@@ -1,6 +1,13 @@
 {
   ClientSession session=sessionManager.getSession(packet.getFrom());
   IQ reply=null;
+  if (session == null) {
+    Log.error("Error during registration. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.internal_server_error);
+    return reply;
+  }
   if (!enabled) {
     reply=IQ.createResultIQ(packet);
     reply.setChildElement(packet.getChildElement().createCopy());
