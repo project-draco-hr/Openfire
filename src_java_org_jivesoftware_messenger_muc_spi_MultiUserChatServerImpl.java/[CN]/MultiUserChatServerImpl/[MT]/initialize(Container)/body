@@ -21,7 +21,7 @@
   String value=JiveGlobals.getProperty("xmpp.muc.tasks.user.timeout");
   if (value != null) {
     try {
-      USER_TIMEOUT=Integer.parseInt(value);
+      user_timeout=Integer.parseInt(value);
     }
  catch (    NumberFormatException e) {
       Log.error("Wrong number format of property xmpp.muc.tasks.user.timeout",e);
@@ -30,7 +30,7 @@
   value=JiveGlobals.getProperty("xmpp.muc.tasks.user.idle");
   if (value != null) {
     try {
-      USER_IDLE=Integer.parseInt(value);
+      user_idle=Integer.parseInt(value);
     }
  catch (    NumberFormatException e) {
       Log.error("Wrong number format of property xmpp.muc.tasks.user.idle",e);
@@ -39,7 +39,7 @@
   value=JiveGlobals.getProperty("xmpp.muc.tasks.log.timeout");
   if (value != null) {
     try {
-      LOG_TIMEOUT=Integer.parseInt(value);
+      log_timeout=Integer.parseInt(value);
     }
  catch (    NumberFormatException e) {
       Log.error("Wrong number format of property xmpp.muc.tasks.log.timeout",e);
@@ -48,7 +48,7 @@
   value=JiveGlobals.getProperty("xmpp.muc.tasks.log.batchsize");
   if (value != null) {
     try {
-      LOG_BATCH_SIZE=Integer.parseInt(value);
+      log_batch_size=Integer.parseInt(value);
     }
  catch (    NumberFormatException e) {
       Log.error("Wrong number format of property xmpp.muc.tasks.log.batchsize",e);
@@ -74,6 +74,8 @@
     chatServiceName+="." + serverName;
   }
   chatServiceAddress=new XMPPAddress(null,chatServiceName,null);
-  timer.schedule(new UserTimeoutTask(),USER_TIMEOUT,USER_TIMEOUT);
-  timer.schedule(new LogConversationTask(),LOG_TIMEOUT,LOG_TIMEOUT);
+  userTimeoutTask=new UserTimeoutTask();
+  timer.schedule(userTimeoutTask,user_timeout,user_timeout);
+  logConversationTask=new LogConversationTask();
+  timer.schedule(logConversationTask,log_timeout,log_timeout);
 }
