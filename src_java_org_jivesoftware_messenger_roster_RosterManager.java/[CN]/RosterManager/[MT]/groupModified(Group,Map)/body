@@ -1,2 +1,41 @@
 {
+  if (!"propertyModified".equals(params.get("type"))) {
+    return;
+  }
+  String originalValue=(String)params.get("originalValue");
+  if ("showInRoster".equals(params.get("propertyKey"))) {
+    String currentValue=group.getProperties().get("showInRoster");
+    if (currentValue.equals(originalValue)) {
+      return;
+    }
+    Collection<String> users=new ArrayList<String>(group.getMembers());
+    users.addAll(group.getAdmins());
+    if ("true".equals(currentValue)) {
+      for (      String addedUser : users) {
+        groupUserAdded(group,addedUser);
+      }
+    }
+ else {
+      for (      String deletedUser : users) {
+        groupUserDeleted(group,deletedUser);
+      }
+    }
+  }
+ else   if ("displayName".equals(params.get("propertyKey"))) {
+    String currentValue=group.getProperties().get("displayName");
+    if (currentValue.equals(originalValue)) {
+      return;
+    }
+    if (!"true".equals(group.getProperties().get("showInRoster"))) {
+      return;
+    }
+    Collection<String> users=new ArrayList<String>(group.getMembers());
+    users.addAll(group.getAdmins());
+    for (    String updatedUser : users) {
+      Roster roster=(Roster)CacheManager.getCache("username2roster").get(updatedUser);
+      if (roster != null) {
+        roster.shareGroupRenamed(originalValue,currentValue,users);
+      }
+    }
+  }
 }

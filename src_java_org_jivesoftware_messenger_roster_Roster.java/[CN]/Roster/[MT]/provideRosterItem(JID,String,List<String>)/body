@@ -3,7 +3,7 @@
     Collection<Group> sharedGroups=GroupManager.getInstance().getGroups();
     for (    String group : groups) {
       for (      Group sharedGroup : sharedGroups) {
-        if (sharedGroup.getName().equals(group)) {
+        if (group.equals(sharedGroup.getProperties().get("displayName"))) {
           throw new SharedGroupException("Cannot add an item to a shared group");
         }
       }

@@ -2,13 +2,14 @@
   Collection<String> users=new ArrayList<String>(group.getMembers());
   users.addAll(group.getAdmins());
   Roster deletedUserRoster=(Roster)CacheManager.getCache("username2roster").get(deletedUser);
+  String groupName=group.getProperties().get("displayName");
   for (  String userToUpdate : users) {
     Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
     if (roster != null) {
-      roster.deleteSharedUser(group.getName(),deletedUser);
+      roster.deleteSharedUser(groupName,deletedUser);
     }
     if (deletedUserRoster != null) {
-      deletedUserRoster.deleteSharedUser(group.getName(),userToUpdate);
+      deletedUserRoster.deleteSharedUser(groupName,userToUpdate);
     }
   }
 }
