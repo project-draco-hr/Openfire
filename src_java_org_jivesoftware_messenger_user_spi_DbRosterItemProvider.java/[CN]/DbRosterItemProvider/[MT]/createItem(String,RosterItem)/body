@@ -8,7 +8,7 @@
     pstmt=con.prepareStatement(CREATE_ROSTER_ITEM);
     pstmt.setString(1,username);
     pstmt.setLong(2,rosterID);
-    pstmt.setString(3,item.getJid().toBareString());
+    pstmt.setString(3,item.getJid().toBareJID());
     pstmt.setInt(4,item.getSubStatus().getValue());
     pstmt.setInt(5,item.getAskStatus().getValue());
     pstmt.setInt(6,item.getRecvStatus().getValue());
@@ -24,25 +24,10 @@
     insertGroups(rosterID,item.getGroups().iterator(),pstmt,con);
   }
  catch (  SQLException e) {
-    throw new UserAlreadyExistsException(item.getJid().toStringPrep());
+    throw new UserAlreadyExistsException(item.getJid().toBareJID());
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.close(pstmt,con);
   }
   return cachedItem;
 }
