@@ -1,45 +1,26 @@
 {
-  ChannelHandler route=null;
   String nodeJID=node.getNode() == null ? "" : node.getNode();
   String resourceJID=node.getResource() == null ? "" : node.getResource();
   routeLock.writeLock().lock();
   try {
-    if (destination instanceof InternalComponentManager.RoutableComponent) {
-      routes.put(node.getDomain(),destination);
-    }
- else {
+    if (destination instanceof ClientSession) {
       Object nameRoutes=routes.get(node.getDomain());
       if (nameRoutes == null) {
-        routes.put(node.getDomain(),destination);
+        nameRoutes=new Hashtable();
+        routes.put(node.getDomain(),nameRoutes);
       }
- else       if (nameRoutes instanceof Hashtable && ((Hashtable)nameRoutes).isEmpty()) {
-        ((Hashtable)nameRoutes).put(nodeJID,destination);
+      Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
+      if (resourceRoutes == null) {
+        resourceRoutes=new Hashtable();
+        ((Hashtable)nameRoutes).put(nodeJID,resourceRoutes);
       }
+      ((Hashtable)resourceRoutes).put(resourceJID,destination);
+    }
  else {
-        if (nameRoutes instanceof ChannelHandler) {
-          nameRoutes=new Hashtable();
-          Object item=routes.put(node.getDomain(),nameRoutes);
-          ((Hashtable)nameRoutes).put("",item);
-        }
-        Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
-        if (resourceRoutes == null || resourceRoutes instanceof ChannelHandler) {
-          resourceRoutes=new Hashtable();
-          Object item=((Hashtable)nameRoutes).put(nodeJID,resourceRoutes);
-          if (item instanceof ChannelHandler) {
-            ((Hashtable)resourceRoutes).put("",item);
-          }
-        }
-        Object resourceRoute=((Hashtable)resourceRoutes).put(resourceJID,destination);
-        if (resourceRoute != null) {
-          if (resourceRoute instanceof ChannelHandler) {
-            route=(ChannelHandler)resourceRoute;
-          }
-        }
-      }
+      routes.put(node.getDomain(),destination);
     }
   }
   finally {
     routeLock.writeLock().unlock();
   }
-  return route;
 }
