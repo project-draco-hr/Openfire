@@ -1,0 +1,17 @@
+{
+  String[] name=parsePropertyName(propName);
+  String value=null;
+  Element element=doc.getRootElement();
+  for (int i=0; i < name.length; i++) {
+    element=element.element(name[i]);
+    if (element == null) {
+      value=null;
+      break;
+    }
+  }
+  value=element.attributeValue(attribute);
+  if ("".equals(value)) {
+    value=null;
+  }
+  return value;
+}

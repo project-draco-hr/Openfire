@@ -3,10 +3,12 @@
   Item item=getItem(subPageID);
   if (item != null) {
     Item parent=item.getParent();
-    while (parent.getId() == null) {
+    if (parent != null) {
       parent=parent.getParent();
+      if (parent != null) {
+        pageID=parent.getId();
+      }
     }
-    pageID=parent.getId();
   }
   return pageID;
 }
