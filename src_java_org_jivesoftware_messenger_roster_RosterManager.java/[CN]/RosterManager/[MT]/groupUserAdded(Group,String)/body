@@ -7,8 +7,14 @@
       if (roster != null) {
         roster.addSharedUser(group,addedUser);
       }
-      if (addedUserRoster != null && group.isUser(userToUpdate)) {
-        addedUserRoster.addSharedUser(group,userToUpdate);
+      if (addedUserRoster != null) {
+        try {
+          User user=UserManager.getInstance().getUser(userToUpdate);
+          Collection<Group> groups=GroupManager.getInstance().getGroups(user);
+          addedUserRoster.addSharedUser(userToUpdate,groups,group);
+        }
+ catch (        UserNotFoundException e) {
+        }
       }
     }
   }

@@ -9,12 +9,12 @@
     if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=getAffectedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"));
-    for (    String deletedUser : users) {
-      groupUserDeleted(group,users,deletedUser);
-    }
-    users=new HashSet<String>(group.getMembers());
+    Collection<String> users=new HashSet<String>(group.getMembers());
     users.addAll(group.getAdmins());
+    Collection<String> affectedUsers=getAffectedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"));
+    for (    String deletedUser : users) {
+      groupUserDeleted(group,affectedUsers,deletedUser);
+    }
     for (    String user : users) {
       groupUserAdded(group,user);
     }
@@ -24,12 +24,12 @@
     if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=getAffectedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue);
-    for (    String deletedUser : users) {
-      groupUserDeleted(group,users,deletedUser);
-    }
-    users=new HashSet<String>(group.getMembers());
+    Collection<String> users=new HashSet<String>(group.getMembers());
     users.addAll(group.getAdmins());
+    Collection<String> affectedUsers=getAffectedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue);
+    for (    String deletedUser : users) {
+      groupUserDeleted(group,affectedUsers,deletedUser);
+    }
     for (    String user : users) {
       groupUserAdded(group,user);
     }

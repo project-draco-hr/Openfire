@@ -1,0 +1,18 @@
+{
+  String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
+  if ("everybody".equals(showInRoster)) {
+    return true;
+  }
+ else   if ("onlyGroup".equals(showInRoster)) {
+    if (group.isUser(username)) {
+      return true;
+    }
+    Collection<Group> groupList=parseGroups(group.getProperties().get("sharedRoster.groupList"));
+    for (    Group groupInList : groupList) {
+      if (groupInList.isUser(username)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

@@ -4,35 +4,32 @@
     RosterItem item=getRosterItem(jid);
     int groupSize=item.getSharedGroups().size() + item.getInvisibleSharedGroups().size();
     if (item.isOnlyShared() && groupSize == 1) {
-      if (!item.getSharedGroups().contains(sharedGroup)) {
-        return;
-      }
       deleteRosterItem(jid,false);
     }
  else {
-      item.removeSharedGroup(sharedGroup);
+      item.removeSharedGroup(deletedGroup.getProperties().get("sharedRoster.displayName"));
+      for (      Group group : groups) {
+        if (!rosterManager.isGroupVisible(group,getUsername())) {
+          String groupName=group.getProperties().get("sharedRoster.displayName");
+          item.removeSharedGroup(groupName);
+        }
+      }
       if (item.isOnlyShared()) {
         Collection<Group> userGroups=null;
-        Collection<Group> sharedGroups=new ArrayList<Group>();
         try {
           User rosterUser=UserManager.getInstance().getUser(getUsername());
           GroupManager groupManager=GroupManager.getInstance();
           userGroups=groupManager.getGroups(rosterUser);
-          for (          String groupName : item.getSharedGroups()) {
-            try {
-              sharedGroups.add(groupManager.getGroup(groupName));
-            }
- catch (            GroupNotFoundException e) {
-            }
-          }
-          if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),sharedGroups)) {
+          if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),groups)) {
             item.setSubStatus(RosterItem.SUB_BOTH);
           }
- else           if (item.getSharedGroups().isEmpty() && !item.getInvisibleSharedGroups().isEmpty()) {
-            item.setSubStatus(RosterItem.SUB_FROM);
-          }
  else {
-            item.setSubStatus(RosterItem.SUB_TO);
+            item.setSubStatus(RosterItem.SUB_FROM);
+            for (            Group group : groups) {
+              if (rosterManager.isGroupVisible(group,getUsername())) {
+                item.setSubStatus(RosterItem.SUB_TO);
+              }
+            }
           }
         }
  catch (        UserNotFoundException e) {

@@ -6,8 +6,14 @@
     if (roster != null) {
       roster.deleteSharedUser(groupName,deletedUser);
     }
-    if (deletedUserRoster != null && group.isUser(userToUpdate)) {
-      deletedUserRoster.deleteSharedUser(groupName,userToUpdate);
+    if (deletedUserRoster != null) {
+      try {
+        User user=UserManager.getInstance().getUser(userToUpdate);
+        Collection<Group> groups=GroupManager.getInstance().getGroups(user);
+        deletedUserRoster.deleteSharedUser(userToUpdate,groups,group);
+      }
+ catch (      UserNotFoundException e) {
+      }
     }
   }
 }

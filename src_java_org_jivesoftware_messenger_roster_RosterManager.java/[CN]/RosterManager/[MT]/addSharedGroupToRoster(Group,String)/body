@@ -8,7 +8,13 @@
       roster.addSharedUser(group,username);
     }
     if (userRoster != null) {
-      userRoster.addSharedUser(group,userToAdd);
+      try {
+        User user=UserManager.getInstance().getUser(userToAdd);
+        Collection<Group> groups=GroupManager.getInstance().getGroups(user);
+        userRoster.addSharedUser(userToAdd,groups,group);
+      }
+ catch (      UserNotFoundException e) {
+      }
     }
   }
 }

@@ -9,7 +9,13 @@
       roster.deleteSharedUser(groupName,username);
     }
     if (userRoster != null) {
-      userRoster.deleteSharedUser(groupName,userToRemove);
+      try {
+        User user=UserManager.getInstance().getUser(userToRemove);
+        Collection<Group> groups=GroupManager.getInstance().getGroups(user);
+        userRoster.deleteSharedUser(userToRemove,groups,group);
+      }
+ catch (      UserNotFoundException e) {
+      }
     }
   }
 }

@@ -5,7 +5,9 @@
   Collection<String> users=new HashSet<String>(group.getMembers());
   users.addAll(group.getAdmins());
   if ("everybody".equals(showInRoster)) {
-    users.addAll(SessionManager.getInstance().getSessionUsers());
+    for (    User user : UserManager.getInstance().getUsers()) {
+      users.add(user.getUsername());
+    }
   }
  else {
     Collection<Group> groupList=parseGroups(groupNames);

@@ -2,12 +2,8 @@
   boolean newItem=false;
   RosterItem item=null;
   JID jid=XMPPServer.getInstance().createJID(addedUser,"");
-  String groupName=group.getProperties().get("sharedRoster.displayName");
   try {
     item=getRosterItem(jid);
-    if (item.getSharedGroups().contains(groupName)) {
-      return;
-    }
     newItem=false;
   }
  catch (  UserNotFoundException e) {
@@ -19,44 +15,40 @@
       newItem=true;
     }
  catch (    UserNotFoundException ex) {
-      Log.error("Group (" + groupName + ") includes non-existent username ("+ addedUser+ ")");
+      Log.error("Couldn't find a user with username (" + addedUser + ")");
     }
   }
   if (newItem || item.isOnlyShared()) {
     Collection<Group> userGroups=null;
-    Collection<Group> sharedGroups=new ArrayList<Group>();
     try {
       User rosterUser=UserManager.getInstance().getUser(getUsername());
       GroupManager groupManager=GroupManager.getInstance();
       userGroups=groupManager.getGroups(rosterUser);
-      for (      String name : item.getSharedGroups()) {
-        try {
-          sharedGroups.add(groupManager.getGroup(name));
-        }
- catch (        GroupNotFoundException e) {
-        }
-      }
-      sharedGroups.add(groupManager.getGroup(groupName));
-      if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),sharedGroups)) {
+      if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),groups)) {
         item.setSubStatus(RosterItem.SUB_BOTH);
+        for (        Group group : groups) {
+          if (rosterManager.isGroupVisible(group,getUsername())) {
+            String groupName=group.getProperties().get("sharedRoster.displayName");
+            item.addSharedGroup(groupName);
+          }
+        }
       }
- else       if (group.isUser(addedUser) && !group.isUser(getUsername())) {
-        item.setSubStatus(RosterItem.SUB_TO);
-      }
- else       if (!group.isUser(addedUser) && group.isUser(getUsername())) {
+ else {
         item.setSubStatus(RosterItem.SUB_FROM);
+        for (        Group group : groups) {
+          if (rosterManager.isGroupVisible(group,getUsername())) {
+            String groupName=group.getProperties().get("sharedRoster.displayName");
+            item.addSharedGroup(groupName);
+            item.setSubStatus(RosterItem.SUB_TO);
+          }
+        }
+        if (item.getSubStatus() == RosterItem.SUB_FROM) {
+          item.addInvisibleSharedGroup(addedGroup.getProperties().get("sharedRoster.displayName"));
+        }
       }
     }
  catch (    UserNotFoundException e) {
     }
-catch (    GroupNotFoundException e) {
-    }
-  }
-  if (item.getSubStatus() != RosterItem.SUB_FROM) {
-    item.addSharedGroup(groupName);
-  }
- else {
-    item.addInvisibleSharedGroup(groupName);
   }
   broadcast(item);
   if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
