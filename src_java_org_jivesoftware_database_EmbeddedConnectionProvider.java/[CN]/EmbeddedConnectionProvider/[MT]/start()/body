@@ -19,7 +19,12 @@ synchronized (initLock) {
         initializeDatabase();
       }
  else {
-        upgradeDatabase();
+        try {
+          upgradeDatabase();
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
       }
     }
  catch (    IOException ioe) {
