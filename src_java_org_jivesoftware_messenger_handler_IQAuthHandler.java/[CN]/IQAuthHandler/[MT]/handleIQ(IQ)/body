@@ -5,12 +5,13 @@
     try {
       Element iq=packet.getElement();
       Element query=iq.element("query");
+      Element queryResponse=probeResponse.createCopy();
       if (IQ.Type.get == packet.getType()) {
         String username=query.elementTextTrim("username");
-        probeResponse.element("username").setText(username);
+        queryResponse.element("username").setText(username);
         response=IQ.createResultIQ(packet);
-        probeResponse.setParent(null);
-        response.setChildElement(probeResponse);
+        queryResponse.setParent(null);
+        response.setChildElement(queryResponse);
         if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
           response.setTo((JID)null);
           session.getConnection().deliver(response);
