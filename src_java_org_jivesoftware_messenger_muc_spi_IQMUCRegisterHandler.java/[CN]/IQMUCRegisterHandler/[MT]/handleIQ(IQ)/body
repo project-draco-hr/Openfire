@@ -12,35 +12,35 @@
     String nickname=room.getReservedNickname(packet.getFrom().toBareJID());
     if (nickname != null) {
       Element currentRegistration=probeResult.createCopy();
-      currentRegistration.setProperty("query.registered",null);
-      XDataFormImpl form=(XDataFormImpl)currentRegistration.getFragment("x","jabber:x:data");
+      ElementUtil.setProperty(currentRegistration,"query.registered",null);
+      XDataFormImpl form=new XDataFormImpl();
+      form.parse(currentRegistration);
       form.getField("muc#register_roomnick").addValue(nickname);
-      reply.setChildFragment(currentRegistration);
+      reply.getElement().add(currentRegistration);
     }
  else {
-      reply.setChildFragment(probeResult);
+      reply.getElement().add(probeResult);
     }
   }
  else   if (IQ.Type.set == packet.getType()) {
     try {
       List<Presence> presences=new ArrayList<Presence>();
-      reply=packet.createResult();
-      XMPPFragment iq=packet.getChildFragment();
-      MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
-      if (metaData.includesProperty("query.remove")) {
-        presences.addAll(room.addNone(packet.getSender().toBareStringPrep(),room.getRole()));
+      reply=IQ.createResultIQ(packet);
+      Element iq=packet.getChildElement();
+      if (ElementUtil.includesProperty(iq,"query.remove")) {
+        presences.addAll(room.addNone(packet.getFrom().toBareJID(),room.getRole()));
       }
  else {
-        Element formElement=((XMPPDOMFragment)iq).getRootElement().element("x");
+        Element formElement=iq.element("x");
         if (formElement != null) {
           XDataFormImpl registrationForm=new XDataFormImpl();
           registrationForm.parse(formElement);
           Iterator<String> values=registrationForm.getField("muc#register_roomnick").getValues();
           String nickname=(values.hasNext() ? values.next() : null);
-          presences.addAll(room.addMember(packet.getSender().toBareStringPrep(),nickname,room.getRole()));
+          presences.addAll(room.addMember(packet.getTo().toBareJID(),nickname,room.getRole()));
         }
  else {
-          reply.setError(XMPPError.Code.BAD_REQUEST);
+          reply.setError(PacketError.Condition.bad_request);
         }
       }
       for (      Presence presence : presences) {
@@ -48,12 +48,12 @@
       }
     }
  catch (    ForbiddenException e) {
-      reply=packet.createResult();
-      reply.setError(XMPPError.Code.FORBIDDEN);
+      reply=IQ.createResultIQ(packet);
+      reply.setError(PacketError.Condition.forbidden);
     }
 catch (    ConflictException e) {
-      reply=packet.createResult();
-      reply.setError(XMPPError.Code.CONFLICT);
+      reply=IQ.createResultIQ(packet);
+      reply.setError(PacketError.Condition.conflict);
     }
 catch (    Exception e) {
       Log.error(e);

@@ -7,15 +7,11 @@
  catch (      Exception e) {
         Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
         try {
-          try {
-            Session session=SessionManager.getInstance().getSession(packet.getFrom());
-            session.getConnection().close();
-          }
- catch (          SessionNotFoundException e1) {
-            e1.printStackTrace();
-          }
+          Session session=SessionManager.getInstance().getSession(packet.getFrom());
+          session.getConnection().close();
         }
- catch (        UnauthorizedException e1) {
+ catch (        Exception e1) {
+          Log.error(e1);
         }
       }
     }
