@@ -7,7 +7,16 @@
     e.printStackTrace();
   }
   String title="Jive Messenger";
-  final JFrame frame=new JFrame(title);
+  frame=new DroppableFrame(){
+    public void fileDropped(    File file){
+      String fileName=file.getName();
+      if (fileName.endsWith("*.jar")) {
+        installPlugin(file);
+      }
+    }
+  }
+;
+  frame.setTitle(title);
   ImageIcon splash=null;
   JLabel splashLabel=null;
   try {
@@ -61,7 +70,7 @@
   stopMenuItem.setEnabled(false);
   ActionListener actionListener=new ActionListener(){
     public void actionPerformed(    ActionEvent e){
-      if (e.getActionCommand().equals("Start")) {
+      if ("Start".equals(e.getActionCommand())) {
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         startApplication();
         startButton.setEnabled(false);
@@ -87,7 +96,7 @@
 ;
         thread.start();
       }
- else       if (e.getActionCommand().equals("Stop")) {
+ else       if ("Stop".equals(e.getActionCommand())) {
         stopApplication();
         frame.setIconImage(offIcon.getImage());
         trayIcon.setIcon(offIcon);
@@ -99,14 +108,14 @@
         startMenuItem.setEnabled(true);
         stopMenuItem.setEnabled(false);
       }
- else       if (e.getActionCommand().equals("Launch Admin")) {
+ else       if ("Launch Admin".equals(e.getActionCommand())) {
         launchBrowser();
       }
- else       if (e.getActionCommand().equals("Quit")) {
+ else       if ("Quit".equals(e.getActionCommand())) {
         stopApplication();
         System.exit(0);
       }
- else       if (e.getActionCommand().equals("Hide/Show") || e.getActionCommand().equals("PressAction")) {
+ else       if ("Hide/Show".equals(e.getActionCommand()) || "PressAction".equals(e.getActionCommand())) {
         if (frame.isVisible()) {
           frame.setVisible(false);
           frame.setState(Frame.ICONIFIED);
