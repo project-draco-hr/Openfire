@@ -27,5 +27,9 @@ synchronized (username.intern()) {
       }
     }
   }
+  if (session != null && session.getConnection().isClosed()) {
+    removeSession(session);
+    return getBestRoute(recipient);
+  }
   return session;
 }

@@ -30,4 +30,7 @@ synchronized (username.intern()) {
     offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }
+ else   if (preAuthenticatedSessions.containsValue(session)) {
+    preAuthenticatedSessions.remove(session.getAddress().toString());
+  }
 }

@@ -3,7 +3,16 @@
     routingTable.removeRoute(session.getAddress());
     try {
       SessionMap sessionMap=sessions.get(session.getUsername());
-      if (sessionMap.getAvailableSessions().isEmpty()) {
+      if (sessionMap == null) {
+        JID userJID=new JID(session.getUsername(),serverName,"");
+        try {
+          routingTable.getRoute(userJID);
+          routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
+        }
+ catch (        NoSuchRouteException e) {
+        }
+      }
+ else       if (sessionMap.getAvailableSessions().isEmpty()) {
         routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
       }
  else {
