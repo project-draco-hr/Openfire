@@ -13,7 +13,7 @@
       Element servletElement=(Element)classes.get(i);
       String name=servletElement.element("servlet-name").getTextTrim();
       String className=servletElement.element("servlet-class").getTextTrim();
-      classMap.put(name,plugin.getClass().getClassLoader().loadClass(className));
+      classMap.put(name,manager.loadClass(className,plugin));
     }
     List names=doc.selectNodes("//servlet-mapping");
     for (int i=0; i < names.size(); i++) {

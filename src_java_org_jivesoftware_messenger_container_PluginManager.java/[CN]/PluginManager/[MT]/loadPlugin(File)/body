@@ -14,9 +14,10 @@
       plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
       plugin.initialize(this,pluginDir);
       plugins.put(pluginDir.getName(),plugin);
+      classloaders.put(plugin,pluginLoader);
       File webXML=new File(pluginDir,"web" + File.separator + "web.xml");
       if (webXML.exists()) {
-        PluginServlet.registerServlets(plugin,webXML);
+        PluginServlet.registerServlets(this,plugin,webXML);
       }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
