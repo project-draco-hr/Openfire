@@ -19,42 +19,42 @@
         }
         if (declinedInvitation) {
           Element info=userInfo.element("decline");
-          server.getChatRoom(group).sendInvitationRejection(info.attributeValue("to"),info.elementTextTrim("reason"),packet.getFrom());
+          server.getChatRoom(group).sendInvitationRejection(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),packet.getFrom());
         }
  else {
-          sendErrorPacket(packet,XMPPError.Code.NOT_ACCEPTABLE);
+          sendErrorPacket(packet,PacketError.Condition.not_acceptable);
         }
       }
  else {
-        sendErrorPacket(packet,XMPPError.Code.NOT_FOUND);
+        sendErrorPacket(packet,PacketError.Condition.recipient_unavailable);
       }
     }
  else {
-      if (!role.getChatUser().getAddress().equals(packet.getSender())) {
-        sendErrorPacket(packet,XMPPError.Code.CONFLICT);
+      if (!role.getChatUser().getAddress().equals(packet.getFrom())) {
+        sendErrorPacket(packet,PacketError.Condition.conflict);
       }
  else {
         try {
-          if (packet.getSubject() != null && packet.getSubject().trim().length() > 0 && Message.GROUP_CHAT == packet.getType()) {
+          if (packet.getSubject() != null && packet.getSubject().trim().length() > 0 && Message.Type.groupchat == packet.getType()) {
             role.getChatRoom().changeSubject(packet,role);
           }
  else {
             Message.Type type=packet.getType();
-            String resource=packet.getRecipient().getResource();
+            String resource=packet.getTo().getResource();
             if (resource == null || resource.trim().length() == 0) {
               resource=null;
             }
-            if (resource == null && Message.GROUP_CHAT == type) {
+            if (resource == null && Message.Type.groupchat == type) {
               role.getChatRoom().sendPublicMessage(packet,role);
             }
- else             if (resource != null && (Message.CHAT == type || Message.NORMAL == type)) {
+ else             if (resource != null && (Message.Type.chat == type || Message.Type.normal == type)) {
               role.getChatRoom().sendPrivateMessage(packet,role);
             }
- else             if (resource == null && Message.NORMAL == type) {
-              XMPPDOMFragment userInfo=(XMPPDOMFragment)packet.getFragment("x","http://jabber.org/protocol/muc#user");
+ else             if (resource == null && Message.Type.normal == type) {
+              Element userInfo=packet.getChildElement("x","http://jabber.org/protocol/muc#user");
               MUCRoomImpl room=(MUCRoomImpl)role.getChatRoom();
-              if (userInfo != null && userInfo.getRootElement().element("invite") != null) {
-                Element info=userInfo.getRootElement().element("invite");
+              if (userInfo != null && userInfo.element("invite") != null) {
+                Element info=userInfo.element("invite");
                 if (room.isInvitationRequiredToEnter()) {
                   room.lock.writeLock().lock();
                   try {
@@ -64,29 +64,29 @@
                     room.lock.writeLock().unlock();
                   }
                 }
-                room.sendInvitation(info.attributeValue("to"),info.elementTextTrim("reason"),role,packet.getOriginatingSession());
+                room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role);
               }
- else               if (userInfo != null && userInfo.getRootElement().element("decline") != null) {
-                Element info=userInfo.getRootElement().element("decline");
-                room.sendInvitationRejection(info.attributeValue("to"),info.elementTextTrim("reason"),packet.getSender(),packet.getOriginatingSession());
+ else               if (userInfo != null && userInfo.element("decline") != null) {
+                Element info=userInfo.element("decline");
+                room.sendInvitationRejection(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),packet.getFrom());
               }
  else {
-                sendErrorPacket(packet,XMPPError.Code.BAD_REQUEST);
+                sendErrorPacket(packet,PacketError.Condition.bad_request);
               }
             }
  else {
-              sendErrorPacket(packet,XMPPError.Code.BAD_REQUEST);
+              sendErrorPacket(packet,PacketError.Condition.bad_request);
             }
           }
         }
  catch (        ForbiddenException e) {
-          sendErrorPacket(packet,XMPPError.Code.FORBIDDEN);
+          sendErrorPacket(packet,PacketError.Condition.forbidden);
         }
 catch (        NotFoundException e) {
-          sendErrorPacket(packet,XMPPError.Code.NOT_FOUND);
+          sendErrorPacket(packet,PacketError.Condition.recipient_unavailable);
         }
 catch (        ConflictException e) {
-          sendErrorPacket(packet,XMPPError.Code.CONFLICT);
+          sendErrorPacket(packet,PacketError.Condition.conflict);
         }
       }
     }

@@ -12,7 +12,7 @@
     Message message;
     int accumulatedChars=0;
     int accumulatedStanzas=0;
-    MetaDataFragment delayInformation;
+    Element delayInformation;
     LinkedList historyToSend=new LinkedList();
     ListIterator iterator=roomHistory.getReverseMessageHistory();
     while (iterator.hasPrevious()) {
@@ -26,9 +26,9 @@
         break;
       }
       if (getSeconds() > -1 || getSince() != null) {
-        delayInformation=(MetaDataFragment)message.getFragment("x","jabber:x:delay");
+        delayInformation=message.getChildElement("x","jabber:x:delay");
         try {
-          Date delayedDate=delayedFormatter.parse(delayInformation.getProperty("x:stamp"));
+          Date delayedDate=delayedFormatter.parse(delayInformation.attributeValue("stamp"));
           if (getSince() != null && delayedDate.before(getSince())) {
             break;
           }

@@ -1,7 +1,7 @@
 {
   lastPacketTime=System.currentTimeMillis();
-  XMPPAddress recipient=packet.getRecipient();
-  String group=recipient.getName();
+  JID recipient=packet.getTo();
+  String group=recipient.getNode();
   if (group == null) {
     Log.info(LocaleUtils.getLocalizedString("muc.error.not-supported") + " " + packet.toString());
   }
@@ -10,29 +10,29 @@
     if (role == null) {
     }
  else {
-      if (!role.getChatUser().getAddress().equals(packet.getSender())) {
-        sendErrorPacket(packet,XMPPError.Code.CONFLICT);
+      if (!role.getChatUser().getAddress().equals(packet.getFrom())) {
+        sendErrorPacket(packet,PacketError.Condition.conflict);
       }
  else {
         try {
-          if ("query".equals(packet.getChildName()) && "http://jabber.org/protocol/muc#owner".equals(packet.getChildNamespace())) {
+          if ("query".equals(packet.getElement().getNamespacePrefix()) && "http://jabber.org/protocol/muc#owner".equals(packet.getElement().getNamespaceURI())) {
             role.getChatRoom().getIQOwnerHandler().handleIQ(packet,role);
           }
- else           if ("query".equals(packet.getChildName()) && "http://jabber.org/protocol/muc#admin".equals(packet.getChildNamespace())) {
+ else           if ("query".equals(packet.getElement().getNamespacePrefix()) && "http://jabber.org/protocol/muc#admin".equals(packet.getElement().getNamespaceURI())) {
             role.getChatRoom().getIQAdminHandler().handleIQ(packet,role);
           }
  else {
-            sendErrorPacket(packet,XMPPError.Code.BAD_REQUEST);
+            sendErrorPacket(packet,PacketError.Condition.bad_request);
           }
         }
  catch (        ForbiddenException e) {
-          sendErrorPacket(packet,XMPPError.Code.FORBIDDEN);
+          sendErrorPacket(packet,PacketError.Condition.forbidden);
         }
 catch (        ConflictException e) {
-          sendErrorPacket(packet,XMPPError.Code.CONFLICT);
+          sendErrorPacket(packet,PacketError.Condition.conflict);
         }
 catch (        NotAllowedException e) {
-          sendErrorPacket(packet,XMPPError.Code.NOT_ALLOWED);
+          sendErrorPacket(packet,PacketError.Condition.not_allowed);
         }
       }
     }
