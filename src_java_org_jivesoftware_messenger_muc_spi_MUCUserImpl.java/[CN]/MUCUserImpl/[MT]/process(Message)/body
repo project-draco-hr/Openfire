@@ -64,7 +64,9 @@
                     room.lock.writeLock().unlock();
                   }
                 }
-                room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role);
+                List<Element> extensions=new ArrayList<Element>(packet.getElement().elements());
+                extensions.remove(userInfo);
+                room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role,extensions);
               }
  else               if (userInfo != null && userInfo.element("decline") != null) {
                 Element info=userInfo.element("decline");
