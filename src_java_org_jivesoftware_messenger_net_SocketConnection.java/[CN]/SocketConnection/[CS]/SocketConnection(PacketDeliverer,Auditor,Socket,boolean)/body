@@ -7,8 +7,5 @@
   sock=socket;
   writer=new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(),charset));
   this.deliverer=deliverer;
-  if (xmlFactory == null) {
-    xmlFactory=XMLOutputFactory.newInstance();
-  }
-  xmlSerializer=xmlFactory.createXMLStreamWriter(writer);
+  xmlSerializer=new XMLWriter(writer);
 }

@@ -3,10 +3,13 @@
     deliverer.deliver(packet);
   }
  else {
-    packet.setSending(true);
 synchronized (writer) {
-      packet.send(xmlSerializer,0);
-      xmlSerializer.flush();
+      try {
+        xmlSerializer.flush();
+      }
+ catch (      IOException e) {
+        Log.error(e);
+      }
     }
     auditor.audit(packet);
     session.incrementServerPacketCount();
