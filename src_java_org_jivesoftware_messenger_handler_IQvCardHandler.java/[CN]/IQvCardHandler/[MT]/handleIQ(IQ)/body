@@ -15,9 +15,9 @@
  else     if (type.equals(IQ.GET)) {
       User user=userManager.getUser(recipient.getName());
       result=packet.createResult();
-      XMPPDOMFragment frag=new XMPPDOMFragment();
+      Element vcard=DocumentHelper.createElement(QName.get("VCARD","vcard-temp"));
+      XMPPDOMFragment frag=new XMPPDOMFragment(vcard);
       result.setChildFragment(frag);
-      Element vcard=frag.getRootElement().addElement("VCARD","vcard-temp");
       Iterator names=user.getVCardPropertyNames();
       while (names.hasNext()) {
         String name=(String)names.next();
