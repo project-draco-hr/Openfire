@@ -1,6 +1,6 @@
 {
   boolean handled=false;
-  String host=packet.getRecipient().getHost();
+  String host=packet.getTo().getDomain();
   for (  Channel channel : transports.values()) {
     if (channel.getName().equalsIgnoreCase(host)) {
       channel.add(packet);
@@ -8,11 +8,11 @@
     }
   }
   if (!handled) {
-    XMPPAddress recipient=packet.getRecipient();
-    XMPPAddress sender=packet.getSender();
-    packet.setError(XMPPError.Code.REMOTE_SERVER_TIMEOUT);
-    packet.setSender(recipient);
-    packet.setRecipient(sender);
+    JID recipient=packet.getTo();
+    JID sender=packet.getFrom();
+    packet.setError(PacketError.Condition.remote_server_timeout);
+    packet.setFrom(recipient);
+    packet.setTo(sender);
     try {
       deliverer.deliver(packet);
     }
@@ -21,9 +21,6 @@
     }
 catch (    PacketException e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-    }
-catch (    XMLStreamException xse) {
-      Log.error(xse);
     }
   }
 }

@@ -4,7 +4,8 @@
   try {
     in=getClass().getResourceAsStream("/messenger_init.xml");
     if (in != null) {
-      Document doc=XPPReader.parseDocument(new InputStreamReader(in),this.getClass());
+      SAXReader reader=new SAXReader();
+      Document doc=reader.read(in);
       messengerHome=doc.getRootElement().getText();
     }
   }

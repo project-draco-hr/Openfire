@@ -60,11 +60,11 @@
         item=(Element)items.next();
         affiliation=item.attributeValue("affiliation");
         if (hasJID) {
-          bareJID=XMPPAddress.parseBareAddress(item.attributeValue("jid"));
+          bareJID=new JID(item.attributeValue("jid")).toBareJID();
         }
  else {
           nick=item.attributeValue("nick");
-          bareJID=room.getOccupant(nick).getChatUser().getAddress().toBareStringPrep();
+          bareJID=room.getOccupant(nick).getChatUser().getAddress().toBareJID();
         }
         jids.put(bareJID,affiliation);
       }

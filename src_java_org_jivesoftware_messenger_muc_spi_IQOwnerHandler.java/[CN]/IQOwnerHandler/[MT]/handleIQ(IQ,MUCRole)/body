@@ -2,8 +2,8 @@
   if (MUCRole.OWNER != role.getAffiliation()) {
     throw new ForbiddenException();
   }
-  IQ reply=packet.createResult();
-  Element element=((XMPPDOMFragment)packet.getChildFragment()).getRootElement();
+  IQ reply=IQ.createResultIQ(packet);
+  Element element=packet.getChildElement();
   Element formElement=element.element(QName.get("x","jabber:x:data"));
   if (formElement != null) {
     handleDataFormElement(role,formElement);
@@ -21,15 +21,15 @@
  else {
         if (!element.elementIterator().hasNext()) {
           refreshConfigurationFormValues();
-          reply.setChildFragment(probeResult);
+          reply.setChildElement(probeResult.createCopy());
         }
  else {
-          reply.setError(XMPPError.Code.BAD_REQUEST);
+          reply.setError(PacketError.Condition.bad_request);
         }
       }
     }
   }
-  if (reply.getRecipient() != null) {
+  if (reply.getTo() != null) {
     router.route(reply);
   }
 }

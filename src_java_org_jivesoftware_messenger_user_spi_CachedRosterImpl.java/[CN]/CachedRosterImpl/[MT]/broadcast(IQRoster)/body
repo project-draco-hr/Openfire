@@ -1,15 +1,11 @@
 {
-  try {
-    if (server == null) {
-      server=(XMPPServer)ServiceLookupFactory.getLookup().lookup(XMPPServer.class);
-    }
-    JID recipient=server.createJID(username,null);
-    roster.setTo(recipient);
-    if (sessionManager == null) {
-      sessionManager=SessionManager.getInstance();
-    }
-    sessionManager.userBroadcast(username,roster);
+  if (server == null) {
+    server=(XMPPServer)ServiceLookupFactory.getLookup().lookup(XMPPServer.class);
   }
- catch (  XMLStreamException e) {
+  JID recipient=server.createJID(username,null);
+  roster.setTo(recipient);
+  if (sessionManager == null) {
+    sessionManager=SessionManager.getInstance();
   }
+  sessionManager.userBroadcast(username,roster);
 }
