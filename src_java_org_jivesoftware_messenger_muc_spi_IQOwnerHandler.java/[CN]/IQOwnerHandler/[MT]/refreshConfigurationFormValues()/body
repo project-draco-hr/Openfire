@@ -15,8 +15,8 @@
     field.addValue(Integer.toString(room.getMaxUsers()));
     field=configurationForm.getField("muc#roomconfig_presencebroadcast");
     field.clearValues();
-    for (Iterator it=room.getRolesToBroadcastPresence(); it.hasNext(); ) {
-      field.addValue((String)it.next());
+    for (    String roleToBroadcast : room.getRolesToBroadcastPresence()) {
+      field.addValue(roleToBroadcast);
     }
     field=configurationForm.getField("muc#roomconfig_publicroom");
     field.clearValues();
@@ -47,13 +47,13 @@
     field.addValue((room.isLogEnabled() ? "1" : "0"));
     field=configurationForm.getField("muc#roomconfig_roomadmins");
     field.clearValues();
-    for (Iterator<String> it=room.getAdmins(); it.hasNext(); ) {
-      field.addValue(it.next());
+    for (    String jid : room.getAdmins()) {
+      field.addValue(jid);
     }
     field=configurationForm.getField("muc#roomconfig_roomowners");
     field.clearValues();
-    for (Iterator<String> it=room.getOwners(); it.hasNext(); ) {
-      field.addValue(it.next());
+    for (    String jid : room.getOwners()) {
+      field.addValue(jid);
     }
   }
   finally {

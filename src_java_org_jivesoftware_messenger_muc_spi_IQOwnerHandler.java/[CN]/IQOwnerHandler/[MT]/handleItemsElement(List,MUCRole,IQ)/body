@@ -10,10 +10,8 @@
       MetaDataFragment result=new MetaDataFragment(DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/muc#owner")));
       if ("owner".equals(affiliation)) {
         MetaDataFragment ownerMetaData;
-        String jid;
         MUCRole role;
-        for (Iterator<String> owners=room.getOwners(); owners.hasNext(); ) {
-          jid=owners.next();
+        for (        String jid : room.getOwners()) {
           ownerMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
           ownerMetaData.setProperty("item:affiliation","owner");
           ownerMetaData.setProperty("item:jid",jid);
@@ -31,10 +29,8 @@
       }
  else       if ("admin".equals(affiliation)) {
         MetaDataFragment adminMetaData;
-        String jid;
         MUCRole role;
-        for (Iterator<String> admins=room.getAdmins(); admins.hasNext(); ) {
-          jid=admins.next();
+        for (        String jid : room.getAdmins()) {
           adminMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
           adminMetaData.setProperty("item:affiliation","admin");
           adminMetaData.setProperty("item:jid",jid);
