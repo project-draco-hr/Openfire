@@ -3,11 +3,7 @@
   if (invitationRequiredToEnter && !this.invitationRequiredToEnter) {
     for (    MUCRole occupant : occupants.values()) {
       if (occupant.getAffiliation() > MUCRole.MEMBER) {
-        try {
-          presences.add(kickOccupant(occupant.getChatUser().getAddress().toStringPrep(),null,LocaleUtils.getLocalizedString("muc.roomIsNowMembersOnly")));
-        }
- catch (        NotAllowedException e) {
-        }
+        presences.add(kickOccupant(jid,null,LocaleUtils.getLocalizedString("muc.roomIsNowMembersOnly")));
       }
     }
   }

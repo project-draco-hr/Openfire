@@ -1,7 +1,7 @@
 {
-  packet=(IQ)packet.createDeepCopy();
-  packet.setError(XMPPError.Code.BAD_REQUEST);
-  packet.setRecipient(packet.getSender());
-  packet.setSender(role.getRoleAddress());
+  packet=packet.createCopy();
+  packet.setError(PacketError.Condition.bad_request);
+  packet.setTo(packet.getFrom());
+  packet.setFrom(role.getRoleAddress());
   router.route(packet);
 }

@@ -13,28 +13,22 @@
     String tag=xpp.getLocalName();
     if ("message".equals(tag)) {
       Message packet=packetFactory.getMessage(xpp);
-      packet.setOriginatingSession(session);
-      packet.setSender(session.getAddress());
-      packet.setSending(false);
+      packet.setFrom(session.getAddress());
       auditor.audit(packet);
       router.route(packet);
       session.incrementClientPacketCount();
     }
  else     if ("presence".equals(tag)) {
       Presence packet=packetFactory.getPresence(xpp);
-      packet.setOriginatingSession(session);
-      packet.setSender(session.getAddress());
-      packet.setSending(false);
+      packet.setFrom(session.getAddress());
       auditor.audit(packet);
       router.route(packet);
       session.incrementClientPacketCount();
-      clearSignout=(Presence.UNAVAILABLE == packet.getType() ? true : false);
+      clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
     }
  else     if ("iq".equals(tag)) {
       IQ packet=packetFactory.getIQ(xpp);
-      packet.setOriginatingSession(session);
-      packet.setSender(session.getAddress());
-      packet.setSending(false);
+      packet.setFrom(session.getAddress());
       auditor.audit(packet);
       router.route(packet);
       session.incrementClientPacketCount();

@@ -1,0 +1,47 @@
+{
+  try {
+    Component component=getPresenceComponent(probee);
+    if (server.isLocal(probee)) {
+      if (probee.getNode() != null && !"".equals(probee.getNode())) {
+        Collection<Session> sessions=sessionManager.getSessions(probee.getNode());
+        for (        Session session : sessions) {
+          Presence presencePacket=session.getPresence().createCopy();
+          presencePacket.setFrom(session.getAddress());
+          try {
+            sessionManager.userBroadcast(prober,presencePacket);
+          }
+ catch (          Exception e) {
+            Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+          }
+        }
+      }
+    }
+ else     if (component != null) {
+      Presence presence=new Presence();
+      presence.setType(Presence.Type.probe);
+      presence.setFrom(server.createJID(prober,""));
+      presence.setTo(probee);
+      component.processPacket(presence);
+    }
+ else {
+      Presence presence=(Presence)foreignUserCache.get(probee.toBareJID());
+      if (presence != null) {
+        Presence presencePacket=presence.createCopy();
+        presencePacket.setFrom(probee);
+        try {
+          sessionManager.userBroadcast(prober,presencePacket);
+        }
+ catch (        Exception e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
+      }
+ else {
+        JID proberAddress=server.createJID(prober,"");
+        componentManager.addPresenceRequest(proberAddress,probee);
+      }
+    }
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

@@ -6,20 +6,28 @@
       leaveRole=occupants.remove(nickname);
       if (leaveRole != null) {
         try {
-          Presence presence=createPresence(Presence.STATUS_OFFLINE);
-          presence.setSender(leaveRole.getRoleAddress());
-          presence.setRecipient(leaveRole.getChatUser().getAddress());
-          MetaDataFragment fragment;
-          fragment=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
-          fragment.setProperty("x.item:affiliation","none");
-          fragment.setProperty("x.item:role","none");
+          Presence presence=createPresence(Presence.Type.unavailable);
+          presence.setFrom(leaveRole.getRoleAddress());
+          presence.setTo(leaveRole.getChatUser().getAddress());
+          Element fragment;
+          fragment=presence.addChildElement("x","http://jabber.org/protocol/muc#user");
+          Element item=fragment.addElement("item");
+          item.addAttribute("affiliation","none");
+          item.addAttribute("role","none");
           if (alternateJID != null && alternateJID.length() > 0) {
-            fragment.setProperty("x.destroy:jid",alternateJID);
+            fragment.addElement("destroy").addAttribute("jid",alternateJID);
           }
           if (reason != null && reason.length() > 0) {
-            fragment.setProperty("x.destroy.reason",reason);
+            Element destroy=fragment.element("destroy");
+            if (destroy == null) {
+              destroy=fragment.addElement("destroy");
+            }
+            Element reasonEl=destroy.element("reason");
+            if (reasonEl == null) {
+              reasonEl=destroy.addElement("reason");
+            }
+            reasonEl.setText(reason);
           }
-          presence.addFragment(fragment);
           router.route(presence);
           leaveRole.kick();
         }

@@ -1,9 +1,9 @@
 {
-  String resource=message.getRecipient().getResource();
+  String resource=message.setTo().getResource();
   MUCRole occupant=occupants.get(resource.toLowerCase());
   if (occupant != null) {
-    message.setSender(senderRole.getRoleAddress());
-    message.setRecipient(occupant.getChatUser().getAddress());
+    message.setFrom(senderRole.getRoleAddress());
+    message.setTo(occupant.getChatUser().getAddress());
     router.route(message);
   }
  else {

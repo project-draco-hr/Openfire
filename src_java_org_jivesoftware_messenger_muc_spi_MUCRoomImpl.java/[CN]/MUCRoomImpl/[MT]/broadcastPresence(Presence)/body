@@ -2,14 +2,14 @@
   if (presence == null) {
     return;
   }
-  MetaDataFragment frag=null;
+  Element frag=null;
   String jid=null;
   if (hasToCheckRoleToBroadcastPresence()) {
-    frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
-    if (!canBroadcastPresence(frag.getProperty("x.item:role"))) {
+    frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
       try {
-        MUCRole occupant=getOccupant(presence.getSender().getResourcePrep());
-        presence.setRecipient(occupant.getChatUser().getAddress());
+        MUCRole occupant=getOccupant(presence.getFrom().getResource());
+        presence.setTo(occupant.getChatUser().getAddress());
         router.route(presence);
       }
  catch (      UserNotFoundException e) {
@@ -19,18 +19,18 @@
   }
   if (!canAnyoneDiscoverJID()) {
     if (frag == null) {
-      frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
+      frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
     }
-    jid=frag.getProperty("x.item:jid");
+    jid=frag.element("item").attributeValue("jid");
   }
   for (  MUCRole occupant : occupants.values()) {
-    presence.setRecipient(occupant.getChatUser().getAddress());
+    presence.setTo(occupant.getChatUser().getAddress());
     if (!canAnyoneDiscoverJID()) {
       if (MUCRole.MODERATOR == occupant.getRole()) {
-        frag.setProperty("x.item:jid",jid);
+        frag.element("item").addAttribute("jid",jid);
       }
  else {
-        frag.deleteProperty("x.item:jid");
+        frag.element("item").addAttribute("jid",null);
       }
     }
     router.route(presence);

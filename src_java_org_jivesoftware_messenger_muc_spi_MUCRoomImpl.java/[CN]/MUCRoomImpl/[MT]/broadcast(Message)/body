@@ -2,13 +2,13 @@
   lock.readLock().lock();
   try {
     for (    MUCRole occupant : occupants.values()) {
-      message.setRecipient(occupant.getChatUser().getAddress());
+      message.setTo(occupant.getChatUser().getAddress());
       router.route(message);
     }
     if (isLogEnabled()) {
       MUCRole senderRole;
-      XMPPAddress senderAddress;
-      senderRole=occupants.get(message.getSender().getResourcePrep());
+      JID senderAddress;
+      senderRole=occupants.get(message.getTo().getResource());
       if (senderRole == null) {
         senderAddress=getRole().getRoleAddress();
       }

@@ -9,8 +9,8 @@
     role=(MUCRole)it.next();
     role.setAffiliation(newAffiliation);
     role.setRole(newRole);
-    Presence presence=(Presence)role.getPresence().createDeepCopy();
-    presence.setSender(role.getRoleAddress());
+    Presence presence=role.getPresence().createCopy();
+    presence.setFrom(role.getRoleAddress());
     presences.add(presence);
   }
   return presences;

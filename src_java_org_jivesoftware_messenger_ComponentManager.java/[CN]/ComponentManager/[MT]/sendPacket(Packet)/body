@@ -3,13 +3,10 @@
   try {
     router=(PacketRouterImpl)ServiceLookupFactory.getLookup().lookup(PacketRouterImpl.class);
     if (router != null) {
-      String packetString=packet.toXML();
-      System.out.println(packetString + "\n");
-      XMPPPacket p=readStream(packetString);
-      router.route(p);
+      router.route(packet);
     }
   }
- catch (  Exception e) {
+ catch (  UnauthorizedException e) {
     Log.error(e);
   }
 }

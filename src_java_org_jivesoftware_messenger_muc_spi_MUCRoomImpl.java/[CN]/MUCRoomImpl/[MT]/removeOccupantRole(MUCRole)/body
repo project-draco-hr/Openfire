@@ -1,12 +1,12 @@
 {
   occupants.remove(leaveRole.getNickname().toLowerCase());
   MUCUser user=leaveRole.getChatUser();
-  List list=occupantsByBareJID.get(user.getAddress().toBareStringPrep());
+  List list=occupantsByBareJID.get(user.getAddress().toBareJID());
   if (list != null) {
     list.remove(leaveRole);
     if (list.isEmpty()) {
-      occupantsByBareJID.remove(user.getAddress().toBareStringPrep());
+      occupantsByBareJID.remove(user.getAddress().toBareJID());
     }
   }
-  occupantsByFullJID.remove(user.getAddress().toStringPrep());
+  occupantsByFullJID.remove(user.getAddress().toString());
 }

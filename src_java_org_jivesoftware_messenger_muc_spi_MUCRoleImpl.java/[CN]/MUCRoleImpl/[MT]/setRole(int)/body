@@ -9,13 +9,7 @@
   }
   role=newRole;
   if (MUCRole.NONE_ROLE == role) {
-    try {
-      presence.setAvailable(false);
-      presence.setVisible(false);
-    }
- catch (    UnauthorizedException e) {
-      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-    }
+    presence.setType(Presence.Type.unavailable);
   }
   calculateExtendedInformation();
 }

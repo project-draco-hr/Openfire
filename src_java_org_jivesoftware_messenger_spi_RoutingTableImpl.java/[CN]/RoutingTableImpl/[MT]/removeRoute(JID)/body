@@ -1,0 +1,42 @@
+{
+  ChannelHandler route=null;
+  routeLock.writeLock().lock();
+  try {
+    if (node.getNode() == null) {
+      Object item=routes.remove(node.getDomain());
+      if (item instanceof ChannelHandler) {
+        route=(ChannelHandler)item;
+      }
+    }
+ else {
+      Object nameRoutes=routes.get(node.getDomain());
+      if (nameRoutes instanceof Hashtable) {
+        if (node.getResource() == null || node.getResource().trim().length() == 0) {
+          Object item=((Hashtable)nameRoutes).remove(node.getNode());
+          if (item instanceof ChannelHandler) {
+            route=(ChannelHandler)item;
+          }
+        }
+ else {
+          Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNode());
+          if (resourceRoutes instanceof Hashtable) {
+            route=(ChannelHandler)((Hashtable)resourceRoutes).remove(node.getResource());
+            if (((Hashtable)resourceRoutes).isEmpty()) {
+              ((Hashtable)nameRoutes).remove(node.getNode());
+              if (((Hashtable)nameRoutes).isEmpty()) {
+                routes.remove(node.getDomain());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error removing route",e);
+  }
+ finally {
+    routeLock.writeLock().unlock();
+  }
+  return route;
+}

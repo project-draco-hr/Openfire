@@ -1,0 +1,14 @@
+{
+  ChannelHandler route=null;
+  try {
+    route=getRoute(node);
+  }
+ catch (  NoSuchRouteException e) {
+    JID defaultNode=new JID(node.getNode(),node.getDomain(),"");
+    route=getRoute(defaultNode);
+  }
+  if (route == null) {
+    throw new NoSuchRouteException();
+  }
+  return route;
+}

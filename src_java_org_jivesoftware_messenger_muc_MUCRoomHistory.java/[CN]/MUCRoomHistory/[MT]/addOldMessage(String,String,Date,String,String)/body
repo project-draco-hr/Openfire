@@ -1,23 +1,22 @@
 {
-  Message packetToAdd=new MessageImpl();
-  packetToAdd.setType(Message.GROUP_CHAT);
-  packetToAdd.setSubject(subject);
-  packetToAdd.setBody(body);
+  Message message=new Message();
+  message.setType(Message.Type.groupchat);
+  message.setSubject(subject);
+  message.setBody(body);
   if (nickname != null && nickname.trim().length() > 0) {
-    XMPPAddress roomJID=room.getRole().getRoleAddress();
-    packetToAdd.setSender(new XMPPAddress(roomJID.getNamePrep(),roomJID.getHostPrep(),nickname));
+    JID roomJID=room.getRole().getRoleAddress();
+    message.setFrom(new JID(roomJID.getNode(),roomJID.getDomain(),nickname));
   }
  else {
-    packetToAdd.setSender(room.getRole().getRoleAddress());
+    message.setFrom(room.getRole().getRoleAddress());
   }
-  MetaDataFragment delayInformation=new MetaDataFragment("jabber:x:delay","x");
-  delayInformation.setProperty("x:stamp",UTC_FORMAT.format(sentDate));
+  Element delayInformation=message.addChildElement("x","jabber:x:deley");
+  delayInformation.addAttribute("stamp",UTC_FORMAT.format(sentDate));
   if (room.canAnyoneDiscoverJID()) {
-    delayInformation.setProperty("x:from",senderJID);
+    delayInformation.addAttribute("from",senderJID);
   }
  else {
-    delayInformation.setProperty("x:from",room.getRole().getRoleAddress().toStringPrep());
+    delayInformation.addAttribute("from",room.getRole().getRoleAddress().toString());
   }
-  packetToAdd.addFragment(delayInformation);
-  historyStrategy.addMessage(packetToAdd);
+  historyStrategy.addMessage(message);
 }

@@ -17,10 +17,10 @@
   }
   if (leaveRole != null) {
     try {
-      Presence presence=createPresence(Presence.STATUS_OFFLINE);
-      presence.setSender(leaveRole.getRoleAddress());
-      presence.addFragment(leaveRole.getExtendedPresenceInformation());
-      broadcastPresence((Presence)presence.createDeepCopy());
+      Presence presence=createPresence(Presence.Type.unavailable);
+      presence.setFrom(leaveRole.getRoleAddress());
+      presence.getElement().add(leaveRole.getExtendedPresenceInformation().createCopy());
+      broadcastPresence(presence.createCopy());
       leaveRole.kick();
       List params=new ArrayList();
       params.add(nickname);

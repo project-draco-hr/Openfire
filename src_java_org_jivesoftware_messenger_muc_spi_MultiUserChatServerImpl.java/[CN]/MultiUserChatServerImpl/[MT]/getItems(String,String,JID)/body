@@ -1,0 +1,26 @@
+{
+  List answer=new ArrayList();
+  if (name == null && node == null) {
+    Element item;
+    for (    MUCRoom room : rooms.values()) {
+      if (room.isPublicRoom()) {
+        item=DocumentHelper.createElement("item");
+        item.addAttribute("jid",room.getRole().getRoleAddress().toString());
+        item.addAttribute("name",room.getNaturalLanguageName());
+        answer.add(item);
+      }
+    }
+  }
+ else   if (name != null && node == null) {
+    MUCRoom room=getChatRoom(name);
+    if (room != null && room.isPublicRoom()) {
+      Element item;
+      for (      MUCRole role : room.getOccupants()) {
+        item=DocumentHelper.createElement("item");
+        item.addAttribute("jid",role.getRoleAddress().toString());
+        answer.add(item);
+      }
+    }
+  }
+  return answer.iterator();
+}

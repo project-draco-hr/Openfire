@@ -13,17 +13,10 @@ catch (  XMLStreamException ie) {
       if (session != null && session.getStatus() == Session.STATUS_AUTHENTICATED) {
         Presence presence=session.getPresence();
         if (presence != null) {
-          Presence packet=(Presence)presence.createDeepCopy();
-          packet.setType(Presence.UNAVAILABLE);
-          try {
-            packet.setAvailable(false);
-            packet.setVisible(false);
-          }
- catch (          UnauthorizedException e) {
-          }
-          packet.setOriginatingSession(session);
-          packet.setSender(session.getAddress());
-          packet.setSending(false);
+          Presence packet=presence.createCopy();
+          packet.setType(Presence.Type.unavailable);
+          packet.setType(null);
+          packet.setFrom(session.getAddress());
           router.route(packet);
           clearSignout=true;
         }

@@ -1,43 +1,41 @@
 {
-  if ((packet.getSender().getResourcePrep() == null || packet.getSender().getResourcePrep().length() == 0) && packet.getSubject() == null) {
+  if ((packet.getFrom() == null || packet.getFrom().toString().length() == 0) && packet.getSubject() == null) {
     return;
   }
-  Message packetToAdd=(Message)packet.createDeepCopy();
-  packetToAdd.setOriginatingSession(null);
+  Message packetToAdd=(Message)packet.createCopy();
   if (isNonAnonymousRoom != room.canAnyoneDiscoverJID()) {
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
     Message message;
-    MetaDataFragment frag;
+    Element delayElement;
     for (Iterator it=getMessageHistory(); it.hasNext(); ) {
       message=(Message)it.next();
-      frag=(MetaDataFragment)message.getFragment("x","jabber:x:delay");
+      delayElement=message.getChildElement("x","jabber:x:delay");
       if (room.canAnyoneDiscoverJID()) {
         try {
-          MUCRole role=room.getOccupant(message.getSender().getResourcePrep());
-          frag.setProperty("x:from",role.getChatUser().getAddress().toStringPrep());
+          MUCRole role=room.getOccupant(message.getFrom().getResource());
+          delayElement.addAttribute("from",role.getChatUser().getAddress().toString());
         }
  catch (        UserNotFoundException e) {
         }
       }
  else {
-        frag.setProperty("x:from",message.getSender().toStringPrep());
+        delayElement.addAttribute("from",message.getFrom().toString());
       }
     }
   }
-  MetaDataFragment delayInformation=new MetaDataFragment("jabber:x:delay","x");
+  Element delayInformation=packetToAdd.addChildElement("x","jabber:x:delay");
   Date current=new Date();
-  delayInformation.setProperty("x:stamp",UTC_FORMAT.format(current));
+  delayInformation.addAttribute("stamp",UTC_FORMAT.format(current));
   if (room.canAnyoneDiscoverJID()) {
     try {
-      MUCRole role=room.getOccupant(packet.getSender().getResourcePrep());
-      delayInformation.setProperty("x:from",role.getChatUser().getAddress().toStringPrep());
+      MUCRole role=room.getOccupant(packet.getFrom().getResource());
+      delayInformation.addAttribute("from",role.getChatUser().getAddress().toString());
     }
  catch (    UserNotFoundException e) {
     }
   }
  else {
-    delayInformation.setProperty("x:from",packet.getSender().toStringPrep());
+    delayInformation.addAttribute("from",packet.getFrom().toString());
   }
-  packetToAdd.addFragment(delayInformation);
   historyStrategy.addMessage(packetToAdd);
 }

@@ -1,0 +1,32 @@
+{
+  IQ iq=(IQ)packet;
+  try {
+    iq=handleIQ(iq);
+    if (iq != null) {
+      deliverer.deliver(iq);
+    }
+  }
+ catch (  org.jivesoftware.messenger.auth.UnauthorizedException e) {
+    if (iq != null) {
+      try {
+        IQ response=IQ.createResultIQ(iq);
+        response.setError(PacketError.Condition.not_authorized);
+        Session session=iq.getOriginatingSession();
+        if (!session.getConnection().isClosed()) {
+          session.getConnection().deliver(response);
+        }
+      }
+ catch (      Exception de) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),de);
+        try {
+          iq.getOriginatingSession().getConnection().close();
+        }
+ catch (        UnauthorizedException e1) {
+        }
+      }
+    }
+  }
+catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

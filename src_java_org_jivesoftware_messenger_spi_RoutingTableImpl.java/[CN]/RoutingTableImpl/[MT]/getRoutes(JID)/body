@@ -1,0 +1,52 @@
+{
+  LinkedList list=null;
+  routeLock.readLock().lock();
+  try {
+    if (node == null || node.getDomain() == null) {
+      list=new LinkedList();
+      getRoutes(list,routes);
+    }
+ else {
+      Object nameRoutes=routes.get(node.getDomain());
+      if (nameRoutes != null) {
+        if (nameRoutes instanceof ChannelHandler) {
+          list=new LinkedList();
+          list.add(nameRoutes);
+        }
+ else         if (node.getNode() == null) {
+          list=new LinkedList();
+          getRoutes(list,(Hashtable)nameRoutes);
+        }
+ else {
+          Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNode());
+          if (resourceRoutes != null) {
+            if (resourceRoutes instanceof ChannelHandler) {
+              list=new LinkedList();
+              list.add(resourceRoutes);
+            }
+ else             if (node.getResource() == null || node.getResource().length() == 0) {
+              list=new LinkedList();
+              getRoutes(list,(Hashtable)resourceRoutes);
+            }
+ else {
+              Object entry=((Hashtable)resourceRoutes).get(node.getResource());
+              if (entry != null) {
+                list=new LinkedList();
+                list.add(entry);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  finally {
+    routeLock.readLock().unlock();
+  }
+  if (list == null) {
+    return Collections.EMPTY_LIST.iterator();
+  }
+ else {
+    return list.iterator();
+  }
+}

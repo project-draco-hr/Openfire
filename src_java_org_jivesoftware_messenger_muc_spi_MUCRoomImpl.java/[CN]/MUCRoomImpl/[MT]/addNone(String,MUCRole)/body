@@ -32,19 +32,14 @@
     updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.NONE,newRole);
     if (isInvitationRequiredToEnter() && wasMember) {
       Presence presence;
-      MetaDataFragment frag;
+      Element frag;
       for (Iterator it=updatedPresences.iterator(); it.hasNext(); ) {
         presence=(Presence)it.next();
-        try {
-          presence.setAvailable(false);
-          presence.setVisible(false);
-        }
- catch (        UnauthorizedException e) {
-        }
-        frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
-        frag.setProperty("x.status:code","321");
+        presence.setType(Presence.Type.unavailable);
+        frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+        frag.element("status").addAttribute("code","321");
         MUCUser senderUser=senderRole.getChatUser();
-        String actorJID=(senderUser == null ? null : senderUser.getAddress().toBareStringPrep());
+        JID actorJID=(senderUser == null ? null : senderUser.getAddress());
         kickPresence(presence,actorJID);
       }
     }

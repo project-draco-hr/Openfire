@@ -34,8 +34,8 @@ case PresenceManager.SORT_USERNAME:
         String presenceUser1="";
         String presenceUser2="";
         try {
-          presenceUser1=userManager.getUser(presence1.getUsername()).getUsername();
-          presenceUser2=userManager.getUser(presence2.getUsername()).getUsername();
+          presenceUser1=userManager.getUser(presence1.getFrom().getNode()).getUsername();
+          presenceUser2=userManager.getUser(presence2.getFrom().getNode()).getUsername();
         }
  catch (        UserNotFoundException e) {
           Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
@@ -59,7 +59,7 @@ List<User> users=new ArrayList<User>();
 for (int i=0; i < presences.size(); i++) {
 Presence presence=(Presence)presences.get(i);
 try {
-users.add(userManager.getUser(presence.getUsername()));
+users.add(userManager.getUser(presence.getFrom().getNode()));
 }
  catch (UserNotFoundException e) {
 Log.error(LocaleUtils.getLocalizedString("admin.error"),e);

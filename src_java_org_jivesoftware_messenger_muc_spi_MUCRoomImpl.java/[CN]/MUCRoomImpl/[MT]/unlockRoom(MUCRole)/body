@@ -2,11 +2,11 @@
   roomLocked=false;
   this.lockedTime=0;
   if (senderRole.getChatUser() != null) {
-    Message message=new MessageImpl();
-    message.setType(Message.GROUP_CHAT);
+    Message message=new Message();
+    message.setType(Message.Type.groupchat);
     message.setBody(LocaleUtils.getLocalizedString("muc.unlocked"));
-    message.setSender(getRole().getRoleAddress());
-    message.setRecipient(senderRole.getChatUser().getAddress());
+    message.setFrom(getRole().getRoleAddress());
+    message.setTo(senderRole.getChatUser().getAddress());
     router.route(message);
   }
 }
