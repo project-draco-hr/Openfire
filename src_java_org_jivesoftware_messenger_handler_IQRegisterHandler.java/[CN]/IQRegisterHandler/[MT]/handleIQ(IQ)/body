@@ -19,6 +19,7 @@
         currentRegistration.element("username").setText(user.getUsername());
         currentRegistration.element("password").setText("");
         currentRegistration.element("email").setText(user.getEmail());
+        currentRegistration.element("name").setText(user.getName());
         Element form=currentRegistration.element(QName.get("x","jabber:x:data"));
         Iterator fields=form.elementIterator("field");
         Element field;
@@ -68,6 +69,7 @@ catch (      UnauthorizedException e) {
         String username=null;
         String password=null;
         String email=null;
+        String name=null;
         User newUser=null;
         XDataFormImpl registrationForm=null;
         FormField field;
@@ -87,11 +89,17 @@ catch (      UnauthorizedException e) {
             values=field.getValues();
             email=(values.hasNext() ? values.next() : " ");
           }
+          field=registrationForm.getField("name");
+          if (field != null) {
+            values=field.getValues();
+            name=(values.hasNext() ? values.next() : " ");
+          }
         }
  else {
           username=iqElement.elementText("username");
           password=iqElement.elementText("password");
           email=iqElement.elementText("email");
+          name=iqElement.elementText("name");
         }
         if (email == null || "".equals(email)) {
           email=" ";
@@ -120,14 +128,8 @@ catch (      UnauthorizedException e) {
  else {
           newUser=userManager.createUser(username,password,null,email);
         }
-        if (newUser != null && registrationForm != null) {
-          Iterator<String> values;
-          field=registrationForm.getField("name");
-          if (field != null) {
-            values=field.getValues();
-            String name=(values.hasNext() ? values.next() : " ");
-            newUser.setName(name);
-          }
+        if (newUser != null && name != null) {
+          newUser.setName(name);
         }
         reply=IQ.createResultIQ(packet);
       }
