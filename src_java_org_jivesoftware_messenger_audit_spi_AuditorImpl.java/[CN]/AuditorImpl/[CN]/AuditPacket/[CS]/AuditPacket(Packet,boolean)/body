@@ -2,8 +2,7 @@
   this.packet=packet;
   this.dropped=dropped;
   this.timestamp=new Date();
-  this.sending=packet.isSending();
-  Session session=packet.getOriginatingSession();
+  Session session=SessionManager.getInstance().getSessions(packet.getFrom());
   if (session != null) {
     if (session.getStreamID() != null) {
       this.streamID=session.getStreamID().toString();
