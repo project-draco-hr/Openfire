@@ -1,0 +1,14 @@
+{
+  for (  PacketInterceptor interceptor : globalInterceptors) {
+    interceptor.interceptPacket(packet,session,read,processed);
+  }
+  String username=session.getAddress().getNode();
+  if (username != null) {
+    Collection<PacketInterceptor> userInterceptors=usersInterceptors.get(username);
+    if (userInterceptors != null && !userInterceptors.isEmpty()) {
+      for (      PacketInterceptor interceptor : userInterceptors) {
+        interceptor.interceptPacket(packet,session,read,processed);
+      }
+    }
+  }
+}
