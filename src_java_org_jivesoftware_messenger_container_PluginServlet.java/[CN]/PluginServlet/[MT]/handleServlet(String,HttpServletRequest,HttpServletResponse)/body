@@ -1,0 +1,12 @@
+{
+  String jspURL=pathInfo.substring(1);
+  HttpServlet servlet=servlets.get(jspURL);
+  if (servlet != null) {
+    servlet.service(request,response);
+    return;
+  }
+ else {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+}
