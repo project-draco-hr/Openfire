@@ -1,45 +1,5 @@
 {
   if (!closed) {
-    try {
-      prepareAuditFile();
-      xmlSerializer.writeStartElement("packet");
-      xmlSerializer.writeDefaultNamespace("http://jivesoftware.org");
-      Session session=packet.getOriginatingSession();
-      if (session != null) {
-        if (session.getStreamID() != null) {
-          xmlSerializer.writeAttribute("session",session.getStreamID().toString());
-        }
-switch (session.getStatus()) {
-case Session.STATUS_AUTHENTICATED:
-          xmlSerializer.writeAttribute("status","auth");
-        break;
-case Session.STATUS_CLOSED:
-      xmlSerializer.writeAttribute("status","closed");
-    break;
-case Session.STATUS_CONNECTED:
-  xmlSerializer.writeAttribute("status","connected");
-break;
-case Session.STATUS_STREAMING:
-xmlSerializer.writeAttribute("status","stream");
-break;
-default :
-xmlSerializer.writeAttribute("status","unknown");
-break;
-}
-}
-xmlSerializer.writeAttribute("timestamp",new Date().toString());
-if (packet.isSending()) {
-xmlSerializer.writeAttribute("sending","true");
-}
-if (dropped) {
-xmlSerializer.writeAttribute("dropped","true");
-}
-packet.send(xmlSerializer,0);
-xmlSerializer.writeEndElement();
-xmlSerializer.flush();
-}
- catch (Exception e) {
-Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-}
-}
+    logQueue.add(new AuditPacket((XMPPPacket)packet.createDeepCopy(),dropped));
+  }
 }
