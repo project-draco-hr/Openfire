@@ -1,6 +1,6 @@
 {
-  if (!"".equals(session.getAddress().getName())) {
-    String username=session.getAddress().getNamePrep();
+  if (!"".equals(session.getAddress().getNode())) {
+    String username=session.getAddress().getNode();
     CachedRoster roster=rosterManager.getRoster(username);
     Iterator items=roster.getRosterItems();
     while (items.hasNext()) {
@@ -15,10 +15,9 @@
         presenceManager.probePresence(username,item.getJid());
       }
     }
-    Iterator msgs=messageStore.getMessages(username);
-    while (msgs.hasNext()) {
-      Message msg=(Message)msgs.next();
-      session.getConnection().deliver(msg);
+    Collection<Message> messages=messageStore.getMessages(username);
+    for (    Message message : messages) {
+      session.getConnection().deliver(message);
     }
   }
 }

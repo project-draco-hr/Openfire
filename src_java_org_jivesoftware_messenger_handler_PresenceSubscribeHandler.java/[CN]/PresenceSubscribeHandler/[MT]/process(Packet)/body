@@ -1,9 +1,9 @@
 {
   Presence presence=(Presence)xmppPacket;
   try {
-    XMPPAddress senderJID=presence.getSender();
-    XMPPAddress recipientJID=presence.getRecipient();
-    XMPPPacket.Type type=presence.getType();
+    JID senderJID=presence.getFrom();
+    JID recipientJID=presence.getTo();
+    Presence.Type type=presence.getType();
     Roster roster=getRoster(senderJID);
     if (roster != null) {
       manageSub(recipientJID,true,type,roster);
@@ -14,10 +14,10 @@
     }
     try {
       ChannelHandler handler=routingTable.getRoute(recipientJID);
-      handler.process((XMPPPacket)presence.createDeepCopy());
+      handler.process(presence.createCopy());
     }
  catch (    NoSuchRouteException e) {
-      deliverer.deliver((XMPPPacket)presence.createDeepCopy());
+      deliverer.deliver(presence.createCopy());
     }
   }
  catch (  Exception e) {

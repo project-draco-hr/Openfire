@@ -1,15 +1,15 @@
 {
-  if (update.getSender() == null) {
+  if (update.getFrom() == null) {
     return;
   }
-  if (localServer.isLocal(update.getSender())) {
-    Set set=(Set)directedPresences.get(update.getSender().toStringPrep());
+  if (localServer.isLocal(update.getFrom())) {
+    Set set=(Set)directedPresences.get(update.getFrom().toString());
     if (set != null) {
       RoutableChannelHandler handler;
       for (Iterator it=set.iterator(); it.hasNext(); ) {
         handler=(RoutableChannelHandler)((HandlerWeakReference)it.next()).get();
         if (handler != null) {
-          update.setRecipient(handler.getAddress());
+          update.setTo(handler.getAddress());
           try {
             handler.process(update);
           }
@@ -18,7 +18,7 @@
           }
         }
       }
-      directedPresences.remove(update.getSender().toStringPrep());
+      directedPresences.remove(update.getFrom().toString());
     }
   }
 }

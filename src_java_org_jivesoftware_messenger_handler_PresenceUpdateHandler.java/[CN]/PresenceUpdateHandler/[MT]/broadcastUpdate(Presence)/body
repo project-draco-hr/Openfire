@@ -1,9 +1,9 @@
 {
-  if (update.getSender() == null) {
+  if (update.getFrom() == null) {
     return;
   }
-  if (localServer.isLocal(update.getSender())) {
-    String name=update.getSender().getName();
+  if (localServer.isLocal(update.getFrom())) {
+    String name=update.getFrom().getNode();
     try {
       if (name != null && !"".equals(name)) {
         name=name.toLowerCase();
@@ -19,6 +19,6 @@ catch (    PacketException e) {
     }
   }
  else {
-    Log.warn("Presence requested from server " + localServer.getServerInfo().getName() + " by unknown user: "+ update.getSender());
+    Log.warn("Presence requested from server " + localServer.getServerInfo().getName() + " by unknown user: "+ update.getFrom());
   }
 }

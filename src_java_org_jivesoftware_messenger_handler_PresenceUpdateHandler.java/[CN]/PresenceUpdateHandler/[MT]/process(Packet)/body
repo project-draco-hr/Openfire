@@ -1,0 +1,41 @@
+{
+  Presence presence=(Presence)xmppPacket;
+  try {
+    Session session=SessionManager.getInstance().getSession(presence.getFrom());
+    Presence.Type type=presence.getType();
+    if (type == null) {
+      broadcastUpdate(presence.createCopy());
+      if (session != null) {
+        session.setPresence(presence);
+        if (!session.isInitialized()) {
+          initSession(session);
+          session.setInitialized(true);
+        }
+      }
+    }
+ else     if (Presence.Type.unavailable == type) {
+      broadcastUpdate(presence.createCopy());
+      broadcastUnavailableForDirectedPresences(presence.createCopy());
+      if (session != null) {
+        session.setPresence(presence);
+      }
+    }
+ else {
+      presence=presence.createCopy();
+      if (session != null) {
+        presence.setFrom(new JID(null,session.getServerName(),null));
+        presence.setTo(session.getAddress());
+      }
+ else {
+        JID sender=presence.getFrom();
+        presence.setFrom(presence.getTo());
+        presence.setTo(sender);
+      }
+      presence.setError(PacketError.Condition.bad_request);
+      deliverer.deliver(presence);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

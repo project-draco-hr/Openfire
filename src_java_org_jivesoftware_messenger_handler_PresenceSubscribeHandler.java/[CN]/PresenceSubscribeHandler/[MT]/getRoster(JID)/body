@@ -1,8 +1,8 @@
 {
   String username=null;
   Roster roster=null;
-  if (localServer.isLocal(address) && !"".equals(address.getName())) {
-    username=address.getNamePrep();
+  if (localServer.isLocal(address) && !"".equals(address.getNode())) {
+    username=address.getNode();
     roster=(Roster)CacheManager.getCache("username2roster").get(username);
     if (roster == null) {
       roster=new CachedRosterImpl(username);
