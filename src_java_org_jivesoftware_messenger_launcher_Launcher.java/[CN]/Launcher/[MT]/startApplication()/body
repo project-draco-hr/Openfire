@@ -1,35 +1,35 @@
 {
   if (messengerd == null) {
+    File binDir=null;
     File libDir=null;
+    File homeDir=null;
     File exe=null;
     try {
-      libDir=new File("").getAbsoluteFile();
-      File parentDir=libDir.getParentFile();
-      if ("lib".equals(libDir.getName())) {
-        exe=new File(parentDir,"messenger.exe");
+      binDir=new File("").getAbsoluteFile();
+      libDir=new File("../lib").getAbsoluteFile();
+      homeDir=binDir.getParentFile();
+      if (libDir.exists()) {
+        messengerd=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
+      }
+ else {
+        exe=new File(homeDir,"messenger.app");
         if (exe.exists()) {
-          messengerd=Runtime.getRuntime().exec(new String[]{exe.toString()});
+          messengerd=Runtime.getRuntime().exec(new String[]{"open",exe.toString()});
         }
  else {
-          exe=new File(parentDir,"messenger.app");
+          exe=new File(homeDir,"messenger");
           if (exe.exists()) {
-            messengerd=Runtime.getRuntime().exec(new String[]{"open",exe.toString()});
+            messengerd=Runtime.getRuntime().exec(new String[]{exe.toString()});
           }
  else {
-            exe=new File(parentDir,"messenger");
-            if (exe.exists()) {
-              messengerd=Runtime.getRuntime().exec(new String[]{exe.toString()});
-            }
- else {
-              throw new FileNotFoundException();
-            }
+            throw new FileNotFoundException();
           }
         }
       }
     }
  catch (    Exception e) {
       try {
-        if (libDir != null) {
+        if (binDir != null) {
           messengerd=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
         }
  else {
