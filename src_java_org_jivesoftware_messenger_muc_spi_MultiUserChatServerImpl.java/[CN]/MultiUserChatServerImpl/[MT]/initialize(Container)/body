@@ -1,5 +1,6 @@
 {
-  chatServerName=JiveGlobals.getProperty("xmpp.muc.domain");
+  super.initialize(container);
+  chatServerName=JiveGlobals.getProperty("xmpp.muc.service");
   historyStrategy.setContext("xmpp.muc.history");
   String property=JiveGlobals.getProperty("xmpp.muc.sysadmin.jid");
   String[] jids;
@@ -44,12 +45,27 @@
     }
   }
   if (chatServerName == null) {
-    chatServerName="conference.127.0.0.1";
+    chatServerName="conference";
+  }
+  String serverName=null;
+  try {
+    XMPPServer server=(XMPPServer)lookup.lookup(XMPPServer.class);
+    if (server != null) {
+      serverName=server.getServerInfo().getName();
+    }
+ else {
+      serverName=JiveGlobals.getProperty("xmpp.domain");
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  if (serverName != null) {
+    chatServerName+="." + serverName;
   }
   chatServerAddress=new XMPPAddress(null,chatServerName,null);
   timer.schedule(new UserTimeoutTask(),USER_TIMEOUT,USER_TIMEOUT);
   timer.schedule(new LogConversationTask(),LOG_TIMEOUT,LOG_TIMEOUT);
   MUCPersistenceManager.resetRoomInMemory();
   initializeCaches();
-  super.initialize(container);
 }
