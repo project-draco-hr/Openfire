@@ -1,0 +1,11 @@
+{
+  if (packet.getRecipient() == null) {
+    return false;
+  }
+  Component component=componentManager.getComponent(packet.getRecipient().toBareStringPrep());
+  if (component != null) {
+    component.processPacket(packet);
+    return true;
+  }
+  return false;
+}
