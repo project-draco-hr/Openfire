@@ -11,6 +11,11 @@
         response=IQ.createResultIQ(packet);
         probeResponse.setParent(null);
         response.setChildElement(probeResponse);
+        if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+          response.setTo((JID)null);
+          session.getConnection().deliver(response);
+          return null;
+        }
       }
  else {
         if (iq.elements().isEmpty()) {
