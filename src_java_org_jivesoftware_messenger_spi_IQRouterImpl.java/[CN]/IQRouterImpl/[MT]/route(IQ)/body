@@ -3,15 +3,14 @@
     throw new NullPointerException();
   }
   Session session=SessionManager.getInstance().getSession(packet.getFrom());
-  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED || (isLocalServer(packet.getTo()) && ("jabber:iq:auth".equals(packet.getChildNamespace()) || "jabber:iq:register".equals(packet.getChildNamespace())))) {
+  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED || (isLocalServer(packet.getTo()) && ("jabber:iq:auth".equals(packet.getChildElement().getNamespaceURI()) || "jabber:iq:register".equals(packet.getChildElement().getNamespaceURI())))) {
     handle(packet);
   }
  else {
-    packet.setRecipient(packet.getOriginatingSession().getAddress());
-    packet.setSender(null);
-    packet.setError(XMPPError.Code.UNAUTHORIZED);
+    packet.setTo(sessionManager.getSession(packet.getFrom()).getAddress());
+    packet.setError(PacketError.Condition.not_authorized);
     try {
-      packet.getOriginatingSession().process(packet);
+      sessionManager.getSession(packet.getFrom()).process(packet);
     }
  catch (    UnauthorizedException ue) {
       Log.error(ue);

@@ -28,7 +28,7 @@
             }
             packet.setError(PacketError.Condition.service_unavailable);
           }
-          Session session=packet.getOriginatingSession();
+          Session session=sessionManager.getSession(packet.getFrom());
           if (session != null) {
             session.getConnection().deliver(packet);
           }
@@ -48,15 +48,13 @@
   }
  catch (  NoSuchRouteException e) {
     Log.info("Packet sent to unreachable address " + packet);
-    Session session=packet.getOriginatingSession();
+    Session session=sessionManager.getSession(packet.getFrom());
     if (session != null) {
       try {
-        packet.setError(XMPPError.Code.SERVICE_UNAVAILABLE);
+        packet.setError(PacketError.Condition.service_unavailable);
         session.getConnection().deliver(packet);
       }
  catch (      UnauthorizedException ex) {
-      }
-catch (      XMLStreamException ex) {
         Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
       }
     }
@@ -64,7 +62,7 @@ catch (      XMLStreamException ex) {
 catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
     try {
-      Session session=packet.getOriginatingSession();
+      Session session=sessionManager.getSession(packet.getFrom());
       if (session != null) {
         Connection conn=session.getConnection();
         if (conn != null) {
