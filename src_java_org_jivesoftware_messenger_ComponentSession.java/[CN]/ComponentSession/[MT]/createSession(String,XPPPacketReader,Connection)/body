@@ -3,7 +3,7 @@
   Session session;
   String domain=xpp.getAttributeValue("","to");
   Writer writer=connection.getWriter();
-  StringBuffer sb=new StringBuffer();
+  StringBuilder sb=new StringBuilder();
   sb.append("<?xml version='1.0' encoding='");
   sb.append(CHARSET);
   sb.append("'?>");
@@ -47,7 +47,7 @@
   session=SessionManager.getInstance().createComponentSession(connection);
   session.setAddress(new JID(null,domain + "." + XMPPServer.getInstance().getServerInfo().getName(),null));
   try {
-    sb=new StringBuffer();
+    sb=new StringBuilder();
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);
     sb.append("'?>");
@@ -64,7 +64,7 @@
     String digest="handshake".equals(doc.getName()) ? doc.getStringValue() : "";
     String anticipatedDigest=AuthFactory.createDigest(session.getStreamID().getID(),secretKey);
     if (!anticipatedDigest.equalsIgnoreCase(digest)) {
-      sb=new StringBuffer();
+      sb=new StringBuilder();
       sb.append("<stream:error>");
       sb.append("<not-authorized xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
       sb.append("</stream:error>");
