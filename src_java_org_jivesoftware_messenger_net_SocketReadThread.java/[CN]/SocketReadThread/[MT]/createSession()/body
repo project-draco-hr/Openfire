@@ -3,10 +3,10 @@
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();
   }
-  if ("jabber:client".equals(xpp.getNamespaceUri(xpp.getDepth() - 1))) {
+  if ("jabber:client".equals(xpp.getNamespace(null))) {
     session=ClientSession.createSession(serverName,reader,connection);
   }
- else   if ("jabber:component:accept".equals(xpp.getNamespaceUri(xpp.getDepth() - 1))) {
+ else   if ("jabber:component:accept".equals(xpp.getNamespace(null))) {
     session=ComponentSession.createSession(serverName,reader,connection);
   }
  else {
