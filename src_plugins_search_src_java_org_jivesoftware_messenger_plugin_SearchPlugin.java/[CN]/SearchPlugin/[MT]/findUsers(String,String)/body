@@ -1,0 +1,57 @@
+{
+  List<User> foundUsers=new ArrayList<User>();
+  if (!getSearchFields().contains(field)) {
+    return foundUsers;
+  }
+  int index=query.indexOf("*");
+  if (index == -1) {
+    Iterator users=userManager.getUsers().iterator();
+    while (users.hasNext()) {
+      User user=(User)users.next();
+      if (field.equals("Username")) {
+        try {
+          foundUsers.add(userManager.getUser(query));
+          return foundUsers;
+        }
+ catch (        UserNotFoundException e) {
+          Log.error("Error getting user",e);
+        }
+      }
+ else       if (field.equals("Name")) {
+        if (query.equalsIgnoreCase(user.getName())) {
+          foundUsers.add(user);
+        }
+      }
+ else       if (field.equals("Email")) {
+        if (user.getEmail() != null) {
+          if (query.equalsIgnoreCase(user.getEmail())) {
+            foundUsers.add(user);
+          }
+        }
+      }
+    }
+  }
+ else {
+    String prefix=query.substring(0,index);
+    Iterator users=userManager.getUsers().iterator();
+    while (users.hasNext()) {
+      User user=(User)users.next();
+      String userInfo="";
+      if (field.equals("Username")) {
+        userInfo=user.getUsername();
+      }
+ else       if (field.equals("Name")) {
+        userInfo=user.getName();
+      }
+ else       if (field.equals("Email")) {
+        userInfo=user.getEmail() == null ? "" : user.getEmail();
+      }
+      if (index < userInfo.length()) {
+        if (userInfo.substring(0,index).equalsIgnoreCase(prefix)) {
+          foundUsers.add(user);
+        }
+      }
+    }
+  }
+  return foundUsers;
+}

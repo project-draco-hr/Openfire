@@ -1,0 +1,32 @@
+{
+  if (p instanceof IQ) {
+    IQ packet=(IQ)p;
+    Element childElement=(packet).getChildElement();
+    String namespace=null;
+    if (childElement != null) {
+      namespace=childElement.getNamespaceURI();
+    }
+    if ("jabber:iq:search".equals(namespace)) {
+      try {
+        IQ replyPacket=handleIQ(packet);
+        componentManager.sendPacket(this,replyPacket);
+      }
+ catch (      ComponentException e) {
+        componentManager.getLog().error(e);
+      }
+    }
+ else     if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+      try {
+        IQ replyPacket=IQ.createResultIQ(packet);
+        Element responseElement=DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/disco#info"));
+        responseElement.addElement("identity").addAttribute("category","search");
+        responseElement.addElement("feature").addAttribute("var","jabber:iq:search");
+        replyPacket.setChildElement(responseElement);
+        componentManager.sendPacket(this,replyPacket);
+      }
+ catch (      ComponentException e) {
+        componentManager.getLog().error(e);
+      }
+    }
+  }
+}

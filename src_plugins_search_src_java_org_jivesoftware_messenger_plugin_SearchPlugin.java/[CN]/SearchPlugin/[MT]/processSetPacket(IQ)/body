@@ -1,0 +1,52 @@
+{
+  XDataFormImpl searchResults=new XDataFormImpl(DataForm.TYPE_RESULT);
+  for (  String fieldName : searchFields) {
+    XFormFieldImpl field=new XFormFieldImpl(fieldName);
+    field.setLabel(initCap(fieldName));
+    searchResults.addReportedField(field);
+  }
+  List<User> users=new ArrayList<User>();
+  Element incomingForm=packet.getChildElement();
+  Element form=incomingForm.element(QName.get("x","jabber:x:data"));
+  Iterator fields=form.elementIterator("field");
+  while (fields.hasNext()) {
+    Element searchField=(Element)fields.next();
+    Iterator iter=searchField.elementIterator("value");
+    while (iter.hasNext()) {
+      Element queryField=(Element)iter.next();
+      Iterator foundIter=null;
+      if (userManager != null) {
+        foundIter=userManager.findUsers(new HashSet<String>(Arrays.asList(searchField.attributeValue("var"))),queryField.getTextTrim()).iterator();
+      }
+ else {
+        foundIter=findUsers(searchField.attributeValue("var"),queryField.getTextTrim()).iterator();
+      }
+      while (foundIter.hasNext()) {
+        User user=(User)foundIter.next();
+        if (!users.contains(user)) {
+          users.add(user);
+        }
+      }
+    }
+  }
+  Iterator userIter=users.iterator();
+  while (userIter.hasNext()) {
+    User user=(User)userIter.next();
+    ArrayList<XFormFieldImpl> items=new ArrayList<XFormFieldImpl>();
+    XFormFieldImpl fieldUsername=new XFormFieldImpl("username");
+    fieldUsername.addValue(user.getUsername());
+    items.add(fieldUsername);
+    XFormFieldImpl fieldName=new XFormFieldImpl("name");
+    fieldName.addValue(user.getName());
+    items.add(fieldName);
+    XFormFieldImpl fieldEmail=new XFormFieldImpl("email");
+    fieldEmail.addValue(user.getEmail());
+    items.add(fieldEmail);
+    searchResults.addItemFields(items);
+  }
+  Element reply=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  reply.add(searchResults.asXMLElement());
+  IQ replyPacket=IQ.createResultIQ(packet);
+  replyPacket.setChildElement(reply);
+  return replyPacket;
+}
