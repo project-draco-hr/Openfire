@@ -1,15 +1,13 @@
 {
-  IQ response;
+  IQ response=IQ.createResultIQ(packet);
+  ;
   if (anonymousAllowed) {
     session.setAnonymousAuth();
-    MetaDataFragment meta=new MetaDataFragment("jabber:iq:auth","query");
-    meta.setProperty("query.resource",session.getAddress().getResource());
-    response=packet.createResult();
-    response.addFragment(meta);
+    Element auth=response.setChildElement("query","jabber:iq:auth");
+    auth.addElement("resource").setText(session.getAddress().getResource());
   }
  else {
-    response=packet.createResult();
-    response.setError(XMPPError.Code.FORBIDDEN);
+    response.setError(PacketError.Condition.forbidden);
   }
   return response;
 }

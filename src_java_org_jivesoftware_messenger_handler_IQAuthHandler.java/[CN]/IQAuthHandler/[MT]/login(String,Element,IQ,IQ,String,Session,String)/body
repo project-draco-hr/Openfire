@@ -1,5 +1,5 @@
 {
-  XMPPAddress jid=localServer.createJID(username,iq.element("resource").getTextTrim());
+  JID jid=localServer.createJID(username,iq.element("resource").getTextTrim());
   if (sessionManager.isActiveRoute(jid)) {
     Session oldSession=null;
     try {
@@ -13,8 +13,8 @@
         }
       }
  else {
-        response=packet.createResult();
-        response.setError(XMPPError.Code.FORBIDDEN);
+        response=IQ.createResultIQ(packet);
+        response.setError(PacketError.Condition.forbidden);
       }
     }
  catch (    Exception e) {
@@ -34,8 +34,8 @@
     }
  else {
       session.setAuthToken(token,userManager,jid.getResource());
-      packet.setSender(session.getAddress());
-      response=packet.createResult();
+      packet.setFrom(session.getAddress());
+      response=IQ.createResultIQ(packet);
     }
   }
   return response;

@@ -1,6 +1,6 @@
 {
   try {
-    String username=user.getNamePrep();
+    String username=user.getNode();
     Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
     if (roster == null) {
       roster=new CachedRosterImpl(username);
@@ -11,7 +11,7 @@
     }
     CacheManager.getCache("username2roster").remove(username);
     RosterItemProvider rosteItemProvider=UserProviderFactory.getRosterItemProvider();
-    Iterator<String> usernames=rosteItemProvider.getUsernames(user.toBareStringPrep());
+    Iterator<String> usernames=rosteItemProvider.getUsernames(user.toBareJID());
     while (usernames.hasNext()) {
       username=usernames.next();
       roster=(Roster)CacheManager.getCache("username2roster").get(username);
