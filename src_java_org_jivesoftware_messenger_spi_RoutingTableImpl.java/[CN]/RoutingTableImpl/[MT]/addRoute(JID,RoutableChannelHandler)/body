@@ -1,12 +1,11 @@
 {
   ChannelHandler route=null;
+  String nodeJID=node.getNode() == null ? "" : node.getNode();
+  String resourceJID=node.getResource() == null ? "" : node.getResource();
   routeLock.writeLock().lock();
   try {
-    if (node.getNode() == null) {
-      Object item=routes.put(node.getDomain(),destination);
-      if (item instanceof ChannelHandler) {
-        route=(ChannelHandler)item;
-      }
+    if (routes.isEmpty()) {
+      routes.put(node.getDomain(),destination);
     }
  else {
       Object nameRoutes=routes.get(node.getDomain());
@@ -14,22 +13,19 @@
         nameRoutes=new Hashtable();
         routes.put(node.getDomain(),nameRoutes);
       }
-      if (node.getResource() == null) {
-        Object item=((Hashtable)nameRoutes).put(node.getNode(),destination);
-        if (item instanceof ChannelHandler) {
-          route=(ChannelHandler)item;
-        }
+      if (((Hashtable)nameRoutes).isEmpty()) {
+        ((Hashtable)nameRoutes).put(nodeJID,destination);
       }
  else {
-        Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNode());
+        Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
         if (resourceRoutes == null || resourceRoutes instanceof ChannelHandler) {
           resourceRoutes=new Hashtable();
-          Object item=((Hashtable)nameRoutes).put(node.getNode(),resourceRoutes);
+          Object item=((Hashtable)nameRoutes).put(nodeJID,resourceRoutes);
           if (item instanceof ChannelHandler) {
             ((Hashtable)resourceRoutes).put("",item);
           }
         }
-        Object resourceRoute=((Hashtable)resourceRoutes).put(node.getResource(),destination);
+        Object resourceRoute=((Hashtable)resourceRoutes).put(resourceJID,destination);
         if (resourceRoute != null) {
           if (resourceRoute instanceof ChannelHandler) {
             route=(ChannelHandler)resourceRoute;

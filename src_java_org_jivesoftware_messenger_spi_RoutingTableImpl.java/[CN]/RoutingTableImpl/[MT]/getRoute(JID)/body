@@ -1,5 +1,7 @@
 {
   RoutableChannelHandler route=null;
+  String nodeJID=node.getNode() == null ? "" : node.getNode();
+  String resourceJID=node.getResource() == null ? "" : node.getResource();
   routeLock.readLock().lock();
   try {
     Object nameRoutes=routes.get(node.getDomain());
@@ -7,13 +9,12 @@
       route=(RoutableChannelHandler)nameRoutes;
     }
  else {
-      Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNode());
+      Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
       if (resourceRoutes instanceof ChannelHandler) {
         route=(RoutableChannelHandler)resourceRoutes;
       }
  else       if (resourceRoutes != null) {
-        String resource=node.getResource() == null ? "" : node.getResource();
-        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(resource);
+        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(resourceJID);
       }
  else {
         throw new NoSuchRouteException(node.toString());
