@@ -1,10 +1,10 @@
 {
   super.initialize(container);
   if (probeResult == null) {
-    Element element=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
-    element.addElement("username");
-    element.addElement("password");
-    element.addElement("email");
+    probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
+    probeResult.addElement("username");
+    probeResult.addElement("password");
+    probeResult.addElement("email");
     XDataFormImpl registrationForm=new XDataFormImpl(DataForm.TYPE_FORM);
     registrationForm.setTitle("XMPP Client Registration");
     registrationForm.addInstruction("Please provide the following information");
@@ -30,8 +30,7 @@
     field.setLabel("Password");
     field.setRequired(true);
     registrationForm.addField(field);
-    probeResult=new MetaDataFragment(element);
-    probeResult.addFragment(registrationForm);
+    probeResult.add(registrationForm.asXMLElement());
   }
   String inband=JiveGlobals.getProperty("register.inband");
   if (inband == null || "".equals(inband)) {

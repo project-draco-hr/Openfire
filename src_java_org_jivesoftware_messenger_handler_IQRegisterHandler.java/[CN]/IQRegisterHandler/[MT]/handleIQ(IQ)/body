@@ -1,55 +1,58 @@
 {
-  IQHandler delegate=getDelegate(packet.getRecipient());
+  IQHandler delegate=getDelegate(packet.getTo());
   if (delegate != null) {
     return delegate.handleIQ(packet);
   }
-  Session session=packet.getOriginatingSession();
+  Session session=null;
+  try {
+    session=SessionManager.getInstance().getSession(packet.getFrom());
+  }
+ catch (  Exception e) {
+  }
   IQ reply=null;
   if (!enabled) {
-    reply=packet.createResult();
-    reply.setError(XMPPError.Code.FORBIDDEN);
+    reply=IQ.createResultIQ(packet);
+    reply.setError(PacketError.Condition.forbidden);
   }
- else   if (IQ.GET.equals(packet.getType())) {
-    reply=packet.createResult();
+ else   if (IQ.Type.get.equals(packet.getType())) {
+    reply=IQ.createResultIQ(packet);
     if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
       try {
         User user=userManager.getUser(session.getUsername());
-        MetaDataFragment currentRegistration=(MetaDataFragment)probeResult.createDeepCopy();
-        currentRegistration.setProperty("query.registered",null);
-        currentRegistration.setProperty("query.username",user.getUsername());
-        currentRegistration.setProperty("query.password",null);
-        currentRegistration.setProperty("query.email",user.getInfo().getEmail());
-        XDataFormImpl form=(XDataFormImpl)currentRegistration.getFragment("x","jabber:x:data");
-        form.getField("username").addValue(user.getUsername());
-        form.getField("name").addValue(user.getInfo().getName());
-        form.getField("email").addValue(user.getInfo().getEmail());
-        reply.setChildFragment(currentRegistration);
+        Element currentRegistration=probeResult.createCopy();
+        currentRegistration.element("registered").setText(null);
+        currentRegistration.element("username").setText(user.getUsername());
+        currentRegistration.element("password").setText(null);
+        currentRegistration.element("email").setText(user.getInfo().getEmail());
+        Element form=currentRegistration.element(QName.get("x","jabber:x:data"));
+        form.element("username").setText(user.getUsername());
+        form.element("name").setText(user.getInfo().getName());
+        form.element("email").setText(user.getInfo().getEmail());
+        reply.setChildElement(currentRegistration);
       }
  catch (      UserNotFoundException e) {
-        reply.setChildFragment(probeResult);
+        reply.setChildElement(probeResult);
       }
 catch (      UnauthorizedException e) {
-        reply.setChildFragment(probeResult);
+        reply.setChildElement(probeResult);
       }
     }
  else {
-      reply.setChildFragment(probeResult);
+      reply.setChildElement(probeResult);
     }
   }
- else   if (IQ.SET.equals(packet.getType())) {
+ else   if (IQ.Type.set.equals(packet.getType())) {
     try {
-      XMPPFragment iq=packet.getChildFragment();
-      MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
-      if (metaData.includesProperty("query.remove")) {
+      Element iqElement=packet.getChildElement();
+      if (iqElement.element("remove") != null) {
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-          Presence presence=new PresenceImpl();
-          presence.setAvailable(false);
-          presence.setVisible(false);
-          presence.setSender(packet.getSender());
+          Presence presence=new Presence();
+          presence.setType(Presence.Type.unavailable);
+          presence.setFrom(packet.getFrom());
           presenceHandler.process(presence);
           userManager.deleteUser(userManager.getUser(session.getUsername()));
           rosterManager.deleteRoster(session.getAddress());
-          reply=packet.createResult();
+          reply=IQ.createResultIQ(packet);
           session.getConnection().deliver(reply);
           session.getConnection().close();
         }
@@ -64,7 +67,7 @@ catch (      UnauthorizedException e) {
         User newUser=null;
         XDataFormImpl registrationForm=null;
         FormField field;
-        Element formElement=((XMPPDOMFragment)iq).getRootElement().element("x");
+        Element formElement=iqElement.element("x");
         if (formElement != null) {
           registrationForm=new XDataFormImpl();
           registrationForm.parse(formElement);
@@ -82,16 +85,16 @@ catch (      UnauthorizedException e) {
           }
         }
  else {
-          username=metaData.getProperty("query.username");
-          password=metaData.getProperty("query.password");
-          email=metaData.getProperty("query.email");
+          username=iqElement.elementText("username");
+          password=iqElement.elementText("password");
+          email=iqElement.elementText("email");
         }
         if (email == null || "".equals(email)) {
           email=" ";
         }
         if (password == null || password.trim().length() == 0) {
-          reply=packet.createResult();
-          reply.setError(XMPPError.Code.NOT_ACCEPTABLE);
+          reply=IQ.createResultIQ(packet);
+          reply.setError(PacketError.Condition.not_acceptable);
           return reply;
         }
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
@@ -128,16 +131,16 @@ catch (      UnauthorizedException e) {
           }
           newUser.saveInfo();
         }
-        reply=packet.createResult();
+        reply=IQ.createResultIQ(packet);
       }
     }
  catch (    UserAlreadyExistsException e) {
-      reply=packet.createResult();
-      reply.setError(XMPPError.Code.CONFLICT);
+      reply=IQ.createResultIQ(packet);
+      reply.setError(PacketError.Condition.conflict);
     }
 catch (    UserNotFoundException e) {
-      reply=packet.createResult();
-      reply.setError(XMPPError.Code.BAD_REQUEST);
+      reply=IQ.createResultIQ(packet);
+      reply.setError(PacketError.Condition.bad_request);
     }
 catch (    Exception e) {
       Log.error(e);
