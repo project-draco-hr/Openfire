@@ -1,6 +1,6 @@
 {
   super.initialize(container);
-  chatServerName=JiveGlobals.getProperty("xmpp.muc.service");
+  chatServiceName=JiveGlobals.getProperty("xmpp.muc.service");
   historyStrategy.setContext("xmpp.muc.history");
   String property=JiveGlobals.getProperty("xmpp.muc.sysadmin.jid");
   String[] jids;
@@ -44,8 +44,8 @@
       Log.error("Wrong number format of property xmpp.muc.tasks.log.batchsize",e);
     }
   }
-  if (chatServerName == null) {
-    chatServerName="conference";
+  if (chatServiceName == null) {
+    chatServiceName="conference";
   }
   String serverName=null;
   try {
@@ -61,9 +61,9 @@
     Log.error(e);
   }
   if (serverName != null) {
-    chatServerName+="." + serverName;
+    chatServiceName+="." + serverName;
   }
-  chatServerAddress=new XMPPAddress(null,chatServerName,null);
+  chatServiceAddress=new XMPPAddress(null,chatServiceName,null);
   timer.schedule(new UserTimeoutTask(),USER_TIMEOUT,USER_TIMEOUT);
   timer.schedule(new LogConversationTask(),LOG_TIMEOUT,LOG_TIMEOUT);
   MUCPersistenceManager.resetRoomInMemory();
