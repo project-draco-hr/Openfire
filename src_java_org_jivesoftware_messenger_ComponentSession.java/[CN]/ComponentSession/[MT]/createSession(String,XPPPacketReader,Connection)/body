@@ -71,12 +71,12 @@
       return null;
     }
  else {
-      ExternalComponent component=((ComponentSession)session).getExternalComponent();
-      InternalComponentManager.getInstance().addComponent(domain,component);
-      component.setServiceName(domain);
       session.setStatus(Session.STATUS_AUTHENTICATED);
       writer.write("<handshake></handshake>");
       writer.flush();
+      ExternalComponent component=((ComponentSession)session).getExternalComponent();
+      InternalComponentManager.getInstance().addComponent(domain,component);
+      component.setServiceName(domain);
       return session;
     }
   }
