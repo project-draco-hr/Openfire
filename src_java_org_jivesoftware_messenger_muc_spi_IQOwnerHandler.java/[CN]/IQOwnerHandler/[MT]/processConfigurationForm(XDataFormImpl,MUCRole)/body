@@ -4,6 +4,7 @@
   List<String> list;
   FormField field;
   field=completedForm.getField("muc#roomconfig_roomadmins");
+  boolean adminsSent=field != null;
   List<String> admins=new ArrayList<String>();
   if (field != null) {
     values=field.getValues();
@@ -12,6 +13,7 @@
     }
   }
   field=completedForm.getField("muc#roomconfig_roomowners");
+  boolean ownersSent=field != null;
   List<String> owners=new ArrayList<String>();
   if (field != null) {
     values=field.getValues();
@@ -19,7 +21,7 @@
       owners.add(values.next());
     }
   }
-  if (owners.isEmpty()) {
+  if (ownersSent && owners.isEmpty()) {
     throw new ConflictException();
   }
   List presences=new ArrayList(admins.size() + owners.size());
@@ -123,20 +125,21 @@
     }
     presences.addAll(room.addOwners(owners,senderRole));
     presences.addAll(room.addAdmins(admins,senderRole));
-    List ownersToRemove=new ArrayList(room.owners);
-    ownersToRemove.removeAll(admins);
-    ownersToRemove.removeAll(owners);
-    String jid;
-    for (Iterator it=ownersToRemove.iterator(); it.hasNext(); ) {
-      jid=(String)it.next();
-      presences.addAll(room.addMember(jid,null,senderRole));
+    if (ownersSent) {
+      List<String> ownersToRemove=new ArrayList<String>(room.owners);
+      ownersToRemove.removeAll(admins);
+      ownersToRemove.removeAll(owners);
+      for (      String jid : ownersToRemove) {
+        presences.addAll(room.addMember(jid,null,senderRole));
+      }
     }
-    List adminsToRemove=new ArrayList(room.admins);
-    adminsToRemove.removeAll(admins);
-    adminsToRemove.removeAll(owners);
-    for (Iterator it=adminsToRemove.iterator(); it.hasNext(); ) {
-      jid=(String)it.next();
-      presences.addAll(room.addMember(jid,null,senderRole));
+    if (adminsSent) {
+      List<String> adminsToRemove=new ArrayList<String>(room.admins);
+      adminsToRemove.removeAll(admins);
+      adminsToRemove.removeAll(owners);
+      for (      String jid : adminsToRemove) {
+        presences.addAll(room.addMember(jid,null,senderRole));
+      }
     }
     if (!room.isPersistent() && room.getOccupantsCount() == 0) {
       room.destroyRoom(null,null);
