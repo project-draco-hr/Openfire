@@ -12,7 +12,8 @@
         route=(RoutableChannelHandler)resourceRoutes;
       }
  else       if (resourceRoutes != null) {
-        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(node.getResource());
+        String resource=node.getResource() == null ? "" : node.getResource();
+        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(resource);
       }
  else {
         throw new NoSuchRouteException(node.toString());
