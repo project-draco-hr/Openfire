@@ -15,12 +15,15 @@
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
     constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
     StringBuffer filter=new StringBuffer();
+    if (fields.size() > 1) {
+      filter.append("(|");
+    }
     for (    String field : fields) {
       String attribute=searchFields.get(field);
-      if (filter.length() != 0) {
-        filter.append(" || ");
-      }
       filter.append("(").append(attribute).append("=").append(query).append(")");
+    }
+    if (fields.size() > 1) {
+      filter.append(")");
     }
     NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
     while (answer.hasMoreElements()) {

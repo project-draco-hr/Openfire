@@ -1,0 +1,12 @@
+{
+  if (searchFilter == null || "".equals(searchFilter)) {
+    StringBuffer filter=new StringBuffer();
+    filter.append("(").append(usernameField).append("={0})");
+    this.searchFilter=filter.toString();
+    JiveGlobals.deleteXMLProperty("ldap.searchFilter");
+  }
+ else {
+    this.searchFilter=searchFilter;
+    JiveGlobals.setXMLProperty("ldap.searchFilter",searchFilter);
+  }
+}

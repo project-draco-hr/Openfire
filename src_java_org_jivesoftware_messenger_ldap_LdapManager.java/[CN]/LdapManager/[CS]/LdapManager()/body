@@ -26,6 +26,14 @@
   if (JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled") != null) {
     this.connectionPoolEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled")).booleanValue();
   }
+  if (JiveGlobals.getXMLProperty("ldap.searchFilter") != null) {
+    this.searchFilter=JiveGlobals.getXMLProperty("ldap.searchFilter");
+  }
+ else {
+    StringBuffer filter=new StringBuffer();
+    filter.append("(").append(usernameField).append("={0})");
+    this.searchFilter=filter.toString();
+  }
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
   if (adminDN != null && adminDN.trim().equals("")) {
     adminDN=null;
@@ -58,6 +66,7 @@
     Log.debug("\t emailField: " + emailField);
     Log.debug("\t adminDN: " + adminDN);
     Log.debug("\t adminPassword: " + adminPassword);
+    Log.debug("\t searchFilter: " + searchFilter);
     Log.debug("\t ldapDebugEnabled: " + ldapDebugEnabled);
     Log.debug("\t sslEnabled: " + sslEnabled);
     Log.debug("\t initialContextFactory: " + initialContextFactory);

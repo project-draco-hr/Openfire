@@ -12,10 +12,7 @@
     SearchControls constraints=new SearchControls();
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
     constraints.setReturningAttributes(new String[]{usernameField});
-    StringBuffer filter=new StringBuffer();
-    filter.append("(").append(usernameField).append("=");
-    filter.append(username).append(")");
-    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    NamingEnumeration answer=ctx.search("",searchFilter,new String[]{username},constraints);
     if (debug) {
       Log.debug("... search finished");
     }
