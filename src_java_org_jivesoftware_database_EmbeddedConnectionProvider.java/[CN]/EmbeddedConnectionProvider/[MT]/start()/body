@@ -2,15 +2,22 @@
 synchronized (initLock) {
     try {
       String driver="org.hsqldb.jdbcDriver";
-      File messengerHome=new File(JiveGlobals.getMessengerHome(),File.separator + "database" + File.separator+ "messenger");
-      String path=messengerHome.getCanonicalPath();
-      String serverURL="jdbc:hsqldb:" + path;
+      File databaseDir=new File(JiveGlobals.getMessengerHome(),File.separator + "embedded-db");
+      boolean initData=false;
+      if (!databaseDir.exists()) {
+        databaseDir.mkdirs();
+        initData=true;
+      }
+      String serverURL="jdbc:hsqldb:" + databaseDir.getCanonicalPath() + File.separator+ "messenger";
       String username="sa";
-      String password="jiverocks";
+      String password="";
       int minConnections=3;
       int maxConnections=10;
       double connectionTimeout=0.5;
       connectionPool=new ConnectionPool(driver,serverURL,username,password,minConnections,maxConnections,connectionTimeout,false);
+      if (initData) {
+        initializeDatabase();
+      }
     }
  catch (    IOException ioe) {
       Log.error("Error starting connection pool.",ioe);

@@ -1,0 +1,48 @@
+{
+  BufferedReader in=null;
+  Connection con=null;
+  try {
+    in=new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/database/messenger_hsqldb.sql")));
+    con=connectionPool.getConnection();
+    boolean done=false;
+    while (!done) {
+      StringBuffer command=new StringBuffer();
+      while (true) {
+        String line=in.readLine();
+        if (line == null) {
+          done=true;
+          break;
+        }
+        if (isCommandPart(line)) {
+          command.append(line);
+        }
+        if (line.endsWith(";")) {
+          break;
+        }
+      }
+      Statement stmt=con.createStatement();
+      stmt.execute(command.toString());
+      stmt.close();
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    e.printStackTrace();
+  }
+ finally {
+    if (in != null) {
+      try {
+        in.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+    if (con != null) {
+      try {
+        con.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+}
