@@ -15,7 +15,9 @@
       Element queryResponse=probeResponse.createCopy();
       if (IQ.Type.get == packet.getType()) {
         String username=query.elementTextTrim("username");
-        queryResponse.element("username").setText(username);
+        if (username != null) {
+          queryResponse.element("username").setText(username);
+        }
         response=IQ.createResultIQ(packet);
         response.setChildElement(queryResponse);
         if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
