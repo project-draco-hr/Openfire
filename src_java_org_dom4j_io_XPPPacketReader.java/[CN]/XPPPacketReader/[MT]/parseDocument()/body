@@ -26,11 +26,14 @@ case XmlPullParser.COMMENT:
     }
 case XmlPullParser.CDSECT:
 {
+    String text=pp.getText();
     if (parent != null) {
-      parent.addCDATA(pp.getText());
+      parent.addCDATA(text);
     }
  else {
-      throw new DocumentException("Cannot have text content outside of the root document");
+      if (text.trim().length() > 0) {
+        throw new DocumentException("Cannot have text content outside of the root document");
+      }
     }
     break;
   }
@@ -81,7 +84,9 @@ if (parent != null) {
 parent.addText(text);
 }
  else {
+if (text.trim().length() > 0) {
 throw new DocumentException("Cannot have text content outside of the root document");
+}
 }
 break;
 }
