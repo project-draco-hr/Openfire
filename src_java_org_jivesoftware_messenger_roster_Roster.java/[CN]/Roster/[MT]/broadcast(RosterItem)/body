@@ -1,0 +1,8 @@
+{
+  List<String> groups=new ArrayList<String>(item.getGroups());
+  groups.addAll(item.getSharedGroups());
+  org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
+  roster.setType(IQ.Type.set);
+  roster.addItem(item.getJid(),item.getNickname(),getAskStatus(item.getAskStatus()),org.xmpp.packet.Roster.Subscription.valueOf(item.getSubStatus().getName()),groups);
+  broadcast(roster);
+}

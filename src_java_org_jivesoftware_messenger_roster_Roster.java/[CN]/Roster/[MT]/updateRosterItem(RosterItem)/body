@@ -14,12 +14,7 @@
     rosterItemProvider.updateItem(username,item);
   }
   if (!(item.getSubStatus() == RosterItem.SUB_NONE && item.getAskStatus() == RosterItem.ASK_NONE)) {
-    List<String> groups=new ArrayList<String>(item.getGroups());
-    groups.addAll(item.getSharedGroups());
-    org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
-    roster.setType(IQ.Type.set);
-    roster.addItem(item.getJid(),item.getNickname(),getAskStatus(item.getAskStatus()),org.xmpp.packet.Roster.Subscription.valueOf(item.getSubStatus().getName()),groups);
-    broadcast(roster);
+    broadcast(item);
   }
   if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
     if (presenceManager == null) {

@@ -1,0 +1,10 @@
+{
+  for (  String userToUpdate : group.getUsers()) {
+    if (!addedUser.equals(userToUpdate)) {
+      Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
+      if (roster != null) {
+        roster.addSharedUser(group.getName(),addedUser);
+      }
+    }
+  }
+}

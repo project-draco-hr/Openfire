@@ -1,0 +1,17 @@
+{
+  JID jid=new JID(deletedUser,XMPPServer.getInstance().getServerInfo().getName(),"");
+  try {
+    RosterItem item=getRosterItem(jid);
+    if (item.isOnlyShared() && item.getSharedGroups().size() == 1) {
+      deleteRosterItem(jid,false);
+    }
+ else {
+      item.removeSharedGroup(sharedGroup);
+      broadcast(item);
+    }
+  }
+ catch (  SharedGroupException e) {
+  }
+catch (  UserNotFoundException e) {
+  }
+}

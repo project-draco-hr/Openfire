@@ -54,8 +54,10 @@ catch (      UnauthorizedException e) {
       Element iqElement=packet.getChildElement();
       if (iqElement.element("remove") != null) {
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-          userManager.deleteUser(userManager.getUser(session.getUsername()));
+          User user=userManager.getUser(session.getUsername());
+          userManager.deleteUser(user);
           rosterManager.deleteRoster(session.getAddress());
+          GroupManager.getInstance().deleteUser(user);
           reply=IQ.createResultIQ(packet);
           session.getConnection().deliver(reply);
           session.getConnection().close();
