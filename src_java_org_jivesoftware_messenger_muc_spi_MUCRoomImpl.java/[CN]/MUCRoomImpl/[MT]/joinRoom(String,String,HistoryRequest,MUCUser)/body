@@ -2,7 +2,7 @@
   MUCRoleImpl joinRole=null;
   lock.writeLock().lock();
   try {
-    if (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers()) {
+    if (isDestroyed || (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers())) {
       throw new NotAllowedException();
     }
     boolean isOwner=owners.contains(user.getAddress().toBareStringPrep());
@@ -53,9 +53,7 @@
       affiliation=MUCRole.NONE;
     }
     joinRole=new MUCRoleImpl(server,this,nickname,role,affiliation,(MUCUserImpl)user,router);
-    Iterator iter=occupants.values().iterator();
-    while (iter.hasNext()) {
-      MUCRole occupantsRole=(MUCRole)iter.next();
+    for (    MUCRole occupantsRole : occupants.values()) {
       Presence occupantsPresence=(Presence)occupantsRole.getPresence().createDeepCopy();
       occupantsPresence.setSender(occupantsRole.getRoleAddress());
       if (!canAnyoneDiscoverJID() && MUCRole.MODERATOR != joinRole.getRole()) {

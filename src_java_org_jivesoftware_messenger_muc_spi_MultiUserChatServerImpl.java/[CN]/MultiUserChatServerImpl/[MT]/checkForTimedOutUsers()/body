@@ -3,11 +3,8 @@
     return;
   }
   final long deadline=System.currentTimeMillis() - USER_IDLE;
-  final Map userMap=new HashMap(users);
-  final Iterator userIter=userMap.values().iterator();
-  while (userIter.hasNext()) {
+  for (  MUCUser user : users.values()) {
     try {
-      MUCUser user=(MUCUser)userIter.next();
       if (user.getLastPacketTime() < deadline) {
         Iterator<MUCRole> roles=user.getRoles();
         MUCRole role;
@@ -27,7 +24,7 @@ catch (          UnauthorizedException e) {
         }
       }
     }
- catch (    Exception e) {
+ catch (    Throwable e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
   }

@@ -2,7 +2,7 @@
   ConversationLogEntry entry=null;
   boolean success=false;
   for (int index=0; index <= LOG_BATCH_SIZE && !logQueue.isEmpty(); index++) {
-    entry=(ConversationLogEntry)logQueue.poll();
+    entry=logQueue.poll();
     if (entry != null) {
       success=MUCPersistenceManager.saveConversationLogEntry(entry);
       if (!success) {

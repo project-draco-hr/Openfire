@@ -1,31 +1,21 @@
 {
   lock.readLock().lock();
   try {
-    Iterator itr=occupants.values().iterator();
-    while (itr.hasNext()) {
-      MUCRole occupant=(MUCRole)itr.next();
+    for (    MUCRole occupant : occupants.values()) {
       message.setRecipient(occupant.getChatUser().getAddress());
       router.route(message);
     }
     if (isLogEnabled()) {
-      lock.readLock().unlock();
-      lock.writeLock().lock();
-      try {
-        MUCRole senderRole;
-        XMPPAddress senderAddress;
-        senderRole=occupants.get(message.getSender().getResourcePrep());
-        if (senderRole == null) {
-          senderAddress=getRole().getRoleAddress();
-        }
+      MUCRole senderRole;
+      XMPPAddress senderAddress;
+      senderRole=occupants.get(message.getSender().getResourcePrep());
+      if (senderRole == null) {
+        senderAddress=getRole().getRoleAddress();
+      }
  else {
-          senderAddress=senderRole.getChatUser().getAddress();
-        }
-        server.logConversation(this,message,senderAddress);
+        senderAddress=senderRole.getChatUser().getAddress();
       }
-  finally {
-        lock.writeLock().unlock();
-        lock.readLock().lock();
-      }
+      server.logConversation(this,message,senderAddress);
     }
   }
   finally {

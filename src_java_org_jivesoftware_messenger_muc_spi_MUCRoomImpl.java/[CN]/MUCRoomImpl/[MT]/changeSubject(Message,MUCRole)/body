@@ -1,13 +1,7 @@
 {
   if ((canOccupantsChangeSubject() && role.getRole() > MUCRole.VISITOR) || MUCRole.MODERATOR == role.getRole()) {
-    lock.writeLock().lock();
-    try {
-      subject=packet.getSubject();
-      MUCPersistenceManager.updateRoomSubject(this,subject);
-    }
-  finally {
-      lock.writeLock().unlock();
-    }
+    subject=packet.getSubject();
+    MUCPersistenceManager.updateRoomSubject(this,subject);
     packet.setSender(role.getRoleAddress());
     send(packet);
   }

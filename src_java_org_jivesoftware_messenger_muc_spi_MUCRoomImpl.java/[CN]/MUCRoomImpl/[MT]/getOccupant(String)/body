@@ -1,13 +1,7 @@
 {
-  lock.readLock().lock();
-  try {
-    MUCRole role=occupants.get(nickname.toLowerCase());
-    if (role != null) {
-      return role;
-    }
-    throw new UserNotFoundException();
+  MUCRole role=occupants.get(nickname.toLowerCase());
+  if (role != null) {
+    return role;
   }
-  finally {
-    lock.readLock().unlock();
-  }
+  throw new UserNotFoundException();
 }

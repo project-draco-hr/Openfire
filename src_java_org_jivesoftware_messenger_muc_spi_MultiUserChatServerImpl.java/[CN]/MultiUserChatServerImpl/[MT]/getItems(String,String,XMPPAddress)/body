@@ -1,29 +1,27 @@
 {
   List answer=new ArrayList();
   if (name == null && node == null) {
-synchronized (rooms) {
-      Iterator itr=rooms.values().iterator();
-      MUCRoom room;
-      Element item;
-      while (itr.hasNext()) {
-        room=(MUCRoom)itr.next();
-        if (room.isPublicRoom()) {
-          item=DocumentHelper.createElement("item");
-          item.addAttribute("jid",room.getRole().getRoleAddress().toStringPrep());
-          item.addAttribute("name",room.getNaturalLanguageName());
-          answer.add(item);
-        }
-      }
-      if (persistentRoomSurrogateCache.size() == 0) {
-        populateRoomSurrogateCache();
-      }
-      for (Iterator it=persistentRoomSurrogateCache.values().iterator(); it.hasNext(); ) {
-        room=(MUCRoom)it.next();
+    Element item;
+    for (    MUCRoom room : rooms.values()) {
+      if (room.isPublicRoom()) {
         item=DocumentHelper.createElement("item");
         item.addAttribute("jid",room.getRole().getRoleAddress().toStringPrep());
         item.addAttribute("name",room.getNaturalLanguageName());
         answer.add(item);
       }
+    }
+synchronized (persistentRoomSurrogateCache) {
+      if (persistentRoomSurrogateCache.size() == 0) {
+        populateRoomSurrogateCache();
+      }
+    }
+    MUCRoom room;
+    for (Iterator it=persistentRoomSurrogateCache.values().iterator(); it.hasNext(); ) {
+      room=(MUCRoom)it.next();
+      item=DocumentHelper.createElement("item");
+      item.addAttribute("jid",room.getRole().getRoleAddress().toStringPrep());
+      item.addAttribute("name",room.getNaturalLanguageName());
+      answer.add(item);
     }
   }
  else   if (name != null && node == null) {
@@ -31,8 +29,8 @@ synchronized (rooms) {
     if (room != null && room.isPublicRoom()) {
       MUCRole role;
       Element item;
-      for (Iterator members=room.getOccupants(); members.hasNext(); ) {
-        role=(MUCRole)members.next();
+      for (Iterator<MUCRole> members=room.getOccupants(); members.hasNext(); ) {
+        role=members.next();
         item=DocumentHelper.createElement("item");
         item.addAttribute("jid",role.getRoleAddress().toStringPrep());
         answer.add(item);

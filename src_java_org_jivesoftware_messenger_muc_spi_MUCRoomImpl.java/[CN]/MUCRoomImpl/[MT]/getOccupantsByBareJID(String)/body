@@ -1,13 +1,7 @@
 {
-  lock.readLock().lock();
-  try {
-    List<MUCRole> roles=occupantsByBareJID.get(jid);
-    if (roles != null && !roles.isEmpty()) {
-      return roles;
-    }
-    throw new UserNotFoundException();
+  List<MUCRole> roles=occupantsByBareJID.get(jid);
+  if (roles != null && !roles.isEmpty()) {
+    return (List<MUCRole>)Collections.unmodifiableCollection(roles);
   }
-  finally {
-    lock.readLock().unlock();
-  }
+  throw new UserNotFoundException();
 }

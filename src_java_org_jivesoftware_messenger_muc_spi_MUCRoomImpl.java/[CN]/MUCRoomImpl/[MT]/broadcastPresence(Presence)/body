@@ -23,22 +23,16 @@
     }
     jid=frag.getProperty("x.item:jid");
   }
-  lock.readLock().lock();
-  try {
-    for (    MUCRole occupant : occupants.values()) {
-      presence.setRecipient(occupant.getChatUser().getAddress());
-      if (!canAnyoneDiscoverJID()) {
-        if (MUCRole.MODERATOR == occupant.getRole()) {
-          frag.setProperty("x.item:jid",jid);
-        }
- else {
-          frag.deleteProperty("x.item:jid");
-        }
+  for (  MUCRole occupant : occupants.values()) {
+    presence.setRecipient(occupant.getChatUser().getAddress());
+    if (!canAnyoneDiscoverJID()) {
+      if (MUCRole.MODERATOR == occupant.getRole()) {
+        frag.setProperty("x.item:jid",jid);
       }
-      router.route(presence);
+ else {
+        frag.deleteProperty("x.item:jid");
+      }
     }
-  }
-  finally {
-    lock.readLock().unlock();
+    router.route(presence);
   }
 }
