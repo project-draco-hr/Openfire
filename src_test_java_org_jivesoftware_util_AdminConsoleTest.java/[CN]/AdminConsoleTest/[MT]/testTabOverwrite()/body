@@ -1,16 +1,15 @@
 {
   String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-03.xml");
   InputStream in=new FileInputStream(filename);
-  AdminConsole.addXMLSource(in);
+  AdminConsole.addModel(in);
   in.close();
-  Collection items=AdminConsole.getItems();
   boolean found=false;
-  for (Iterator iter=items.iterator(); iter.hasNext(); ) {
-    AdminConsole.Item item=(AdminConsole.Item)iter.next();
-    if ("server".equals(item.getId())) {
+  for (Iterator tabs=AdminConsole.getModel().selectNodes("//tab").iterator(); tabs.hasNext(); ) {
+    Element tab=(Element)tabs.next();
+    if ("server".equals(tab.attributeValue("id"))) {
       found=true;
-      assertEquals("New Server Title",item.getName());
-      assertEquals("Testing 1 2 3",item.getDescription());
+      assertEquals("New Server Title",tab.attributeValue("name"));
+      assertEquals("Testing 1 2 3",tab.attributeValue("description"));
     }
   }
   if (!found) {

@@ -1,0 +1,28 @@
+{
+  Document doc=DocumentFactory.getInstance().createDocument();
+  generatedModel=coreModel.createCopy();
+  doc.add(generatedModel);
+  for (  Element element : overrideModels) {
+    Element appName=(Element)element.selectSingleNode("/adminconsole/global/appname");
+    if (appName != null) {
+      Element existingAppName=(Element)generatedModel.selectSingleNode("/adminconsole/global/appname");
+      existingAppName.setText(appName.getText());
+    }
+    Element appLogoImage=(Element)element.selectSingleNode("/adminconsole/global/logo-image");
+    if (appLogoImage != null) {
+      Element existingLogoImage=(Element)generatedModel.selectSingleNode("/adminconsole/global/logo-image");
+      existingLogoImage.setText(appLogoImage.getText());
+    }
+    for (Iterator i=element.selectNodes("//tab").iterator(); i.hasNext(); ) {
+      Element tab=(Element)i.next();
+      String id=tab.attributeValue("id");
+      Element existingTab=getElemnetByID(id);
+      if (existingTab == null) {
+        generatedModel.add(tab.createCopy());
+      }
+ else {
+        overrideTab(existingTab,tab);
+      }
+    }
+  }
+}

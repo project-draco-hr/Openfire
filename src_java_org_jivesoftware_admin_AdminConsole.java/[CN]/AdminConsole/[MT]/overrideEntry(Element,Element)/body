@@ -1,0 +1,16 @@
+{
+  entry.addAttribute("name",overrideEntry.attributeValue("name"));
+  entry.addAttribute("url",overrideEntry.attributeValue("url"));
+  entry.addAttribute("description",overrideEntry.attributeValue("description"));
+  for (Iterator i=overrideEntry.elementIterator(); i.hasNext(); ) {
+    Element sidebar=(Element)i.next();
+    String id=sidebar.attributeValue("id");
+    Element existingSidebar=getElemnetByID(id);
+    if (existingSidebar == null) {
+      entry.add(sidebar.createCopy());
+    }
+ else {
+      overrideSidebar(existingSidebar,sidebar);
+    }
+  }
+}

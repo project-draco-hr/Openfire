@@ -1,0 +1,16 @@
+{
+  tab.addAttribute("name",overrideTab.attributeValue("name"));
+  tab.addAttribute("url",overrideTab.attributeValue("url"));
+  tab.addAttribute("description",overrideTab.attributeValue("description"));
+  for (Iterator i=overrideTab.elementIterator(); i.hasNext(); ) {
+    Element sidebar=(Element)i.next();
+    String id=sidebar.attributeValue("id");
+    Element existingSidebar=getElemnetByID(id);
+    if (existingSidebar == null) {
+      tab.add(sidebar.createCopy());
+    }
+ else {
+      overrideSidebar(existingSidebar,sidebar);
+    }
+  }
+}

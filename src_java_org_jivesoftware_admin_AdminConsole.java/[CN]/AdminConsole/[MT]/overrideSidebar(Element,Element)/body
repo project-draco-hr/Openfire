@@ -1,0 +1,14 @@
+{
+  sidebar.addAttribute("name",overrideSidebar.attributeValue("name"));
+  for (Iterator i=overrideSidebar.elementIterator(); i.hasNext(); ) {
+    Element entry=(Element)i.next();
+    String id=sidebar.attributeValue("id");
+    Element existingEntry=getElemnetByID(id);
+    if (existingEntry == null) {
+      sidebar.add(entry.createCopy());
+    }
+ else {
+      overrideEntry(existingEntry,entry);
+    }
+  }
+}

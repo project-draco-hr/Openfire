@@ -5,7 +5,9 @@
     return;
   }
   try {
-    addXMLSource(in);
+    SAXReader saxReader=new SAXReader();
+    Document doc=saxReader.read(in);
+    coreModel=(Element)doc.selectSingleNode("/adminconsole");
   }
  catch (  Exception e) {
     Log.error("Failure when parsing main admin-sidebar.xml file",e);
@@ -23,12 +25,18 @@
         Enumeration e=classLoaders[i].getResources("/META-INF/admin-sidebar.xml");
         while (e.hasMoreElements()) {
           url=(URL)e.nextElement();
-          in=url.openStream();
-          addXMLSource(in);
           try {
-            in.close();
+            in=url.openStream();
+            addModel(in);
           }
- catch (          Exception ignored) {
+  finally {
+            try {
+              if (in != null) {
+                in.close();
+              }
+            }
+ catch (            Exception ignored) {
+            }
           }
         }
       }
@@ -41,4 +49,5 @@
       Log.warn(msg,e);
     }
   }
+  rebuildModel();
 }
