@@ -1,0 +1,35 @@
+{
+  XDataFormImpl searchResults=new XDataFormImpl(DataForm.TYPE_RESULT);
+  XFormFieldImpl field=new XFormFieldImpl("jid");
+  field.setLabel("JID");
+  searchResults.addReportedField(field);
+  for (  String fieldName : searchFields) {
+    field=new XFormFieldImpl(fieldName);
+    field.setLabel(fieldName);
+    searchResults.addReportedField(field);
+  }
+  Iterator userIter=users.iterator();
+  while (userIter.hasNext()) {
+    User user=(User)userIter.next();
+    String username=user.getUsername();
+    ArrayList<XFormFieldImpl> items=new ArrayList<XFormFieldImpl>();
+    XFormFieldImpl fieldJID=new XFormFieldImpl("jid");
+    fieldJID.addValue(username + "@" + serverName);
+    items.add(fieldJID);
+    XFormFieldImpl fieldUsername=new XFormFieldImpl("Username");
+    fieldUsername.addValue(username);
+    items.add(fieldUsername);
+    XFormFieldImpl fieldName=new XFormFieldImpl("Name");
+    fieldName.addValue(user.getName());
+    items.add(fieldName);
+    XFormFieldImpl fieldEmail=new XFormFieldImpl("Email");
+    fieldEmail.addValue(user.getEmail());
+    items.add(fieldEmail);
+    searchResults.addItemFields(items);
+  }
+  Element reply=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  reply.add(searchResults.asXMLElement());
+  IQ replyPacket=IQ.createResultIQ(packet);
+  replyPacket.setChildElement(reply);
+  return replyPacket;
+}

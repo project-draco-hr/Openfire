@@ -9,15 +9,17 @@
   }
   if (probeResult == null) {
     probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+    probeResult.addElement("instructions").addText(instructions);
     XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
     searchForm.setTitle("User Search");
-    searchForm.addInstruction("The following fields are available for search. " + "Wildcard (*) characters are allowed as part the of query.");
+    searchForm.addInstruction(instructions);
     Iterator iter=searchFields.iterator();
     while (iter.hasNext()) {
       String searchField=(String)iter.next();
+      probeResult.addElement(searchField.toLowerCase());
       XFormFieldImpl field=new XFormFieldImpl(searchField);
       field.setType(FormField.TYPE_TEXT_SINGLE);
-      field.setLabel(initCap(searchField));
+      field.setLabel(searchField);
       field.setRequired(false);
       searchForm.addField(field);
     }
