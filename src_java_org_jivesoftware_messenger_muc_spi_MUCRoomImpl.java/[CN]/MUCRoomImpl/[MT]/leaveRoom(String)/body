@@ -17,10 +17,10 @@
   }
   if (leaveRole != null) {
     try {
-      Presence presence=createPresence(Presence.Type.unavailable);
+      Presence presence=(Presence)leaveRole.getPresence().createCopy();
+      presence.setType(Presence.Type.unavailable);
       presence.setFrom(leaveRole.getRoleAddress());
-      presence.getElement().add(leaveRole.getExtendedPresenceInformation().createCopy());
-      broadcastPresence(presence.createCopy());
+      broadcastPresence(presence);
       leaveRole.kick();
       List params=new ArrayList();
       params.add(nickname);
