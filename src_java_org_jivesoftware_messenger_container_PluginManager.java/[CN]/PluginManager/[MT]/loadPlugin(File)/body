@@ -21,6 +21,14 @@
       }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
+        Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
+        if (imageEl != null) {
+          imageEl.setText("plugins/" + pluginDir.getName() + "/"+ imageEl.getText());
+        }
+        imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/login-image");
+        if (imageEl != null) {
+          imageEl.setText("plugins/" + pluginDir.getName() + "/"+ imageEl.getText());
+        }
         List urls=adminElement.selectNodes("//@url");
         for (int i=0; i < urls.size(); i++) {
           Attribute attr=(Attribute)urls.get(i);

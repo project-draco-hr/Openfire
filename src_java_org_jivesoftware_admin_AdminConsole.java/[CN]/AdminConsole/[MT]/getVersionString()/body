@@ -1,9 +1,16 @@
 {
-  Element globalVersion=(Element)generatedModel.selectSingleNode("/adminconsole/global/version");
+  Element globalVersion=(Element)generatedModel.selectSingleNode("//adminconsole/global/version");
   if (globalVersion != null) {
     return globalVersion.getText();
   }
  else {
-    return null;
+    try {
+      XMPPServer xmppServer=(XMPPServer)ServiceLookupFactory.getLookup().lookup(XMPPServer.class);
+      return xmppServer.getServerInfo().getVersion().getVersionString();
+    }
+ catch (    UnauthorizedException ue) {
+      Log.error(ue);
+      return null;
+    }
   }
 }
