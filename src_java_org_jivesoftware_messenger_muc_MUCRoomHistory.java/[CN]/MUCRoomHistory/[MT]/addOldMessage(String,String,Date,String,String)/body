@@ -1,0 +1,23 @@
+{
+  Message packetToAdd=new MessageImpl();
+  packetToAdd.setType(Message.GROUP_CHAT);
+  packetToAdd.setSubject(subject);
+  packetToAdd.setBody(body);
+  if (nickname != null && nickname.trim().length() > 0) {
+    XMPPAddress roomJID=room.getRole().getRoleAddress();
+    packetToAdd.setSender(new XMPPAddress(roomJID.getNamePrep(),roomJID.getHostPrep(),nickname));
+  }
+ else {
+    packetToAdd.setSender(room.getRole().getRoleAddress());
+  }
+  MetaDataFragment delayInformation=new MetaDataFragment("jabber:x:delay","x");
+  delayInformation.setProperty("x:stamp",UTC_FORMAT.format(sentDate));
+  if (room.canAnyoneDiscoverJID()) {
+    delayInformation.setProperty("x:from",senderJID);
+  }
+ else {
+    delayInformation.setProperty("x:from",room.getRole().getRoleAddress().toStringPrep());
+  }
+  packetToAdd.addFragment(delayInformation);
+  historyStrategy.addMessage(packetToAdd);
+}
