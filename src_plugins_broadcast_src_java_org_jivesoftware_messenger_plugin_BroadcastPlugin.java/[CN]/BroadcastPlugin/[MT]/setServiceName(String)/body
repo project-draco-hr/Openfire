@@ -6,8 +6,17 @@
     return;
   }
   JiveGlobals.setProperty("plugin.broadcast.serviceName",serviceName);
-  ComponentManager.getInstance().removeComponent(this.serviceName);
-  ComponentManager.getInstance().addComponent(serviceName,this);
+  try {
+    componentManager.removeComponent(this.serviceName);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
+  try {
+    componentManager.addComponent(serviceName,this);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
   this.serviceName=serviceName;
-  serviceJID=new JID(serviceName + "." + XMPPServer.getInstance().getServerInfo().getName());
 }

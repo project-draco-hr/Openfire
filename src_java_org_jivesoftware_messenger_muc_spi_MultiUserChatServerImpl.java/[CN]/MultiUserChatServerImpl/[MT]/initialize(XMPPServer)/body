@@ -58,20 +58,11 @@
   if (chatServiceName == null) {
     chatServiceName="conference";
   }
-  String serverName=server.getServerInfo().getName();
-  String domain=chatServiceName;
-  if (serverName != null) {
-    domain=chatServiceName + "." + serverName;
-  }
-  chatServiceAddress=new JID(null,domain,null);
   userTimeoutTask=new UserTimeoutTask();
   timer.schedule(userTimeoutTask,user_timeout,user_timeout);
   logConversationTask=new LogConversationTask();
   timer.schedule(logConversationTask,log_timeout,log_timeout);
   cleanupTask=new CleanupTask();
   timer.schedule(cleanupTask,cleanup_frequency,cleanup_frequency);
-  routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
-  registerHandler=server.getIQRegisterHandler();
-  registerHandler.addDelegate(getServiceDomain(),new IQMUCRegisterHandler(this));
 }

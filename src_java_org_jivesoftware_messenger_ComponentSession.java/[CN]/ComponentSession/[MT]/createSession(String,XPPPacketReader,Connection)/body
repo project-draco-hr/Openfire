@@ -34,7 +34,7 @@
     connection.close();
     return null;
   }
-  if (ComponentManager.getInstance().getComponent(domain) != null) {
+  if (InternalComponentManager.getInstance().getComponent(domain) != null) {
     sb.append("<stream:error>");
     sb.append("<conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
     sb.append("</stream:error>");
@@ -76,7 +76,7 @@
     }
  else {
       ExternalComponent component=((ComponentSession)session).getExternalComponent();
-      ComponentManager.getInstance().addComponent(domain,component);
+      InternalComponentManager.getInstance().addComponent(domain,component);
       component.setServiceName(domain);
       session.setStatus(Session.STATUS_AUTHENTICATED);
       writer.write("<handshake></handshake>");

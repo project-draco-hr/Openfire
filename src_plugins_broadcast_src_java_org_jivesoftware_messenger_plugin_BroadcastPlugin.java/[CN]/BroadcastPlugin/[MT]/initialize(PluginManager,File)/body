@@ -1,5 +1,11 @@
 {
   sessionManager=SessionManager.getInstance();
   groupManager=GroupManager.getInstance();
-  ComponentManager.getInstance().addComponent(serviceName,this);
+  componentManager=ComponentManagerFactory.getComponentManager();
+  try {
+    componentManager.addComponent(serviceName,this);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
 }

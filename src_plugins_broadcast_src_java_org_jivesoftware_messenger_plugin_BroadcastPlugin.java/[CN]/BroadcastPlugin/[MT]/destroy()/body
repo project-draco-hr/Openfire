@@ -1,5 +1,10 @@
 {
-  ComponentManager.getInstance().removeComponent(serviceName);
+  try {
+    componentManager.removeComponent(serviceName);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
   sessionManager=null;
   groupManager=null;
   allowedUsers.clear();
