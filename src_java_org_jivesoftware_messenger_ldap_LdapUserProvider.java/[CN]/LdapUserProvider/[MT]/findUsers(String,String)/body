@@ -1,0 +1,38 @@
+{
+  String searchAttribute=searchFields.get(field);
+  if (searchAttribute == null) {
+    throw new IllegalArgumentException("Search field " + field + " is invalid.");
+  }
+  List<String> usernames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String filter="(" + searchAttribute + "="+ query+ ")";
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    while (answer.hasMoreElements()) {
+      usernames.add((String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get());
+    }
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
+      Collections.sort(usernames);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+}
