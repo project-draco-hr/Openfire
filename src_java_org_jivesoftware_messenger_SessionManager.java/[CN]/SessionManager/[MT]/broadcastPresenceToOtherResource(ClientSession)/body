@@ -1,0 +1,18 @@
+{
+  Presence presence=null;
+  SessionMap sessionMap=sessions.get(session.getUsername());
+  if (sessionMap != null) {
+    for (    ClientSession userSession : sessionMap.getAvailableSessions()) {
+      if (userSession != session) {
+        if (session.getPresence().isAvailable()) {
+          presence=userSession.getPresence().createCopy();
+          presence.setTo(session.getAddress());
+          session.getConnection().deliver(presence);
+        }
+        presence=session.getPresence().createCopy();
+        presence.setTo(userSession.getAddress());
+        userSession.getConnection().deliver(presence);
+      }
+    }
+  }
+}

@@ -16,13 +16,15 @@ catch (  SocketException se) {
 catch (  XmlPullParserException ie) {
     if (clearSignout == false) {
       if (session != null && session.getStatus() == Session.STATUS_AUTHENTICATED) {
-        Presence presence=session.getPresence();
-        if (presence != null) {
-          Presence packet=presence.createCopy();
-          packet.setType(Presence.Type.unavailable);
-          packet.setFrom(session.getAddress());
-          router.route(packet);
-          clearSignout=true;
+        if (session instanceof ClientSession) {
+          Presence presence=((ClientSession)session).getPresence();
+          if (presence != null) {
+            Presence packet=presence.createCopy();
+            packet.setType(Presence.Type.unavailable);
+            packet.setFrom(session.getAddress());
+            router.route(packet);
+            clearSignout=true;
+          }
         }
       }
     }

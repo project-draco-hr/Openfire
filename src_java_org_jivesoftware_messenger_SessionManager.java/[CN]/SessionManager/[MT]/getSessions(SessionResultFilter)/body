@@ -1,5 +1,5 @@
 {
-  List<Session> results=new ArrayList<Session>();
+  List<ClientSession> results=new ArrayList<ClientSession>();
   if (filter != null) {
     if (filter.getUsername() == null) {
       copyAnonSessions(results);
@@ -16,8 +16,8 @@
     Date createMax=filter.getCreationDateRangeMax();
     Date activityMin=filter.getLastActivityDateRangeMin();
     Date activityMax=filter.getLastActivityDateRangeMax();
-    List<Session> filteredResults=new ArrayList<Session>();
-    for (    Session session : results) {
+    List<ClientSession> filteredResults=new ArrayList<ClientSession>();
+    for (    ClientSession session : results) {
       if (createMin != null || createMax != null) {
         if (!isBetweenDates(session.getCreationDate(),createMin,createMax)) {
           session=null;
@@ -47,11 +47,11 @@
     if (maxResults == SessionResultFilter.NO_RESULT_LIMIT) {
       maxResults=filteredResults.size();
     }
-    List<Session> finalResults=new ArrayList<Session>();
+    List<ClientSession> finalResults=new ArrayList<ClientSession>();
     int startIndex=filter.getStartIndex();
-    Iterator<Session> sortedIter=filteredResults.iterator();
+    Iterator<ClientSession> sortedIter=filteredResults.iterator();
     for (int i=0; sortedIter.hasNext() && finalResults.size() < maxResults; i++) {
-      Session result=sortedIter.next();
+      ClientSession result=sortedIter.next();
       if (i >= startIndex) {
         finalResults.add(result);
       }

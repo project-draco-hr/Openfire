@@ -1,0 +1,42 @@
+{
+  JID jid=localServer.createJID(username,iq.elementTextTrim("resource"));
+  if (sessionManager.isActiveRoute(jid)) {
+    ClientSession oldSession=null;
+    try {
+      oldSession=sessionManager.getSession(jid);
+      oldSession.incrementConflictCount();
+      int conflictLimit=sessionManager.getConflictKickLimit();
+      if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
+        Connection conn=oldSession.getConnection();
+        if (conn != null) {
+          conn.close();
+        }
+      }
+ else {
+        response=IQ.createResultIQ(packet);
+        response.setError(PacketError.Condition.forbidden);
+      }
+    }
+ catch (    Exception e) {
+      Log.error("Error during login",e);
+    }
+  }
+  if (response == null) {
+    AuthToken token=null;
+    if (password != null && AuthFactory.isPlainSupported()) {
+      token=AuthFactory.authenticate(username,password);
+    }
+ else     if (digest != null && AuthFactory.isDigestSupported()) {
+      token=AuthFactory.authenticate(username,session.getStreamID().toString(),digest);
+    }
+    if (token == null) {
+      throw new UnauthorizedException();
+    }
+ else {
+      session.setAuthToken(token,userManager,jid.getResource());
+      packet.setFrom(session.getAddress());
+      response=IQ.createResultIQ(packet);
+    }
+  }
+  return response;
+}

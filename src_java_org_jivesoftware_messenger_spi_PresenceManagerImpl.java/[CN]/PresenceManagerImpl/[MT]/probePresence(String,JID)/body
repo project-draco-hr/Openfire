@@ -3,8 +3,8 @@
     Component component=getPresenceComponent(probee);
     if (server.isLocal(probee)) {
       if (probee.getNode() != null && !"".equals(probee.getNode())) {
-        Collection<Session> sessions=sessionManager.getSessions(probee.getNode());
-        for (        Session session : sessions) {
+        Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
+        for (        ClientSession session : sessions) {
           Presence presencePacket=session.getPresence().createCopy();
           presencePacket.setFrom(session.getAddress());
           try {
@@ -21,7 +21,7 @@
       presence.setType(Presence.Type.probe);
       presence.setFrom(server.createJID(prober,""));
       presence.setTo(probee);
-      component.processPacket(presence);
+      component.process(presence);
     }
  else {
       Presence presence=(Presence)foreignUserCache.get(probee.toBareJID());

@@ -1,0 +1,16 @@
+{
+  boolean success=false;
+  String username=session.getAddress().getNode().toLowerCase();
+  SessionMap resources=null;
+synchronized (username.intern()) {
+    resources=sessions.get(username);
+    if (resources == null) {
+      resources=new SessionMap();
+      sessions.put(username,resources);
+    }
+    resources.addSession(session);
+    preAuthenticatedSessions.remove(new JID(null,session.getAddress().getDomain(),session.getStreamID().toString()).toString());
+    success=true;
+  }
+  return success;
+}
