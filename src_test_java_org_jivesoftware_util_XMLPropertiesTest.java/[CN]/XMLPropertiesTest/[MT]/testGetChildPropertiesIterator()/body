@@ -1,0 +1,13 @@
+{
+  XMLProperties props=new XMLProperties("./resources/org/jivesoftware/util/XMLProperties.test02.xml");
+  String[] names={"a","b","c","d"};
+  String[] values={"1","2","3","4"};
+  String[] children=props.getChildrenProperties("foo.bar");
+  for (int i=0; i < children.length; i++) {
+    String prop=children[i];
+    assertEquals(names[i],prop);
+    String value=props.getProperty("foo.bar." + prop);
+    assertEquals(values[i],value);
+    i++;
+  }
+}
