@@ -16,15 +16,20 @@
       Element queryField=(Element)iter.next();
       Iterator foundIter=null;
       if (userManager != null) {
-        foundIter=userManager.findUsers(new HashSet<String>(Arrays.asList(searchField.attributeValue("var"))),queryField.getTextTrim()).iterator();
+        String query=queryField.getTextTrim();
+        if (query.length() > 0) {
+          foundIter=userManager.findUsers(new HashSet<String>(Arrays.asList(searchField.attributeValue("var"))),query).iterator();
+        }
       }
  else {
         foundIter=findUsers(searchField.attributeValue("var"),queryField.getTextTrim()).iterator();
       }
-      while (foundIter.hasNext()) {
-        User user=(User)foundIter.next();
-        if (!users.contains(user)) {
-          users.add(user);
+      if (foundIter != null) {
+        while (foundIter.hasNext()) {
+          User user=(User)foundIter.next();
+          if (!users.contains(user)) {
+            users.add(user);
+          }
         }
       }
     }
@@ -33,13 +38,13 @@
   while (userIter.hasNext()) {
     User user=(User)userIter.next();
     ArrayList<XFormFieldImpl> items=new ArrayList<XFormFieldImpl>();
-    XFormFieldImpl fieldUsername=new XFormFieldImpl("username");
+    XFormFieldImpl fieldUsername=new XFormFieldImpl("Username");
     fieldUsername.addValue(user.getUsername());
     items.add(fieldUsername);
-    XFormFieldImpl fieldName=new XFormFieldImpl("name");
+    XFormFieldImpl fieldName=new XFormFieldImpl("Name");
     fieldName.addValue(user.getName());
     items.add(fieldName);
-    XFormFieldImpl fieldEmail=new XFormFieldImpl("email");
+    XFormFieldImpl fieldEmail=new XFormFieldImpl("Email");
     fieldEmail.addValue(user.getEmail());
     items.add(fieldEmail);
     searchResults.addItemFields(items);
