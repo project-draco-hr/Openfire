@@ -1,24 +1,23 @@
 {
-  IQ reply=(IQ)packet.createDeepCopy();
-  reply.setType(IQ.RESULT);
-  reply.setRecipient(packet.getSender());
-  reply.setSender(packet.getRecipient());
-  if (IQ.SET == packet.getType()) {
-    reply.setError(XMPPError.Code.NOT_IMPLEMENTED);
+  IQ reply=IQ.createResultIQ(packet);
+  reply.setType(IQ.Type.result);
+  reply.setTo(packet.getFrom());
+  reply.setFrom(packet.getFrom());
+  if (IQ.Type.set == packet.getType()) {
+    reply.setError(PacketError.Condition.feature_not_implemented);
     return reply;
   }
-  DiscoItemsProvider itemsProvider=getProvider(packet.getRecipient().getHost());
+  DiscoItemsProvider itemsProvider=getProvider(packet.getTo().getDomain());
   if (itemsProvider != null) {
-    String name=packet.getRecipient().getName();
+    String name=packet.getTo().getNode();
     if (name == null || name.trim().length() == 0) {
       name=null;
     }
-    XMPPFragment iq=packet.getChildFragment();
-    MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
-    String node=metaData.getProperty("query:node");
-    Iterator itemsItr=itemsProvider.getItems(name,node,packet.getSender());
+    Element iq=packet.getChildElement();
+    String node=iq.attributeValue("node");
+    Iterator itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
     if (itemsItr != null) {
-      Element queryElement=((XMPPDOMFragment)reply.getChildFragment()).getRootElement();
+      Element queryElement=reply.getChildElement();
       Element item;
       while (itemsItr.hasNext()) {
         item=(Element)itemsItr.next();
@@ -27,11 +26,11 @@
       ;
     }
  else {
-      reply.setError(XMPPError.Code.NOT_FOUND);
+      reply.setError(PacketError.Condition.item_not_found);
     }
   }
  else {
-    reply.setError(XMPPError.Code.NOT_FOUND);
+    reply.setError(PacketError.Condition.item_not_found);
   }
   return reply;
 }
