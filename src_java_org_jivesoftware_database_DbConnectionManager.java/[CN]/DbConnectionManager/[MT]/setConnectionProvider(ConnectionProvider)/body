@@ -10,15 +10,24 @@ synchronized (providerLock) {
     try {
       con=connectionProvider.getConnection();
       setMetaData(con);
+      try {
+        upgradeDatabase(con);
+      }
+ catch (      Exception e) {
+        Log.error("Database upgrade failed. Please manually upgrade your database.",e);
+      }
     }
  catch (    Exception e) {
       Log.error(e);
     }
  finally {
       try {
-        con.close();
+        if (con != null) {
+          con.close();
+        }
       }
  catch (      Exception e) {
+        Log.error(e);
       }
     }
   }

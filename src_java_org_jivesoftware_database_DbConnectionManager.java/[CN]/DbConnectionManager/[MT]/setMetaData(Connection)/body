@@ -10,7 +10,7 @@
   String dbName=metaData.getDatabaseProductName().toLowerCase();
   String driverName=metaData.getDriverName().toLowerCase();
   if (dbName.indexOf("oracle") != -1) {
-    databaseType=DatabaseType.ORACLE;
+    databaseType=DatabaseType.oracle;
     streamTextRequired=true;
     if (driverName.indexOf("auguro") != -1) {
       streamTextRequired=false;
@@ -19,24 +19,29 @@
     }
   }
  else   if (dbName.indexOf("postgres") != -1) {
-    databaseType=DatabaseType.POSTGRES;
+    databaseType=DatabaseType.postgres;
     scrollResultsSupported=false;
     fetchSizeSupported=false;
   }
  else   if (dbName.indexOf("interbase") != -1) {
+    databaseType=DatabaseType.interbase;
     fetchSizeSupported=false;
     maxRowsSupported=false;
   }
  else   if (dbName.indexOf("sql server") != -1 && driverName.indexOf("una") != -1) {
+    databaseType=DatabaseType.sqlserver;
     fetchSizeSupported=true;
     maxRowsSupported=false;
   }
  else   if (dbName.indexOf("mysql") != -1) {
-    databaseType=DatabaseType.MYSQL;
+    databaseType=DatabaseType.mysql;
     transactionsSupported=false;
   }
  else   if (dbName.indexOf("hsql") != -1) {
-    databaseType=DatabaseType.HSQL;
+    databaseType=DatabaseType.hsqldb;
     scrollResultsSupported=false;
+  }
+ else   if (dbName.indexOf("db2") != 1) {
+    databaseType=DatabaseType.db2;
   }
 }

@@ -13,7 +13,7 @@
           done=true;
           break;
         }
-        if (isCommandPart(line)) {
+        if (DbConnectionManager.isSQLCommandPart(line)) {
           command.append(line);
         }
         if (line.endsWith(";")) {
@@ -37,12 +37,13 @@
  catch (      Exception e) {
       }
     }
-    if (con != null) {
-      try {
+    try {
+      if (con != null) {
         con.close();
       }
- catch (      Exception e) {
-      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
     }
   }
 }

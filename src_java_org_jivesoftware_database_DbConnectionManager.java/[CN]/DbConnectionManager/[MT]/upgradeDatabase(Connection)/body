@@ -1,10 +1,8 @@
 {
   int majorVersion;
   int minorVersion;
-  Connection con=null;
   PreparedStatement pstmt=null;
   try {
-    con=getConnection();
     pstmt=con.prepareStatement(CHECK_VERSION);
     ResultSet rs=pstmt.executeQuery();
     if (!rs.next()) {
@@ -28,25 +26,25 @@
  catch (    Exception e) {
       Log.error(e);
     }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
   }
   if (minorVersion == CURRENT_MINOR_VERSION) {
-    return;
+    return false;
   }
   Log.info("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
+  if (databaseType == DatabaseType.unknown) {
+    Log.info("Warning: database type unknown. You must manually upgrade your database.");
+    return false;
+  }
+ else   if (databaseType == DatabaseType.interbase) {
+    Log.info("Warning: automatic upgrades of Interbase are not supported. You " + "must manually upgrade your database.");
+    return false;
+  }
   for (int i=minorVersion; i < CURRENT_MINOR_VERSION; i++) {
     BufferedReader in=null;
+    Statement stmt=null;
     try {
-      String resourceName="/database/upgrade/" + CURRENT_MAJOR_VERSION + "."+ i+ "_to_"+ CURRENT_MAJOR_VERSION+ "."+ (i + 1)+ "/messenger_hsqldb.sql";
-      in=new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(resourceName)));
-      con=getConnection();
+      String resourceName="/database/upgrade/" + CURRENT_MAJOR_VERSION + "."+ i+ "_to_"+ CURRENT_MAJOR_VERSION+ "."+ (i + 1)+ "/messenger_"+ databaseType+ ".sql";
+      in=new BufferedReader(new InputStreamReader(new DbConnectionManager().getClass().getResourceAsStream(resourceName)));
       boolean done=false;
       while (!done) {
         StringBuffer command=new StringBuffer();
@@ -56,23 +54,29 @@
             done=true;
             break;
           }
-          if (isCommandPart(line)) {
+          if (isSQLCommandPart(line)) {
             command.append(line);
           }
           if (line.endsWith(";")) {
             break;
           }
         }
-        Statement stmt=con.createStatement();
-        stmt.execute(command.toString());
-        stmt.close();
+        if (!done && command != null) {
+          stmt=con.createStatement();
+          stmt.execute(command.toString());
+          stmt.close();
+        }
       }
     }
- catch (    Exception e) {
-      Log.error(e);
-      e.printStackTrace();
-    }
- finally {
+  finally {
+      try {
+        if (pstmt != null) {
+          pstmt.close();
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
       if (in != null) {
         try {
           in.close();
@@ -80,13 +84,7 @@
  catch (        Exception e) {
         }
       }
-      if (con != null) {
-        try {
-          con.close();
-        }
- catch (        Exception e) {
-        }
-      }
     }
   }
+  return true;
 }
