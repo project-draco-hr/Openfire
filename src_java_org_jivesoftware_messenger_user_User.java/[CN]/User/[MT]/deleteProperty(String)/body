@@ -2,6 +2,7 @@
   if (properties == null) {
     loadPropertiesFromDb();
   }
-  properties.remove(name);
-  deletePropertyFromDb(name);
+  if (properties.remove(name) != null) {
+    deletePropertyFromDb(name);
+  }
 }
