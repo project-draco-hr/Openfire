@@ -37,10 +37,12 @@
     }
  catch (    UserNotFoundException e) {
       response=IQ.createResultIQ(packet);
+      response.setChildElement(packet.getChildElement().createCopy());
       response.setError(PacketError.Condition.not_authorized);
     }
 catch (    UnauthorizedException e) {
       response=IQ.createResultIQ(packet);
+      response.setChildElement(packet.getChildElement().createCopy());
       response.setError(PacketError.Condition.not_authorized);
     }
     session.getConnection().deliver(response);

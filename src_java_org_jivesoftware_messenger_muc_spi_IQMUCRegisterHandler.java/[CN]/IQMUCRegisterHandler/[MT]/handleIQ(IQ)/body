@@ -3,6 +3,7 @@
   MUCRoom room=mucServer.getChatRoom(packet.getTo().getNode());
   if (room == null) {
     reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.item_not_found);
     return reply;
   }
@@ -45,6 +46,7 @@
           presences.addAll(room.addMember(packet.getFrom().toBareJID(),nickname,room.getRole()));
         }
  else {
+          reply.setChildElement(packet.getChildElement().createCopy());
           reply.setError(PacketError.Condition.bad_request);
         }
       }
@@ -54,10 +56,12 @@
     }
  catch (    ForbiddenException e) {
       reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.forbidden);
     }
 catch (    ConflictException e) {
       reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.conflict);
     }
 catch (    Exception e) {

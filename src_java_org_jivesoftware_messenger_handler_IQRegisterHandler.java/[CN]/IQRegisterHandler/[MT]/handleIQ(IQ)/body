@@ -3,6 +3,7 @@
   IQ reply=null;
   if (!enabled) {
     reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.forbidden);
   }
  else   if (IQ.Type.get.equals(packet.getType())) {
@@ -101,6 +102,7 @@
         }
         if (password == null || password.trim().length() == 0) {
           reply=IQ.createResultIQ(packet);
+          reply.setChildElement(packet.getChildElement().createCopy());
           reply.setError(PacketError.Condition.not_acceptable);
           return reply;
         }
@@ -131,10 +133,12 @@
     }
  catch (    UserAlreadyExistsException e) {
       reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.conflict);
     }
 catch (    UserNotFoundException e) {
       reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.bad_request);
     }
 catch (    Exception e) {

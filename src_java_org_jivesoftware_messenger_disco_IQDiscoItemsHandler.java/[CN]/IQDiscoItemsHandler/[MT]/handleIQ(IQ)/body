@@ -1,6 +1,7 @@
 {
   IQ reply=IQ.createResultIQ(packet);
   if (IQ.Type.set == packet.getType()) {
+    reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.feature_not_implemented);
     return reply;
   }
@@ -25,10 +26,12 @@
       ;
     }
  else {
+      reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.item_not_found);
     }
   }
  else {
+    reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.item_not_found);
   }
   return reply;
