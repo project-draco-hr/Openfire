@@ -5,7 +5,7 @@
     if (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers()) {
       throw new NotAllowedException();
     }
-    boolean isOwner=owners.contains(user.getAddress().toBareString());
+    boolean isOwner=owners.contains(user.getAddress().toBareStringPrep());
     if (roomLocked) {
       if (!isOwner) {
         throw new RoomLockedException();
@@ -30,19 +30,19 @@
       role=MUCRole.MODERATOR;
       affiliation=MUCRole.OWNER;
     }
- else     if (server.getSysadmins().contains(user.getAddress().toBareString())) {
+ else     if (server.getSysadmins().contains(user.getAddress().toBareStringPrep())) {
       role=MUCRole.MODERATOR;
       affiliation=MUCRole.OWNER;
     }
- else     if (admins.contains(user.getAddress().toBareString())) {
+ else     if (admins.contains(user.getAddress().toBareStringPrep())) {
       role=MUCRole.MODERATOR;
       affiliation=MUCRole.ADMINISTRATOR;
     }
- else     if (members.containsKey(user.getAddress().toBareString())) {
+ else     if (members.containsKey(user.getAddress().toBareStringPrep())) {
       role=MUCRole.PARTICIPANT;
       affiliation=MUCRole.MEMBER;
     }
- else     if (outcasts.contains(user.getAddress().toBareString())) {
+ else     if (outcasts.contains(user.getAddress().toBareStringPrep())) {
       throw new ForbiddenException();
     }
  else {
