@@ -1,0 +1,8 @@
+{
+  String xml="<root><foo></foo></root>";
+  XMLProperties props=new XMLProperties(new ByteArrayInputStream(xml.getBytes()));
+  assertNull(props.getAttribute("foo","bar"));
+  xml="<root><foo bar=\"test123\"></foo></root>";
+  props=new XMLProperties(new ByteArrayInputStream(xml.getBytes()));
+  assertEquals(props.getAttribute("foo","bar"),"test123");
+}
