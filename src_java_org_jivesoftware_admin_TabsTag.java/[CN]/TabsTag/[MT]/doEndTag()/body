@@ -1,5 +1,5 @@
 {
-  ServletRequest request=pageContext.getRequest();
+  HttpServletRequest request=(HttpServletRequest)pageContext.getRequest();
   String beanName=getBean();
   AdminPageBean pageInfo=(AdminPageBean)request.getAttribute(beanName);
   String pageID=null;
@@ -21,7 +21,7 @@
       String value=body;
       if (value != null) {
         value=StringUtils.replace(value,"[id]",clean(tab.attributeValue("id")));
-        value=StringUtils.replace(value,"[url]",clean(tab.attributeValue("url")));
+        value=StringUtils.replace(value,"[url]",request.getContextPath() + "/" + clean(tab.attributeValue("url")));
         value=StringUtils.replace(value,"[name]",clean(tab.attributeValue("name")));
         value=StringUtils.replace(value,"[description]",clean(tab.attributeValue("description")));
       }
