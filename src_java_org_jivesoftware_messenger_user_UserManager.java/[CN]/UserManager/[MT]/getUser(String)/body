@@ -1,10 +1,5 @@
 {
-  try {
-    username=Stringprep.nodeprep(username);
-  }
- catch (  StringprepException se) {
-    throw new UserNotFoundException("Invalid username: " + username,se);
-  }
+  username=username.trim().toLowerCase();
   User user=(User)userCache.get(username);
   if (user == null) {
 synchronized (username.intern()) {

@@ -1,31 +1,6 @@
 {
-  if (from == null || serverName == null || !serverName.equals(from.getDomain())) {
+  if (from == null) {
     return null;
   }
-  ClientSession session=null;
-  session=preAuthenticatedSessions.get(from.toString());
-  if (session != null) {
-    return (ClientSession)session;
-  }
-  String resource=from.getResource();
-  if (resource == null) {
-    return null;
-  }
-  String username=from.getNode();
-  if (username == null || "".equals(username)) {
-    session=anonymousSessions.get(resource);
-  }
- else {
-    username=username.toLowerCase();
-synchronized (username.intern()) {
-      SessionMap sessionMap=sessions.get(username);
-      if (sessionMap != null) {
-        session=sessionMap.getSession(resource);
-      }
-    }
-  }
-  if (session == null) {
-    return null;
-  }
-  return session;
+  return getSession(from.getNode(),from.getDomain(),from.getResource());
 }

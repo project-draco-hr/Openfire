@@ -1,0 +1,37 @@
+{
+  if (serverName == null || !serverName.equals(domain)) {
+    return null;
+  }
+  ClientSession session=null;
+  StringBuilder buf=new StringBuilder();
+  if (username != null) {
+    buf.append(username).append("@");
+  }
+  buf.append(domain);
+  if (resource != null) {
+    buf.append("/").append(resource);
+  }
+  session=preAuthenticatedSessions.get(buf.toString());
+  if (session != null) {
+    return (ClientSession)session;
+  }
+  if (resource == null) {
+    return null;
+  }
+  if (username == null || "".equals(username)) {
+    session=anonymousSessions.get(resource);
+  }
+ else {
+    username=username.toLowerCase();
+synchronized (username.intern()) {
+      SessionMap sessionMap=sessions.get(username);
+      if (sessionMap != null) {
+        session=sessionMap.getSession(resource);
+      }
+    }
+  }
+  if (session == null) {
+    return null;
+  }
+  return session;
+}

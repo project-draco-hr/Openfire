@@ -1,8 +1,10 @@
 {
   Presence presence=null;
+  Collection<ClientSession> availableSession;
   SessionMap sessionMap=sessions.get(session.getUsername());
   if (sessionMap != null) {
-    for (    ClientSession userSession : sessionMap.getAvailableSessions()) {
+    availableSession=new ArrayList<ClientSession>(sessionMap.getAvailableSessions());
+    for (    ClientSession userSession : availableSession) {
       if (userSession != session) {
         if (session.getPresence().isAvailable()) {
           presence=userSession.getPresence().createCopy();

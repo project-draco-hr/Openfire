@@ -2,12 +2,7 @@
   if (username == null || password == null) {
     throw new UnauthorizedException();
   }
-  try {
-    username=Stringprep.nodeprep(username);
-  }
- catch (  StringprepException se) {
-    throw new UnauthorizedException("Illegal username: " + se.getMessage());
-  }
+  username=username.trim().toLowerCase();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {

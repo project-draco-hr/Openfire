@@ -1,9 +1,11 @@
 {
-  JID jid=localServer.createJID(username,iq.elementTextTrim("resource"));
-  if (sessionManager.isActiveRoute(jid)) {
+  String resource=iq.elementTextTrim("resource");
+  resource=resource != null ? resource.toLowerCase() : null;
+  if (sessionManager.isActiveRoute(username,resource)) {
     ClientSession oldSession=null;
     try {
-      oldSession=sessionManager.getSession(jid);
+      String domain=localServer.getServerInfo().getName();
+      oldSession=sessionManager.getSession(username,domain,resource);
       oldSession.incrementConflictCount();
       int conflictLimit=sessionManager.getConflictKickLimit();
       if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
@@ -33,7 +35,7 @@
       throw new UnauthorizedException();
     }
  else {
-      session.setAuthToken(token,userManager,jid.getResource());
+      session.setAuthToken(token,userManager,resource);
       packet.setFrom(session.getAddress());
       response=IQ.createResultIQ(packet);
     }
