@@ -40,7 +40,7 @@
               if (hcss == null) {
                 hcss="";
               }
-              buf.append("<li class=\"").append(hcss).append("\">").append(clean(header)).append("</li>");
+              buf.append("<li class=\"").append(hcss).append("\">").append(clean(i18n(header))).append("</li>");
               for (Iterator subitems=sidebar.elementIterator(); subitems.hasNext(); ) {
                 Element item=(Element)subitems.next();
                 String subitemID=item.attributeValue("id");
@@ -50,8 +50,8 @@
                 String value=getBodyContent().getString();
                 if (value != null) {
                   value=StringUtils.replace(value,"[id]",clean(subitemID));
-                  value=StringUtils.replace(value,"[name]",clean(subitemName));
-                  value=StringUtils.replace(value,"[description]",clean(subitemDescr));
+                  value=StringUtils.replace(value,"[name]",clean(i18n(subitemName)));
+                  value=StringUtils.replace(value,"[description]",clean(i18n(subitemDescr)));
                   value=StringUtils.replace(value,"[url]",request.getContextPath() + "/" + clean(subitemURL));
                 }
                 String css=getCss();
@@ -67,7 +67,7 @@
                   if (hadNext) {
                     buf.append("<ul class=\"subitems\">\n");
                     String subheader=subcurrent.getParent().attributeValue("name");
-                    buf.append("<li class=\"").append(hcss).append("\">").append(clean(subheader)).append("</li>");
+                    buf.append("<li class=\"").append(hcss).append("\">").append(clean(i18n(subheader))).append("</li>");
                   }
                   String extraParams=pageInfo.getExtraParams();
                   while (siblings.hasNext()) {
@@ -87,8 +87,8 @@
                     String svalue=getSubsidebarTag().getBody();
                     if (svalue != null) {
                       svalue=StringUtils.replace(svalue,"[id]",clean(sibID));
-                      svalue=StringUtils.replace(svalue,"[name]",clean(sibName));
-                      svalue=StringUtils.replace(svalue,"[description]",clean(sibDescr));
+                      svalue=StringUtils.replace(svalue,"[name]",clean(i18n(sibName)));
+                      svalue=StringUtils.replace(svalue,"[description]",clean(i18n(sibDescr)));
                       svalue=StringUtils.replace(svalue,"[url]",request.getContextPath() + "/" + clean(sibURL));
                     }
                     buf.append("<li class=\"").append(subcss).append("\">").append(svalue).append("</li>\n");
