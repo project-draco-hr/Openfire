@@ -1,6 +1,6 @@
 {
   xmlSerializer.writeStartElement("jabber:iq:roster","item");
-  xmlSerializer.writeAttribute("jid",jid.toBareString());
+  xmlSerializer.writeAttribute("jid",jid.toBareJID());
   xmlSerializer.writeAttribute("subscription",subStatus.getName());
   if (askStatus != ASK_NONE) {
     xmlSerializer.writeAttribute("ask",askStatus.getName());
@@ -20,7 +20,7 @@
   }
   Iterator frags=fragments.iterator();
   while (frags.hasNext()) {
-    XMPPFragment frag=(XMPPFragment)frags.next();
+    Element frag=(Element)frags.next();
     frag.send(xmlSerializer,version);
   }
   xmlSerializer.writeEndElement();

@@ -2,8 +2,8 @@
   try {
     IQ returnPacket=null;
     IQRoster roster=(IQRoster)packet;
-    XMPPAddress recipientJID=packet.getRecipient();
-    if (recipientJID == null || recipientJID.getName() == null) {
+    JID recipientJID=packet.getTo();
+    if (recipientJID == null || recipientJID.getNode() == null) {
       returnPacket=manageRoster(roster);
     }
  else {

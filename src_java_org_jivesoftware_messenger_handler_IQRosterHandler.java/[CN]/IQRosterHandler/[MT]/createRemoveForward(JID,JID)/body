@@ -1,0 +1,11 @@
+{
+  IQ response=new IQ();
+  response.setFrom(from);
+  response.setTo(to);
+  response.setType(IQ.Type.set);
+  Element query=response.setChildElement("query","jabber:iq:roster");
+  IQRosterItem responseItem=new IQRosterItemImpl(from);
+  responseItem.setSubStatus(RosterItem.SUB_REMOVE);
+  query.addFragment(responseItem);
+  return response;
+}

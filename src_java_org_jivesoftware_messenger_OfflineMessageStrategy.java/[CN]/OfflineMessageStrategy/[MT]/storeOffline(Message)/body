@@ -1,0 +1,35 @@
+{
+  if (message != null) {
+    Session senderSession=null;
+    try {
+      senderSession=sessionManager.getSession(message.getFrom());
+    }
+ catch (    SessionNotFoundException e) {
+      Log.error(e);
+    }
+    JID sender=senderSession.getAddress();
+    if (sender == null || sender.getNode() == null || senderSession == null) {
+    }
+ else {
+      if (type == Type.bounce) {
+        bounce(message);
+      }
+ else       if (type == Type.store) {
+        store(message);
+      }
+ else       if (type == Type.store_and_bounce) {
+        if (underQuota(message)) {
+          store(message);
+        }
+ else {
+          bounce(message);
+        }
+      }
+ else       if (type == Type.store_and_drop) {
+        if (underQuota(message)) {
+          store(message);
+        }
+      }
+    }
+  }
+}
