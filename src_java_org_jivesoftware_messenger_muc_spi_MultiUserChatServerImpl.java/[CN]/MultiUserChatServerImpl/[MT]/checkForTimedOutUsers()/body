@@ -11,12 +11,18 @@
       if (user.getLastPacketTime() < deadline) {
         Iterator<MUCRole> roles=user.getRoles();
         MUCRole role;
+        MUCRoom room;
+        Presence kickedPresence;
         while (roles.hasNext()) {
           role=roles.next();
+          room=role.getChatRoom();
           try {
-            role.getChatRoom().kickOccupant(user.getAddress().toStringPrep(),null,null);
+            kickedPresence=room.kickOccupant(user.getAddress().toStringPrep(),null,null);
+            room.send(kickedPresence);
           }
  catch (          NotAllowedException e) {
+          }
+catch (          UnauthorizedException e) {
           }
         }
       }
