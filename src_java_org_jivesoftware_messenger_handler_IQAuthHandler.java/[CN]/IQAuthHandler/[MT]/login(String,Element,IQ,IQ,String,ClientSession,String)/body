@@ -1,6 +1,13 @@
 {
   String resource=iq.elementTextTrim("resource");
-  resource=resource != null ? resource.toLowerCase() : null;
+  if (resource != null) {
+    try {
+      resource=Stringprep.resourceprep(resource);
+    }
+ catch (    StringprepException e) {
+      throw new IllegalArgumentException("Invalid resource: " + resource);
+    }
+  }
   if (sessionManager.isActiveRoute(username,resource)) {
     ClientSession oldSession=null;
     try {
