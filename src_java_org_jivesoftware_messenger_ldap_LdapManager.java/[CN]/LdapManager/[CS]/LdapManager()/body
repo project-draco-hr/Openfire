@@ -14,15 +14,21 @@
   if (JiveGlobals.getXMLProperty("ldap.baseDN") != null) {
     this.baseDN=JiveGlobals.getXMLProperty("ldap.baseDN");
   }
+  if (JiveGlobals.getXMLProperty("ldap.alternateBaseDN") != null) {
+    this.alternateBaseDN=JiveGlobals.getXMLProperty("ldap.alternateBaseDN");
+  }
   if (JiveGlobals.getXMLProperty("ldap.nameField") != null) {
     this.nameField=JiveGlobals.getXMLProperty("ldap.nameField");
   }
   if (JiveGlobals.getXMLProperty("ldap.emailField") != null) {
     this.emailField=JiveGlobals.getXMLProperty("ldap.emailField");
   }
+  if (JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled") != null) {
+    this.connectionPoolEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled")).booleanValue();
+  }
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
   this.adminPassword=JiveGlobals.getXMLProperty("ldap.adminPassword");
-  this.debugEnabled="true".equals(JiveGlobals.getXMLProperty("ldap.debugEnabled"));
+  this.ldapDebugEnabled="true".equals(JiveGlobals.getXMLProperty("ldap.ldapDebugEnabled"));
   this.sslEnabled="true".equals(JiveGlobals.getXMLProperty("ldap.sslEnabled"));
   String modeStr=JiveGlobals.getXMLProperty("ldap.mode");
   if (modeStr != null) {
@@ -31,5 +37,35 @@
     }
  catch (    NumberFormatException nfe) {
     }
+  }
+  this.initialContextFactory=JiveGlobals.getXMLProperty("ldap.initialContextFactory");
+  if (initialContextFactory != null) {
+    try {
+      Class.forName(initialContextFactory);
+    }
+ catch (    ClassNotFoundException cnfe) {
+      Log.error("Initial context factory class failed to load: " + initialContextFactory + ".  Using default initial context factory class instead.");
+      initialContextFactory="com.sun.jndi.ldap.LdapCtxFactory";
+    }
+  }
+ else {
+    initialContextFactory="com.sun.jndi.ldap.LdapCtxFactory";
+  }
+  if (Log.isDebugEnabled()) {
+    Log.debug("Created new LdapManager() instance, fields:");
+    Log.debug("\t host: " + host);
+    Log.debug("\t port: " + port);
+    Log.debug("\t usernamefield: " + usernameField);
+    Log.debug("\t baseDN: " + baseDN);
+    Log.debug("\t alternateBaseDN: " + alternateBaseDN);
+    Log.debug("\t nameField: " + nameField);
+    Log.debug("\t emailField: " + emailField);
+    Log.debug("\t adminDN: " + adminDN);
+    Log.debug("\t adminPassword: " + adminPassword);
+    Log.debug("\t ldapDebugEnabled: " + ldapDebugEnabled);
+    Log.debug("\t sslEnabled: " + sslEnabled);
+    Log.debug("\t mode: " + mode);
+    Log.debug("\t initialContextFactory: " + initialContextFactory);
+    Log.debug("\t connectionPoolEnabled: " + connectionPoolEnabled);
   }
 }

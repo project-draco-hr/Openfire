@@ -1,20 +1,3 @@
 {
-  Hashtable env=new Hashtable();
-  env.put(Context.INITIAL_CONTEXT_FACTORY,"com.sun.jndi.ldap.LdapCtxFactory");
-  if (sslEnabled) {
-    env.put("java.naming.ldap.factory.socket","org.jivesoftware.util.ssl.DummySSLSocketFactory");
-    env.put(Context.SECURITY_PROTOCOL,"ssl");
-  }
-  env.put(Context.PROVIDER_URL,"ldap://" + host + ":"+ port+ "/"+ baseDN);
-  env.put(Context.SECURITY_AUTHENTICATION,"simple");
-  if (adminDN != null) {
-    env.put(Context.SECURITY_PRINCIPAL,adminDN);
-  }
-  if (adminPassword != null) {
-    env.put(Context.SECURITY_CREDENTIALS,adminPassword);
-  }
-  if (debugEnabled) {
-    env.put("com.sun.jndi.ldap.trace.ber",System.err);
-  }
-  return new InitialDirContext(env);
+  return getContext(baseDN);
 }

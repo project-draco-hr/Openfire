@@ -11,6 +11,7 @@
       while (rs.next()) {
         users.add(rs.getLong(1));
       }
+      rs.close();
     }
  catch (    SQLException e) {
       Log.error(e);
@@ -52,9 +53,12 @@
   }
  finally {
     try {
-      ctx.close();
+      if (ctx != null) {
+        ctx.close();
+      }
     }
  catch (    Exception e) {
+      Log.error(e);
     }
   }
   return users;

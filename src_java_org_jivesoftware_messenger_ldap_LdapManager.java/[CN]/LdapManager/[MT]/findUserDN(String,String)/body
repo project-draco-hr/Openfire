@@ -1,0 +1,50 @@
+{
+  boolean debug=Log.isDebugEnabled();
+  if (debug) {
+    Log.debug("Trying to find a user's DN based on their username. " + usernameField + ": "+ username+ ", Base DN: "+ baseDN+ "...");
+  }
+  DirContext ctx=null;
+  try {
+    ctx=getContext(baseDN);
+    if (debug) {
+      Log.debug("Starting LDAP search...");
+    }
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{usernameField});
+    StringBuffer filter=new StringBuffer();
+    filter.append("(").append(usernameField).append("=");
+    filter.append(username).append(")");
+    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    if (debug) {
+      Log.debug("... search finished");
+    }
+    if (answer == null || !answer.hasMoreElements()) {
+      if (debug) {
+        Log.debug("User DN based on username '" + username + "' not found.");
+      }
+      throw new UnauthorizedException("Username " + username + " not found");
+    }
+    String userDN=((SearchResult)answer.next()).getName();
+    if (answer.hasMoreElements()) {
+      if (debug) {
+        Log.debug("Search for userDN based on username '" + username + "' found multiple "+ "responses, throwing exception.");
+      }
+      throw new Exception("LDAP username lookup for " + username + " matched multiple entries.");
+    }
+    return userDN;
+  }
+ catch (  Exception e) {
+    if (debug) {
+      Log.debug("Exception thrown when searching for userDN based on username '" + username + "'",e);
+    }
+    throw e;
+  }
+ finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception ignored) {
+    }
+  }
+}

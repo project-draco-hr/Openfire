@@ -2,12 +2,14 @@
   if (manager.getMode() == LdapManager.ALL_LDAP_MODE) {
     return getUserIDFromLdap(username);
   }
-  long id=0L;
-  try {
-    id=getUserIDLocally(username);
+ else {
+    long id=0L;
+    try {
+      id=getUserIDLocally(username);
+    }
+ catch (    UserNotFoundException e) {
+      id=generateNewUserIDLocally(username);
+    }
+    return id;
   }
- catch (  UserNotFoundException e) {
-    id=generateNewUserIDLocally(username);
-  }
-  return id;
 }

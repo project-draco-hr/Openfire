@@ -1,0 +1,34 @@
+{
+  boolean debug=Log.isDebugEnabled();
+  if (debug) {
+    Log.debug("Creating a DirContext in LdapManager.getContext()...");
+  }
+  Hashtable env=new Hashtable();
+  env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
+  env.put(Context.PROVIDER_URL,getProviderURL(baseDN));
+  if (sslEnabled) {
+    env.put("java.naming.ldap.factory.socket","com.jivesoftware.util.ssl.DummySSLSocketFactory");
+    env.put(Context.SECURITY_PROTOCOL,"ssl");
+  }
+  env.put(Context.SECURITY_AUTHENTICATION,"simple");
+  if (adminDN != null) {
+    env.put(Context.SECURITY_PRINCIPAL,adminDN);
+  }
+  if (adminPassword != null) {
+    env.put(Context.SECURITY_CREDENTIALS,adminPassword);
+  }
+  if (ldapDebugEnabled) {
+    env.put("com.sun.jndi.ldap.trace.ber",System.err);
+  }
+  if (connectionPoolEnabled) {
+    env.put("com.sun.jndi.ldap.connect.pool","true");
+  }
+  if (debug) {
+    Log.debug("Created hashtable with context values, attempting to create context...");
+  }
+  DirContext context=new InitialDirContext(env);
+  if (debug) {
+    Log.debug("... context created successfully, returning.");
+  }
+  return context;
+}

@@ -19,9 +19,12 @@
     }
  finally {
       try {
-        ctx.close();
+        if (ctx != null) {
+          ctx.close();
+        }
       }
  catch (      Exception e) {
+        Log.error(e);
       }
     }
   }
@@ -35,6 +38,7 @@
       if (rs.next()) {
         count=rs.getInt(1);
       }
+      rs.close();
     }
  catch (    SQLException e) {
       Log.error(e);
