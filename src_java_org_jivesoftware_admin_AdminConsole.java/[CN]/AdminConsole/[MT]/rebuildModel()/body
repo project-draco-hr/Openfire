@@ -18,6 +18,9 @@
       String id=tab.attributeValue("id");
       Element existingTab=getElemnetByID(id);
       if (existingTab == null) {
+        if (tab.attributeValue("url") == null) {
+          tab.addAttribute("url",((Element)tab.selectSingleNode("//item[@url]")).attributeValue("url"));
+        }
         generatedModel.add(tab.createCopy());
       }
  else {
