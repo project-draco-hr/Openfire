@@ -1,0 +1,33 @@
+{
+  try {
+    ZipFile zipFile=new JarFile(file);
+    if (zipFile.getEntry("plugin.xml") == null) {
+      return;
+    }
+    dir.mkdir();
+    Log.debug("Extracting plugin: " + pluginName);
+    for (Enumeration e=zipFile.entries(); e.hasMoreElements(); ) {
+      JarEntry entry=(JarEntry)e.nextElement();
+      File entryFile=new File(dir,entry.getName());
+      if (entry.getName().toLowerCase().endsWith("manifest.mf")) {
+        continue;
+      }
+      if (!entry.isDirectory()) {
+        entryFile.getParentFile().mkdirs();
+        FileOutputStream out=new FileOutputStream(entryFile);
+        InputStream zin=zipFile.getInputStream(entry);
+        byte[] b=new byte[512];
+        int len=0;
+        while ((len=zin.read(b)) != -1) {
+          out.write(b,0,len);
+        }
+        out.flush();
+        out.close();
+        zin.close();
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

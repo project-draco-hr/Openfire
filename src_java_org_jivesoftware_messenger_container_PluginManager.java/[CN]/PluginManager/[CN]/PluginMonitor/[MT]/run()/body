@@ -8,40 +8,18 @@
 );
     for (int i=0; i < jars.length; i++) {
       File jarFile=jars[i];
-      String jarName=jarFile.getName().substring(0,jarFile.getName().length() - 4).toLowerCase();
-      File dir=new File(pluginDirectory,jarName);
+      String pluginName=jarFile.getName().substring(0,jarFile.getName().length() - 4).toLowerCase();
+      File dir=new File(pluginDirectory,pluginName);
       if (!dir.exists()) {
-        try {
-          ZipFile zipFile=new JarFile(jarFile);
-          if (zipFile.getEntry("plugin.xml") == null) {
-            continue;
-          }
-          dir.mkdir();
-          Log.debug("Extracting plugin: " + jarName);
-          for (Enumeration e=zipFile.entries(); e.hasMoreElements(); ) {
-            JarEntry entry=(JarEntry)e.nextElement();
-            File entryFile=new File(dir,entry.getName());
-            if (entry.getName().toLowerCase().endsWith("manifest.mf")) {
-              continue;
-            }
-            if (!entry.isDirectory()) {
-              entryFile.getParentFile().mkdirs();
-              FileOutputStream out=new FileOutputStream(entryFile);
-              InputStream zin=zipFile.getInputStream(entry);
-              byte[] b=new byte[512];
-              int len=0;
-              while ((len=zin.read(b)) != -1) {
-                out.write(b,0,len);
-              }
-              out.flush();
-              out.close();
-              zin.close();
-            }
-          }
+        unzipPlugin(pluginName,jarFile,dir);
+      }
+ else       if (jarFile.lastModified() > dir.lastModified()) {
+        unloadPlugin(pluginName);
+        if (!deleteDir(dir)) {
+          Log.error("Error unloading plugin " + pluginName + ". "+ "You must manually delete the plugin directory.");
+          continue;
         }
- catch (        Exception e) {
-          Log.error(e);
-        }
+        unzipPlugin(pluginName,jarFile,dir);
       }
     }
     File[] dirs=pluginDirectory.listFiles(new FileFilter(){
@@ -66,6 +44,21 @@
       File dirFile=dirs[i];
       if (!plugins.containsKey(dirFile.getName())) {
         loadPlugin(dirFile);
+      }
+    }
+    if (plugins.size() > jars.length + 1) {
+      for (      String pluginName : plugins.keySet()) {
+        if (pluginName.equals("admin")) {
+          continue;
+        }
+        File file=new File(pluginDirectory,pluginName + ".jar");
+        if (!file.exists()) {
+          unloadPlugin(pluginName);
+          if (!deleteDir(new File(pluginDirectory,pluginName))) {
+            Log.error("Error unloading plugin " + pluginName + ". "+ "You must manually delete the plugin directory.");
+            continue;
+          }
+        }
       }
     }
   }
