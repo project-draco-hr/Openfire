@@ -1,9 +1,8 @@
 {
-  bodyElement.element("name").setText(AdminConsole.getAppName());
-  versionElement.setText(AdminConsole.getVersionString());
-  IQ result=null;
-  result=IQ.createResultIQ(packet);
-  bodyElement.setParent(null);
-  result.setChildElement(bodyElement.createCopy());
+  Element answerElement=bodyElement.createCopy();
+  answerElement.element("name").setText(AdminConsole.getAppName());
+  answerElement.element("version").setText(AdminConsole.getVersionString());
+  IQ result=IQ.createResultIQ(packet);
+  result.setChildElement(answerElement);
   return result;
 }
