@@ -1,10 +1,10 @@
 {
-  Iterator values;
+  Iterator<String> values;
   String booleanValue;
   List list;
   FormField field;
   field=completedForm.getField("muc#roomconfig_roomadmins");
-  List admins=new ArrayList();
+  List<String> admins=new ArrayList<String>();
   if (field != null) {
     values=field.getValues();
     while (values.hasNext()) {
@@ -12,7 +12,7 @@
     }
   }
   field=completedForm.getField("muc#roomconfig_roomowners");
-  List owners=new ArrayList();
+  List<String> owners=new ArrayList<String>();
   if (field != null) {
     values=field.getValues();
     while (values.hasNext()) {
@@ -29,23 +29,23 @@
     field=completedForm.getField("muc#roomconfig_roomname");
     if (field != null) {
       values=field.getValues();
-      room.setNaturalLanguageName((values.hasNext() ? (String)values.next() : " "));
+      room.setNaturalLanguageName((values.hasNext() ? values.next() : " "));
     }
     field=completedForm.getField("muc#roomconfig_roomdesc");
     if (field != null) {
       values=field.getValues();
-      room.setDescription((values.hasNext() ? (String)values.next() : " "));
+      room.setDescription((values.hasNext() ? values.next() : " "));
     }
     field=completedForm.getField("muc#roomconfig_changesubject");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setCanOccupantsChangeSubject(("1".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_maxusers");
     if (field != null) {
       values=field.getValues();
-      room.setMaxUsers((values.hasNext() ? Integer.parseInt((String)values.next()) : 30));
+      room.setMaxUsers((values.hasNext() ? Integer.parseInt(values.next()) : 30));
     }
     field=completedForm.getField("muc#roomconfig_presencebroadcast");
     if (field != null) {
@@ -59,13 +59,13 @@
     field=completedForm.getField("muc#roomconfig_publicroom");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setPublicRoom(("1".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_persistentroom");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       boolean isPersistent=("1".equals(booleanValue) ? true : false);
       if (room.isPersistent() && !isPersistent) {
         MUCPersistenceManager.deleteFromDB(room);
@@ -75,31 +75,31 @@
     field=completedForm.getField("muc#roomconfig_moderatedroom");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setModerated(("1".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_inviteonly");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setInvitationRequiredToEnter(("1".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_allowinvites");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setCanOccupantsInvite(("1".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_passwordprotectedroom");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       boolean isPasswordProtected="1".equals(booleanValue);
       if (isPasswordProtected) {
         field=completedForm.getField("muc#roomconfig_roomsecret");
         if (field != null) {
           values=completedForm.getField("muc#roomconfig_roomsecret").getValues();
-          room.setPassword((values.hasNext() ? (String)values.next() : null));
+          room.setPassword((values.hasNext() ? values.next() : null));
         }
       }
  else {
@@ -109,13 +109,13 @@
     field=completedForm.getField("muc#roomconfig_whois");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setCanAnyoneDiscoverJID(("anyone".equals(booleanValue) ? true : false));
     }
     field=completedForm.getField("muc#roomconfig_enablelogging");
     if (field != null) {
       values=field.getValues();
-      booleanValue=(values.hasNext() ? (String)values.next() : "1");
+      booleanValue=(values.hasNext() ? values.next() : "1");
       room.setLogEnabled(("1".equals(booleanValue) ? true : false));
     }
     if (room.isPersistent()) {

@@ -12,14 +12,14 @@
         MetaDataFragment ownerMetaData;
         String jid;
         MUCRole role;
-        for (Iterator owners=room.getOwners(); owners.hasNext(); ) {
-          jid=(String)owners.next();
+        for (Iterator<String> owners=room.getOwners(); owners.hasNext(); ) {
+          jid=owners.next();
           ownerMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
           ownerMetaData.setProperty("item:affiliation","owner");
           ownerMetaData.setProperty("item:jid",jid);
           try {
-            List roles=room.getOccupantsByBareJID(jid);
-            role=(MUCRole)roles.get(0);
+            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+            role=roles.get(0);
             ownerMetaData.setProperty("item:role",role.getRoleAsString());
             ownerMetaData.setProperty("item:nick",role.getNickname());
           }
@@ -33,14 +33,14 @@
         MetaDataFragment adminMetaData;
         String jid;
         MUCRole role;
-        for (Iterator admins=room.getAdmins(); admins.hasNext(); ) {
-          jid=(String)admins.next();
+        for (Iterator<String> admins=room.getAdmins(); admins.hasNext(); ) {
+          jid=admins.next();
           adminMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
           adminMetaData.setProperty("item:affiliation","admin");
           adminMetaData.setProperty("item:jid",jid);
           try {
-            List roles=room.getOccupantsByBareJID(jid);
-            role=(MUCRole)roles.get(0);
+            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+            role=roles.get(0);
             adminMetaData.setProperty("item:role",role.getRoleAsString());
             adminMetaData.setProperty("item:nick",role.getNickname());
           }
@@ -56,7 +56,7 @@
     }
   }
  else {
-    Map jids=new HashMap();
+    Map<String,String> jids=new HashMap<String,String>();
     String bareJID=null;
     String nick;
     for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
@@ -75,7 +75,7 @@
  catch (      UserNotFoundException e) {
       }
     }
-    List presences=new ArrayList(jids.size());
+    List<Presence> presences=new ArrayList<Presence>(jids.size());
     room.lock.readLock().lock();
     try {
       if (jids.keySet().containsAll(room.owners)) {
@@ -88,9 +88,9 @@
       room.lock.writeLock().lock();
       try {
         String targetAffiliation=null;
-        for (Iterator it=jids.keySet().iterator(); it.hasNext(); ) {
-          bareJID=(String)it.next();
-          targetAffiliation=(String)jids.get(bareJID);
+        for (Iterator<String> it=jids.keySet().iterator(); it.hasNext(); ) {
+          bareJID=it.next();
+          targetAffiliation=jids.get(bareJID);
           if ("owner".equals(targetAffiliation)) {
             presences.addAll(room.addOwner(bareJID,senderRole));
           }
@@ -114,8 +114,8 @@
       room.lock.readLock().unlock();
     }
     try {
-      for (Iterator it=presences.iterator(); it.hasNext(); ) {
-        room.send((Presence)it.next());
+      for (      Presence presence : presences) {
+        room.send(presence);
       }
     }
  catch (    UnauthorizedException e) {

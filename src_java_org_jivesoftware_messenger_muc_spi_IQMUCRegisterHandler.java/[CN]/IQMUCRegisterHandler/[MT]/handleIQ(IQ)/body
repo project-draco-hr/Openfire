@@ -23,7 +23,7 @@
   }
  else   if (IQ.SET.equals(packet.getType())) {
     try {
-      List presences=new ArrayList();
+      List<Presence> presences=new ArrayList<Presence>();
       reply=packet.createResult();
       XMPPFragment iq=packet.getChildFragment();
       MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
@@ -35,8 +35,8 @@
         if (formElement != null) {
           XDataFormImpl registrationForm=new XDataFormImpl();
           registrationForm.parse(formElement);
-          Iterator values=registrationForm.getField("muc#register_roomnick").getValues();
-          String nickname=(values.hasNext() ? (String)values.next() : null);
+          Iterator<String> values=registrationForm.getField("muc#register_roomnick").getValues();
+          String nickname=(values.hasNext() ? values.next() : null);
           presences.addAll(room.addMember(packet.getSender().toBareStringPrep(),nickname,room.getRole()));
         }
  else {
@@ -44,8 +44,8 @@
         }
       }
       try {
-        for (Iterator it=presences.iterator(); it.hasNext(); ) {
-          room.send((Presence)it.next());
+        for (        Presence presence : presences) {
+          room.send(presence);
         }
       }
  catch (      UnauthorizedException e) {

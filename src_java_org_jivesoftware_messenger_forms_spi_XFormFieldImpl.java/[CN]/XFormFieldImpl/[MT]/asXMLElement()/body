@@ -16,15 +16,15 @@
     field.addElement("required");
   }
   if (values.size() > 0) {
-    Iterator valuesItr=getValues();
+    Iterator<String> valuesItr=getValues();
     while (valuesItr.hasNext()) {
-      field.addElement("value").addText((String)valuesItr.next());
+      field.addElement("value").addText(valuesItr.next());
     }
   }
   if (options.size() > 0) {
-    Iterator optionsItr=getOptions();
+    Iterator<Option> optionsItr=getOptions();
     while (optionsItr.hasNext()) {
-      field.add(((Option)optionsItr.next()).asXMLElement());
+      field.add((optionsItr.next()).asXMLElement());
     }
   }
   return field;

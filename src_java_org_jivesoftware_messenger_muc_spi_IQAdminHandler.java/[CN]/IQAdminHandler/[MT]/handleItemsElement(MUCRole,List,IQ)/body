@@ -17,8 +17,8 @@
           throw new ForbiddenException();
         }
         String jid;
-        for (Iterator it=room.getOutcasts(); it.hasNext(); ) {
-          jid=(String)it.next();
+        for (Iterator<String> it=room.getOutcasts(); it.hasNext(); ) {
+          jid=it.next();
           metaData=new MetaDataFragment("http://jabber.org/protocol/muc#admin","item");
           metaData.setProperty("item:affiliation","outcast");
           metaData.setProperty("item:jid",jid);
@@ -31,14 +31,14 @@
           throw new ForbiddenException();
         }
         String jid;
-        for (Iterator it=room.getMembers(); it.hasNext(); ) {
-          jid=(String)it.next();
+        for (Iterator<String> it=room.getMembers(); it.hasNext(); ) {
+          jid=it.next();
           metaData=new MetaDataFragment("http://jabber.org/protocol/muc#admin","item");
           metaData.setProperty("item:affiliation","member");
           metaData.setProperty("item:jid",jid);
           try {
-            List roles=room.getOccupantsByBareJID(jid);
-            role=(MUCRole)roles.get(0);
+            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+            role=roles.get(0);
             metaData.setProperty("item:role",role.getRoleAsString());
             metaData.setProperty("item:nick",role.getNickname());
           }
@@ -52,8 +52,8 @@
         if (MUCRole.ADMINISTRATOR != senderRole.getAffiliation() && MUCRole.OWNER != senderRole.getAffiliation()) {
           throw new ForbiddenException();
         }
-        for (Iterator roles=room.getModerators(); roles.hasNext(); ) {
-          role=(MUCRole)roles.next();
+        for (Iterator<MUCRole> roles=room.getModerators(); roles.hasNext(); ) {
+          role=roles.next();
           metaData=new MetaDataFragment("http://jabber.org/protocol/muc#admin","item");
           metaData.setProperty("item:role","moderator");
           metaData.setProperty("item:jid",role.getChatUser().getAddress().toStringPrep());
@@ -67,8 +67,8 @@
         if (MUCRole.MODERATOR != senderRole.getRole()) {
           throw new ForbiddenException();
         }
-        for (Iterator roles=room.getParticipants(); roles.hasNext(); ) {
-          role=(MUCRole)roles.next();
+        for (Iterator<MUCRole> roles=room.getParticipants(); roles.hasNext(); ) {
+          role=roles.next();
           metaData=new MetaDataFragment("http://jabber.org/protocol/muc#admin","item");
           metaData.setProperty("item:role","participant");
           metaData.setProperty("item:jid",role.getChatUser().getAddress().toStringPrep());
@@ -88,7 +88,7 @@
     String nick;
     String target=null;
     boolean hasAffiliation=((Element)itemsList.get(0)).attributeValue("affiliation") != null;
-    List presences=new ArrayList(itemsList.size());
+    List<Presence> presences=new ArrayList<Presence>(itemsList.size());
     for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
       try {
         item=(Element)items.next();
@@ -147,8 +147,8 @@
       }
     }
     try {
-      for (Iterator it=presences.iterator(); it.hasNext(); ) {
-        room.send((Presence)it.next());
+      for (      Presence presence : presences) {
+        room.send(presence);
       }
     }
  catch (    UnauthorizedException e) {
