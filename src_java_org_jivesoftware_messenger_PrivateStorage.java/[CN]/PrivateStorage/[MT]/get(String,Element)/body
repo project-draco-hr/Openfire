@@ -10,8 +10,8 @@
       pstmt.setString(2,data.getNamespaceURI());
       ResultSet rs=pstmt.executeQuery();
       if (rs.next()) {
-        StringReader reader=new StringReader(rs.getString(1).trim());
-        Document doc=XPPReader.parseDocument(reader,this.getClass());
+        String result=rs.getString(1).trim();
+        Document doc=xmlReader.read(result);
         data=doc.getRootElement();
       }
       rs.close();

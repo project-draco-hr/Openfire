@@ -1,17 +1,17 @@
 {
-  Session session=packet.getOriginatingSession();
+  Session session=SessionManager.getInstance().getSession(packet.getFrom());
   IQ reply=null;
-  MUCRoom room=mucServer.getChatRoom(packet.getRecipient().getNamePrep());
+  MUCRoom room=mucServer.getChatRoom(packet.getTo().getNode());
   if (room == null) {
-    reply=packet.createResult();
-    reply.setError(XMPPError.Code.NOT_FOUND);
+    reply=IQ.createResultIQ(packet);
+    reply.setError(PacketError.Condition.item_not_found);
     return reply;
   }
   if (IQ.Type.get == packet.getType()) {
-    reply=packet.createResult();
-    String nickname=room.getReservedNickname(packet.getSender().toBareStringPrep());
+    reply=IQ.createResultIQ(packet);
+    String nickname=room.getReservedNickname(packet.getFrom().toBareJID());
     if (nickname != null) {
-      MetaDataFragment currentRegistration=(MetaDataFragment)probeResult.createDeepCopy();
+      Element currentRegistration=probeResult.createCopy();
       currentRegistration.setProperty("query.registered",null);
       XDataFormImpl form=(XDataFormImpl)currentRegistration.getFragment("x","jabber:x:data");
       form.getField("muc#register_roomnick").addValue(nickname);
