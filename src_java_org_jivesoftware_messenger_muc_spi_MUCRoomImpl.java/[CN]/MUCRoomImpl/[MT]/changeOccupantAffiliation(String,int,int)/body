@@ -6,16 +6,12 @@
   }
   MUCRole role;
   for (Iterator it=roles.iterator(); it.hasNext(); ) {
-    try {
-      role=(MUCRole)it.next();
-      role.setAffiliation(newAffiliation);
-      role.setRole(newRole);
-      Presence presence=(Presence)role.getPresence().createDeepCopy();
-      presence.setSender(role.getRoleAddress());
-      presences.add(presence);
-    }
- catch (    UnauthorizedException e) {
-    }
+    role=(MUCRole)it.next();
+    role.setAffiliation(newAffiliation);
+    role.setRole(newRole);
+    Presence presence=(Presence)role.getPresence().createDeepCopy();
+    presence.setSender(role.getRoleAddress());
+    presences.add(presence);
   }
   return presences;
 }

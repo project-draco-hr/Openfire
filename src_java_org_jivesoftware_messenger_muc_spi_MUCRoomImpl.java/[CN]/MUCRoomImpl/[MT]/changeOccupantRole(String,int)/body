@@ -1,14 +1,10 @@
 {
   MUCRole role=occupantsByFullJID.get(fullJID);
   if (role != null) {
-    try {
-      role.setRole(newRole);
-      Presence presence=(Presence)role.getPresence().createDeepCopy();
-      presence.setSender(role.getRoleAddress());
-      return presence;
-    }
- catch (    UnauthorizedException e) {
-    }
+    role.setRole(newRole);
+    Presence presence=(Presence)role.getPresence().createDeepCopy();
+    presence.setSender(role.getRoleAddress());
+    return presence;
   }
   return null;
 }
