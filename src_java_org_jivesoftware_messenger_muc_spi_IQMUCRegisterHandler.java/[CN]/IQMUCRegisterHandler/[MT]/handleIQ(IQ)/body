@@ -10,8 +10,8 @@
   if (IQ.Type.get == packet.getType()) {
     reply=IQ.createResultIQ(packet);
     String nickname=room.getReservedNickname(packet.getFrom().toBareJID());
+    Element currentRegistration=probeResult.createCopy();
     if (nickname != null) {
-      Element currentRegistration=probeResult.createCopy();
       ElementUtil.setProperty(currentRegistration,"query.registered",null);
       XDataFormImpl form=new XDataFormImpl();
       form.parse(currentRegistration);
@@ -19,7 +19,7 @@
       reply.getElement().add(currentRegistration);
     }
  else {
-      reply.getElement().add(probeResult);
+      reply.getElement().add(currentRegistration);
     }
   }
  else   if (IQ.Type.set == packet.getType()) {
@@ -37,7 +37,7 @@
           registrationForm.parse(formElement);
           Iterator<String> values=registrationForm.getField("muc#register_roomnick").getValues();
           String nickname=(values.hasNext() ? values.next() : null);
-          presences.addAll(room.addMember(packet.getTo().toBareJID(),nickname,room.getRole()));
+          presences.addAll(room.addMember(packet.getFrom().toBareJID(),nickname,room.getRole()));
         }
  else {
           reply.setError(PacketError.Condition.bad_request);
