@@ -12,7 +12,7 @@
   if (username == null || "".equals(username)) {
     anonymousSessionLock.readLock().lock();
     try {
-      session=(Session)anonymousSessions.get(resource);
+      session=anonymousSessions.get(resource);
     }
   finally {
       anonymousSessionLock.readLock().unlock();
@@ -22,7 +22,7 @@
     username=username.toLowerCase();
     sessionLock.readLock().lock();
     try {
-      SessionMap sessionMap=(SessionMap)sessions.get(username);
+      SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
         session=sessionMap.getSession(resource);
       }

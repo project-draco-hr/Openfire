@@ -6,7 +6,7 @@
     if (resource != null) {
       anonymousSessionLock.readLock().lock();
       try {
-        session=(Session)anonymousSessions.get(resource);
+        session=anonymousSessions.get(resource);
         if (session == null) {
           session=getSession(recipient);
         }
@@ -20,7 +20,7 @@
     username=username.toLowerCase();
     sessionLock.readLock().lock();
     try {
-      SessionMap sessionMap=(SessionMap)sessions.get(username);
+      SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
         if (resource == null) {
           session=sessionMap.getDefaultSession();

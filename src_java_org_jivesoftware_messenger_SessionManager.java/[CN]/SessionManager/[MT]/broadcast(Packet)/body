@@ -11,9 +11,8 @@
   }
   anonymousSessionLock.readLock().lock();
   try {
-    Iterator values=anonymousSessions.values().iterator();
-    while (values.hasNext()) {
-      ((Session)values.next()).getConnection().deliver(packet);
+    for (    Session session : anonymousSessions.values()) {
+      session.getConnection().deliver(packet);
     }
   }
   finally {

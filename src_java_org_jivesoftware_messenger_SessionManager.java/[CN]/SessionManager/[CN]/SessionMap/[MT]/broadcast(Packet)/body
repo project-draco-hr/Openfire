@@ -1,7 +1,5 @@
 {
-  Iterator entries=resources.values().iterator();
-  while (entries.hasNext()) {
-    Session session=(Session)entries.next();
+  for (  Session session : resources.values()) {
     packet.setTo(session.getAddress());
     session.getConnection().deliver(packet);
   }
