@@ -1,5 +1,5 @@
 {
-  BasicUserInfo userInfo=null;
+  UserInfo userInfo=null;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -10,7 +10,7 @@
     if (!rs.next()) {
       throw new UserNotFoundException();
     }
-    userInfo=new BasicUserInfo(username,rs.getString(1),rs.getString(2),new java.util.Date(Long.parseLong(rs.getString(3).trim())),new java.util.Date(Long.parseLong(rs.getString(4).trim())));
+    userInfo=new UserInfo(username,rs.getString(1),rs.getString(2),new java.util.Date(Long.parseLong(rs.getString(3).trim())),new java.util.Date(Long.parseLong(rs.getString(4).trim())));
   }
  catch (  SQLException e) {
     throw new UserNotFoundException("Failed to read user " + username + " from database.",e);
