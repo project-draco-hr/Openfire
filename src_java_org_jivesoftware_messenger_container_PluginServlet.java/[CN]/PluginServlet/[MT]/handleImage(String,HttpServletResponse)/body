@@ -1,0 +1,39 @@
+{
+  File image=new File(pluginDirectory,pathInfo.replaceAll("/",File.separator));
+  if (!image.exists()) {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+ else {
+    String contentType="image/gif";
+    if (pathInfo.endsWith(".png")) {
+      contentType="image/png";
+    }
+    response.setHeader("Content-disposition","filename=\"" + image + "\";");
+    response.setContentType(contentType);
+    InputStream in=null;
+    ServletOutputStream out=null;
+    try {
+      in=new BufferedInputStream(new FileInputStream(image));
+      out=response.getOutputStream();
+      response.setContentLength((int)image.length());
+      byte[] buf=new byte[1024];
+      int len;
+      while ((len=in.read(buf)) != -1) {
+        out.write(buf,0,len);
+      }
+    }
+  finally {
+      try {
+        in.close();
+      }
+ catch (      Exception ignored) {
+      }
+      try {
+        out.close();
+      }
+ catch (      Exception ignored) {
+      }
+    }
+  }
+}
