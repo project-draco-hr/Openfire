@@ -8,6 +8,9 @@
     SearchControls constraints=new SearchControls();
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
     constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    if (!Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
+      constraints.setCountLimit(startIndex + numResults);
+    }
     String filter="(" + manager.getUsernameField() + "=*)";
     NamingEnumeration answer=ctx.search("",filter,constraints);
     if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
