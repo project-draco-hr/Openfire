@@ -82,8 +82,6 @@
   }
   if (joinRole != null) {
     boolean isRoomNew=roomLocked && occupants.size() == 1;
-    List params=new ArrayList();
-    params.add(nickname);
     try {
       Presence joinPresence=joinRole.getPresence().createCopy();
       if (isRoomNew) {
@@ -95,9 +93,6 @@
     }
  catch (    Exception e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-    }
-    if (canBroadcastPresence(joinRole.getRoleAsString())) {
-      serverBroadcast(LocaleUtils.getLocalizedString("muc.join",params));
     }
     if (isRoomNew) {
       Message message=new Message();
