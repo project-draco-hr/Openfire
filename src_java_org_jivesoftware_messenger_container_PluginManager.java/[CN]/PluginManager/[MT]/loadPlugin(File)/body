@@ -3,19 +3,19 @@
     return;
   }
   Log.debug("Loading plugin " + pluginDir.getName());
-  Module mod=null;
+  Plugin plugin=null;
   try {
-    File moduleConfig=new File(pluginDir,"module.xml");
-    if (moduleConfig.exists()) {
-      XMLProperties moduleProps=new XMLProperties(moduleConfig);
-      JiveModuleLoader modLoader=new JiveModuleLoader(pluginDir.toString());
-      mod=modLoader.loadModule(moduleProps.getProperty("module"));
-      mod.initialize(container);
-      mod.start();
-      plugins.put(pluginDir.getName(),mod);
+    File pluginConfig=new File(pluginDir,"plugin.xml");
+    if (pluginConfig.exists()) {
+      XMLProperties pluginProps=new XMLProperties(pluginConfig);
+      PluginClassLoader pluginLoader=new PluginClassLoader(pluginDir);
+      String className=pluginProps.getProperty("class");
+      plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
+      plugin.initialize(this,pluginDir);
+      plugins.put(pluginDir.getName(),plugin);
     }
  else {
-      Log.warn("Plugin " + pluginDir + " not loaded: no module.xml configuration file not found");
+      Log.warn("Plugin " + pluginDir + " could not be loaded: no plugin.xml file found");
     }
   }
  catch (  Exception e) {

@@ -1,0 +1,28 @@
+{
+  final List list=new ArrayList();
+  File classesDir=new File(pluginDir,"classes");
+  if (classesDir.exists()) {
+    list.add(classesDir.toURL());
+  }
+  File libDir=new File(pluginDir,"lib");
+  File[] jars=libDir.listFiles(new FilenameFilter(){
+    public boolean accept(    File dir,    String name){
+      return name.endsWith(".jar") || name.endsWith(".zip");
+    }
+  }
+);
+  if (jars != null) {
+    for (int i=0; i < jars.length; i++) {
+      if (jars[i] != null && jars[i].isFile()) {
+        list.add(jars[i].toURL());
+      }
+    }
+  }
+  Iterator urls=list.iterator();
+  URL[] urlArray=new URL[list.size()];
+  for (int i=0; urls.hasNext(); i++) {
+    urlArray[i]=(URL)urls.next();
+  }
+  classLoader=new URLClassLoader(urlArray,findParentClassLoader());
+  Thread.currentThread().setContextClassLoader(classLoader);
+}
