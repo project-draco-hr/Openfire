@@ -1,6 +1,9 @@
 {
   org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
   for (  RosterItem item : rosterItems.values()) {
+    if (item.isOnlyShared() && item.getSubStatus() == RosterItem.SUB_FROM) {
+      continue;
+    }
     org.xmpp.packet.Roster.Ask ask=getAskStatus(item.getAskStatus());
     org.xmpp.packet.Roster.Subscription sub=org.xmpp.packet.Roster.Subscription.valueOf(item.getSubStatus().getName());
     List<String> groups=new ArrayList<String>(item.getGroups());
