@@ -1,58 +1,54 @@
 {
-  try {
-    if (!isConfigured()) {
-      Iterator history=roomHistory.getMessageHistory();
-      while (history.hasNext()) {
-        joinRole.send((Message)history.next());
-      }
-    }
- else {
-      if (getMaxChars() == 0) {
-        return;
-      }
-      Message message;
-      int accumulatedChars=0;
-      int accumulatedStanzas=0;
-      MetaDataFragment delayInformation;
-      LinkedList historyToSend=new LinkedList();
-      ListIterator iterator=roomHistory.getReverseMessageHistory();
-      while (iterator.hasPrevious()) {
-        message=(Message)iterator.previous();
-        accumulatedChars+=message.getBody().length();
-        if (getMaxChars() > -1 && accumulatedChars > getMaxChars()) {
-          break;
-        }
-        accumulatedStanzas++;
-        if (getMaxStanzas() > -1 && accumulatedStanzas > getMaxStanzas()) {
-          break;
-        }
-        if (getSeconds() > -1 || getSince() != null) {
-          delayInformation=(MetaDataFragment)message.getFragment("x","jabber:x:delay");
-          try {
-            Date delayedDate=delayedFormatter.parse(delayInformation.getProperty("x:stamp"));
-            if (getSince() != null && delayedDate.before(getSince())) {
-              break;
-            }
-            if (getSeconds() > -1) {
-              Date current=new Date();
-              long diff=(current.getTime() - delayedDate.getTime()) / 1000;
-              if (getSeconds() <= diff) {
-                break;
-              }
-            }
-          }
- catch (          ParseException e) {
-            Log.error("Error parsing date from historic message",e);
-          }
-        }
-        historyToSend.addFirst(message);
-      }
-      Iterator history=historyToSend.iterator();
-      while (history.hasNext()) {
-        joinRole.send((Message)history.next());
-      }
+  if (!isConfigured()) {
+    Iterator history=roomHistory.getMessageHistory();
+    while (history.hasNext()) {
+      joinRole.send((Message)history.next());
     }
   }
- catch (  UnauthorizedException e) {
+ else {
+    if (getMaxChars() == 0) {
+      return;
+    }
+    Message message;
+    int accumulatedChars=0;
+    int accumulatedStanzas=0;
+    MetaDataFragment delayInformation;
+    LinkedList historyToSend=new LinkedList();
+    ListIterator iterator=roomHistory.getReverseMessageHistory();
+    while (iterator.hasPrevious()) {
+      message=(Message)iterator.previous();
+      accumulatedChars+=message.getBody().length();
+      if (getMaxChars() > -1 && accumulatedChars > getMaxChars()) {
+        break;
+      }
+      accumulatedStanzas++;
+      if (getMaxStanzas() > -1 && accumulatedStanzas > getMaxStanzas()) {
+        break;
+      }
+      if (getSeconds() > -1 || getSince() != null) {
+        delayInformation=(MetaDataFragment)message.getFragment("x","jabber:x:delay");
+        try {
+          Date delayedDate=delayedFormatter.parse(delayInformation.getProperty("x:stamp"));
+          if (getSince() != null && delayedDate.before(getSince())) {
+            break;
+          }
+          if (getSeconds() > -1) {
+            Date current=new Date();
+            long diff=(current.getTime() - delayedDate.getTime()) / 1000;
+            if (getSeconds() <= diff) {
+              break;
+            }
+          }
+        }
+ catch (        ParseException e) {
+          Log.error("Error parsing date from historic message",e);
+        }
+      }
+      historyToSend.addFirst(message);
+    }
+    Iterator history=historyToSend.iterator();
+    while (history.hasNext()) {
+      joinRole.send((Message)history.next());
+    }
   }
 }
