@@ -1,0 +1,14 @@
+{
+  if (components.containsKey(validateJID(jid))) {
+    return components.get(validateJID(jid));
+  }
+ else {
+    String serverName=StringUtils.parseServer(validateJID(jid));
+    int index=serverName.indexOf(".");
+    if (index != -1) {
+      String serviceName=serverName.substring(0,index);
+      jid=serviceName;
+    }
+  }
+  return components.get(validateJID(jid));
+}
