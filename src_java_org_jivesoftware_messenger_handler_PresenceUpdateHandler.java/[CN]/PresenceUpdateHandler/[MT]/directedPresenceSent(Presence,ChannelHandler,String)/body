@@ -3,44 +3,51 @@
     return;
   }
   if (localServer.isLocal(update.getFrom())) {
+    boolean keepTrack=false;
     WeakHashMap<ChannelHandler,Set<String>> map;
     String name=update.getFrom().getNode();
-    try {
-      if (name != null && !"".equals(name)) {
-        name=name.toLowerCase();
+    if (name != null && !"".equals(name)) {
+      name=name.toLowerCase();
+      try {
         Roster roster=rosterManager.getRoster(name);
         if (!roster.isRosterItem(update.getTo())) {
-          map=directedPresences.get(update.getFrom().toString());
-          if (map == null) {
-            map=new WeakHashMap<ChannelHandler,Set<String>>();
-            map.put(handler,new HashSet<String>());
-            directedPresences.put(update.getFrom().toString(),map);
-          }
-          if (Presence.Type.unavailable.equals(update.getType())) {
-            if (handler instanceof ClientSession) {
-              map.remove(handler);
-              if (map.isEmpty()) {
-                directedPresences.remove(update.getFrom().toString());
-              }
-            }
- else {
-              map.get(handler).remove(jid);
-            }
-          }
- else {
-            if (map.get(handler) == null) {
-              map.put(handler,new HashSet<String>());
-            }
-            map.get(handler).add(jid);
-          }
+          keepTrack=true;
         }
       }
+ catch (      UserNotFoundException e) {
+        Log.warn("Presence being sent from unknown user " + name,e);
+      }
+catch (      PacketException e) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      }
     }
- catch (    UserNotFoundException e) {
-      Log.warn("Presence being sent from unknown user " + name,e);
+ else     if (update.getFrom().getResource() != null) {
+      keepTrack=true;
     }
-catch (    PacketException e) {
-      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    if (keepTrack) {
+      map=directedPresences.get(update.getFrom().toString());
+      if (map == null) {
+        map=new WeakHashMap<ChannelHandler,Set<String>>();
+        map.put(handler,new HashSet<String>());
+        directedPresences.put(update.getFrom().toString(),map);
+      }
+      if (Presence.Type.unavailable.equals(update.getType())) {
+        if (handler instanceof ClientSession) {
+          map.remove(handler);
+          if (map.isEmpty()) {
+            directedPresences.remove(update.getFrom().toString());
+          }
+        }
+ else {
+          map.get(handler).remove(jid);
+        }
+      }
+ else {
+        if (map.get(handler) == null) {
+          map.put(handler,new HashSet<String>());
+        }
+        map.get(handler).add(jid);
+      }
     }
   }
 }
