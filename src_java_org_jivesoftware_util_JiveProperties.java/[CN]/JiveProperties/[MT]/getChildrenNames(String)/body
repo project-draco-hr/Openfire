@@ -1,0 +1,21 @@
+{
+  Collection<String> results=new HashSet<String>();
+  for (  String key : properties.keySet()) {
+    if (key.startsWith(parentKey + ".")) {
+      if (key.equals(parentKey)) {
+        continue;
+      }
+      int dotIndex=key.indexOf(".",parentKey.length() + 1);
+      if (dotIndex < 1) {
+        if (!results.contains(key)) {
+          results.add(key);
+        }
+      }
+ else {
+        String name=parentKey + key.substring(parentKey.length(),dotIndex);
+        results.add(name);
+      }
+    }
+  }
+  return results;
+}

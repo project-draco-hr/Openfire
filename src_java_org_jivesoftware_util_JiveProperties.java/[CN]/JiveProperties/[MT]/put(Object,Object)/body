@@ -1,0 +1,21 @@
+{
+  if (key == null || value == null) {
+    throw new NullPointerException("Key or value cannot be null. Key=" + key + ", value="+ value);
+  }
+  if (!(key instanceof String) || !(value instanceof String)) {
+    throw new IllegalArgumentException("Key and value must be of type String.");
+  }
+  if (((String)key).endsWith(".")) {
+    key=((String)key).substring(0,((String)key).length() - 1);
+  }
+  key=((String)key).trim();
+  if (properties.containsKey(key)) {
+    if (!properties.get(key).equals(value)) {
+      updateProperty((String)key,(String)value);
+    }
+  }
+ else {
+    insertProperty((String)key,(String)value);
+  }
+  return properties.put((String)key,(String)value);
+}
