@@ -1,0 +1,27 @@
+{
+  int count=0;
+  DirContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String filter="(" + manager.getUsernameField() + "=*)";
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    while (answer.hasMoreElements()) {
+      count++;
+      answer.nextElement();
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return count;
+}

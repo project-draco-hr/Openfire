@@ -1,0 +1,18 @@
+{
+  if (properties == null) {
+    loadPropertiesFromDb();
+  }
+  if (name == null || value == null || "".equals(name) || "".equals(value)) {
+    throw new NullPointerException("Cannot set property with empty or null value.");
+  }
+  if (properties.containsKey(name)) {
+    if (!(value.equals(properties.get(name)))) {
+      properties.put(name,value);
+      updatePropertyInDb(name,value);
+    }
+  }
+ else {
+    properties.put(name,value);
+    insertPropertyIntoDb(name,value);
+  }
+}

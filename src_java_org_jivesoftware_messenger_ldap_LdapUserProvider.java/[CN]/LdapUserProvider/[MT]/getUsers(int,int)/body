@@ -1,0 +1,34 @@
+{
+  List<String> usernames=new ArrayList<String>();
+  DirContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{"jiveUserID"});
+    String filter="(jiveUserID=*)";
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    for (int i=0; i < startIndex; i++) {
+      answer.next();
+    }
+    for (int i=0; i < numResults; i++) {
+      if (answer.hasMoreElements()) {
+        usernames.add((String)((SearchResult)answer.next()).getAttributes().get("jiveUserID").get());
+      }
+ else {
+        break;
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+}

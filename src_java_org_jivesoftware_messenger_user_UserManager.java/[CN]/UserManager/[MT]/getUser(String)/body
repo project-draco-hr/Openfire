@@ -1,0 +1,14 @@
+{
+  try {
+    username=Stringprep.nameprep(username,true);
+  }
+ catch (  StringprepException se) {
+    throw new IllegalArgumentException(se);
+  }
+  User user=(User)userCache.get(username);
+  if (user == null) {
+    user=provider.loadUser(username);
+    userCache.put(username,user);
+  }
+  return user;
+}

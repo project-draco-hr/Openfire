@@ -1,0 +1,11 @@
+{
+  String username=user.getUsername();
+  try {
+    username=Stringprep.nameprep(username,true);
+  }
+ catch (  StringprepException se) {
+    throw new IllegalArgumentException(se);
+  }
+  provider.deleteUser(user.getUsername());
+  userCache.remove(user.getUsername());
+}

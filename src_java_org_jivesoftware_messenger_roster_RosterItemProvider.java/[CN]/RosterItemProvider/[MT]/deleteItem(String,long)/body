@@ -1,0 +1,34 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
+    pstmt.setLong(1,rosterItemID);
+    pstmt.executeUpdate();
+    pstmt=con.prepareStatement(DELETE_ROSTER_ITEM);
+    pstmt.setLong(1,rosterItemID);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

@@ -18,7 +18,7 @@
         currentRegistration.addElement("registered");
         currentRegistration.element("username").setText(user.getUsername());
         currentRegistration.element("password").setText("");
-        currentRegistration.element("email").setText(user.getInfo().getEmail());
+        currentRegistration.element("email").setText(user.getEmail());
         Element form=currentRegistration.element(QName.get("x","jabber:x:data"));
         Iterator fields=form.elementIterator("field");
         Element field;
@@ -28,10 +28,10 @@
             field.addElement("value").addText(user.getUsername());
           }
  else           if ("name".equals(field.attributeValue("var"))) {
-            field.addElement("value").addText(user.getInfo().getName());
+            field.addElement("value").addText(user.getName());
           }
  else           if ("email".equals(field.attributeValue("var"))) {
-            field.addElement("value").addText(user.getInfo().getEmail());
+            field.addElement("value").addText(user.getEmail());
           }
         }
         reply.setChildElement(currentRegistration);
@@ -110,16 +110,11 @@ catch (      UnauthorizedException e) {
           if (user != null) {
             if (user.getUsername().equalsIgnoreCase(username)) {
               user.setPassword(password);
-              user.getInfo().setEmail(email);
+              user.setEmail(email);
               newUser=user;
             }
  else {
-              if (user.isAuthorized(Permissions.SYSTEM_ADMIN)) {
-                newUser=userManager.createUser(username,password,email);
-              }
- else {
-                throw new UnauthorizedException();
-              }
+              newUser=userManager.createUser(username,password,null,email);
             }
           }
  else {
@@ -127,7 +122,7 @@ catch (      UnauthorizedException e) {
           }
         }
  else {
-          newUser=userManager.createUser(username,password,email);
+          newUser=userManager.createUser(username,password,null,email);
         }
         if (newUser != null && registrationForm != null) {
           Iterator<String> values;
@@ -135,9 +130,8 @@ catch (      UnauthorizedException e) {
           if (field != null) {
             values=field.getValues();
             String name=(values.hasNext() ? values.next() : " ");
-            newUser.getInfo().setName(name);
+            newUser.setName(name);
           }
-          newUser.saveInfo();
         }
         reply=IQ.createResultIQ(packet);
       }

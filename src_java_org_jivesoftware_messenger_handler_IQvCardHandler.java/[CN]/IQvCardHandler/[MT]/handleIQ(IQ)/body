@@ -17,12 +17,12 @@
       result=IQ.createResultIQ(packet);
       Element vcard=DocumentHelper.createElement(QName.get("vCard","vcard-temp"));
       result.setChildElement(vcard);
-      Iterator names=user.getVCardPropertyNames();
-      while (names.hasNext()) {
-        String name=(String)names.next();
+      VCardManager vManager=VCardManager.getInstance();
+      Collection<String> names=vManager.getVCardPropertyNames(user.getUsername());
+      for (      String name : names) {
         String path=name.replace(':','/');
         Element node=DocumentHelper.makeElement(vcard,path);
-        node.setText(user.getVCardProperty(name));
+        node.setText(vManager.getVCardProperty(user.getUsername(),name));
       }
     }
  else {

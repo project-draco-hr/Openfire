@@ -1,0 +1,28 @@
+{
+  try {
+    String username=user.getNode();
+    Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
+    if (roster == null) {
+      roster=new CachedRosterImpl(username);
+    }
+    Iterator<RosterItem> items=roster.getRosterItems();
+    while (items.hasNext()) {
+      roster.deleteRosterItem(items.next().getJid());
+    }
+    CacheManager.getCache("username2roster").remove(username);
+    RosterItemProvider rosteItemProvider=RosterItemProvider.getInstance();
+    Iterator<String> usernames=rosteItemProvider.getUsernames(user.toBareJID());
+    while (usernames.hasNext()) {
+      username=usernames.next();
+      roster=(Roster)CacheManager.getCache("username2roster").get(username);
+      if (roster == null) {
+        roster=new CachedRosterImpl(username);
+      }
+      roster.deleteRosterItem(user);
+    }
+  }
+ catch (  UnsupportedOperationException e) {
+  }
+catch (  UnauthorizedException e) {
+  }
+}

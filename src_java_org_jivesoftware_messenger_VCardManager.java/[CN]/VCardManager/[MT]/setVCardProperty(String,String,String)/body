@@ -1,0 +1,17 @@
+{
+  Map<String,String> properties=(Map<String,String>)vcardCache.get(username);
+  if (properties == null) {
+    properties=loadPropertiesFromDb(username);
+    vcardCache.put(username,properties);
+  }
+  if (properties.containsKey(name)) {
+    if (!(value.equals(properties.get(name)))) {
+      properties.put(name,value);
+      updatePropertyInDb(username,name,value);
+    }
+  }
+ else {
+    properties.put(name,value);
+    insertPropertyIntoDb(username,name,value);
+  }
+}

@@ -1,0 +1,9 @@
+{
+  Map<String,String> properties=(Map<String,String>)vcardCache.get(username);
+  if (properties == null) {
+    properties=loadPropertiesFromDb(username);
+    vcardCache.put(username,properties);
+  }
+  properties.remove(name);
+  deletePropertyFromDb(username,name);
+}
