@@ -1,9 +1,12 @@
 {
 synchronized (rooms) {
-    final MUCRoom room=(MUCRoom)rooms.get(roomName.toLowerCase());
+    final MUCRoom room=rooms.get(roomName.toLowerCase());
     final long chatLength=room.getChatLength();
     totalChatTime+=chatLength;
     MUCPersistenceManager.updateRoomInMemory(room,false);
+    if (room.isPersistent()) {
+      persistentRoomSurrogateCache.clear();
+    }
     rooms.remove(roomName.toLowerCase());
   }
 }

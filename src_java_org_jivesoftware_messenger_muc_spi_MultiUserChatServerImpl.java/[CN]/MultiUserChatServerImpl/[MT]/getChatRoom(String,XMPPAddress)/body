@@ -1,7 +1,7 @@
 {
   MUCRoom room=null;
 synchronized (rooms) {
-    room=(MUCRoom)rooms.get(roomName.toLowerCase());
+    room=rooms.get(roomName.toLowerCase());
     if (room == null) {
       room=new MUCRoomImpl(this,roomName,router);
       if (!room.isPersistent()) {
@@ -14,6 +14,7 @@ synchronized (rooms) {
       }
  else {
         MUCPersistenceManager.updateRoomInMemory(room,true);
+        persistentRoomSurrogateCache.remove(room.getName());
       }
       rooms.put(roomName.toLowerCase(),room);
     }

@@ -1,5 +1,12 @@
 {
 synchronized (rooms) {
-    return (MUCRoom)rooms.get(roomName.toLowerCase());
+    MUCRoom answer=rooms.get(roomName.toLowerCase());
+    if (answer == null) {
+      if (persistentRoomSurrogateCache.size() == 0) {
+        populateRoomSurrogateCache();
+      }
+      answer=(MUCRoom)persistentRoomSurrogateCache.get(roomName);
+    }
+    return answer;
   }
 }
