@@ -9,7 +9,14 @@
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
       String msgXML=rs.getString(1);
-      messages.add(new Message(saxReader.read(new StringReader(msgXML)).getRootElement()));
+      Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
+      Message message=new Message(saxReader.read(new StringReader(msgXML)).getRootElement());
+      Element delay=message.addChildElement("x","jabber:x:delay");
+      delay.addElement("from").setText(XMPPServer.getInstance().getServerInfo().getName());
+synchronized (dateFormat) {
+        delay.addElement("stamp").setText(dateFormat.format(creationDate));
+      }
+      messages.add(message);
     }
     rs.close();
     pstmt.close();
