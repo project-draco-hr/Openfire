@@ -5,15 +5,15 @@
     ctx=manager.getContext();
     SearchControls constraints=new SearchControls();
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    constraints.setReturningAttributes(new String[]{"jiveUserID"});
-    String filter="(jiveUserID=*)";
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String filter="(" + manager.getUsernameField() + "=*)";
     NamingEnumeration answer=ctx.search("",filter,constraints);
     for (int i=0; i < startIndex; i++) {
       answer.next();
     }
     for (int i=0; i < numResults; i++) {
       if (answer.hasMoreElements()) {
-        usernames.add((String)((SearchResult)answer.next()).getAttributes().get("jiveUserID").get());
+        usernames.add((String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get());
       }
  else {
         break;
