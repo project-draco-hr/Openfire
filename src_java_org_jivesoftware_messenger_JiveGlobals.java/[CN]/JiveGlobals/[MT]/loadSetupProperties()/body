@@ -29,6 +29,17 @@
       }
     }
     if (messengerHome == null) {
+      try {
+        messengerHome=new File("").getCanonicalPath();
+        if (!new File(messengerHome,"conf/jive-messenger.xml").exists()) {
+          messengerHome=null;
+        }
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
+    }
+    if (messengerHome == null) {
       failedLoading=true;
       StringBuffer msg=new StringBuffer();
       msg.append("Critical Error! The messengerHome directory could not be loaded, \n");
