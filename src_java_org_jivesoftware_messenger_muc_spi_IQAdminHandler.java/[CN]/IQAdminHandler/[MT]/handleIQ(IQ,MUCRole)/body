@@ -8,5 +8,7 @@
  else {
     reply.setError(XMPPError.Code.BAD_REQUEST);
   }
-  router.route(reply);
+  if (reply.getRecipient() != null) {
+    router.route(reply);
+  }
 }
