@@ -17,6 +17,7 @@
     String node=iq.attributeValue("node");
     Iterator<Element> itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
     if (itemsItr != null) {
+      reply.setChildElement(iq.createCopy());
       Element queryElement=reply.getChildElement();
       Element item;
       while (itemsItr.hasNext()) {

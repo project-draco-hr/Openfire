@@ -1,6 +1,5 @@
 {
   if (probeResult == null) {
-    Element element=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
     XDataFormImpl registrationForm=new XDataFormImpl(DataForm.TYPE_FORM);
     registrationForm.setTitle(LocaleUtils.getLocalizedString("muc.form.reg.title"));
     registrationForm.addInstruction(LocaleUtils.getLocalizedString("muc.form.reg.instruction"));
@@ -35,7 +34,7 @@
     field.setType(FormField.TYPE_TEXT_MULTI);
     field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.faqentry"));
     registrationForm.addField(field);
-    probeResult=element;
+    probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
     probeResult.add(registrationForm.asXMLElement());
   }
 }

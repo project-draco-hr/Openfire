@@ -12,6 +12,7 @@
     Element iq=packet.getChildElement();
     String node=iq.attributeValue("node");
     if (infoProvider.hasInfo(name,node,packet.getFrom())) {
+      reply.setChildElement(iq.createCopy());
       Element queryElement=reply.getChildElement();
       Element identity;
       Iterator identities=infoProvider.getIdentities(name,node,packet.getFrom());

@@ -13,13 +13,19 @@
     Element currentRegistration=probeResult.createCopy();
     if (nickname != null) {
       ElementUtil.setProperty(currentRegistration,"query.registered",null);
-      XDataFormImpl form=new XDataFormImpl();
-      form.parse(currentRegistration);
-      form.getField("muc#register_roomnick").addValue(nickname);
-      reply.getElement().add(currentRegistration);
+      Element form=currentRegistration.element(QName.get("x","jabber:x:data"));
+      Iterator fields=form.elementIterator("field");
+      Element field;
+      while (fields.hasNext()) {
+        field=(Element)fields.next();
+        if ("muc#register_roomnick".equals(field.attributeValue("var"))) {
+          field.addElement("value").addText(nickname);
+        }
+      }
+      reply.setChildElement(currentRegistration);
     }
  else {
-      reply.getElement().add(currentRegistration);
+      reply.setChildElement(currentRegistration);
     }
   }
  else   if (IQ.Type.set == packet.getType()) {
