@@ -2,35 +2,43 @@
   if (!"propertyModified".equals(params.get("type"))) {
     return;
   }
+  String keyChanged=(String)params.get("propertyKey");
   String originalValue=(String)params.get("originalValue");
-  if ("showInRoster".equals(params.get("propertyKey"))) {
-    String currentValue=group.getProperties().get("showInRoster");
+  if ("sharedRoster.showInRoster".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.showInRoster");
     if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=new ArrayList<String>(group.getMembers());
-    users.addAll(group.getAdmins());
-    if ("true".equals(currentValue)) {
-      for (      String addedUser : users) {
-        groupUserAdded(group,addedUser);
-      }
+    Collection<String> users=getRelatedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"),true);
+    for (    String deletedUser : users) {
+      groupUserDeleted(group,users,deletedUser);
     }
- else {
-      for (      String deletedUser : users) {
-        groupUserDeleted(group,deletedUser);
-      }
+    for (    String addedUser : getRelatedUsers(group,true)) {
+      groupUserAdded(group,addedUser);
     }
   }
- else   if ("displayName".equals(params.get("propertyKey"))) {
-    String currentValue=group.getProperties().get("displayName");
+ else   if ("sharedRoster.groupList".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.groupList");
     if (currentValue.equals(originalValue)) {
       return;
     }
-    if (!"true".equals(group.getProperties().get("showInRoster"))) {
+    Collection<String> users=getRelatedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue,true);
+    for (    String deletedUser : users) {
+      groupUserDeleted(group,users,deletedUser);
+    }
+    for (    String addedUser : getRelatedUsers(group,true)) {
+      groupUserAdded(group,addedUser);
+    }
+  }
+ else   if ("sharedRoster.displayName".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.displayName");
+    if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=new ArrayList<String>(group.getMembers());
-    users.addAll(group.getAdmins());
+    if (!isSharedGroup(group)) {
+      return;
+    }
+    Collection<String> users=getRelatedUsers(group,true);
     for (    String updatedUser : users) {
       Roster roster=(Roster)CacheManager.getCache("username2roster").get(updatedUser);
       if (roster != null) {
