@@ -48,7 +48,13 @@ return document;
 case XmlPullParser.START_TAG:
 {
 QName qname=(pp.getPrefix() == null) ? df.createQName(pp.getName(),pp.getNamespace()) : df.createQName(pp.getName(),pp.getPrefix(),pp.getNamespace());
-Element newElement=df.createElement(qname);
+Element newElement=null;
+if ("jabber:client".equals(qname.getNamespaceURI())) {
+newElement=df.createElement(pp.getName());
+}
+ else {
+newElement=df.createElement(qname);
+}
 int nsStart=pp.getNamespaceCount(pp.getDepth() - 1);
 int nsEnd=pp.getNamespaceCount(pp.getDepth());
 for (int i=nsStart; i < nsEnd; i++) if (pp.getNamespacePrefix(i) != null) newElement.addNamespace(pp.getNamespacePrefix(i),pp.getNamespaceUri(i));
