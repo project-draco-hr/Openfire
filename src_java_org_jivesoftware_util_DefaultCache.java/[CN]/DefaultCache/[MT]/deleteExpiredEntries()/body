@@ -6,7 +6,7 @@
   if (node == null) {
     return;
   }
-  long expireTime=CacheFactory.currentTime - maxLifetime;
+  long expireTime=System.currentTimeMillis() - maxLifetime;
   while (expireTime > node.timestamp) {
     remove(node.object);
     node=ageList.getLast();
