@@ -1,7 +1,7 @@
 {
   Presence presence=(Presence)xmppPacket;
   try {
-    Session session=sessionManager.getSession(presence.getFrom());
+    ClientSession session=sessionManager.getSession(presence.getFrom());
     Presence.Type type=presence.getType();
     if (type == null) {
       broadcastUpdate(presence.createCopy());
@@ -15,7 +15,7 @@
     }
  else     if (Presence.Type.unavailable == type) {
       broadcastUpdate(presence.createCopy());
-      broadcastUnavailableForDirectedPresences(presence.createCopy());
+      broadcastUnavailableForDirectedPresences(presence);
       if (session != null) {
         session.setPresence(presence);
       }

@@ -9,11 +9,6 @@
  else {
     packet.setTo(sessionManager.getSession(packet.getFrom()).getAddress());
     packet.setError(PacketError.Condition.not_authorized);
-    try {
-      sessionManager.getSession(packet.getFrom()).process(packet);
-    }
- catch (    UnauthorizedException ue) {
-      Log.error(ue);
-    }
+    sessionManager.getSession(packet.getFrom()).process(packet);
   }
 }

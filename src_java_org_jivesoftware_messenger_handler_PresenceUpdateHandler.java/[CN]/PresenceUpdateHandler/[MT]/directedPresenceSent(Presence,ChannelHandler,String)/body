@@ -3,27 +3,32 @@
     return;
   }
   if (localServer.isLocal(update.getFrom())) {
+    WeakHashMap<ChannelHandler,Set<String>> map;
     String name=update.getFrom().getNode();
     try {
       if (name != null && !"".equals(name)) {
         name=name.toLowerCase();
         Roster roster=rosterManager.getRoster(name);
         if (!roster.isRosterItem(update.getTo())) {
-          Set set=(Set)directedPresences.get(update.getFrom().toString());
-          if (set == null) {
-            set=new CopyOnWriteArraySet();
-            directedPresences.put(update.getFrom().toString(),set);
+          map=directedPresences.get(update.getFrom().toString());
+          if (map == null) {
+            map=new WeakHashMap<ChannelHandler,Set<String>>();
+            map.put(handler,new HashSet<String>());
+            directedPresences.put(update.getFrom().toString(),map);
           }
           if (Presence.Type.unavailable.equals(update.getType())) {
-            if (handler instanceof SessionImpl) {
-              set.remove(new HandlerWeakReference(handler));
-              if (set.isEmpty()) {
+            if (handler instanceof ClientSession) {
+              map.remove(handler);
+              if (map.isEmpty()) {
                 directedPresences.remove(update.getFrom().toString());
               }
             }
+ else {
+              map.get(handler).remove(jid);
+            }
           }
  else {
-            set.add(new HandlerWeakReference(handler));
+            map.get(handler).add(jid);
           }
         }
       }

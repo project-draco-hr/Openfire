@@ -6,8 +6,12 @@
       Presence presence=new Presence();
       presence.setFrom(prober);
       presence.setTo(probee);
-      component.processPacket(presence);
-      presenceMap.remove(prober);
+      try {
+        component.process(presence);
+        presenceMap.remove(prober);
+      }
+ catch (      UnauthorizedException e) {
+      }
     }
   }
 }

@@ -1,7 +1,14 @@
 {
   JID recipientJID=packet.getTo();
   try {
-    if (isLocalServer(recipientJID)) {
+    Component component=null;
+    if (recipientJID != null) {
+      component=componentManager.getComponent(packet.getTo().toBareJID());
+    }
+    if (component != null) {
+      component.process(packet);
+    }
+ else     if (isLocalServer(recipientJID)) {
       Element childElement=packet.getChildElement();
       String namespace=null;
       if (childElement != null) {
