@@ -1,24 +1,32 @@
 {
   IQ returnPacket=null;
-  Session session=packet.getOriginatingSession();
-  XMPPPacket.Type type=packet.getType();
+  Session session=null;
+  try {
+    SessionManager.getInstance().getSession(packet.getFrom());
+  }
+ catch (  Exception e) {
+    IQ error=IQ.createResultIQ(packet);
+    error.setError(PacketError.Condition.internal_server_error);
+    return error;
+  }
+  IQ.Type type=packet.getType();
   try {
     User sessionUser=userManager.getUser(session.getUsername());
     CachedRoster cachedRoster=(CachedRoster)sessionUser.getRoster();
-    if (IQ.GET == type) {
+    if (IQ.Type.get == type) {
       returnPacket=cachedRoster.getReset();
-      returnPacket.setType(IQ.RESULT);
-      returnPacket.setRecipient(session.getAddress());
+      returnPacket.setType(IQ.Type.result);
+      returnPacket.setTo(session.getAddress());
       returnPacket.setID(packet.getID());
       deliverer.deliver(returnPacket);
       returnPacket=null;
     }
- else     if (IQ.SET == type) {
+ else     if (IQ.Type.set == type) {
       Iterator itemIter=packet.getRosterItems();
       while (itemIter.hasNext()) {
         RosterItem item=(RosterItem)itemIter.next();
         if (item.getSubStatus() == RosterItem.SUB_REMOVE) {
-          removeItem(cachedRoster,packet.getSender(),item);
+          removeItem(cachedRoster,packet.getFrom(),item);
         }
  else {
           if (cachedRoster.isRosterItem(item.getJid())) {
@@ -31,7 +39,7 @@
           }
         }
       }
-      returnPacket=packet.createResult();
+      returnPacket=IQ.createResultIQ(packet);
     }
   }
  catch (  UserNotFoundException e) {

@@ -11,8 +11,8 @@
         roster.deleteRosterItem(senderJID);
         item.setSubStatus(RosterItem.SUB_REMOVE);
         item.setSubStatus(RosterItem.SUB_NONE);
-        Packet itemPacket=(Packet)packet.createDeepCopy();
-        sessionManager.userBroadcast(recipientJID.getName().toLowerCase(),itemPacket);
+        Packet itemPacket=packet.createCopy();
+        sessionManager.userBroadcast(recipientJID.getNode(),itemPacket);
       }
     }
   }
