@@ -1,7 +1,9 @@
 {
   try {
     ComponentSession session=(ComponentSession)handback;
-    InternalComponentManager.getInstance().removeComponent(session.getAddress().getDomain());
+    String domain=session.getAddress().getDomain();
+    String subdomain=domain.substring(0,domain.indexOf(serverName) - 1);
+    InternalComponentManager.getInstance().removeComponent(subdomain);
     componentsSessions.remove(session);
   }
  catch (  Exception e) {
