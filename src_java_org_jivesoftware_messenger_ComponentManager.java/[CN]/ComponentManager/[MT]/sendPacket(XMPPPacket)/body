@@ -1,11 +1,12 @@
 {
+  PacketRouter router;
   try {
-    PacketDelivererImpl deliverer=(PacketDelivererImpl)ServiceLookupFactory.getLookup().lookup(PacketDelivererImpl.class);
-    if (deliverer != null) {
-      deliverer.deliver(packet);
+    router=(PacketRouterImpl)ServiceLookupFactory.getLookup().lookup(PacketRouterImpl.class);
+    if (router != null) {
+      router.route(packet);
     }
   }
- catch (  Exception e) {
-    Log.error("Unable to deliver packet",e);
+ catch (  UnauthorizedException e) {
+    Log.error(e);
   }
 }
