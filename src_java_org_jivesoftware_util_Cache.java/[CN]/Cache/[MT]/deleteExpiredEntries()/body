@@ -1,0 +1,17 @@
+{
+  if (maxLifetime <= 0) {
+    return;
+  }
+  LinkedListNode node=ageList.getLast();
+  if (node == null) {
+    return;
+  }
+  long expireTime=System.currentTimeMillis() - maxLifetime;
+  while (expireTime > node.timestamp) {
+    remove(node.object);
+    node=ageList.getLast();
+    if (node == null) {
+      return;
+    }
+  }
+}

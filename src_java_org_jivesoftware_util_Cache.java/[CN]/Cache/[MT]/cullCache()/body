@@ -1,0 +1,12 @@
+{
+  if (maxCacheSize < 0) {
+    return;
+  }
+  if (cacheSize >= maxCacheSize * .97) {
+    deleteExpiredEntries();
+    int desiredSize=(int)(maxCacheSize * .90);
+    while (cacheSize > desiredSize) {
+      remove(lastAccessedList.getLast().object);
+    }
+  }
+}
