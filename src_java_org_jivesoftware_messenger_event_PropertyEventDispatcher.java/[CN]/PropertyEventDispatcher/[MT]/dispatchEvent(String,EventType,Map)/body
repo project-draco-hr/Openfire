@@ -1,0 +1,33 @@
+{
+  for (  PropertyEventListener listener : listeners) {
+    try {
+switch (eventType) {
+case property_set:
+{
+          listener.propertySet(property,params);
+          break;
+        }
+case property_deleted:
+{
+        listener.propertyDeleted(property,params);
+        break;
+      }
+case xml_property_set:
+{
+      listener.xmlPropertySet(property,params);
+      break;
+    }
+case xml_property_deleted:
+{
+    listener.xmlPropertyDeleted(property,params);
+    break;
+  }
+default :
+break;
+}
+}
+ catch (Exception e) {
+Log.error(e);
+}
+}
+}

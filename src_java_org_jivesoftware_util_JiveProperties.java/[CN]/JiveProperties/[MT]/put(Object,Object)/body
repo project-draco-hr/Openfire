@@ -17,5 +17,8 @@
  else {
     insertProperty((String)key,(String)value);
   }
+  Map params=new HashMap();
+  params.put("value",value);
+  PropertyEventDispatcher.dispatchEvent((String)key,PropertyEventDispatcher.EventType.property_set,params);
   return properties.put((String)key,(String)value);
 }
