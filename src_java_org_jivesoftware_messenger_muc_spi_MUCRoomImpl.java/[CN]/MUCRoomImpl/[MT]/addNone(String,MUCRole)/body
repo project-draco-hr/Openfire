@@ -23,14 +23,14 @@
   MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
   try {
     int newRole;
-    if (isInvitationRequiredToEnter() && wasMember) {
+    if (isMembersOnly() && wasMember) {
       newRole=MUCRole.NONE_ROLE;
     }
  else {
       newRole=isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT;
     }
     updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.NONE,newRole);
-    if (isInvitationRequiredToEnter() && wasMember) {
+    if (isMembersOnly() && wasMember) {
       Element frag;
       for (      Presence presence : updatedPresences) {
         presence.setType(Presence.Type.unavailable);

@@ -55,7 +55,7 @@
               MUCRoomImpl room=(MUCRoomImpl)role.getChatRoom();
               if (userInfo != null && userInfo.element("invite") != null) {
                 Element info=userInfo.element("invite");
-                if (room.isInvitationRequiredToEnter()) {
+                if (room.isMembersOnly()) {
                   room.lock.writeLock().lock();
                   try {
                     room.addMember(info.attributeValue("to"),null,role);
