@@ -9,14 +9,20 @@
       propName[propName.length - 1]=lastName.substring(0,attributeIndex);
       attName=lastName.substring(attributeIndex + 1);
     }
-    for (int i=0; i < propName.length; i++) {
+    int i=propName[0].equals(element.getName()) ? 1 : 0;
+    for (; i < propName.length; i++) {
       element=element.element(propName[i]);
       if (element == null) {
         break;
       }
     }
     if (element != null) {
-      return true;
+      if (attName == null) {
+        return true;
+      }
+ else {
+        return element.attribute(attName) != null;
+      }
     }
  else {
       return false;

@@ -2,21 +2,9 @@
   Presence updatedPresence=changeOccupantRole(jid,MUCRole.NONE_ROLE);
   if (updatedPresence != null) {
     Element frag=updatedPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-    Element status=frag.element("status");
-    if (status == null) {
-      status=frag.addElement("status");
-    }
-    status.addAttribute("code","307");
+    frag.addElement("status").addAttribute("code","307");
     if (reason != null && reason.trim().length() > 0) {
-      Element item=frag.element("item");
-      if (item == null) {
-        item=frag.addElement("item");
-      }
-      Element reasonEl=item.element("reason");
-      if (reasonEl == null) {
-        reasonEl=item.addElement("reason");
-      }
-      reasonEl.setText(reason);
+      frag.element("item").addElement("reason").setText(reason);
     }
     kickPresence(updatedPresence,actorJID);
   }

@@ -5,15 +5,7 @@
     kickPresence=kickPresence.createCopy();
     if (actorJID != null && actorJID.toString().length() > 0) {
       Element frag=kickPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-      Element item=frag.element("item");
-      if (item == null) {
-        frag.addElement("item");
-      }
-      Element actor=item.element("actor");
-      if (actor == null) {
-        actor=item.addElement("actor");
-      }
-      actor.addAttribute("jid",actorJID.toString());
+      frag.element("item").addElement("actor").addAttribute("jid",actorJID.toString());
     }
     kickedRole.send(kickPresence);
     removeOccupantRole(kickedRole);

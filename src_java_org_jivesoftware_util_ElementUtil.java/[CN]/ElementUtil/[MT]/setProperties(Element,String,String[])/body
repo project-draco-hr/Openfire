@@ -1,7 +1,8 @@
 {
   String[] propName=parsePropertyName(name);
   setProperty(element,name,values[0]);
-  for (int i=0; i < propName.length - 1; i++) {
+  int i=propName[0].equals(element.getName()) ? 1 : 0;
+  for (; i < propName.length - 1; i++) {
     element=element.element(propName[i]);
     if (element == null) {
       return;
@@ -12,9 +13,9 @@
   while (iter.hasNext()) {
     ((Node)iter.next()).detach();
   }
-  for (int i=0; i < values.length; i++) {
-    if (values[i] != null) {
-      element.addElement(childName).setText(values[i]);
+  for (int j=0; i < values.length; i++) {
+    if (values[j] != null) {
+      element.addElement(childName).setText(values[j]);
     }
   }
 }

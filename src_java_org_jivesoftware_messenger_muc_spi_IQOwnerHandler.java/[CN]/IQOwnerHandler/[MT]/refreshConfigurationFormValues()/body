@@ -55,6 +55,8 @@
     for (    String jid : room.getOwners()) {
       field.addValue(jid);
     }
+    probeResult.remove(probeResult.element(QName.get("x","jabber:x:data")));
+    probeResult.add(configurationForm.asXMLElement());
   }
   finally {
     room.lock.readLock().unlock();

@@ -6,15 +6,7 @@
   if (updatedPresence != null) {
     Element frag=updatedPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
     if (reason != null && reason.trim().length() > 0) {
-      Element item=frag.element("item");
-      if (item == null) {
-        item=frag.addElement("item");
-      }
-      Element reasonEl=item.element("reason");
-      if (reasonEl == null) {
-        reasonEl=item.addElement("reason");
-      }
-      reasonEl.setText(reason);
+      frag.element("item").addElement("reason").setText(reason);
     }
   }
   return updatedPresence;
