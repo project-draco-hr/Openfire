@@ -13,8 +13,6 @@
         response.setChildElement(queryResponse);
         if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
           response.setTo((JID)null);
-          session.getConnection().deliver(response);
-          return null;
         }
       }
  else {
@@ -45,7 +43,7 @@ catch (    UnauthorizedException e) {
       response=IQ.createResultIQ(packet);
       response.setError(PacketError.Condition.not_authorized);
     }
-    deliverer.deliver(response);
+    session.getConnection().deliver(response);
   }
  catch (  Exception e) {
     Log.error("Error handling authentication IQ packet",e);

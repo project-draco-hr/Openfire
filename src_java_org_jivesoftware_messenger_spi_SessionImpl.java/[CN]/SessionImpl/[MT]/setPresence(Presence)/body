@@ -1,7 +1,14 @@
 {
   Presence oldPresence=this.presence;
   this.presence=presence;
-  if (oldPresence.getPriority() != this.presence.getPriority()) {
+  if (oldPresence.isAvailable() && !this.presence.isAvailable()) {
+    sessionManager.sessionUnavailable(this);
+    setInitialized(false);
+  }
+ else   if (!oldPresence.isAvailable() && this.presence.isAvailable()) {
+    sessionManager.sessionAvailable(this);
+  }
+ else   if (oldPresence.getPriority() != this.presence.getPriority()) {
     sessionManager.changePriority(getAddress(),this.presence.getPriority());
   }
   return oldPresence;

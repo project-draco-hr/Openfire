@@ -30,16 +30,4 @@ synchronized (username.intern()) {
     offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }
-  if (session.getAddress() != null && routingTable != null && session.getAddress().toBareJID().trim().length() != 0) {
-    routingTable.removeRoute(session.getAddress());
-    if (sessionMap != null) {
-      if (sessionMap.isEmpty()) {
-        routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
-      }
- else {
-        Session defaultSession=sessionMap.getDefaultSession();
-        routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
-      }
-    }
-  }
 }

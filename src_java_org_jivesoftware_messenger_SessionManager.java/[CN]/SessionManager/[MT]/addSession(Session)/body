@@ -18,11 +18,5 @@ synchronized (username.intern()) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
   }
-  if (success) {
-    Session defaultSession=resources.getDefaultSession();
-    JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
-    routingTable.addRoute(node,defaultSession);
-    routingTable.addRoute(session.getAddress(),session);
-  }
   return success;
 }

@@ -1,0 +1,19 @@
+{
+  if (session.getAddress() != null && routingTable != null && session.getAddress().toBareJID().trim().length() != 0) {
+    routingTable.removeRoute(session.getAddress());
+    try {
+      SessionMap sessionMap=sessions.get(session.getUsername());
+      if (sessionMap.getAvailableSessions().isEmpty()) {
+        routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
+      }
+ else {
+        Session defaultSession=sessionMap.getDefaultSession(true);
+        routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
+      }
+    }
+ catch (    UserNotFoundException e) {
+    }
+catch (    UnauthorizedException e) {
+    }
+  }
+}

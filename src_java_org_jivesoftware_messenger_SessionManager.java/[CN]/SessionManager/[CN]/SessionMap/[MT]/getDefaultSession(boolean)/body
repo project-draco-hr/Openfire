@@ -1,0 +1,17 @@
+{
+  if (priorityList.isEmpty()) {
+    return null;
+  }
+  if (!filterAvailable) {
+    return resources.get(priorityList.getFirst());
+  }
+ else {
+    for (int i=0; i < priorityList.size(); i++) {
+      Session s=resources.get(priorityList.get(i));
+      if (s.getPresence().isAvailable()) {
+        return s;
+      }
+    }
+    return null;
+  }
+}
