@@ -4,20 +4,13 @@
   }
   SessionMap sessionMap=null;
   if (anonymousSessions.containsValue(session)) {
-    anonymousSessionLock.writeLock().lock();
-    try {
-      anonymousSessions.remove(session.getAddress().getResource());
-      sessionCount--;
-    }
-  finally {
-      anonymousSessionLock.writeLock().unlock();
-    }
+    anonymousSessions.remove(session.getAddress().getResource());
+    sessionCount--;
   }
  else {
     if (session.getAddress() != null && session.getAddress().getNode() != null) {
       String username=session.getAddress().getNode().toLowerCase();
-      sessionLock.writeLock().lock();
-      try {
+synchronized (username.intern()) {
         sessionMap=sessions.get(username);
         if (sessionMap != null) {
           sessionMap.removeSession(session);
@@ -26,9 +19,6 @@
             sessions.remove(username);
           }
         }
-      }
-  finally {
-        sessionLock.writeLock().unlock();
       }
     }
   }

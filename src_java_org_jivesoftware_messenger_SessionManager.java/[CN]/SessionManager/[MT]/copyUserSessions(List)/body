@@ -1,15 +1,9 @@
 {
-  sessionLock.readLock().lock();
-  try {
-    Iterator users=getSessionUsers();
-    while (users.hasNext()) {
-      Collection<Session> usrSessions=getSessions((String)users.next());
-      for (      Session session : usrSessions) {
-        sessions.add(session);
-      }
+  Iterator users=getSessionUsers();
+  while (users.hasNext()) {
+    Collection<Session> usrSessions=getSessions((String)users.next());
+    for (    Session session : usrSessions) {
+      sessions.add(session);
     }
-  }
-  finally {
-    sessionLock.readLock().unlock();
   }
 }

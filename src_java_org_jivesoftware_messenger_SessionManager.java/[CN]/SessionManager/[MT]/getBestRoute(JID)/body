@@ -4,22 +4,17 @@
   String username=recipient.getNode();
   if (username == null || "".equals(username)) {
     if (resource != null) {
-      anonymousSessionLock.readLock().lock();
-      try {
+synchronized (username.intern()) {
         session=anonymousSessions.get(resource);
         if (session == null) {
           session=getSession(recipient);
         }
       }
-  finally {
-        anonymousSessionLock.readLock().unlock();
-      }
     }
   }
  else {
     username=username.toLowerCase();
-    sessionLock.readLock().lock();
-    try {
+synchronized (username.intern()) {
       SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
         if (resource == null) {
@@ -32,9 +27,6 @@
           }
         }
       }
-    }
-  finally {
-      sessionLock.readLock().unlock();
     }
   }
   return session;

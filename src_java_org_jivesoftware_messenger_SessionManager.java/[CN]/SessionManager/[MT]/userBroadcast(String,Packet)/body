@@ -1,12 +1,6 @@
 {
-  sessionLock.readLock().lock();
-  try {
-    SessionMap sessionMap=sessions.get(username);
-    if (sessionMap != null) {
-      sessionMap.broadcast(packet);
-    }
-  }
-  finally {
-    sessionLock.readLock().unlock();
+  SessionMap sessionMap=sessions.get(username);
+  if (sessionMap != null) {
+    sessionMap.broadcast(packet);
   }
 }

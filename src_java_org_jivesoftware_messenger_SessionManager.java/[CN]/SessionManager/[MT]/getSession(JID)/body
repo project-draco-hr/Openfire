@@ -13,25 +13,15 @@
   }
   String username=from.getNode();
   if (username == null || "".equals(username)) {
-    anonymousSessionLock.readLock().lock();
-    try {
-      session=anonymousSessions.get(resource);
-    }
-  finally {
-      anonymousSessionLock.readLock().unlock();
-    }
+    session=anonymousSessions.get(resource);
   }
  else {
     username=username.toLowerCase();
-    sessionLock.readLock().lock();
-    try {
+synchronized (username.intern()) {
       SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
         session=sessionMap.getSession(resource);
       }
-    }
-  finally {
-      sessionLock.readLock().unlock();
     }
   }
   if (session == null) {

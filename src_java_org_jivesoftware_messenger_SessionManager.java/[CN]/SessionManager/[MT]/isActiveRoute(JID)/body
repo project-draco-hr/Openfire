@@ -4,20 +4,13 @@
   String username=route.getNode();
   if (username == null || "".equals(username)) {
     if (resource != null) {
-      anonymousSessionLock.readLock().lock();
-      try {
-        hasRoute=anonymousSessions.containsKey(resource);
-      }
-  finally {
-        anonymousSessionLock.readLock().unlock();
-      }
+      hasRoute=anonymousSessions.containsKey(resource);
     }
   }
  else {
     username=username.toLowerCase();
     Session session=null;
-    sessionLock.readLock().lock();
-    try {
+synchronized (username.intern()) {
       SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
         if (resource == null) {
@@ -29,9 +22,6 @@
           }
         }
       }
-    }
-  finally {
-      sessionLock.readLock().unlock();
     }
     if (session != null && !session.getConnection().isClosed()) {
       hasRoute=session.getConnection().validate();

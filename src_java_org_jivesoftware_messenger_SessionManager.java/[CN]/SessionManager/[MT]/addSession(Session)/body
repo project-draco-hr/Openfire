@@ -2,23 +2,21 @@
   boolean success=false;
   String username=session.getAddress().getNode().toLowerCase();
   SessionMap resources=null;
-  sessionLock.writeLock().lock();
-  try {
-    resources=sessions.get(username);
-    if (resources == null) {
-      resources=new SessionMap();
-      sessions.put(username,resources);
+synchronized (username.intern()) {
+    try {
+      resources=sessions.get(username);
+      if (resources == null) {
+        resources=new SessionMap();
+        sessions.put(username,resources);
+      }
+      resources.addSession(session);
+      session.getConnection().registerCloseListener(this,session);
+      preAuthenticatedSessions.remove(new JID(null,session.getAddress().getDomain(),session.getStreamID().toString()).toString());
+      success=true;
     }
-    resources.addSession(session);
-    session.getConnection().registerCloseListener(this,session);
-    preAuthenticatedSessions.remove(new JID(null,session.getAddress().getDomain(),session.getStreamID().toString()).toString());
-    success=true;
-  }
- catch (  UnauthorizedException e) {
-    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-  }
- finally {
-    sessionLock.writeLock().unlock();
+ catch (    UnauthorizedException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
   }
   if (success) {
     Session defaultSession=resources.getDefaultSession();

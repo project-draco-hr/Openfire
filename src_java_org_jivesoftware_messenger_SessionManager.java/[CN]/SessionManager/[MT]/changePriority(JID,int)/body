@@ -1,7 +1,6 @@
 {
   String username=sender.getNode().toLowerCase();
-  sessionLock.writeLock().lock();
-  try {
+synchronized (username.intern()) {
     SessionMap resources=sessions.get(username);
     if (resources == null) {
       return;
@@ -9,8 +8,5 @@
     resources.changePriority(sender,priority);
     Session defaultSession=resources.getDefaultSession();
     routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
-  }
-  finally {
-    sessionLock.writeLock().unlock();
   }
 }
