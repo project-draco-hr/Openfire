@@ -16,12 +16,16 @@
         add=true;
       }
     }
-    if (add) {
+    if (add && !subdir.getName().equals(except)) {
       buf.append(sep).append(subdir.getName());
       sep=getDelimiter();
     }
   }
+  if (buf.length() == 0) {
+    log("No tokens found.",Project.MSG_DEBUG);
+  }
   if (buf.length() > 0) {
+    log("Setting property '" + property + "' to "+ buf.toString(),Project.MSG_DEBUG);
     getProject().setProperty(property,buf.toString());
   }
 }
