@@ -13,11 +13,10 @@
     log.add(logSink);
     jetty=new Server();
     port=JiveGlobals.getXMLProperty("adminConsole.port",9090);
-    String domain=JiveGlobals.getProperty("xmpp.domain");
-    HttpListener httpListener=jetty.addListener(new InetAddrPort(domain,port));
-    SunJsseListener secureListener=new SunJsseListener();
+    jetty.addListener(Integer.toString(port));
     boolean secureStarted=false;
     try {
+      SunJsseListener listener=new SunJsseListener();
       String keyStoreLocation=JiveGlobals.getProperty("xmpp.socket.ssl.keystore","resources" + File.separator + "security"+ File.separator+ "keystore");
       keyStoreLocation=JiveGlobals.getMessengerHome() + File.separator + keyStoreLocation;
       String keypass=JiveGlobals.getProperty("xmpp.socket.ssl.keypass","changeit");
@@ -26,13 +25,12 @@
       trustStoreLocation=JiveGlobals.getMessengerHome() + File.separator + trustStoreLocation;
       String trustpass=JiveGlobals.getProperty("xmpp.socket.ssl.trustpass","changeit");
       trustpass=trustpass.trim();
-      secureListener.setHost(domain);
-      secureListener.setKeystore(keyStoreLocation);
-      secureListener.setKeyPassword(keypass);
-      secureListener.setPassword(keypass);
+      listener.setKeystore(keyStoreLocation);
+      listener.setKeyPassword(keypass);
+      listener.setPassword(keypass);
       securePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
-      secureListener.setPort(securePort);
-      jetty.addListener(secureListener);
+      listener.setPort(securePort);
+      jetty.addListener(listener);
       secureStarted=true;
     }
  catch (    Exception e) {
@@ -48,8 +46,8 @@
  else {
       Log.info("Started secure admin console on port: " + securePort);
       System.out.println("Admin console listening at:");
-      System.out.println("  http://" + httpListener.getHost() + ":"+ port);
-      System.out.println("  https://" + secureListener.getHost() + ":"+ securePort);
+      System.out.println("  http://" + XMPPServer.getInstance().getServerInfo().getName() + ":"+ port);
+      System.out.println("  https://" + XMPPServer.getInstance().getServerInfo().getName() + ":"+ securePort);
     }
   }
  catch (  Exception e) {
