@@ -52,16 +52,15 @@
       role=(isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT);
       affiliation=MUCRole.NONE;
     }
-    joinRole=new MUCRoleImpl(server,this,nickname,role,affiliation,(MUCUserImpl)user,router);
+    joinRole=new MUCRoleImpl(server,this,nickname,role,affiliation,(MUCUserImpl)user,presence,router);
     for (    MUCRole occupantsRole : occupants.values()) {
-      Presence occupantsPresence=(Presence)occupantsRole.getPresence().createCopy();
+      Presence occupantsPresence=occupantsRole.getPresence().createCopy();
       if (hasToCheckRoleToBroadcastPresence()) {
         Element frag=occupantsPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
         if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
           continue;
         }
       }
-      occupantsPresence.setFrom(occupantsRole.getRoleAddress());
       if (!canAnyoneDiscoverJID() && MUCRole.MODERATOR != joinRole.getRole()) {
         Element frag=occupantsPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
         frag.element("item").addAttribute("jid",null);
@@ -88,7 +87,6 @@
         Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
         frag.addElement("status").addAttribute("code","201");
       }
-      joinPresence.setFrom(joinRole.getRoleAddress());
       broadcastPresence(joinPresence);
     }
  catch (    Exception e) {

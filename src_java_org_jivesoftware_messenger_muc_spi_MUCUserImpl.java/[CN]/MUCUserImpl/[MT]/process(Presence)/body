@@ -23,7 +23,7 @@
                 historyRequest=new HistoryRequest(mucInfo);
               }
             }
-            role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this);
+            role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this,packet.createCopy());
             roles.put(group,role);
             if (mucInfo == null && room.isLocked() && !room.isManuallyLocked()) {
               room.unlock(role);
@@ -80,30 +80,26 @@ catch (          Exception e) {
           try {
             String resource=(recipient.getResource() == null || recipient.getResource().trim().length() == 0 ? null : recipient.getResource().trim());
             if (resource == null || role.getNickname().equalsIgnoreCase(resource)) {
-              role.setPresence(packet);
-              Presence presence=(Presence)role.getPresence().createCopy();
-              presence.setFrom(role.getRoleAddress());
-              role.getChatRoom().send(presence);
+              role.setPresence(packet.createCopy());
+              role.getChatRoom().send(role.getPresence().createCopy());
             }
  else {
               if (role.getChatRoom().hasOccupant(resource)) {
                 sendErrorPacket(packet,PacketError.Condition.conflict);
               }
  else {
-                Presence presence=(Presence)role.getPresence().createCopy();
+                Presence presence=role.getPresence().createCopy();
                 presence.setType(Presence.Type.unavailable);
-                presence.setFrom(role.getRoleAddress());
+                presence.setStatus(null);
                 Element frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
                 frag.element("item").addAttribute("nick",resource);
                 frag.addElement("status").addAttribute("code","303");
                 role.getChatRoom().send(presence);
                 String oldNick=role.getNickname();
-                role.setPresence(packet);
+                role.setPresence(packet.createCopy());
                 role.changeNickname(resource);
                 role.getChatRoom().nicknameChanged(oldNick,resource);
-                presence=(Presence)role.getPresence().createCopy();
-                presence.setFrom(role.getRoleAddress());
-                role.getChatRoom().send(presence);
+                role.getChatRoom().send(role.getPresence().createCopy());
               }
             }
           }

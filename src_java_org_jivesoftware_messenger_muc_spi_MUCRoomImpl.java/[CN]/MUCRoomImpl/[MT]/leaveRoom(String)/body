@@ -20,9 +20,9 @@
   }
   if (leaveRole != null) {
     try {
-      Presence presence=(Presence)leaveRole.getPresence().createCopy();
+      Presence presence=leaveRole.getPresence().createCopy();
       presence.setType(Presence.Type.unavailable);
-      presence.setFrom(leaveRole.getRoleAddress());
+      presence.setStatus(null);
       broadcastPresence(presence);
       leaveRole.kick();
     }
