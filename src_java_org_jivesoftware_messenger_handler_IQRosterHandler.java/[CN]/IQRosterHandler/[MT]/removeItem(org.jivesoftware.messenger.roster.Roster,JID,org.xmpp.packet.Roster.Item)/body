@@ -10,7 +10,12 @@
     }
   }
  else {
-    Packet removePacket=createRemoveForward(sender,recipient);
-    router.route(removePacket);
+    String serverDomain=localServer.getServerInfo().getName();
+    if (!recipient.getDomain().contains(serverDomain)) {
+    }
+ else {
+      Packet removePacket=createRemoveForward(sender,recipient);
+      router.route(removePacket);
+    }
   }
 }
