@@ -1,0 +1,94 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  boolean isFlashClient=xpp.getPrefix().equals("flash");
+  connection.setFlashClient(isFlashClient);
+  if (!xpp.getName().equals("stream") && !isFlashClient) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-stream"));
+  }
+  if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
+  }
+  String language="en";
+  int majorVersion=0;
+  int minorVersion=0;
+  for (int i=0; i < xpp.getAttributeCount(); i++) {
+    if ("lang".equals(xpp.getAttributeName(i))) {
+      language=xpp.getAttributeValue(i);
+    }
+    if ("version".equals(xpp.getAttributeName(i))) {
+      try {
+        String[] versionString=xpp.getAttributeValue(i).split("\\.");
+        majorVersion=Integer.parseInt(versionString[0]);
+        minorVersion=Integer.parseInt(versionString[1]);
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+    }
+  }
+  if (majorVersion > MAJOR_VERSION) {
+    majorVersion=MAJOR_VERSION;
+    minorVersion=MINOR_VERSION;
+  }
+ else   if (majorVersion == MAJOR_VERSION) {
+    if (minorVersion > MINOR_VERSION) {
+      minorVersion=MINOR_VERSION;
+    }
+  }
+  connection.setLanaguage(language);
+  connection.setXMPPVersion(majorVersion,minorVersion);
+  Session session=SessionManager.getInstance().createClientSession(connection);
+  Writer writer=connection.getWriter();
+  StringBuilder sb=new StringBuilder();
+  sb.append("<?xml version='1.0' encoding='");
+  sb.append(CHARSET);
+  sb.append("'?>");
+  if (isFlashClient) {
+    sb.append("<flash:stream xmlns:flash=\"http://www.jabber.com/streams/flash\" ");
+  }
+ else {
+    sb.append("<stream:stream ");
+  }
+  sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"");
+  sb.append(serverName);
+  sb.append("\" id=\"");
+  sb.append(session.getStreamID().toString());
+  sb.append("\" xml:lang=\"");
+  sb.append(language);
+  if (majorVersion != 0) {
+    sb.append("\" version=\"");
+    sb.append(majorVersion).append(".").append(minorVersion);
+  }
+  sb.append("\">");
+  writer.write(sb.toString());
+  if (majorVersion == 0) {
+    if (isFlashClient) {
+      writer.write('\0');
+    }
+    writer.flush();
+    return session;
+  }
+  sb=new StringBuilder();
+  sb.append("<stream:features>");
+  sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+  sb.append("</starttls></stream:features>");
+  writer.write(sb.toString());
+  if (isFlashClient) {
+    writer.write('\0');
+  }
+  writer.flush();
+  boolean done=false;
+  while (!done) {
+    if (xpp.next() == XmlPullParser.START_TAG) {
+      done=true;
+      if (xpp.getName().equals("starttls") && xpp.getNamespace(xpp.getPrefix()).equals(TLS_NAMESPACE)) {
+        writer.write("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
+        if (isFlashClient) {
+          writer.write('\0');
+        }
+        writer.flush();
+      }
+    }
+  }
+  return session;
+}

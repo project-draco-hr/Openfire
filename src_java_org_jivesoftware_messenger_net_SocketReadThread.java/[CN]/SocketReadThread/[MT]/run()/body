@@ -2,7 +2,7 @@
   try {
     reader=new XPPPacketReader();
     reader.setXPPFactory(factory);
-    reader.getXPPParser().setInput(new InputStreamReader(sock.getInputStream(),CHARSET));
+    reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
     createSession();
     if (session != null) {
       readStream();
@@ -41,11 +41,11 @@ catch (  Exception e) {
         session.getConnection().close();
       }
  catch (      Exception e) {
-        Log.warn(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + sock.toString());
+        Log.warn(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + socket.toString());
       }
     }
  else {
-      Log.error(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + sock.toString());
+      Log.error(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + socket.toString());
     }
   }
 }
