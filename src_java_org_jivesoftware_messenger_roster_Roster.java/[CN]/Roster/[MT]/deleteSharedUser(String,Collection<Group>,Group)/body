@@ -7,11 +7,10 @@
       deleteRosterItem(jid,false);
     }
  else {
-      item.removeSharedGroup(deletedGroup.getProperties().get("sharedRoster.displayName"));
+      item.removeSharedGroup(deletedGroup);
       for (      Group group : groups) {
         if (!rosterManager.isGroupVisible(group,getUsername())) {
-          String groupName=group.getProperties().get("sharedRoster.displayName");
-          item.removeSharedGroup(groupName);
+          item.removeSharedGroup(group);
         }
       }
       if (item.isOnlyShared()) {

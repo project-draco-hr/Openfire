@@ -1,10 +1,9 @@
 {
   Roster deletedUserRoster=(Roster)CacheManager.getCache("username2roster").get(deletedUser);
-  String groupName=group.getProperties().get("sharedRoster.displayName");
   for (  String userToUpdate : users) {
     Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
     if (roster != null) {
-      roster.deleteSharedUser(groupName,deletedUser);
+      roster.deleteSharedUser(group,deletedUser);
     }
     if (deletedUserRoster != null) {
       try {

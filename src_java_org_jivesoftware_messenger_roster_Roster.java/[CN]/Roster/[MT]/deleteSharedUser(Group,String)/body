@@ -18,13 +18,7 @@
           User rosterUser=UserManager.getInstance().getUser(getUsername());
           GroupManager groupManager=GroupManager.getInstance();
           userGroups=groupManager.getGroups(rosterUser);
-          for (          String groupName : item.getSharedGroups()) {
-            try {
-              sharedGroups.add(groupManager.getGroup(groupName));
-            }
- catch (            GroupNotFoundException e) {
-            }
-          }
+          sharedGroups.addAll(item.getSharedGroups());
           if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),sharedGroups)) {
             item.setSubStatus(RosterItem.SUB_BOTH);
           }

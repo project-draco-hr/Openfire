@@ -28,8 +28,12 @@
         item.setSubStatus(RosterItem.SUB_BOTH);
         for (        Group group : groups) {
           if (rosterManager.isGroupVisible(group,getUsername())) {
-            String groupName=group.getProperties().get("sharedRoster.displayName");
-            item.addSharedGroup(groupName);
+            item.addSharedGroup(group);
+          }
+        }
+        for (        Group group : userGroups) {
+          if (!group.isUser(addedUser) && rosterManager.isGroupVisible(group,addedUser)) {
+            item.addInvisibleSharedGroup(group);
           }
         }
       }
@@ -37,13 +41,12 @@
         item.setSubStatus(RosterItem.SUB_FROM);
         for (        Group group : groups) {
           if (rosterManager.isGroupVisible(group,getUsername())) {
-            String groupName=group.getProperties().get("sharedRoster.displayName");
-            item.addSharedGroup(groupName);
+            item.addSharedGroup(group);
             item.setSubStatus(RosterItem.SUB_TO);
           }
         }
         if (item.getSubStatus() == RosterItem.SUB_FROM) {
-          item.addInvisibleSharedGroup(addedGroup.getProperties().get("sharedRoster.displayName"));
+          item.addInvisibleSharedGroup(addedGroup);
         }
       }
     }

@@ -19,7 +19,7 @@
     RosterItem item=(RosterItem)items.next();
     for (    Group group : sharedGroups) {
       if (group.isUser(item.getJid().getNode())) {
-        item.addSharedGroup(group.getProperties().get("sharedRoster.displayName"));
+        item.addSharedGroup(group);
       }
     }
     rosterItems.put(item.getJid().toBareJID(),item);
@@ -33,11 +33,11 @@
       RosterItem item=new RosterItem(jid,RosterItem.SUB_TO,RosterItem.ASK_NONE,RosterItem.RECV_NONE,nickname,null);
       for (      Group group : sharedUsers.get(jid)) {
         if (group.isUser(jid.getNode())) {
-          item.addSharedGroup(group.getProperties().get("sharedRoster.displayName"));
+          item.addSharedGroup(group);
           itemGroups.add(group);
         }
  else {
-          item.addInvisibleSharedGroup(group.getProperties().get("sharedRoster.displayName"));
+          item.addInvisibleSharedGroup(group);
         }
       }
       if (rosterManager.hasMutualVisibility(username,userGroups,jid.getNode(),itemGroups)) {

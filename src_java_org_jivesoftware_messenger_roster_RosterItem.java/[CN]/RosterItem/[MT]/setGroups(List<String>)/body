@@ -3,7 +3,8 @@
     this.groups=new LinkedList<String>();
   }
  else {
-    for (    String groupName : getSharedGroups()) {
+    for (    Group group : getSharedGroups()) {
+      String groupName=group.getProperties().get("sharedRoster.displayName");
       if (!groups.contains(groupName)) {
         throw new SharedGroupException("Cannot remove item from shared group");
       }

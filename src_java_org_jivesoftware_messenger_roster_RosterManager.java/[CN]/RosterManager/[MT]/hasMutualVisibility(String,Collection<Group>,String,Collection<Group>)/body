@@ -21,6 +21,18 @@
           }
         }
       }
+ else       if ("everybody".equals(showInRoster) && "onlyGroup".equals(otherShowInRoster)) {
+        String otherGroupNames=otherGroup.getProperties().get("sharedRoster.groupList");
+        if (otherGroupNames != null && otherGroupNames.contains(group.getName())) {
+          return true;
+        }
+      }
+ else       if ("onlyGroup".equals(showInRoster) && "everybody".equals(otherShowInRoster)) {
+        String groupNames=group.getProperties().get("sharedRoster.groupList");
+        if (groupNames != null && groupNames.contains(otherGroup.getName())) {
+          return true;
+        }
+      }
     }
   }
   return false;
