@@ -1,10 +1,7 @@
 {
   if (isScrollResultsSupported()) {
     if (rowNumber > 0) {
-      if (getDatabaseType() == DatabaseType.oracle) {
-        rs.setFetchDirection(ResultSet.TYPE_SCROLL_INSENSITIVE);
-      }
- else {
+      if (getDatabaseType() != DatabaseType.oracle) {
         rs.setFetchDirection(ResultSet.FETCH_FORWARD);
       }
       rs.relative(rowNumber);
