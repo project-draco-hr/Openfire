@@ -10,6 +10,12 @@
   if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
+  String language="en";
+  for (int i=0; i < xpp.getAttributeCount(); i++) {
+    if ("lang".equals(xpp.getAttributeName(i))) {
+      language=xpp.getAttributeValue(i);
+    }
+  }
   Writer writer=connection.getWriter();
   StringBuffer sb=new StringBuffer();
   sb.append("<?xml version='1.0' encoding='");
@@ -25,6 +31,8 @@
   sb.append(serverName);
   sb.append("\" id=\"");
   sb.append(session.getStreamID().toString());
+  sb.append("\" xml:lang=\"");
+  sb.append(language);
   sb.append("\">");
   writer.write(sb.toString());
   if (isFlashClient) {
