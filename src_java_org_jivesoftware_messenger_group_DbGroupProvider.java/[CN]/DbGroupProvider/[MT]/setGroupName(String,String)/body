@@ -1,0 +1,35 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(SET_GROUP_NAME_1);
+    pstmt.setString(1,newName);
+    pstmt.setString(2,oldName);
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(SET_GROUP_NAME_2);
+    pstmt.setString(1,newName);
+    pstmt.setString(2,oldName);
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(SET_GROUP_NAME_3);
+    pstmt.setString(1,newName);
+    pstmt.setString(2,oldName);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

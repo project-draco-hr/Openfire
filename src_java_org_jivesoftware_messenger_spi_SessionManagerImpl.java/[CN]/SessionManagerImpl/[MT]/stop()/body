@@ -2,9 +2,7 @@
   sendServerMessage(null,LocaleUtils.getLocalizedString("admin.shutdown.now"));
   super.stop();
   try {
-    Iterator sIter=this.getSessions();
-    while (sIter.hasNext()) {
-      Session session=(Session)sIter.next();
+    for (    Session session : getSessions()) {
       try {
         session.getConnection().close();
       }

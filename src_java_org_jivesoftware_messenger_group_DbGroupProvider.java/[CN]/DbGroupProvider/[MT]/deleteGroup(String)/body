@@ -1,0 +1,29 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(DELETE_GROUP_USERS);
+    pstmt.setString(1,groupName);
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_GROUP);
+    pstmt.setString(1,groupName);
+    pstmt.executeUpdate();
+    pstmt.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

@@ -1,7 +1,6 @@
 {
-  Iterator resultIterator=null;
+  List<Session> results=new ArrayList<Session>();
   if (filter != null) {
-    LinkedList results=new LinkedList();
     if (filter.getUsername() == null) {
       copyAnonSessions(results);
       copyUserSessions(results);
@@ -17,10 +16,8 @@
     Date createMax=filter.getCreationDateRangeMax();
     Date activityMin=filter.getLastActivityDateRangeMin();
     Date activityMax=filter.getLastActivityDateRangeMax();
-    TreeSet sortedResults=new TreeSet(filter.getSortComparator());
-    Iterator resultIter=results.iterator();
-    while (resultIter.hasNext()) {
-      Session session=(Session)resultIter.next();
+    List<Session> filteredResults=new ArrayList<Session>();
+    for (    Session session : results) {
       if (createMin != null || createMax != null) {
         if (!isBetweenDates(session.getCreationDate(),createMin,createMax)) {
           session=null;
@@ -42,23 +39,24 @@
         }
       }
       if (session != null) {
-        sortedResults.add(session);
+        filteredResults.add(session);
       }
     }
+    Collections.sort(filteredResults,filter.getSortComparator());
     int maxResults=filter.getNumResults();
     if (maxResults == SessionResultFilter.NO_RESULT_LIMIT) {
-      maxResults=sortedResults.size();
+      maxResults=filteredResults.size();
     }
-    LinkedList finalResults=new LinkedList();
-    Iterator sortedIter=sortedResults.iterator();
+    List<Session> finalResults=new ArrayList<Session>();
     int startIndex=filter.getStartIndex();
+    Iterator<Session> sortedIter=filteredResults.iterator();
     for (int i=0; sortedIter.hasNext() && finalResults.size() < maxResults; i++) {
-      Object result=sortedIter.next();
+      Session result=sortedIter.next();
       if (i >= startIndex) {
         finalResults.add(result);
       }
     }
-    resultIterator=finalResults.iterator();
+    return finalResults;
   }
-  return resultIterator;
+  return results;
 }

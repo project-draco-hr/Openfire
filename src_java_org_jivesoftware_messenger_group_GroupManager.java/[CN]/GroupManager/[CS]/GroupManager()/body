@@ -1,0 +1,15 @@
+{
+  CacheManager.initializeCache("group",128 * 1024);
+  CacheManager.initializeCache("group member",32 * 1024);
+  groupCache=CacheManager.getCache("group");
+  groupMemberCache=CacheManager.getCache("group member");
+  String className=JiveGlobals.getXMLProperty("group.provider.className","org.jivesoftware.messenger.group.DbGroupProvider");
+  try {
+    Class c=ClassUtils.forName(className);
+    provider=(GroupProvider)c.newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Error loading group provider: " + className,e);
+    provider=new DbGroupProvider();
+  }
+}

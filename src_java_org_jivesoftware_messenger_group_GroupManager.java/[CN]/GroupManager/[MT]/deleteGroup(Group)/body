@@ -1,0 +1,8 @@
+{
+  Collection<String> members=new ArrayList<String>(group.getMembers());
+  provider.deleteGroup(group.getName());
+  groupCache.remove(group.getName());
+  for (  String username : members) {
+    groupMemberCache.remove("userGroups-" + username);
+  }
+}

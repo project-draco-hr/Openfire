@@ -1,0 +1,14 @@
+{
+synchronized (name.intern()) {
+    Group newGroup=null;
+    try {
+      getGroup(name);
+      throw new GroupAlreadyExistsException();
+    }
+ catch (    GroupNotFoundException unfe) {
+      newGroup=provider.createGroup(name);
+      groupCache.put(name,newGroup);
+    }
+    return newGroup;
+  }
+}

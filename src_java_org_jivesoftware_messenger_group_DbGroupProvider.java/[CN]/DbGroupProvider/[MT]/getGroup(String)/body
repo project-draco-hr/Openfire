@@ -1,0 +1,41 @@
+{
+  String description=null;
+  Date creationDate=null;
+  Date modificationDate=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(SELECT_GROUP_BY_NAME);
+    pstmt.setString(1,name);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new GroupNotFoundException("Group with name " + name + " not found.");
+    }
+    if (rs.next()) {
+      description=rs.getString(1);
+      creationDate=new java.util.Date(Long.parseLong(rs.getString(2).trim()));
+      modificationDate=new java.util.Date(Long.parseLong(rs.getString(3).trim()));
+    }
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  Collection<String> members=getMembers(name,false);
+  Collection<String> administrators=getMembers(name,true);
+  return new Group(this,name,description,creationDate,modificationDate,members,administrators);
+}
