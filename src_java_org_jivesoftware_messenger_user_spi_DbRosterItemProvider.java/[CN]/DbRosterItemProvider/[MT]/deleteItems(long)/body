@@ -13,11 +13,11 @@
     for (int i=0; i < list.size(); i++) {
       pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
       pstmt.setLong(1,list.get(i));
-      pstmt.execute();
+      pstmt.executeUpdate();
     }
     pstmt=con.prepareStatement(DELETE_ROSTER);
     pstmt.setLong(1,userID);
-    pstmt.execute();
+    pstmt.executeUpdate();
   }
  catch (  SQLException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);

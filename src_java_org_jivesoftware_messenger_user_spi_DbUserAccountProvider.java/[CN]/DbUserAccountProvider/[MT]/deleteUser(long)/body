@@ -6,21 +6,21 @@
     con=DbConnectionManager.getTransactionConnection();
     pstmt=con.prepareStatement(DELETE_USER_GROUPS);
     pstmt.setLong(1,userID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(DELETE_USER_PROPS);
     pstmt.setLong(1,userID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(DELETE_VCARD_PROPS);
     pstmt.setLong(1,userID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(DELETE_USER);
     pstmt.setLong(1,userID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(DELETE_USER_ID);
     pstmt.setLong(1,userID);
     pstmt.setInt(2,DbUserIDProvider.USER_TYPE);
     pstmt.setLong(3,DbUserIDProvider.DEFAULT_DOMAIN);
-    pstmt.execute();
+    pstmt.executeUpdate();
   }
  catch (  Exception e) {
     Log.error(e);

@@ -10,10 +10,10 @@
     pstmt.setInt(3,item.getRecvStatus().getValue());
     pstmt.setString(4,item.getNickname());
     pstmt.setLong(5,rosterID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
     pstmt.setLong(1,rosterID);
-    pstmt.execute();
+    pstmt.executeUpdate();
     insertGroups(rosterID,item.getGroups().iterator(),pstmt,con);
   }
  catch (  SQLException e) {

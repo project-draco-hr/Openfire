@@ -14,7 +14,7 @@
     pstmt.setLong(2,DbUserIDProvider.DEFAULT_DOMAIN);
     pstmt.setLong(3,DbUserIDProvider.USER_TYPE);
     pstmt.setLong(4,id);
-    pstmt.execute();
+    pstmt.executeUpdate();
     pstmt=con.prepareStatement(INSERT_USER);
     pstmt.setLong(1,id);
     pstmt.setString(2,password);
@@ -25,7 +25,7 @@
     Date now=new Date();
     pstmt.setString(7,StringUtils.dateToMillis(now));
     pstmt.setString(8,StringUtils.dateToMillis(now));
-    pstmt.execute();
+    pstmt.executeUpdate();
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
