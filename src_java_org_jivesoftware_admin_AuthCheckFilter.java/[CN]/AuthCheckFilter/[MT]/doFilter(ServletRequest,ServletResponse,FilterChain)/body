@@ -1,0 +1,21 @@
+{
+  HttpServletRequest request=(HttpServletRequest)req;
+  HttpServletResponse response=(HttpServletResponse)res;
+  String url=request.getRequestURL().toString();
+  boolean doExclude=false;
+  for (  String exclude : excludes) {
+    if (url.indexOf(exclude) > -1) {
+      doExclude=true;
+      break;
+    }
+  }
+  if (!doExclude) {
+    WebManager manager=new WebManager();
+    manager.init(request,response,request.getSession(),context);
+    if (manager.getUser() == null) {
+      response.sendRedirect(getRedirectURL(request,null));
+      return;
+    }
+  }
+  chain.doFilter(req,res);
+}
