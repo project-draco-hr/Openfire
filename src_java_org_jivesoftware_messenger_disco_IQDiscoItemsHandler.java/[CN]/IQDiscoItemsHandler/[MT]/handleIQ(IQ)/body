@@ -15,13 +15,14 @@
     }
     Element iq=packet.getChildElement();
     String node=iq.attributeValue("node");
-    Iterator itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
+    Iterator<Element> itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
     if (itemsItr != null) {
       Element queryElement=reply.getChildElement();
       Element item;
       while (itemsItr.hasNext()) {
-        item=(Element)itemsItr.next();
-        queryElement.add((Element)item.clone());
+        item=itemsItr.next();
+        item.setQName(new QName(item.getName(),queryElement.getNamespace()));
+        queryElement.add(item.createCopy());
       }
       ;
     }
