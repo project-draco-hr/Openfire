@@ -1,0 +1,13 @@
+{
+  try {
+    SSLContext sslcontent=SSLContext.getInstance("TLS");
+    sslcontent.init(null,new TrustManager[]{new DummyTrustManager()},new java.security.SecureRandom());
+    factory=sslcontent.getSocketFactory();
+  }
+ catch (  NoSuchAlgorithmException e) {
+    Log.error(e);
+  }
+catch (  KeyManagementException e) {
+    Log.error(e);
+  }
+}
