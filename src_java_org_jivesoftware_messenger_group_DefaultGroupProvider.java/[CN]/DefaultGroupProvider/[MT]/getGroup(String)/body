@@ -4,15 +4,13 @@
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(SELECT_GROUP_BY_NAME);
+    pstmt=con.prepareStatement(LOAD_GROUP);
     pstmt.setString(1,name);
     ResultSet rs=pstmt.executeQuery();
     if (!rs.next()) {
       throw new GroupNotFoundException("Group with name " + name + " not found.");
     }
-    if (rs.next()) {
-      description=rs.getString(1);
-    }
+    description=rs.getString(1);
   }
  catch (  SQLException e) {
     Log.error(e);
