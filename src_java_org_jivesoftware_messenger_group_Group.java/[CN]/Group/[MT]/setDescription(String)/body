@@ -1,7 +1,13 @@
 {
   try {
+    String originalDescription=this.description;
     provider.setDescription(name,description);
     this.description=description;
+    Map params=new HashMap();
+    params.put("type","descriptionModified");
+    params.put("originalValue",originalDescription);
+    GroupEvent event=new GroupEvent(GroupEvent.EventType.group_modified,this,params);
+    GroupEventDispatcher.dispatchEvent(event);
   }
  catch (  Exception e) {
     Log.error(e);

@@ -1,9 +1,15 @@
 {
   try {
+    String originalName=this.name;
     provider.setName(this.name,name);
     groupManager.groupCache.remove(this.name);
     this.name=name;
     groupManager.groupCache.put(name,this);
+    Map params=new HashMap();
+    params.put("type","nameModified");
+    params.put("originalValue",originalName);
+    GroupEvent event=new GroupEvent(GroupEvent.EventType.group_modified,this,params);
+    GroupEventDispatcher.dispatchEvent(event);
   }
  catch (  Exception e) {
     Log.error(e);

@@ -15,6 +15,11 @@
       }
       deleteProperty((String)current.getKey());
       iter.remove();
+      Map params=new HashMap();
+      params.put("type","propertyDeleted");
+      params.put("propertyKey",current.getKey());
+      GroupEvent event=new GroupEvent(GroupEvent.EventType.group_modified,Group.this,params);
+      GroupEventDispatcher.dispatchEvent(event);
     }
   }
 ;

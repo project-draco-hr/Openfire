@@ -1,9 +1,21 @@
 {
   if (properties.containsKey(key)) {
+    String originalValue=properties.get(key);
     updateProperty((String)key,(String)value);
+    Map params=new HashMap();
+    params.put("type","propertyModified");
+    params.put("propertyKey",key);
+    params.put("originalValue",originalValue);
+    GroupEvent event=new GroupEvent(GroupEvent.EventType.group_modified,Group.this,params);
+    GroupEventDispatcher.dispatchEvent(event);
   }
  else {
     insertProperty((String)key,(String)value);
+    Map params=new HashMap();
+    params.put("type","propertyAdded");
+    params.put("propertyKey",key);
+    GroupEvent event=new GroupEvent(GroupEvent.EventType.group_modified,Group.this,params);
+    GroupEventDispatcher.dispatchEvent(event);
   }
   return properties.put((String)key,(String)value);
 }

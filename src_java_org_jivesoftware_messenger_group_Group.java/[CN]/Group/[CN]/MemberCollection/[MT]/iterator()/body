@@ -17,6 +17,18 @@
       XMPPServer.getInstance().getRosterManager().groupUserDeleted(Group.this,user);
       iter.remove();
       provider.deleteMember(name,user);
+      if (adminCollection) {
+        Map params=new HashMap();
+        params.put("admin",user);
+        GroupEvent event=new GroupEvent(GroupEvent.EventType.admin_removed,Group.this,params);
+        GroupEventDispatcher.dispatchEvent(event);
+      }
+ else {
+        Map params=new HashMap();
+        params.put("member",user);
+        GroupEvent event=new GroupEvent(GroupEvent.EventType.member_removed,Group.this,params);
+        GroupEventDispatcher.dispatchEvent(event);
+      }
     }
   }
 ;

@@ -1,0 +1,49 @@
+{
+  GroupEvent.EventType eventType=event.getEventType();
+  for (  GroupEventListener listener : listeners) {
+    try {
+switch (eventType) {
+case group_created:
+{
+          listener.groupCreated(event);
+          break;
+        }
+case group_deleting:
+{
+        listener.groupDeleting(event);
+        break;
+      }
+case member_added:
+{
+      listener.memberAdded(event);
+      break;
+    }
+case member_removed:
+{
+    listener.memberRemoved(event);
+    break;
+  }
+case admin_added:
+{
+  listener.adminAdded(event);
+  break;
+}
+case admin_removed:
+{
+listener.adminRemoved(event);
+break;
+}
+case group_modified:
+{
+listener.groupModified(event);
+break;
+}
+default :
+break;
+}
+}
+ catch (Exception e) {
+Log.error(e);
+}
+}
+}
