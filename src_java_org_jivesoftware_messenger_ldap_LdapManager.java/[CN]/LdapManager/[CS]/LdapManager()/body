@@ -27,6 +27,9 @@
     this.connectionPoolEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled")).booleanValue();
   }
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
+  if (adminDN != null && adminDN.trim().equals("")) {
+    adminDN=null;
+  }
   this.adminPassword=JiveGlobals.getXMLProperty("ldap.adminPassword");
   this.ldapDebugEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.ldapDebugEnabled")).booleanValue();
   this.sslEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.sslEnabled")).booleanValue();
