@@ -12,14 +12,6 @@
       returnPacket.setID(packet.getID());
       deliverer.deliver(returnPacket);
       returnPacket=null;
-      String username=sessionUser.getUsername();
-      Iterator items=cachedRoster.getRosterItems();
-      while (items.hasNext()) {
-        RosterItem cachedItem=(RosterItem)items.next();
-        if (cachedItem.getSubStatus() == RosterItem.SUB_BOTH || cachedItem.getSubStatus() == RosterItem.SUB_TO) {
-          presenceManager.probePresence(username,cachedItem.getJid());
-        }
-      }
     }
  else     if (IQ.SET == type) {
       Iterator itemIter=packet.getRosterItems();
