@@ -1,0 +1,16 @@
+{
+  XMLReader parent=getParent();
+  if (parent == null) {
+    throw new NullPointerException("No parent for filter");
+  }
+  for (int i=0; i < LEXICAL_HANDLER_NAMES.length; i++) {
+    try {
+      parent.setProperty(LEXICAL_HANDLER_NAMES[i],this);
+      break;
+    }
+ catch (    SAXNotRecognizedException ex) {
+    }
+catch (    SAXNotSupportedException ex) {
+    }
+  }
+}

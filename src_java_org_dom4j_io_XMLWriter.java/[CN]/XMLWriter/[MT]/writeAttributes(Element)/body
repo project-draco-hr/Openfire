@@ -1,0 +1,39 @@
+{
+  for (int i=0, size=element.attributeCount(); i < size; i++) {
+    Attribute attribute=element.attribute(i);
+    Namespace ns=attribute.getNamespace();
+    if (ns != null && ns != Namespace.NO_NAMESPACE && ns != Namespace.XML_NAMESPACE) {
+      String prefix=ns.getPrefix();
+      String uri=namespaceStack.getURI(prefix);
+      if (!ns.getURI().equals(uri)) {
+        writeNamespace(ns);
+        namespaceStack.push(ns);
+      }
+    }
+    String attName=attribute.getName();
+    if (attName.startsWith("xmlns:")) {
+      String prefix=attName.substring(6);
+      if (namespaceStack.getNamespaceForPrefix(prefix) == null) {
+        String uri=attribute.getValue();
+        namespaceStack.push(prefix,uri);
+        writeNamespace(prefix,uri);
+      }
+    }
+ else     if (attName.equals("xmlns")) {
+      if (namespaceStack.getDefaultNamespace() == null) {
+        String uri=attribute.getValue();
+        namespaceStack.push(null,uri);
+        writeNamespace(null,uri);
+      }
+    }
+ else {
+      char quote=format.getAttributeQuoteCharacter();
+      writer.write(" ");
+      writer.write(attribute.getQualifiedName());
+      writer.write("=");
+      writer.write(quote);
+      writeEscapeAttributeEntities(attribute.getValue());
+      writer.write(quote);
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  int nodeType=node.getNodeType();
+switch (nodeType) {
+case Node.ELEMENT_NODE:
+    writeElement((Element)node);
+  break;
+case Node.ATTRIBUTE_NODE:
+writeAttribute((Attribute)node);
+break;
+case Node.TEXT_NODE:
+writeNodeText(node);
+break;
+case Node.CDATA_SECTION_NODE:
+writeCDATA(node.getText());
+break;
+case Node.ENTITY_REFERENCE_NODE:
+writeEntity((Entity)node);
+break;
+case Node.PROCESSING_INSTRUCTION_NODE:
+writeProcessingInstruction((ProcessingInstruction)node);
+break;
+case Node.COMMENT_NODE:
+writeComment(node.getText());
+break;
+case Node.DOCUMENT_NODE:
+write((Document)node);
+break;
+case Node.DOCUMENT_TYPE_NODE:
+writeDocType((DocumentType)node);
+break;
+case Node.NAMESPACE_NODE:
+break;
+default :
+throw new IOException("Invalid node type: " + node);
+}
+}

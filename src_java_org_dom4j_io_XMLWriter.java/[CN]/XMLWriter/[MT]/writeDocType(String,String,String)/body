@@ -1,0 +1,21 @@
+{
+  boolean hasPublic=false;
+  writer.write("<!DOCTYPE ");
+  writer.write(name);
+  if ((publicID != null) && (!publicID.equals(""))) {
+    writer.write(" PUBLIC \"");
+    writer.write(publicID);
+    writer.write("\"");
+    hasPublic=true;
+  }
+  if ((systemID != null) && (!systemID.equals(""))) {
+    if (!hasPublic) {
+      writer.write(" SYSTEM");
+    }
+    writer.write(" \"");
+    writer.write(systemID);
+    writer.write("\"");
+  }
+  writer.write(">");
+  writePrintln();
+}

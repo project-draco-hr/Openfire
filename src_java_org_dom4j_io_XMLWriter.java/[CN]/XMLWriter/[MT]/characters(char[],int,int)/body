@@ -1,0 +1,36 @@
+{
+  if (ch == null || ch.length == 0 || length <= 0) {
+    return;
+  }
+  try {
+    String string=new String(ch,start,length);
+    if (escapeText) {
+      string=escapeElementEntities(string);
+    }
+    if (format.isTrimText()) {
+      if ((lastOutputNodeType == Node.TEXT_NODE) && !charactersAdded) {
+        writer.write(" ");
+      }
+ else       if (charactersAdded && Character.isWhitespace(lastChar)) {
+        writer.write(lastChar);
+      }
+      String delim="";
+      StringTokenizer tokens=new StringTokenizer(string);
+      while (tokens.hasMoreTokens()) {
+        writer.write(delim);
+        writer.write(tokens.nextToken());
+        delim=" ";
+      }
+    }
+ else {
+      writer.write(string);
+    }
+    charactersAdded=true;
+    lastChar=ch[start + length - 1];
+    lastOutputNodeType=Node.TEXT_NODE;
+    super.characters(ch,start,length);
+  }
+ catch (  IOException e) {
+    handleException(e);
+  }
+}
