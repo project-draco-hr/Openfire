@@ -1,0 +1,55 @@
+{
+  if (failedLoading) {
+    return;
+  }
+  if (xmlProperties == null) {
+    if (jiveHome == null) {
+      jiveHome=new InitPropLoader().getJiveHome();
+    }
+    if (jiveHome == null) {
+      try {
+        InitialContext context=new InitialContext();
+        jiveHome=(String)context.lookup("java:comp/env/jiveHome");
+      }
+ catch (      Exception e) {
+      }
+    }
+    if (jiveHome == null) {
+      jiveHome=System.getProperty("jiveHome");
+    }
+    if (jiveHome == null) {
+      failedLoading=true;
+      StringBuffer msg=new StringBuffer();
+      msg.append("Critical Error! The jiveHome directory could not be loaded, \n");
+      msg.append("which will prevent the application from working correctly.\n\n");
+      msg.append("You must set jiveHome in one of four ways:\n");
+      msg.append("    1) Set a servlet init parameter named jiveHome.\n");
+      msg.append("    2) Add a jive_init.xml file to your classpath, which points \n ");
+      msg.append("       to jiveHome. Normally, this file will be in WEB-INF/classes.\n");
+      msg.append("    3) Set the JNDI value \"java:comp/env/jiveHome\" with a String \n");
+      msg.append("       that points to your jiveHome directory. \n");
+      msg.append("    4) Set the Java system property \"jiveHome\".\n\n");
+      msg.append("Further instructions for setting jiveHome can be found in the \n");
+      msg.append("installation documentation.");
+      System.err.println(msg.toString());
+      return;
+    }
+    try {
+      File jh=new File(jiveHome);
+      if (!jh.exists()) {
+        Log.error("Error - the specified jiveHome directory does not exist (" + jiveHome + ")");
+      }
+ else {
+        if (!jh.canRead() || !jh.canWrite()) {
+          Log.error("Error - the user running this Jive application can not read and write to the " + "specified jiveHome directory (" + jiveHome + "). Please grant the executing user "+ "read and write perms.");
+        }
+      }
+      xmlProperties=new XMLProperties(jiveHome + File.separator + JIVE_CONFIG_FILENAME);
+    }
+ catch (    IOException ioe) {
+      Log.error(ioe);
+      failedLoading=true;
+      return;
+    }
+  }
+}

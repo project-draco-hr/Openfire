@@ -1,6 +1,17 @@
 {
-  if (locale == null) {
-    loadProperties();
+  if (characterEncoding == null) {
+    if (properties != null) {
+      String charEncoding=(String)properties.get("locale.characterEncoding");
+      if (charEncoding != null) {
+        characterEncoding=charEncoding;
+      }
+ else {
+        characterEncoding=DEFAULT_CHAR_ENCODING;
+      }
+    }
+ else {
+      return DEFAULT_CHAR_ENCODING;
+    }
   }
   return characterEncoding;
 }

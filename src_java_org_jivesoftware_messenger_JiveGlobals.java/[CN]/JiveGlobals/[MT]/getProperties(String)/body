@@ -1,0 +1,15 @@
+{
+  if (properties == null) {
+    properties=JiveProperties.getInstance();
+  }
+  Collection propertyNames=properties.getChildrenNames(parent);
+  List values=new ArrayList();
+  for (Iterator i=propertyNames.iterator(); i.hasNext(); ) {
+    String propName=(String)i.next();
+    String value=getProperty(propName);
+    if (value != null) {
+      values.add(value);
+    }
+  }
+  return values;
+}

@@ -1,6 +1,17 @@
 {
-  if (locale == null) {
-    loadProperties();
+  if (timeZone == null) {
+    if (properties != null) {
+      String timeZoneID=(String)properties.get("locale.timeZone");
+      if (timeZoneID == null) {
+        timeZone=TimeZone.getDefault();
+      }
+ else {
+        timeZone=TimeZone.getTimeZone(timeZoneID);
+      }
+    }
+ else {
+      return TimeZone.getDefault();
+    }
   }
   return timeZone;
 }

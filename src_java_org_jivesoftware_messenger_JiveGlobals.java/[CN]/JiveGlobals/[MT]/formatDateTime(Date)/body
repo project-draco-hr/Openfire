@@ -1,6 +1,14 @@
 {
-  if (locale == null) {
-    loadProperties();
+  if (dateTimeFormat == null) {
+    if (properties != null) {
+      dateTimeFormat=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,getLocale());
+      dateTimeFormat.setTimeZone(getTimeZone());
+    }
+ else {
+      DateFormat instance=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,getLocale());
+      instance.setTimeZone(getTimeZone());
+      return instance.format(date);
+    }
   }
   return dateTimeFormat.format(date);
 }

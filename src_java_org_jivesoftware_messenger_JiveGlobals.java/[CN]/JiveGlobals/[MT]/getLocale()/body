@@ -1,11 +1,24 @@
 {
   if (locale == null) {
-    loadProperties();
-  }
-  if (locale != null) {
-    return locale;
-  }
+    if (properties != null) {
+      String language=(String)properties.get("locale.language");
+      if (language == null) {
+        language="";
+      }
+      String country=(String)properties.get("locale.country");
+      if (country == null) {
+        country="";
+      }
+      if (language.equals("") && country.equals("")) {
+        locale=Locale.getDefault();
+      }
  else {
-    return Locale.getDefault();
+        locale=new Locale(language,country);
+      }
+    }
+ else {
+      return Locale.getDefault();
+    }
   }
+  return locale;
 }
