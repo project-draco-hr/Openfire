@@ -5,8 +5,13 @@
     username=address.getNode();
     roster=(Roster)CacheManager.getCache("username2roster").get(username);
     if (roster == null) {
-      roster=new Roster(username);
-      CacheManager.getCache("username2roster").put(username,roster);
+synchronized (address.toString().intern()) {
+        roster=(Roster)CacheManager.getCache("username2roster").get(username);
+        if (roster == null) {
+          roster=new Roster(username);
+          CacheManager.getCache("username2roster").put(username,roster);
+        }
+      }
     }
   }
   return roster;

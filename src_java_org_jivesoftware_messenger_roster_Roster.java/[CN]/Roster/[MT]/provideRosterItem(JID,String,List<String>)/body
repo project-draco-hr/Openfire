@@ -1,4 +1,14 @@
 {
+  if (groups != null && !groups.isEmpty()) {
+    Collection<Group> sharedGroups=GroupManager.getInstance().getGroups();
+    for (    String group : groups) {
+      for (      Group sharedGroup : sharedGroups) {
+        if (sharedGroup.getName().equals(group)) {
+          throw new SharedGroupException("Cannot add an item to a shared group");
+        }
+      }
+    }
+  }
   org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
   roster.setType(IQ.Type.set);
   org.xmpp.packet.Roster.Item item=roster.addItem(user,nickname,null,org.xmpp.packet.Roster.Subscription.none,groups);

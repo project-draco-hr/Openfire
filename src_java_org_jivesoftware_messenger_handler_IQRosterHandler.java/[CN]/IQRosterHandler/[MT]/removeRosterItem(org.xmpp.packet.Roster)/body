@@ -6,7 +6,7 @@
       if (packetItem.getSubscription() == org.xmpp.packet.Roster.Subscription.remove) {
         Roster roster=userManager.getUser(recipientJID.getNode()).getRoster();
         RosterItem item=roster.getRosterItem(senderJID);
-        roster.deleteRosterItem(senderJID);
+        roster.deleteRosterItem(senderJID,true);
         item.setSubStatus(RosterItem.SUB_REMOVE);
         item.setSubStatus(RosterItem.SUB_NONE);
         Packet itemPacket=packet.createCopy();

@@ -6,7 +6,11 @@
       roster=new Roster(username);
     }
     for (    RosterItem item : roster.getRosterItems()) {
-      roster.deleteRosterItem(item.getJid());
+      try {
+        roster.deleteRosterItem(item.getJid(),false);
+      }
+ catch (      SharedGroupException e) {
+      }
     }
     CacheManager.getCache("username2roster").remove(username);
     RosterItemProvider rosteItemProvider=RosterItemProvider.getInstance();
@@ -17,7 +21,11 @@
       if (roster == null) {
         roster=new Roster(username);
       }
-      roster.deleteRosterItem(user);
+      try {
+        roster.deleteRosterItem(user,false);
+      }
+ catch (      SharedGroupException e) {
+      }
     }
   }
  catch (  UnsupportedOperationException e) {

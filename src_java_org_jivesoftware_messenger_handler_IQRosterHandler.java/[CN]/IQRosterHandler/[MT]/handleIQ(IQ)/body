@@ -11,7 +11,12 @@
     }
     return returnPacket;
   }
- catch (  Exception e) {
+ catch (  SharedGroupException e) {
+    IQ result=IQ.createResultIQ(packet);
+    result.setError(PacketError.Condition.not_acceptable);
+    return result;
+  }
+catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
   return null;

@@ -3,6 +3,20 @@
     this.groups=new LinkedList<String>();
   }
  else {
+    for (    String groupName : getSharedGroups()) {
+      if (!groups.contains(groupName)) {
+        throw new SharedGroupException("Cannot remove item from shared group");
+      }
+    }
+    for (Iterator<String> it=groups.iterator(); it.hasNext(); ) {
+      try {
+        String group=it.next();
+        GroupManager.getInstance().getGroup(group);
+        it.remove();
+      }
+ catch (      GroupNotFoundException e) {
+      }
+    }
     this.groups=groups;
   }
 }

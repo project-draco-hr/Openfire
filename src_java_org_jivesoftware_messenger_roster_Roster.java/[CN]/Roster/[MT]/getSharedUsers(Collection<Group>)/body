@@ -1,0 +1,19 @@
+{
+  Map<JID,List<String>> sharedGroupUsers=new HashMap<JID,List<String>>();
+  for (  Group group : sharedGroups) {
+    Collection<String> users=new ArrayList<String>(group.getAdministrators());
+    users.addAll(group.getMembers());
+    for (    String groupUser : users) {
+      JID jid=new JID(groupUser,XMPPServer.getInstance().getServerInfo().getName(),null);
+      if (!isRosterItem(jid) && !getUsername().equals(groupUser)) {
+        List<String> groups=sharedGroupUsers.get(jid);
+        if (groups == null) {
+          groups=new ArrayList<String>();
+          sharedGroupUsers.put(jid,groups);
+        }
+        groups.add(group.getName());
+      }
+    }
+  }
+  return sharedGroupUsers;
+}

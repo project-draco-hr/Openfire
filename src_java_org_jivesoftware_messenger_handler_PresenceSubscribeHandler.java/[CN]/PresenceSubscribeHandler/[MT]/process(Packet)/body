@@ -5,19 +5,27 @@
     JID recipientJID=presence.getTo();
     Presence.Type type=presence.getType();
     Roster roster=getRoster(senderJID);
-    if (roster != null) {
-      manageSub(recipientJID,true,type,roster);
-    }
-    roster=getRoster(recipientJID);
-    if (roster != null) {
-      manageSub(senderJID,false,type,roster);
-    }
     try {
+      if (roster != null) {
+        manageSub(recipientJID,true,type,roster);
+      }
+      roster=getRoster(recipientJID);
+      if (roster != null) {
+        manageSub(senderJID,false,type,roster);
+      }
       ChannelHandler handler=routingTable.getRoute(recipientJID);
       handler.process(presence.createCopy());
     }
  catch (    NoSuchRouteException e) {
       deliverer.deliver(presence.createCopy());
+    }
+catch (    SharedGroupException e) {
+      Presence result=presence.createCopy();
+      JID sender=result.getFrom();
+      result.setFrom(presence.getTo());
+      result.setTo(sender);
+      result.setError(PacketError.Condition.not_acceptable);
+      deliverer.deliver(result);
     }
   }
  catch (  Exception e) {
