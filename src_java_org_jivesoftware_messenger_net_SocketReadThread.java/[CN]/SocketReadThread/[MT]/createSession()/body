@@ -8,17 +8,8 @@
   if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE)) {
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
-  XMLWriter xser=connection.getSerializer();
-  String s="<stream:stream to=\"jivesoftware.com\" xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\" >";
-  Element streamElement=null;
-  try {
-    streamElement=DocumentHelper.createElement(s);
-  }
- catch (  Exception e) {
-    e.printStackTrace();
-  }
-  streamElement.addAttribute("from",serverName);
-  streamElement.addAttribute("id",session.getStreamID().toString());
-  xser.write(streamElement);
-  xser.flush();
+  Writer writer=connection.getWriter();
+  String startPacket="<?xml version='1.0' encoding='" + charset + "'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\""+ serverName+ "\" id=\""+ session.getStreamID().toString()+ "\">";
+  writer.write(startPacket);
+  writer.flush();
 }
