@@ -21,7 +21,12 @@
     Element appVersion=(Element)element.selectSingleNode("//adminconsole/global/version");
     if (appVersion != null) {
       Element existingVersion=(Element)generatedModel.selectSingleNode("//adminconsole/global/version");
-      existingVersion.setText(appVersion.getText());
+      if (existingVersion != null) {
+        existingVersion.setText(appVersion.getText());
+      }
+ else {
+        ((Element)generatedModel.selectSingleNode("//adminconsole/global")).add(appVersion.createCopy());
+      }
     }
     for (Iterator i=element.selectNodes("//tab").iterator(); i.hasNext(); ) {
       Element tab=(Element)i.next();
