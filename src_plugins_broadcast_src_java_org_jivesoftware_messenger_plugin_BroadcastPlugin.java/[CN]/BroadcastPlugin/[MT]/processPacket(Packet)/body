@@ -1,0 +1,35 @@
+{
+  if (packet instanceof Message) {
+    Message message=(Message)packet;
+    String name=message.getTo().getNode();
+    if ("all".equals(name)) {
+      if (allowedUsers.size() > 0) {
+        String address=message.getFrom().toBareJID();
+        if (!allowedUsers.contains(address)) {
+          Message error=new Message();
+          if (message.getID() != null) {
+            error.setID(message.getID());
+          }
+          error.setError(PacketError.Condition.not_allowed);
+          error.setTo(message.getFrom());
+          error.setSubject("Error sending broadcast message");
+          error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+          ComponentManager.getInstance().sendPacket(error);
+          return;
+        }
+      }
+      sessionManager.sendServerMessage(message.getSubject(),message.getBody());
+    }
+ else {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setTo(message.getFrom());
+      error.setError(PacketError.Condition.not_allowed);
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+      ComponentManager.getInstance().sendPacket(error);
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  if (serviceName == null) {
+    throw new NullPointerException("Service name cannot be null");
+  }
+  if (this.serviceName.equals(serviceName)) {
+    return;
+  }
+  JiveGlobals.setProperty("plugin.broadcast.serviceName",serviceName);
+  ComponentManager.getInstance().removeComponent(this.serviceName);
+  ComponentManager.getInstance().addComponent(serviceName,this);
+  this.serviceName=serviceName;
+}
