@@ -6,15 +6,15 @@
   if (pageInfo != null) {
     pageID=pageInfo.getPageID();
   }
-  Collection items=AdminConsole.getItems();
+  Collection<AdminConsole.Item> items=AdminConsole.getItems();
   if (items.size() > 0) {
     JspWriter out=pageContext.getOut();
     StringBuffer buf=new StringBuffer();
     buf.append("<ul>");
     String body=getBodyContent().getString();
     AdminConsole.Item root=AdminConsole.getRootByChildID(pageID);
-    for (Iterator iter=items.iterator(); iter.hasNext(); ) {
-      AdminConsole.Item item=(AdminConsole.Item)iter.next();
+    for (Iterator<AdminConsole.Item> iter=items.iterator(); iter.hasNext(); ) {
+      AdminConsole.Item item=iter.next();
       String value=body;
       if (value != null) {
         value=StringUtils.replace(value,"[id]",clean(item.getId()));
