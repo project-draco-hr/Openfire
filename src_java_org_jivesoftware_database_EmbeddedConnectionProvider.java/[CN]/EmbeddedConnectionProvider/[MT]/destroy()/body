@@ -1,11 +1,32 @@
 {
-  if (connectionPool != null) {
+  if (connectionPool == null) {
+    return;
+  }
+  Connection con=null;
+  try {
+    con=getConnection();
+    Statement stmt=con.createStatement();
+    stmt.execute("SHUTDOWN");
+    stmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
     try {
-      connectionPool.destroy();
+      if (con != null) {
+        con.close();
+      }
     }
  catch (    Exception e) {
       Log.error(e);
     }
+  }
+  try {
+    connectionPool.destroy();
+  }
+ catch (  Exception e) {
+    Log.error(e);
   }
   connectionPool=null;
 }
