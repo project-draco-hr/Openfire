@@ -5,7 +5,8 @@
  else {
     Session defaultSession=null;
     try {
-      defaultSession=sessions.get(session.getUsername()).getDefaultSession(true);
+      String username=session.getUsername().toLowerCase();
+      defaultSession=sessions.get(username).getDefaultSession(true);
       JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
       routingTable.addRoute(node,defaultSession);
       routingTable.addRoute(session.getAddress(),session);
