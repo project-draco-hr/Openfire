@@ -1,4 +1,8 @@
 {
+  if (setupMode && !(pluginDir.getName().equals("admin"))) {
+    return;
+  }
+  Log.debug("Loading plugin " + pluginDir.getName());
   Module mod=null;
   try {
     File moduleConfig=new File(pluginDir,"module.xml");
@@ -6,15 +10,15 @@
       XMLProperties moduleProps=new XMLProperties(moduleConfig);
       JiveModuleLoader modLoader=new JiveModuleLoader(pluginDir.toString());
       mod=modLoader.loadModule(moduleProps.getProperty("module"));
-      mod.initialize(this);
+      mod.initialize(container);
       mod.start();
-      this.modules.add(mod);
+      plugins.put(pluginDir.getName(),mod);
     }
  else {
-      Log.warn("Plugin " + pluginDir + " not loaded: no module.xml configuration file found");
+      Log.warn("Plugin " + pluginDir + " not loaded: no module.xml configuration file not found");
     }
   }
  catch (  Exception e) {
-    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    Log.error("Error loading plugin",e);
   }
 }

@@ -1,0 +1,72 @@
+{
+  try {
+    File[] jars=pluginDirectory.listFiles(new FileFilter(){
+      public boolean accept(      File pathname){
+        return pathname.getName().toLowerCase().endsWith(".jar");
+      }
+    }
+);
+    for (int i=0; i < jars.length; i++) {
+      File jarFile=jars[i];
+      String jarName=jarFile.getName().substring(0,jarFile.getName().length() - 4).toLowerCase();
+      File dir=new File(pluginDirectory,jarName);
+      if (!dir.exists()) {
+        try {
+          ZipFile zipFile=new ZipFile(jarFile);
+          if (zipFile.getEntry("module.xml") == null) {
+            continue;
+          }
+          dir.mkdir();
+          Log.debug("Extracting plugin: " + jarName);
+          for (Enumeration e=zipFile.entries(); e.hasMoreElements(); ) {
+            ZipEntry entry=(ZipEntry)e.nextElement();
+            File entryFile=new File(dir,entry.getName());
+            if (!entryFile.isDirectory()) {
+              entryFile.getParentFile().mkdirs();
+              FileOutputStream out=new FileOutputStream(entryFile);
+              InputStream zin=zipFile.getInputStream(entry);
+              byte[] b=new byte[512];
+              int len=0;
+              while ((len=zin.read(b)) != -1) {
+                out.write(b,0,len);
+              }
+              out.flush();
+              out.close();
+              zin.close();
+            }
+          }
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+    File[] dirs=pluginDirectory.listFiles(new FileFilter(){
+      public boolean accept(      File pathname){
+        return pathname.isDirectory();
+      }
+    }
+);
+    Arrays.sort(dirs,new Comparator<File>(){
+      public int compare(      File file1,      File file2){
+        if (file1.getName().equals("admin")) {
+          return -1;
+        }
+ else         if (file2.getName().equals("admin")) {
+          return 1;
+        }
+ else         return file1.compareTo(file2);
+      }
+    }
+);
+    for (int i=0; i < dirs.length; i++) {
+      File dirFile=dirs[i];
+      if (!plugins.containsKey(dirFile.getName())) {
+        loadPlugin(dirFile);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

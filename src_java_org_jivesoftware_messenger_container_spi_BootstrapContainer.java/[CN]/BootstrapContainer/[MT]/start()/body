@@ -12,16 +12,18 @@
     containerRegistration=lookup.register(serverItem);
     loader=Thread.currentThread().getContextClassLoader();
     if (setupMode) {
-      loadCorePlugins(getSetupModuleNames());
+      loadCoreModules(getSetupModuleNames());
     }
  else {
       verifyDataSource();
-      loadCorePlugins(getBootModuleNames());
-      loadCorePlugins(getCoreModuleNames());
-      loadCorePlugins(getStandardModuleNames());
+      loadCoreModules(getBootModuleNames());
+      loadCoreModules(getCoreModuleNames());
+      loadCoreModules(getStandardModuleNames());
     }
-    startCorePlugins();
-    loadPlugins(setupMode);
+    startCoreModules();
+    File pluginDir=new File(messengerHome + "/plugins");
+    pluginManager=new PluginManager(pluginDir,this);
+    pluginManager.start();
   }
  catch (  Exception e) {
     e.printStackTrace();
