@@ -3,26 +3,32 @@
     Document document=reader.parseDocument();
     if (document != null) {
       Element doc=document.getRootElement();
-      Packet packet=null;
       String tag=doc.getName();
       if ("message".equals(tag)) {
-        packet=new Message(doc);
+        Message packet=new Message(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
       }
  else       if ("presence".equals(tag)) {
-        packet=new Presence(doc);
-        Presence.Type type=((Presence)packet).getType();
-        clearSignout=(Presence.Type.unavailable == type ? true : false);
+        Presence packet=new Presence(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
+        clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
       }
  else       if ("iq".equals(tag)) {
-        packet=getIQ(doc);
+        IQ packet=getIQ(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
       }
  else {
         throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);
       }
-      CompositePacket compositePacket=new CompositePacket(packet,session);
-      auditor.audit(compositePacket);
-      router.route(compositePacket);
-      session.incrementClientPacketCount();
     }
   }
 }
