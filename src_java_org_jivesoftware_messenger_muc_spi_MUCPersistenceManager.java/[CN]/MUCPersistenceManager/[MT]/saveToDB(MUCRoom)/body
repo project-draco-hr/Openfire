@@ -8,7 +8,7 @@
     if (room.wasSavedToDB()) {
       pstmt=con.prepareStatement(UPDATE_ROOM);
       pstmt.setString(1,StringUtils.dateToMillis(nowDate));
-      pstmt.setString(2,room.getName());
+      pstmt.setString(2,room.getNaturalLanguageName());
       pstmt.setString(3,room.getDescription());
       pstmt.setInt(4,(room.canOccupantsChangeSubject() ? 1 : 0));
       pstmt.setInt(5,room.getMaxUsers());
@@ -30,21 +30,22 @@
       pstmt.setString(2,StringUtils.dateToMillis(nowDate));
       pstmt.setString(3,StringUtils.dateToMillis(nowDate));
       pstmt.setString(4,room.getName());
-      pstmt.setString(5,room.getDescription());
-      pstmt.setInt(6,(room.canOccupantsChangeSubject() ? 1 : 0));
-      pstmt.setInt(7,room.getMaxUsers());
-      pstmt.setInt(8,(room.isPublicRoom() ? 1 : 0));
-      pstmt.setInt(9,(room.isModerated() ? 1 : 0));
-      pstmt.setInt(10,(room.isInvitationRequiredToEnter() ? 1 : 0));
-      pstmt.setInt(11,(room.canOccupantsInvite() ? 1 : 0));
-      pstmt.setString(12,room.getPassword());
-      pstmt.setInt(13,(room.canAnyoneDiscoverJID() ? 1 : 0));
-      pstmt.setInt(14,(room.isLogEnabled() ? 1 : 0));
-      pstmt.setString(15,room.getSubject());
-      pstmt.setInt(16,marshallRolesToBroadcast(room));
-      pstmt.setString(17,StringUtils.dateToMillis(nowDate));
-      pstmt.setInt(18,1);
-      pstmt.execute();
+      pstmt.setString(5,room.getNaturalLanguageName());
+      pstmt.setString(6,room.getDescription());
+      pstmt.setInt(7,(room.canOccupantsChangeSubject() ? 1 : 0));
+      pstmt.setInt(8,room.getMaxUsers());
+      pstmt.setInt(9,(room.isPublicRoom() ? 1 : 0));
+      pstmt.setInt(10,(room.isModerated() ? 1 : 0));
+      pstmt.setInt(11,(room.isInvitationRequiredToEnter() ? 1 : 0));
+      pstmt.setInt(12,(room.canOccupantsInvite() ? 1 : 0));
+      pstmt.setString(13,room.getPassword());
+      pstmt.setInt(14,(room.canAnyoneDiscoverJID() ? 1 : 0));
+      pstmt.setInt(15,(room.isLogEnabled() ? 1 : 0));
+      pstmt.setString(16,room.getSubject());
+      pstmt.setInt(17,marshallRolesToBroadcast(room));
+      pstmt.setString(18,StringUtils.dateToMillis(nowDate));
+      pstmt.setInt(19,1);
+      pstmt.executeUpdate();
     }
   }
  catch (  SQLException sqle) {
