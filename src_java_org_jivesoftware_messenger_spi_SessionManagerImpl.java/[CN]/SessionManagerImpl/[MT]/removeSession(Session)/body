@@ -34,19 +34,6 @@
   }
   Presence presence=session.getPresence();
   if (presence == null || presence.isAvailable()) {
-    Iterator servers=chatServers.iterator();
-    while (servers.hasNext()) {
-      Presence packet=packetFactory.getPresence();
-      packet.setOriginatingSession(session);
-      packet.setSender(session.getAddress());
-      packet.setRecipient(new XMPPAddress(null,((ChatServer)servers.next()).getChatServerName(),null));
-      packet.setAvailable(false);
-      try {
-        transporter.deliver(packet);
-      }
- catch (      XMLStreamException e) {
-      }
-    }
     Presence offline=packetFactory.getPresence();
     offline.setOriginatingSession(session);
     offline.setSender(session.getAddress());
