@@ -28,8 +28,9 @@
   }
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
   this.adminPassword=JiveGlobals.getXMLProperty("ldap.adminPassword");
-  this.ldapDebugEnabled="true".equals(JiveGlobals.getXMLProperty("ldap.ldapDebugEnabled"));
-  this.sslEnabled="true".equals(JiveGlobals.getXMLProperty("ldap.sslEnabled"));
+  this.ldapDebugEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.ldapDebugEnabled")).booleanValue();
+  this.sslEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.sslEnabled")).booleanValue();
+  this.followReferrals=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.autoFollowReferrals")).booleanValue();
   this.initialContextFactory=JiveGlobals.getXMLProperty("ldap.initialContextFactory");
   if (initialContextFactory != null) {
     try {
@@ -58,5 +59,6 @@
     Log.debug("\t sslEnabled: " + sslEnabled);
     Log.debug("\t initialContextFactory: " + initialContextFactory);
     Log.debug("\t connectionPoolEnabled: " + connectionPoolEnabled);
+    Log.debug("\t autoFollowReferrals: " + followReferrals);
   }
 }

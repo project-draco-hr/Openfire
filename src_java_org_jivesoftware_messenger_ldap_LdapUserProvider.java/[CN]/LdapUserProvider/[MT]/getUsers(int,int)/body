@@ -1,8 +1,10 @@
 {
   List<String> usernames=new ArrayList<String>();
-  DirContext ctx=null;
+  LdapContext ctx=null;
   try {
     ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
     SearchControls constraints=new SearchControls();
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
     constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
@@ -25,7 +27,10 @@
   }
  finally {
     try {
-      ctx.close();
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
     }
  catch (    Exception ignored) {
     }

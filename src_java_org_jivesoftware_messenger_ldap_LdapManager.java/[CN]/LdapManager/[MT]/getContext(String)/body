@@ -10,12 +10,15 @@
     env.put("java.naming.ldap.factory.socket","com.jivesoftware.util.ssl.DummySSLSocketFactory");
     env.put(Context.SECURITY_PROTOCOL,"ssl");
   }
-  env.put(Context.SECURITY_AUTHENTICATION,"simple");
   if (adminDN != null) {
+    env.put(Context.SECURITY_AUTHENTICATION,"simple");
     env.put(Context.SECURITY_PRINCIPAL,adminDN);
+    if (adminPassword != null) {
+      env.put(Context.SECURITY_CREDENTIALS,adminPassword);
+    }
   }
-  if (adminPassword != null) {
-    env.put(Context.SECURITY_CREDENTIALS,adminPassword);
+  if (adminDN != null) {
+    env.put(Context.SECURITY_AUTHENTICATION,"none");
   }
   if (ldapDebugEnabled) {
     env.put("com.sun.jndi.ldap.trace.ber",System.err);
@@ -23,10 +26,13 @@
   if (connectionPoolEnabled) {
     env.put("com.sun.jndi.ldap.connect.pool","true");
   }
+  if (followReferrals) {
+    env.put(Context.REFERRAL,"follow");
+  }
   if (debug) {
     Log.debug("Created hashtable with context values, attempting to create context...");
   }
-  DirContext context=new InitialDirContext(env);
+  LdapContext context=new InitialLdapContext(env,null);
   if (debug) {
     Log.debug("... context created successfully, returning.");
   }
