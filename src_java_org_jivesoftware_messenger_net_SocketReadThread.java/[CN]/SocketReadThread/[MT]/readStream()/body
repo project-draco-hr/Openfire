@@ -12,13 +12,9 @@
       }
  catch (      IllegalArgumentException e) {
         Message reply=new Message();
-        if (doc.attributeValue("id") != null) {
-          reply.setID(doc.attributeValue("id"));
-        }
+        reply.setID(doc.attributeValue("id"));
         reply.setTo(session.getAddress());
-        if (doc.attributeValue("to") != null) {
-          reply.getElement().addAttribute("from",doc.attributeValue("to"));
-        }
+        reply.getElement().addAttribute("from",doc.attributeValue("to"));
         reply.setError(PacketError.Condition.jid_malformed);
         session.process(reply);
         continue;
@@ -35,13 +31,9 @@
       }
  catch (      IllegalArgumentException e) {
         Presence reply=new Presence();
-        if (doc.attributeValue("id") != null) {
-          reply.setID(doc.attributeValue("id"));
-        }
+        reply.setID(doc.attributeValue("id"));
         reply.setTo(session.getAddress());
-        if (doc.attributeValue("to") != null) {
-          reply.getElement().addAttribute("from",doc.attributeValue("to"));
-        }
+        reply.getElement().addAttribute("from",doc.attributeValue("to"));
         reply.setError(PacketError.Condition.jid_malformed);
         session.process(reply);
         continue;
@@ -62,9 +54,7 @@
         if (!doc.elements().isEmpty()) {
           reply.setChildElement(((Element)doc.elements().get(0)).createCopy());
         }
-        if (doc.attributeValue("id") != null) {
-          reply.setID(doc.attributeValue("id"));
-        }
+        reply.setID(doc.attributeValue("id"));
         reply.setTo(session.getAddress());
         if (doc.attributeValue("to") != null) {
           reply.getElement().addAttribute("from",doc.attributeValue("to"));
