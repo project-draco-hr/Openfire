@@ -9,5 +9,7 @@
       throw new AlreadyExistsException(portAddress.toString());
     }
   }
-  return new AcceptPortImpl(context.createChildProperty("accept.port"),connManager,portAddress);
+  AcceptPort acceptPort=new AcceptPortImpl("port" + ports.size(),connManager,portAddress);
+  ports.add(acceptPort);
+  return acceptPort;
 }

@@ -1,0 +1,12 @@
+{
+  super.initialize(container);
+  setEnabled(JiveGlobals.getBooleanProperty("xmpp.audit.active"));
+  setEnabled(JiveGlobals.getBooleanProperty("xmpp.audit.message"));
+  setEnabled(JiveGlobals.getBooleanProperty("xmpp.audit.presence"));
+  setEnabled(JiveGlobals.getBooleanProperty("xmpp.audit.iq"));
+  setEnabled(JiveGlobals.getBooleanProperty("xmpp.audit.xpath"));
+  maxSize=JiveGlobals.getIntProperty("xmpp.audit.maxsize",MAX_FILE_SIZE);
+  maxCount=JiveGlobals.getIntProperty("xmpp.audit.maxcount",MAX_FILE_COUNT);
+  auditor=new AuditorImpl(this);
+  auditor.setMaxValues(maxSize,maxCount);
+}

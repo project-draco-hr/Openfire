@@ -1,9 +1,8 @@
 {
   if (service instanceof ConnectionManager) {
     connManager=(ConnectionManager)service;
-    Iterator portIter=context.getChildProperties("portIter.port");
-    while (portIter.hasNext()) {
-      AcceptPort port=new AcceptPortImpl((ModuleProperties)portIter.next(),connManager);
+    for (    String propName : JiveGlobals.getProperties("acceptPorts")) {
+      AcceptPort port=new AcceptPortImpl(propName,connManager);
       ports.add(port);
     }
   }

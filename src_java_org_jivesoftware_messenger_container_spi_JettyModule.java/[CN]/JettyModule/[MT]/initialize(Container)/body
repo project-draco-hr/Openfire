@@ -1,0 +1,12 @@
+{
+  try {
+    jetty=new Server();
+    port=JiveGlobals.getProperty("embedded-web.port","9090");
+    jetty.addListener(port);
+    this.serverContainer=container;
+    webAppContext=jetty.addWebApplication("/",JiveGlobals.getMessengerHome() + File.separator + "plugins"+ File.separator+ "admin"+ File.separator+ "webapp");
+  }
+ catch (  Exception e) {
+    Log.error("Trouble initializing Jetty",e);
+  }
+}

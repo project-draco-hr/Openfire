@@ -1,5 +1,10 @@
 {
   ports.remove(acceptPort);
+  JiveGlobals.deleteProperty("acceptPorts");
+  for (int i=0; i < ports.size(); i++) {
+    ((AcceptPortImpl)ports.get(i)).setContext("acceptPorts.port" + i);
+    ((AcceptPortImpl)ports.get(i)).savePort();
+  }
   try {
     acceptPort.close();
   }

@@ -1,0 +1,35 @@
+{
+  this.file=file;
+  if (!file.exists()) {
+    File tempFile;
+    tempFile=new File(file.getParentFile(),file.getName() + ".tmp");
+    if (tempFile.exists()) {
+      Log.error("WARNING: " + file.getName() + " was not found, but temp file from "+ "previous write operation was. Attempting automatic recovery."+ " Please check file for data consistency.");
+      tempFile.renameTo(file);
+    }
+ else {
+      throw new FileNotFoundException("XML properties file does not exist: " + file.getName());
+    }
+  }
+  if (!file.canRead()) {
+    throw new IOException("XML properties file must be readable: " + file.getName());
+  }
+  if (!file.canWrite()) {
+    throw new IOException("XML properties file must be writable: " + file.getName());
+  }
+  FileReader reader=null;
+  try {
+    reader=new FileReader(file);
+    SAXReader xmlReader=new SAXReader();
+    document=xmlReader.read(reader);
+  }
+ catch (  Exception e) {
+    Log.error("Error reading XML properties file " + file.getName() + ".",e);
+    throw new IOException(e.getMessage());
+  }
+ finally {
+    if (reader != null) {
+      reader.close();
+    }
+  }
+}

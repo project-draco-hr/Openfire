@@ -5,7 +5,9 @@
   try {
     tempFile=new File(file.getParentFile(),file.getName() + ".tmp");
     writer=new FileWriter(tempFile);
-    XPPWriter.write(rootElement.getDocument(),writer);
+    OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
+    XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
+    xmlWriter.write(document);
   }
  catch (  Exception e) {
     Log.error(e);

@@ -2,14 +2,14 @@
   java.sql.Connection conn=null;
   try {
     conn=DbConnectionManager.getConnection();
-    PreparedStatement stmt=conn.prepareStatement("SELECT userID FROM jiveUser WHERE userID=1");
+    PreparedStatement stmt=conn.prepareStatement("SELECT count(*) FROM jiveID");
     ResultSet rs=stmt.executeQuery();
-    while (rs.next()) {
-    }
+    rs.next();
     rs.close();
+    stmt.close();
   }
  catch (  Exception e) {
-    System.out.println("Database setup or configuration error: " + "Please verify your database settings and check the " + "logs/error.log file for detailed error messages.");
+    System.err.println("Database setup or configuration error: " + "Please verify your database settings and check the " + "logs/error.log file for detailed error messages.");
     Log.error("Database could not be accessed",e);
     throw new IllegalArgumentException();
   }
@@ -19,7 +19,7 @@
         conn.close();
       }
  catch (      SQLException e) {
-        Log.error("Could not close open connection ",e);
+        Log.error(e);
       }
     }
   }
