@@ -6,7 +6,6 @@
     if ("all".equals(toNode)) {
       if (allowedUsers.size() > 0) {
         JID address=new JID(message.getFrom().toBareJID());
-        System.out.println("address: " + address);
         if (!allowedUsers.contains(address)) {
           Message error=new Message();
           if (message.getID() != null) {
@@ -35,7 +34,7 @@
  else {
       try {
         Group group=groupManager.getGroup(toNode);
-        if ((groupMembersAllowed && group.isUser(fromNode)) || group.getAdmins().contains(fromNode) || allowedUsers.contains(message.getFrom().toBareJID())) {
+        if (disableGroupPermissions || (groupMembersAllowed && group.isUser(fromNode)) || group.getAdmins().contains(fromNode)|| allowedUsers.contains(message.getFrom().toBareJID())) {
           for (          String user : group.getMembers()) {
             Message newMessage=message.createCopy();
             JID userJID=XMPPServer.getInstance().createJID(user,null);
