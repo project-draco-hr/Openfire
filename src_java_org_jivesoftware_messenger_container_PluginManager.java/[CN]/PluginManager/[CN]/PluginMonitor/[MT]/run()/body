@@ -12,16 +12,19 @@
       File dir=new File(pluginDirectory,jarName);
       if (!dir.exists()) {
         try {
-          ZipFile zipFile=new ZipFile(jarFile);
+          ZipFile zipFile=new JarFile(jarFile);
           if (zipFile.getEntry("plugin.xml") == null) {
             continue;
           }
           dir.mkdir();
           Log.debug("Extracting plugin: " + jarName);
           for (Enumeration e=zipFile.entries(); e.hasMoreElements(); ) {
-            ZipEntry entry=(ZipEntry)e.nextElement();
+            JarEntry entry=(JarEntry)e.nextElement();
             File entryFile=new File(dir,entry.getName());
-            if (!entryFile.isDirectory()) {
+            if (entry.getName().toLowerCase().endsWith("manifest.mf")) {
+              continue;
+            }
+            if (!entry.isDirectory()) {
               entryFile.getParentFile().mkdirs();
               FileOutputStream out=new FileOutputStream(entryFile);
               InputStream zin=zipFile.getInputStream(entry);
