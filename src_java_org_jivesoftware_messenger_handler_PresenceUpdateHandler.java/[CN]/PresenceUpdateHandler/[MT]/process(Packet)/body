@@ -12,12 +12,20 @@
           session.setInitialized(true);
         }
       }
+      if (presence.getTo() == null && localServer.isLocal(presence.getFrom())) {
+        presenceManager.deleteLastUnavailablePresence(presence.getFrom().getNode());
+      }
     }
  else     if (Presence.Type.unavailable == type) {
       broadcastUpdate(presence.createCopy());
       broadcastUnavailableForDirectedPresences(presence);
       if (session != null) {
         session.setPresence(presence);
+      }
+      if (presence.getTo() == null && localServer.isLocal(presence.getFrom())) {
+        if (!presence.getElement().elements().isEmpty()) {
+          presenceManager.saveLastUnavailablePresence(presence.getFrom().getNode(),presence);
+        }
       }
     }
  else {

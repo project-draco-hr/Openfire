@@ -4,15 +4,37 @@
     if (server.isLocal(probee)) {
       if (probee.getNode() != null && !"".equals(probee.getNode())) {
         Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
-        for (        ClientSession session : sessions) {
-          Presence presencePacket=session.getPresence().createCopy();
-          presencePacket.setFrom(session.getAddress());
-          presencePacket.setTo(prober);
+        if (sessions.isEmpty()) {
           try {
-            deliverer.deliver(presencePacket);
+            User probeeUser=UserManager.getInstance().getUser(probee.getNode());
+            String presenceXML=probeeUser.getProperty(lastPresenceProp);
+            if (presenceXML != null) {
+              try {
+                Document element=DocumentHelper.parseText(presenceXML);
+                Presence presencePacket=new Presence(element.getRootElement());
+                presencePacket.setFrom(probee.toBareJID());
+                presencePacket.setTo(prober);
+                deliverer.deliver(presencePacket);
+              }
+ catch (              Exception e) {
+                Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+              }
+            }
           }
- catch (          Exception e) {
-            Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+ catch (          UserNotFoundException e) {
+          }
+        }
+ else {
+          for (          ClientSession session : sessions) {
+            Presence presencePacket=session.getPresence().createCopy();
+            presencePacket.setFrom(session.getAddress());
+            presencePacket.setTo(prober);
+            try {
+              deliverer.deliver(presencePacket);
+            }
+ catch (            Exception e) {
+              Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+            }
           }
         }
       }
