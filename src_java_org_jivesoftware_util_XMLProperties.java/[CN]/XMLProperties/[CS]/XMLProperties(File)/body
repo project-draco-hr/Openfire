@@ -17,19 +17,6 @@
   if (!file.canWrite()) {
     throw new IOException("XML properties file must be writable: " + file.getName());
   }
-  FileReader reader=null;
-  try {
-    reader=new FileReader(file);
-    SAXReader xmlReader=new SAXReader();
-    document=xmlReader.read(reader);
-  }
- catch (  Exception e) {
-    Log.error("Error reading XML properties file " + file.getName() + ".",e);
-    throw new IOException(e.getMessage());
-  }
- finally {
-    if (reader != null) {
-      reader.close();
-    }
-  }
+  FileReader reader=new FileReader(file);
+  buildDoc(reader);
 }
