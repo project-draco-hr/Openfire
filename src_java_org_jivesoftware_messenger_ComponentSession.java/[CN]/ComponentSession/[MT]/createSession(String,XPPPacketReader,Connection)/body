@@ -13,9 +13,8 @@
   sb.append(domain);
   sb.append("\">");
   if (domain == null) {
-    sb.append("<stream:error>");
-    sb.append("<bad-format xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
-    sb.append("</stream:error>");
+    StreamError error=new StreamError(StreamError.Condition.bad_format);
+    sb.append(error.toXML());
     sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
@@ -24,10 +23,9 @@
   }
   String secretKey=JiveGlobals.getProperty("component.external.secretKey");
   if (secretKey == null) {
-    Log.error("Setup for external components is incomplete. Property " + "component.external.secretKey  does not exist.");
-    sb.append("<stream:error>");
-    sb.append("<internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
-    sb.append("</stream:error>");
+    Log.error("Setup for external components is incomplete. Property " + "component.external.secretKey does not exist.");
+    StreamError error=new StreamError(StreamError.Condition.internal_server_error);
+    sb.append(error.toXML());
     sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
@@ -35,9 +33,8 @@
     return null;
   }
   if (InternalComponentManager.getInstance().getComponent(domain) != null) {
-    sb.append("<stream:error>");
-    sb.append("<conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
-    sb.append("</stream:error>");
+    StreamError error=new StreamError(StreamError.Condition.conflict);
+    sb.append(error.toXML());
     sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
@@ -65,9 +62,8 @@
     String anticipatedDigest=AuthFactory.createDigest(session.getStreamID().getID(),secretKey);
     if (!anticipatedDigest.equalsIgnoreCase(digest)) {
       sb=new StringBuilder();
-      sb.append("<stream:error>");
-      sb.append("<not-authorized xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"/>");
-      sb.append("</stream:error>");
+      StreamError error=new StreamError(StreamError.Condition.not_authorized);
+      sb.append(error.toXML());
       sb.append("</stream:stream>");
       writer.write(sb.toString());
       writer.flush();
