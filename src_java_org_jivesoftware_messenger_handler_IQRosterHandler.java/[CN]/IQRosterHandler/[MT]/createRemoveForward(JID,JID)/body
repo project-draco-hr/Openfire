@@ -1,11 +1,7 @@
 {
-  IQ response=new IQ();
+  org.xmpp.packet.Roster response=new org.xmpp.packet.Roster(IQ.Type.set);
   response.setFrom(from);
   response.setTo(to);
-  response.setType(IQ.Type.set);
-  Element query=response.setChildElement("query","jabber:iq:roster");
-  IQRosterItem responseItem=new IQRosterItemImpl(from);
-  responseItem.setSubStatus(RosterItem.SUB_REMOVE);
-  query.add(responseItem.asXMLElement());
+  response.addItem(from,org.xmpp.packet.Roster.Subscription.remove);
   return response;
 }

@@ -10,15 +10,10 @@
   super.updateRosterItem(cachedItem);
   rosterItemProvider.updateItem(username,cachedItem);
   if (!(cachedItem.getSubStatus() == RosterItem.SUB_NONE && cachedItem.getAskStatus() == RosterItem.ASK_NONE)) {
-    try {
-      IQRoster roster=new IQRoster();
-      roster.setType(IQ.Type.set);
-      roster.createRosterItem(cachedItem);
-      broadcast(roster);
-    }
- catch (    UserAlreadyExistsException e) {
-      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-    }
+    Roster roster=new Roster();
+    roster.setType(IQ.Type.set);
+    roster.addItem(cachedItem.getJid(),cachedItem.getNickname(),Roster.Ask.valueOf(cachedItem.getAskStatus().getName()),Roster.Subscription.valueOf(cachedItem.getSubStatus().getName()),cachedItem.getGroups());
+    broadcast(roster);
   }
   if (cachedItem.getSubStatus() == RosterItem.SUB_BOTH || cachedItem.getSubStatus() == RosterItem.SUB_TO) {
     if (presenceManager == null) {

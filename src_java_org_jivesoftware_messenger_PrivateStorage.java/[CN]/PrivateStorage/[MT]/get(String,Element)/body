@@ -1,5 +1,4 @@
 {
-  data.clearContent();
   if (enabled) {
     Connection con=null;
     PreparedStatement pstmt=null;
@@ -10,6 +9,7 @@
       pstmt.setString(2,data.getNamespaceURI());
       ResultSet rs=pstmt.executeQuery();
       if (rs.next()) {
+        data.clearContent();
         String result=rs.getString(1).trim();
         Document doc=xmlReader.read(result);
         data=doc.getRootElement();

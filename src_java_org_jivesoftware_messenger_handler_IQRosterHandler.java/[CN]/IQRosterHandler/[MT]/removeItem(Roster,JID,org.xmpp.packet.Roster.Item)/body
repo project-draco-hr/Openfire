@@ -1,0 +1,16 @@
+{
+  JID recipient=item.getJID();
+  roster.deleteRosterItem(item.getJID());
+  if (localServer.isLocal(recipient)) {
+    try {
+      CachedRoster recipientRoster=userManager.getUser(recipient.getNode()).getRoster();
+      recipientRoster.deleteRosterItem(sender);
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+ else {
+    Packet removePacket=createRemoveForward(sender,recipient);
+    router.route(removePacket);
+  }
+}

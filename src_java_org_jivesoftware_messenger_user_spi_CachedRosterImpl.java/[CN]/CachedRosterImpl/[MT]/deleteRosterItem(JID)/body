@@ -2,16 +2,10 @@
   CachedRosterItem item=(CachedRosterItem)super.deleteRosterItem(user);
   if (item != null) {
     rosterItemProvider.deleteItem(username,item.getID());
-    try {
-      IQRoster roster=new IQRoster();
-      roster.setType(IQ.Type.set);
-      IQRosterItem iqItem=(IQRosterItem)roster.createRosterItem(user);
-      iqItem.setSubStatus(RosterItem.SUB_REMOVE);
-      broadcast(roster);
-    }
- catch (    UserAlreadyExistsException e) {
-      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
-    }
+    Roster roster=new Roster();
+    roster.setType(IQ.Type.set);
+    roster.addItem(user,Roster.Subscription.remove);
+    broadcast(roster);
   }
   return item;
 }
