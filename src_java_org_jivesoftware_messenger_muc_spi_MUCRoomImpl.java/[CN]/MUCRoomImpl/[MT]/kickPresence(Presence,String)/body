@@ -2,16 +2,12 @@
   MUCRole kickedRole;
   kickedRole=occupants.get(kickPresence.getSender().getResourcePrep());
   if (kickedRole != null) {
-    try {
-      kickPresence=(Presence)kickPresence.createDeepCopy();
-      if (actorJID != null && actorJID.trim().length() > 0) {
-        MetaDataFragment frag=(MetaDataFragment)kickPresence.getFragment("x","http://jabber.org/protocol/muc#user");
-        frag.setProperty("x.item.actor:jid",actorJID);
-      }
-      kickedRole.send(kickPresence);
+    kickPresence=(Presence)kickPresence.createDeepCopy();
+    if (actorJID != null && actorJID.trim().length() > 0) {
+      MetaDataFragment frag=(MetaDataFragment)kickPresence.getFragment("x","http://jabber.org/protocol/muc#user");
+      frag.setProperty("x.item.actor:jid",actorJID);
     }
- catch (    UnauthorizedException e) {
-    }
+    kickedRole.send(kickPresence);
     removeOccupantRole(kickedRole);
     try {
       kickedRole.kick();

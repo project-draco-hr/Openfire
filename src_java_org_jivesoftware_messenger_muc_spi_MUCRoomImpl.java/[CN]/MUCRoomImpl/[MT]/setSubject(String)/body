@@ -1,3 +1,10 @@
 {
   this.subject=subject;
+  if (subject != null && subject.length() > 0) {
+    Message message=new MessageImpl();
+    message.setType(Message.GROUP_CHAT);
+    message.setSubject(subject);
+    message.setSender(getRole().getRoleAddress());
+    roomHistory.addMessage(message);
+  }
 }

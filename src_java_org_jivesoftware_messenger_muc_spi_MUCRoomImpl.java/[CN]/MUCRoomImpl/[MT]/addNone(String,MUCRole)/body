@@ -7,7 +7,7 @@
     throw new ConflictException();
   }
   List<Presence> updatedPresences=null;
-  boolean wasMember=members.containsKey(bareJID);
+  boolean wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
   if (removeOwner(bareJID)) {
     oldAffiliation=MUCRole.OWNER;
   }

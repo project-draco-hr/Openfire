@@ -6,7 +6,10 @@
   if (owners.contains(bareJID) && owners.size() == 1) {
     throw new ConflictException();
   }
-  String actorJID=senderRole.getChatUser().getAddress().toBareStringPrep();
+  String actorJID=null;
+  if (senderRole.getChatUser() != null) {
+    actorJID=senderRole.getChatUser().getAddress().toBareStringPrep();
+  }
   List<Presence> updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.OUTCAST,MUCRole.NONE_ROLE);
   if (!updatedPresences.isEmpty()) {
     Presence presence;

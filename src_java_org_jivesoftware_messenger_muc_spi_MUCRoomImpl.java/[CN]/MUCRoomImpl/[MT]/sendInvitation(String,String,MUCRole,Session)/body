@@ -5,7 +5,9 @@
     message.setSender(role.getRoleAddress());
     message.setRecipient(XMPPAddress.parseJID(to));
     MetaDataFragment frag=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
-    frag.setProperty("x.invite:from",senderRole.getChatUser().getAddress().toBareStringPrep());
+    if (senderRole.getChatUser() != null) {
+      frag.setProperty("x.invite:from",senderRole.getChatUser().getAddress().toBareStringPrep());
+    }
     if (reason != null && reason.length() > 0) {
       frag.setProperty("x.invite.reason",reason);
     }
