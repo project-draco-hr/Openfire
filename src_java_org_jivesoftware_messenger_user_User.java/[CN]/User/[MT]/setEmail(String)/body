@@ -1,4 +1,7 @@
 {
+  if (UserManager.getUserProvider().isReadOnly()) {
+    throw new UnsupportedOperationException("User provider is read-only.");
+  }
   try {
     UserManager.getUserProvider().setEmail(username,email);
     this.email=email;

@@ -1,0 +1,66 @@
+{
+  if (fields.isEmpty()) {
+    return Collections.emptyList();
+  }
+  if (!getSearchFields().containsAll(fields)) {
+    throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
+  }
+  query="%" + query.replace('*','%') + "%";
+  if (query.endsWith("%%")) {
+    query=query.substring(0,query.length() - 1);
+  }
+  List<String> usernames=new ArrayList<String>(50);
+  Connection con=null;
+  Statement stmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    stmt=con.createStatement();
+    StringBuffer sql=new StringBuffer();
+    sql.append("SELECT username FROM jiveUser WHERE");
+    boolean first=true;
+    if (fields.contains("Username")) {
+      sql.append(" username LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+      first=false;
+    }
+    if (fields.contains("Name")) {
+      if (!first) {
+        sql.append(" AND");
+      }
+      sql.append(" name LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+      first=false;
+    }
+    if (fields.contains("Email")) {
+      if (!first) {
+        sql.append(" AND");
+      }
+      sql.append(" email LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+    }
+    ResultSet rs=stmt.executeQuery(sql.toString());
+    while (rs.next()) {
+      usernames.add(rs.getString(1));
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (stmt != null) {
+        stmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+}
