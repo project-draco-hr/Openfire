@@ -1,28 +1,28 @@
 {
-  XMLProperties xmlTest=new XMLProperties(in);
-  String[] tabs=xmlTest.getChildrenProperties("tabs");
+  XMLProperties xml=new XMLProperties(in);
+  String[] tabs=xml.getChildrenProperties("tabs");
   for (int i=0; i < tabs.length; i++) {
     String propName="tabs." + tabs[i];
-    String id=xmlTest.getProperty(propName + ".id");
-    String name=xmlTest.getProperty(propName + ".name");
-    String description=xmlTest.getProperty(propName + ".description");
+    String id=xml.getProperty(propName + ".id");
+    String name=xml.getProperty(propName + ".name");
+    String description=xml.getProperty(propName + ".description");
     Item item=new Item(id,name,description,null);
     getItems().add(item);
-    String[] sidebars=xmlTest.getChildrenProperties(propName + ".sidebars");
+    String[] sidebars=xml.getChildrenProperties(propName + ".sidebars");
     for (int j=0; j < sidebars.length; j++) {
       String sidebarName=propName + ".sidebars." + sidebars[j];
-      name=xmlTest.getProperty(sidebarName + ".name");
+      name=xml.getProperty(sidebarName + ".name");
       Item subItem=new Item(null,name,null,null);
-      String[] subitems=xmlTest.getChildrenProperties(sidebarName + ".items");
+      String[] subitems=xml.getChildrenProperties(sidebarName + ".items");
       for (int k=0; k < subitems.length; k++) {
         String subitemName=sidebarName + ".items." + subitems[k];
-        String subID=xmlTest.getProperty(subitemName + ".id");
-        String subName=xmlTest.getProperty(subitemName + ".name");
-        String subDescr=xmlTest.getProperty(subitemName + ".description");
-        String subURL=xmlTest.getProperty(subitemName + ".url");
+        String subID=xml.getProperty(subitemName + ".id");
+        String subName=xml.getProperty(subitemName + ".name");
+        String subDescr=xml.getProperty(subitemName + ".description");
+        String subURL=xml.getProperty(subitemName + ".url");
         Item kItem=new Item(subID,subName,subDescr,subURL,subItem);
         subItem.getItems().add(kItem);
-        subAddtoModel(subitemName,xmlTest,kItem);
+        subAddtoModel(subitemName,xml,kItem);
         if (j == 0 && k == 0) {
           item.setUrl(subURL);
         }
