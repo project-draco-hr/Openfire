@@ -9,7 +9,7 @@
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
       String msgXML=rs.getString(1);
-      messages.add(new Message(saxReader.read(msgXML).getRootElement()));
+      messages.add(new Message(saxReader.read(new StringReader(msgXML)).getRootElement()));
     }
     rs.close();
     pstmt.close();

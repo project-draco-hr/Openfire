@@ -2,12 +2,12 @@
   if (message == null) {
     return;
   }
-  String username=message.getFrom().getNode();
+  String username=message.getTo().getNode();
   if (username == null) {
     return;
   }
   long messageID=SequenceManager.nextID(JiveConstants.OFFLINE);
-  String msgXML=docFactory.createDocument(message.getElement()).asXML();
+  String msgXML=message.getElement().asXML();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
