@@ -7,8 +7,13 @@
   }
   User user=(User)userCache.get(username);
   if (user == null) {
-    user=provider.loadUser(username);
-    userCache.put(username,user);
+synchronized (username.intern()) {
+      user=(User)userCache.get(username);
+      if (user == null) {
+        user=provider.loadUser(username);
+        userCache.put(username,user);
+      }
+    }
   }
   return user;
 }
