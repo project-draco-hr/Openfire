@@ -15,10 +15,11 @@
       File tempPluginsFile=new File(pluginsDir,tempName);
       File realPluginsFile=new File(pluginsDir,plugin.getName());
       try {
+        Thread.sleep(2000);
         WebManager.copy(plugin.toURL(),tempPluginsFile);
         tempPluginsFile.renameTo(realPluginsFile);
       }
- catch (      IOException e) {
+ catch (      Exception e) {
         e.printStackTrace();
       }
       return realPluginsFile;
@@ -29,4 +30,6 @@
   }
 ;
   installerThread.start();
+  dialog.setLocationRelativeTo(frame);
+  dialog.setVisible(true);
 }
