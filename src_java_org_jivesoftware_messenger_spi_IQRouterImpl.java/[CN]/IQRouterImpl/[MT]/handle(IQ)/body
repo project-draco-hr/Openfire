@@ -13,7 +13,10 @@
  else {
         IQHandler handler=getHandler(namespace);
         if (handler == null) {
-          if (recipientJID.getNode() == null || "".equals(recipientJID.getNode())) {
+          if (recipientJID == null) {
+            packet.setError(PacketError.Condition.service_unavailable);
+          }
+ else           if (recipientJID.getNode() == null || "".equals(recipientJID.getNode())) {
             packet.setError(PacketError.Condition.feature_not_implemented);
           }
  else {
