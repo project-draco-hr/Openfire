@@ -3,9 +3,15 @@
   Document document=df.createDocument();
   Element parent=null;
   XmlPullParser pp=getXPPParser();
-  pp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES,true);
+  int count=0;
   while (true) {
-    int type=pp.nextToken();
+    int type=-1;
+    try {
+      type=pp.nextToken();
+    }
+ catch (    Exception ex) {
+      return null;
+    }
 switch (type) {
 case XmlPullParser.PROCESSING_INSTRUCTION:
 {
@@ -59,12 +65,17 @@ parent.add(newElement);
 document.add(newElement);
 }
 parent=newElement;
+count++;
 break;
 }
 case XmlPullParser.END_TAG:
 {
 if (parent != null) {
 parent=parent.getParent();
+}
+count--;
+if (count == 0) {
+return document;
 }
 break;
 }
