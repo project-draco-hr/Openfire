@@ -16,6 +16,7 @@
       throw new SQLException("Loading the current ID failed. The " + "jiveID table may not be correctly populated.");
     }
     long currentID=rs.getLong(1);
+    rs.close();
     pstmt.close();
     long newID=currentID + blockSize;
     pstmt=con.prepareStatement(UPDATE_ID);
