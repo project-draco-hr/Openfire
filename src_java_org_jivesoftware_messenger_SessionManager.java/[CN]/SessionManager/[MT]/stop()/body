@@ -1,6 +1,8 @@
 {
   serverName=null;
-  sendServerMessage(null,LocaleUtils.getLocalizedString("admin.shutdown.now"));
+  if (JiveGlobals.getBooleanProperty("shutdownMessage.enabled")) {
+    sendServerMessage(null,LocaleUtils.getLocalizedString("admin.shutdown.now"));
+  }
   try {
     for (    Session session : getSessions()) {
       try {
