@@ -77,7 +77,7 @@
     }
   }
  else {
-    String jid=null;
+    JID jid=null;
     String nick;
     String target=null;
     boolean hasAffiliation=((Element)itemsList.get(0)).attributeValue("affiliation") != null;
@@ -87,11 +87,11 @@
         item=(Element)items.next();
         target=(hasAffiliation ? item.attributeValue("affiliation") : item.attributeValue("role"));
         if (hasJID) {
-          jid=item.attributeValue("jid");
+          jid=new JID(item.attributeValue("jid"));
         }
  else {
           nick=item.attributeValue("nick");
-          jid=room.getOccupant(nick).getChatUser().getAddress().toStringPrep();
+          jid=room.getOccupant(nick).getChatUser().getAddress();
         }
         room.lock.writeLock().lock();
         try {
@@ -122,11 +122,11 @@
               if (MUCRole.MODERATOR != senderRole.getRole()) {
                 throw new ForbiddenException();
               }
-              presences.add(room.kickOccupant(jid,senderRole.getChatUser().getAddress().toBareStringPrep(),item.elementTextTrim("reason")));
+              presences.add(room.kickOccupant(jid,senderRole.getChatUser().getAddress(),item.elementTextTrim("reason")));
             }
           }
  else {
-            reply.setError(XMPPError.Code.BAD_REQUEST);
+            reply.setError(PacketError.Condition.bad_request);
           }
         }
   finally {

@@ -7,7 +7,7 @@
     reply.setError(XMPPError.Code.NOT_FOUND);
     return reply;
   }
-  if (IQ.GET.equals(packet.getType())) {
+  if (IQ.Type.get == packet.getType()) {
     reply=packet.createResult();
     String nickname=room.getReservedNickname(packet.getSender().toBareStringPrep());
     if (nickname != null) {
@@ -21,7 +21,7 @@
       reply.setChildFragment(probeResult);
     }
   }
- else   if (IQ.SET.equals(packet.getType())) {
+ else   if (IQ.Type.set == packet.getType()) {
     try {
       List<Presence> presences=new ArrayList<Presence>();
       reply=packet.createResult();
