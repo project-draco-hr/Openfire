@@ -9,11 +9,24 @@
     if (pluginConfig.exists()) {
       SAXReader saxReader=new SAXReader();
       Document pluginXML=saxReader.read(pluginConfig);
+      Element minServerVersion=(Element)pluginXML.selectSingleNode("/plugin/minServerVersion");
+      if (minServerVersion != null) {
+        String requiredVersion=minServerVersion.getTextTrim();
+        Version version=XMPPServer.getInstance().getServerInfo().getVersion();
+        String hasVersion=version.getMajor() + "." + version.getMinor()+ "."+ version.getMicro();
+        if (hasVersion.compareTo(requiredVersion) < 0) {
+          String msg="Ignoring plugin " + pluginDir.getName() + ": requires "+ "server version "+ requiredVersion;
+          Log.warn(msg);
+          System.out.println(msg);
+          return;
+        }
+      }
       PluginClassLoader pluginLoader=new PluginClassLoader(pluginDir);
       String className=pluginXML.selectSingleNode("/plugin/class").getText();
       plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
-      plugin.initialize(this,pluginDir);
+      plugin.initializePlugin(this,pluginDir);
       plugins.put(pluginDir.getName(),plugin);
+      pluginDirs.put(plugin,pluginDir);
       classloaders.put(plugin,pluginLoader);
       File webXML=new File(pluginDir,"web" + File.separator + "web.xml");
       if (webXML.exists()) {
