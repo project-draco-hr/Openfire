@@ -1,11 +1,15 @@
 {
   Collection<String> users=new ArrayList<String>(group.getMembers());
   users.addAll(group.getAdmins());
+  Roster addedUserRoster=(Roster)CacheManager.getCache("username2roster").get(addedUser);
   for (  String userToUpdate : users) {
     if (!addedUser.equals(userToUpdate)) {
       Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
       if (roster != null) {
         roster.addSharedUser(group.getName(),addedUser);
+      }
+      if (addedUserRoster != null) {
+        addedUserRoster.addSharedUser(group.getName(),userToUpdate);
       }
     }
   }

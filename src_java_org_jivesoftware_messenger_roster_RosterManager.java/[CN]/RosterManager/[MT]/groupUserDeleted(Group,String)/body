@@ -1,11 +1,15 @@
 {
   Collection<String> users=new ArrayList<String>(group.getMembers());
   users.addAll(group.getAdmins());
+  Roster deletedUserRoster=(Roster)CacheManager.getCache("username2roster").get(deletedUser);
   for (  String userToUpdate : users) {
     if (!deletedUser.equals(userToUpdate)) {
       Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
       if (roster != null) {
         roster.deleteSharedUser(group.getName(),deletedUser);
+      }
+      if (deletedUserRoster != null) {
+        deletedUserRoster.deleteSharedUser(group.getName(),userToUpdate);
       }
     }
   }

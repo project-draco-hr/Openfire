@@ -4,7 +4,7 @@
     Collection<String> users=new ArrayList<String>(group.getMembers());
     users.addAll(group.getAdmins());
     for (    String groupUser : users) {
-      JID jid=new JID(groupUser,XMPPServer.getInstance().getServerInfo().getName(),null);
+      JID jid=XMPPServer.getInstance().createJID(groupUser,null);
       if (!isRosterItem(jid) && !getUsername().equals(groupUser)) {
         List<String> groups=sharedGroupUsers.get(jid);
         if (groups == null) {
