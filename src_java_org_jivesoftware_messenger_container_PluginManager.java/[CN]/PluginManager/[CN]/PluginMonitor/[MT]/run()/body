@@ -15,9 +15,10 @@
       }
  else       if (jarFile.lastModified() > dir.lastModified()) {
         unloadPlugin(pluginName);
-        if (!deleteDir(dir)) {
-          Log.error("Error unloading plugin " + pluginName + ". "+ "You must manually delete the plugin directory.");
-          continue;
+        System.gc();
+        while (!deleteDir(dir)) {
+          Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+          Thread.sleep(5000);
         }
         unzipPlugin(pluginName,jarFile,dir);
       }
@@ -47,17 +48,22 @@
       }
     }
     if (plugins.size() > jars.length + 1) {
+      List<String> toDelete=new ArrayList<String>();
       for (      String pluginName : plugins.keySet()) {
         if (pluginName.equals("admin")) {
           continue;
         }
         File file=new File(pluginDirectory,pluginName + ".jar");
         if (!file.exists()) {
-          unloadPlugin(pluginName);
-          if (!deleteDir(new File(pluginDirectory,pluginName))) {
-            Log.error("Error unloading plugin " + pluginName + ". "+ "You must manually delete the plugin directory.");
-            continue;
-          }
+          toDelete.add(pluginName);
+        }
+      }
+      for (      String pluginName : toDelete) {
+        unloadPlugin(pluginName);
+        System.gc();
+        while (!deleteDir(new File(pluginDirectory,pluginName))) {
+          Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+          Thread.sleep(5000);
         }
       }
     }
