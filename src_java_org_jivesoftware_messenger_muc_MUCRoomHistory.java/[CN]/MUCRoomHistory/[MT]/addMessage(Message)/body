@@ -1,8 +1,9 @@
 {
-  if (packet.getSender().getResourcePrep() == null || packet.getSender().getResourcePrep().length() == 0) {
+  if ((packet.getSender().getResourcePrep() == null || packet.getSender().getResourcePrep().length() == 0) && packet.getSubject() == null) {
     return;
   }
   Message packetToAdd=(Message)packet.createDeepCopy();
+  packetToAdd.setOriginatingSession(null);
   if (isNonAnonymousRoom != room.canAnyoneDiscoverJID()) {
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
     Message message;
