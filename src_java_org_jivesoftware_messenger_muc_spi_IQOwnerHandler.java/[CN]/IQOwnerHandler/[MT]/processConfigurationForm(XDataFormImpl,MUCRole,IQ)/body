@@ -94,12 +94,17 @@
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? (String)values.next() : "1");
-      room.setPasswordProtected(("1".equals(booleanValue) ? true : false));
-    }
-    field=completedForm.getField("muc#owner_roomsecret");
-    if (field != null) {
-      values=completedForm.getField("muc#owner_roomsecret").getValues();
-      room.setPassword((values.hasNext() ? (String)values.next() : " "));
+      boolean isPasswordProtected="1".equals(booleanValue);
+      if (isPasswordProtected) {
+        field=completedForm.getField("muc#owner_roomsecret");
+        if (field != null) {
+          values=completedForm.getField("muc#owner_roomsecret").getValues();
+          room.setPassword((values.hasNext() ? (String)values.next() : null));
+        }
+      }
+ else {
+        room.setPassword(null);
+      }
     }
     field=completedForm.getField("muc#owner_whois");
     if (field != null) {
