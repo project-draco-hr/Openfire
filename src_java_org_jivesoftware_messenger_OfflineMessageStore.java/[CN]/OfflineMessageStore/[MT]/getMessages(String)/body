@@ -12,9 +12,9 @@
       Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
       Message message=new Message(saxReader.read(new StringReader(msgXML)).getRootElement());
       Element delay=message.addChildElement("x","jabber:x:delay");
-      delay.addElement("from").setText(XMPPServer.getInstance().getServerInfo().getName());
+      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
 synchronized (dateFormat) {
-        delay.addElement("stamp").setText(dateFormat.format(creationDate));
+        delay.addAttribute("stamp",dateFormat.format(creationDate));
       }
       messages.add(message);
     }
