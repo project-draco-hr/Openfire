@@ -1,13 +1,10 @@
 {
   Iterator ports;
-  if (connectionManager == null) {
-    connectionManager=(ConnectionManager)lookup.lookup(ConnectionManager.class);
-  }
-  if (connectionManager == null) {
+  if (getConnectionManager() == null) {
     ports=Collections.EMPTY_LIST.iterator();
   }
  else {
-    ports=connectionManager.getPorts();
+    ports=getConnectionManager().getPorts();
   }
   if (!initialized) {
     throw new IllegalStateException("Not initialized yet");

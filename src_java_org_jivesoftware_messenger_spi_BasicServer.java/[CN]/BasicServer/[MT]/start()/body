@@ -1,12 +1,29 @@
 {
-  super.start();
-  DateFormat formatter=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
-  List params=new ArrayList();
-  params.add(version.getVersionString());
-  params.add(formatter.format(new Date()));
-  String startupBanner=LocaleUtils.getLocalizedString("startup.name",params);
-  Log.info(startupBanner);
-  System.out.println(startupBanner);
-  startDate=new Date();
-  stopDate=null;
+  try {
+    initialize();
+    if (!setupMode) {
+      verifyDataSource();
+      loadModules();
+      initModules();
+      startModules();
+    }
+    File pluginDir=new File(messengerHome,"plugins");
+    pluginManager=new PluginManager(pluginDir);
+    pluginManager.start();
+    DateFormat formatter=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
+    List params=new ArrayList();
+    params.add(version.getVersionString());
+    params.add(formatter.format(new Date()));
+    String startupBanner=LocaleUtils.getLocalizedString("startup.name",params);
+    Log.info(startupBanner);
+    System.out.println(startupBanner);
+    startDate=new Date();
+    stopDate=null;
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    Log.error(e);
+    System.out.println(LocaleUtils.getLocalizedString("startup.error"));
+    shutdownServer();
+  }
 }

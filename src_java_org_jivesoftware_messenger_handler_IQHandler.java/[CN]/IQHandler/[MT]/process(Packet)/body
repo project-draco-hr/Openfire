@@ -11,14 +11,14 @@
       try {
         IQ response=IQ.createResultIQ(iq);
         response.setError(PacketError.Condition.not_authorized);
-        Session session=SessionManager.getInstance().getSession(iq.getFrom());
+        Session session=sessionManager.getSession(iq.getFrom());
         if (!session.getConnection().isClosed()) {
           session.getConnection().deliver(response);
         }
       }
  catch (      Exception de) {
         Log.error(LocaleUtils.getLocalizedString("admin.error"),de);
-        SessionManager.getInstance().getSession(iq.getFrom()).getConnection().close();
+        sessionManager.getSession(iq.getFrom()).getConnection().close();
       }
     }
   }

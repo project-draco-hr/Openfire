@@ -1,0 +1,79 @@
+{
+  super.initialize(server);
+  chatServiceName=JiveGlobals.getProperty("xmpp.muc.service");
+  historyStrategy.setContext("xmpp.muc.history");
+  String property=JiveGlobals.getProperty("xmpp.muc.sysadmin.jid");
+  String[] jids;
+  if (property != null) {
+    jids=property.split(",");
+    for (int i=0; i < jids.length; i++) {
+      sysadmins.add(jids[i].trim().toLowerCase());
+    }
+  }
+  roomCreationRestricted=Boolean.parseBoolean(JiveGlobals.getProperty("xmpp.muc.create.anyone","false"));
+  property=JiveGlobals.getProperty("xmpp.muc.create.jid");
+  if (property != null) {
+    jids=property.split(",");
+    for (int i=0; i < jids.length; i++) {
+      allowedToCreate.add(jids[i].trim().toLowerCase());
+    }
+  }
+  String value=JiveGlobals.getProperty("xmpp.muc.tasks.user.timeout");
+  if (value != null) {
+    try {
+      user_timeout=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property xmpp.muc.tasks.user.timeout",e);
+    }
+  }
+  value=JiveGlobals.getProperty("xmpp.muc.tasks.user.idle");
+  if (value != null) {
+    try {
+      user_idle=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property xmpp.muc.tasks.user.idle",e);
+    }
+  }
+  value=JiveGlobals.getProperty("xmpp.muc.tasks.log.timeout");
+  if (value != null) {
+    try {
+      log_timeout=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property xmpp.muc.tasks.log.timeout",e);
+    }
+  }
+  value=JiveGlobals.getProperty("xmpp.muc.tasks.log.batchsize");
+  if (value != null) {
+    try {
+      log_batch_size=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property xmpp.muc.tasks.log.batchsize",e);
+    }
+  }
+  if (chatServiceName == null) {
+    chatServiceName="conference";
+  }
+  String serverName=null;
+  serverName=server.getServerInfo().getName();
+  if (serverName != null) {
+    chatServiceName+="." + serverName;
+  }
+  chatServiceAddress=new JID(null,chatServiceName,null);
+  userTimeoutTask=new UserTimeoutTask();
+  timer.schedule(userTimeoutTask,user_timeout,user_timeout);
+  logConversationTask=new LogConversationTask();
+  timer.schedule(logConversationTask,log_timeout,log_timeout);
+  routingTable=server.getRoutingTable();
+  router=server.getPacketRouter();
+  registerHandler=server.getIQRegisterHandler();
+  registerHandler.addDelegate(getServiceName(),new IQMUCRegisterHandler(this));
+  routingTable.addRoute(chatServiceAddress,this);
+  ArrayList params=new ArrayList();
+  params.clear();
+  params.add(chatServiceName);
+  Log.info(LocaleUtils.getLocalizedString("startup.starting.muc",params));
+}

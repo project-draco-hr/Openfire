@@ -1,0 +1,16 @@
+{
+  locateMessenger();
+  name=JiveGlobals.getProperty("xmpp.domain");
+  if (name == null) {
+    name="127.0.0.1";
+  }
+  version=new Version(2,1,0,Version.ReleaseStatus.Beta,-1);
+  if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
+    setupMode=false;
+  }
+  if (isStandAlone()) {
+    Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
+  }
+  loader=Thread.currentThread().getContextClassLoader();
+  initialized=true;
+}

@@ -2,7 +2,7 @@
   if (packet == null) {
     throw new NullPointerException();
   }
-  Session session=SessionManager.getInstance().getSession(packet.getFrom());
+  Session session=sessionManager.getSession(packet.getFrom());
   if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED || (isLocalServer(packet.getTo()) && ("jabber:iq:auth".equals(packet.getChildElement().getNamespaceURI()) || "jabber:iq:register".equals(packet.getChildElement().getNamespaceURI())))) {
     handle(packet);
   }

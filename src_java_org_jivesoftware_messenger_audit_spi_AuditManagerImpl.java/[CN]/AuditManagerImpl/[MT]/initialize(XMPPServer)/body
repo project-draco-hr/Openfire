@@ -1,0 +1,14 @@
+{
+  super.initialize(server);
+  enabled=JiveGlobals.getBooleanProperty("xmpp.audit.active");
+  auditMessage=JiveGlobals.getBooleanProperty("xmpp.audit.message");
+  auditPresence=JiveGlobals.getBooleanProperty("xmpp.audit.presence");
+  auditIQ=JiveGlobals.getBooleanProperty("xmpp.audit.iq");
+  auditXPath=JiveGlobals.getBooleanProperty("xmpp.audit.xpath");
+  maxSize=JiveGlobals.getIntProperty("xmpp.audit.maxsize",MAX_FILE_SIZE);
+  maxCount=JiveGlobals.getIntProperty("xmpp.audit.maxcount",MAX_FILE_COUNT);
+  logTimeout=JiveGlobals.getIntProperty("xmpp.audit.logtimeout",DEFAULT_LOG_TIMEOUT);
+  auditor=new AuditorImpl(this);
+  auditor.setMaxValues(maxSize,maxCount);
+  auditor.setLogTimeout(logTimeout);
+}

@@ -1,4 +1,9 @@
 {
+  super("Session Manager");
+  if (singleton != null) {
+    throw new IllegalStateException();
+  }
+  singleton=this;
   if (JiveGlobals.getBooleanProperty("xmpp.audit.active")) {
     streamIDFactory=new AuditStreamIDFactory();
   }
