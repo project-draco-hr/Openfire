@@ -1,13 +1,7 @@
 {
   boolean isLocalServer=recipientJID == null || recipientJID.getHost() == null || "".equals(recipientJID.getHost()) || recipientJID.getResource() == null || "".equals(recipientJID.getResource());
-  try {
-    if (recipientJID != null) {
-      ChatbotManager chatBotManager=(ChatbotManager)ServiceLookupFactory.getLookup().lookup(ChatbotManager.class);
-      isLocalServer=!chatBotManager.isChatbot(recipientJID);
-    }
-  }
- catch (  UnauthorizedException e) {
-    e.printStackTrace();
+  if (recipientJID != null) {
+    isLocalServer=!chatBotManager.isChatbot(recipientJID);
   }
   return isLocalServer;
 }
