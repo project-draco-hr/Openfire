@@ -1,26 +1,19 @@
 {
-  lock.readLock().lock();
-  try {
-    for (    MUCRole occupant : occupants.values()) {
-      message.setTo(occupant.getChatUser().getAddress());
-      router.route(message);
-    }
-    if (isLogEnabled()) {
-      MUCRole senderRole=null;
-      JID senderAddress=null;
-      if (message.getTo() != null && message.getTo().getResource() != null) {
-        senderRole=occupants.get(message.getTo().getResource());
-      }
-      if (senderRole == null) {
-        senderAddress=getRole().getRoleAddress();
-      }
- else {
-        senderAddress=senderRole.getChatUser().getAddress();
-      }
-      server.logConversation(this,message,senderAddress);
-    }
+  for (  MUCRole occupant : occupants.values()) {
+    occupant.send(message);
   }
-  finally {
-    lock.readLock().unlock();
+  if (isLogEnabled()) {
+    MUCRole senderRole=null;
+    JID senderAddress=null;
+    if (message.getTo() != null && message.getTo().getResource() != null) {
+      senderRole=occupants.get(message.getTo().getResource());
+    }
+    if (senderRole == null) {
+      senderAddress=getRole().getRoleAddress();
+    }
+ else {
+      senderAddress=senderRole.getChatUser().getAddress();
+    }
+    server.logConversation(this,message,senderAddress);
   }
 }

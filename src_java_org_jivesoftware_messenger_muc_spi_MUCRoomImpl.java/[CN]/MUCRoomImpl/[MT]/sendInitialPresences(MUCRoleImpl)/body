@@ -1,0 +1,19 @@
+{
+  for (  MUCRole occupant : occupants.values()) {
+    if (occupant == joinRole) {
+      continue;
+    }
+    Presence occupantPresence=occupant.getPresence().createCopy();
+    if (hasToCheckRoleToBroadcastPresence()) {
+      Element frag=occupantPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+      if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
+        continue;
+      }
+    }
+    if (!canAnyoneDiscoverJID() && MUCRole.MODERATOR != joinRole.getRole()) {
+      Element frag=occupantPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+      frag.element("item").addAttribute("jid",null);
+    }
+    joinRole.send(occupantPresence);
+  }
+}

@@ -9,8 +9,7 @@
     if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
       try {
         MUCRole occupant=getOccupant(presence.getFrom().getResource());
-        presence.setTo(occupant.getChatUser().getAddress());
-        router.route(presence);
+        occupant.send(presence);
       }
  catch (      UserNotFoundException e) {
       }
@@ -24,7 +23,6 @@
     jid=frag.element("item").attributeValue("jid");
   }
   for (  MUCRole occupant : occupants.values()) {
-    presence.setTo(occupant.getChatUser().getAddress());
     if (!canAnyoneDiscoverJID()) {
       if (MUCRole.MODERATOR == occupant.getRole()) {
         frag.element("item").addAttribute("jid",jid);
@@ -33,6 +31,6 @@
         frag.element("item").addAttribute("jid",null);
       }
     }
-    router.route(presence);
+    occupant.send(presence);
   }
 }

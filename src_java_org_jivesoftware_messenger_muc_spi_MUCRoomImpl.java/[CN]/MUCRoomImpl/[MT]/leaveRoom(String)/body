@@ -18,16 +18,13 @@
   finally {
     lock.writeLock().unlock();
   }
-  if (leaveRole != null) {
-    try {
-      Presence presence=leaveRole.getPresence().createCopy();
-      presence.setType(Presence.Type.unavailable);
-      presence.setStatus(null);
-      broadcastPresence(presence);
-      leaveRole.kick();
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+  try {
+    Presence presence=leaveRole.getPresence().createCopy();
+    presence.setType(Presence.Type.unavailable);
+    presence.setStatus(null);
+    broadcastPresence(presence);
+  }
+ catch (  Exception e) {
+    Log.error(e);
   }
 }

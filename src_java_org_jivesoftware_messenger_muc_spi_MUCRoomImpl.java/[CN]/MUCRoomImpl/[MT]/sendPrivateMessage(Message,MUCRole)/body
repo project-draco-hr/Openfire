@@ -3,8 +3,7 @@
   MUCRole occupant=occupants.get(resource.toLowerCase());
   if (occupant != null) {
     message.setFrom(senderRole.getRoleAddress());
-    message.setTo(occupant.getChatUser().getAddress());
-    router.route(message);
+    occupant.send(message);
   }
  else {
     throw new NotFoundException();
