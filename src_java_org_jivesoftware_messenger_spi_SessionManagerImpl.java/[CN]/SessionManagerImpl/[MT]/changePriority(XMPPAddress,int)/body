@@ -7,6 +7,8 @@
       return;
     }
     resources.changePriority(sender,priority);
+    Session defaultSession=resources.getDefaultSession();
+    routingTable.addRoute(new XMPPAddress(defaultSession.getAddress().getNamePrep(),defaultSession.getAddress().getHostPrep(),""),defaultSession);
   }
   finally {
     sessionLock.writeLock().unlock();
