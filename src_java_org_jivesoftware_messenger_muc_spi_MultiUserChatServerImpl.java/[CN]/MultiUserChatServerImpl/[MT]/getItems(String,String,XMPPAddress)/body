@@ -14,10 +14,8 @@
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);
     if (room != null && room.isPublicRoom()) {
-      MUCRole role;
       Element item;
-      for (Iterator<MUCRole> members=room.getOccupants(); members.hasNext(); ) {
-        role=members.next();
+      for (      MUCRole role : room.getOccupants()) {
         item=DocumentHelper.createElement("item");
         item.addAttribute("jid",role.getRoleAddress().toStringPrep());
         answer.add(item);
