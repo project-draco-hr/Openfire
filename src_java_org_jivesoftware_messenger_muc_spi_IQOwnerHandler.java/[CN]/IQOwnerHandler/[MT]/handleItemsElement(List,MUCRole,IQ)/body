@@ -98,7 +98,11 @@
             presences.addAll(room.addAdmin(bareJID,senderRole));
           }
  else           if ("member".equals(targetAffiliation)) {
+            boolean hadAffiliation=room.getAffiliation(bareJID) != MUCRole.NONE;
             presences.addAll(room.addMember(bareJID,null,senderRole));
+            if (!hadAffiliation && room.isInvitationRequiredToEnter()) {
+              room.sendInvitation(bareJID,null,senderRole,reply.getOriginatingSession());
+            }
           }
  else           if ("none".equals(targetAffiliation)) {
             presences.addAll(room.addNone(bareJID,senderRole));
