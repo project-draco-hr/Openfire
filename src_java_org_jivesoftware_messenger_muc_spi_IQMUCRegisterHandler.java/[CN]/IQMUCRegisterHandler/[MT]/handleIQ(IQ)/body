@@ -1,5 +1,4 @@
 {
-  Session session=SessionManager.getInstance().getSession(packet.getFrom());
   IQ reply=null;
   MUCRoom room=mucServer.getChatRoom(packet.getTo().getNode());
   if (room == null) {
@@ -65,8 +64,5 @@ catch (    Exception e) {
       Log.error(e);
     }
   }
-  if (reply != null) {
-    session.getConnection().deliver(reply);
-  }
-  return null;
+  return reply;
 }

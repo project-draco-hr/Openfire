@@ -1,5 +1,10 @@
 {
   try {
+    if (packet instanceof IQ) {
+      if (process((IQ)packet)) {
+        return;
+      }
+    }
     MUCUser user=getChatUser(packet.getFrom());
     user.process(packet);
   }

@@ -1,0 +1,31 @@
+{
+  Element childElement=iq.getChildElement();
+  String namespace=null;
+  if (childElement != null) {
+    namespace=childElement.getNamespaceURI();
+  }
+  if ("jabber:iq:register".equals(namespace)) {
+    IQ reply=registerHandler.handleIQ(iq);
+    router.route(reply);
+  }
+ else   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+    try {
+      IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
+      router.route(reply);
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
+    try {
+      IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
+      router.route(reply);
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else {
+    return false;
+  }
+  return true;
+}
