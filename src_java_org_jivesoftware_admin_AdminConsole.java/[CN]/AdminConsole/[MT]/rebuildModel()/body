@@ -34,7 +34,10 @@
       Element existingTab=getElemnetByID(id);
       if (existingTab == null) {
         if (tab.attributeValue("url") == null) {
-          tab.addAttribute("url",((Element)tab.selectSingleNode("//item[@url]")).attributeValue("url"));
+          Element firstItem=(Element)tab.selectSingleNode("//item[@url]");
+          if (firstItem != null) {
+            tab.addAttribute("url",firstItem.attributeValue("url"));
+          }
         }
         generatedModel.add(tab.createCopy());
       }
