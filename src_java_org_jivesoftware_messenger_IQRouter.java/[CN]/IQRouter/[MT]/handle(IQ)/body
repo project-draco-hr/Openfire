@@ -19,19 +19,24 @@
         namespace=childElement.getNamespaceURI();
       }
       if (namespace == null) {
-        Log.warn("Unknown packet " + packet);
+        if (packet.getType() != IQ.Type.result) {
+          Log.warn("Unknown packet " + packet);
+        }
       }
  else {
         IQHandler handler=getHandler(namespace);
         if (handler == null) {
           IQ reply=IQ.createResultIQ(packet);
           if (recipientJID == null) {
+            reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(PacketError.Condition.service_unavailable);
           }
  else           if (recipientJID.getNode() == null || "".equals(recipientJID.getNode())) {
+            reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(PacketError.Condition.feature_not_implemented);
           }
  else {
+            reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(PacketError.Condition.service_unavailable);
           }
           Session session=sessionManager.getSession(packet.getFrom());
@@ -48,24 +53,28 @@
       }
     }
  else {
-      ChannelHandler route=routingTable.getRoute(recipientJID);
-      route.process(packet);
-    }
-  }
- catch (  NoSuchRouteException e) {
-    Log.info("Packet sent to unreachable address " + packet);
-    Session session=sessionManager.getSession(packet.getFrom());
-    if (session != null) {
       try {
-        packet.setError(PacketError.Condition.service_unavailable);
-        session.getConnection().deliver(packet);
+        ChannelHandler route=routingTable.getRoute(recipientJID);
+        route.process(packet);
       }
- catch (      UnauthorizedException ex) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+ catch (      NoSuchRouteException e) {
+        Log.info("Packet sent to unreachable address " + packet);
+        Session session=sessionManager.getSession(packet.getFrom());
+        if (session != null) {
+          try {
+            IQ reply=IQ.createResultIQ(packet);
+            reply.setChildElement(packet.getChildElement().createCopy());
+            reply.setError(PacketError.Condition.service_unavailable);
+            session.getConnection().deliver(reply);
+          }
+ catch (          UnauthorizedException ex) {
+            Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+          }
+        }
       }
     }
   }
-catch (  Exception e) {
+ catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
     try {
       Session session=sessionManager.getSession(packet.getFrom());
