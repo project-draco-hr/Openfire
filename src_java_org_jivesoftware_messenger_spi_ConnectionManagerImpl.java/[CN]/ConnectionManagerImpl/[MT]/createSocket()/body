@@ -12,15 +12,6 @@
       localIPAddress="Unknown";
     }
   }
-  if ("true".equals(JiveGlobals.getProperty("xmpp.socket.plain.active"))) {
-    socketThread=new SocketAcceptThread(this);
-    ports.add(new ServerPortImpl(socketThread.getPort(),serverName,localIPAddress,false,null));
-    socketThread.setDaemon(true);
-    socketThread.start();
-    List params=new ArrayList();
-    params.add(Integer.toString(socketThread.getPort()));
-    Log.info(LocaleUtils.getLocalizedString("startup.plain",params));
-  }
   if ("true".equals(JiveGlobals.getProperty("xmpp.socket.ssl.active"))) {
     try {
       sslSocketThread=new SSLSocketAcceptThread(this);
@@ -38,5 +29,14 @@
  catch (    Exception e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error.ssl"),e);
     }
+  }
+ else {
+    socketThread=new SocketAcceptThread(this);
+    ports.add(new ServerPortImpl(socketThread.getPort(),serverName,localIPAddress,false,null));
+    socketThread.setDaemon(true);
+    socketThread.start();
+    List params=new ArrayList();
+    params.add(Integer.toString(socketThread.getPort()));
+    Log.info(LocaleUtils.getLocalizedString("startup.plain",params));
   }
 }
