@@ -1,11 +1,10 @@
 {
   try {
-    JID newAddress=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),Integer.toHexString(randomResource.nextInt()));
-    session.setAddress(newAddress);
     anonymousSessionLock.writeLock().lock();
     try {
       anonymousSessions.put(session.getAddress().getResource(),session);
       session.getConnection().registerCloseListener(this,session);
+      preAuthenticatedSessions.remove(session.getAddress().toString());
     }
   finally {
       anonymousSessionLock.writeLock().unlock();
