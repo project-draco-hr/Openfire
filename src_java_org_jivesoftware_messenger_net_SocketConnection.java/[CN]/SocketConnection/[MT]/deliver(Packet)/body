@@ -6,6 +6,9 @@
 synchronized (writer) {
       try {
         xmlSerializer.write(packet.getElement());
+        if (flashClient) {
+          writer.write('\0');
+        }
         xmlSerializer.flush();
       }
  catch (      IOException e) {
