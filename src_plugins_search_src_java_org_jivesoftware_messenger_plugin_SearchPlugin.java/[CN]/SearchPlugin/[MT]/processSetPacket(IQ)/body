@@ -1,7 +1,10 @@
 {
   XDataFormImpl searchResults=new XDataFormImpl(DataForm.TYPE_RESULT);
+  XFormFieldImpl field=new XFormFieldImpl("jid");
+  field.setLabel("JID");
+  searchResults.addReportedField(field);
   for (  String fieldName : searchFields) {
-    XFormFieldImpl field=new XFormFieldImpl(fieldName);
+    field=new XFormFieldImpl(fieldName);
     field.setLabel(initCap(fieldName));
     searchResults.addReportedField(field);
   }
@@ -37,9 +40,13 @@
   Iterator userIter=users.iterator();
   while (userIter.hasNext()) {
     User user=(User)userIter.next();
+    String username=user.getName();
     ArrayList<XFormFieldImpl> items=new ArrayList<XFormFieldImpl>();
+    XFormFieldImpl fieldJID=new XFormFieldImpl("jid");
+    fieldJID.addValue(username + "@" + server.getServerInfo().getName());
+    items.add(fieldJID);
     XFormFieldImpl fieldUsername=new XFormFieldImpl("Username");
-    fieldUsername.addValue(user.getUsername());
+    fieldUsername.addValue(username);
     items.add(fieldUsername);
     XFormFieldImpl fieldName=new XFormFieldImpl("Name");
     fieldName.addValue(user.getName());
