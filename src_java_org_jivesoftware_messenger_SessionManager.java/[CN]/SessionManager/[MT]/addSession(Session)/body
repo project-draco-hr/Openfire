@@ -11,6 +11,7 @@
     }
     resources.addSession(session);
     session.getConnection().registerCloseListener(this,session);
+    preAuthenticatedSessions.remove(session.getAddress().toBareJID());
     success=true;
   }
  catch (  UnauthorizedException e) {
@@ -21,7 +22,8 @@
   }
   if (success) {
     Session defaultSession=resources.getDefaultSession();
-    routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
+    JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
+    routingTable.addRoute(node,defaultSession);
     routingTable.addRoute(session.getAddress(),session);
   }
   return success;

@@ -6,5 +6,6 @@
   Session session=new SessionImpl(serverName,conn,id);
   conn.init(session);
   conn.registerCloseListener(this,session);
+  preAuthenticatedSessions.put(session.getAddress().toBareJID(),session);
   return session;
 }
