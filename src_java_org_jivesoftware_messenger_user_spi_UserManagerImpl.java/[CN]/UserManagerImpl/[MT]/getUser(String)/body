@@ -2,7 +2,12 @@
   if (username == null) {
     throw new UserNotFoundException("Username with null value is not valid.");
   }
-  username=NodePrep.prep(username);
+  try {
+    username=Stringprep.nameprep(username,false);
+  }
+ catch (  StringprepException e) {
+    e.printStackTrace();
+  }
   User user=(User)userCache.get(username);
   if (user == null) {
     UserProviderFactory.getUserInfoProvider().getInfo(username);

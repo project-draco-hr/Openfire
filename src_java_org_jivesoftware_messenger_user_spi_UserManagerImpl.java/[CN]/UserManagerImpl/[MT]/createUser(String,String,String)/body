@@ -1,6 +1,11 @@
 {
   User newUser=null;
-  username=NodePrep.prep(username);
+  try {
+    username=Stringprep.nameprep(username,true);
+  }
+ catch (  StringprepException e) {
+    Log.error(e);
+  }
   username=StringUtils.replace(username,"&nbsp;","");
   try {
     getUser(username);
@@ -29,22 +34,7 @@
         Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
       }
  finally {
-        try {
-          if (pstmt != null) {
-            pstmt.close();
-          }
-        }
- catch (        Exception e) {
-          Log.error(e);
-        }
-        try {
-          if (con != null) {
-            con.close();
-          }
-        }
- catch (        Exception e) {
-          Log.error(e);
-        }
+        DbConnectionManager.close(pstmt,con);
       }
       newUser=getUser(username);
     }
