@@ -45,6 +45,7 @@ catch (      UnauthorizedException e) {
       }
     }
  else {
+      reply.setTo((JID)null);
       reply.setChildElement(probeResult);
     }
   }
@@ -62,6 +63,7 @@ catch (      UnauthorizedException e) {
           reply=IQ.createResultIQ(packet);
           session.getConnection().deliver(reply);
           session.getConnection().close();
+          reply=null;
         }
  else {
           throw new UnauthorizedException();
