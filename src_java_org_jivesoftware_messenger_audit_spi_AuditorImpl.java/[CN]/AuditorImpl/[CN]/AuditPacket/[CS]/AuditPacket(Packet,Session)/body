@@ -1,19 +1,18 @@
 {
   element=docFactory.createElement("packet","http://www.jivesoftware.org");
-  Session session=SessionManager.getInstance().getSession(packet.getFrom());
-  if (session != null) {
-    if (session.getStreamID() != null) {
-      element.addAttribute("streamID",session.getStreamID().toString());
-    }
+  if (session.getStreamID() != null) {
+    element.addAttribute("streamID",session.getStreamID().toString());
+  }
 switch (session.getStatus()) {
 case Session.STATUS_AUTHENTICATED:
-      element.addAttribute("status","auth");
-    break;
+    element.addAttribute("status","auth");
+  break;
 case Session.STATUS_CLOSED:
-  element.addAttribute("status","closed");
+element.addAttribute("status","closed");
 break;
 case Session.STATUS_CONNECTED:
 element.addAttribute("status","connected");
+packet.setFrom((String)null);
 break;
 case Session.STATUS_STREAMING:
 element.addAttribute("status","stream");
@@ -22,7 +21,6 @@ default :
 element.addAttribute("status","unknown");
 break;
 }
-}
-element.addAttribute("timestap",new Date().toString());
+element.addAttribute("timestamp",new Date().toString());
 element.add(packet.getElement());
 }
