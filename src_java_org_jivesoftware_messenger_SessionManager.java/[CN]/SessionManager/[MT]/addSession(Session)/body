@@ -1,7 +1,7 @@
 {
   boolean success=false;
   sessionLock.writeLock().lock();
-  String username=session.getAddress().getName().toLowerCase();
+  String username=session.getAddress().getNode().toLowerCase();
   SessionMap resources=null;
   try {
     resources=(SessionMap)sessions.get(username);
@@ -21,7 +21,7 @@
   }
   if (success) {
     Session defaultSession=resources.getDefaultSession();
-    routingTable.addRoute(new XMPPAddress(defaultSession.getAddress().getNamePrep(),defaultSession.getAddress().getHostPrep(),""),defaultSession);
+    routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
     routingTable.addRoute(session.getAddress(),session);
   }
   return success;

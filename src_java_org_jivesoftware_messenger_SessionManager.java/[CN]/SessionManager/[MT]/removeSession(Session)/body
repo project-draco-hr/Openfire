@@ -14,8 +14,8 @@
     }
   }
  else {
-    if (session.getAddress() != null && session.getAddress().getName() != null) {
-      String username=session.getAddress().getName().toLowerCase();
+    if (session.getAddress() != null && session.getAddress().getNode() != null) {
+      String username=session.getAddress().getNode().toLowerCase();
       sessionLock.writeLock().lock();
       try {
         sessionMap=(SessionMap)sessions.get(username);
@@ -35,21 +35,20 @@
   Presence presence=session.getPresence();
   if (presence == null || presence.isAvailable()) {
     Presence offline=packetFactory.getPresence();
-    offline.setOriginatingSession(session);
-    offline.setSender(session.getAddress());
-    offline.setRecipient(new XMPPAddress(null,serverName,null));
-    offline.setAvailable(false);
+    offline.setFrom(session.getAddress());
+    offline.setTo(new JID(null,serverName,null));
+    offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }
-  if (session.getAddress() != null && routingTable != null && !session.getAddress().isEmpty()) {
+  if (session.getAddress() != null && routingTable != null && session.getAddress().toBareJID().trim().length() != 0) {
     routingTable.removeRoute(session.getAddress());
     if (sessionMap != null) {
       if (sessionMap.isEmpty()) {
-        routingTable.removeRoute(new XMPPAddress(session.getAddress().getNamePrep(),session.getAddress().getHostPrep(),""));
+        routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
       }
  else {
         Session defaultSession=sessionMap.getDefaultSession();
-        routingTable.addRoute(new XMPPAddress(defaultSession.getAddress().getNamePrep(),defaultSession.getAddress().getHostPrep(),""),defaultSession);
+        routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
       }
     }
   }

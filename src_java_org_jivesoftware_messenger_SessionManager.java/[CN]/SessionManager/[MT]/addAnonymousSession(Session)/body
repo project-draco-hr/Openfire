@@ -1,6 +1,7 @@
 {
   try {
-    session.getAddress().setResource(Integer.toHexString(randomResource.nextInt()));
+    JID newAddress=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),Integer.toHexString(randomResource.nextInt()));
+    session.setAddress(newAddress);
     anonymousSessionLock.writeLock().lock();
     try {
       anonymousSessions.put(session.getAddress().getResource(),session);
