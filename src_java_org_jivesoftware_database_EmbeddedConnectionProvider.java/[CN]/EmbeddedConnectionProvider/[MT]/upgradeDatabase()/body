@@ -1,0 +1,92 @@
+{
+  int majorVersion;
+  int minorVersion;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=getConnection();
+    pstmt=con.prepareStatement(CHECK_VERSION);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      majorVersion=2;
+      minorVersion=0;
+    }
+    majorVersion=rs.getInt(1);
+    minorVersion=rs.getInt(2);
+    rs.close();
+  }
+ catch (  SQLException sqle) {
+    majorVersion=2;
+    minorVersion=0;
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  if (minorVersion == CURRENT_MINOR_VERSION) {
+    return;
+  }
+  Log.info("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
+  for (int i=minorVersion; i < CURRENT_MINOR_VERSION; i++) {
+    BufferedReader in=null;
+    try {
+      String resourceName="/database/upgrade/" + CURRENT_MAJOR_VERSION + "."+ i+ "_to_"+ CURRENT_MAJOR_VERSION+ "."+ (i + 1)+ "/messenger_hsqldb.sql";
+      in=new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(resourceName)));
+      con=getConnection();
+      boolean done=false;
+      while (!done) {
+        StringBuffer command=new StringBuffer();
+        while (true) {
+          String line=in.readLine();
+          if (line == null) {
+            done=true;
+            break;
+          }
+          if (isCommandPart(line)) {
+            command.append(line);
+          }
+          if (line.endsWith(";")) {
+            break;
+          }
+        }
+        Statement stmt=con.createStatement();
+        stmt.execute(command.toString());
+        stmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      e.printStackTrace();
+    }
+ finally {
+      if (in != null) {
+        try {
+          in.close();
+        }
+ catch (        Exception e) {
+        }
+      }
+      if (con != null) {
+        try {
+          con.close();
+        }
+ catch (        Exception e) {
+        }
+      }
+    }
+  }
+}
