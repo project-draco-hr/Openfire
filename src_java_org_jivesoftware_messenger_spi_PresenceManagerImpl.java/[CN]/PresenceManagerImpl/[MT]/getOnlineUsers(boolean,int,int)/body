@@ -14,11 +14,13 @@ case PresenceManager.SORT_ONLINE_TIME:
         public int compare(        Object object1,        Object object2){
           Presence presence1=(Presence)object1;
           Presence presence2=(Presence)object2;
+          Session presence1Session=sessionManager.getSession(presence1.getFrom());
+          Session presence2Session=sessionManager.getSession(presence2.getFrom());
           if (ascending) {
-            return presence1.getLoginTime().compareTo(presence2.getLoginTime());
+            return presence1Session.getCreationDate().compareTo(presence2Session.getCreationDate());
           }
  else {
-            return presence2.getLoginTime().compareTo(presence1.getLoginTime());
+            return presence2Session.getCreationDate().compareTo(presence1Session.getCreationDate());
           }
         }
       }

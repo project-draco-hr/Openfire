@@ -3,12 +3,8 @@
     return null;
   }
   List<Presence> presences=new ArrayList<Presence>();
-  try {
-    for (    Session session : sessionManager.getSessions(user.getUsername())) {
-      presences.add(session.getPresence());
-    }
-  }
- catch (  UnauthorizedException ue) {
+  for (  Session session : sessionManager.getSessions(user.getUsername())) {
+    presences.add(session.getPresence());
   }
   return Collections.unmodifiableCollection(presences);
 }

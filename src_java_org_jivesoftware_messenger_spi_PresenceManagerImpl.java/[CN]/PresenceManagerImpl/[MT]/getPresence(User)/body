@@ -3,17 +3,13 @@
     return null;
   }
   Presence presence=null;
-  try {
-    for (    Session session : sessionManager.getSessions(user.getUsername())) {
-      if (presence == null) {
-        presence=session.getPresence();
-      }
- else       if (presence.getShow().ordinal() > session.getPresence().getShow().ordinal()) {
-        presence=session.getPresence();
-      }
+  for (  Session session : sessionManager.getSessions(user.getUsername())) {
+    if (presence == null) {
+      presence=session.getPresence();
     }
-  }
- catch (  UnauthorizedException ue) {
+ else     if (presence.getShow().ordinal() > session.getPresence().getShow().ordinal()) {
+      presence=session.getPresence();
+    }
   }
   return presence;
 }
