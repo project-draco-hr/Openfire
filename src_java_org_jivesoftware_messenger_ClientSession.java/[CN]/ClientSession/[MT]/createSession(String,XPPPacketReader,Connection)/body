@@ -1,0 +1,43 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  Session session;
+  boolean isFlashClient=xpp.getPrefix().equals("flash");
+  if (!xpp.getName().equals("stream") && !isFlashClient) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-stream"));
+  }
+  if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
+  }
+  session=SessionManager.getInstance().createClientSession(connection);
+  String language="en";
+  for (int i=0; i < xpp.getAttributeCount(); i++) {
+    if ("lang".equals(xpp.getAttributeName(i))) {
+      language=xpp.getAttributeValue(i);
+    }
+  }
+  Writer writer=connection.getWriter();
+  StringBuffer sb=new StringBuffer();
+  sb.append("<?xml version='1.0' encoding='");
+  sb.append(CHARSET);
+  sb.append("'?>");
+  if (isFlashClient) {
+    sb.append("<flash:stream xmlns:flash=\"http://www.jabber.com/streams/flash\" ");
+  }
+ else {
+    sb.append("<stream:stream ");
+  }
+  sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"");
+  sb.append(serverName);
+  sb.append("\" id=\"");
+  sb.append(session.getStreamID().toString());
+  sb.append("\" xml:lang=\"");
+  sb.append(language);
+  sb.append("\">");
+  writer.write(sb.toString());
+  if (isFlashClient) {
+    session.getConnection().setFlashClient(true);
+    writer.write('\0');
+  }
+  writer.flush();
+  return session;
+}
