@@ -1,4 +1,9 @@
 {
+  Component component=componentManager.getComponent(packet.getRecipient().toBareStringPrep());
+  if (component != null) {
+    component.processPacket(packet);
+    return;
+  }
   if (packet instanceof Message) {
     route((Message)packet);
   }
