@@ -1,7 +1,12 @@
 {
   if (isScrollResultsSupported()) {
     if (rowNumber > 0) {
-      rs.setFetchDirection(ResultSet.FETCH_FORWARD);
+      if (getDatabaseType() == DatabaseType.oracle) {
+        rs.setFetchDirection(ResultSet.TYPE_SCROLL_INSENSITIVE);
+      }
+ else {
+        rs.setFetchDirection(ResultSet.FETCH_FORWARD);
+      }
       rs.relative(rowNumber);
     }
   }
