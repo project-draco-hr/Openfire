@@ -5,9 +5,8 @@
     if (roster == null) {
       roster=new Roster(username);
     }
-    Iterator<RosterItem> items=roster.getRosterItems();
-    while (items.hasNext()) {
-      roster.deleteRosterItem(items.next().getJid());
+    for (    RosterItem item : roster.getRosterItems()) {
+      roster.deleteRosterItem(item.getJid());
     }
     CacheManager.getCache("username2roster").remove(username);
     RosterItemProvider rosteItemProvider=RosterItemProvider.getInstance();

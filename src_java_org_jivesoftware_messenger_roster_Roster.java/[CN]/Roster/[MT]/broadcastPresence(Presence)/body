@@ -5,9 +5,7 @@
   if (routingTable == null) {
     return;
   }
-  Iterator items=getRosterItems();
-  while (items.hasNext()) {
-    RosterItem item=(RosterItem)items.next();
+  for (  RosterItem item : rosterItems.values()) {
     if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_FROM) {
       JID searchNode=new JID(item.getJid().getNode(),item.getJid().getDomain(),null);
       Iterator sessions=routingTable.getRoutes(searchNode);
