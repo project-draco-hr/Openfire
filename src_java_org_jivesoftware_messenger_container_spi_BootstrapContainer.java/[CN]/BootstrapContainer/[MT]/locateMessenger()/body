@@ -1,5 +1,5 @@
 {
-  String jiveConfigName="conf" + File.separator + "jive-"+ getFileCoreName()+ ".xml";
+  String jiveConfigName="conf" + File.separator + "jive-messenger.xml";
   if (messengerHome == null) {
     String homeProperty=System.getProperty("messengerHome");
     try {
@@ -12,9 +12,11 @@
   }
   if (messengerHome == null) {
     try {
-      messengerHome=verifyHome("..",jiveConfigName);
+      messengerHome=verifyHome("..",jiveConfigName).getCanonicalFile();
     }
  catch (    FileNotFoundException fe) {
+    }
+catch (    IOException ie) {
     }
   }
   if (messengerHome == null) {
