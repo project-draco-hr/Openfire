@@ -1,0 +1,14 @@
+{
+  if (router == null) {
+    throw new IllegalStateException("Not initialized");
+  }
+  MUCUser user=null;
+synchronized (users) {
+    user=(MUCUser)users.get(userjid);
+    if (user == null) {
+      user=new MUCUserImpl(this,router,userjid);
+      users.put(userjid,user);
+    }
+  }
+  return user;
+}

@@ -1,0 +1,50 @@
+{
+  parseRootAttributes(xpp);
+  Document doc=null;
+  try {
+    doc=XPPReader.parseDocument(xpp);
+    Element root=doc.getRootElement();
+    show=Presence.SHOW_NONE;
+    Iterator subElements=root.elementIterator();
+    while (subElements.hasNext()) {
+      Element element=(Element)subElements.next();
+      String name=element.getName();
+      if ("show".equals(name)) {
+        String showText=root.element("show").getText();
+        if ("".equals(showText)) {
+          show=Presence.SHOW_NONE;
+        }
+ else         if ("chat".equals(showText)) {
+          show=Presence.SHOW_CHAT;
+        }
+ else         if ("dnd".equals(showText)) {
+          show=Presence.SHOW_DND;
+        }
+ else         if ("away".equals(showText)) {
+          show=Presence.SHOW_AWAY;
+        }
+ else         if ("xa".equals(showText)) {
+          show=Presence.SHOW_XA;
+        }
+      }
+ else       if ("status".equals(name)) {
+        status=root.element("status").getTextTrim();
+      }
+ else       if ("error".equals(name)) {
+        setType(ERROR);
+      }
+ else       if ("priority".equals(name)) {
+        String priorityText=root.element("priority").getTextTrim();
+        if (priorityText != null && priorityText.length() > 0) {
+          priority=Integer.parseInt(priorityText);
+        }
+      }
+ else {
+        addFragment(new MetaDataFragment(element));
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

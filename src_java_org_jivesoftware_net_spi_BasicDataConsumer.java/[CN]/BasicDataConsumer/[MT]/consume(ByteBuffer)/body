@@ -1,0 +1,17 @@
+{
+  Date start=new Date();
+  int size=data.remaining();
+  preConsume(data);
+  if (data.hasRemaining()) {
+    doConsume(data);
+  }
+  if (data.hasRemaining()) {
+    postConsume(data);
+  }
+  if (monitor != null) {
+    monitor.addSample(size,start,new Date());
+  }
+  if (sink != null && data.hasRemaining()) {
+    sink.consume(data);
+  }
+}

@@ -1,0 +1,13 @@
+{
+  IQRosterItemImpl item=new IQRosterItemImpl(new XMPPAddress(jid.getName(),jid.getHost(),jid.getResource()));
+  item.subStatus=subStatus;
+  item.askStatus=askStatus;
+  item.recvStatus=recvStatus;
+  item.nickname=nickname;
+  if (groups != null) {
+    item.groups=new ArrayList(groups.size());
+    Collections.copy(item.groups,groups);
+  }
+  item.fragments=(ConcurrentHashSet)fragments.clone();
+  return item;
+}

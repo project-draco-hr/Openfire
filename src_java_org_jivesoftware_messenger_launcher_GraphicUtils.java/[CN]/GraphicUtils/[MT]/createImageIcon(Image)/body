@@ -1,0 +1,16 @@
+{
+  if (image == null) {
+    return null;
+  }
+synchronized (tracker) {
+    tracker.addImage(image,0);
+    try {
+      tracker.waitForID(0,0);
+    }
+ catch (    InterruptedException e) {
+      System.out.println("INTERRUPTED while loading Image");
+    }
+    tracker.removeImage(image,0);
+  }
+  return new ImageIcon(image);
+}

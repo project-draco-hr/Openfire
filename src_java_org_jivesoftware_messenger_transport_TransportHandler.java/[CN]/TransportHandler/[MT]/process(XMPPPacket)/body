@@ -1,0 +1,29 @@
+{
+  boolean handled=false;
+  String host=packet.getRecipient().getHost();
+  for (  Channel channel : transports.values()) {
+    if (channel.getName().equalsIgnoreCase(host)) {
+      channel.add(packet);
+      handled=true;
+    }
+  }
+  if (!handled) {
+    XMPPAddress recipient=packet.getRecipient();
+    XMPPAddress sender=packet.getSender();
+    packet.setError(XMPPError.Code.REMOTE_SERVER_TIMEOUT);
+    packet.setSender(recipient);
+    packet.setRecipient(sender);
+    try {
+      deliverer.deliver(packet);
+    }
+ catch (    UnauthorizedException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+catch (    PacketException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+catch (    XMLStreamException xse) {
+      Log.error(xse);
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  Iterator resultIterator=null;
+  if (filter != null) {
+    LinkedList results=new LinkedList();
+    if (filter.getUserID() == SessionResultFilter.ALL_USER_ID) {
+      copyAnonSessions(results);
+      copyUserSessions(results);
+    }
+ else {
+      if (filter.getUserID() == SessionResultFilter.ANONYMOUS_USER_ID) {
+        copyAnonSessions(results);
+      }
+ else {
+        try {
+          copyUserSessions(userManager.getUser(filter.getUserID()).getUsername(),results);
+        }
+ catch (        UserNotFoundException e) {
+        }
+      }
+    }
+    Date createMin=filter.getCreationDateRangeMin();
+    Date createMax=filter.getCreationDateRangeMax();
+    Date activityMin=filter.getLastActivityDateRangeMin();
+    Date activityMax=filter.getLastActivityDateRangeMax();
+    TreeSet sortedResults=new TreeSet(filter.getSortComparator());
+    Iterator resultIter=results.iterator();
+    while (resultIter.hasNext()) {
+      Session session=(Session)resultIter.next();
+      if (createMin != null || createMax != null) {
+        if (!isBetweenDates(session.getCreationDate(),createMin,createMax)) {
+          session=null;
+        }
+      }
+      if ((activityMin != null || activityMax != null) && session != null) {
+        if (!isBetweenDates(session.getLastActiveDate(),activityMin,activityMax)) {
+          session=null;
+        }
+      }
+      if (session != null) {
+        if (!isBetweenPacketCount(session.getNumClientPackets(),filter.getClientPacketRangeMin(),filter.getClientPacketRangeMax())) {
+          session=null;
+        }
+      }
+      if (session != null) {
+        if (!isBetweenPacketCount(session.getNumServerPackets(),filter.getServerPacketRangeMin(),filter.getServerPacketRangeMax())) {
+          session=null;
+        }
+      }
+      if (session != null) {
+        sortedResults.add(session);
+      }
+    }
+    int maxResults=filter.getNumResults();
+    if (maxResults == SessionResultFilter.NO_RESULT_LIMIT) {
+      maxResults=sortedResults.size();
+    }
+    LinkedList finalResults=new LinkedList();
+    Iterator sortedIter=sortedResults.iterator();
+    int startIndex=filter.getStartIndex();
+    for (int i=0; sortedIter.hasNext() && finalResults.size() < maxResults; i++) {
+      Object result=sortedIter.next();
+      if (i >= startIndex) {
+        finalResults.add(result);
+      }
+    }
+    resultIterator=finalResults.iterator();
+  }
+  return resultIterator;
+}

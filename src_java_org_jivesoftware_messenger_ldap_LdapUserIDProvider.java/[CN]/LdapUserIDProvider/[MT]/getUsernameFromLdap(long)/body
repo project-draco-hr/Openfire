@@ -1,0 +1,33 @@
+{
+  DirContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{"jiveUserID"});
+    StringBuffer filter=new StringBuffer();
+    filter.append("(").append("jiveUserID").append("=");
+    filter.append(id).append(")");
+    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    if (answer == null || !answer.hasMoreElements()) {
+      throw new UserNotFoundException("User not found: " + id);
+    }
+    String userDN=((SearchResult)answer.next()).getName();
+    return getUsernameFromUserDN(userDN);
+  }
+ catch (  NamingException e) {
+    Log.error(e);
+    throw new UserNotFoundException(e);
+  }
+catch (  UserNotFoundException e) {
+    Log.error(e);
+    throw new UserNotFoundException(e);
+  }
+ finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception e) {
+    }
+  }
+}

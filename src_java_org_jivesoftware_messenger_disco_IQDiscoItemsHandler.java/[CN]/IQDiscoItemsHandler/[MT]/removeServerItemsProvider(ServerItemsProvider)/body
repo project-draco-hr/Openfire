@@ -1,0 +1,21 @@
+{
+  DiscoItem discoItem;
+  for (Iterator it=provider.getItems(); it.hasNext(); ) {
+    discoItem=(DiscoItem)it.next();
+    Element element=null;
+    boolean found=false;
+    for (Iterator itemsItr=serverItems.iterator(); !found && it.hasNext(); ) {
+      element=(Element)itemsItr.next();
+      if (discoItem.getJID().equals(element.attributeValue("jid"))) {
+        found=true;
+        break;
+      }
+    }
+    if (found) {
+      serverItems.remove(element);
+    }
+    String host=parseHost(discoItem.getJID());
+    infoHandler.removeProvider(host);
+    removeProvider(host);
+  }
+}

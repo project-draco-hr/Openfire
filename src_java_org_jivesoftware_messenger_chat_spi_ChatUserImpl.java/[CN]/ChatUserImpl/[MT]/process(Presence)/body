@@ -1,0 +1,64 @@
+{
+  lastPacketTime=System.currentTimeMillis();
+  try {
+    XMPPAddress recipient=packet.getRecipient();
+    String group=recipient.getNamePrep();
+    if (group == null) {
+      if (Presence.UNAVAILABLE == packet.getType()) {
+        server.removeUser(packet.getSender());
+      }
+    }
+ else {
+      ChatRole role=(ChatRole)roles.get(group.toLowerCase());
+      if (role == null) {
+        if (recipient.getResource() != null || recipient.getResource().trim().length() > 0) {
+          if (packet.getType() == Presence.AVAILABLE || Presence.INVISIBLE == packet.getType()) {
+            try {
+              ChatRoom room=server.getChatRoom(group);
+              role=room.joinRoom(recipient.getResource().trim(),this);
+              roles.put(group,role);
+            }
+ catch (            UnauthorizedException e) {
+              Log.error(e);
+            }
+catch (            UserAlreadyExistsException e) {
+              sendConflict(packet);
+            }
+          }
+ else {
+          }
+        }
+ else {
+        }
+      }
+ else {
+        if (!role.getChatUser().getAddress().equals(packet.getSender())) {
+          sendConflict(packet);
+        }
+ else {
+          if (Presence.UNAVAILABLE == packet.getType()) {
+            try {
+              roles.remove(group.toLowerCase());
+              role.getChatRoom().leaveRoom(role.getNickname());
+            }
+ catch (            Exception e) {
+              Log.error(e);
+            }
+          }
+ else {
+            try {
+              role.setPresence(packet);
+              role.getChatRoom().send(role.getPresence());
+            }
+ catch (            Exception e) {
+              Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+            }
+          }
+        }
+      }
+    }
+  }
+ catch (  UnauthorizedException ue) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),ue);
+  }
+}

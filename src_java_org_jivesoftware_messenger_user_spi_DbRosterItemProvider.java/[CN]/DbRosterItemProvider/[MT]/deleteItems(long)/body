@@ -1,0 +1,43 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    LongList list=new LongList();
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_ROSTER_IDS);
+    pstmt.setLong(1,userID);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      list.add(rs.getLong(1));
+    }
+    for (int i=0; i < list.size(); i++) {
+      pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
+      pstmt.setLong(1,list.get(i));
+      pstmt.execute();
+    }
+    pstmt=con.prepareStatement(DELETE_ROSTER);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+  }
+ catch (  SQLException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

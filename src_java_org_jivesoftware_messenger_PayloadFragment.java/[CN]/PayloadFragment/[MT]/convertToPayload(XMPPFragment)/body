@@ -1,0 +1,15 @@
+{
+  PayloadFragment payload=null;
+  if (frag instanceof XMPPDOMFragment) {
+    XMPPDOMFragment dom=(XMPPDOMFragment)frag;
+    payload=new PayloadFragment(dom.getNamespace(),dom.getName());
+    Iterator frags=dom.getRootElement().elementIterator();
+    while (frags.hasNext()) {
+      payload.addFragment(new MetaDataFragment((Element)frags.next()));
+    }
+  }
+ else {
+    throw new IllegalArgumentException();
+  }
+  return payload;
+}

@@ -1,0 +1,10 @@
+{
+  username=NodePrep.prep(username);
+  Long userIDLong=(Long)name2idCache.get(username);
+  if (userIDLong == null) {
+    long userID=userIDProvider.getUserID(username);
+    User user=loadUser(userID,username);
+    return user.getID();
+  }
+  return userIDLong.longValue();
+}

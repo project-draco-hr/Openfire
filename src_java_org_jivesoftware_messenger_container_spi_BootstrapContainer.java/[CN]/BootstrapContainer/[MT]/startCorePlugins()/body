@@ -1,0 +1,18 @@
+{
+  Iterator modIter=modules.iterator();
+  while (modIter.hasNext()) {
+    boolean started=false;
+    Module mod=null;
+    try {
+      mod=(Module)modIter.next();
+      mod.start();
+    }
+ catch (    Exception e) {
+      if (started && mod != null) {
+        mod.stop();
+        mod.destroy();
+      }
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

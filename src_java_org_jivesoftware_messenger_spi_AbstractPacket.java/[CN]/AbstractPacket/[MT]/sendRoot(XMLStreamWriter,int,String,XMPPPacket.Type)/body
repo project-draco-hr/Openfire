@@ -1,0 +1,23 @@
+{
+  xmlSerializer.writeStartElement("jabber:client",elementName);
+  if (sender != null && sender.getHost() != null) {
+    xmlSerializer.writeAttribute("from",sender.toString());
+  }
+ else {
+    if (session != null && session.getAddress() != null && session.getAddress().getHost() != null) {
+      xmlSerializer.writeAttribute("from",session.getAddress().toString());
+    }
+  }
+  if (recipient != null && recipient.getHost() != null) {
+    xmlSerializer.writeAttribute("to",recipient.toString());
+  }
+  if (id != null && !"".equals(id)) {
+    xmlSerializer.writeAttribute("id",id);
+  }
+  if (type != null && type != ignoreType) {
+    xmlSerializer.writeAttribute("type",type.toString());
+    if (type.equals(ERROR) && error != null) {
+      error.send(xmlSerializer,version);
+    }
+  }
+}

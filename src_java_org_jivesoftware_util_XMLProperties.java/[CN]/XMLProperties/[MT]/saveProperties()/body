@@ -1,0 +1,41 @@
+{
+  boolean error=false;
+  File tempFile=null;
+  Writer writer=null;
+  try {
+    tempFile=new File(file.getParentFile(),file.getName() + ".tmp");
+    writer=new FileWriter(tempFile);
+    XPPWriter.write(rootElement.getDocument(),writer);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    error=true;
+  }
+ finally {
+    if (writer != null) {
+      try {
+        writer.close();
+      }
+ catch (      IOException e1) {
+        Log.error(e1);
+        error=true;
+      }
+    }
+  }
+  if (!error) {
+    if (!file.delete()) {
+      Log.error("Error deleting property file: " + file.getAbsolutePath());
+      return;
+    }
+    try {
+      FileCopier.copy(tempFile,file);
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      error=true;
+    }
+    if (!error) {
+      tempFile.delete();
+    }
+  }
+}

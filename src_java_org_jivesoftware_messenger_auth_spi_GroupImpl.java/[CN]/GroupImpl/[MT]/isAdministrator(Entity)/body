@@ -1,0 +1,10 @@
+{
+  long userID=entity.getID();
+  Boolean bool=null;
+  bool=(Boolean)groupMemberCache.get(groupID + ",admin," + userID);
+  if (bool == null) {
+    bool=new Boolean(provider.isMember(groupID,userID,true));
+    groupMemberCache.put(groupID + ",admin," + userID,bool);
+  }
+  return bool.booleanValue();
+}

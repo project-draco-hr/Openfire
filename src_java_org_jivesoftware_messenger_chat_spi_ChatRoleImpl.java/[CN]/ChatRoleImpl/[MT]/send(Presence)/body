@@ -1,0 +1,8 @@
+{
+  presence=room.createPresence(Presence.UNAVAILABLE == packet.getType() ? Presence.STATUS_OFFLINE : Presence.STATUS_ONLINE);
+  packet.setRecipient(user.getAddress());
+  if (nonAnonFragment != null) {
+    presence.addFragment(nonAnonFragment);
+  }
+  router.route(packet);
+}

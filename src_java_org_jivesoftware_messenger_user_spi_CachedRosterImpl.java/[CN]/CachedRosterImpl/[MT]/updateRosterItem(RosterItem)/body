@@ -1,0 +1,29 @@
+{
+  CachedRosterItem cachedItem=null;
+  if (item instanceof CachedRosterItem) {
+    cachedItem=(CachedRosterItem)item;
+  }
+ else {
+    cachedItem=(CachedRosterItem)super.getRosterItem(item.getJid());
+    cachedItem=new CachedRosterItemImpl(cachedItem.getID(),item);
+  }
+  super.updateRosterItem(cachedItem);
+  rosterItemProvider.updateItem(userID,cachedItem);
+  if (!(cachedItem.getSubStatus() == RosterItem.SUB_NONE && cachedItem.getAskStatus() == RosterItem.ASK_NONE)) {
+    try {
+      IQRoster roster=new IQRosterImpl();
+      roster.setType(IQ.SET);
+      roster.createRosterItem(cachedItem);
+      broadcast(roster);
+    }
+ catch (    UserAlreadyExistsException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+  if (cachedItem.getSubStatus() == RosterItem.SUB_BOTH || cachedItem.getSubStatus() == RosterItem.SUB_TO) {
+    if (presenceManager == null) {
+      presenceManager=(PresenceManager)ServiceLookupFactory.getLookup().lookup(PresenceManager.class);
+    }
+    presenceManager.probePresence(username,cachedItem.getJid());
+  }
+}

@@ -1,0 +1,21 @@
+{
+  XMPPPacket.Type typeObject=super.typeFromString(type);
+  if (typeObject == null) {
+    if (type == null || type.length() == 0) {
+      typeObject=Message.NORMAL;
+    }
+ else     if (Message.GROUP_CHAT.toString().equals(type)) {
+      typeObject=Message.GROUP_CHAT;
+    }
+ else     if (Message.CHAT.toString().equals(type)) {
+      typeObject=Message.CHAT;
+    }
+ else     if (Message.HEADLINE.toString().equals(type)) {
+      typeObject=Message.HEADLINE;
+    }
+ else {
+      typeObject=Message.NORMAL;
+    }
+  }
+  return typeObject;
+}

@@ -1,0 +1,38 @@
+{
+  Session session=null;
+  String resource=recipient.getResource();
+  String username=recipient.getName();
+  if (username == null || "".equals(username)) {
+    if (resource != null) {
+      anonymousSessionLock.readLock().lock();
+      try {
+        session=(Session)anonymousSessions.get(resource);
+      }
+  finally {
+        anonymousSessionLock.readLock().unlock();
+      }
+    }
+  }
+ else {
+    username=username.toLowerCase();
+    sessionLock.readLock().lock();
+    try {
+      SessionMap sessionMap=(SessionMap)sessions.get(username);
+      if (sessionMap != null) {
+        if (resource == null) {
+          session=sessionMap.getDefaultSession();
+        }
+ else {
+          session=sessionMap.getSession(resource);
+          if (session == null) {
+            session=sessionMap.getDefaultSession();
+          }
+        }
+      }
+    }
+  finally {
+      sessionLock.readLock().unlock();
+    }
+  }
+  return session;
+}

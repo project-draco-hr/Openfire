@@ -1,0 +1,28 @@
+{
+  if (userIDProvider == null) {
+synchronized (classNames) {
+      if (userIDProvider == null) {
+        try {
+          Class[] providers=new Class[classNames.length];
+          for (int i=0; i < classNames.length; i++) {
+            String className=classNames[i];
+            String classNameProp=JiveGlobals.getJiveProperty(propNames[i]);
+            if (classNameProp != null) {
+              className=classNameProp;
+            }
+            try {
+              providers[i]=ClassUtils.forName(className);
+            }
+ catch (            Exception e) {
+              Log.error("Exception loading class: " + className,e);
+            }
+          }
+          setProviders(providers);
+        }
+ catch (        Exception e) {
+          Log.error("Exception loading class: " + classNames,e);
+        }
+      }
+    }
+  }
+}

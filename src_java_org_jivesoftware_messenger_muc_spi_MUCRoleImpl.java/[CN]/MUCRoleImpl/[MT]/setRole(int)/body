@@ -1,0 +1,16 @@
+{
+  if (MUCRole.OWNER == affiliation || MUCRole.ADMINISTRATOR == affiliation) {
+    if (MUCRole.MODERATOR != newRole) {
+      throw new NotAllowedException();
+    }
+  }
+  if (MUCRole.MODERATOR == role && MUCRole.NONE_ROLE == newRole) {
+    throw new NotAllowedException();
+  }
+  role=newRole;
+  if (MUCRole.NONE_ROLE == role) {
+    presence.setAvailable(false);
+    presence.setVisible(false);
+  }
+  calculateExtendedInformation();
+}

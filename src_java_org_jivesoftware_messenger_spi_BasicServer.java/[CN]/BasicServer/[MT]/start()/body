@@ -1,0 +1,17 @@
+{
+  super.start();
+  DateFormat formatter=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
+  List params=new ArrayList();
+  params.add(version.getVersionString());
+  params.add(formatter.format(new Date()));
+  String startupBanner=LocaleUtils.getLocalizedString("startup.name",params);
+  Log.info("####################################################################");
+  Log.info(startupBanner);
+  Log.info("--------------------------------------------------------------------");
+  System.out.println(startupBanner);
+  params.clear();
+  params.add(name);
+  Log.info(LocaleUtils.getLocalizedString("startup.starting",params));
+  startDate=new Date();
+  stopDate=null;
+}

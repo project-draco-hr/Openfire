@@ -1,0 +1,74 @@
+{
+  XMPPAddress recipientJID=packet.getRecipient();
+  try {
+    if (isLocalServer(recipientJID)) {
+      String namespace=packet.getChildNamespace();
+      if (namespace == null) {
+        Log.warn("Unknown packet " + packet);
+      }
+ else {
+        IQHandler handler=getHandler(namespace);
+        if (handler == null) {
+          if (recipientJID.getName() == null || "".equals(recipientJID.getName())) {
+            packet.setError(XMPPError.Code.NOT_IMPLEMENTED);
+          }
+ else {
+            try {
+              ChannelHandler route=routingTable.getRoute(recipientJID);
+              if (route instanceof BasicModule) {
+                route.process(packet);
+                return;
+              }
+            }
+ catch (            NoSuchRouteException e) {
+            }
+            packet.setError(XMPPError.Code.SERVICE_UNAVAILABLE);
+          }
+          Session session=packet.getOriginatingSession();
+          if (session != null) {
+            session.getConnection().deliver(packet);
+          }
+ else {
+            Log.warn("Packet could not be delivered " + packet);
+          }
+        }
+ else {
+          handler.process(packet);
+        }
+      }
+    }
+ else {
+      ChannelHandler route=routingTable.getRoute(recipientJID);
+      route.process(packet);
+    }
+  }
+ catch (  NoSuchRouteException e) {
+    Log.info("Packet sent to unreachable address " + packet);
+    Session session=packet.getOriginatingSession();
+    if (session != null) {
+      try {
+        packet.setError(XMPPError.Code.SERVICE_UNAVAILABLE);
+        session.getConnection().deliver(packet);
+      }
+ catch (      UnauthorizedException ex) {
+      }
+catch (      XMLStreamException ex) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+      }
+    }
+  }
+catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+    try {
+      Session session=packet.getOriginatingSession();
+      if (session != null) {
+        Connection conn=session.getConnection();
+        if (conn != null) {
+          conn.close();
+        }
+      }
+    }
+ catch (    UnauthorizedException e1) {
+    }
+  }
+}

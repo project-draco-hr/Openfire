@@ -1,0 +1,26 @@
+{
+  java.sql.Connection conn=null;
+  try {
+    conn=DbConnectionManager.getConnection();
+    PreparedStatement stmt=conn.prepareStatement("SELECT userID FROM jiveUser WHERE userID=1");
+    ResultSet rs=stmt.executeQuery();
+    while (rs.next()) {
+    }
+    rs.close();
+  }
+ catch (  Exception e) {
+    System.out.println("Database setup or configuration error: " + "Please verify your database settings and check the " + "jiveHome/logs/jive.error.log file for detailed error messages.");
+    Log.error("Database could not be accessed",e);
+    throw new IllegalArgumentException();
+  }
+ finally {
+    if (conn != null) {
+      try {
+        conn.close();
+      }
+ catch (      SQLException e) {
+        Log.error("Could not close open connection ",e);
+      }
+    }
+  }
+}

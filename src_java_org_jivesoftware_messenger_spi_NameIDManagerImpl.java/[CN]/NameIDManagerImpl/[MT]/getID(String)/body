@@ -1,0 +1,12 @@
+{
+  if (name2idCache == null) {
+    name2idCache=CacheManager.getCache("username2userid");
+  }
+  Long id=(Long)name2idCache.get(username);
+  if (id == null) {
+    return chatbotManager.getChatbotID(username);
+  }
+ else {
+    return id.longValue();
+  }
+}

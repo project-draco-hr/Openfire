@@ -1,0 +1,23 @@
+{
+  int i=indexOfInsertion(key);
+  if (i < 0) {
+    i=-i - 1;
+    this.values[i]=value;
+    return false;
+  }
+  if (this.distinct > this.highWaterMark) {
+    int newCapacity=chooseGrowCapacity(this.distinct + 1,this.minLoadFactor,this.maxLoadFactor);
+    rehash(newCapacity);
+    return put(key,value);
+  }
+  this.table[i]=key;
+  this.values[i]=value;
+  if (this.state[i] == FREE)   this.freeEntries--;
+  this.state[i]=FULL;
+  this.distinct++;
+  if (this.freeEntries < 1) {
+    int newCapacity=chooseGrowCapacity(this.distinct + 1,this.minLoadFactor,this.maxLoadFactor);
+    rehash(newCapacity);
+  }
+  return true;
+}

@@ -1,0 +1,74 @@
+{
+  Iterator iter=onlineUserCache.values().iterator();
+  List presences=new ArrayList();
+  while (iter.hasNext()) {
+    Presence presence=(Presence)iter.next();
+    if (presence.isAvailable()) {
+      presences.add(presence);
+    }
+  }
+switch (sortField) {
+case PresenceManager.SORT_ONLINE_TIME:
+{
+      Collections.sort(presences,new Comparator(){
+        public int compare(        Object object1,        Object object2){
+          Presence presence1=(Presence)object1;
+          Presence presence2=(Presence)object2;
+          if (ascending) {
+            return presence1.getLoginTime().compareTo(presence2.getLoginTime());
+          }
+ else {
+            return presence2.getLoginTime().compareTo(presence1.getLoginTime());
+          }
+        }
+      }
+);
+      break;
+    }
+case PresenceManager.SORT_USERNAME:
+{
+    Collections.sort(presences,new Comparator(){
+      public int compare(      Object object1,      Object object2){
+        Presence presence1=(Presence)object1;
+        Presence presence2=(Presence)object2;
+        String presenceUser1="";
+        String presenceUser2="";
+        try {
+          presenceUser1=userManager.getUser(presence1.getUserID()).getUsername();
+          presenceUser2=userManager.getUser(presence2.getUserID()).getUsername();
+        }
+ catch (        UserNotFoundException e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
+        if (ascending) {
+          return presenceUser1.compareTo(presenceUser2);
+        }
+ else {
+          return presenceUser2.compareTo(presenceUser1);
+        }
+      }
+    }
+);
+    break;
+  }
+default :
+{
+}
+}
+List users=new ArrayList();
+for (int i=0; i < presences.size(); i++) {
+Presence presence=(Presence)presences.get(i);
+try {
+users.add(userManager.getUser(presence.getUserID()));
+}
+ catch (UserNotFoundException e) {
+Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+}
+}
+if (numResults > users.size()) {
+return Collections.unmodifiableList(users).iterator();
+}
+ else {
+return Collections.unmodifiableList(users.subList(0,numResults - 1)).iterator();
+}
+}

@@ -1,0 +1,24 @@
+{
+  driver=JiveGlobals.getJiveProperty("database.defaultProvider.driver");
+  serverURL=JiveGlobals.getJiveProperty("database.defaultProvider.serverURL");
+  username=JiveGlobals.getJiveProperty("database.defaultProvider.username");
+  password=JiveGlobals.getJiveProperty("database.defaultProvider.password");
+  String minCons=JiveGlobals.getJiveProperty("database.defaultProvider.minConnections");
+  String maxCons=JiveGlobals.getJiveProperty("database.defaultProvider.maxConnections");
+  String conTimeout=JiveGlobals.getJiveProperty("database.defaultProvider.connectionTimeout");
+  mysqlUseUnicode=Boolean.valueOf(JiveGlobals.getJiveProperty("database.mysql.useUnicode")).booleanValue();
+  try {
+    if (minCons != null) {
+      minConnections=Integer.parseInt(minCons);
+    }
+    if (maxCons != null) {
+      maxConnections=Integer.parseInt(maxCons);
+    }
+    if (conTimeout != null) {
+      connectionTimeout=Double.parseDouble(conTimeout);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error: could not parse default pool properties. " + "Make sure the values exist and are correct.",e);
+  }
+}

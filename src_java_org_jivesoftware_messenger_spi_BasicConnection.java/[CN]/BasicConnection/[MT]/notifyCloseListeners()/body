@@ -1,0 +1,9 @@
+{
+synchronized (listeners) {
+    Iterator itr=listeners.keySet().iterator();
+    while (itr.hasNext()) {
+      ConnectionCloseListener listener=(ConnectionCloseListener)itr.next();
+      listener.onConnectionClose(listeners.get(listener));
+    }
+  }
+}

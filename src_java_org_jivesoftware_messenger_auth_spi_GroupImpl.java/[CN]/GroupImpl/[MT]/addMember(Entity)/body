@@ -1,0 +1,17 @@
+{
+  if (isMember(entity)) {
+    throw new UserAlreadyExistsException("User " + entity.getUsername() + "with ID "+ entity.getID()+ " already is a member of the group");
+  }
+  long userID=entity.getID();
+  provider.createMember(groupID,userID,false);
+  try {
+    provider.updateGroup(this);
+  }
+ catch (  GroupNotFoundException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  memberList=null;
+  groupCache.put(new Long(groupID),this);
+  groupMemberCache.remove(groupID + ",member," + userID);
+  groupMemberCache.remove("userGroups-" + userID);
+}

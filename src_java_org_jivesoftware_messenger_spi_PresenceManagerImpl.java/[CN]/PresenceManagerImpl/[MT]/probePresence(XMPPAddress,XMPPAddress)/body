@@ -1,0 +1,47 @@
+{
+  try {
+    if (chatbotManager.isChatbot(probee)) {
+      try {
+        RoutableChannelHandler handler=routingTable.getRoute(probee);
+        Presence presence=new PresenceImpl();
+        presence.setType(Presence.PROBE);
+        presence.setSender(prober);
+        presence.setRecipient(handler.getAddress());
+        handler.process(presence);
+      }
+ catch (      NoSuchRouteException e) {
+        Log.info(prober + " probing presence of unavailable chatbot " + probee);
+      }
+    }
+ else     if (server.isLocal(probee)) {
+      Iterator sessionIter=sessionManager.getSessions(probee.getName().toLowerCase());
+      while (sessionIter.hasNext()) {
+        Session session=(Session)sessionIter.next();
+        Presence presencePacket=(Presence)session.getPresence().createDeepCopy();
+        presencePacket.setSender(session.getAddress());
+        try {
+          deliverer.deliver(presencePacket);
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+ else {
+      Presence presence=(Presence)foreignUserCache.get(probee.toBareStringPrep());
+      if (presence != null) {
+        Presence presencePacket=(Presence)presence.createDeepCopy();
+        presencePacket.setSender(probee);
+        try {
+          deliverer.deliver(presencePacket);
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

@@ -1,0 +1,46 @@
+{
+  while (true) {
+    for (int eventType=xpp.next(); eventType != XMLStreamConstants.START_ELEMENT; eventType=xpp.next()) {
+      if (eventType == XMLStreamConstants.CHARACTERS) {
+        if (!xpp.isWhiteSpace()) {
+          throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.packet.text"));
+        }
+      }
+ else       if (eventType == XMLStreamConstants.END_DOCUMENT) {
+        return;
+      }
+    }
+    String tag=xpp.getLocalName();
+    if ("message".equals(tag)) {
+      Message packet=packetFactory.getMessage(xpp);
+      packet.setOriginatingSession(session);
+      packet.setSender(session.getAddress());
+      packet.setSending(false);
+      auditor.audit(packet);
+      router.route(packet);
+      session.incrementClientPacketCount();
+    }
+ else     if ("presence".equals(tag)) {
+      Presence packet=packetFactory.getPresence(xpp);
+      packet.setOriginatingSession(session);
+      packet.setSender(session.getAddress());
+      packet.setSending(false);
+      auditor.audit(packet);
+      router.route(packet);
+      session.incrementClientPacketCount();
+      clearSignout=(Presence.UNAVAILABLE == packet.getType() ? true : false);
+    }
+ else     if ("iq".equals(tag)) {
+      IQ packet=packetFactory.getIQ(xpp);
+      packet.setOriginatingSession(session);
+      packet.setSender(session.getAddress());
+      packet.setSending(false);
+      auditor.audit(packet);
+      router.route(packet);
+      session.incrementClientPacketCount();
+    }
+ else {
+      throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  super("XMPP Server Version Handler");
+  info=new IQHandlerInfo("query","jabber:iq:version",IQImpl.class);
+  if (bodyElement == null) {
+    bodyElement=DocumentHelper.createElement(QName.get("query","jabber:iq:version"));
+    bodyElement.addElement("name").setText("Jive Messenger");
+    bodyElement.addElement("os").setText("JDK 1.4.x");
+    versionElement=bodyElement.addElement("version");
+  }
+}

@@ -1,0 +1,19 @@
+{
+  if (packet == null) {
+    throw new NullPointerException();
+  }
+  if (packet.getOriginatingSession() == null || packet.getOriginatingSession().getStatus() == Session.STATUS_AUTHENTICATED) {
+    handle(packet);
+  }
+ else {
+    packet.setRecipient(packet.getOriginatingSession().getAddress());
+    packet.setSender(null);
+    packet.setError(XMPPError.Code.UNAUTHORIZED);
+    try {
+      packet.getOriginatingSession().process(packet);
+    }
+ catch (    UnauthorizedException ue) {
+      Log.error(ue);
+    }
+  }
+}

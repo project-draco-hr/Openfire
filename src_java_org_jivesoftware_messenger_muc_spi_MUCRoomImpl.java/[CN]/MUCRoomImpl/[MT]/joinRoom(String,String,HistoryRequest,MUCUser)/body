@@ -1,0 +1,134 @@
+{
+  MUCRoleImpl joinRole=null;
+  lock.writeLock().lock();
+  try {
+    if (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers()) {
+      throw new NotAllowedException();
+    }
+    boolean isOwner=owners.contains(user.getAddress().toBareString());
+    if (roomLocked) {
+      if (!isOwner) {
+        throw new RoomLockedException();
+      }
+    }
+    if (occupants.containsKey(nickname.toLowerCase())) {
+      throw new UserAlreadyExistsException();
+    }
+    if (isPasswordProtected()) {
+      if (password == null || !password.equals(getPassword())) {
+        throw new UnauthorizedException();
+      }
+    }
+    if (members.containsValue(nickname)) {
+      if (!nickname.equals(members.get(user.getAddress().toBareStringPrep()))) {
+        throw new ConflictException();
+      }
+    }
+    int role;
+    int affiliation;
+    if (isOwner) {
+      role=MUCRole.MODERATOR;
+      affiliation=MUCRole.OWNER;
+    }
+ else     if (server.getSysadmins().contains(user.getAddress().toBareString())) {
+      role=MUCRole.MODERATOR;
+      affiliation=MUCRole.OWNER;
+    }
+ else     if (admins.contains(user.getAddress().toBareString())) {
+      role=MUCRole.MODERATOR;
+      affiliation=MUCRole.ADMINISTRATOR;
+    }
+ else     if (members.containsKey(user.getAddress().toBareString())) {
+      role=MUCRole.PARTICIPANT;
+      affiliation=MUCRole.MEMBER;
+    }
+ else     if (outcasts.contains(user.getAddress().toBareString())) {
+      throw new ForbiddenException();
+    }
+ else {
+      if (isInvitationRequiredToEnter()) {
+        throw new RegistrationRequiredException();
+      }
+      role=(isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT);
+      affiliation=MUCRole.NONE;
+    }
+    joinRole=new MUCRoleImpl(server,this,nickname,role,affiliation,(MUCUserImpl)user,router);
+    if (roomHistory.getUserID() == null) {
+      roomHistory.setUserID(nickname);
+    }
+ else {
+      roomHistory.userJoined(user,new java.util.Date());
+    }
+    Iterator iter=occupants.values().iterator();
+    while (iter.hasNext()) {
+      MUCRole occupantsRole=(MUCRole)iter.next();
+      Presence occupantsPresence=(Presence)occupantsRole.getPresence().createDeepCopy();
+      occupantsPresence.setSender(occupantsRole.getRoleAddress());
+      if (!canAnyoneDiscoverJID() && MUCRole.MODERATOR != joinRole.getRole()) {
+        MetaDataFragment frag=(MetaDataFragment)occupantsPresence.getFragment("x","http://jabber.org/protocol/muc#user");
+        frag.deleteProperty("x.item:jid");
+      }
+      joinRole.send(occupantsPresence);
+    }
+    occupants.put(nickname.toLowerCase(),joinRole);
+    List<MUCRole> list=occupantsByBareJID.get(user.getAddress().toBareStringPrep());
+    if (list == null) {
+      list=new ArrayList<MUCRole>();
+      occupantsByBareJID.put(user.getAddress().toBareStringPrep(),list);
+    }
+    list.add(joinRole);
+    occupantsByFullJID.put(user.getAddress().toStringPrep(),joinRole);
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  if (joinRole != null) {
+    boolean isRoomNew=roomLocked && occupants.size() == 1;
+    List params=new ArrayList();
+    params.add(nickname);
+    try {
+      Presence joinPresence=(Presence)joinRole.getPresence().createDeepCopy();
+      if (isRoomNew) {
+        MetaDataFragment frag=(MetaDataFragment)joinPresence.getFragment("x","http://jabber.org/protocol/muc#user");
+        frag.setProperty("x.status:code","201");
+      }
+      joinPresence.setSender(joinRole.getRoleAddress());
+      broadcastPresence(joinPresence);
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+    if (canBroadcastPresence(joinRole.getRoleAsString())) {
+      serverBroadcast(LocaleUtils.getLocalizedString("muc.join",params));
+    }
+    if (isRoomNew) {
+      Message message=new MessageImpl();
+      message.setType(Message.GROUP_CHAT);
+      message.setBody(LocaleUtils.getLocalizedString("muc.locked"));
+      message.setSender(role.getRoleAddress());
+      message.setRecipient(user.getAddress());
+      router.route(message);
+    }
+ else     if (canAnyoneDiscoverJID()) {
+      Message message=new MessageImpl();
+      message.setType(Message.GROUP_CHAT);
+      message.setBody(LocaleUtils.getLocalizedString("muc.warnnonanonymous"));
+      message.setSender(role.getRoleAddress());
+      message.setRecipient(user.getAddress());
+      MetaDataFragment frag=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
+      frag.setProperty("x.status:code","100");
+      message.addFragment(frag);
+      router.route(message);
+    }
+    if (historyRequest == null) {
+      Iterator history=roomHistory.getMessageHistory();
+      while (history.hasNext()) {
+        joinRole.send((Message)history.next());
+      }
+    }
+ else {
+      historyRequest.sendHistory(joinRole,roomHistory);
+    }
+  }
+  return joinRole;
+}

@@ -1,0 +1,39 @@
+{
+  if (update.getSender() == null) {
+    return;
+  }
+  if (localServer.isLocal(update.getSender())) {
+    String name=update.getSender().getName();
+    try {
+      if (name != null && !"".equals(name)) {
+        name=name.toLowerCase();
+        long userID=nameManager.getID(name);
+        CachedRoster roster=rosterManager.getRoster(userID);
+        if (!roster.isRosterItem(update.getRecipient())) {
+          Set set=(Set)directedPresences.get(update.getSender().toStringPrep());
+          if (set == null) {
+            set=new HashSet();
+            directedPresences.put(update.getSender().toStringPrep(),set);
+          }
+          if (Presence.UNAVAILABLE.equals(update.getType())) {
+            if (handler instanceof SessionImpl) {
+              set.remove(new HandlerWeakReference(handler));
+              if (set.isEmpty()) {
+                directedPresences.remove(update.getSender().toStringPrep());
+              }
+            }
+          }
+ else {
+            set.add(new HandlerWeakReference(handler));
+          }
+        }
+      }
+    }
+ catch (    UserNotFoundException e) {
+      Log.warn("Presence being sent from unknown user " + name);
+    }
+catch (    PacketException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

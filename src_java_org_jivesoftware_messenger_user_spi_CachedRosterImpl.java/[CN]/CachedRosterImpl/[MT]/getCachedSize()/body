@@ -1,0 +1,16 @@
+{
+  int size=0;
+  size+=CacheSizes.sizeOfObject();
+  size+=CacheSizes.sizeOfLong();
+  try {
+    Iterator itemIter=getRosterItems();
+    while (itemIter.hasNext()) {
+      CachedRosterItem item=(CachedRosterItem)itemIter.next();
+      size+=item.getCachedSize();
+    }
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  return size;
+}

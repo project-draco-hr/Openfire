@@ -1,0 +1,32 @@
+{
+  String value=(String)propertyCache.get(name);
+  if (value == null) {
+    String[] propName=parsePropertyName(name);
+    String lastName=propName[propName.length - 1];
+    String attName=null;
+    int attributeIndex=lastName.indexOf(':');
+    if (attributeIndex >= 0) {
+      propName[propName.length - 1]=lastName.substring(0,attributeIndex);
+      attName=lastName.substring(attributeIndex + 1);
+    }
+    Element element=root;
+    for (int i=0; i < propName.length; i++) {
+      element=element.element(propName[i]);
+      if (element == null) {
+        break;
+      }
+    }
+    if (element != null) {
+      if (attName == null) {
+        return true;
+      }
+ else {
+        return element.attribute(attName) != null;
+      }
+    }
+ else {
+      return false;
+    }
+  }
+  return true;
+}

@@ -1,0 +1,47 @@
+{
+  try {
+    Connection con=null;
+    ClassUtils.forName(driver);
+    if (mysqlUseUnicode) {
+      Properties props=new Properties();
+      String encoding=JiveGlobals.getCharacterEncoding();
+      props.put("characterEncoding",encoding);
+      props.put("useUnicode","true");
+      if (username != null) {
+        props.put("user",username);
+      }
+      if (password != null) {
+        props.put("password",password);
+      }
+      con=DriverManager.getConnection(serverURL,props);
+    }
+ else {
+      con=DriverManager.getConnection(serverURL,username,password);
+    }
+    if (con == null) {
+      throw new SQLException("Unable to retrieve connection from DriverManager");
+    }
+    try {
+      con.setAutoCommit(true);
+    }
+ catch (    SQLException e) {
+    }
+    try {
+      if (con.getMetaData().supportsTransactions()) {
+        con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+      }
+    }
+ catch (    SQLException e) {
+    }
+    ConnectionWrapper wrapper=new ConnectionWrapper(con,this);
+synchronized (conCountLock) {
+      cons[index]=con;
+      wrappers[index]=wrapper;
+    }
+    return wrapper;
+  }
+ catch (  ClassNotFoundException e) {
+    Log.error(e);
+    throw new SQLException(e.getMessage());
+  }
+}

@@ -1,0 +1,10 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  StreamID id=streamIDFactory.createStreamID();
+  Session session=new SessionImpl(this,serverName,conn,id);
+  conn.init(session);
+  conn.registerCloseListener(this,session);
+  return session;
+}

@@ -1,0 +1,12 @@
+{
+  final String path=url.getPath();
+  try {
+    return new FileOutputStream(path);
+  }
+ catch (  FileNotFoundException e) {
+    final File file=url2File(url);
+    final File dir=file.getParentFile();
+    dir.mkdirs();
+    return new FileOutputStream(path);
+  }
+}

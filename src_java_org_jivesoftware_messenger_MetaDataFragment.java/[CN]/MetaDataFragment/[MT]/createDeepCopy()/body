@@ -1,0 +1,18 @@
+{
+  MetaDataFragment meta=null;
+  Iterator metaElements=root.elementIterator();
+  if (metaElements.hasNext()) {
+    meta=new MetaDataFragment((Element)metaElements.next());
+    while (metaElements.hasNext()) {
+      meta.root.add((Element)metaElements.next());
+    }
+  }
+ else {
+    meta=new MetaDataFragment(namespace,name);
+  }
+  Iterator fragmentIter=getFragments();
+  while (fragmentIter.hasNext()) {
+    meta.addFragment(((XMPPFragment)fragmentIter.next()).createDeepCopy());
+  }
+  return meta;
+}

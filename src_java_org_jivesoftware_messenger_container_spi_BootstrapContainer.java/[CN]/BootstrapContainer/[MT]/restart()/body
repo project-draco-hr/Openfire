@@ -1,0 +1,12 @@
+{
+  if (isStandAlone() && isRestartable()) {
+    try {
+      Class wrapperClass=Class.forName(WRAPPER_CLASSNAME);
+      Method restartMethod=wrapperClass.getMethod("restart",(Class)null);
+      restartMethod.invoke(null,(Class)null);
+    }
+ catch (    Exception e) {
+      Log.error("Could not restart container",e);
+    }
+  }
+}

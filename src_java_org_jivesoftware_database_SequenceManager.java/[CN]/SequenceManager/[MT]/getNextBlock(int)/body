@@ -1,0 +1,55 @@
+{
+  if (count == 0) {
+    Log.error("Failed at last attempt to obtain an ID, aborting...");
+    return;
+  }
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  boolean success=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(LOAD_ID);
+    pstmt.setInt(1,type);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new SQLException("Loading the current ID failed. The " + "jiveID table may not be correctly populated.");
+    }
+    long currentID=rs.getLong(1);
+    pstmt.close();
+    long newID=currentID + blockSize;
+    pstmt=con.prepareStatement(UPDATE_ID);
+    pstmt.setLong(1,newID);
+    pstmt.setInt(2,type);
+    pstmt.setLong(3,currentID);
+    success=pstmt.executeUpdate() == 1;
+    if (success) {
+      this.currentID=currentID;
+      this.maxID=newID;
+    }
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+  if (!success) {
+    Log.error("WARNING: failed to obtain next ID block due to " + "thread contention. Trying again...");
+    try {
+      Thread.sleep(75);
+    }
+ catch (    InterruptedException ie) {
+    }
+    getNextBlock(count - 1);
+  }
+}

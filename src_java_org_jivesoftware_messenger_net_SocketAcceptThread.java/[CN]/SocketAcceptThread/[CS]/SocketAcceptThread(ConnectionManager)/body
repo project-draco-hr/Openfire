@@ -1,0 +1,21 @@
+{
+  super("SAT accept");
+  this.connManager=connManager;
+  port=SocketAcceptThread.DEFAULT_PORT;
+  String portName=JiveGlobals.getJiveProperty("xmpp.socket.plain.port");
+  if (portName != null) {
+    port=Integer.parseInt(portName);
+  }
+  String interfaceName=JiveGlobals.getJiveProperty("xmpp.socket.plain.interface");
+  bindInterface=null;
+  if (interfaceName != null) {
+    try {
+      if (interfaceName.trim().length() > 0) {
+        bindInterface=InetAddress.getByName(interfaceName);
+      }
+    }
+ catch (    UnknownHostException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  Element root=doc.getRootElement();
+  setRecipient(XMPPAddress.parseJID(root.attributeValue("to")));
+  setType(typeFromString(root.attributeValue("type")));
+  setID(root.attributeValue("id"));
+  Iterator elements=root.elements().iterator();
+  while (elements.hasNext()) {
+    Element element=(Element)elements.next();
+    if ("query".equals(element.getName())) {
+      Iterator items=element.elementIterator("item");
+      while (items.hasNext()) {
+        try {
+          Element item=(Element)items.next();
+          RosterItem rosterItem=basicRoster.createRosterItem(XMPPAddress.parseJID(item.attributeValue("jid")),item.attributeValue("name"),null);
+          rosterItem.setSubStatus("remove".equals(item.attributeValue("subscription")) ? RosterItem.SUB_REMOVE : RosterItem.SUB_NONE);
+          Iterator groupElements=item.elementIterator("group");
+          while (groupElements.hasNext()) {
+            rosterItem.getGroups().add(((Element)groupElements.next()).getTextTrim());
+          }
+        }
+ catch (        UnauthorizedException e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
+catch (        UserAlreadyExistsException e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
+      }
+    }
+  }
+}

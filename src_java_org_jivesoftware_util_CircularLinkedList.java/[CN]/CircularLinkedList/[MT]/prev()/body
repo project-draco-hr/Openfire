@@ -1,0 +1,17 @@
+{
+  Object item=null;
+  if (current != null) {
+    currentLock.writeLock().lock();
+    try {
+      item=current.object;
+      current=current.previous;
+    }
+  finally {
+      currentLock.writeLock().unlock();
+    }
+  }
+  if (mark == current) {
+    passCount--;
+  }
+  return item;
+}

@@ -1,0 +1,24 @@
+{
+  if (text == null || text.length() == 0) {
+    return new String[0];
+  }
+  ArrayList wordList=new ArrayList();
+  BreakIterator boundary=BreakIterator.getWordInstance();
+  boundary.setText(text);
+  int start=0;
+  for (int end=boundary.next(); end != BreakIterator.DONE; start=end, end=boundary.next()) {
+    String tmp=text.substring(start,end).trim();
+    tmp=replace(tmp,"+","");
+    tmp=replace(tmp,"/","");
+    tmp=replace(tmp,"\\","");
+    tmp=replace(tmp,"#","");
+    tmp=replace(tmp,"*","");
+    tmp=replace(tmp,")","");
+    tmp=replace(tmp,"(","");
+    tmp=replace(tmp,"&","");
+    if (tmp.length() > 0) {
+      wordList.add(tmp);
+    }
+  }
+  return (String[])wordList.toArray(new String[wordList.size()]);
+}

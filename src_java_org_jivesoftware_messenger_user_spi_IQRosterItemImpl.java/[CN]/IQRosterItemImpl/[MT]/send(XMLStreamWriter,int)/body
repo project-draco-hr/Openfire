@@ -1,0 +1,27 @@
+{
+  xmlSerializer.writeStartElement("jabber:iq:roster","item");
+  xmlSerializer.writeAttribute("jid",jid.toBareString());
+  xmlSerializer.writeAttribute("subscription",subStatus.getName());
+  if (askStatus != ASK_NONE) {
+    xmlSerializer.writeAttribute("ask",askStatus.getName());
+  }
+  if (nickname != null) {
+    if (nickname.trim().length() > 0) {
+      xmlSerializer.writeAttribute("name",nickname.trim());
+    }
+  }
+  if (groups != null) {
+    Iterator groupsItr=groups.iterator();
+    while (groupsItr.hasNext()) {
+      xmlSerializer.writeStartElement("jabber:iq:roster","group");
+      xmlSerializer.writeCharacters((String)groupsItr.next());
+      xmlSerializer.writeEndElement();
+    }
+  }
+  Iterator frags=fragments.iterator();
+  while (frags.hasNext()) {
+    XMPPFragment frag=(XMPPFragment)frags.next();
+    frag.send(xmlSerializer,version);
+  }
+  xmlSerializer.writeEndElement();
+}

@@ -1,0 +1,39 @@
+{
+  dirty=false;
+  StringBuffer buf=new StringBuffer();
+  StringBuffer bufprep=new StringBuffer();
+  if (name != null && !"".equals(name)) {
+    bufprep.append(NodePrep.prep(name));
+    bufprep.append('@');
+    buf.append(name);
+    buf.append('@');
+  }
+  if (host != null) {
+    bufprep.append(NamePrep.prep(host));
+    buf.append(host);
+  }
+  if (resource != null && !"".equals(resource)) {
+    cachedBarePrep=bufprep.toString();
+    cachedBare=buf.toString();
+    buf.append('/');
+    buf.append(resource);
+    bufprep.append('/');
+    bufprep.append(ResourcePrep.prep(resource));
+    cached=buf.toString();
+    cachedPrep=bufprep.toString();
+  }
+ else {
+    if (buf.length() == 0) {
+      cached=Integer.toHexString(hashCode());
+      cachedBare=cached;
+      cachedPrep=cached;
+      cachedBarePrep=cached;
+    }
+ else {
+      cached=buf.toString();
+      cachedBare=cached;
+      cachedPrep=bufprep.toString();
+      cachedBarePrep=cachedPrep;
+    }
+  }
+}

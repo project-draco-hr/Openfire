@@ -1,0 +1,39 @@
+{
+  ChatRoleImpl joinRole=null;
+  if (members.containsKey(nickname.toLowerCase())) {
+    throw new UserAlreadyExistsException();
+  }
+  joinRole=new ChatRoleImpl(server,this,nickname,(ChatUserImpl)user,router);
+  if (roomHistory.getUserID() == null) {
+    roomHistory.setUserID(nickname);
+  }
+ else {
+    roomHistory.userJoined(user,new Date());
+  }
+  Iterator iter=members.values().iterator();
+  while (iter.hasNext()) {
+    ChatRole memberRole=(ChatRole)iter.next();
+    Presence memberPresence=(Presence)memberRole.getPresence().createDeepCopy();
+    memberPresence.setSender(memberRole.getRoleAddress());
+    joinRole.send(memberPresence);
+  }
+  members.put(nickname.toLowerCase(),joinRole);
+  if (joinRole != null) {
+    List params=new ArrayList();
+    params.add(nickname);
+    try {
+      Presence joinPresence=(Presence)joinRole.getPresence().createDeepCopy();
+      joinPresence.setSender(joinRole.getRoleAddress());
+      broadcast(joinPresence);
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+    Iterator history=historyStrategy.getMessageHistory();
+    while (history.hasNext()) {
+      joinRole.send((Message)history.next());
+    }
+    serverBroadcast(LocaleUtils.getLocalizedString("chat.join",params));
+  }
+  return joinRole;
+}

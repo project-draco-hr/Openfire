@@ -1,0 +1,16 @@
+{
+  int parentIndex=findKey(parentKey,(char)1);
+  int index=0;
+  char siblingIndex=leftChildren[new Long(parentIndex).intValue()];
+  if (siblingIndex == 0) {
+    return -1;
+  }
+  while (keys[siblingIndex] != childKey) {
+    index++;
+    siblingIndex=rightSiblings[siblingIndex];
+    if (siblingIndex == 0) {
+      return -1;
+    }
+  }
+  return index;
+}

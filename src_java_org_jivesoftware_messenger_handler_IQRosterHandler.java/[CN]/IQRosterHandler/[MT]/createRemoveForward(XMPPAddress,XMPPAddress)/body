@@ -1,0 +1,12 @@
+{
+  IQ response=packetFactory.getIQ();
+  response.setSender(from);
+  response.setRecipient(to);
+  response.setType(IQ.SET);
+  PayloadFragment query=new PayloadFragment("jabber:iq:roster","query");
+  response.setChildFragment(query);
+  IQRosterItem responseItem=new IQRosterItemImpl(from);
+  responseItem.setSubStatus(RosterItem.SUB_REMOVE);
+  query.addFragment(responseItem);
+  return response;
+}

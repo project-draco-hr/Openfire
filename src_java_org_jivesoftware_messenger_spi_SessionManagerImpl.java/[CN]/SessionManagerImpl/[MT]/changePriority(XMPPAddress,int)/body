@@ -1,0 +1,14 @@
+{
+  String username=sender.getName().toLowerCase();
+  sessionLock.writeLock().lock();
+  try {
+    SessionMap resources=(SessionMap)sessions.get(username);
+    if (resources == null) {
+      return;
+    }
+    resources.changePriority(sender,priority);
+  }
+  finally {
+    sessionLock.writeLock().unlock();
+  }
+}

@@ -1,0 +1,20 @@
+{
+  if (presenceID == null) {
+    return null;
+  }
+  Iterator onlineUsers=onlineUserCache.values().iterator();
+  while (onlineUsers.hasNext()) {
+    Presence presence=(Presence)onlineUsers.next();
+    if (presence.getID().equals(presenceID)) {
+      return presence;
+    }
+  }
+  Iterator guestUsers=onlineGuestCache.values().iterator();
+  while (guestUsers.hasNext()) {
+    Presence presence=(Presence)guestUsers.next();
+    if (presence.getID().equals(presenceID)) {
+      return presence;
+    }
+  }
+  return null;
+}

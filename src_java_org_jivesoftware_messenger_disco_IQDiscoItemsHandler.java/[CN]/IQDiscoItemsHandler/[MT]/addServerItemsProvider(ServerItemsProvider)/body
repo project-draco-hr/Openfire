@@ -1,0 +1,14 @@
+{
+  DiscoServerItem discoItem;
+  for (Iterator it=provider.getItems(); it.hasNext(); ) {
+    discoItem=(DiscoServerItem)it.next();
+    Element element=DocumentHelper.createElement("item");
+    element.addAttribute("jid",discoItem.getJID());
+    element.addAttribute("node",discoItem.getNode());
+    element.addAttribute("name",discoItem.getName());
+    serverItems.add(element);
+    String host=parseHost(discoItem.getJID());
+    infoHandler.setProvider(host,discoItem.getDiscoInfoProvider());
+    setProvider(host,discoItem.getDiscoItemsProvider());
+  }
+}

@@ -1,0 +1,44 @@
+{
+  long now=System.currentTimeMillis();
+  Date nowDate=new Date(now);
+  long id=SequenceManager.nextID(JiveConstants.GROUP);
+  Group group=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(INSERT_GROUP);
+    pstmt.setString(1,name);
+    pstmt.setString(2,"None");
+    pstmt.setLong(3,id);
+    pstmt.setString(4,StringUtils.dateToMillis(nowDate));
+    pstmt.setString(5,StringUtils.dateToMillis(nowDate));
+    pstmt.executeUpdate();
+    group=new GroupImpl(id,name,null,nowDate,nowDate);
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  if (group == null) {
+    throw new GroupAlreadyExistsException(name);
+  }
+  return group;
+}

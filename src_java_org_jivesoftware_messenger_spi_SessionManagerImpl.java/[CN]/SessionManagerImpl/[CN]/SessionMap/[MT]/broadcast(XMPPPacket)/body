@@ -1,0 +1,8 @@
+{
+  Iterator entries=resources.values().iterator();
+  while (entries.hasNext()) {
+    Session session=(Session)entries.next();
+    packet.setRecipient(session.getAddress());
+    session.getConnection().deliver(packet);
+  }
+}

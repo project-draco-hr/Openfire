@@ -1,0 +1,16 @@
+{
+  String[] propName=parsePropertyName(name);
+  Element element=rootElement;
+  for (int i=0; i < propName.length - 1; i++) {
+    element=element.element(propName[i]);
+    if (element == null) {
+      return Collections.EMPTY_LIST.iterator();
+    }
+  }
+  Iterator iter=element.elementIterator(propName[propName.length - 1]);
+  ArrayList props=new ArrayList();
+  while (iter.hasNext()) {
+    props.add(new XMLProperties(file,(Element)iter.next()));
+  }
+  return props.iterator();
+}

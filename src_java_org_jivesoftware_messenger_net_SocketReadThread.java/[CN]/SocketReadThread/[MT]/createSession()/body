@@ -1,0 +1,19 @@
+{
+  for (int eventType=xpp.getEventType(); eventType != XMLStreamConstants.START_ELEMENT; eventType=xpp.next()) {
+  }
+  if (!xpp.getLocalName().equals("stream")) {
+    throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.bad-stream"));
+  }
+  if (!xpp.getNamespaceURI(xpp.getPrefix()).equals(ETHERX_NAMESPACE)) {
+    throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
+  }
+  XMLStreamWriter xser=connection.getSerializer();
+  xser.writeStartDocument();
+  xser.writeStartElement("stream","stream","http://etherx.jabber.org/streams");
+  xser.writeNamespace("stream","http://etherx.jabber.org/streams");
+  xser.writeDefaultNamespace("jabber:client");
+  xser.writeAttribute("from",serverName);
+  xser.writeAttribute("id",session.getStreamID().toString());
+  xser.writeCharacters(" ");
+  xser.flush();
+}

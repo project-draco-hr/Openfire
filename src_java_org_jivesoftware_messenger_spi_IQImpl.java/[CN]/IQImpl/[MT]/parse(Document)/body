@@ -1,0 +1,15 @@
+{
+  Element root=doc.getRootElement();
+  setRecipient(XMPPAddress.parseJID(root.attributeValue("to")));
+  setType(typeFromString(root.attributeValue("type")));
+  setID(root.attributeValue("id"));
+  Iterator elements=root.elements().iterator();
+  while (elements.hasNext()) {
+    Element element=(Element)elements.next();
+    setChildNamespace(element.getNamespaceURI());
+    setChildName(element.getName());
+    XMPPFragment fragment=new XMPPDOMFragment(element);
+    addFragment(fragment);
+    setChildFragment(fragment);
+  }
+}

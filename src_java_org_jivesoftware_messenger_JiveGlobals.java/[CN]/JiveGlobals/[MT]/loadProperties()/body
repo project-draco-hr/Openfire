@@ -1,0 +1,71 @@
+{
+  if (failedLoading) {
+    return;
+  }
+  if (properties == null) {
+    if (jiveHome == null) {
+      jiveHome=System.getProperty("jiveHome");
+    }
+    if (jiveHome == null) {
+      jiveHome="..";
+      try {
+        properties=new XMLProperties(jiveHome + File.separator + "config"+ File.separator+ JIVE_CONFIG_FILENAME);
+      }
+ catch (      IOException ioe) {
+        jiveHome=null;
+      }
+    }
+    if (jiveHome == null) {
+      jiveHome=new InitPropLoader().getJiveHome();
+    }
+    if (jiveHome == null) {
+      Log.error("Jive Home was never set. In order to continue, Jive Home will need to be set");
+      failedLoading=true;
+      return;
+    }
+ else {
+      try {
+        properties=new XMLProperties(jiveHome + File.separator + "config"+ File.separator+ JIVE_CONFIG_FILENAME);
+      }
+ catch (      IOException ioe) {
+        Log.error(ioe);
+        failedLoading=true;
+        return;
+      }
+    }
+  }
+  if (locale == null) {
+    String language=properties.getProperty("locale.language");
+    if (language == null) {
+      language="";
+    }
+    String country=properties.getProperty("locale.country");
+    if (country == null) {
+      country="";
+    }
+    if (language.equals("") && country.equals("")) {
+      locale=Locale.getDefault();
+    }
+ else {
+      locale=new Locale(language,country);
+    }
+    String charEncoding=properties.getProperty("locale.characterEncoding");
+    if (charEncoding != null) {
+      characterEncoding=charEncoding;
+    }
+ else {
+      characterEncoding="ISO-8859-1";
+    }
+    String timeZoneID=properties.getProperty("locale.timeZone");
+    if (timeZoneID == null) {
+      timeZone=TimeZone.getDefault();
+    }
+ else {
+      timeZone=TimeZone.getTimeZone(timeZoneID);
+    }
+    dateFormat=DateFormat.getDateInstance(DateFormat.MEDIUM,locale);
+    dateTimeFormat=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,locale);
+    dateFormat.setTimeZone(timeZone);
+    dateTimeFormat.setTimeZone(timeZone);
+  }
+}

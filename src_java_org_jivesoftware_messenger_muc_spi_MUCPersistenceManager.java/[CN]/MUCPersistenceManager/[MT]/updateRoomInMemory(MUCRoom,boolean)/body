@@ -1,0 +1,31 @@
+{
+  if (!room.isPersistent() || !room.wasSavedToDB()) {
+    return;
+  }
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_IN_MEMORY);
+    pstmt.setBoolean(1,inMemory);
+    pstmt.setLong(2,room.getID());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

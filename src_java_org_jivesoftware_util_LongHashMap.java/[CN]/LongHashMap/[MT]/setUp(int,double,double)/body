@@ -1,0 +1,29 @@
+{
+  if (initialCapacity < 0) {
+    throw new IllegalArgumentException("Initial Capacity must not be less than zero: " + initialCapacity);
+  }
+  if (minLoadFactor < 0.0 || minLoadFactor >= 1.0) {
+    throw new IllegalArgumentException("Illegal minLoadFactor: " + minLoadFactor);
+  }
+  if (maxLoadFactor <= 0.0 || maxLoadFactor >= 1.0) {
+    throw new IllegalArgumentException("Illegal maxLoadFactor: " + maxLoadFactor);
+  }
+  if (minLoadFactor >= maxLoadFactor) {
+    throw new IllegalArgumentException("Illegal minLoadFactor: " + minLoadFactor + " and maxLoadFactor: "+ maxLoadFactor);
+  }
+  int capacity=initialCapacity;
+  capacity=nextPrime(capacity);
+  if (capacity == 0) {
+    capacity=1;
+  }
+  this.table=new long[capacity];
+  this.values=new Object[capacity];
+  this.state=new byte[capacity];
+  this.minLoadFactor=minLoadFactor;
+  if (capacity == LARGEST_PRIME)   this.maxLoadFactor=1.0;
+ else   this.maxLoadFactor=maxLoadFactor;
+  this.distinct=0;
+  this.freeEntries=capacity;
+  this.lowWaterMark=0;
+  this.highWaterMark=chooseHighWaterMark(capacity,this.maxLoadFactor);
+}

@@ -1,0 +1,21 @@
+{
+  if (startIndex == 0) {
+    return 0;
+  }
+  if (keys[startIndex] == value) {
+    return startIndex;
+  }
+  char siblingIndex=leftChildren[startIndex];
+  while (siblingIndex != 0) {
+    depth[0]++;
+    char recursiveIndex=findDepth(value,siblingIndex,depth);
+    if (recursiveIndex != 0) {
+      return recursiveIndex;
+    }
+ else {
+      depth[0]--;
+      siblingIndex=rightSiblings[siblingIndex];
+    }
+  }
+  return 0;
+}

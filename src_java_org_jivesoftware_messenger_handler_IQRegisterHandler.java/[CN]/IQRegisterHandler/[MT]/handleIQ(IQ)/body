@@ -1,0 +1,163 @@
+{
+  IQHandler delegate=getDelegate(packet.getRecipient());
+  if (delegate != null) {
+    return delegate.handleIQ(packet);
+  }
+  Session session=packet.getOriginatingSession();
+  IQ reply=null;
+  if (!enabled) {
+    reply=packet.createResult();
+    reply.setError(XMPPError.Code.FORBIDDEN);
+  }
+ else   if (IQ.GET.equals(packet.getType())) {
+    reply=packet.createResult();
+    if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+      try {
+        User user=userManager.getUser(session.getUserID());
+        MetaDataFragment currentRegistration=(MetaDataFragment)probeResult.createDeepCopy();
+        currentRegistration.setProperty("query.registered",null);
+        currentRegistration.setProperty("query.username",user.getUsername());
+        currentRegistration.setProperty("query.password",null);
+        currentRegistration.setProperty("query.email",user.getInfo().getEmail());
+        XDataFormImpl form=(XDataFormImpl)currentRegistration.getFragment("x","jabber:x:data");
+        form.getField("username").addValue(user.getUsername());
+        form.getField("name").addValue(user.getInfo().getName());
+        form.getField("email").addValue(user.getInfo().getEmail());
+        FormField field=form.getField("x-nameVisible");
+        field.clearValues();
+        field.addValue((user.getInfo().isNameVisible() ? "1" : "0"));
+        field=form.getField("x-emailVisible");
+        field.clearValues();
+        field.addValue((user.getInfo().isEmailVisible() ? "1" : "0"));
+        reply.setChildFragment(currentRegistration);
+      }
+ catch (      UserNotFoundException e) {
+        reply.setChildFragment(probeResult);
+      }
+catch (      UnauthorizedException e) {
+        reply.setChildFragment(probeResult);
+      }
+    }
+ else {
+      reply.setChildFragment(probeResult);
+    }
+  }
+ else   if (IQ.SET.equals(packet.getType())) {
+    try {
+      XMPPFragment iq=packet.getChildFragment();
+      MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
+      if (metaData.includesProperty("query.remove")) {
+        if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+          Presence presence=new PresenceImpl();
+          presence.setAvailable(false);
+          presence.setVisible(false);
+          presence.setSender(packet.getSender());
+          presenceHandler.process(presence);
+          userManager.deleteUser(session.getUserID());
+          reply=packet.createResult();
+          session.getConnection().deliver(reply);
+          session.getConnection().close();
+        }
+ else {
+          throw new UnauthorizedException();
+        }
+      }
+ else {
+        String username=null;
+        String password=null;
+        String email=null;
+        User newUser=null;
+        XDataFormImpl registrationForm=null;
+        FormField field;
+        Element formElement=((XMPPDOMFragment)iq).getRootElement().element("x");
+        if (formElement != null) {
+          registrationForm=new XDataFormImpl();
+          registrationForm.parse(formElement);
+          Iterator values=registrationForm.getField("username").getValues();
+          username=(values.hasNext() ? (String)values.next() : " ");
+          field=registrationForm.getField("password");
+          if (field != null) {
+            values=field.getValues();
+            password=(values.hasNext() ? (String)values.next() : " ");
+          }
+          field=registrationForm.getField("email");
+          if (field != null) {
+            values=field.getValues();
+            email=(values.hasNext() ? (String)values.next() : " ");
+          }
+        }
+ else {
+          username=metaData.getProperty("query.username");
+          password=metaData.getProperty("query.password");
+          email=metaData.getProperty("query.email");
+        }
+        if (email == null || "".equals(email)) {
+          email=" ";
+        }
+        if (password == null || password.trim().length() == 0) {
+          reply=packet.createResult();
+          reply.setError(XMPPError.Code.NOT_ACCEPTABLE);
+          return reply;
+        }
+        if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+          User user=userManager.getUser(session.getUserID());
+          if (user != null) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+              user.setPassword(password);
+              user.getInfo().setEmail(email);
+              newUser=user;
+            }
+ else {
+              if (user.isAuthorized(Permissions.SYSTEM_ADMIN)) {
+                newUser=userManager.createUser(username,password,email);
+              }
+ else {
+                throw new UnauthorizedException();
+              }
+            }
+          }
+ else {
+            throw new UnauthorizedException();
+          }
+        }
+ else {
+          newUser=userManager.createUser(username,password,email);
+        }
+        if (newUser != null && registrationForm != null) {
+          Iterator values;
+          field=registrationForm.getField("name");
+          if (field != null) {
+            values=field.getValues();
+            String name=(values.hasNext() ? (String)values.next() : " ");
+            newUser.getInfo().setName(name);
+          }
+          values=registrationForm.getField("x-nameVisible").getValues();
+          String visible=(values.hasNext() ? (String)values.next() : "1");
+          boolean nameVisible=("1".equals(visible) ? true : false);
+          values=registrationForm.getField("x-emailVisible").getValues();
+          visible=(values.hasNext() ? (String)values.next() : "0");
+          boolean emailVisible=("1".equals(visible) ? true : false);
+          newUser.getInfo().setNameVisible(nameVisible);
+          newUser.getInfo().setEmailVisible(emailVisible);
+          newUser.saveInfo();
+        }
+        reply=packet.createResult();
+      }
+    }
+ catch (    UserAlreadyExistsException e) {
+      reply=packet.createResult();
+      reply.setError(XMPPError.Code.CONFLICT);
+    }
+catch (    UserNotFoundException e) {
+      reply=packet.createResult();
+      reply.setError(XMPPError.Code.BAD_REQUEST);
+    }
+catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  if (reply != null) {
+    session.getConnection().deliver(reply);
+  }
+  return null;
+}

@@ -1,0 +1,29 @@
+{
+  boolean found=false;
+  if (field.length() == 0) {
+    found=true;
+  }
+ else {
+    found=tryMethod("remove" + field,trackClass,service);
+  }
+  if (!found) {
+    found=tryMethod("remove" + field,Object.class,service);
+    if (!found) {
+      found=tryMethod("set" + field,trackClass,null);
+      if (!found) {
+        found=tryMethod("set" + field,Object.class,null);
+        try {
+          Class parent=this.getClass();
+          while (parent != null && !found) {
+            found=matchFields(parent,field,service,false);
+            parent=parent.getSuperclass();
+          }
+        }
+ catch (        Exception e) {
+          Log.error("Problem processing service",e);
+        }
+      }
+    }
+  }
+  return found;
+}

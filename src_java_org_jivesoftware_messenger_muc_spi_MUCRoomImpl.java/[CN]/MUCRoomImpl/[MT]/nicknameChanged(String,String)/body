@@ -1,0 +1,10 @@
+{
+  lock.writeLock().lock();
+  try {
+    occupants.put(newNick.toLowerCase(),occupants.get(oldNick.toLowerCase()));
+    occupants.remove(oldNick.toLowerCase());
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+}

@@ -1,0 +1,24 @@
+{
+  if (update.getSender() == null) {
+    return;
+  }
+  if (localServer.isLocal(update.getSender())) {
+    Set set=(Set)directedPresences.get(update.getSender().toStringPrep());
+    if (set != null) {
+      RoutableChannelHandler handler;
+      for (Iterator it=set.iterator(); it.hasNext(); ) {
+        handler=(RoutableChannelHandler)((HandlerWeakReference)it.next()).get();
+        if (handler != null) {
+          update.setRecipient(handler.getAddress());
+          try {
+            handler.process(update);
+          }
+ catch (          UnauthorizedException ue) {
+            Log.error(ue);
+          }
+        }
+      }
+      directedPresences.remove(update.getSender().toStringPrep());
+    }
+  }
+}

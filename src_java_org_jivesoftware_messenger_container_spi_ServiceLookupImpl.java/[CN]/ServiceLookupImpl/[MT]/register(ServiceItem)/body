@@ -1,0 +1,20 @@
+{
+  if (item.serviceID == null) {
+    item.serviceID=new ServiceID();
+  }
+  Object result=null;
+  try {
+    matchLock.writeLock().lock();
+    result=idTable.put(item.serviceID,item);
+  }
+  finally {
+    matchLock.writeLock().unlock();
+  }
+  if (result == null) {
+    notifyTransitions(noMatchMatchListeners,TRANSITION_NOMATCH_MATCH,item);
+  }
+ else {
+    notifyTransitions(matchMatchListeners,TRANSITION_MATCH_MATCH,item);
+  }
+  return new ServiceRegistrationImpl(this,item.serviceID);
+}

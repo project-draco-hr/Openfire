@@ -1,0 +1,36 @@
+{
+  LongList users=new LongList(500);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ALL_USERS);
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.setFetchSize(rs,500);
+    while (rs.next()) {
+      users.add(rs.getLong(1));
+    }
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return users;
+}

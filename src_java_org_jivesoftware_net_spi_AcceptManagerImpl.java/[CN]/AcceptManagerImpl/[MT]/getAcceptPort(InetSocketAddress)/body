@@ -1,0 +1,14 @@
+{
+  AcceptPort matchedPort=null;
+  Iterator portIter=ports.iterator();
+  while (portIter.hasNext()) {
+    AcceptPort acceptPort=(AcceptPort)portIter.next();
+    if (acceptPort.getInetSocketAddress().equals(portAddress)) {
+      matchedPort=acceptPort;
+    }
+  }
+  if (matchedPort == null) {
+    throw new NotFoundException(portAddress.toString());
+  }
+  return matchedPort;
+}

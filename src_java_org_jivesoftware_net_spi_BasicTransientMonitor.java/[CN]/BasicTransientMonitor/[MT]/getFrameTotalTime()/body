@@ -1,0 +1,17 @@
+{
+  long time=0;
+  if (frameList.size() > 0) {
+    frameLock.writeLock().lock();
+    try {
+      frameList.mark();
+      while (frameList.getPassCount() == 0) {
+        Sample sample=(Sample)frameList.next();
+        time+=sample.getTime();
+      }
+    }
+  finally {
+      frameLock.writeLock().lock();
+    }
+  }
+  return time;
+}

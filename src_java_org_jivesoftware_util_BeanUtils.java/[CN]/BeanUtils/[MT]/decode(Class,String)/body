@@ -1,0 +1,31 @@
+{
+  if (type.getName().equals("java.lang.String")) {
+    return value;
+  }
+  if (type.getName().equals("boolean")) {
+    return Boolean.valueOf(value);
+  }
+  if (type.getName().equals("int")) {
+    return Integer.valueOf(value);
+  }
+  if (type.getName().equals("long")) {
+    return Long.valueOf(value);
+  }
+  if (type.getName().equals("float")) {
+    return Float.valueOf(value);
+  }
+  if (type.getName().equals("double")) {
+    return Double.valueOf(value);
+  }
+  if (type.getName().equals("java.awt.Color")) {
+    StringTokenizer tokens=new StringTokenizer(value,",");
+    int red=Integer.parseInt(tokens.nextToken());
+    int green=Integer.parseInt(tokens.nextToken());
+    int blue=Integer.parseInt(tokens.nextToken());
+    return new Color(red,green,blue);
+  }
+  if (type.getName().equals("java.lang.Class")) {
+    return ClassUtils.forName(value);
+  }
+  return null;
+}

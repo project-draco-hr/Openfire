@@ -1,0 +1,29 @@
+{
+  ChatRole leaveRole=null;
+  leaveRole=(ChatRole)members.remove(nickname.toLowerCase());
+  ChatUser user=leaveRole.getChatUser();
+  roomHistory.userLeft(user,new Date());
+  if (members.isEmpty()) {
+    endTime=System.currentTimeMillis();
+    roomHistory.setHistory(getHistoryStrategy());
+    roomHistory.setEndTime(System.currentTimeMillis());
+    ChatAuditManager cAuditManager=ChatAuditManager.getInstance();
+    cAuditManager.addChatHistory(roomHistory);
+    cAuditManager.fireChatRoomClosed(server.getChatRoom(name));
+    server.removeChatRoom(name);
+  }
+  if (leaveRole != null) {
+    try {
+      Presence presence=createPresence(Presence.STATUS_OFFLINE);
+      presence.setSender(leaveRole.getRoleAddress());
+      broadcast((Presence)presence.createDeepCopy());
+      leaveRole.kick();
+      List params=new ArrayList();
+      params.add(nickname);
+      serverBroadcast(LocaleUtils.getLocalizedString("chat.leave",params));
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

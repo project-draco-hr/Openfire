@@ -1,0 +1,31 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(DELETE_CHATBOT_INFO);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+    pstmt=con.prepareStatement(DELETE_CHATBOT_ID);
+    pstmt.setLong(1,userID);
+    pstmt.setInt(2,DbUserIDProvider.CHATBOT_TYPE);
+    pstmt.setLong(3,DbUserIDProvider.DEFAULT_DOMAIN);
+    pstmt.execute();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

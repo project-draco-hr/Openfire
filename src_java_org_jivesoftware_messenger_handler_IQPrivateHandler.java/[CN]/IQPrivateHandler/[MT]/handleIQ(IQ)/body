@@ -1,0 +1,27 @@
+{
+  IQ replyPacket=null;
+  try {
+    Element dataElement=(Element)((XMPPDOMFragment)packet.getChildFragment()).getRootElement().elementIterator().next();
+    if (dataElement != null) {
+      if (IQ.GET.equals(packet.getType())) {
+        replyPacket=packet.createResult();
+        PayloadFragment frag=new PayloadFragment("jabber:iq:private","query");
+        frag.addFragment(new XMPPDOMFragment(privateStore.get(packet.getOriginatingSession().getUserID(),dataElement)));
+        replyPacket.setChildFragment(frag);
+      }
+ else {
+        privateStore.add(packet.getOriginatingSession().getUserID(),dataElement);
+        replyPacket=packet.createResult();
+      }
+    }
+ else {
+      replyPacket=packet.createResult();
+      PayloadFragment frag=new PayloadFragment("jabber:iq:private","query");
+      replyPacket.setChildFragment(frag);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UnauthorizedException(e);
+  }
+  return replyPacket;
+}

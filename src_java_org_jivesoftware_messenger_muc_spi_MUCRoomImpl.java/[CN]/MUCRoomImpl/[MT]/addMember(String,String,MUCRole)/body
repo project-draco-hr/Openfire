@@ -1,0 +1,40 @@
+{
+  int oldAffiliation=MUCRole.NONE;
+  if (isInvitationRequiredToEnter()) {
+    if (!canOccupantsInvite()) {
+      if (MUCRole.ADMINISTRATOR != sendRole.getAffiliation() && MUCRole.OWNER != sendRole.getAffiliation()) {
+        throw new ForbiddenException();
+      }
+    }
+  }
+ else {
+    if (MUCRole.ADMINISTRATOR != sendRole.getAffiliation() && MUCRole.OWNER != sendRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+  }
+  if (nickname != null && nickname.trim().length() > 0 && members.containsValue(nickname)) {
+    if (!nickname.equals(members.get(bareJID))) {
+      throw new ConflictException();
+    }
+  }
+  if (owners.contains(bareJID) && owners.size() == 1) {
+    throw new ConflictException();
+  }
+  members.put(bareJID,(nickname == null ? "" : nickname));
+  if (removeOwner(bareJID)) {
+    oldAffiliation=MUCRole.OWNER;
+  }
+ else   if (removeAdmin(bareJID)) {
+    oldAffiliation=MUCRole.ADMINISTRATOR;
+  }
+ else   if (removeOutcast(bareJID)) {
+    oldAffiliation=MUCRole.OUTCAST;
+  }
+  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,nickname,MUCRole.MEMBER,oldAffiliation);
+  try {
+    return changeAffiliationOfOccupant(bareJID,MUCRole.MEMBER,MUCRole.PARTICIPANT);
+  }
+ catch (  NotAllowedException e) {
+    return null;
+  }
+}

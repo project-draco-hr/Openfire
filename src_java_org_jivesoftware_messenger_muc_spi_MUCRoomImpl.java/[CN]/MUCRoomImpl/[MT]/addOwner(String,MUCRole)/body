@@ -1,0 +1,23 @@
+{
+  int oldAffiliation=MUCRole.NONE;
+  if (MUCRole.OWNER != sendRole.getAffiliation()) {
+    throw new ForbiddenException();
+  }
+  owners.add(bareJID);
+  if (removeAdmin(bareJID)) {
+    oldAffiliation=MUCRole.ADMINISTRATOR;
+  }
+ else   if (removeMember(bareJID)) {
+    oldAffiliation=MUCRole.MEMBER;
+  }
+ else   if (removeOutcast(bareJID)) {
+    oldAffiliation=MUCRole.OUTCAST;
+  }
+  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.OWNER,oldAffiliation);
+  try {
+    return changeAffiliationOfOccupant(bareJID,MUCRole.OWNER,MUCRole.MODERATOR);
+  }
+ catch (  NotAllowedException e) {
+    return null;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  MUCRoom room=null;
+synchronized (rooms) {
+    room=(MUCRoom)rooms.get(roomName.toLowerCase());
+    if (room == null) {
+      room=new MUCRoomImpl(this,roomName,router);
+      if (!room.isPersistent()) {
+        if (allowedToCreate.size() > 0 && !sysadmins.contains(userjid.toBareStringPrep())) {
+          if (!allowedToCreate.contains(userjid.toBareStringPrep())) {
+            throw new UnauthorizedException();
+          }
+        }
+        room.addFirstOwner(userjid.toBareStringPrep());
+      }
+ else {
+        MUCPersistenceManager.updateRoomInMemory(room,true);
+      }
+      rooms.put(roomName.toLowerCase(),room);
+    }
+  }
+  return room;
+}

@@ -1,0 +1,28 @@
+{
+  String name;
+  String host;
+  String resource;
+  if (address == null) {
+    return null;
+  }
+ else {
+    address=address.trim();
+    int atPos=address.indexOf('@');
+    int slashPos=address.indexOf('/');
+    if (atPos != -1) {
+      name=address.substring(0,atPos);
+    }
+ else {
+      name="";
+    }
+    if (slashPos == -1 || slashPos == address.length() - 1) {
+      slashPos=address.length();
+      resource="";
+    }
+ else {
+      resource=address.substring(slashPos + 1);
+    }
+    host=address.substring(atPos + 1,slashPos);
+  }
+  return new XMPPAddress(name,host,resource);
+}

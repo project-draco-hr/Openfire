@@ -1,0 +1,17 @@
+{
+  if (LAZY_PROP_LOADING && properties == null) {
+    loadPropertiesFromDb(isVcard);
+  }
+  Map props;
+  if (isVcard) {
+    props=vcardProps;
+  }
+ else {
+    props=properties;
+  }
+  if (props.containsKey(name)) {
+    props.remove(name);
+    deletePropertyFromDb(name,isVcard);
+    CacheManager.getCache("userid2user").put(new Long(id),this);
+  }
+}

@@ -1,0 +1,18 @@
+{
+  if (index < 0 || index > size) {
+    throw new IndexOutOfBoundsException("Index " + index + " not valid.");
+  }
+  for (int i=size; i > index; i--) {
+    elements[i]=elements[i - 1];
+  }
+  elements[index]=value;
+  size++;
+  if (size == capacity) {
+    capacity=capacity * 2;
+    long[] newElements=new long[capacity];
+    for (int i=0; i < size; i++) {
+      newElements[i]=elements[i];
+    }
+    elements=newElements;
+  }
+}

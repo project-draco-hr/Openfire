@@ -1,0 +1,11 @@
+{
+  if (connectionPool == null) {
+synchronized (initLock) {
+      if (connectionPool == null) {
+        Log.error("Error: EmbeddedConnectionProvider.getConnection() was" + "called before the internal pool has been initialized.");
+        return null;
+      }
+    }
+  }
+  return connectionPool.getConnection();
+}

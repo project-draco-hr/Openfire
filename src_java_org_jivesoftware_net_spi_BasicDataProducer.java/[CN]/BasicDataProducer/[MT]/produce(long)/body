@@ -1,0 +1,18 @@
+{
+  Date start=new Date();
+  ByteBuffer data=null;
+  boolean success=preProduction(limit);
+  if (success) {
+    data=doProduction(limit);
+  }
+  if (success && data != null) {
+    success=postProduction(data,limit);
+  }
+  if (monitor != null) {
+    monitor.addSample(data.remaining(),start,new Date());
+  }
+  if (data != null && sink != null) {
+    sink.consume(data);
+  }
+  return data;
+}

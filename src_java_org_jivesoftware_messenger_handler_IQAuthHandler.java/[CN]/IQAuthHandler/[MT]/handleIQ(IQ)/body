@@ -1,0 +1,49 @@
+{
+  try {
+    Session session=packet.getOriginatingSession();
+    IQ response=null;
+    try {
+      Element iq=((XMPPDOMFragment)packet.getChildFragment()).getRootElement();
+      if (IQ.GET == packet.getType()) {
+        String username=iq.element("username").getTextTrim();
+        probeResponse.element("username").setText(username);
+        response=packet.createResult(probeResponse);
+      }
+ else {
+        if (iq.elements().isEmpty()) {
+          response=anonymousLogin(session,packet);
+        }
+ else {
+          String username=iq.element("username").getTextTrim();
+          String password=null;
+          if (iq.element("password") != null) {
+            password=iq.element("password").getTextTrim();
+          }
+          String digest=null;
+          if (iq.element("digest") != null) {
+            digest=iq.element("digest").getTextTrim().toLowerCase();
+          }
+          if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+            response=passwordReset(password,packet,username,session);
+          }
+ else {
+            response=login(username,iq,packet,response,password,session,digest);
+          }
+        }
+      }
+    }
+ catch (    UserNotFoundException e) {
+      response=packet.createResult();
+      response.setError(XMPPError.Code.UNAUTHORIZED);
+    }
+catch (    UnauthorizedException e) {
+      response=packet.createResult();
+      response.setError(XMPPError.Code.UNAUTHORIZED);
+    }
+    deliverer.deliver(response);
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  return null;
+}

@@ -1,0 +1,15 @@
+{
+  long groupID=group.getID();
+  long[] members=new long[group.getMemberCount()];
+  Iterator iter=group.members();
+  for (int i=0; i < members.length; i++) {
+    User user=(User)iter.next();
+    members[i]=user.getID();
+  }
+  provider.deleteGroup(group.getID());
+  groupCache.remove(new Long(groupID));
+  groupIDCache.remove(group.getName());
+  for (int i=0; i < members.length; i++) {
+    groupMemberCache.remove("userGroups-" + members[i]);
+  }
+}

@@ -1,0 +1,27 @@
+{
+  if (current != null) {
+    currentLock.writeLock().lock();
+    try {
+      if (item == null ? current.object == null : item.equals(current.object)) {
+        current=null;
+        mark();
+      }
+ else {
+        for (LinkedListNode node=current.next; node != current; node=node.next) {
+          if (item == null ? node.object == null : item.equals(node.object)) {
+            node.previous.next=node.next;
+            node.next.previous=node.previous;
+            if (node == mark) {
+              mark=node.next;
+            }
+            break;
+          }
+        }
+      }
+      size--;
+    }
+  finally {
+      currentLock.writeLock().lock();
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  IQ returnPacket=null;
+  Session session=packet.getOriginatingSession();
+  XMPPPacket.Type type=packet.getType();
+  try {
+    User sessionUser=userManager.getUser(session.getUserID());
+    CachedRoster cachedRoster=(CachedRoster)sessionUser.getRoster();
+    if (IQ.GET == type) {
+      returnPacket=cachedRoster.getReset();
+      returnPacket.setType(IQ.RESULT);
+      returnPacket.setRecipient(session.getAddress());
+      returnPacket.setID(packet.getID());
+      deliverer.deliver(returnPacket);
+      returnPacket=null;
+      String username=sessionUser.getUsername();
+      Iterator items=cachedRoster.getRosterItems();
+      while (items.hasNext()) {
+        RosterItem cachedItem=(RosterItem)items.next();
+        if (cachedItem.getSubStatus() == RosterItem.SUB_BOTH || cachedItem.getSubStatus() == RosterItem.SUB_TO) {
+          presenceManager.probePresence(username,cachedItem.getJid());
+        }
+      }
+    }
+ else     if (IQ.SET == type) {
+      Iterator itemIter=packet.getRosterItems();
+      while (itemIter.hasNext()) {
+        RosterItem item=(RosterItem)itemIter.next();
+        if (item.getSubStatus() == RosterItem.SUB_REMOVE) {
+          removeItem(cachedRoster,packet.getSender(),item,packet);
+        }
+ else {
+          if (cachedRoster.isRosterItem(item.getJid())) {
+            CachedRosterItem cachedItem=(CachedRosterItem)cachedRoster.getRosterItem(item.getJid());
+            cachedItem.setAsCopyOf(item);
+            cachedRoster.updateRosterItem(cachedItem);
+          }
+ else {
+            cachedRoster.createRosterItem(item);
+          }
+        }
+      }
+      returnPacket=packet.createResult();
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UnauthorizedException(e);
+  }
+  return returnPacket;
+}

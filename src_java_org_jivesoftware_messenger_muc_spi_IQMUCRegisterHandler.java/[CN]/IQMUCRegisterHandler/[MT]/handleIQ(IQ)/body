@@ -1,0 +1,54 @@
+{
+  Session session=packet.getOriginatingSession();
+  IQ reply=null;
+  if (IQ.GET.equals(packet.getType())) {
+    reply=packet.createResult();
+    reply.setChildFragment(probeResult);
+  }
+ else   if (IQ.SET.equals(packet.getType())) {
+    try {
+      reply=packet.createResult();
+      XMPPFragment iq=packet.getChildFragment();
+      Element formElement=((XMPPDOMFragment)iq).getRootElement().element("x");
+      if (formElement != null) {
+        XDataFormImpl registrationForm=new XDataFormImpl();
+        registrationForm.parse(formElement);
+        Iterator values=registrationForm.getField("muc#user_roomnick").getValues();
+        String nickname=(values.hasNext() ? (String)values.next() : null);
+        MUCRoom room=mucServer.getChatRoom(packet.getRecipient().getNamePrep());
+        if (room != null) {
+          List presences=new ArrayList();
+          presences.addAll(room.addMember(packet.getSender().toBareStringPrep(),nickname,room.getRole()));
+          try {
+            for (Iterator it=presences.iterator(); it.hasNext(); ) {
+              room.send((Presence)it.next());
+            }
+          }
+ catch (          UnauthorizedException e) {
+          }
+        }
+ else {
+          reply.setError(XMPPError.Code.NOT_FOUND);
+        }
+      }
+ else {
+        reply.setError(XMPPError.Code.BAD_REQUEST);
+      }
+    }
+ catch (    ForbiddenException e) {
+      reply=packet.createResult();
+      reply.setError(XMPPError.Code.FORBIDDEN);
+    }
+catch (    ConflictException e) {
+      reply=packet.createResult();
+      reply.setError(XMPPError.Code.CONFLICT);
+    }
+catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  if (reply != null) {
+    session.getConnection().deliver(reply);
+  }
+  return null;
+}

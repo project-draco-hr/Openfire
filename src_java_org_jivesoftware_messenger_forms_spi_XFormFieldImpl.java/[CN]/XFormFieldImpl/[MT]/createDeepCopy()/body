@@ -1,0 +1,14 @@
+{
+  XFormFieldImpl copy=new XFormFieldImpl(variable);
+  copy.description=this.description;
+  copy.required=this.required;
+  copy.label=this.label;
+  copy.type=this.type;
+  copy.options=(List)((ArrayList)this.options).clone();
+  copy.values=(List)((ArrayList)this.values).clone();
+  Iterator fragmentIter=getFragments();
+  while (fragmentIter.hasNext()) {
+    copy.addFragment(((XMPPFragment)fragmentIter.next()).createDeepCopy());
+  }
+  return copy;
+}

@@ -1,0 +1,39 @@
+{
+  if (shutdownStarted) {
+    return null;
+  }
+  ConnectionWrapper con=getCon();
+  if (con != null) {
+synchronized (con) {
+      con.checkedout=true;
+      con.lockTime=System.currentTimeMillis();
+    }
+    return con;
+  }
+ else {
+synchronized (waitLock) {
+      try {
+        waitingForCon++;
+        while (true) {
+          con=getCon();
+          if (con != null) {
+            --waitingForCon;
+synchronized (con) {
+              con.checkedout=true;
+              con.lockTime=System.currentTimeMillis();
+            }
+            return con;
+          }
+ else {
+            waitLock.wait();
+          }
+        }
+      }
+ catch (      InterruptedException ex) {
+        --waitingForCon;
+        waitLock.notify();
+        throw new SQLException("Interrupted while waiting for connection to " + "become available.");
+      }
+    }
+  }
+}

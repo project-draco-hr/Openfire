@@ -1,0 +1,18 @@
+{
+  IQHandler handler=null;
+  handler=(IQHandler)namespace2Handlers.get(namespace);
+  if (handler == null) {
+    Iterator handlerIter=iqHandlers.iterator();
+    while (handlerIter.hasNext() && handler == null) {
+      IQHandler handlerCandidate=(IQHandler)handlerIter.next();
+      IQHandlerInfo handlerInfo=handlerCandidate.getInfo();
+      if (handlerInfo != null && namespace.equalsIgnoreCase(handlerInfo.getNamespace())) {
+        handler=handlerCandidate;
+      }
+    }
+    if (handler != null) {
+      namespace2Handlers.put(namespace,handler);
+    }
+  }
+  return handler;
+}

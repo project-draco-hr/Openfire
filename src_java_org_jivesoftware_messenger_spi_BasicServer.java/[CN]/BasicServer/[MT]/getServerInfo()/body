@@ -1,0 +1,16 @@
+{
+  Iterator ports;
+  if (connectionManager == null) {
+    connectionManager=(ConnectionManager)lookup.lookup(ConnectionManager.class);
+  }
+  if (connectionManager == null) {
+    ports=Collections.EMPTY_LIST.iterator();
+  }
+ else {
+    ports=connectionManager.getPorts();
+  }
+  if (!initialized) {
+    throw new IllegalStateException("Not initialized yet");
+  }
+  return new XMPPServerInfoImpl(modContext,name,version,startDate,stopDate,ports);
+}

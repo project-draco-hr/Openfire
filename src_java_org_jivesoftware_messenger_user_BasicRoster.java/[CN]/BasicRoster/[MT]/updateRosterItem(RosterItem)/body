@@ -1,0 +1,12 @@
+{
+  itemLock.writeLock().lock();
+  try {
+    if (rosterItems.get(item.getJid().toBareStringPrep()) == null) {
+      throw new UserNotFoundException(item.getJid().toBareStringPrep());
+    }
+    rosterItems.put(item.getJid().toBareStringPrep(),item);
+  }
+  finally {
+    itemLock.writeLock().unlock();
+  }
+}

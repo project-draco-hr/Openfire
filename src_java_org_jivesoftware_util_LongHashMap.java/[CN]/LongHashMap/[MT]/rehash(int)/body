@@ -1,0 +1,24 @@
+{
+  int oldCapacity=table.length;
+  long oldTable[]=table;
+  Object oldValues[]=values;
+  byte oldState[]=state;
+  long newTable[]=new long[newCapacity];
+  Object newValues[]=new Object[newCapacity];
+  byte newState[]=new byte[newCapacity];
+  this.lowWaterMark=chooseLowWaterMark(newCapacity,this.minLoadFactor);
+  this.highWaterMark=chooseHighWaterMark(newCapacity,this.maxLoadFactor);
+  this.table=newTable;
+  this.values=newValues;
+  this.state=newState;
+  this.freeEntries=newCapacity - this.distinct;
+  for (int i=oldCapacity; i-- > 0; ) {
+    if (oldState[i] == FULL) {
+      long element=oldTable[i];
+      int index=indexOfInsertion(element);
+      newTable[index]=element;
+      newValues[index]=oldValues[i];
+      newState[index]=FULL;
+    }
+  }
+}

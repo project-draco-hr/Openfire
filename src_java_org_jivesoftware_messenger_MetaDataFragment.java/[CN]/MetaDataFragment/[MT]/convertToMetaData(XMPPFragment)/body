@@ -1,0 +1,18 @@
+{
+  MetaDataFragment meta=null;
+  if (fragment instanceof MetaDataFragment) {
+    meta=(MetaDataFragment)fragment;
+  }
+ else   if (fragment instanceof XMPPDOMFragment) {
+    XMPPDOMFragment dom=(XMPPDOMFragment)fragment;
+    meta=new MetaDataFragment(dom.getRootElement());
+    Iterator frags=dom.getFragments();
+    while (frags.hasNext()) {
+      meta.addFragment((XMPPFragment)frags.next());
+    }
+  }
+ else {
+    throw new IllegalArgumentException();
+  }
+  return meta;
+}

@@ -1,0 +1,24 @@
+{
+  BeanDescriptor descriptor=new BeanDescriptor(getBeanClass());
+  try {
+    String displayName=bundle.getString("displayName");
+    if (displayName != null) {
+      descriptor.setDisplayName(displayName);
+    }
+    String shortDescription=bundle.getString("shortDescription");
+    if (shortDescription != null) {
+      descriptor.setShortDescription(shortDescription);
+    }
+    Enumeration enumeration=bundle.getKeys();
+    while (enumeration.hasMoreElements()) {
+      String key=(String)enumeration.nextElement();
+      String value=bundle.getString(key);
+      if (value != null) {
+        descriptor.setValue(key,value);
+      }
+    }
+  }
+ catch (  Exception e) {
+  }
+  return descriptor;
+}

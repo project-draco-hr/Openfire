@@ -1,0 +1,13 @@
+{
+  if (presence.getUserID() != -1) {
+synchronized (onlineUserCache) {
+      Long id=new Long(presence.getUserID());
+      onlineUserCache.remove(id);
+    }
+  }
+ else {
+synchronized (onlineGuestCache) {
+      onlineGuestCache.remove(presence.getID());
+    }
+  }
+}

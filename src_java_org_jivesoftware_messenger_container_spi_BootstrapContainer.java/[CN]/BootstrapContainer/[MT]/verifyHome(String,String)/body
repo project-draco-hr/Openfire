@@ -1,0 +1,14 @@
+{
+  String forumsConfigName="jive_config.xml";
+  File realHome=null;
+  File guess=new File(homeGuess);
+  File configFileGuess=new File(guess,jiveConfigName);
+  if (configFileGuess.exists()) {
+    realHome=guess;
+  }
+  File forumsHome=new File(guess,forumsConfigName);
+  if (forumsHome.exists()) {
+    throw new FileNotFoundException();
+  }
+  return realHome;
+}

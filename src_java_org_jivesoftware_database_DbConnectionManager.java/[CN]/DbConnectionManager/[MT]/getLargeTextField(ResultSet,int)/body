@@ -1,0 +1,35 @@
+{
+  if (isStreamTextRequired()) {
+    Reader bodyReader=null;
+    String value=null;
+    try {
+      bodyReader=rs.getCharacterStream(columnIndex);
+      if (bodyReader == null) {
+        return null;
+      }
+      char[] buf=new char[256];
+      int len;
+      StringWriter out=new StringWriter(256);
+      while ((len=bodyReader.read(buf)) >= 0) {
+        out.write(buf,0,len);
+      }
+      value=out.toString();
+      out.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      throw new SQLException("Failed to load text field");
+    }
+ finally {
+      try {
+        bodyReader.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+    return value;
+  }
+ else {
+    return rs.getString(columnIndex);
+  }
+}

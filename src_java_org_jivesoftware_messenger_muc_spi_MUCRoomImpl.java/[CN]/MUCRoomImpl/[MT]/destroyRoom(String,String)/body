@@ -1,0 +1,39 @@
+{
+  MUCRole leaveRole=null;
+  lock.writeLock().lock();
+  try {
+    for (    String nickname : occupants.keySet()) {
+      leaveRole=occupants.remove(nickname);
+      if (leaveRole != null) {
+        try {
+          Presence presence=createPresence(Presence.STATUS_OFFLINE);
+          presence.setSender(leaveRole.getRoleAddress());
+          presence.setRecipient(leaveRole.getChatUser().getAddress());
+          MetaDataFragment fragment;
+          fragment=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
+          fragment.setProperty("x.item:affiliation","none");
+          fragment.setProperty("x.item:role","none");
+          if (alternateJID != null && alternateJID.length() > 0) {
+            fragment.setProperty("x.destroy:jid",alternateJID);
+          }
+          if (reason != null && reason.length() > 0) {
+            fragment.setProperty("x.destroy.reason",reason);
+          }
+          presence.addFragment(fragment);
+          router.route(presence);
+          leaveRole.kick();
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+    endTime=System.currentTimeMillis();
+    roomHistory.setEndTime(System.currentTimeMillis());
+    MUCPersistenceManager.deleteFromDB(this);
+    server.removeChatRoom(name);
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+}

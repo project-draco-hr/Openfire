@@ -1,0 +1,27 @@
+{
+  if (rosterCache == null) {
+    rosterCache=CacheManager.getCache("userid2roster");
+  }
+  if (rosterCache == null) {
+    throw new UserNotFoundException("Could not load caches");
+  }
+  CachedRoster roster=(CachedRoster)rosterCache.get(new Long(id));
+  if (roster == null) {
+    if (nameIDManager == null) {
+      try {
+        nameIDManager=(NameIDManager)ServiceLookupFactory.getLookup().lookup(NameIDManager.class);
+      }
+ catch (      UnauthorizedException e) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      }
+    }
+    if (nameIDManager != null) {
+      roster=new CachedRosterImpl(id,nameIDManager.getUsername(id));
+      rosterCache.put(new Long(id),roster);
+    }
+  }
+  if (roster == null) {
+    throw new UserNotFoundException(Long.toHexString(id));
+  }
+  return roster;
+}

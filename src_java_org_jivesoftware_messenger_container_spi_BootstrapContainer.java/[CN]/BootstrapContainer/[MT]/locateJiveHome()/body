@@ -1,0 +1,76 @@
+{
+  String jiveConfigName="config" + File.separator + "jive-"+ getFileCoreName()+ ".xml";
+  if (jiveHome == null) {
+    String homeProperty=System.getProperty("jiveHome");
+    try {
+      if (homeProperty != null) {
+        jiveHome=verifyHome(homeProperty,jiveConfigName);
+      }
+    }
+ catch (    FileNotFoundException fe) {
+      System.err.println("Messenger and Forums/KB cannot share " + "the same jiveHome directory!");
+      System.err.println(" *  A Forum/KB jiveHome directory was detected " + "using the system property 'jiveHome' pointing to " + homeProperty);
+      System.err.println(" *  Messenger will continue looking for jiveHome");
+    }
+  }
+  if (jiveHome == null) {
+    try {
+      jiveHome=verifyHome("..",jiveConfigName);
+    }
+ catch (    FileNotFoundException fe) {
+      String path="..";
+      try {
+        path=new File("..").getCanonicalPath();
+      }
+ catch (      Exception e) {
+        System.err.println("Could not resolve path to '..'");
+      }
+      System.err.println("Messenger and Forums/KB cannot share " + "the same jiveHome directory!");
+      System.err.println(" *  A Forum/KB jiveHome directory was detected " + "where a standalone Messenger installation was " + "expected: "+ path);
+      System.err.println(" *  Messenger will continue looking for jiveHome");
+    }
+  }
+  if (jiveHome == null) {
+    InputStream in=null;
+    try {
+      in=getClass().getResourceAsStream("/jive_init.xml");
+      if (in != null) {
+        Document doc=XPPReader.parseDocument(new InputStreamReader(in),this.getClass());
+        String path=doc.getRootElement().getText();
+        try {
+          if (path != null) {
+            jiveHome=verifyHome(path,jiveConfigName);
+          }
+        }
+ catch (        FileNotFoundException fe) {
+          System.err.println("Messenger and Forums/KB cannot share " + "the same jiveHome directory");
+          System.err.println(" *  A Forum/KB jiveHome directory was " + "detected by following the directory " + "specified in the resource stream "+ "'/jive_init.xml'"+ "probably located on your classpath. The"+ "init file pointed to "+ path);
+        }
+      }
+    }
+ catch (    Exception e) {
+      System.err.println("Error loading jive_init.xml to find jiveHome.");
+      e.printStackTrace();
+    }
+ finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      }
+ catch (      Exception e) {
+        System.err.println("Could not close open connection");
+        e.printStackTrace();
+      }
+    }
+  }
+  if (jiveHome == null) {
+    System.err.println("Could not locate jiveHome");
+    throw new FileNotFoundException();
+  }
+ else {
+    JiveGlobals.jiveHome=jiveHome.toString();
+    configFile=new File(jiveHome,jiveConfigName);
+    logDir=new File(jiveHome,JIVE_LOG_DIR);
+  }
+}

@@ -1,0 +1,15 @@
+{
+  lock.readLock().lock();
+  try {
+    ArrayList<MUCRole> participants=new ArrayList<MUCRole>();
+    for (    MUCRole role : occupants.values()) {
+      if (MUCRole.PARTICIPANT == role.getRole()) {
+        participants.add(role);
+      }
+    }
+    return participants.iterator();
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

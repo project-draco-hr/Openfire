@@ -1,0 +1,9 @@
+{
+  long userID=entity.getID();
+  String key="userGroups-" + userID;
+  long[] groups=(long[])groupMemberCache.get(key);
+  if (groups == null) {
+    groups=provider.getGroups(entity.getID()).toArray();
+  }
+  return new GroupIterator(this,groups);
+}

@@ -1,0 +1,18 @@
+{
+  InputStream in=null;
+  OutputStream out=null;
+  try {
+    in=source.openStream();
+    out=new FileOutputStream(destination);
+    destination.mkdirs();
+    copy(in,out);
+  }
+  finally {
+    try {
+      if (in != null)       in.close();
+      if (out != null)       out.close();
+    }
+ catch (    IOException e) {
+    }
+  }
+}

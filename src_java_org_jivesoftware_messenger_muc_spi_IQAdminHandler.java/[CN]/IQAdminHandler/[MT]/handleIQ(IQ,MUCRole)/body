@@ -1,0 +1,12 @@
+{
+  IQ reply=packet.createResult();
+  Element element=((XMPPDOMFragment)packet.getChildFragment()).getRootElement();
+  List itemsList=element.elements("item");
+  if (!itemsList.isEmpty()) {
+    handleItemsElement(role,itemsList,reply);
+  }
+ else {
+    reply.setError(XMPPError.Code.BAD_REQUEST);
+  }
+  router.route(reply);
+}

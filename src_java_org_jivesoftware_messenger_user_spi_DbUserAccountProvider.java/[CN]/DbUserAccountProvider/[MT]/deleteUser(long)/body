@@ -1,0 +1,40 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(DELETE_USER_GROUPS);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+    pstmt=con.prepareStatement(DELETE_USER_PROPS);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+    pstmt=con.prepareStatement(DELETE_VCARD_PROPS);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+    pstmt=con.prepareStatement(DELETE_USER);
+    pstmt.setLong(1,userID);
+    pstmt.execute();
+    pstmt=con.prepareStatement(DELETE_USER_ID);
+    pstmt.setLong(1,userID);
+    pstmt.setInt(2,DbUserIDProvider.USER_TYPE);
+    pstmt.setLong(3,DbUserIDProvider.DEFAULT_DOMAIN);
+    pstmt.execute();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

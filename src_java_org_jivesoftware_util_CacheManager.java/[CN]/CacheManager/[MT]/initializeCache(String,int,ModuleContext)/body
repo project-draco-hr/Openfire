@@ -1,0 +1,15 @@
+{
+  Cache cache=(Cache)caches.get(name);
+  if (cache == null) {
+    String cacheSize=context.getProperty("cache." + name + ".size");
+    int maxCacheSize=defaultMaxCacheSize;
+    if (cacheSize != null) {
+      try {
+        maxCacheSize=Integer.parseInt(cacheSize);
+      }
+ catch (      NumberFormatException e) {
+      }
+    }
+    caches.put(name,CacheFactory.createCache(name,maxCacheSize,maxLifetime));
+  }
+}

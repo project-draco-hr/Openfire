@@ -1,0 +1,11 @@
+{
+  item=provideRosterItem(item);
+  itemLock.writeLock().lock();
+  try {
+    rosterItems.put(item.getJid().toBareStringPrep(),item);
+    return item;
+  }
+  finally {
+    itemLock.writeLock().unlock();
+  }
+}

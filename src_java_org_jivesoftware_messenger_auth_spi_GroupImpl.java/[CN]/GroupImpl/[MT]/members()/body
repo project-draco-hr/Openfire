@@ -1,0 +1,13 @@
+{
+  if (memberList == null) {
+    memberList=provider.getMembers(groupID,false).toArray();
+    groupCache.put(new Long(groupID),this);
+  }
+  try {
+    return new UserIterator(memberList);
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  return null;
+}

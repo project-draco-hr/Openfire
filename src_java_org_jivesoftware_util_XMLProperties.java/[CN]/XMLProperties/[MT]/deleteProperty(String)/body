@@ -1,0 +1,13 @@
+{
+  propertyCache.remove(name);
+  String[] propName=parsePropertyName(name);
+  Element element=rootElement;
+  for (int i=0; i < propName.length - 1; i++) {
+    element=element.element(propName[i]);
+    if (element == null) {
+      return;
+    }
+  }
+  element.remove(element.element(propName[propName.length - 1]));
+  saveProperties();
+}

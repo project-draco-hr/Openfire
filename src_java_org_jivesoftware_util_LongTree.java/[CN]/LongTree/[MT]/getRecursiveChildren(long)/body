@@ -1,0 +1,15 @@
+{
+  char startIndex=findKey(parentKey,(char)1);
+  long[] depthKeys=new long[nextIndex - 1];
+  int cursor=0;
+  char siblingIndex=leftChildren[startIndex];
+  while (siblingIndex != 0) {
+    cursor=fillDepthKeys(siblingIndex,depthKeys,cursor);
+    siblingIndex=rightSiblings[siblingIndex];
+  }
+  long[] dKeys=new long[cursor];
+  for (int i=0; i < cursor; i++) {
+    dKeys[i]=depthKeys[i];
+  }
+  return dKeys;
+}

@@ -1,0 +1,36 @@
+{
+  MUCRole leaveRole=null;
+  lock.writeLock().lock();
+  try {
+    leaveRole=occupants.remove(nickname.toLowerCase());
+    if (leaveRole == null) {
+      throw new UserNotFoundException();
+    }
+    removeOccupantRole(leaveRole);
+    if (occupants.isEmpty()) {
+      endTime=System.currentTimeMillis();
+      roomHistory.setEndTime(System.currentTimeMillis());
+      server.removeChatRoom(name);
+    }
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  if (leaveRole != null) {
+    try {
+      Presence presence=createPresence(Presence.STATUS_OFFLINE);
+      presence.setSender(leaveRole.getRoleAddress());
+      presence.addFragment(leaveRole.getExtendedPresenceInformation());
+      broadcastPresence((Presence)presence.createDeepCopy());
+      leaveRole.kick();
+      List params=new ArrayList();
+      params.add(nickname);
+      if (canBroadcastPresence(leaveRole.getRoleAsString())) {
+        serverBroadcast(LocaleUtils.getLocalizedString("muc.leave",params));
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  if (MUCRole.MODERATOR != senderRole.getRole()) {
+    throw new ForbiddenException();
+  }
+  Presence updatedPresence=changeRoleOfOccupant(fullJID,MUCRole.PARTICIPANT);
+  if (updatedPresence != null) {
+    MetaDataFragment frag=(MetaDataFragment)updatedPresence.getFragment("x","http://jabber.org/protocol/muc#user");
+    if (reason != null && reason.trim().length() > 0) {
+      frag.setProperty("x.item.reason",reason);
+    }
+  }
+  return updatedPresence;
+}

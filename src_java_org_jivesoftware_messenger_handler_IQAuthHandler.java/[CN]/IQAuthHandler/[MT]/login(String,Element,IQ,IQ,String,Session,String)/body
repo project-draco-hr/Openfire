@@ -1,0 +1,42 @@
+{
+  XMPPAddress jid=localServer.createAddress(username,iq.element("resource").getTextTrim());
+  if (sessionManager.isActiveRoute(jid)) {
+    Session oldSession=null;
+    try {
+      oldSession=sessionManager.getSession(jid);
+      oldSession.incrementConflictCount();
+      int conflictLimit=sessionManager.getConflictKickLimit();
+      if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
+        Connection conn=oldSession.getConnection();
+        if (conn != null) {
+          conn.close();
+        }
+      }
+ else {
+        response=packet.createResult();
+        response.setError(XMPPError.Code.FORBIDDEN);
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+  if (response == null) {
+    AuthToken token=null;
+    if (password != null && AuthFactory.isPlainSupported()) {
+      token=AuthFactory.getAuthToken(username,password);
+    }
+ else     if (digest != null && AuthFactory.isDigestSupported()) {
+      token=AuthFactory.getAuthToken(username,session.getStreamID().toString(),digest);
+    }
+    if (token == null) {
+      throw new UnauthorizedException();
+    }
+ else {
+      session.setAuthToken(token,userManager,jid.getResource());
+      packet.setSender(session.getAddress());
+      response=packet.createResult();
+    }
+  }
+  return response;
+}

@@ -1,0 +1,32 @@
+{
+  if (con == null) {
+    return;
+  }
+  if (isTransactionsSupported()) {
+    try {
+      if (abortTransaction) {
+        con.rollback();
+      }
+ else {
+        con.commit();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  try {
+    if (isTransactionsSupported()) {
+      con.setAutoCommit(true);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  try {
+    con.close();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

@@ -1,0 +1,15 @@
+{
+  if (isAdministrator(entity)) {
+    long userID=entity.getID();
+    provider.deleteMember(groupID,userID);
+    try {
+      provider.updateGroup(this);
+    }
+ catch (    GroupNotFoundException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+    adminList=null;
+    groupCache.put(new Long(groupID),this);
+    groupMemberCache.remove(groupID + ",admin," + userID);
+  }
+}

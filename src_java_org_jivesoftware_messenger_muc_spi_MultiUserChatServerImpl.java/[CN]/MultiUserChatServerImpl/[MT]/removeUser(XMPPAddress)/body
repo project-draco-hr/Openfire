@@ -1,0 +1,17 @@
+{
+synchronized (users) {
+    MUCUser user=(MUCUser)users.remove(jabberID);
+    if (user != null) {
+      Iterator roles=user.getRoles();
+      while (roles.hasNext()) {
+        MUCRole role=(MUCRole)roles.next();
+        try {
+          role.getChatRoom().leaveRoom(role.getNickname());
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  if (isStreamTextRequired()) {
+    Reader bodyReader=null;
+    try {
+      bodyReader=new StringReader(value);
+      pstmt.setCharacterStream(parameterIndex,bodyReader,value.length());
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      throw new SQLException("Failed to set text field.");
+    }
+  }
+ else {
+    pstmt.setString(parameterIndex,value);
+  }
+}

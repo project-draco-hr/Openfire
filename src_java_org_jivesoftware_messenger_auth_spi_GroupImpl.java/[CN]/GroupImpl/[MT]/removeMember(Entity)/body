@@ -1,0 +1,11 @@
+{
+  if (!isMember(entity)) {
+    return;
+  }
+  long userID=entity.getID();
+  provider.deleteMember(groupID,userID);
+  memberList=null;
+  groupCache.put(new Long(groupID),this);
+  groupMemberCache.remove(groupID + ",member," + userID);
+  groupMemberCache.remove("userGroups-" + userID);
+}

@@ -1,0 +1,14 @@
+{
+  if (isClosed()) {
+    deliverer.deliver(packet);
+  }
+ else {
+    packet.setSending(true);
+synchronized (writer) {
+      packet.send(xmlSerializer,0);
+      xmlSerializer.flush();
+    }
+    auditor.audit(packet);
+    session.incrementServerPacketCount();
+  }
+}

@@ -1,0 +1,35 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_CHATBOT);
+    pstmt.setString(1,info.getDescription());
+    pstmt.setString(2,StringUtils.dateToMillis(info.getCreationDate()));
+    pstmt.setString(3,StringUtils.dateToMillis(info.getModificationDate()));
+    pstmt.setLong(4,id);
+    pstmt.execute();
+  }
+ catch (  SQLException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    throw new UnauthorizedException();
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

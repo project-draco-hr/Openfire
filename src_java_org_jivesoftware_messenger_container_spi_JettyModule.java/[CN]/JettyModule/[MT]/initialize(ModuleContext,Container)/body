@@ -1,0 +1,19 @@
+{
+  try {
+    File logDir=context.getLogDirectory();
+    if (!logDir.exists()) {
+      logDir.mkdirs();
+    }
+    File logFile=new File(logDir,"embedded-web.log");
+    OutputStreamLogSink logSink=new OutputStreamLogSink(logFile.toString());
+    logSink.start();
+    jetty=new Server();
+    port=context.getProperty("embedded-web.port");
+    jetty.addListener(port);
+    this.serverContainer=container;
+    webAppContext=jetty.addWebApplication("/",context.getHomeDirectory() + "/web-app/");
+  }
+ catch (  Exception e) {
+    Log.error("Trouble initializing Jetty",e);
+  }
+}

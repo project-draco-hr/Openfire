@@ -1,0 +1,20 @@
+{
+  for (int i=0; i < modules.length; i++) {
+    Module mod=null;
+    boolean isInitialized=false;
+    try {
+      Class modClass=loader.loadClass(modules[i]);
+      mod=(Module)modClass.newInstance();
+      mod.initialize(context,this);
+      isInitialized=true;
+      this.modules.add(mod);
+    }
+ catch (    Exception e) {
+      if (isInitialized) {
+        mod.stop();
+        mod.destroy();
+      }
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

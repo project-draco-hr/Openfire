@@ -1,0 +1,13 @@
+{
+  itemLock.readLock().lock();
+  try {
+    RosterItem item=(RosterItem)rosterItems.get(user.toBareStringPrep());
+    if (item == null) {
+      throw new UserNotFoundException(user.toBareStringPrep());
+    }
+    return item;
+  }
+  finally {
+    itemLock.readLock().unlock();
+  }
+}

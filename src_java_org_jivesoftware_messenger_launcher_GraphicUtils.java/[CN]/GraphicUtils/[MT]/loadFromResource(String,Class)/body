@@ -1,0 +1,18 @@
+{
+  try {
+    final URL url=cls.getResource(imageName);
+    if (url == null) {
+      return null;
+    }
+    Image image=(Image)imageCache.get(url.toString());
+    if (image == null) {
+      image=Toolkit.getDefaultToolkit().createImage(url);
+      imageCache.put(url.toString(),image);
+    }
+    return image;
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  return null;
+}

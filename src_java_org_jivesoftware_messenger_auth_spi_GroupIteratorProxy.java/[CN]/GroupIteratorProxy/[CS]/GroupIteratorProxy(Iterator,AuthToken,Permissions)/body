@@ -1,0 +1,14 @@
+{
+  this.iterator=iterator;
+  this.auth=auth;
+  this.permissions=permissions;
+  proxyFactory=new ProxyFactory(){
+    public Object createProxy(    Object obj,    AuthToken auth,    Permissions perms){
+      Group group=(Group)obj;
+      Permissions userPerms=group.getPermissions(auth);
+      Permissions newPerms=new Permissions(userPerms,perms);
+      return new GroupProxy(group,auth,newPerms);
+    }
+  }
+;
+}

@@ -1,0 +1,13 @@
+{
+  Message message=new MessageImpl();
+  message.setOriginatingSession(session);
+  message.setSender(role.getRoleAddress());
+  message.setRecipient(XMPPAddress.parseJID(to));
+  MetaDataFragment frag=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
+  frag.setProperty("x.decline:from",sender.toBareStringPrep());
+  if (reason != null && reason.length() > 0) {
+    frag.setProperty("x.decline.reason",reason);
+  }
+  message.addFragment(frag);
+  router.route(message);
+}

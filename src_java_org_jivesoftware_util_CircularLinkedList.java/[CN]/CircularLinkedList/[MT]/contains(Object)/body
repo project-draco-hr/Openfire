@@ -1,0 +1,23 @@
+{
+  boolean in=false;
+  if (current != null) {
+    currentLock.readLock().lock();
+    try {
+      if (item == null ? current.object == null : item.equals(current.object)) {
+        in=true;
+      }
+ else {
+        for (LinkedListNode node=current.next; node != current; node=node.next) {
+          if (item == null ? node.object == null : item.equals(node.object)) {
+            in=true;
+            break;
+          }
+        }
+      }
+    }
+  finally {
+      currentLock.readLock().unlock();
+    }
+  }
+  return in;
+}

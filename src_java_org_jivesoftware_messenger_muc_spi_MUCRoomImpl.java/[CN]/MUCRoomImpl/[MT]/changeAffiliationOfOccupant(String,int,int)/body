@@ -1,0 +1,21 @@
+{
+  List presences=new ArrayList();
+  List roles=occupantsByBareJID.get(bareJID);
+  if (roles == null) {
+    return presences;
+  }
+  MUCRole role;
+  for (Iterator it=roles.iterator(); it.hasNext(); ) {
+    try {
+      role=(MUCRole)it.next();
+      role.setAffiliation(newAffiliation);
+      role.setRole(newRole);
+      Presence presence=(Presence)role.getPresence().createDeepCopy();
+      presence.setSender(role.getRoleAddress());
+      presences.add(presence);
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+  return presences;
+}

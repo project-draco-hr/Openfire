@@ -1,0 +1,18 @@
+{
+  try {
+    IQ returnPacket=null;
+    IQRoster roster=(IQRoster)packet;
+    XMPPAddress recipientJID=packet.getRecipient();
+    if (recipientJID == null || recipientJID.getName() == null) {
+      returnPacket=manageRoster(roster);
+    }
+ else {
+      removeRosterItem(roster);
+    }
+    return returnPacket;
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  return null;
+}

@@ -1,0 +1,38 @@
+{
+  DatabaseMetaData metaData=con.getMetaData();
+  transactionsSupported=metaData.supportsTransactions();
+  subqueriesSupported=metaData.supportsCorrelatedSubqueries();
+  scrollResultsSupported=metaData.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+  batchUpdatesSupported=metaData.supportsBatchUpdates();
+  streamTextRequired=false;
+  maxRowsSupported=true;
+  fetchSizeSupported=true;
+  String dbName=metaData.getDatabaseProductName().toLowerCase();
+  String driverName=metaData.getDriverName().toLowerCase();
+  if (dbName.indexOf("oracle") != -1) {
+    databaseType=DatabaseType.ORACLE;
+    streamTextRequired=true;
+    if (driverName.indexOf("auguro") != -1) {
+      streamTextRequired=false;
+      fetchSizeSupported=true;
+      maxRowsSupported=false;
+    }
+  }
+ else   if (dbName.indexOf("postgres") != -1) {
+    databaseType=DatabaseType.POSTGRES;
+    scrollResultsSupported=false;
+    fetchSizeSupported=false;
+  }
+ else   if (dbName.indexOf("interbase") != -1) {
+    fetchSizeSupported=false;
+    maxRowsSupported=false;
+  }
+ else   if (dbName.indexOf("sql server") != -1 && driverName.indexOf("una") != -1) {
+    fetchSizeSupported=true;
+    maxRowsSupported=false;
+  }
+ else   if (dbName.indexOf("mysql") != -1) {
+    databaseType=DatabaseType.MYSQL;
+    transactionsSupported=false;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  this.context=modcontext;
+  if (context != null) {
+    chatServerName=context.getProperty("xmpp.chat.domain");
+    historyStrategy.setContext(context,"xmpp.chat.history");
+    useAnonRooms=!"false".equals(context.getProperty("xmpp.chat.anonymous_rooms"));
+  }
+  if (chatServerName == null) {
+    chatServerName="chat.127.0.0.1";
+  }
+  chatServerAddress=new XMPPAddress(null,chatServerName,null);
+  super.initialize(context,container);
+}

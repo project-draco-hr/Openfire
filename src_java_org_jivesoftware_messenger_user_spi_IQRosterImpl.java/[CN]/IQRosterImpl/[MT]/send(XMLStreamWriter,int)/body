@@ -1,0 +1,23 @@
+{
+  try {
+    super.sendRoot(xmlSerializer,version,"iq",null);
+    xmlSerializer.setPrefix("","jabber:iq:roster");
+    xmlSerializer.writeStartElement("query");
+    xmlSerializer.writeDefaultNamespace("jabber:iq:roster");
+    Iterator items=basicRoster.getRosterItems();
+    while (items.hasNext()) {
+      Object item=items.next();
+      if (item instanceof IQRosterItem) {
+        ((IQRosterItem)item).send(xmlSerializer,version);
+      }
+ else {
+        new IQRosterItemImpl((RosterItem)item).send(xmlSerializer,version);
+      }
+    }
+    xmlSerializer.writeEndElement();
+    xmlSerializer.writeEndElement();
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

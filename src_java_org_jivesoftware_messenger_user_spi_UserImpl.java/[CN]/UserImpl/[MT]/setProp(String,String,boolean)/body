@@ -1,0 +1,27 @@
+{
+  if (LAZY_PROP_LOADING && properties == null) {
+    loadPropertiesFromDb(isVcard);
+  }
+  if (name == null || value == null || "".equals(name) || "".equals(value)) {
+    throw new NullPointerException("Cannot set property with empty or null value.");
+  }
+  Map props;
+  if (isVcard) {
+    props=vcardProps;
+  }
+ else {
+    props=properties;
+  }
+  if (props.containsKey(name)) {
+    if (!(value.equals(props.get(name)))) {
+      props.put(name,value);
+      updatePropertyInDb(name,value,isVcard);
+      CacheManager.getCache("userid2user").put(new Long(id),this);
+    }
+  }
+ else {
+    props.put(name,value);
+    insertPropertyIntoDb(name,value,isVcard);
+    CacheManager.getCache("userid2user").put(new Long(id),this);
+  }
+}

@@ -1,0 +1,31 @@
+{
+  boolean found=false;
+  try {
+    Class parent=this.getClass();
+    while (parent != null) {
+      Method[] methods=parent.getMethods();
+      for (int i=0; i < methods.length; i++) {
+        Class[] parameters=methods[i].getParameterTypes();
+        if (methods[i].getName().equals(methodName) && parameters.length == 1 && parameters[0] == trackClass) {
+          try {
+            methods[i].invoke(this,new Object[]{service});
+            found=true;
+            break;
+          }
+ catch (          Exception e) {
+            Log.error("Problem processing service",e);
+          }
+        }
+      }
+      if (found) {
+        break;
+      }
+      parent=parent.getSuperclass();
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  ;
+  return found;
+}

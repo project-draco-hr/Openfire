@@ -1,0 +1,28 @@
+{
+  boolean success=false;
+  sessionLock.writeLock().lock();
+  String username=session.getAddress().getName().toLowerCase();
+  SessionMap resources=null;
+  try {
+    resources=(SessionMap)sessions.get(username);
+    if (resources == null) {
+      resources=new SessionMap();
+      sessions.put(username,resources);
+    }
+    resources.addSession(session);
+    session.getConnection().registerCloseListener(this,session);
+    success=true;
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    sessionLock.writeLock().unlock();
+  }
+  if (success) {
+    Session defaultSession=resources.getDefaultSession();
+    routingTable.addRoute(new XMPPAddress(defaultSession.getAddress().getNamePrep(),defaultSession.getAddress().getHostPrep(),""),defaultSession);
+    routingTable.addRoute(session.getAddress(),session);
+  }
+  return success;
+}

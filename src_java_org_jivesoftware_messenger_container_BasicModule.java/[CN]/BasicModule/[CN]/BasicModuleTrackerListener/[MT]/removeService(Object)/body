@@ -1,0 +1,26 @@
+{
+  boolean success=false;
+  Iterator tracked=trackInfo.getTrackerClasses().keySet().iterator();
+  while (tracked.hasNext()) {
+    Class trackClass=(Class)tracked.next();
+    if (trackClass.isInstance(service)) {
+      Object field=trackInfo.getTrackerClasses().get(trackClass);
+      if (field instanceof String[]) {
+        String[] fields=(String[])field;
+        for (int i=0; i < fields.length; i++) {
+          if (doServiceRemove(service,trackClass,fields[i])) {
+            success=true;
+          }
+        }
+      }
+ else {
+        if (doServiceRemove(service,trackClass,(String)field)) {
+          success=true;
+        }
+      }
+    }
+  }
+  if (success) {
+    serviceRemoved(service);
+  }
+}

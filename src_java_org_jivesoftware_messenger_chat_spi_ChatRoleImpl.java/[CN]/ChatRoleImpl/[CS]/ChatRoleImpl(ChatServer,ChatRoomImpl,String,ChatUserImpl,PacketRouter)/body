@@ -1,0 +1,19 @@
+{
+  this.room=chatroom;
+  this.nick=nickname;
+  this.user=chatuser;
+  this.server=chatserver;
+  this.router=packetRouter;
+  role=ChatRole.OCCUPANT;
+  rJID=new XMPPAddress(room.getName(),server.getChatServerName(),nick);
+  if (server.isUseAnonymousRooms()) {
+    nonAnonFragment=null;
+  }
+ else {
+    nonAnonFragment=new MetaDataFragment("http://jabber.org/protocol/muc#user","x");
+    nonAnonFragment.setProperty("x.item:jid",user.getAddress().toString());
+    nonAnonFragment.setProperty("x.item:affiliation","none");
+    nonAnonFragment.setProperty("x.item:role","participant");
+  }
+  setPresence(room.createPresence(Presence.STATUS_ONLINE));
+}

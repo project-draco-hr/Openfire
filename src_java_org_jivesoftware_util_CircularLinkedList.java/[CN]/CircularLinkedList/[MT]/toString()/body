@@ -1,0 +1,19 @@
+{
+  StringBuffer buf=new StringBuffer();
+  if (current == null) {
+    buf.append("empty");
+  }
+ else {
+    currentLock.readLock().lock();
+    try {
+      buf.append(current.toString());
+      for (LinkedListNode node=current.next; node != current; node=node.next) {
+        buf.append(", ").append(node.toString());
+      }
+    }
+  finally {
+      currentLock.readLock().unlock();
+    }
+  }
+  return buf.toString();
+}

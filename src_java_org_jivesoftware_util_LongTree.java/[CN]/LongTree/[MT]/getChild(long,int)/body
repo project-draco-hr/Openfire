@@ -1,0 +1,19 @@
+{
+  char parentIndex=findKey(parentKey,(char)1);
+  if (parentIndex == 0) {
+    return -1;
+  }
+  char siblingIndex=leftChildren[parentIndex];
+  if (siblingIndex == -1) {
+    return -1;
+  }
+  int i=index;
+  while (i > 0) {
+    siblingIndex=rightSiblings[siblingIndex];
+    if (siblingIndex == 0) {
+      return -1;
+    }
+    i--;
+  }
+  return keys[siblingIndex];
+}

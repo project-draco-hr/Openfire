@@ -1,0 +1,19 @@
+{
+synchronized (initLock) {
+    try {
+      String driver="org.hsqldb.jdbcDriver";
+      File jiveHome=new File(JiveGlobals.getJiveHome(),File.separator + "database" + File.separator+ "messenger");
+      String path=jiveHome.getCanonicalPath();
+      String serverURL="jdbc:hsqldb:" + path;
+      String username="sa";
+      String password="jiverocks";
+      int minConnections=3;
+      int maxConnections=10;
+      double connectionTimeout=0.5;
+      connectionPool=new ConnectionPool(driver,serverURL,username,password,minConnections,maxConnections,connectionTimeout,false);
+    }
+ catch (    IOException ioe) {
+      Log.error("Error starting connection pool.",ioe);
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  itemLock.readLock().lock();
+  try {
+    LinkedList itemList=new LinkedList();
+    Iterator items=rosterItems.values().iterator();
+    while (items.hasNext()) {
+      itemList.add(items.next());
+    }
+    return itemList.iterator();
+  }
+  finally {
+    itemLock.readLock().unlock();
+  }
+}

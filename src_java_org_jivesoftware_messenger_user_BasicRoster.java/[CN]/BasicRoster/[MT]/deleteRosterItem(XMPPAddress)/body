@@ -1,0 +1,9 @@
+{
+  itemLock.writeLock().lock();
+  try {
+    return (RosterItem)rosterItems.remove(user.toBareStringPrep());
+  }
+  finally {
+    itemLock.writeLock().unlock();
+  }
+}

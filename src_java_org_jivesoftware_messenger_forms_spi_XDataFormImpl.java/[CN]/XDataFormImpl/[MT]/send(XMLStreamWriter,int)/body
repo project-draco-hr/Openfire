@@ -1,0 +1,55 @@
+{
+  xmlSerializer.writeStartElement("jabber:x:data","x");
+  xmlSerializer.writeNamespace("","jabber:x:data");
+  if (getType() != null) {
+    xmlSerializer.writeAttribute("type",getType());
+  }
+  if (getTitle() != null) {
+    xmlSerializer.writeStartElement("jabber:x:data","title");
+    xmlSerializer.writeCharacters(getTitle());
+    xmlSerializer.writeEndElement();
+  }
+  if (instructions.size() > 0) {
+    Iterator instrItr=getInstructions();
+    while (instrItr.hasNext()) {
+      xmlSerializer.writeStartElement("jabber:x:data","instructions");
+      xmlSerializer.writeCharacters((String)instrItr.next());
+      xmlSerializer.writeEndElement();
+    }
+  }
+  if (reportedFields.size() > 0) {
+    xmlSerializer.writeStartElement("jabber:x:data","reported");
+    Iterator fieldsItr=reportedFields.iterator();
+    while (fieldsItr.hasNext()) {
+      XFormFieldImpl field=(XFormFieldImpl)fieldsItr.next();
+      field.send(xmlSerializer,version);
+    }
+    xmlSerializer.writeEndElement();
+  }
+  if (reportedItems.size() > 0) {
+    xmlSerializer.writeStartElement("jabber:x:data","item");
+    Iterator itemsItr=reportedItems.iterator();
+    while (itemsItr.hasNext()) {
+      List fields=(List)itemsItr.next();
+      Iterator fieldsItr=fields.iterator();
+      while (fieldsItr.hasNext()) {
+        XFormFieldImpl field=(XFormFieldImpl)fieldsItr.next();
+        field.send(xmlSerializer,version);
+      }
+    }
+    xmlSerializer.writeEndElement();
+  }
+  if (fields.size() > 0) {
+    Iterator fieldsItr=getFields();
+    while (fieldsItr.hasNext()) {
+      XFormFieldImpl field=(XFormFieldImpl)fieldsItr.next();
+      field.send(xmlSerializer,version);
+    }
+  }
+  Iterator frags=fragments.iterator();
+  while (frags.hasNext()) {
+    XMPPFragment frag=(XMPPFragment)frags.next();
+    frag.send(xmlSerializer,version);
+  }
+  xmlSerializer.writeEndElement();
+}

@@ -1,0 +1,87 @@
+{
+  while (true) {
+    for (int i=0; i < maxCon; i++) {
+      if (cons[i] == null) {
+        continue;
+      }
+      try {
+        SQLWarning warning=cons[i].getWarnings();
+        if (warning != null) {
+          Log.warn("Connection " + i + " had warnings: "+ warning);
+          cons[i].clearWarnings();
+        }
+      }
+ catch (      SQLException e) {
+        Log.warn("Unable to get warning for connection: ",e);
+      }
+    }
+    int lastOpen=-1;
+    for (int i=maxCon - 1; i >= 0; i--) {
+      if (wrappers[i] == null) {
+        continue;
+      }
+      try {
+        long time=System.currentTimeMillis();
+synchronized (wrappers[i]) {
+          if (wrappers[i].checkedout) {
+            if (lastOpen < i) {
+              lastOpen=i;
+            }
+            continue;
+          }
+          wrappers[i].checkedout=true;
+        }
+        Statement stmt=null;
+        try {
+          stmt=cons[i].createStatement();
+        }
+  finally {
+          if (stmt != null) {
+            stmt.close();
+          }
+        }
+        if (cons[i].isClosed()) {
+          throw new SQLException();
+        }
+        if (time - wrappers[i].createTime > conTimeout) {
+          throw new SQLException();
+        }
+        if ((time - wrappers[i].checkinTime > 60 * 1000) && i > minCon && lastOpen <= i) {
+synchronized (conCountLock) {
+            cons[i].close();
+            wrappers[i]=null;
+            cons[i]=null;
+            conCount--;
+          }
+        }
+        lastOpen=i;
+        if (wrappers[i] != null) {
+          wrappers[i].checkedout=false;
+        }
+      }
+ catch (      SQLException e) {
+        try {
+synchronized (conCountLock) {
+            cons[i].close();
+            wrappers[i]=createCon(i);
+            wrappers[i].checkedout=false;
+          }
+        }
+ catch (        SQLException sqle) {
+          Log.warn("Failed to reopen connection",sqle);
+synchronized (conCountLock) {
+            wrappers[i]=null;
+            cons[i]=null;
+            conCount--;
+          }
+        }
+      }
+    }
+    try {
+      Thread.sleep(30 * 1000);
+    }
+ catch (    InterruptedException e) {
+      return;
+    }
+  }
+}

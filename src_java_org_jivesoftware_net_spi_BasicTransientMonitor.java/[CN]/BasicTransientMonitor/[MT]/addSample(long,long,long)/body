@@ -1,0 +1,22 @@
+{
+  totalSamples+=quantity;
+  totalTime+=endTime - startTime;
+  lastSampleTime=endTime;
+  if (firstSampleTime == -1) {
+    firstSampleTime=startTime;
+  }
+  frameLock.writeLock().lock();
+  try {
+    Sample sample=new Sample(quantity,endTime - startTime);
+    if (frameList.size() < frameSize) {
+      frameList.add(sample);
+    }
+ else {
+      frameList.prev();
+      frameList.setNext(sample);
+    }
+  }
+  finally {
+    frameLock.writeLock().unlock();
+  }
+}

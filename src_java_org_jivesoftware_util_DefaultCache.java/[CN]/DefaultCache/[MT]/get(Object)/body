@@ -1,0 +1,13 @@
+{
+  deleteExpiredEntries();
+  CacheObject cacheObject=(CacheObject)map.get(key);
+  if (cacheObject == null) {
+    cacheMisses++;
+    return null;
+  }
+  cacheHits++;
+  cacheObject.readCount++;
+  cacheObject.lastAccessedListNode.remove();
+  lastAccessedList.addFirst(cacheObject.lastAccessedListNode);
+  return cacheObject.object;
+}

@@ -1,0 +1,28 @@
+{
+  DirContext ctx=null;
+  try {
+    ctx=getContext();
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{usernameField});
+    StringBuffer filter=new StringBuffer();
+    filter.append("(").append(usernameField).append("=");
+    filter.append(username).append(")");
+    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    if (answer == null || !answer.hasMoreElements()) {
+      throw new UnauthorizedException("Username " + username + " not found");
+    }
+    String userDN=((SearchResult)answer.next()).getName();
+    if (answer.hasMoreElements()) {
+      throw new Exception("LDAP username lookup for " + username + " matched multiple entries.");
+    }
+    return userDN;
+  }
+  finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception e) {
+    }
+  }
+}

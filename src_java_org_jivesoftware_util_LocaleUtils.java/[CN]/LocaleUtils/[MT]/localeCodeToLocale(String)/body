@@ -1,0 +1,22 @@
+{
+  Locale locale=null;
+  if (localeCode != null) {
+    String language=null;
+    String country=null;
+    String variant=null;
+    if (localeCode != null) {
+      StringTokenizer tokenizer=new StringTokenizer(localeCode,"_");
+      if (tokenizer.hasMoreTokens()) {
+        language=tokenizer.nextToken();
+        if (tokenizer.hasMoreTokens()) {
+          country=tokenizer.nextToken();
+          if (tokenizer.hasMoreTokens()) {
+            variant=tokenizer.nextToken();
+          }
+        }
+      }
+    }
+    locale=new Locale(language,((country != null) ? country : ""),((variant != null) ? variant : ""));
+  }
+  return locale;
+}

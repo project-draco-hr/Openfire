@@ -1,0 +1,44 @@
+{
+  if (presence == null) {
+    return;
+  }
+  MetaDataFragment frag=null;
+  String jid=null;
+  if (hasToCheckRoleToBroadcastPresence()) {
+    frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
+    if (!canBroadcastPresence(frag.getProperty("x.item:role"))) {
+      try {
+        MUCRole occupant=getOccupant(presence.getSender().getResourcePrep());
+        presence.setRecipient(occupant.getChatUser().getAddress());
+        router.route(presence);
+      }
+ catch (      UserNotFoundException e) {
+      }
+      return;
+    }
+  }
+  if (!canAnyoneDiscoverJID()) {
+    if (frag == null) {
+      frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
+    }
+    jid=frag.getProperty("x.item:jid");
+  }
+  lock.readLock().lock();
+  try {
+    for (    MUCRole occupant : occupants.values()) {
+      presence.setRecipient(occupant.getChatUser().getAddress());
+      if (!canAnyoneDiscoverJID()) {
+        if (MUCRole.MODERATOR == occupant.getRole()) {
+          frag.setProperty("x.item:jid",jid);
+        }
+ else {
+          frag.deleteProperty("x.item:jid");
+        }
+      }
+      router.route(presence);
+    }
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

@@ -1,0 +1,33 @@
+{
+  boolean found=false;
+  Field[] fields=parent.getFields();
+  for (int i=0; i < fields.length; i++) {
+    if (fields[i].getName().equals(field)) {
+      try {
+        Object fieldObject=fields[i].get(this);
+        if (add) {
+          if (fieldObject instanceof List) {
+            ((List)fieldObject).add(service);
+          }
+ else {
+            fields[i].set(this,service);
+          }
+        }
+ else {
+          if (fieldObject instanceof List) {
+            ((List)fieldObject).remove(service);
+          }
+ else {
+            fields[i].set(this,null);
+          }
+        }
+        found=true;
+        break;
+      }
+ catch (      Exception e) {
+        Log.error("Problem processing service",e);
+      }
+    }
+  }
+  return found;
+}

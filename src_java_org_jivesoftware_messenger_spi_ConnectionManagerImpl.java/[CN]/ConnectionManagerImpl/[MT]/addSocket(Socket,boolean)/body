@@ -1,0 +1,15 @@
+{
+  try {
+    Connection conn=new SocketConnection(deliverer,auditManager.getAuditor(),sock,isSecure);
+    Session session=sessionManager.createSession(conn);
+    SocketReadThread reader=new SocketReadThread(router,packetFactory,serverName,auditManager.getAuditor(),sock,session);
+    reader.setDaemon(true);
+    reader.start();
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+catch (  IOException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

@@ -1,0 +1,19 @@
+{
+  currentLock.writeLock().lock();
+  try {
+    if (current == null) {
+      current=new LinkedListNode(item,null,null);
+      current.next=current;
+      current.previous=current;
+      mark();
+    }
+ else {
+      LinkedListNode node=current.next;
+      current.next=new LinkedListNode(item,node,current);
+    }
+    size++;
+  }
+  finally {
+    currentLock.writeLock().unlock();
+  }
+}

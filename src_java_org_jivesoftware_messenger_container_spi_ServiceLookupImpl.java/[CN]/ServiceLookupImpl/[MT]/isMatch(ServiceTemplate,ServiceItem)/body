@@ -1,0 +1,27 @@
+{
+  boolean isMatch=true;
+  if (tmpl.attributes != null) {
+    for (int i=0; i < tmpl.attributes.length; i++) {
+      boolean hasAttribute=false;
+      for (int j=0; j < item.attributes.length; j++) {
+        if (item.attributes[j].equals(tmpl.attributes[i])) {
+          hasAttribute=true;
+        }
+      }
+      if (!hasAttribute) {
+        isMatch=false;
+        item=null;
+      }
+    }
+  }
+  if (item != null && tmpl.types != null) {
+    for (int i=0; i < tmpl.types.length; i++) {
+      if (!tmpl.types[i].isInstance(item.service)) {
+        isMatch=false;
+        item=null;
+        break;
+      }
+    }
+  }
+  return isMatch;
+}

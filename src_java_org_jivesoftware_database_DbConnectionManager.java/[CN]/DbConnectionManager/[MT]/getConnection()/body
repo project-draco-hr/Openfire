@@ -1,0 +1,32 @@
+{
+  if (connectionProvider == null) {
+synchronized (providerLock) {
+      if (connectionProvider == null) {
+        String className=JiveGlobals.getJiveProperty("connectionProvider.className");
+        if (className != null) {
+          try {
+            Class conClass=ClassUtils.forName(className);
+            setConnectionProvider((ConnectionProvider)conClass.newInstance());
+          }
+ catch (          Exception e) {
+            Log.error("Warning: failed to create the " + "connection provider specified by connection" + "Provider.className. Using the default pool.",e);
+            setConnectionProvider(new DefaultConnectionProvider());
+          }
+        }
+ else {
+          setConnectionProvider(new DefaultConnectionProvider());
+        }
+      }
+    }
+  }
+  Connection con=connectionProvider.getConnection();
+  if (con == null) {
+    Log.error("WARNING: ConnectionManager.getConnection() " + "failed to obtain a connection.");
+  }
+  if (profilingEnabled) {
+    return new ProfiledConnection(con);
+  }
+ else {
+    return con;
+  }
+}

@@ -1,0 +1,42 @@
+{
+  if (packet.getSender().getResourcePrep() == null || packet.getSender().getResourcePrep().length() == 0) {
+    return;
+  }
+  Message packetToAdd=(Message)packet.createDeepCopy();
+  if (isNonAnonymousRoom != room.canAnyoneDiscoverJID()) {
+    isNonAnonymousRoom=room.canAnyoneDiscoverJID();
+    Message message;
+    MetaDataFragment frag;
+    for (Iterator it=getMessageHistory(); it.hasNext(); ) {
+      message=(Message)it.next();
+      frag=(MetaDataFragment)message.getFragment("x","jabber:x:delay");
+      if (room.canAnyoneDiscoverJID()) {
+        try {
+          MUCRole role=room.getOccupant(message.getSender().getResourcePrep());
+          frag.setProperty("x:from",role.getChatUser().getAddress().toStringPrep());
+        }
+ catch (        UserNotFoundException e) {
+        }
+      }
+ else {
+        frag.setProperty("x:from",message.getSender().toStringPrep());
+      }
+    }
+  }
+  MetaDataFragment delayInformation=new MetaDataFragment("jabber:x:delay","x");
+  Date current=new Date();
+  delayInformation.setProperty("x:stamp",UTC_FORMAT.format(current));
+  if (room.canAnyoneDiscoverJID()) {
+    try {
+      MUCRole role=room.getOccupant(packet.getSender().getResourcePrep());
+      delayInformation.setProperty("x:from",role.getChatUser().getAddress().toStringPrep());
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+ else {
+    delayInformation.setProperty("x:from",packet.getSender().toStringPrep());
+  }
+  packetToAdd.addFragment(delayInformation);
+  history.addMessage(packetToAdd);
+}

@@ -1,0 +1,19 @@
+{
+  IQ iq=null;
+  try {
+    Document doc=XPPReader.parseDocument(xpp);
+    Element query=doc.getRootElement().element("query");
+    if (query != null && "jabber:iq:roster".equals(query.getNamespaceURI())) {
+      iq=new IQRosterImpl();
+      ((IQImpl)iq).parse(doc);
+    }
+ else {
+      iq=new IQImpl();
+      ((IQImpl)iq).parse(doc);
+    }
+  }
+ catch (  DocumentException e) {
+    throw new XMLStreamException(e.getMessage());
+  }
+  return iq;
+}

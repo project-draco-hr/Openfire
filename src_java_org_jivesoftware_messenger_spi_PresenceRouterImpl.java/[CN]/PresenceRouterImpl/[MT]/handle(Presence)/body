@@ -1,0 +1,38 @@
+{
+  XMPPAddress recipientJID=packet.getRecipient();
+  try {
+    XMPPPacket.Type type=packet.getType();
+    if (type == null || Presence.UNAVAILABLE == type || Presence.INVISIBLE == type || Presence.AVAILABLE == type) {
+      if (recipientJID == null || recipientJID.getHost() == null || "".equals(recipientJID.getHost()) || (recipientJID.getName() == null && recipientJID.getResource() == null)) {
+        updateHandler.process(packet);
+      }
+ else {
+        ChannelHandler handler=routingTable.getRoute(recipientJID);
+        handler.process(packet);
+        updateHandler.directedPresenceSent(packet,handler);
+      }
+    }
+ else     if (Presence.SUBSCRIBE == type || Presence.UNSUBSCRIBE == type || Presence.SUBSCRIBED == type || Presence.UNSUBSCRIBED == type) {
+      subscribeHandler.process(packet);
+    }
+ else {
+      routingTable.getRoute(recipientJID).process(packet);
+    }
+  }
+ catch (  NoSuchRouteException e) {
+  }
+catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+    try {
+      Session session=packet.getOriginatingSession();
+      if (session != null) {
+        Connection conn=session.getConnection();
+        if (conn != null) {
+          conn.close();
+        }
+      }
+    }
+ catch (    UnauthorizedException e1) {
+    }
+  }
+}

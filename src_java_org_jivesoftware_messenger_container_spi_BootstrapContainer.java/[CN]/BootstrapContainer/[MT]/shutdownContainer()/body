@@ -1,0 +1,14 @@
+{
+  if (containerRegistration != null) {
+    containerRegistration.cancel();
+    containerRegistration=null;
+  }
+  Iterator loadedModules=modules.iterator();
+  while (loadedModules.hasNext()) {
+    Module mod=(Module)loadedModules.next();
+    mod.stop();
+    mod.destroy();
+  }
+  modules.clear();
+  Log.info("Jive Messenger stopped");
+}

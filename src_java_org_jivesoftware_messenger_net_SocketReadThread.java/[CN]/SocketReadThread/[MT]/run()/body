@@ -1,0 +1,52 @@
+{
+  try {
+    xpp=xppFactory.createXMLStreamReader(new InputStreamReader(sock.getInputStream()));
+    createSession();
+    if (session != null) {
+      readStream();
+    }
+  }
+ catch (  EOFException eof) {
+  }
+catch (  XMLStreamException ie) {
+    if (clearSignout == false) {
+      if (session != null && session.getStatus() == Session.STATUS_AUTHENTICATED) {
+        Presence presence=session.getPresence();
+        if (presence != null) {
+          Presence packet=(Presence)presence.createDeepCopy();
+          packet.setType(Presence.UNAVAILABLE);
+          try {
+            packet.setAvailable(false);
+            packet.setVisible(false);
+          }
+ catch (          UnauthorizedException e) {
+          }
+          packet.setOriginatingSession(session);
+          packet.setSender(session.getAddress());
+          packet.setSending(false);
+          router.route(packet);
+          clearSignout=true;
+        }
+      }
+    }
+  }
+catch (  Exception e) {
+    if (session != null) {
+      Log.warn(LocaleUtils.getLocalizedString("admin.error.stream"),e);
+    }
+  }
+ finally {
+    if (session != null) {
+      try {
+        sleep(3000);
+        session.getConnection().close();
+      }
+ catch (      Exception e) {
+        Log.warn(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + sock.toString());
+      }
+    }
+ else {
+      Log.error(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + sock.toString());
+    }
+  }
+}

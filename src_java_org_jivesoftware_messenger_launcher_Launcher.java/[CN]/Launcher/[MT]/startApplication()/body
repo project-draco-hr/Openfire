@@ -1,0 +1,48 @@
+{
+  if (messengerd == null) {
+    File binDir=null;
+    File exe=null;
+    try {
+      binDir=new File("").getAbsoluteFile();
+      if (!"bin".equals(binDir.getName())) {
+        binDir=new File(binDir,"bin");
+      }
+      if ("bin".equals(binDir.getName())) {
+        exe=new File(binDir,"messengerd.exe");
+        if (exe.exists()) {
+          messengerd=Runtime.getRuntime().exec(new String[]{exe.toString()});
+        }
+ else {
+          exe=new File(binDir,"messengerd.app");
+          if (exe.exists()) {
+            messengerd=Runtime.getRuntime().exec(new String[]{"open",exe.toString()});
+          }
+ else {
+            exe=new File(binDir,"messengerd");
+            if (exe.exists()) {
+              messengerd=Runtime.getRuntime().exec(new String[]{exe.toString()});
+            }
+ else {
+              throw new FileNotFoundException();
+            }
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      try {
+        if (binDir != null) {
+          messengerd=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(binDir,"messengerd.jar").toString()});
+        }
+ else {
+          e.printStackTrace();
+          JOptionPane.showMessageDialog(null,"Launcher could not locate messengerd,\nthe Jive Messenger server daemon executable","File not found",JOptionPane.ERROR_MESSAGE);
+        }
+      }
+ catch (      Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null,"Launcher could not locate messengerd,\nthe Jive Messenger server daemon executable","File not found",JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }
+}

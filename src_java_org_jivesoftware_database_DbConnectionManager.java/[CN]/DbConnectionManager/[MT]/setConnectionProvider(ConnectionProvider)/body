@@ -1,0 +1,26 @@
+{
+synchronized (providerLock) {
+    if (connectionProvider != null) {
+      connectionProvider.destroy();
+      connectionProvider=null;
+    }
+    connectionProvider=provider;
+    connectionProvider.start();
+    Connection con=null;
+    try {
+      con=connectionProvider.getConnection();
+      setMetaData(con);
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+ finally {
+      try {
+        con.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+  JiveGlobals.setJiveProperty("connectionProvider.className",provider.getClass().getName());
+}

@@ -1,0 +1,37 @@
+{
+  try {
+    XMPPAddress recipient=packet.getRecipient();
+    Session senderSession=packet.getOriginatingSession();
+    if (recipient == null || (recipient.getName() == null && recipient.getResource() == null)) {
+      if (senderSession != null && !senderSession.getConnection().isClosed()) {
+        senderSession.getConnection().deliver(packet);
+      }
+ else {
+        dropPacket(packet);
+      }
+    }
+ else {
+      Session session=sessionManager.getBestRoute(recipient);
+      if (session == null) {
+        if (packet instanceof Message) {
+          messageStrategy.storeOffline((Message)packet);
+        }
+ else         if (packet instanceof Presence) {
+        }
+ else {
+          dropPacket(packet);
+        }
+      }
+ else {
+        try {
+          session.getConnection().deliver(packet);
+        }
+ catch (        Exception e) {
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error.deliver") + "\n" + packet.toString(),e);
+  }
+}

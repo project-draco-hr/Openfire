@@ -1,0 +1,66 @@
+{
+  if (key == null) {
+    throw new NullPointerException("Key cannot be null");
+  }
+  if (locale == null) {
+    locale=JiveGlobals.getLocale();
+  }
+  String value="";
+  try {
+    ResourceBundle bundle=ResourceBundle.getBundle(resourceBaseName,locale);
+    value=bundle.getString(key);
+    if (arguments != null) {
+      MessageFormat messageFormat=new MessageFormat("");
+      messageFormat.setLocale(bundle.getLocale());
+      messageFormat.applyPattern(value);
+      try {
+        Format[] formats=messageFormat.getFormats();
+        for (int i=0; i < formats.length; i++) {
+          Format format=formats[i];
+          if (format != null) {
+            if (format instanceof DateFormat) {
+              if (arguments.size() > i) {
+                Object val=arguments.get(i);
+                if (val instanceof String) {
+                  DateFormat dateFmt=(DateFormat)format;
+                  try {
+                    val=dateFmt.parse((String)val);
+                    arguments.set(i,val);
+                  }
+ catch (                  ParseException e) {
+                    Log.error(e);
+                  }
+                }
+              }
+            }
+ else             if (format instanceof NumberFormat) {
+              if (arguments.size() > i) {
+                Object val=arguments.get(i);
+                if (val instanceof String) {
+                  NumberFormat nbrFmt=(NumberFormat)format;
+                  try {
+                    val=nbrFmt.parse((String)val);
+                    arguments.set(i,val);
+                  }
+ catch (                  ParseException e) {
+                    Log.error(e);
+                  }
+                }
+              }
+            }
+          }
+        }
+        value=messageFormat.format(arguments.toArray());
+      }
+ catch (      IllegalArgumentException e) {
+        Log.error("Unable to format resource string for key: " + key + ", argument type not supported");
+        value="";
+      }
+    }
+  }
+ catch (  java.util.MissingResourceException mre) {
+    Log.error("Missing resource for key: " + key + " in locale "+ locale.toString());
+    value="";
+  }
+  return value;
+}

@@ -1,0 +1,30 @@
+{
+  if (string == null || string.length() == 0) {
+    return string;
+  }
+  char[] charArray=string.toCharArray();
+  int sLength=string.length();
+  if (length < sLength) {
+    sLength=length;
+  }
+  for (int i=0; i < sLength - 1; i++) {
+    if (charArray[i] == '\r' && charArray[i + 1] == '\n') {
+      return string.substring(0,i + 1);
+    }
+ else     if (charArray[i] == '\n') {
+      return string.substring(0,i);
+    }
+  }
+  if (charArray[sLength - 1] == '\n') {
+    return string.substring(0,sLength - 1);
+  }
+  if (string.length() < length) {
+    return string;
+  }
+  for (int i=length - 1; i > 0; i--) {
+    if (charArray[i] == ' ') {
+      return string.substring(0,i).trim();
+    }
+  }
+  return string.substring(0,length);
+}

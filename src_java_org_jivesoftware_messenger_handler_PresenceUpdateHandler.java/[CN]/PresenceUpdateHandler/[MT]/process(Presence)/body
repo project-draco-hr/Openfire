@@ -1,0 +1,25 @@
+{
+  try {
+    process((XMPPPacket)presence);
+  }
+ catch (  UnauthorizedException e) {
+    try {
+      Session session=presence.getOriginatingSession();
+      presence=(Presence)presence.createDeepCopy();
+      if (session != null) {
+        presence.setSender(new XMPPAddress(null,session.getServerName(),null));
+        presence.setRecipient(session.getAddress());
+      }
+ else {
+        XMPPAddress sender=presence.getSender();
+        presence.setSender(presence.getRecipient());
+        presence.setRecipient(sender);
+      }
+      presence.setError(XMPPError.Code.UNAUTHORIZED);
+      deliverer.deliver(presence);
+    }
+ catch (    Exception err) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),err);
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  if (update.getSender() == null) {
+    return;
+  }
+  if (localServer.isLocal(update.getSender())) {
+    String name=update.getSender().getName();
+    try {
+      if (name != null && !"".equals(name)) {
+        name=name.toLowerCase();
+        long userID=nameManager.getID(name);
+        CachedRoster roster=rosterManager.getRoster(userID);
+        roster.broadcastPresence(update);
+      }
+    }
+ catch (    UserNotFoundException e) {
+      Log.warn("Presence being sent from unknown user " + name);
+    }
+catch (    PacketException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+ else {
+    Log.warn("Presence requested from server " + localServer.getServerInfo().getName() + " by unknown user: "+ update.getSender());
+  }
+}

@@ -1,0 +1,19 @@
+{
+  User user=null;
+  try {
+    user=userManager.getUser(presence.getUserID());
+  }
+ catch (  UserNotFoundException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  if (user != null) {
+synchronized (onlineUserCache) {
+      onlineUserCache.put(new Long(user.getID()),presence);
+    }
+  }
+ else {
+synchronized (onlineGuestCache) {
+      onlineGuestCache.put(presence.getID(),presence);
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  if (authProvider == null) {
+synchronized (authClassName) {
+      if (authProvider == null) {
+        String classNameProp=JiveGlobals.getJiveProperty("AuthProvider.className");
+        if (classNameProp != null) {
+          authClassName=classNameProp;
+        }
+        try {
+          Class c=ClassUtils.forName(authClassName);
+          authProvider=(AuthProvider)c.newInstance();
+        }
+ catch (        Exception e) {
+          Log.error("Exception loading class: " + authClassName,e);
+        }
+      }
+    }
+  }
+  return authProvider;
+}

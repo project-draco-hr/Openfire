@@ -1,0 +1,11 @@
+{
+  if (MUCRole.ADMINISTRATOR != senderRole.getAffiliation() && MUCRole.OWNER != senderRole.getAffiliation()) {
+    throw new ForbiddenException();
+  }
+  try {
+    return changeRoleOfOccupant(fullJID,MUCRole.MODERATOR);
+  }
+ catch (  NotAllowedException e) {
+    return null;
+  }
+}

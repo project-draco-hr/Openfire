@@ -1,0 +1,36 @@
+{
+  if (manager.getMode() == LdapManager.ALL_LDAP_MODE) {
+    DirContext ctx=null;
+    try {
+      ctx=manager.getContext();
+      SearchControls constraints=new SearchControls();
+      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+      constraints.setReturningAttributes(new String[]{"jiveUserID"});
+      StringBuffer filter=new StringBuffer();
+      filter.append("(").append("jiveUserID").append("=");
+      filter.append(id).append(")");
+      NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+      if (answer == null || !answer.hasMoreElements()) {
+        throw new UserNotFoundException("User not found: " + id);
+      }
+      String userDN=((SearchResult)answer.next()).getName();
+      if (answer.hasMoreElements()) {
+        throw new UserNotFoundException("LDAP username lookup matched multiple entries.");
+      }
+    }
+ catch (    Exception e) {
+      throw new UserNotFoundException(e);
+    }
+ finally {
+      try {
+        ctx.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+    return getUsernameFromLdap(id);
+  }
+ else {
+    return getUsernameFromDb(id);
+  }
+}

@@ -1,0 +1,9 @@
+{
+  authProvider.authenticate(username,token,digest);
+  try {
+    return new AuthTokenImpl(userIDProvider.getUserID(username));
+  }
+ catch (  UserNotFoundException e) {
+    throw new UnauthorizedException("User " + username + " digest authenticated but no ID found",e);
+  }
+}

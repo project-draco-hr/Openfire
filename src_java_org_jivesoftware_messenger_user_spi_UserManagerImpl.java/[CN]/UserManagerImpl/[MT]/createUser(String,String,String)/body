@@ -1,0 +1,18 @@
+{
+  User newUser=null;
+  username=NodePrep.prep(username);
+  username=StringUtils.replace(username,"&nbsp;","");
+  try {
+    getUser(username);
+    throw new UserAlreadyExistsException();
+  }
+ catch (  UserNotFoundException unfe) {
+    try {
+      newUser=getUser(userAccountProvider.createUser(username,password,email));
+    }
+ catch (    UserNotFoundException e) {
+      throw new UnauthorizedException("Created an account but could not load it. username: " + username + " pass: "+ password+ " email: "+ email);
+    }
+  }
+  return newUser;
+}

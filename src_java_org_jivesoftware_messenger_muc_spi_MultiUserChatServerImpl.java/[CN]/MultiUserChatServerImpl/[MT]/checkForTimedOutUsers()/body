@@ -1,0 +1,16 @@
+{
+  final long deadline=System.currentTimeMillis() - USER_TIMEOUT;
+  final Map userMap=new HashMap(users);
+  final Iterator userIter=userMap.values().iterator();
+  while (userIter.hasNext()) {
+    try {
+      MUCUser user=(MUCUser)userIter.next();
+      if (user.getLastPacketTime() < deadline) {
+        presenceManager.probePresence(chatServerAddress,user.getAddress());
+      }
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

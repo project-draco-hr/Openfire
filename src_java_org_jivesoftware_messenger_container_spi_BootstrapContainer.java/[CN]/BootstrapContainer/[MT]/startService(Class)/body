@@ -1,0 +1,10 @@
+{
+  Object instance=lookup.lookup(service);
+  if (instance == null) {
+    if (service.getName().equals("org.jivesoftware.xmpp.user.UserManager")) {
+      loadCorePlugins(new String[]{"org.jivesoftware.xmpp.user.spi.UserManagerImpl"});
+      instance=lookup.lookup(service);
+    }
+  }
+  return instance;
+}

@@ -1,0 +1,13 @@
+{
+  occupants.remove(leaveRole.getNickname().toLowerCase());
+  MUCUser user=leaveRole.getChatUser();
+  List list=occupantsByBareJID.get(user.getAddress().toBareStringPrep());
+  if (list != null) {
+    list.remove(leaveRole);
+    if (list.isEmpty()) {
+      occupantsByBareJID.remove(user.getAddress().toBareStringPrep());
+    }
+  }
+  occupantsByFullJID.remove(user.getAddress().toStringPrep());
+  roomHistory.userLeft(user,new java.util.Date());
+}

@@ -1,0 +1,124 @@
+{
+  Element item;
+  String affiliation=null;
+  boolean hasJID=((Element)itemsList.get(0)).attributeValue("jid") != null;
+  boolean hasNick=((Element)itemsList.get(0)).attributeValue("nick") != null;
+  if (!hasJID && !hasNick) {
+    for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
+      item=(Element)items.next();
+      affiliation=item.attributeValue("affiliation");
+      MetaDataFragment result=new MetaDataFragment(DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/muc#owner")));
+      if ("owner".equals(affiliation)) {
+        MetaDataFragment ownerMetaData;
+        String jid;
+        MUCRole role;
+        for (Iterator owners=room.getOwners(); owners.hasNext(); ) {
+          jid=(String)owners.next();
+          ownerMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
+          ownerMetaData.setProperty("item:affiliation","owner");
+          ownerMetaData.setProperty("item:jid",jid);
+          try {
+            List roles=room.getOccupantsByBareJID(jid);
+            role=(MUCRole)roles.get(0);
+            ownerMetaData.setProperty("item:role",role.getRoleAsString());
+            ownerMetaData.setProperty("item:nick",role.getNickname());
+          }
+ catch (          UserNotFoundException e) {
+          }
+          result.addFragment(ownerMetaData);
+        }
+        reply.addFragment(result);
+      }
+ else       if ("admin".equals(affiliation)) {
+        MetaDataFragment adminMetaData;
+        String jid;
+        MUCRole role;
+        for (Iterator admins=room.getAdmins(); admins.hasNext(); ) {
+          jid=(String)admins.next();
+          adminMetaData=new MetaDataFragment("http://jabber.org/protocol/muc#owner","item");
+          adminMetaData.setProperty("item:affiliation","admin");
+          adminMetaData.setProperty("item:jid",jid);
+          try {
+            List roles=room.getOccupantsByBareJID(jid);
+            role=(MUCRole)roles.get(0);
+            adminMetaData.setProperty("item:role",role.getRoleAsString());
+            adminMetaData.setProperty("item:nick",role.getNickname());
+          }
+ catch (          UserNotFoundException e) {
+          }
+          result.addFragment(adminMetaData);
+        }
+        reply.addFragment(result);
+      }
+ else {
+        reply.setError(XMPPError.Code.BAD_REQUEST);
+      }
+    }
+  }
+ else {
+    Map jids=new HashMap();
+    String bareJID=null;
+    String nick;
+    for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
+      try {
+        item=(Element)items.next();
+        affiliation=item.attributeValue("affiliation");
+        if (hasJID) {
+          bareJID=XMPPAddress.parseBareAddress(item.attributeValue("jid"));
+        }
+ else {
+          nick=item.attributeValue("nick");
+          bareJID=room.getOccupant(nick).getChatUser().getAddress().toBareStringPrep();
+        }
+        jids.put(bareJID,affiliation);
+      }
+ catch (      UserNotFoundException e) {
+      }
+    }
+    List presences=new ArrayList(jids.size());
+    room.lock.readLock().lock();
+    try {
+      if (jids.keySet().containsAll(room.owners)) {
+        if (!jids.containsValue("owner")) {
+          reply.setError(XMPPError.Code.CONFLICT);
+          return;
+        }
+      }
+      room.lock.readLock().unlock();
+      room.lock.writeLock().lock();
+      try {
+        String targetAffiliation=null;
+        for (Iterator it=jids.keySet().iterator(); it.hasNext(); ) {
+          bareJID=(String)it.next();
+          targetAffiliation=(String)jids.get(bareJID);
+          if ("owner".equals(targetAffiliation)) {
+            presences.addAll(room.addOwner(bareJID,senderRole));
+          }
+ else           if ("admin".equals(targetAffiliation)) {
+            presences.addAll(room.addAdmin(bareJID,senderRole));
+          }
+ else           if ("member".equals(targetAffiliation)) {
+            presences.addAll(room.addMember(bareJID,null,senderRole));
+          }
+ else           if ("none".equals(targetAffiliation)) {
+            presences.addAll(room.addNone(bareJID,senderRole));
+          }
+        }
+      }
+  finally {
+        room.lock.writeLock().unlock();
+        room.lock.readLock().lock();
+      }
+    }
+  finally {
+      room.lock.readLock().unlock();
+    }
+    try {
+      for (Iterator it=presences.iterator(); it.hasNext(); ) {
+        room.send((Presence)it.next());
+      }
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+}

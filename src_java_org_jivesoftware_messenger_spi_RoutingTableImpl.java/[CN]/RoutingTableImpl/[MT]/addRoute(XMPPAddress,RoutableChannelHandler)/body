@@ -1,0 +1,45 @@
+{
+  ChannelHandler route=null;
+  routeLock.writeLock().lock();
+  try {
+    if (node.getName() == null) {
+      Object item=routes.put(node.getHostPrep(),destination);
+      if (item instanceof ChannelHandler) {
+        route=(ChannelHandler)item;
+      }
+    }
+ else {
+      Object nameRoutes=routes.get(node.getHostPrep());
+      if (nameRoutes == null || nameRoutes instanceof ChannelHandler) {
+        nameRoutes=new Hashtable();
+        routes.put(node.getHostPrep(),nameRoutes);
+      }
+      if (node.getResource() == null) {
+        Object item=((Hashtable)nameRoutes).put(node.getNamePrep(),destination);
+        if (item instanceof ChannelHandler) {
+          route=(ChannelHandler)item;
+        }
+      }
+ else {
+        Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNamePrep());
+        if (resourceRoutes == null || resourceRoutes instanceof ChannelHandler) {
+          resourceRoutes=new Hashtable();
+          Object item=((Hashtable)nameRoutes).put(node.getNamePrep(),resourceRoutes);
+          if (item instanceof ChannelHandler) {
+            route=(ChannelHandler)item;
+          }
+        }
+        Object resourceRoute=((Hashtable)resourceRoutes).put(node.getResourcePrep(),destination);
+        if (resourceRoute != null) {
+          if (resourceRoute instanceof ChannelHandler) {
+            route=(ChannelHandler)resourceRoute;
+          }
+        }
+      }
+    }
+  }
+  finally {
+    routeLock.writeLock().unlock();
+  }
+  return route;
+}

@@ -1,0 +1,33 @@
+{
+  RoutableChannelHandler route=null;
+  routeLock.readLock().lock();
+  try {
+    Object nameRoutes=routes.get(node.getHostPrep());
+    if (nameRoutes instanceof ChannelHandler) {
+      route=(RoutableChannelHandler)nameRoutes;
+    }
+ else {
+      Object resourceRoutes=((Hashtable)nameRoutes).get(node.getNamePrep());
+      if (resourceRoutes instanceof ChannelHandler) {
+        route=(RoutableChannelHandler)resourceRoutes;
+      }
+ else       if (resourceRoutes != null) {
+        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(node.getResourcePrep());
+      }
+ else {
+        System.err.println(nameRoutes);
+        throw new NoSuchRouteException(node.toString());
+      }
+    }
+  }
+ catch (  Exception e) {
+    throw new NoSuchRouteException(node == null ? "No node" : node.toString(),e);
+  }
+ finally {
+    routeLock.readLock().unlock();
+  }
+  if (route == null) {
+    throw new NoSuchRouteException(node == null ? "No node" : node.toString());
+  }
+  return route;
+}

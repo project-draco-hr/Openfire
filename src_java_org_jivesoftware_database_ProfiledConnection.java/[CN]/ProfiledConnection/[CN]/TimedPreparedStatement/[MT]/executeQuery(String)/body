@@ -1,0 +1,19 @@
+{
+  long t1=System.currentTimeMillis();
+  ResultSet result=pstmt.executeQuery(_sql);
+  long t2=System.currentTimeMillis();
+  String sqlL=_sql.toLowerCase().trim();
+  if (sqlL.startsWith("insert")) {
+    addQuery(INSERT,_sql,t2 - t1);
+  }
+ else   if (sqlL.startsWith("update")) {
+    addQuery(UPDATE,_sql,t2 - t1);
+  }
+ else   if (sqlL.startsWith("delete")) {
+    addQuery(DELETE,_sql,t2 - t1);
+  }
+ else {
+    addQuery(SELECT,_sql,t2 - t1);
+  }
+  return result;
+}

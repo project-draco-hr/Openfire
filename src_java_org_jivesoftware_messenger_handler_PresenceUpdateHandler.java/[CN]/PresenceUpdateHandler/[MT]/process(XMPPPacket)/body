@@ -1,0 +1,50 @@
+{
+  Presence presence=(Presence)xmppPacket;
+  Session session=presence.getOriginatingSession();
+  try {
+    XMPPPacket.Type type=presence.getType();
+    if (type == null || Presence.AVAILABLE.equals(type)) {
+      broadcastUpdate((Presence)presence.createDeepCopy());
+      if (session != null) {
+        session.setPresence(presence);
+        if (!session.isInitialized()) {
+          initSession(session);
+          session.setInitialized(true);
+        }
+      }
+    }
+ else     if (Presence.UNAVAILABLE.equals(type)) {
+      broadcastUpdate((Presence)presence.createDeepCopy());
+      broadcastUnavailableForDirectedPresences((Presence)presence.createDeepCopy());
+      if (session != null) {
+        session.setPresence(presence);
+      }
+    }
+ else     if (Presence.INVISIBLE.equals(type)) {
+      if (session != null) {
+        session.setPresence(presence);
+        if (!session.isInitialized()) {
+          initSession(session);
+          session.setInitialized(true);
+        }
+      }
+    }
+ else {
+      presence=(Presence)presence.createDeepCopy();
+      if (session != null) {
+        presence.setSender(new XMPPAddress(null,session.getServerName(),null));
+        presence.setRecipient(session.getAddress());
+      }
+ else {
+        XMPPAddress sender=presence.getSender();
+        presence.setSender(presence.getRecipient());
+        presence.setRecipient(sender);
+      }
+      presence.setError(XMPPError.Code.BAD_REQUEST);
+      deliverer.deliver(presence);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

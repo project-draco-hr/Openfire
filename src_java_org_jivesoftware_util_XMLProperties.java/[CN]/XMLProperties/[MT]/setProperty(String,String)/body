@@ -1,0 +1,15 @@
+{
+  if (name == null)   return;
+  if (value == null)   value="";
+  propertyCache.put(name,value);
+  String[] propName=parsePropertyName(name);
+  Element element=rootElement;
+  for (int i=0; i < propName.length; i++) {
+    if (element.element(propName[i]) == null) {
+      element.addElement(propName[i]);
+    }
+    element=element.element(propName[i]);
+  }
+  element.setText(value);
+  saveProperties();
+}

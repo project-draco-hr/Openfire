@@ -1,0 +1,10 @@
+{
+  ClassLoader parent=Thread.currentThread().getContextClassLoader();
+  if (parent == null) {
+    parent=this.getClass().getClassLoader();
+    if (parent == null) {
+      parent=ClassLoader.getSystemClassLoader();
+    }
+  }
+  return parent;
+}

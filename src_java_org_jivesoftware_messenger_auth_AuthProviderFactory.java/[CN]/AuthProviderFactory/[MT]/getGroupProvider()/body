@@ -1,0 +1,20 @@
+{
+  if (groupProvider == null) {
+synchronized (groupClassName) {
+      if (groupProvider == null) {
+        String classNameProp=JiveGlobals.getJiveProperty("GroupProvider.className");
+        if (classNameProp != null) {
+          groupClassName=classNameProp;
+        }
+        try {
+          Class c=ClassUtils.forName(groupClassName);
+          groupProvider=(GroupProvider)c.newInstance();
+        }
+ catch (        Exception e) {
+          Log.error("Exception loading class: " + groupClassName,e);
+        }
+      }
+    }
+  }
+  return groupProvider;
+}

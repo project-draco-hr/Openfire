@@ -1,0 +1,19 @@
+{
+  float time=0;
+  float quantity=0;
+  if (frameList.size() > 0) {
+    frameLock.writeLock().lock();
+    try {
+      frameList.mark();
+      while (frameList.getPassCount() == 0) {
+        Sample sample=(Sample)frameList.next();
+        time+=sample.getTime();
+        quantity+=sample.getQuantity();
+      }
+    }
+  finally {
+      frameLock.writeLock().lock();
+    }
+  }
+  return quantity / time * 1000;
+}

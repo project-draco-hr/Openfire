@@ -1,0 +1,11 @@
+{
+  Iterator modIter=modules.iterator();
+  while (modIter.hasNext()) {
+    Object mod=modIter.next();
+    if (mod.getClass().isAssignableFrom(service)) {
+      modIter.remove();
+      ((Module)mod).stop();
+      ((Module)mod).destroy();
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  Presence presence=(Presence)xmppPacket;
+  try {
+    XMPPAddress senderJID=presence.getSender();
+    XMPPAddress recipientJID=presence.getRecipient();
+    XMPPPacket.Type type=presence.getType();
+    Roster roster=getRoster(senderJID);
+    if (roster != null) {
+      manageSub(recipientJID,true,type,roster);
+    }
+    roster=getRoster(recipientJID);
+    if (roster != null) {
+      manageSub(senderJID,false,type,roster);
+    }
+    if (chatbotManager.isChatbot(recipientJID)) {
+      routingTable.getRoute(recipientJID).process((IQ)presence.createDeepCopy());
+    }
+ else {
+      deliverer.deliver((XMPPPacket)presence.createDeepCopy());
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

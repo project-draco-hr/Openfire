@@ -1,0 +1,24 @@
+{
+  for (int i=0; i < conCount; i++) {
+    ConnectionWrapper wrapper=wrappers[i];
+    if (wrapper == null) {
+      break;
+    }
+synchronized (wrapper) {
+      if (!wrapper.checkedout) {
+        wrapper.setConnection(cons[i]);
+        wrapper.checkedout=true;
+        wrapper.lockTime=System.currentTimeMillis();
+        return wrapper;
+      }
+    }
+  }
+synchronized (conCountLock) {
+    if (conCount >= maxCon) {
+      return null;
+    }
+    ConnectionWrapper con=createCon(conCount);
+    conCount++;
+    return con;
+  }
+}

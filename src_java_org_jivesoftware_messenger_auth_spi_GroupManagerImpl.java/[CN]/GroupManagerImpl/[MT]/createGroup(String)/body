@@ -1,0 +1,12 @@
+{
+  Group newGroup=null;
+  try {
+    getGroup(name);
+    throw new GroupAlreadyExistsException();
+  }
+ catch (  GroupNotFoundException unfe) {
+    newGroup=provider.createGroup(name);
+    groupCache.put(new Long(newGroup.getID()),newGroup);
+  }
+  return newGroup;
+}

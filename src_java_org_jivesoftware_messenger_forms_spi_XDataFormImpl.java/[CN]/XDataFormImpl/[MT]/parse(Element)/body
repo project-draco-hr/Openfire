@@ -1,0 +1,38 @@
+{
+  type=formElement.attributeValue("type");
+  Element titleElement=formElement.element("title");
+  if (titleElement != null) {
+    setTitle(titleElement.getTextTrim());
+  }
+  Iterator instructionElements=formElement.elementIterator("instructions");
+  while (instructionElements.hasNext()) {
+    addInstruction(((Element)instructionElements.next()).getTextTrim());
+  }
+  Iterator fieldElements=formElement.elementIterator("field");
+  while (fieldElements.hasNext()) {
+    XFormFieldImpl field=new XFormFieldImpl();
+    field.parse((Element)fieldElements.next());
+    addField(field);
+  }
+  Element reportedElement=formElement.element("reported");
+  if (reportedElement != null) {
+    Iterator reportedFieldElements=reportedElement.elementIterator("field");
+    while (reportedFieldElements.hasNext()) {
+      XFormFieldImpl field=new XFormFieldImpl();
+      field.parse((Element)reportedFieldElements.next());
+      addReportedField(field);
+    }
+  }
+  Iterator itemElements=formElement.elementIterator("item");
+  while (itemElements.hasNext()) {
+    Element itemElement=(Element)itemElements.next();
+    Iterator itemFieldElements=itemElement.elementIterator("field");
+    ArrayList itemFields=new ArrayList();
+    while (itemFieldElements.hasNext()) {
+      XFormFieldImpl field=new XFormFieldImpl();
+      field.parse((Element)itemFieldElements.next());
+      itemFields.add(field);
+    }
+    addItemFields(itemFields);
+  }
+}

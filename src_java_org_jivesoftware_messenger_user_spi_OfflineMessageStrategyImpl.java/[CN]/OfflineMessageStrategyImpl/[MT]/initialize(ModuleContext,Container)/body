@@ -1,0 +1,12 @@
+{
+  super.initialize(context,container);
+  this.context=context;
+  String quota=context.getProperty("xmpp.offline.quota");
+  if (quota != null && quota.length() > 0) {
+    OfflineMessageStrategyImpl.quota=Integer.parseInt(quota);
+  }
+  String type=context.getProperty("xmpp.offline.type");
+  if (type != null && type.length() > 0) {
+    OfflineMessageStrategyImpl.type=Type.valueOf(type);
+  }
+}

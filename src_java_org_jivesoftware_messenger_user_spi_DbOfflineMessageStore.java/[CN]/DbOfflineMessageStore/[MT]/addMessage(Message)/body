@@ -1,0 +1,46 @@
+{
+  if (message != null) {
+    Connection con=null;
+    PreparedStatement pstmt=null;
+    long messageID=SequenceManager.nextID(JiveConstants.OFFLINE);
+    String user=message.getRecipient().getNamePrep();
+    try {
+      long userID=userManager.getUserID(user);
+      StringXMLStreamWriter serMsg=new StringXMLStreamWriter();
+      message.send(serMsg,0);
+      String msg=serMsg.toString();
+      con=DbConnectionManager.getConnection();
+      pstmt=con.prepareStatement(INSERT_OFFLINE);
+      pstmt.setLong(1,userID);
+      pstmt.setLong(2,messageID);
+      pstmt.setString(3,StringUtils.dateToMillis(new Date()));
+      pstmt.setInt(4,msg.length());
+      pstmt.setString(5,msg);
+      pstmt.executeUpdate();
+    }
+ catch (    UserNotFoundException e) {
+      Log.warn("Could not store offline message for " + user + " address "+ message.getRecipient(),e);
+    }
+catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+ finally {
+      try {
+        if (pstmt != null) {
+          pstmt.close();
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+      try {
+        if (con != null) {
+          con.close();
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  IQ result=null;
+  try {
+    XMPPAddress recipient=packet.getRecipient();
+    XMPPPacket.Type type=packet.getType();
+    if (type.equals(IQ.SET)) {
+      User user=userManager.getUser(packet.getOriginatingSession().getUserID());
+      Element vcard=((XMPPDOMFragment)packet.getChildFragment()).getRootElement();
+      if (vcard != null) {
+        List nameStack=new ArrayList(5);
+        readVCard(vcard,nameStack,user);
+      }
+      result=packet.createResult();
+    }
+ else     if (type.equals(IQ.GET)) {
+      User user=userManager.getUser(recipient.getName());
+      result=packet.createResult();
+      XMPPDOMFragment frag=new XMPPDOMFragment();
+      result.setChildFragment(frag);
+      Element vcard=frag.getRootElement().addElement("VCARD","vcard-temp");
+      Iterator names=user.getVCardPropertyNames();
+      while (names.hasNext()) {
+        String name=(String)names.next();
+        String path=name.replace(':','/');
+        Element node=DocumentHelper.makeElement(vcard,path);
+        node.setText(user.getVCardProperty(name));
+      }
+    }
+ else {
+      result=packet.createResult();
+      result.setError(XMPPError.Code.NOT_ACCEPTABLE);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    result=packet.createResult();
+    result.setError(XMPPError.Code.NOT_FOUND);
+  }
+  return result;
+}

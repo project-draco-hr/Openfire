@@ -1,0 +1,11 @@
+{
+  CachedRoster roster=null;
+  if (CacheManager.getCache("userid2roster").get(new Long(this.id)) != null) {
+    roster=(CachedRoster)CacheManager.getCache("userid2roster").get(new Long(this.id));
+  }
+ else {
+    roster=new CachedRosterImpl(id,username);
+    CacheManager.getCache("userid2roster").put(new Long(this.id),roster);
+  }
+  return roster;
+}

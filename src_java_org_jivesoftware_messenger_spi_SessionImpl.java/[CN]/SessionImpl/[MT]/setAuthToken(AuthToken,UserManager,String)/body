@@ -1,0 +1,10 @@
+{
+  User user=userManager.getUser(auth.getUserID());
+  jid=new XMPPAddress(user.getUsername(),serverName,resource);
+  authToken=auth;
+  List params=new ArrayList();
+  params.add(jid.toString());
+  params.add(getConnection().toString());
+  sessionManager.addSession(this);
+  setStatus(Session.STATUS_AUTHENTICATED);
+}

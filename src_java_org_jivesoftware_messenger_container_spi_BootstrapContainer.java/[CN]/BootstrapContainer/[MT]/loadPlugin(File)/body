@@ -1,0 +1,20 @@
+{
+  Module mod=null;
+  try {
+    File moduleConfig=new File(pluginDir,"module.xml");
+    if (moduleConfig.exists()) {
+      ModuleContext modContext=new XMLModuleContext(context,moduleConfig,pluginDir,logDir);
+      JiveModuleLoader modLoader=new JiveModuleLoader(pluginDir.toString());
+      mod=modLoader.loadModule(modContext.getProperty("module"));
+      mod.initialize(modContext,this);
+      mod.start();
+      this.modules.add(mod);
+    }
+ else {
+      Log.warn("Plug-in " + pluginDir + " not loaded: no module.xml configuration file found");
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

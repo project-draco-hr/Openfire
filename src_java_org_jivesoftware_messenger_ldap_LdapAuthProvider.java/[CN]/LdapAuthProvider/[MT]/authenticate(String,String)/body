@@ -1,0 +1,15 @@
+{
+  if (username == null || password == null) {
+    throw new UnauthorizedException();
+  }
+  String userDN=null;
+  try {
+    userDN=manager.findUserDN(username);
+    if (!manager.checkAuthentication(userDN,password)) {
+      throw new UnauthorizedException("Username and password don't match");
+    }
+  }
+ catch (  Exception e) {
+    throw new UnauthorizedException(e);
+  }
+}

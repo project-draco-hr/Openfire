@@ -1,0 +1,29 @@
+{
+  if (packet == null) {
+    throw new NullPointerException();
+  }
+  if (packet.getOriginatingSession() == null || packet.getOriginatingSession().getStatus() == Session.STATUS_AUTHENTICATED) {
+    XMPPAddress recipientJID=packet.getRecipient();
+    try {
+      routingTable.getBestRoute(recipientJID).process(packet);
+    }
+ catch (    Exception e) {
+      try {
+        messageStrategy.storeOffline(packet);
+      }
+ catch (      Exception e1) {
+      }
+    }
+  }
+ else {
+    packet.setRecipient(packet.getOriginatingSession().getAddress());
+    packet.setSender(null);
+    packet.setError(XMPPError.Code.UNAUTHORIZED);
+    try {
+      packet.getOriginatingSession().process(packet);
+    }
+ catch (    UnauthorizedException ue) {
+      Log.error(ue);
+    }
+  }
+}

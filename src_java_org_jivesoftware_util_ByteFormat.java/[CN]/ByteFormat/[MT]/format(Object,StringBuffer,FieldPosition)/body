@@ -1,0 +1,14 @@
+{
+  if (obj instanceof Long) {
+    long numBytes=((Long)obj).longValue();
+    if (numBytes < 1024 * 1024) {
+      DecimalFormat formatter=new DecimalFormat("#,##0.0");
+      buf.append(formatter.format((double)numBytes / 1024.0)).append(" K");
+    }
+ else {
+      DecimalFormat formatter=new DecimalFormat("#,##0.0");
+      buf.append(formatter.format((double)numBytes / (1024.0 * 1024.0))).append(" MB");
+    }
+  }
+  return buf;
+}

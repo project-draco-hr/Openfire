@@ -1,0 +1,14 @@
+{
+  try {
+    lookup=container.getServiceLookup();
+    trackInfo=getTrackInfo();
+    if (trackInfo != null) {
+      int classCount=trackInfo.getTrackerClasses().keySet().size();
+      Class[] trackedClasses=(Class[])trackInfo.getTrackerClasses().keySet().toArray(new Class[classCount]);
+      tracker=new ServiceTracker(lookup,new BasicModuleTrackerListener(),trackedClasses);
+    }
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

@@ -1,0 +1,37 @@
+{
+  IQ reply=(IQ)packet.createDeepCopy();
+  reply.setType(IQ.RESULT);
+  reply.setRecipient(packet.getSender());
+  reply.setSender(packet.getRecipient());
+  if (IQ.SET == packet.getType()) {
+    reply.setError(XMPPError.Code.NOT_IMPLEMENTED);
+    return reply;
+  }
+  DiscoItemsProvider itemsProvider=getProvider(packet.getRecipient().getHost());
+  if (itemsProvider != null) {
+    String name=packet.getRecipient().getName();
+    if (name == null || name.trim().length() == 0) {
+      name=null;
+    }
+    XMPPFragment iq=packet.getChildFragment();
+    MetaDataFragment metaData=MetaDataFragment.convertToMetaData(iq);
+    String node=metaData.getProperty("query:node");
+    Iterator itemsItr=itemsProvider.getItems(name,node,packet.getSender());
+    if (itemsItr != null) {
+      Element queryElement=((XMPPDOMFragment)reply.getChildFragment()).getRootElement();
+      Element item;
+      while (itemsItr.hasNext()) {
+        item=(Element)itemsItr.next();
+        queryElement.add((Element)item.clone());
+      }
+      ;
+    }
+ else {
+      reply.setError(XMPPError.Code.NOT_FOUND);
+    }
+  }
+ else {
+    reply.setError(XMPPError.Code.NOT_FOUND);
+  }
+  return reply;
+}

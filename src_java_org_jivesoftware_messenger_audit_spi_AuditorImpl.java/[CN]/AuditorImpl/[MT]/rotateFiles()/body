@@ -1,0 +1,26 @@
+{
+  close();
+  int i;
+  for (i=0; maxCount < 1 || i < maxCount; i++) {
+    currentAuditFile=new File(moduleContext.getLogDirectory(),"jive.audit-" + i + ".log");
+    if (!currentAuditFile.exists()) {
+      break;
+    }
+  }
+  if (i != 0) {
+    if (i == maxCount) {
+      currentAuditFile.delete();
+    }
+    for (i--; i >= 0; i--) {
+      String previousName="jive.audit-" + i + ".log";
+      File previousFile=new File(moduleContext.getLogDirectory(),previousName);
+      previousFile.renameTo(currentAuditFile);
+      currentAuditFile=new File(moduleContext.getLogDirectory(),previousName);
+    }
+  }
+  writer=new FileWriter(currentAuditFile);
+  xmlSerializer=XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
+  xmlSerializer.setDefaultNamespace("jabber:client");
+  xmlSerializer.writeStartElement("jive","jive","http://jivesoftware.com");
+  xmlSerializer.writeNamespace("jive","http://jivesoftware.com");
+}

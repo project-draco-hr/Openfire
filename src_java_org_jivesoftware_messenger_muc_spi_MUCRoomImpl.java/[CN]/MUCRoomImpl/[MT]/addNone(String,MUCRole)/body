@@ -1,0 +1,54 @@
+{
+  int oldAffiliation=MUCRole.NONE;
+  if (MUCRole.ADMINISTRATOR != senderRole.getAffiliation() && MUCRole.OWNER != senderRole.getAffiliation()) {
+    throw new ForbiddenException();
+  }
+  if (owners.contains(bareJID) && owners.size() == 1) {
+    throw new ConflictException();
+  }
+  String actorJID=senderRole.getChatUser().getAddress().toBareStringPrep();
+  List updatedPresences=null;
+  boolean wasMember=members.containsKey(bareJID);
+  if (removeOwner(bareJID)) {
+    oldAffiliation=MUCRole.OWNER;
+  }
+ else   if (removeAdmin(bareJID)) {
+    oldAffiliation=MUCRole.ADMINISTRATOR;
+  }
+ else   if (removeMember(bareJID)) {
+    oldAffiliation=MUCRole.MEMBER;
+  }
+ else   if (removeOutcast(bareJID)) {
+    oldAffiliation=MUCRole.OUTCAST;
+  }
+  MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
+  try {
+    int newRole;
+    if (isInvitationRequiredToEnter() && wasMember) {
+      newRole=MUCRole.NONE_ROLE;
+    }
+ else {
+      newRole=isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT;
+    }
+    updatedPresences=changeAffiliationOfOccupant(bareJID,MUCRole.NONE,newRole);
+    if (isInvitationRequiredToEnter() && wasMember) {
+      Presence presence;
+      MetaDataFragment frag;
+      for (Iterator it=updatedPresences.iterator(); it.hasNext(); ) {
+        presence=(Presence)it.next();
+        try {
+          presence.setAvailable(false);
+          presence.setVisible(false);
+        }
+ catch (        UnauthorizedException e) {
+        }
+        frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
+        frag.setProperty("x.status:code","321");
+        kickPresence(presence,actorJID);
+      }
+    }
+  }
+ catch (  NotAllowedException e) {
+  }
+  return updatedPresences;
+}

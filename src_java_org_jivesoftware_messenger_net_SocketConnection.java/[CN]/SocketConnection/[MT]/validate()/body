@@ -1,0 +1,15 @@
+{
+  if (isClosed()) {
+    return false;
+  }
+  try {
+synchronized (writer) {
+      xmlSerializer.writeCharacters(" ");
+      xmlSerializer.flush();
+    }
+  }
+ catch (  Exception e) {
+    close();
+  }
+  return !isClosed();
+}

@@ -1,0 +1,15 @@
+{
+  Iterator children=element.elementIterator();
+  while (children.hasNext()) {
+    Element child=(Element)children.next();
+    nameStack.add(child.getName());
+    String value=child.getTextTrim();
+    if (value != null) {
+      if (!"".equals(value)) {
+        user.setVCardProperty(createName(nameStack),value);
+      }
+    }
+    readVCard(child,nameStack,user);
+    nameStack.remove(nameStack.size() - 1);
+  }
+}

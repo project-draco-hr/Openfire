@@ -1,0 +1,22 @@
+{
+  super("SSL accept");
+  this.connManager=connManager;
+  int port=SSLSocketAcceptThread.DEFAULT_PORT;
+  String portName=JiveGlobals.getJiveProperty("xmpp.socket.ssl.port");
+  if (portName != null) {
+    port=Integer.parseInt(portName);
+  }
+  String interfaceName=JiveGlobals.getJiveProperty("xmpp.socket.ssl.interface");
+  bindInterface=null;
+  if (interfaceName != null) {
+    try {
+      if (interfaceName.trim().length() > 0) {
+        bindInterface=InetAddress.getByName(interfaceName);
+      }
+    }
+ catch (    UnknownHostException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+  serverSocket=SSLConfig.createServerSocket(port,bindInterface);
+}

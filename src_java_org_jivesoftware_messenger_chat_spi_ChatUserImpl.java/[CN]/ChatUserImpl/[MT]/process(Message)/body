@@ -1,0 +1,27 @@
+{
+  lastPacketTime=System.currentTimeMillis();
+  XMPPAddress recipient=packet.getRecipient();
+  String group=recipient.getName();
+  if (group == null) {
+    Log.info(LocaleUtils.getLocalizedString("chat.error.not-supported") + " " + packet.toString());
+  }
+ else {
+    ChatRole role=roles.get(group.toLowerCase());
+    if (role == null) {
+    }
+ else {
+      if (!role.getChatUser().getAddress().equals(packet.getSender())) {
+        sendConflict(packet);
+      }
+ else {
+        try {
+          packet.setSender(role.getRoleAddress());
+          role.getChatRoom().send(packet);
+        }
+ catch (        UnauthorizedException e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
+      }
+    }
+  }
+}

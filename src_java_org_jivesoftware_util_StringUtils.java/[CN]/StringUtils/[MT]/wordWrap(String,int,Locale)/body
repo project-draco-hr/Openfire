@@ -1,0 +1,54 @@
+{
+  if (input == null) {
+    return "";
+  }
+ else   if (width < 5) {
+    return input;
+  }
+ else   if (width >= input.length()) {
+    return input;
+  }
+  if (locale == null) {
+    locale=JiveGlobals.getLocale();
+  }
+  StringBuffer buf=new StringBuffer(input);
+  boolean endOfLine=false;
+  int lineStart=0;
+  for (int i=0; i < buf.length(); i++) {
+    if (buf.charAt(i) == '\n') {
+      lineStart=i + 1;
+      endOfLine=true;
+    }
+    if (i > lineStart + width - 1) {
+      if (!endOfLine) {
+        int limit=i - lineStart - 1;
+        BreakIterator breaks=BreakIterator.getLineInstance(locale);
+        breaks.setText(buf.substring(lineStart,i));
+        int end=breaks.last();
+        if (end == limit + 1) {
+          if (!Character.isWhitespace(buf.charAt(lineStart + end))) {
+            end=breaks.preceding(end - 1);
+          }
+        }
+        if (end != BreakIterator.DONE && end == limit + 1) {
+          buf.replace(lineStart + end,lineStart + end + 1,"\n");
+          lineStart=lineStart + end;
+        }
+ else         if (end != BreakIterator.DONE && end != 0) {
+          buf.insert(lineStart + end,'\n');
+          lineStart=lineStart + end + 1;
+        }
+ else {
+          buf.insert(i,'\n');
+          lineStart=i + 1;
+        }
+      }
+ else {
+        buf.insert(i,'\n');
+        lineStart=i + 1;
+        endOfLine=false;
+      }
+    }
+  }
+  return buf.toString();
+}

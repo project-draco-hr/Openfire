@@ -1,0 +1,18 @@
+{
+  if (!isClosed()) {
+    try {
+      if (session != null) {
+        session.setStatus(Session.STATUS_CLOSED);
+      }
+    }
+ catch (    Exception e) {
+    }
+    try {
+      sock.close();
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
+    }
+    notifyCloseListeners();
+  }
+}

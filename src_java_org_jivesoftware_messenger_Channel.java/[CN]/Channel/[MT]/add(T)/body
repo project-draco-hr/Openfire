@@ -1,0 +1,19 @@
+{
+  Runnable r=new Runnable(){
+    public void run(){
+      try {
+        channelHandler.process(packet);
+      }
+ catch (      Exception e) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        try {
+          packet.getOriginatingSession().getConnection().close();
+        }
+ catch (        UnauthorizedException e1) {
+        }
+      }
+    }
+  }
+;
+  executor.execute(r);
+}

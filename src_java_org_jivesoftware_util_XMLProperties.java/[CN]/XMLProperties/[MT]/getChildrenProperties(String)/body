@@ -1,0 +1,17 @@
+{
+  String[] propName=parsePropertyName(parent);
+  Element element=rootElement;
+  for (int i=0; i < propName.length; i++) {
+    element=element.element(propName[i]);
+    if (element == null) {
+      return new String[]{};
+    }
+  }
+  List children=element.elements();
+  int childCount=children.size();
+  String[] childrenNames=new String[childCount];
+  for (int i=0; i < childCount; i++) {
+    childrenNames[i]=((Element)children.get(i)).getName();
+  }
+  return childrenNames;
+}

@@ -1,0 +1,19 @@
+{
+  MUCPersistenceManager.saveToDB(this);
+  if (!savedToDB) {
+    savedToDB=true;
+    for (Iterator it=owners.iterator(); it.hasNext(); ) {
+      MUCPersistenceManager.saveAffiliationToDB(this,(String)it.next(),null,MUCRole.OWNER,MUCRole.NONE);
+    }
+    for (Iterator it=admins.iterator(); it.hasNext(); ) {
+      MUCPersistenceManager.saveAffiliationToDB(this,(String)it.next(),null,MUCRole.ADMINISTRATOR,MUCRole.NONE);
+    }
+    for (Iterator it=members.keySet().iterator(); it.hasNext(); ) {
+      String bareJID=(String)it.next();
+      MUCPersistenceManager.saveAffiliationToDB(this,bareJID,(String)members.get(bareJID),MUCRole.MEMBER,MUCRole.NONE);
+    }
+    for (Iterator it=outcasts.iterator(); it.hasNext(); ) {
+      MUCPersistenceManager.saveAffiliationToDB(this,(String)it.next(),null,MUCRole.OUTCAST,MUCRole.NONE);
+    }
+  }
+}

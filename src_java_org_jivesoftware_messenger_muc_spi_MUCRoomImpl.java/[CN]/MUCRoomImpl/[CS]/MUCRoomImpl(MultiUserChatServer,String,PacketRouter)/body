@@ -1,0 +1,26 @@
+{
+  this.server=chatserver;
+  this.name=roomname;
+  this.description=roomname;
+  this.router=packetRouter;
+  this.startTime=System.currentTimeMillis();
+  roomHistory=new MUCRoomHistory(this,new HistoryStrategy(server.getHistoryStrategy()));
+  roomHistory.setStartTime(startTime);
+  role=new RoomRole(this);
+  this.iqOwnerHandler=new IQOwnerHandler(this,packetRouter);
+  this.iqAdminHandler=new IQAdminHandler(this,packetRouter);
+  this.roomLocked=true;
+  this.lockedTime=startTime;
+  rolesToBroadcastPresence.add("moderator");
+  rolesToBroadcastPresence.add("participant");
+  rolesToBroadcastPresence.add("visitor");
+  try {
+    MUCPersistenceManager.loadFromDB(this);
+    if (this.isPersistent()) {
+      this.savedToDB=true;
+      this.roomLocked=false;
+    }
+  }
+ catch (  IllegalArgumentException e) {
+  }
+}
