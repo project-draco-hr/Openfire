@@ -12,8 +12,8 @@ synchronized (writer) {
         xmlSerializer.flush();
       }
  catch (      IOException e) {
-        Log.error("Problem sending the following packet: " + packet.toXML());
         Log.error(e);
+        close();
       }
     }
     auditor.audit(packet,session);
