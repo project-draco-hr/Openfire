@@ -1,0 +1,41 @@
+{
+  boolean hasRoute=false;
+  String resource=route.getResource();
+  String username=route.getName();
+  if (username == null || "".equals(username)) {
+    if (resource != null) {
+      anonymousSessionLock.readLock().lock();
+      try {
+        hasRoute=anonymousSessions.containsKey(resource);
+      }
+  finally {
+        anonymousSessionLock.readLock().unlock();
+      }
+    }
+  }
+ else {
+    username=username.toLowerCase();
+    Session session=null;
+    sessionLock.readLock().lock();
+    try {
+      SessionMap sessionMap=(SessionMap)sessions.get(username);
+      if (sessionMap != null) {
+        if (resource == null) {
+          hasRoute=!sessionMap.isEmpty();
+        }
+ else {
+          if (sessionMap.hasSession(resource)) {
+            session=sessionMap.getSession(resource);
+          }
+        }
+      }
+    }
+  finally {
+      sessionLock.readLock().unlock();
+    }
+    if (session != null && !session.getConnection().isClosed()) {
+      hasRoute=session.getConnection().validate();
+    }
+  }
+  return hasRoute;
+}

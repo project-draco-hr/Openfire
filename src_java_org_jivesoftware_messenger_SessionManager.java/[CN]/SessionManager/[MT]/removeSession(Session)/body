@@ -1,0 +1,56 @@
+{
+  if (session == null) {
+    return;
+  }
+  SessionMap sessionMap=null;
+  if (anonymousSessions.containsValue(session)) {
+    anonymousSessionLock.writeLock().lock();
+    try {
+      anonymousSessions.remove(session.getAddress().getResource());
+      sessionCount--;
+    }
+  finally {
+      anonymousSessionLock.writeLock().unlock();
+    }
+  }
+ else {
+    if (session.getAddress() != null && session.getAddress().getName() != null) {
+      String username=session.getAddress().getName().toLowerCase();
+      sessionLock.writeLock().lock();
+      try {
+        sessionMap=(SessionMap)sessions.get(username);
+        if (sessionMap != null) {
+          sessionMap.removeSession(session);
+          sessionCount--;
+          if (sessionMap.isEmpty()) {
+            sessions.remove(username);
+          }
+        }
+      }
+  finally {
+        sessionLock.writeLock().unlock();
+      }
+    }
+  }
+  Presence presence=session.getPresence();
+  if (presence == null || presence.isAvailable()) {
+    Presence offline=packetFactory.getPresence();
+    offline.setOriginatingSession(session);
+    offline.setSender(session.getAddress());
+    offline.setRecipient(new XMPPAddress(null,serverName,null));
+    offline.setAvailable(false);
+    router.route(offline);
+  }
+  if (session.getAddress() != null && routingTable != null && !session.getAddress().isEmpty()) {
+    routingTable.removeRoute(session.getAddress());
+    if (sessionMap != null) {
+      if (sessionMap.isEmpty()) {
+        routingTable.removeRoute(new XMPPAddress(session.getAddress().getNamePrep(),session.getAddress().getHostPrep(),""));
+      }
+ else {
+        Session defaultSession=sessionMap.getDefaultSession();
+        routingTable.addRoute(new XMPPAddress(defaultSession.getAddress().getNamePrep(),defaultSession.getAddress().getHostPrep(),""),defaultSession);
+      }
+    }
+  }
+}

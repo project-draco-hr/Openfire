@@ -1,0 +1,34 @@
+{
+  Session session=null;
+  String resource=address.getResource();
+  if (resource == null) {
+    throw new SessionNotFoundException();
+  }
+  String username=address.getName();
+  if (username == null || "".equals(username)) {
+    anonymousSessionLock.readLock().lock();
+    try {
+      session=(Session)anonymousSessions.get(resource);
+    }
+  finally {
+      anonymousSessionLock.readLock().unlock();
+    }
+  }
+ else {
+    username=username.toLowerCase();
+    sessionLock.readLock().lock();
+    try {
+      SessionMap sessionMap=(SessionMap)sessions.get(username);
+      if (sessionMap != null) {
+        session=sessionMap.getSession(resource);
+      }
+    }
+  finally {
+      sessionLock.readLock().unlock();
+    }
+  }
+  if (session == null) {
+    throw new SessionNotFoundException();
+  }
+  return session;
+}
