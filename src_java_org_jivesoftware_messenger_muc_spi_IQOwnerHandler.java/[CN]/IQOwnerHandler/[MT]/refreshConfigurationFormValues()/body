@@ -1,56 +1,56 @@
 {
   room.lock.readLock().lock();
   try {
-    FormField field=configurationForm.getField("muc#owner_roomname");
+    FormField field=configurationForm.getField("muc#roomconfig_roomname");
     field.clearValues();
     field.addValue(room.getName());
-    field=configurationForm.getField("muc#owner_roomdesc");
+    field=configurationForm.getField("muc#roomconfig_roomdesc");
     field.clearValues();
     field.addValue(room.getDescription());
-    field=configurationForm.getField("muc#owner_changesubject");
+    field=configurationForm.getField("muc#roomconfig_changesubject");
     field.clearValues();
     field.addValue((room.canOccupantsChangeSubject() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_maxusers");
+    field=configurationForm.getField("muc#roomconfig_maxusers");
     field.clearValues();
     field.addValue(Integer.toString(room.getMaxUsers()));
-    field=configurationForm.getField("muc#owner_presencebroadcast");
+    field=configurationForm.getField("muc#roomconfig_presencebroadcast");
     field.clearValues();
     for (Iterator it=room.getRolesToBroadcastPresence(); it.hasNext(); ) {
       field.addValue((String)it.next());
     }
-    field=configurationForm.getField("muc#owner_publicroom");
+    field=configurationForm.getField("muc#roomconfig_publicroom");
     field.clearValues();
     field.addValue((room.isPublicRoom() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_persistentroom");
+    field=configurationForm.getField("muc#roomconfig_persistentroom");
     field.clearValues();
     field.addValue((room.isPersistent() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_moderatedroom");
+    field=configurationForm.getField("muc#roomconfig_moderatedroom");
     field.clearValues();
     field.addValue((room.isModerated() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_inviteonly");
+    field=configurationForm.getField("muc#roomconfig_inviteonly");
     field.clearValues();
     field.addValue((room.isInvitationRequiredToEnter() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_allowinvites");
+    field=configurationForm.getField("muc#roomconfig_allowinvites");
     field.clearValues();
     field.addValue((room.canOccupantsInvite() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_passwordprotectedroom");
+    field=configurationForm.getField("muc#roomconfig_passwordprotectedroom");
     field.clearValues();
     field.addValue((room.isPasswordProtected() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_roomsecret");
+    field=configurationForm.getField("muc#roomconfig_roomsecret");
     field.clearValues();
     field.addValue(room.getPassword());
-    field=configurationForm.getField("muc#owner_whois");
+    field=configurationForm.getField("muc#roomconfig_whois");
     field.clearValues();
     field.addValue((room.canAnyoneDiscoverJID() ? "anyone" : "moderators"));
-    field=configurationForm.getField("muc#owner_enablelogging");
+    field=configurationForm.getField("muc#roomconfig_enablelogging");
     field.clearValues();
     field.addValue((room.isLogEnabled() ? "1" : "0"));
-    field=configurationForm.getField("muc#owner_roomadmins");
+    field=configurationForm.getField("muc#roomconfig_roomadmins");
     field.clearValues();
     for (Iterator it=room.getAdmins(); it.hasNext(); ) {
       field.addValue((String)it.next());
     }
-    field=configurationForm.getField("muc#owner_roomowners");
+    field=configurationForm.getField("muc#roomconfig_roomowners");
     field.clearValues();
     for (Iterator it=room.getOwners(); it.hasNext(); ) {
       field.addValue((String)it.next());

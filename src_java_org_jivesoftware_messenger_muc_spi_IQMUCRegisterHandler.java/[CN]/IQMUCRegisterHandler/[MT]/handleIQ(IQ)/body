@@ -14,7 +14,7 @@
       MetaDataFragment currentRegistration=(MetaDataFragment)probeResult.createDeepCopy();
       currentRegistration.setProperty("query.registered",null);
       XDataFormImpl form=(XDataFormImpl)currentRegistration.getFragment("x","jabber:x:data");
-      form.getField("muc#user_roomnick").addValue(nickname);
+      form.getField("muc#register_roomnick").addValue(nickname);
       reply.setChildFragment(currentRegistration);
     }
  else {
@@ -35,7 +35,7 @@
         if (formElement != null) {
           XDataFormImpl registrationForm=new XDataFormImpl();
           registrationForm.parse(formElement);
-          Iterator values=registrationForm.getField("muc#user_roomnick").getValues();
+          Iterator values=registrationForm.getField("muc#register_roomnick").getValues();
           String nickname=(values.hasNext() ? (String)values.next() : null);
           presences.addAll(room.addMember(packet.getSender().toBareStringPrep(),nickname,room.getRole()));
         }
