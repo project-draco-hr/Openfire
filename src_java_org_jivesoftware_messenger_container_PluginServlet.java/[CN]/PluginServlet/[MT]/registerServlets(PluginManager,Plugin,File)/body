@@ -5,7 +5,8 @@
   }
   String pluginName=webXML.getParentFile().getParentFile().getName();
   try {
-    SAXReader saxReader=new SAXReader();
+    SAXReader saxReader=new SAXReader(false);
+    saxReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false);
     Document doc=saxReader.read(webXML);
     List classes=doc.selectNodes("//servlet");
     Map<String,Class> classMap=new HashMap<String,Class>();
