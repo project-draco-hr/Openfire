@@ -1,8 +1,5 @@
 {
   IQ reply=IQ.createResultIQ(packet);
-  reply.setType(IQ.Type.result);
-  reply.setTo(packet.getFrom());
-  reply.setFrom(packet.getTo());
   DiscoInfoProvider infoProvider=getProvider(packet.getTo() == null ? XMPPServer.getInstance().getServerInfo().getName() : packet.getTo().getDomain());
   if (infoProvider != null) {
     String name=packet.getTo() == null ? null : packet.getTo().getNode();
