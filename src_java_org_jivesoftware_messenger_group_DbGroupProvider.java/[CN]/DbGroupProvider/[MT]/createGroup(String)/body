@@ -1,6 +1,4 @@
 {
-  long now=System.currentTimeMillis();
-  Date nowDate=new Date(now);
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -8,8 +6,6 @@
     pstmt=con.prepareStatement(INSERT_GROUP);
     pstmt.setString(1,name);
     pstmt.setString(2,"");
-    pstmt.setString(3,StringUtils.dateToMillis(nowDate));
-    pstmt.setString(4,StringUtils.dateToMillis(nowDate));
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {
@@ -31,5 +27,5 @@
   }
   Collection<String> members=getMembers(name,false);
   Collection<String> administrators=getMembers(name,true);
-  return new Group(this,name,"",nowDate,nowDate,members,administrators);
+  return new Group(this,name,"",members,administrators);
 }

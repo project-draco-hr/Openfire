@@ -1,7 +1,5 @@
 {
   String description=null;
-  Date creationDate=null;
-  Date modificationDate=null;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -14,8 +12,6 @@
     }
     if (rs.next()) {
       description=rs.getString(1);
-      creationDate=new java.util.Date(Long.parseLong(rs.getString(2).trim()));
-      modificationDate=new java.util.Date(Long.parseLong(rs.getString(3).trim()));
     }
   }
  catch (  SQLException e) {
@@ -37,5 +33,5 @@
   }
   Collection<String> members=getMembers(name,false);
   Collection<String> administrators=getMembers(name,true);
-  return new Group(this,name,description,creationDate,modificationDate,members,administrators);
+  return new Group(this,name,description,members,administrators);
 }
