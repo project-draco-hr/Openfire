@@ -6,7 +6,7 @@
       throw new NotAllowedException();
     }
     boolean isOwner=owners.contains(user.getAddress().toBareJID());
-    if (roomLocked) {
+    if (isLocked()) {
       if (!isOwner) {
         throw new RoomLockedException();
       }
@@ -81,7 +81,7 @@
     lock.writeLock().unlock();
   }
   if (joinRole != null) {
-    boolean isRoomNew=roomLocked && occupants.size() == 1;
+    boolean isRoomNew=isLocked() && creationDate.getTime() == lockedTime;
     try {
       Presence joinPresence=joinRole.getPresence().createCopy();
       if (isRoomNew) {
@@ -95,6 +95,14 @@
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
     if (isRoomNew) {
+      Message message=new Message();
+      message.setType(Message.Type.groupchat);
+      message.setBody(LocaleUtils.getLocalizedString("muc.new"));
+      message.setFrom(role.getRoleAddress());
+      message.setTo(user.getAddress());
+      router.route(message);
+    }
+ else     if (isLocked()) {
       Message message=new Message();
       message.setType(Message.Type.groupchat);
       message.setBody(LocaleUtils.getLocalizedString("muc.locked"));

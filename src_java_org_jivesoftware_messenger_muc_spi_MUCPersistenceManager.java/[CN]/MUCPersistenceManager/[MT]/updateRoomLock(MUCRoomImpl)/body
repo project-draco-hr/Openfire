@@ -6,8 +6,8 @@
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(UPDATE_SUBJECT);
-    pstmt.setString(1,subject);
+    pstmt=con.prepareStatement(UPDATE_LOCK);
+    pstmt.setString(1,StringUtils.dateToMillis(room.getLockedDate()));
     pstmt.setLong(2,room.getID());
     pstmt.executeUpdate();
   }

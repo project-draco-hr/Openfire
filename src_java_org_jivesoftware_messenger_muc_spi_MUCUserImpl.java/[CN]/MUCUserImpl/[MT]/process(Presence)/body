@@ -25,8 +25,8 @@
             }
             role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this);
             roles.put(group,role);
-            if (room.isLocked() && mucInfo == null) {
-              room.unlockRoom(role);
+            if (mucInfo == null && room.isLocked() && !room.isManuallyLocked()) {
+              room.unlock(role);
             }
           }
  catch (          UnauthorizedException e) {

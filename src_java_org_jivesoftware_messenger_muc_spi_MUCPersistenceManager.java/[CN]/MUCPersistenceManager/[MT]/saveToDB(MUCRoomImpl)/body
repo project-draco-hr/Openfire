@@ -29,17 +29,18 @@
       pstmt.setString(4,room.getName());
       pstmt.setString(5,room.getNaturalLanguageName());
       pstmt.setString(6,room.getDescription());
-      pstmt.setInt(7,(room.canOccupantsChangeSubject() ? 1 : 0));
-      pstmt.setInt(8,room.getMaxUsers());
-      pstmt.setInt(9,(room.isPublicRoom() ? 1 : 0));
-      pstmt.setInt(10,(room.isModerated() ? 1 : 0));
-      pstmt.setInt(11,(room.isMembersOnly() ? 1 : 0));
-      pstmt.setInt(12,(room.canOccupantsInvite() ? 1 : 0));
-      pstmt.setString(13,room.getPassword());
-      pstmt.setInt(14,(room.canAnyoneDiscoverJID() ? 1 : 0));
-      pstmt.setInt(15,(room.isLogEnabled() ? 1 : 0));
-      pstmt.setString(16,room.getSubject());
-      pstmt.setInt(17,marshallRolesToBroadcast(room));
+      pstmt.setString(7,StringUtils.dateToMillis(room.getLockedDate()));
+      pstmt.setInt(8,(room.canOccupantsChangeSubject() ? 1 : 0));
+      pstmt.setInt(9,room.getMaxUsers());
+      pstmt.setInt(10,(room.isPublicRoom() ? 1 : 0));
+      pstmt.setInt(11,(room.isModerated() ? 1 : 0));
+      pstmt.setInt(12,(room.isMembersOnly() ? 1 : 0));
+      pstmt.setInt(13,(room.canOccupantsInvite() ? 1 : 0));
+      pstmt.setString(14,room.getPassword());
+      pstmt.setInt(15,(room.canAnyoneDiscoverJID() ? 1 : 0));
+      pstmt.setInt(16,(room.isLogEnabled() ? 1 : 0));
+      pstmt.setString(17,room.getSubject());
+      pstmt.setInt(18,marshallRolesToBroadcast(room));
       pstmt.executeUpdate();
     }
   }

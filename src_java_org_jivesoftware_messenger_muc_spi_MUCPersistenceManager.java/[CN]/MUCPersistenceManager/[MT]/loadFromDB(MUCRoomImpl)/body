@@ -14,18 +14,19 @@
     room.setModificationDate(new Date(Long.parseLong(rs.getString(3).trim())));
     room.setNaturalLanguageName(rs.getString(4));
     room.setDescription(rs.getString(5));
-    room.setCanOccupantsChangeSubject(rs.getInt(6) == 1 ? true : false);
-    room.setMaxUsers(rs.getInt(7));
-    room.setPublicRoom(rs.getInt(8) == 1 ? true : false);
-    room.setModerated(rs.getInt(9) == 1 ? true : false);
-    room.setMembersOnly(rs.getInt(10) == 1 ? true : false);
-    room.setCanOccupantsInvite(rs.getInt(11) == 1 ? true : false);
-    room.setPassword(rs.getString(12));
-    room.setCanAnyoneDiscoverJID(rs.getInt(13) == 1 ? true : false);
-    room.setLogEnabled(rs.getInt(14) == 1 ? true : false);
-    room.setSubject(rs.getString(15));
+    room.setLockedDate(new Date(Long.parseLong(rs.getString(6).trim())));
+    room.setCanOccupantsChangeSubject(rs.getInt(7) == 1 ? true : false);
+    room.setMaxUsers(rs.getInt(8));
+    room.setPublicRoom(rs.getInt(9) == 1 ? true : false);
+    room.setModerated(rs.getInt(10) == 1 ? true : false);
+    room.setMembersOnly(rs.getInt(11) == 1 ? true : false);
+    room.setCanOccupantsInvite(rs.getInt(12) == 1 ? true : false);
+    room.setPassword(rs.getString(13));
+    room.setCanAnyoneDiscoverJID(rs.getInt(14) == 1 ? true : false);
+    room.setLogEnabled(rs.getInt(15) == 1 ? true : false);
+    room.setSubject(rs.getString(16));
     List<String> rolesToBroadcast=new ArrayList<String>();
-    String roles=Integer.toBinaryString(rs.getInt(16));
+    String roles=Integer.toBinaryString(rs.getInt(17));
     if (roles.charAt(0) == '1') {
       rolesToBroadcast.add("moderator");
     }

@@ -5,7 +5,7 @@ synchronized (roomName.intern()) {
     if (room == null) {
       room=new MUCRoomImpl(this,roomName,router);
       try {
-        MUCPersistenceManager.loadFromDB(room);
+        MUCPersistenceManager.loadFromDB((MUCRoomImpl)room);
       }
  catch (      IllegalArgumentException e) {
         if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
