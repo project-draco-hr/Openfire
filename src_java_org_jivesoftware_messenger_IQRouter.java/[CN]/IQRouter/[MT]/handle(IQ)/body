@@ -1,14 +1,18 @@
 {
   JID recipientJID=packet.getTo();
   try {
-    Component component=null;
     if (recipientJID != null) {
-      component=componentManager.getComponent(packet.getTo().toBareJID());
+      try {
+        RoutableChannelHandler serviceRoute=routingTable.getRoute(recipientJID);
+        if (!(serviceRoute instanceof ClientSession)) {
+          serviceRoute.process(packet);
+          return;
+        }
+      }
+ catch (      NoSuchRouteException e) {
+      }
     }
-    if (component != null) {
-      component.processPacket(packet);
-    }
- else     if (isLocalServer(recipientJID)) {
+    if (isLocalServer(recipientJID)) {
       Element childElement=packet.getChildElement();
       String namespace=null;
       if (childElement != null) {
@@ -28,15 +32,6 @@
             reply.setError(PacketError.Condition.feature_not_implemented);
           }
  else {
-            try {
-              ChannelHandler route=routingTable.getRoute(recipientJID);
-              if (route instanceof BasicModule) {
-                route.process(packet);
-                return;
-              }
-            }
- catch (            NoSuchRouteException e) {
-            }
             reply.setError(PacketError.Condition.service_unavailable);
           }
           Session session=sessionManager.getSession(packet.getFrom());
