@@ -1,14 +1,11 @@
 {
   if (message != null) {
-    Session senderSession=null;
-    try {
-      senderSession=sessionManager.getSession(message.getFrom());
-    }
- catch (    SessionNotFoundException e) {
-      Log.error(e);
+    Session senderSession=sessionManager.getSession(message.getFrom());
+    if (senderSession == null) {
+      return;
     }
     JID sender=senderSession.getAddress();
-    if (sender == null || sender.getNode() == null || senderSession == null) {
+    if (sender == null || sender.getNode() == null) {
     }
  else {
       if (type == Type.bounce) {

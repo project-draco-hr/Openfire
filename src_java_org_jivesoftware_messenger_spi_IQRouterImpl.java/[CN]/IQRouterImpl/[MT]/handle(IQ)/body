@@ -1,16 +1,20 @@
 {
-  XMPPAddress recipientJID=packet.getRecipient();
+  JID recipientJID=packet.getTo();
   try {
     if (isLocalServer(recipientJID)) {
-      String namespace=packet.getChildNamespace();
+      Element childElement=packet.getChildElement();
+      String namespace=null;
+      if (childElement != null) {
+        childElement.getNamespaceURI();
+      }
       if (namespace == null) {
         Log.warn("Unknown packet " + packet);
       }
  else {
         IQHandler handler=getHandler(namespace);
         if (handler == null) {
-          if (recipientJID.getName() == null || "".equals(recipientJID.getName())) {
-            packet.setError(XMPPError.Code.NOT_IMPLEMENTED);
+          if (recipientJID.getNode() == null || "".equals(recipientJID.getNode())) {
+            packet.setError(PacketError.Condition.feature_not_implemented);
           }
  else {
             try {
@@ -22,7 +26,7 @@
             }
  catch (            NoSuchRouteException e) {
             }
-            packet.setError(XMPPError.Code.SERVICE_UNAVAILABLE);
+            packet.setError(PacketError.Condition.service_unavailable);
           }
           Session session=packet.getOriginatingSession();
           if (session != null) {

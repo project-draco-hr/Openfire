@@ -2,7 +2,8 @@
   if (packet == null) {
     throw new NullPointerException();
   }
-  if (packet.getOriginatingSession() == null || packet.getOriginatingSession().getStatus() == Session.STATUS_AUTHENTICATED || (isLocalServer(packet.getRecipient()) && ("jabber:iq:auth".equals(packet.getChildNamespace()) || "jabber:iq:register".equals(packet.getChildNamespace())))) {
+  Session session=SessionManager.getInstance().getSession(packet.getFrom());
+  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED || (isLocalServer(packet.getTo()) && ("jabber:iq:auth".equals(packet.getChildNamespace()) || "jabber:iq:register".equals(packet.getChildNamespace())))) {
     handle(packet);
   }
  else {

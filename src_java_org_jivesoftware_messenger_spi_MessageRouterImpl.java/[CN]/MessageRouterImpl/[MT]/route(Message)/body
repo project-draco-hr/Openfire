@@ -2,8 +2,9 @@
   if (packet == null) {
     throw new NullPointerException();
   }
-  if (packet.getOriginatingSession() == null || packet.getOriginatingSession().getStatus() == Session.STATUS_AUTHENTICATED) {
-    XMPPAddress recipientJID=packet.getRecipient();
+  Session session=SessionManager.getInstance().getSession(packet.getFrom());
+  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
+    JID recipientJID=packet.getTo();
     try {
       routingTable.getBestRoute(recipientJID).process(packet);
     }
@@ -16,11 +17,11 @@
     }
   }
  else {
-    packet.setRecipient(packet.getOriginatingSession().getAddress());
-    packet.setSender(null);
-    packet.setError(XMPPError.Code.UNAUTHORIZED);
+    packet.setTo(session.getAddress());
+    packet.setFrom((JID)null);
+    packet.setError(PacketError.Condition.not_authorized);
     try {
-      packet.getOriginatingSession().process(packet);
+      session.process(packet);
     }
  catch (    UnauthorizedException ue) {
       Log.error(ue);
