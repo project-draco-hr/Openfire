@@ -11,7 +11,7 @@
         if (!roster.isRosterItem(update.getTo())) {
           Set set=(Set)directedPresences.get(update.getFrom().toString());
           if (set == null) {
-            set=new HashSet();
+            set=new CopyOnWriteArraySet();
             directedPresences.put(update.getFrom().toString(),set);
           }
           if (Presence.Type.unavailable.equals(update.getType())) {
