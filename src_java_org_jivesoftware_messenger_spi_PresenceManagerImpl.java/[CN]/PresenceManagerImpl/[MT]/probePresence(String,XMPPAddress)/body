@@ -1,5 +1,6 @@
 {
   try {
+    Component component=getPresenceComponent(probee);
     if (server.isLocal(probee)) {
       if (probee.getNamePrep() != null && !"".equals(probee.getNamePrep())) {
         Iterator sessionIter=sessionManager.getSessions(probee.getNamePrep());
@@ -16,6 +17,13 @@
         }
       }
     }
+ else     if (component != null) {
+      Presence presence=new PresenceImpl();
+      presence.setType(Presence.PROBE);
+      presence.setSender(server.createAddress(prober,""));
+      presence.setRecipient(probee);
+      component.processPacket(presence);
+    }
  else {
       Presence presence=(Presence)foreignUserCache.get(probee.toBareStringPrep());
       if (presence != null) {
@@ -27,6 +35,10 @@
  catch (        Exception e) {
           Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
         }
+      }
+ else {
+        XMPPAddress proberAddress=server.createAddress(prober,"");
+        componentManager.addPresenceRequest(proberAddress,probee);
       }
     }
   }

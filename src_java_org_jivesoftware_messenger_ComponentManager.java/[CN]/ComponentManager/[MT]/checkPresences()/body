@@ -1,0 +1,12 @@
+{
+  for (  XMPPAddress prober : presenceMap.keySet()) {
+    XMPPAddress probee=presenceMap.get(prober);
+    Component component=getComponent(probee.toBareStringPrep());
+    if (component != null) {
+      Presence presence=new PresenceImpl();
+      presence.setSender(prober);
+      presence.setRecipient(probee);
+      component.processPacket(presence);
+    }
+  }
+}
