@@ -1,23 +1,15 @@
 {
+  List<String> answer=new ArrayList<String>();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
-    LongList list=new LongList();
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(LOAD_ROSTER_IDS);
-    pstmt.setString(1,username);
+    pstmt=con.prepareStatement(LOAD_USERNAMES);
+    pstmt.setString(1,jid);
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
-      list.add(rs.getLong(1));
+      answer.add(rs.getString(1));
     }
-    for (int i=0; i < list.size(); i++) {
-      pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
-      pstmt.setLong(1,list.get(i));
-      pstmt.executeUpdate();
-    }
-    pstmt=con.prepareStatement(DELETE_ROSTER);
-    pstmt.setString(1,username);
-    pstmt.executeUpdate();
   }
  catch (  SQLException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
@@ -40,4 +32,5 @@
       Log.error(e);
     }
   }
+  return answer.iterator();
 }

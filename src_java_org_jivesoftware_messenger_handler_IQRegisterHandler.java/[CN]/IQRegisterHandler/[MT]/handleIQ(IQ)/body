@@ -48,6 +48,7 @@ catch (      UnauthorizedException e) {
           presence.setSender(packet.getSender());
           presenceHandler.process(presence);
           userManager.deleteUser(userManager.getUser(session.getUsername()));
+          rosterManager.deleteRoster(session.getAddress());
           reply=packet.createResult();
           session.getConnection().deliver(reply);
           session.getConnection().close();
