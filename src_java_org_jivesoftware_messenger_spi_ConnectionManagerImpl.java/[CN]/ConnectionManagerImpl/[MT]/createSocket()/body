@@ -19,7 +19,7 @@
       if ("".equals(algorithm) || algorithm == null) {
         algorithm="TLS";
       }
-      ports.add(new ServerPortImpl(sslSocketThread.getPort(),serverName,localIPAddress,true,algorithm));
+      ports.add(new ServerPort(sslSocketThread.getPort(),serverName,localIPAddress,true,algorithm));
       sslSocketThread.setDaemon(true);
       sslSocketThread.start();
       List params=new ArrayList();
@@ -32,7 +32,7 @@
   }
   if (JiveGlobals.getBooleanProperty("xmpp.socket.plain.active",true)) {
     socketThread=new SocketAcceptThread(this);
-    ports.add(new ServerPortImpl(socketThread.getPort(),serverName,localIPAddress,false,null));
+    ports.add(new ServerPort(socketThread.getPort(),serverName,localIPAddress,false,null));
     socketThread.setDaemon(true);
     socketThread.start();
     List params=new ArrayList();
