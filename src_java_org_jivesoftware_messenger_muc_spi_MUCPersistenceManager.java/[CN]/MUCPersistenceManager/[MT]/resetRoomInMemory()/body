@@ -1,9 +1,12 @@
 {
+  long now=System.currentTimeMillis();
+  Date nowDate=new Date(now);
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(RESET_IN_MEMORY);
+    pstmt.setString(1,StringUtils.dateToMillis(nowDate));
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {
