@@ -18,19 +18,16 @@
               MetaDataFragment mucInfo=(MetaDataFragment)packet.getFragment("x","http://jabber.org/protocol/muc");
               HistoryRequest historyRequest=null;
               String password=null;
-              if (room.isLocked() && mucInfo == null) {
-                sendErrorPacket(packet,XMPPError.Code.BAD_REQUEST);
-                server.removeChatRoom(group);
-              }
- else {
-                if (mucInfo != null) {
-                  password=mucInfo.getProperty("x.password");
-                  if (mucInfo.includesProperty("x.history")) {
-                    historyRequest=new HistoryRequest(mucInfo);
-                  }
+              if (mucInfo != null) {
+                password=mucInfo.getProperty("x.password");
+                if (mucInfo.includesProperty("x.history")) {
+                  historyRequest=new HistoryRequest(mucInfo);
                 }
-                role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this);
-                roles.put(group,role);
+              }
+              role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this);
+              roles.put(group,role);
+              if (room.isLocked() && mucInfo == null) {
+                room.unlockRoom(role);
               }
             }
  catch (            UnauthorizedException e) {

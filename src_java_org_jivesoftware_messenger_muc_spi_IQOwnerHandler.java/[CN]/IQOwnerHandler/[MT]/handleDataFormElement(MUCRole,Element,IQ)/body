@@ -13,13 +13,7 @@
       processConfigurationForm(completedForm,senderRole,reply);
     }
     if (room.isLocked()) {
-      room.unlockRoom();
-      Message message=new MessageImpl();
-      message.setType(Message.GROUP_CHAT);
-      message.setBody(LocaleUtils.getLocalizedString("muc.unlocked"));
-      message.setSender(room.getRole().getRoleAddress());
-      message.setRecipient(senderRole.getChatUser().getAddress());
-      router.route(message);
+      room.unlockRoom(senderRole);
     }
   }
 }
