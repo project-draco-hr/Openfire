@@ -1,8 +1,9 @@
 {
   if (packet instanceof Message) {
     Message message=(Message)packet;
-    String name=message.getTo().getNode();
-    if ("all".equals(name)) {
+    String toNode=message.getTo().getNode();
+    String fromNode=message.getFrom().getNode();
+    if ("all".equals(toNode)) {
       if (allowedUsers.size() > 0) {
         String address=message.getFrom().toBareJID();
         if (!allowedUsers.contains(address)) {
@@ -18,18 +19,47 @@
           return;
         }
       }
-      sessionManager.sendServerMessage(message.getSubject(),message.getBody());
+      try {
+        sessionManager.broadcast(message);
+      }
+ catch (      UnauthorizedException ue) {
+        Log.error(ue);
+      }
     }
  else {
-      Message error=new Message();
-      if (message.getID() != null) {
-        error.setID(message.getID());
+      try {
+        Group group=groupManager.getGroup(toNode);
+        if ((groupMembersAllowed && group.isUser(fromNode)) || group.getAdmins().contains(fromNode)) {
+          for (          String user : group.getMembers()) {
+            Message newMessage=message.createCopy();
+            JID userJID=XMPPServer.getInstance().createJID(user,null);
+            newMessage.setTo(userJID);
+            ComponentManager.getInstance().sendPacket(newMessage);
+          }
+        }
+ else {
+          Message error=new Message();
+          if (message.getID() != null) {
+            error.setID(message.getID());
+          }
+          error.setTo(message.getFrom());
+          error.setError(PacketError.Condition.not_allowed);
+          error.setSubject("Error sending broadcast message");
+          error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+          ComponentManager.getInstance().sendPacket(error);
+        }
       }
-      error.setTo(message.getFrom());
-      error.setError(PacketError.Condition.not_allowed);
-      error.setSubject("Error sending broadcast message");
-      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
-      ComponentManager.getInstance().sendPacket(error);
+ catch (      GroupNotFoundException gnfe) {
+        Message error=new Message();
+        if (message.getID() != null) {
+          error.setID(message.getID());
+        }
+        error.setTo(message.getFrom());
+        error.setError(PacketError.Condition.not_allowed);
+        error.setSubject("Error sending broadcast message");
+        error.setBody("Address not valid: " + message.getTo());
+        ComponentManager.getInstance().sendPacket(error);
+      }
     }
   }
 }
