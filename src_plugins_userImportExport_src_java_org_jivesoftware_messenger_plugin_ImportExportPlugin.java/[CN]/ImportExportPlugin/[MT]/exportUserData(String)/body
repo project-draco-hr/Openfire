@@ -1,0 +1,13 @@
+{
+  if (!createExportDirectory()) {
+    return false;
+  }
+  if (!file.endsWith(".xml")) {
+    file+=".xml";
+  }
+  String exportFilePath=exportDirectory() + File.separator + file;
+  XMLWriter writer=new XMLWriter(new FileWriter(exportFilePath),OutputFormat.createPrettyPrint());
+  writer.write(exportUsers());
+  writer.close();
+  return true;
+}
