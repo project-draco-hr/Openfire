@@ -1,0 +1,19 @@
+{
+  String user=(String)member;
+  if (adminCollection) {
+    if (members.contains(user)) {
+      throw new IllegalArgumentException("The user is already a member of the group");
+    }
+  }
+ else {
+    if (administrators.contains(user)) {
+      throw new IllegalArgumentException("The user is already an admin of the group");
+    }
+  }
+  if (users.add(user)) {
+    provider.addMember(name,user,adminCollection);
+    XMPPServer.getInstance().getRosterManager().groupUserAdded(Group.this,user);
+    return true;
+  }
+  return false;
+}

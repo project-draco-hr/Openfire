@@ -1,5 +1,7 @@
 {
-  for (  String userToUpdate : group.getUsers()) {
+  Collection<String> users=new ArrayList<String>(group.getMembers());
+  users.addAll(group.getAdmins());
+  for (  String userToUpdate : users) {
     if (!deletedUser.equals(userToUpdate)) {
       Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate);
       if (roster != null) {

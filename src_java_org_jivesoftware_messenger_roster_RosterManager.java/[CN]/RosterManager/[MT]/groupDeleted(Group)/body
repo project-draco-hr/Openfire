@@ -1,5 +1,7 @@
 {
-  for (  String deletedUser : group.getUsers()) {
+  Collection<String> users=new ArrayList<String>(group.getMembers());
+  users.addAll(group.getAdmins());
+  for (  String deletedUser : users) {
     groupUserDeleted(group,deletedUser);
   }
 }
