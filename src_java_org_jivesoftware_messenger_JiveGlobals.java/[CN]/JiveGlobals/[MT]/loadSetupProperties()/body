@@ -3,48 +3,48 @@
     return;
   }
   if (xmlProperties == null) {
-    if (jiveHome == null) {
-      jiveHome=new InitPropLoader().getJiveHome();
+    if (messengerHome == null) {
+      messengerHome=new InitPropLoader().getMessengerHome();
     }
-    if (jiveHome == null) {
+    if (messengerHome == null) {
       try {
         InitialContext context=new InitialContext();
-        jiveHome=(String)context.lookup("java:comp/env/jiveHome");
+        messengerHome=(String)context.lookup("java:comp/env/messengerHome");
       }
  catch (      Exception e) {
       }
     }
-    if (jiveHome == null) {
-      jiveHome=System.getProperty("jiveHome");
+    if (messengerHome == null) {
+      messengerHome=System.getProperty("messengerHome");
     }
-    if (jiveHome == null) {
+    if (messengerHome == null) {
       failedLoading=true;
       StringBuffer msg=new StringBuffer();
-      msg.append("Critical Error! The jiveHome directory could not be loaded, \n");
+      msg.append("Critical Error! The messengerHome directory could not be loaded, \n");
       msg.append("which will prevent the application from working correctly.\n\n");
-      msg.append("You must set jiveHome in one of four ways:\n");
-      msg.append("    1) Set a servlet init parameter named jiveHome.\n");
-      msg.append("    2) Add a jive_init.xml file to your classpath, which points \n ");
-      msg.append("       to jiveHome. Normally, this file will be in WEB-INF/classes.\n");
-      msg.append("    3) Set the JNDI value \"java:comp/env/jiveHome\" with a String \n");
-      msg.append("       that points to your jiveHome directory. \n");
-      msg.append("    4) Set the Java system property \"jiveHome\".\n\n");
-      msg.append("Further instructions for setting jiveHome can be found in the \n");
+      msg.append("You must set messengerHome in one of four ways:\n");
+      msg.append("    1) Set a servlet init parameter named messengerHome.\n");
+      msg.append("    2) Add a messenger_init.xml file to your classpath, which points \n ");
+      msg.append("       to messengerHome. Normally, this file will be in WEB-INF/classes.\n");
+      msg.append("    3) Set the JNDI value \"java:comp/env/messengerHome\" with a String \n");
+      msg.append("       that points to your messengerHome directory. \n");
+      msg.append("    4) Set the Java system property \"messengerHome\".\n\n");
+      msg.append("Further instructions for setting messengerHome can be found in the \n");
       msg.append("installation documentation.");
       System.err.println(msg.toString());
       return;
     }
     try {
-      File jh=new File(jiveHome);
-      if (!jh.exists()) {
-        Log.error("Error - the specified jiveHome directory does not exist (" + jiveHome + ")");
+      File mh=new File(messengerHome);
+      if (!mh.exists()) {
+        Log.error("Error - the specified messengerHome directory does not exist (" + messengerHome + ")");
       }
  else {
-        if (!jh.canRead() || !jh.canWrite()) {
-          Log.error("Error - the user running this Jive application can not read and write to the " + "specified jiveHome directory (" + jiveHome + "). Please grant the executing user "+ "read and write perms.");
+        if (!mh.canRead() || !mh.canWrite()) {
+          Log.error("Error - the user running this Jive application can not read and write to the " + "specified jiveHome directory (" + messengerHome + "). Please grant the executing user "+ "read and write perms.");
         }
       }
-      xmlProperties=new XMLProperties(jiveHome + File.separator + JIVE_CONFIG_FILENAME);
+      xmlProperties=new XMLProperties(messengerHome + File.separator + "conf"+ File.separator+ JIVE_CONFIG_FILENAME);
     }
  catch (    IOException ioe) {
       Log.error(ioe);
