@@ -3,17 +3,17 @@
   if (!savedToDB) {
     savedToDB=true;
     for (    String owner : owners) {
-      MUCPersistenceManager.saveAffiliationToDB(this,owner,null,MUCRole.OWNER,MUCRole.NONE);
+      MUCPersistenceManager.saveAffiliationToDB(this,owner,null,MUCRole.Affiliation.owner,MUCRole.Affiliation.none);
     }
     for (    String admin : admins) {
-      MUCPersistenceManager.saveAffiliationToDB(this,admin,null,MUCRole.ADMINISTRATOR,MUCRole.NONE);
+      MUCPersistenceManager.saveAffiliationToDB(this,admin,null,MUCRole.Affiliation.admin,MUCRole.Affiliation.none);
     }
     for (Iterator it=members.keySet().iterator(); it.hasNext(); ) {
       String bareJID=(String)it.next();
-      MUCPersistenceManager.saveAffiliationToDB(this,bareJID,(String)members.get(bareJID),MUCRole.MEMBER,MUCRole.NONE);
+      MUCPersistenceManager.saveAffiliationToDB(this,bareJID,(String)members.get(bareJID),MUCRole.Affiliation.member,MUCRole.Affiliation.none);
     }
     for (    String outcast : outcasts) {
-      MUCPersistenceManager.saveAffiliationToDB(this,outcast,null,MUCRole.OUTCAST,MUCRole.NONE);
+      MUCPersistenceManager.saveAffiliationToDB(this,outcast,null,MUCRole.Affiliation.outcast,MUCRole.Affiliation.none);
     }
   }
 }

@@ -18,7 +18,7 @@
           try {
             List<MUCRole> roles=room.getOccupantsByBareJID(jid);
             role=roles.get(0);
-            ownerMetaData.addAttribute("role",role.getRoleAsString());
+            ownerMetaData.addAttribute("role",role.getRole().toString());
             ownerMetaData.addAttribute("nick",role.getNickname());
           }
  catch (          UserNotFoundException e) {
@@ -35,7 +35,7 @@
           try {
             List<MUCRole> roles=room.getOccupantsByBareJID(jid);
             role=roles.get(0);
-            adminMetaData.addAttribute("role",role.getRoleAsString());
+            adminMetaData.addAttribute("role",role.getRole().toString());
             adminMetaData.addAttribute("nick",role.getNickname());
           }
  catch (          UserNotFoundException e) {
@@ -89,7 +89,7 @@
             presences.addAll(room.addAdmin(bareJID,senderRole));
           }
  else           if ("member".equals(targetAffiliation)) {
-            boolean hadAffiliation=room.getAffiliation(bareJID) != MUCRole.NONE;
+            boolean hadAffiliation=room.getAffiliation(bareJID) != MUCRole.Affiliation.none;
             presences.addAll(room.addMember(bareJID,null,senderRole));
             if (!hadAffiliation && room.isMembersOnly()) {
               room.sendInvitation(new JID(bareJID),null,senderRole,null);

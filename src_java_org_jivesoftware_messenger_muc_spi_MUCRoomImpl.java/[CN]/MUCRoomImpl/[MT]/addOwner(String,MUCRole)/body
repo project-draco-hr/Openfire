@@ -1,21 +1,21 @@
 {
-  int oldAffiliation=MUCRole.NONE;
-  if (MUCRole.OWNER != sendRole.getAffiliation()) {
+  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+  if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
     throw new ForbiddenException();
   }
   owners.add(bareJID);
   if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.ADMINISTRATOR;
+    oldAffiliation=MUCRole.Affiliation.admin;
   }
  else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.MEMBER;
+    oldAffiliation=MUCRole.Affiliation.member;
   }
  else   if (removeOutcast(bareJID)) {
-    oldAffiliation=MUCRole.OUTCAST;
+    oldAffiliation=MUCRole.Affiliation.outcast;
   }
-  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.OWNER,oldAffiliation);
+  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.owner,oldAffiliation);
   try {
-    return changeOccupantAffiliation(bareJID,MUCRole.OWNER,MUCRole.MODERATOR);
+    return changeOccupantAffiliation(bareJID,MUCRole.Affiliation.owner,MUCRole.Role.moderator);
   }
  catch (  NotAllowedException e) {
     return null;

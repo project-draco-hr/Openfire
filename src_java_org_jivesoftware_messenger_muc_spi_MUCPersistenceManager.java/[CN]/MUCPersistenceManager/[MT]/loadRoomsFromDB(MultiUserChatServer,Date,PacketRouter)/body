@@ -79,20 +79,20 @@
     rs=pstmt.executeQuery();
     while (rs.next()) {
       String jid=rs.getString(2);
-      int affiliation=rs.getInt(3);
+      MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(3));
       room=(MUCRoomImpl)rooms.get(rs.getLong(1));
       if (room == null) {
         continue;
       }
       try {
 switch (affiliation) {
-case MUCRole.OWNER:
+case owner:
           room.addOwner(jid,room.getRole());
         break;
-case MUCRole.ADMINISTRATOR:
+case admin:
       room.addAdmin(jid,room.getRole());
     break;
-case MUCRole.OUTCAST:
+case outcast:
   room.addOutcast(jid,null,room.getRole());
 break;
 default :

@@ -1,0 +1,16 @@
+{
+  if (packet instanceof Message) {
+    roomHistory.addMessage((Message)packet);
+    broadcast((Message)packet);
+  }
+ else   if (packet instanceof Presence) {
+    broadcastPresence((Presence)packet);
+  }
+ else   if (packet instanceof IQ) {
+    packet=packet.createCopy();
+    packet.setError(PacketError.Condition.bad_request);
+    packet.setTo(packet.getFrom());
+    packet.setFrom(role.getRoleAddress());
+    router.route(packet);
+  }
+}

@@ -24,23 +24,23 @@
         throw new ConflictException();
       }
     }
-    int role;
-    int affiliation;
+    MUCRole.Role role;
+    MUCRole.Affiliation affiliation;
     if (isOwner) {
-      role=MUCRole.MODERATOR;
-      affiliation=MUCRole.OWNER;
+      role=MUCRole.Role.moderator;
+      affiliation=MUCRole.Affiliation.owner;
     }
  else     if (server.getSysadmins().contains(user.getAddress().toBareJID())) {
-      role=MUCRole.MODERATOR;
-      affiliation=MUCRole.OWNER;
+      role=MUCRole.Role.moderator;
+      affiliation=MUCRole.Affiliation.owner;
     }
  else     if (admins.contains(user.getAddress().toBareJID())) {
-      role=MUCRole.MODERATOR;
-      affiliation=MUCRole.ADMINISTRATOR;
+      role=MUCRole.Role.moderator;
+      affiliation=MUCRole.Affiliation.admin;
     }
  else     if (members.containsKey(user.getAddress().toBareJID())) {
-      role=MUCRole.PARTICIPANT;
-      affiliation=MUCRole.MEMBER;
+      role=MUCRole.Role.participant;
+      affiliation=MUCRole.Affiliation.member;
     }
  else     if (outcasts.contains(user.getAddress().toBareJID())) {
       throw new ForbiddenException();
@@ -49,8 +49,8 @@
       if (isMembersOnly()) {
         throw new RegistrationRequiredException();
       }
-      role=(isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT);
-      affiliation=MUCRole.NONE;
+      role=(isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant);
+      affiliation=MUCRole.Affiliation.none;
     }
     joinRole=new MUCRoleImpl(server,this,nickname,role,affiliation,(MUCUserImpl)user,presence,router);
     occupants.put(nickname.toLowerCase(),joinRole);

@@ -1,6 +1,6 @@
 {
-  int oldAffiliation=MUCRole.NONE;
-  if (MUCRole.ADMINISTRATOR != senderRole.getAffiliation() && MUCRole.OWNER != senderRole.getAffiliation()) {
+  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+  if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
     throw new ForbiddenException();
   }
   if (owners.contains(bareJID) && owners.size() == 1) {
@@ -9,27 +9,27 @@
   List<Presence> updatedPresences=null;
   boolean wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
   if (removeOwner(bareJID)) {
-    oldAffiliation=MUCRole.OWNER;
+    oldAffiliation=MUCRole.Affiliation.owner;
   }
  else   if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.ADMINISTRATOR;
+    oldAffiliation=MUCRole.Affiliation.admin;
   }
  else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.MEMBER;
+    oldAffiliation=MUCRole.Affiliation.member;
   }
  else   if (removeOutcast(bareJID)) {
-    oldAffiliation=MUCRole.OUTCAST;
+    oldAffiliation=MUCRole.Affiliation.outcast;
   }
   MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
   try {
-    int newRole;
+    MUCRole.Role newRole;
     if (isMembersOnly() && wasMember) {
-      newRole=MUCRole.NONE_ROLE;
+      newRole=MUCRole.Role.none;
     }
  else {
-      newRole=isModerated() ? MUCRole.VISITOR : MUCRole.PARTICIPANT;
+      newRole=isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant;
     }
-    updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.NONE,newRole);
+    updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.Affiliation.none,newRole);
     if (isMembersOnly() && wasMember) {
       Element frag;
       for (      Presence presence : updatedPresences) {

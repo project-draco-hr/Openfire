@@ -1,6 +1,6 @@
 {
-  int oldAffiliation=MUCRole.NONE;
-  if (MUCRole.ADMINISTRATOR != senderRole.getAffiliation() && MUCRole.OWNER != senderRole.getAffiliation()) {
+  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+  if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
     throw new ForbiddenException();
   }
   if (owners.contains(bareJID) && owners.size() == 1) {
@@ -10,7 +10,7 @@
   if (senderRole.getChatUser() != null) {
     actorJID=senderRole.getChatUser().getAddress();
   }
-  List<Presence> updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.OUTCAST,MUCRole.NONE_ROLE);
+  List<Presence> updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.Affiliation.outcast,MUCRole.Role.none);
   Element frag;
   for (  Presence presence : updatedPresences) {
     frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
@@ -22,14 +22,14 @@
   }
   outcasts.add(bareJID);
   if (removeOwner(bareJID)) {
-    oldAffiliation=MUCRole.OWNER;
+    oldAffiliation=MUCRole.Affiliation.owner;
   }
  else   if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.ADMINISTRATOR;
+    oldAffiliation=MUCRole.Affiliation.admin;
   }
  else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.MEMBER;
+    oldAffiliation=MUCRole.Affiliation.member;
   }
-  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.OUTCAST,oldAffiliation);
+  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.outcast,oldAffiliation);
   return updatedPresences;
 }
