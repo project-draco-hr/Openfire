@@ -80,6 +80,7 @@
         target=(hasAffiliation ? item.attributeValue("affiliation") : item.attributeValue("role"));
         if (hasJID) {
           jid=new JID(item.attributeValue("jid"));
+          nick=null;
         }
  else {
           nick=item.attributeValue("nick");
@@ -98,7 +99,7 @@
           }
  else           if ("member".equals(target)) {
             boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.NONE;
-            presences.addAll(room.addMember(jid.toBareJID(),null,senderRole));
+            presences.addAll(room.addMember(jid.toBareJID(),nick,senderRole));
             if (!hadAffiliation && room.isMembersOnly()) {
               room.sendInvitation(jid,null,senderRole);
             }
