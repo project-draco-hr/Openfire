@@ -1,13 +1,14 @@
 {
   if (locale == null) {
-    if (properties != null) {
-      String language=(String)properties.get("locale.language");
+    if (xmlProperties != null) {
+      String[] localeArray=((String)xmlProperties.getProperty("locale")).split("_");
+      String language=localeArray[0];
       if (language == null) {
         language="";
       }
-      String country=(String)properties.get("locale.country");
-      if (country == null) {
-        country="";
+      String country="";
+      if (localeArray.length == 2) {
+        country=localeArray[1];
       }
       if (language.equals("") && country.equals("")) {
         locale=Locale.getDefault();
