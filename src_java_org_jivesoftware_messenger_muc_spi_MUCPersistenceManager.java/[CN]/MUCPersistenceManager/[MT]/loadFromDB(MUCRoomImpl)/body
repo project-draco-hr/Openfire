@@ -15,18 +15,24 @@
     room.setNaturalLanguageName(rs.getString(4));
     room.setDescription(rs.getString(5));
     room.setLockedDate(new Date(Long.parseLong(rs.getString(6).trim())));
-    room.setCanOccupantsChangeSubject(rs.getInt(7) == 1 ? true : false);
-    room.setMaxUsers(rs.getInt(8));
-    room.setPublicRoom(rs.getInt(9) == 1 ? true : false);
-    room.setModerated(rs.getInt(10) == 1 ? true : false);
-    room.setMembersOnly(rs.getInt(11) == 1 ? true : false);
-    room.setCanOccupantsInvite(rs.getInt(12) == 1 ? true : false);
-    room.setPassword(rs.getString(13));
-    room.setCanAnyoneDiscoverJID(rs.getInt(14) == 1 ? true : false);
-    room.setLogEnabled(rs.getInt(15) == 1 ? true : false);
-    room.setSubject(rs.getString(16));
+    if (rs.getString(7) != null) {
+      room.setEmptyDate(new Date(Long.parseLong(rs.getString(7).trim())));
+    }
+ else {
+      room.setEmptyDate(null);
+    }
+    room.setCanOccupantsChangeSubject(rs.getInt(8) == 1 ? true : false);
+    room.setMaxUsers(rs.getInt(9));
+    room.setPublicRoom(rs.getInt(10) == 1 ? true : false);
+    room.setModerated(rs.getInt(11) == 1 ? true : false);
+    room.setMembersOnly(rs.getInt(12) == 1 ? true : false);
+    room.setCanOccupantsInvite(rs.getInt(13) == 1 ? true : false);
+    room.setPassword(rs.getString(14));
+    room.setCanAnyoneDiscoverJID(rs.getInt(15) == 1 ? true : false);
+    room.setLogEnabled(rs.getInt(16) == 1 ? true : false);
+    room.setSubject(rs.getString(17));
     List<String> rolesToBroadcast=new ArrayList<String>();
-    String roles=Integer.toBinaryString(rs.getInt(17));
+    String roles=Integer.toBinaryString(rs.getInt(18));
     if (roles.charAt(0) == '1') {
       rolesToBroadcast.add("moderator");
     }
@@ -96,6 +102,9 @@ Log.error(e);
 }
 rs.close();
 room.setSavedToDB(true);
+if (room.getEmptyDate() == null) {
+room.setEmptyDate(new Date());
+}
 }
  catch (SQLException sqle) {
 Log.error(sqle);

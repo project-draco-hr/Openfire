@@ -68,13 +68,10 @@
   timer.schedule(userTimeoutTask,user_timeout,user_timeout);
   logConversationTask=new LogConversationTask();
   timer.schedule(logConversationTask,log_timeout,log_timeout);
+  cleanupTask=new CleanupTask();
+  timer.schedule(cleanupTask,cleanup_frequency,cleanup_frequency);
   routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
   registerHandler=server.getIQRegisterHandler();
   registerHandler.addDelegate(getServiceName(),new IQMUCRegisterHandler(this));
-  routingTable.addRoute(chatServiceAddress,this);
-  ArrayList params=new ArrayList();
-  params.clear();
-  params.add(chatServiceName);
-  Log.info(LocaleUtils.getLocalizedString("startup.starting.muc",params));
 }
