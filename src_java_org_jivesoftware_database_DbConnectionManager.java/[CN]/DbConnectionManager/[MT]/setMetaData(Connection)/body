@@ -2,7 +2,12 @@
   DatabaseMetaData metaData=con.getMetaData();
   transactionsSupported=metaData.supportsTransactions();
   subqueriesSupported=metaData.supportsCorrelatedSubqueries();
-  scrollResultsSupported=metaData.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+  try {
+    scrollResultsSupported=metaData.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+  }
+ catch (  Exception e) {
+    scrollResultsSupported=false;
+  }
   batchUpdatesSupported=metaData.supportsBatchUpdates();
   streamTextRequired=false;
   maxRowsSupported=true;
