@@ -1,41 +1,40 @@
 {
-  GroupEvent.EventType eventType=event.getEventType();
   for (  GroupEventListener listener : listeners) {
     try {
 switch (eventType) {
 case group_created:
 {
-          listener.groupCreated(event);
+          listener.groupCreated(group,params);
           break;
         }
 case group_deleting:
 {
-        listener.groupDeleting(event);
+        listener.groupDeleting(group,params);
         break;
       }
 case member_added:
 {
-      listener.memberAdded(event);
+      listener.memberAdded(group,params);
       break;
     }
 case member_removed:
 {
-    listener.memberRemoved(event);
+    listener.memberRemoved(group,params);
     break;
   }
 case admin_added:
 {
-  listener.adminAdded(event);
+  listener.adminAdded(group,params);
   break;
 }
 case admin_removed:
 {
-listener.adminRemoved(event);
+listener.adminRemoved(group,params);
 break;
 }
 case group_modified:
 {
-listener.groupModified(event);
+listener.groupModified(group,params);
 break;
 }
 default :

@@ -8,8 +8,7 @@ synchronized (name.intern()) {
  catch (    GroupNotFoundException unfe) {
       newGroup=provider.createGroup(name);
       groupCache.put(name,newGroup);
-      GroupEvent event=new GroupEvent(GroupEvent.EventType.group_created,newGroup,Collections.EMPTY_MAP);
-      GroupEventDispatcher.dispatchEvent(event);
+      GroupEventDispatcher.dispatchEvent(newGroup,GroupEventDispatcher.EventType.group_created,Collections.emptyMap());
     }
     return newGroup;
   }

@@ -22,14 +22,12 @@
     if (adminCollection) {
       Map params=new HashMap();
       params.put("admin",username);
-      GroupEvent event=new GroupEvent(GroupEvent.EventType.admin_added,Group.this,params);
-      GroupEventDispatcher.dispatchEvent(event);
+      GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_added,params);
     }
  else {
       Map params=new HashMap();
       params.put("member",username);
-      GroupEvent event=new GroupEvent(GroupEvent.EventType.member_added,Group.this,params);
-      GroupEventDispatcher.dispatchEvent(event);
+      GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_added,params);
     }
     XMPPServer.getInstance().getRosterManager().groupUserAdded(Group.this,username);
     return true;
