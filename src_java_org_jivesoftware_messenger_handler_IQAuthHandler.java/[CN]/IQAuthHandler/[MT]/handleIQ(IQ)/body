@@ -1,6 +1,13 @@
 {
   try {
     ClientSession session=sessionManager.getSession(packet.getFrom());
+    if (session == null) {
+      Log.error("Error during authentication. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+      IQ reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.internal_server_error);
+      return reply;
+    }
     IQ response=null;
     try {
       Element iq=packet.getElement();
