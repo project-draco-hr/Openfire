@@ -13,9 +13,11 @@
     log.add(logSink);
     jetty=new Server();
     boolean plainStarted=false;
+    interfaceName=JiveGlobals.getXMLProperty("adminConsole.inteface");
     port=JiveGlobals.getXMLProperty("adminConsole.port",9090);
+    InetAddrPort address=new InetAddrPort(interfaceName,port);
     if (port > 0) {
-      jetty.addListener(Integer.toString(port));
+      jetty.addListener(address);
       plainStarted=true;
     }
     boolean secureStarted=false;
@@ -34,6 +36,7 @@
         listener.setKeystore(keyStoreLocation);
         listener.setKeyPassword(keypass);
         listener.setPassword(keypass);
+        listener.setHost(interfaceName);
         listener.setPort(securePort);
         jetty.addListener(listener);
         secureStarted=true;
