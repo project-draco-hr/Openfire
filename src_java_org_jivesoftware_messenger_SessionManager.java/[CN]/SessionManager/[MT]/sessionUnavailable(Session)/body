@@ -2,8 +2,10 @@
   if (session.getAddress() != null && routingTable != null && session.getAddress().toBareJID().trim().length() != 0) {
     routingTable.removeRoute(session.getAddress());
     try {
-      String username=session.getUsername().toLowerCase();
-      SessionMap sessionMap=sessions.get(username);
+      if (session.getUsername() == null) {
+        return;
+      }
+      SessionMap sessionMap=sessions.get(session.getUsername());
       if (sessionMap == null) {
         JID userJID=new JID(session.getUsername(),serverName,"");
         try {
