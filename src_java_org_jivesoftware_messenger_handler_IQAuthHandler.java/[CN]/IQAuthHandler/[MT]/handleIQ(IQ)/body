@@ -4,8 +4,9 @@
     IQ response=null;
     try {
       Element iq=packet.getElement();
+      Element query=iq.element("query");
       if (IQ.Type.get == packet.getType()) {
-        String username=iq.element("username").getTextTrim();
+        String username=query.elementTextTrim("username");
         probeResponse.element("username").setText(username);
         response=IQ.createResultIQ(new IQ(probeResponse));
       }
@@ -14,14 +15,11 @@
           response=anonymousLogin(session,packet);
         }
  else {
-          String username=iq.element("username").getTextTrim();
-          String password=null;
-          if (iq.element("password") != null) {
-            password=iq.element("password").getTextTrim();
-          }
+          String username=query.elementTextTrim("username");
+          String password=query.elementTextTrim("password");
           String digest=null;
-          if (iq.element("digest") != null) {
-            digest=iq.element("digest").getTextTrim().toLowerCase();
+          if (query.element("digest") != null) {
+            digest=query.elementTextTrim("digest").toLowerCase();
           }
           if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
             response=passwordReset(password,packet,username,session);
