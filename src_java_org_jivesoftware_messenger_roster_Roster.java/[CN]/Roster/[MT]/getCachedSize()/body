@@ -1,0 +1,11 @@
+{
+  int size=0;
+  size+=CacheSizes.sizeOfObject();
+  size+=CacheSizes.sizeOfCollection(rosterItems.values());
+  size+=CacheSizes.sizeOfString(username);
+  Iterator<RosterItem> itemIter=getRosterItems();
+  while (itemIter.hasNext()) {
+    size+=itemIter.next().getCachedSize();
+  }
+  return size;
+}

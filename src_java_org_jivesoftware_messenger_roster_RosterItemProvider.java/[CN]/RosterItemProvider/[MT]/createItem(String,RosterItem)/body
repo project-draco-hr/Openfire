@@ -1,7 +1,6 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
-  CachedRosterItem cachedItem=null;
   try {
     con=DbConnectionManager.getConnection();
     long rosterID=SequenceManager.nextID(JiveConstants.ROSTER);
@@ -14,13 +13,7 @@
     pstmt.setInt(6,item.getRecvStatus().getValue());
     pstmt.setString(7,item.getNickname());
     pstmt.executeUpdate();
-    if (item instanceof CachedRosterItemImpl) {
-      cachedItem=(CachedRosterItem)item;
-      ((CachedRosterItemImpl)cachedItem).setID(rosterID);
-    }
- else {
-      cachedItem=new CachedRosterItemImpl(rosterID,item);
-    }
+    item.setID(rosterID);
     insertGroups(rosterID,item.getGroups().iterator(),pstmt,con);
   }
  catch (  SQLException e) {
@@ -44,5 +37,5 @@
       Log.error(e);
     }
   }
-  return cachedItem;
+  return item;
 }

@@ -1,0 +1,15 @@
+{
+  if (server == null) {
+    server=XMPPServer.getInstance();
+  }
+  JID recipient=server.createJID(username,null);
+  roster.setTo(recipient);
+  if (sessionManager == null) {
+    sessionManager=SessionManager.getInstance();
+  }
+  try {
+    sessionManager.userBroadcast(username,roster);
+  }
+ catch (  UnauthorizedException e) {
+  }
+}

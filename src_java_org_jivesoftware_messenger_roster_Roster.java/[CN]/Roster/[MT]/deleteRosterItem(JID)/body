@@ -1,0 +1,11 @@
+{
+  RosterItem item=rosterItems.remove(user.toBareJID());
+  if (item != null) {
+    rosterItemProvider.deleteItem(username,item.getID());
+    org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
+    roster.setType(IQ.Type.set);
+    roster.addItem(user,org.xmpp.packet.Roster.Subscription.remove);
+    broadcast(roster);
+  }
+  return item;
+}

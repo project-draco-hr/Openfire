@@ -3,7 +3,7 @@
     String username=user.getNode();
     Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
     if (roster == null) {
-      roster=new CachedRosterImpl(username);
+      roster=new Roster(username);
     }
     Iterator<RosterItem> items=roster.getRosterItems();
     while (items.hasNext()) {
@@ -16,13 +16,11 @@
       username=usernames.next();
       roster=(Roster)CacheManager.getCache("username2roster").get(username);
       if (roster == null) {
-        roster=new CachedRosterImpl(username);
+        roster=new Roster(username);
       }
       roster.deleteRosterItem(user);
     }
   }
  catch (  UnsupportedOperationException e) {
-  }
-catch (  UnauthorizedException e) {
   }
 }

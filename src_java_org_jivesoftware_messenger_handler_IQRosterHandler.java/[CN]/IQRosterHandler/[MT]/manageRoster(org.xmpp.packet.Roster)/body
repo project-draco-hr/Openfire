@@ -4,7 +4,7 @@
   IQ.Type type=packet.getType();
   try {
     User sessionUser=userManager.getUser(session.getUsername());
-    CachedRoster cachedRoster=(CachedRoster)sessionUser.getRoster();
+    Roster cachedRoster=sessionUser.getRoster();
     if (IQ.Type.get == type) {
       returnPacket=cachedRoster.getReset();
       returnPacket.setType(IQ.Type.result);
@@ -20,7 +20,7 @@
         }
  else {
           if (cachedRoster.isRosterItem(item.getJID())) {
-            CachedRosterItem cachedItem=(CachedRosterItem)cachedRoster.getRosterItem(item.getJID());
+            RosterItem cachedItem=cachedRoster.getRosterItem(item.getJID());
             cachedItem.setAsCopyOf(item);
             cachedRoster.updateRosterItem(cachedItem);
           }
