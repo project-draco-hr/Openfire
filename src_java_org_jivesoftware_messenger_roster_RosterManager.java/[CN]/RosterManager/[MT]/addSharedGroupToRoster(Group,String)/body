@@ -1,0 +1,14 @@
+{
+  Collection<String> users=new HashSet<String>(group.getMembers());
+  users.addAll(group.getAdmins());
+  Roster userRoster=(Roster)CacheManager.getCache("username2roster").get(username);
+  for (  String userToAdd : users) {
+    Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToAdd);
+    if (roster != null) {
+      roster.addSharedUser(group,username);
+    }
+    if (userRoster != null) {
+      userRoster.addSharedUser(group,userToAdd);
+    }
+  }
+}

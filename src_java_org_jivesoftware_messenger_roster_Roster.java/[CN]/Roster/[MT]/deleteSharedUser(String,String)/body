@@ -3,6 +3,9 @@
   try {
     RosterItem item=getRosterItem(jid);
     if (item.isOnlyShared() && item.getSharedGroups().size() == 1) {
+      if (!item.getSharedGroups().contains(sharedGroup)) {
+        return;
+      }
       deleteRosterItem(jid,false);
     }
  else {

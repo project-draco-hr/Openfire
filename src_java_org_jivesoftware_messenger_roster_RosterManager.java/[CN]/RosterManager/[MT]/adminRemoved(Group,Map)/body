@@ -1,7 +1,11 @@
 {
+  String deletedUser=(String)params.get("admin");
   if (!isSharedGroup(group)) {
-    return;
+    for (    Group visibleGroup : getVisibleGroups(group)) {
+      removeSharedGroupFromRoster(visibleGroup,deletedUser);
+    }
   }
-  String addedUser=(String)params.get("admin");
-  groupUserDeleted(group,addedUser);
+ else {
+    groupUserDeleted(group,deletedUser);
+  }
 }

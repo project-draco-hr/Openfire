@@ -1,7 +1,11 @@
 {
-  if (!isSharedGroup(group)) {
-    return;
-  }
   String addedUser=(String)params.get("admin");
-  groupUserAdded(group,addedUser);
+  if (!isSharedGroup(group)) {
+    for (    Group visibleGroup : getVisibleGroups(group)) {
+      addSharedGroupToRoster(visibleGroup,addedUser);
+    }
+  }
+ else {
+    groupUserAdded(group,addedUser);
+  }
 }

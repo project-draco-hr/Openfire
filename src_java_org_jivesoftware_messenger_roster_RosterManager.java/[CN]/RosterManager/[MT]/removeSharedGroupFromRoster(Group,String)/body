@@ -1,0 +1,15 @@
+{
+  Collection<String> users=new HashSet<String>(group.getMembers());
+  users.addAll(group.getAdmins());
+  Roster userRoster=(Roster)CacheManager.getCache("username2roster").get(username);
+  String groupName=group.getProperties().get("sharedRoster.displayName");
+  for (  String userToRemove : users) {
+    Roster roster=(Roster)CacheManager.getCache("username2roster").get(userToRemove);
+    if (roster != null) {
+      roster.deleteSharedUser(groupName,username);
+    }
+    if (userRoster != null) {
+      userRoster.deleteSharedUser(groupName,userToRemove);
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   Map<JID,List<Group>> sharedGroupUsers=new HashMap<JID,List<Group>>();
   for (  Group group : sharedGroups) {
-    Collection<String> users=XMPPServer.getInstance().getRosterManager().getRelatedUsers(group,false);
+    Collection<String> users=XMPPServer.getInstance().getRosterManager().getSharedUsersForRoster(group,this);
     for (    String user : users) {
       JID jid=XMPPServer.getInstance().createJID(user,null);
       if (!isRosterItem(jid) && !getUsername().equals(user)) {
