@@ -1,13 +1,11 @@
 {
-  long now=System.currentTimeMillis();
-  Date nowDate=new Date(now);
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     if (room.wasSavedToDB()) {
       pstmt=con.prepareStatement(UPDATE_ROOM);
-      pstmt.setString(1,StringUtils.dateToMillis(nowDate));
+      pstmt.setString(1,StringUtils.dateToMillis(room.getModificationDate()));
       pstmt.setString(2,room.getNaturalLanguageName());
       pstmt.setString(3,room.getDescription());
       pstmt.setInt(4,(room.canOccupantsChangeSubject() ? 1 : 0));
@@ -27,8 +25,8 @@
  else {
       pstmt=con.prepareStatement(ADD_ROOM);
       pstmt.setLong(1,room.getID());
-      pstmt.setString(2,StringUtils.dateToMillis(nowDate));
-      pstmt.setString(3,StringUtils.dateToMillis(nowDate));
+      pstmt.setString(2,StringUtils.dateToMillis(room.getCreationDate()));
+      pstmt.setString(3,StringUtils.dateToMillis(room.getModificationDate()));
       pstmt.setString(4,room.getName());
       pstmt.setString(5,room.getNaturalLanguageName());
       pstmt.setString(6,room.getDescription());
@@ -43,7 +41,7 @@
       pstmt.setInt(15,(room.isLogEnabled() ? 1 : 0));
       pstmt.setString(16,room.getSubject());
       pstmt.setInt(17,marshallRolesToBroadcast(room));
-      pstmt.setString(18,StringUtils.dateToMillis(nowDate));
+      pstmt.setString(18,StringUtils.dateToMillis(new Date()));
       pstmt.setInt(19,1);
       pstmt.executeUpdate();
     }

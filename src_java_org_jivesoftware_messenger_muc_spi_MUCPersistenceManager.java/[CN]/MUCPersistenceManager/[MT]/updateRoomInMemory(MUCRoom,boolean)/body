@@ -2,14 +2,12 @@
   if (!room.isPersistent() || !room.wasSavedToDB()) {
     return;
   }
-  long now=System.currentTimeMillis();
-  Date nowDate=new Date(now);
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(UPDATE_IN_MEMORY);
-    pstmt.setString(1,StringUtils.dateToMillis(nowDate));
+    pstmt.setString(1,StringUtils.dateToMillis(new Date()));
     pstmt.setBoolean(2,inMemory);
     pstmt.setLong(3,room.getID());
     pstmt.executeUpdate();
