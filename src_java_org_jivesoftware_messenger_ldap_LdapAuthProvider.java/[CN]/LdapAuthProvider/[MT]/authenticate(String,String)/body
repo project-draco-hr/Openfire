@@ -2,6 +2,12 @@
   if (username == null || password == null) {
     throw new UnauthorizedException();
   }
+  if (authCache != null && authCache.containsKey(username)) {
+    String hash=(String)authCache.get(username);
+    if (StringUtils.hash(password).equals(hash)) {
+      return;
+    }
+  }
   String userDN=null;
   try {
     userDN=manager.findUserDN(username);
@@ -11,5 +17,8 @@
   }
  catch (  Exception e) {
     throw new UnauthorizedException(e);
+  }
+  if (authCache != null) {
+    authCache.put(username,StringUtils.hash(password));
   }
 }
