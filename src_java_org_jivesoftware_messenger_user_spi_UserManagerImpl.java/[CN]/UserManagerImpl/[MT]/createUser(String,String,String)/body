@@ -20,10 +20,10 @@
         pstmt.setString(1,username);
         pstmt.setString(2,password);
         pstmt.setString(3,"");
-        pstmt.setString(5,email);
+        pstmt.setString(4,email);
         Date now=new Date();
-        pstmt.setString(7,StringUtils.dateToMillis(now));
-        pstmt.setString(8,StringUtils.dateToMillis(now));
+        pstmt.setString(5,StringUtils.dateToMillis(now));
+        pstmt.setString(6,StringUtils.dateToMillis(now));
         pstmt.execute();
       }
  catch (      Exception e) {
@@ -44,7 +44,7 @@
       newUser=getUser(username);
     }
  catch (    UserNotFoundException e) {
-      throw new UnauthorizedException("Created an account but could not load it. username: " + username + " pass: "+ password+ " email: "+ email);
+      throw new UnauthorizedException("Created an account but could not load it. username: " + username + " pass: "+ password+ " email: "+ email,e);
     }
   }
   return newUser;

@@ -5,10 +5,8 @@
   username=NodePrep.prep(username);
   User user=(User)userCache.get(username);
   if (user == null) {
+    UserProviderFactory.getUserInfoProvider().getInfo(username);
     user=loadUser(username);
-  }
- else {
-    user=(User)userCache.get(username);
   }
   if (user == null) {
     throw new UserNotFoundException();
