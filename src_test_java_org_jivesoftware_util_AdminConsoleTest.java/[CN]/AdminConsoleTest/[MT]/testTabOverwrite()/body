@@ -1,0 +1,19 @@
+{
+  String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-02.xml");
+  InputStream in=new FileInputStream(filename);
+  AdminConsole.addXMLSource(in);
+  in.close();
+  Collection items=AdminConsole.getItems();
+  boolean found=false;
+  for (Iterator iter=items.iterator(); iter.hasNext(); ) {
+    AdminConsole.Item item=(AdminConsole.Item)iter.next();
+    if ("server".equals(item.getId())) {
+      found=true;
+      assertEquals("New Server Title",item.getName());
+      assertEquals("Testing 1 2 3",item.getDescription());
+    }
+  }
+  if (!found) {
+    fail("Failed to overwrite 'server' tab with new properties.");
+  }
+}

@@ -1,0 +1,21 @@
+{
+  String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-02.xml");
+  InputStream in=new FileInputStream(filename);
+  AdminConsole.addXMLSource(in);
+  in.close();
+  Collection items=AdminConsole.getItems();
+  assertNotNull(items);
+  assertTrue(items.size() > 0);
+  boolean found=false;
+  for (Iterator iter=items.iterator(); iter.hasNext(); ) {
+    AdminConsole.Item item=(AdminConsole.Item)iter.next();
+    if ("foobar".equals(item.getId())) {
+      found=true;
+      assertEquals("Foo Bar",item.getName());
+      assertEquals("Click to see foo bar",item.getDescription());
+    }
+  }
+  if (!found) {
+    fail("Expected new item 'foobar' was not found.");
+  }
+}
