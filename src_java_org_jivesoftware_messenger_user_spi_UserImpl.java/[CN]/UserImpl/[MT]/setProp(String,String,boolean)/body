@@ -16,12 +16,12 @@
     if (!(value.equals(props.get(name)))) {
       props.put(name,value);
       updatePropertyInDb(name,value,isVcard);
-      CacheManager.getCache("userid2user").put(new Long(id),this);
+      CacheManager.getCache("userCache").put(username,this);
     }
   }
  else {
     props.put(name,value);
     insertPropertyIntoDb(name,value,isVcard);
-    CacheManager.getCache("userid2user").put(new Long(id),this);
+    CacheManager.getCache("userCache").put(username,this);
   }
 }

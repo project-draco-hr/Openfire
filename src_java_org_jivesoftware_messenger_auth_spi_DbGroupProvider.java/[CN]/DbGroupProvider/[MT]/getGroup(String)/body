@@ -1,7 +1,7 @@
 {
+  Group group=null;
   Connection con=null;
   PreparedStatement pstmt=null;
-  Group group=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(SELECT_GROUP_BY_NAME);
@@ -15,6 +15,7 @@
       while (rs.next()) {
         group.setProperty(rs.getString(1),rs.getString(2));
       }
+      rs.close();
     }
   }
  catch (  SQLException e) {

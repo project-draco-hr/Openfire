@@ -1,0 +1,10 @@
+{
+  String username=user.getUsername();
+  Boolean bool=null;
+  bool=(Boolean)groupMemberCache.get(groupID + ",admin," + username);
+  if (bool == null) {
+    bool=new Boolean(provider.isMember(groupID,username,true));
+    groupMemberCache.put(groupID + ",admin," + username,bool);
+  }
+  return bool.booleanValue();
+}

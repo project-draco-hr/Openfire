@@ -2,20 +2,15 @@
   Iterator resultIterator=null;
   if (filter != null) {
     LinkedList results=new LinkedList();
-    if (filter.getUserID() == SessionResultFilter.ALL_USER_ID) {
+    if (filter.getUsername() == null) {
       copyAnonSessions(results);
       copyUserSessions(results);
     }
  else {
-      if (filter.getUserID() == SessionResultFilter.ANONYMOUS_USER_ID) {
-        copyAnonSessions(results);
+      try {
+        copyUserSessions(userManager.getUser(filter.getUsername()).getUsername(),results);
       }
- else {
-        try {
-          copyUserSessions(userManager.getUser(filter.getUserID()).getUsername(),results);
-        }
- catch (        UserNotFoundException e) {
-        }
+ catch (      UserNotFoundException e) {
       }
     }
     Date createMin=filter.getCreationDateRangeMin();

@@ -1,0 +1,11 @@
+{
+  if (!isMember(user)) {
+    return;
+  }
+  String username=user.getUsername();
+  provider.deleteMember(groupID,username);
+  memberList=null;
+  groupCache.put(new Long(groupID),this);
+  groupMemberCache.remove(groupID + ",member," + username);
+  groupMemberCache.remove("userGroups-" + username);
+}

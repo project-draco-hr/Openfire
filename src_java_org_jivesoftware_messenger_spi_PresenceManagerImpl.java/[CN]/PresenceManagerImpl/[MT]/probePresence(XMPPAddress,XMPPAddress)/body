@@ -1,19 +1,6 @@
 {
   try {
-    if (chatbotManager.isChatbot(probee)) {
-      try {
-        RoutableChannelHandler handler=routingTable.getRoute(probee);
-        Presence presence=new PresenceImpl();
-        presence.setType(Presence.PROBE);
-        presence.setSender(prober);
-        presence.setRecipient(handler.getAddress());
-        handler.process(presence);
-      }
- catch (      NoSuchRouteException e) {
-        Log.info(prober + " probing presence of unavailable chatbot " + probee);
-      }
-    }
- else     if (server.isLocal(probee)) {
+    if (server.isLocal(probee)) {
       Iterator sessionIter=sessionManager.getSessions(probee.getName().toLowerCase());
       while (sessionIter.hasNext()) {
         Session session=(Session)sessionIter.next();

@@ -1,10 +1,10 @@
 {
   long groupID=group.getID();
-  long[] members=new long[group.getMemberCount()];
+  String[] members=new String[group.getMemberCount()];
   Iterator iter=group.members();
   for (int i=0; i < members.length; i++) {
     User user=(User)iter.next();
-    members[i]=user.getID();
+    members[i]=user.getUsername();
   }
   provider.deleteGroup(group.getID());
   groupCache.remove(new Long(groupID));

@@ -1,15 +1,3 @@
 {
-  boolean isLocalServer=recipientJID == null || recipientJID.getHost() == null || "".equals(recipientJID.getHost()) || recipientJID.getResource() == null || "".equals(recipientJID.getResource());
-  if (recipientJID != null && isLocalServer) {
-    if (chatBotManager == null) {
-      try {
-        chatBotManager=(ChatbotManager)ServiceLookupFactory.getLookup().lookup(ChatbotManager.class);
-      }
- catch (      UnauthorizedException e) {
-        Log.error(e);
-      }
-    }
-    isLocalServer=!chatBotManager.isChatbot(recipientJID);
-  }
-  return isLocalServer;
+  return recipientJID == null || recipientJID.getHost() == null || "".equals(recipientJID.getHost()) || recipientJID.getResource() == null || "".equals(recipientJID.getResource());
 }

@@ -1,0 +1,41 @@
+{
+  Map props=new Hashtable();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    if (isVcard) {
+      pstmt=con.prepareStatement(LOAD_VPROPERTIES);
+    }
+ else {
+      pstmt=con.prepareStatement(LOAD_PROPERTIES);
+    }
+    pstmt.setString(1,username);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      props.put(rs.getString(1),rs.getString(2));
+    }
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return props;
+}

@@ -13,7 +13,7 @@
     reply=packet.createResult();
     if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
       try {
-        User user=userManager.getUser(session.getUserID());
+        User user=userManager.getUser(session.getUsername());
         MetaDataFragment currentRegistration=(MetaDataFragment)probeResult.createDeepCopy();
         currentRegistration.setProperty("query.registered",null);
         currentRegistration.setProperty("query.username",user.getUsername());
@@ -23,12 +23,6 @@
         form.getField("username").addValue(user.getUsername());
         form.getField("name").addValue(user.getInfo().getName());
         form.getField("email").addValue(user.getInfo().getEmail());
-        FormField field=form.getField("x-nameVisible");
-        field.clearValues();
-        field.addValue((user.getInfo().isNameVisible() ? "1" : "0"));
-        field=form.getField("x-emailVisible");
-        field.clearValues();
-        field.addValue((user.getInfo().isEmailVisible() ? "1" : "0"));
         reply.setChildFragment(currentRegistration);
       }
  catch (      UserNotFoundException e) {
@@ -53,7 +47,7 @@ catch (      UnauthorizedException e) {
           presence.setVisible(false);
           presence.setSender(packet.getSender());
           presenceHandler.process(presence);
-          userManager.deleteUser(session.getUserID());
+          userManager.deleteUser(userManager.getUser(session.getUsername()));
           reply=packet.createResult();
           session.getConnection().deliver(reply);
           session.getConnection().close();
@@ -100,7 +94,7 @@ catch (      UnauthorizedException e) {
           return reply;
         }
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-          User user=userManager.getUser(session.getUserID());
+          User user=userManager.getUser(session.getUsername());
           if (user != null) {
             if (user.getUsername().equalsIgnoreCase(username)) {
               user.setPassword(password);
@@ -131,14 +125,6 @@ catch (      UnauthorizedException e) {
             String name=(values.hasNext() ? values.next() : " ");
             newUser.getInfo().setName(name);
           }
-          values=registrationForm.getField("x-nameVisible").getValues();
-          String visible=(values.hasNext() ? values.next() : "1");
-          boolean nameVisible=("1".equals(visible) ? true : false);
-          values=registrationForm.getField("x-emailVisible").getValues();
-          visible=(values.hasNext() ? values.next() : "0");
-          boolean emailVisible=("1".equals(visible) ? true : false);
-          newUser.getInfo().setNameVisible(nameVisible);
-          newUser.getInfo().setEmailVisible(emailVisible);
           newUser.saveInfo();
         }
         reply=packet.createResult();

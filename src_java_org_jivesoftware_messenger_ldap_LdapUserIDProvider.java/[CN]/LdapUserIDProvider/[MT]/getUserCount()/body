@@ -1,65 +1,29 @@
 {
   int count=0;
-  if (manager.getMode() == LdapManager.ALL_LDAP_MODE) {
-    DirContext ctx=null;
+  DirContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String filter="(" + manager.getUsernameField() + " + =*)";
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    while (answer.hasMoreElements()) {
+      count++;
+      answer.nextElement();
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
     try {
-      ctx=manager.getContext();
-      SearchControls constraints=new SearchControls();
-      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-      constraints.setReturningAttributes(new String[]{"jiveUserID"});
-      String filter="(jiveUserID=*)";
-      NamingEnumeration answer=ctx.search("",filter,constraints);
-      while (answer.hasMoreElements()) {
-        count++;
-        answer.nextElement();
+      if (ctx != null) {
+        ctx.close();
       }
     }
  catch (    Exception e) {
       Log.error(e);
-    }
- finally {
-      try {
-        if (ctx != null) {
-          ctx.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
-    }
-  }
- else {
-    Connection con=null;
-    PreparedStatement pstmt=null;
-    try {
-      con=DbConnectionManager.getConnection();
-      pstmt=con.prepareStatement(USER_COUNT);
-      ResultSet rs=pstmt.executeQuery();
-      if (rs.next()) {
-        count=rs.getInt(1);
-      }
-      rs.close();
-    }
- catch (    SQLException e) {
-      Log.error(e);
-    }
- finally {
-      try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
-      try {
-        if (con != null) {
-          con.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
     }
   }
   return count;

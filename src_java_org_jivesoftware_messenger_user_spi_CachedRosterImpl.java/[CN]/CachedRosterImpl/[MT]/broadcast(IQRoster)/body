@@ -6,27 +6,10 @@
     XMPPAddress recipient=server.createAddress(username,null);
     roster.setRecipient(recipient);
     roster.setOriginatingSession(server.getSession());
-    if (chatbotManager == null) {
-      chatbotManager=(ChatbotManager)ServiceLookupFactory.getLookup().lookup(ChatbotManager.class);
+    if (sessionManager == null) {
+      sessionManager=(SessionManager)ServiceLookupFactory.getLookup().lookup(SessionManager.class);
     }
-    if (chatbotManager.isChatbot(recipient)) {
-      if (routingTable == null) {
-        routingTable=(RoutingTable)ServiceLookupFactory.getLookup().lookup(RoutingTable.class);
-      }
-      try {
-        ChannelHandler handler=routingTable.getRoute(recipient);
-        handler.process(roster);
-      }
- catch (      NoSuchRouteException e) {
-        Log.warn("Chatbot unreachable " + recipient,e);
-      }
-    }
- else {
-      if (sessionManager == null) {
-        sessionManager=(SessionManager)ServiceLookupFactory.getLookup().lookup(SessionManager.class);
-      }
-      sessionManager.userBroadcast(username,roster);
-    }
+    sessionManager.userBroadcast(username,roster);
   }
  catch (  XMLStreamException e) {
   }

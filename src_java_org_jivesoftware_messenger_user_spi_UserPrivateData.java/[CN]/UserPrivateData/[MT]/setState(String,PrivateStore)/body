@@ -1,0 +1,16 @@
+{
+  this.privateStore=privateStore;
+  this.username=username;
+  try {
+    final Element element=privateStore.get(username,DocumentHelper.createElement(namespace));
+    final List list=element.elements();
+    final Iterator iter=list.iterator();
+    while (iter.hasNext()) {
+      Element el=(Element)iter.next();
+      addToSettings(el);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),ex);
+  }
+}

@@ -1,29 +1,12 @@
 {
-  Long userID=null;
+  String username=null;
   Roster roster=null;
   if (localServer.isLocal(address) && !"".equals(address.getName())) {
-    try {
-      if (chatbotManager != null) {
-        if (chatbotManager.isChatbot(address)) {
-          userID=chatbotManager.getChatbotID(address.getNamePrep());
-        }
-      }
-    }
- catch (    UserNotFoundException e) {
-    }
-    try {
-      if (userID == null && userManager != null) {
-        userID=userManager.getUserID(address.getNamePrep());
-      }
-    }
- catch (    UserNotFoundException e) {
-    }
-    if (userID != null) {
-      roster=(Roster)CacheManager.getCache("userid2roster").get(userID);
-      if (roster == null) {
-        roster=new CachedRosterImpl(userID,address.getNamePrep());
-        CacheManager.getCache("userid2roster").put(userID,roster);
-      }
+    username=address.getNamePrep();
+    roster=(Roster)CacheManager.getCache("username2roster").get(username);
+    if (roster == null) {
+      roster=new CachedRosterImpl(username);
+      CacheManager.getCache("username2roster").put(username,roster);
     }
   }
   return roster;

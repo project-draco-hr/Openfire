@@ -3,15 +3,13 @@
     throw new UnauthorizedException();
   }
   username=NodePrep.prep(username);
-  long userID=0;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
-    userID=idProvider.getUserID(username);
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(UPDATE_PASSWORD);
     pstmt.setString(1,password);
-    pstmt.setLong(2,userID);
+    pstmt.setString(2,username);
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {

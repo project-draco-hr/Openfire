@@ -7,15 +7,6 @@
       recipientRoster.deleteRosterItem(sender);
     }
  catch (    UserNotFoundException e) {
-      try {
-        ChannelHandler route=routingTable.getRoute(recipient);
-        if (route instanceof Chatbot) {
-          route.process(packet);
-        }
-      }
- catch (      NoSuchRouteException e1) {
-        throw new UserNotFoundException();
-      }
     }
   }
  else {

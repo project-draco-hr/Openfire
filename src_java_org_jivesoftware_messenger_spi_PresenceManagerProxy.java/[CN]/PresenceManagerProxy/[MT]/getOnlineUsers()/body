@@ -1,11 +1,3 @@
 {
-  Iterator iter=manager.getOnlineUsers();
-  ArrayList users=new ArrayList();
-  while (iter.hasNext()) {
-    User user=(User)iter.next();
-    if (permissions.hasPermission(Permissions.SYSTEM_ADMIN | Permissions.USER_ADMIN) || user.isAuthorized(Permissions.VIEW_ONLINE_STATUS)) {
-      users.add(user);
-    }
-  }
-  return new UserIteratorProxy(users.iterator(),authToken,permissions);
+  return manager.getOnlineUsers();
 }

@@ -1,5 +1,5 @@
 {
-  Iterator iter=onlineUserCache.values().iterator();
+  Iterator iter=onlineUsers.values().iterator();
   List presences=new ArrayList();
   while (iter.hasNext()) {
     Presence presence=(Presence)iter.next();
@@ -34,8 +34,8 @@ case PresenceManager.SORT_USERNAME:
         String presenceUser1="";
         String presenceUser2="";
         try {
-          presenceUser1=userManager.getUser(presence1.getUserID()).getUsername();
-          presenceUser2=userManager.getUser(presence2.getUserID()).getUsername();
+          presenceUser1=userManager.getUser(presence1.getUsername()).getUsername();
+          presenceUser2=userManager.getUser(presence2.getUsername()).getUsername();
         }
  catch (        UserNotFoundException e) {
           Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
@@ -55,20 +55,20 @@ default :
 {
 }
 }
-List users=new ArrayList();
+List<User> users=new ArrayList<User>();
 for (int i=0; i < presences.size(); i++) {
 Presence presence=(Presence)presences.get(i);
 try {
-users.add(userManager.getUser(presence.getUserID()));
+users.add(userManager.getUser(presence.getUsername()));
 }
  catch (UserNotFoundException e) {
 Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
 }
 }
 if (numResults > users.size()) {
-return Collections.unmodifiableList(users).iterator();
+return Collections.unmodifiableCollection(users);
 }
  else {
-return Collections.unmodifiableList(users.subList(0,numResults - 1)).iterator();
+return Collections.unmodifiableCollection(users.subList(0,numResults - 1));
 }
 }

@@ -1,16 +1,14 @@
 {
-  Iterator iter=onlineUserCache.values().iterator();
-  List users=new ArrayList();
-  while (iter.hasNext()) {
-    Presence presence=(Presence)iter.next();
+  List<User> users=new ArrayList<User>();
+  for (  Presence presence : onlineUsers.values()) {
     if (presence.isAvailable()) {
       try {
-        users.add(userManager.getUser(presence.getUserID()));
+        users.add(userManager.getUser(presence.getUsername()));
       }
  catch (      UserNotFoundException e) {
         Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
       }
     }
   }
-  return Collections.unmodifiableList(getOnlineUserList()).iterator();
+  return Collections.unmodifiableCollection(users);
 }

@@ -1,0 +1,17 @@
+{
+  if (rosterCache == null) {
+    rosterCache=CacheManager.getCache("username2roster");
+  }
+  if (rosterCache == null) {
+    throw new UserNotFoundException("Could not load caches");
+  }
+  CachedRoster roster=(CachedRoster)rosterCache.get(username);
+  if (roster == null) {
+    roster=new CachedRosterImpl(username);
+    rosterCache.put(username,roster);
+  }
+  if (roster == null) {
+    throw new UserNotFoundException(username);
+  }
+  return roster;
+}

@@ -1,7 +1,7 @@
 {
+  List<String> members=new ArrayList<String>();
   Connection con=null;
   PreparedStatement pstmt=null;
-  LongList members=new LongList();
   try {
     con=DbConnectionManager.getConnection();
     if (adminsOnly) {
@@ -13,8 +13,9 @@
     pstmt.setLong(1,groupID);
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
-      members.add(rs.getLong(1));
+      members.add(rs.getString(1));
     }
+    rs.close();
   }
  catch (  SQLException e) {
     Log.error(e);
@@ -33,5 +34,5 @@
       Log.error(e);
     }
   }
-  return members;
+  return (String[])members.toArray();
 }

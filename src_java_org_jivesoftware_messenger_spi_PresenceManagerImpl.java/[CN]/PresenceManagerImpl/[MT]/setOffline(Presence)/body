@@ -1,13 +1,12 @@
 {
-  if (presence.getUserID() != -1) {
-synchronized (onlineUserCache) {
-      Long id=new Long(presence.getUserID());
-      onlineUserCache.remove(id);
+  if (presence.getUsername() != null) {
+synchronized (onlineUsers) {
+      onlineUsers.remove(presence.getUsername());
     }
   }
  else {
-synchronized (onlineGuestCache) {
-      onlineGuestCache.remove(presence.getID());
+synchronized (onlineGuests) {
+      onlineGuests.remove(presence.getID());
     }
   }
 }

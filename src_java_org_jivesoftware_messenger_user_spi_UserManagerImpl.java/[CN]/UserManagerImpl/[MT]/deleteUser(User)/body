@@ -1,5 +1,40 @@
 {
-  userAccountProvider.deleteUser(user.getID());
-  id2userCache.remove(user.getID());
-  name2idCache.remove(user.getUsername());
+  String username=user.getUsername();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(DELETE_USER_GROUPS);
+    pstmt.setString(1,username);
+    pstmt.execute();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_USER_PROPS);
+    pstmt.setString(1,username);
+    pstmt.execute();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_VCARD_PROPS);
+    pstmt.setString(1,username);
+    pstmt.execute();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_USER);
+    pstmt.setString(1,username);
+    pstmt.execute();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+  userCache.remove(user.getUsername());
 }

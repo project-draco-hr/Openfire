@@ -3,25 +3,21 @@
     throw new UnauthorizedException();
   }
   username=NodePrep.prep(username);
-  long userID=0;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
-    userID=idProvider.getUserID(username);
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(AUTHORIZE);
-    pstmt.setLong(1,userID);
+    pstmt.setString(1,username);
     pstmt.setString(2,password);
     ResultSet rs=pstmt.executeQuery();
     if (!rs.next()) {
       throw new UnauthorizedException();
     }
+    rs.close();
   }
  catch (  SQLException e) {
     Log.error("Exception in DbAuthProvider",e);
-    throw new UnauthorizedException();
-  }
-catch (  UserNotFoundException e) {
     throw new UnauthorizedException();
   }
  finally {

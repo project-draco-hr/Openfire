@@ -1,3 +1,45 @@
 {
-  return new UserIterator(userIDProvider.getUserIDs(startIndex,numResults).toArray());
+  List<String> users=new ArrayList<String>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ALL_USERS);
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.setFetchSize(rs,startIndex + numResults);
+    for (int i=0; i < startIndex; i++) {
+      rs.next();
+    }
+    for (int i=0; i < numResults; i++) {
+      if (rs.next()) {
+        users.add(rs.getString(1));
+      }
+ else {
+        break;
+      }
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return new UserIterator((String[])users.toArray());
 }

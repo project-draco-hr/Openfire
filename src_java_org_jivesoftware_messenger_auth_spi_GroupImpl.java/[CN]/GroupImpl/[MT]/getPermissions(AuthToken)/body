@@ -1,11 +1,11 @@
 {
-  long userID=auth.getUserID();
+  String username=auth.getUsername();
   try {
     Boolean bool=null;
-    bool=(Boolean)groupMemberCache.get(groupID + ",admin," + userID);
+    bool=(Boolean)groupMemberCache.get(groupID + ",admin," + username);
     if (bool == null) {
-      bool=new Boolean(provider.isMember(groupID,userID,true));
-      groupMemberCache.put(groupID + ",admin," + userID,bool);
+      bool=new Boolean(provider.isMember(groupID,username,true));
+      groupMemberCache.put(groupID + ",admin," + username,bool);
     }
     if (bool.booleanValue()) {
       return new Permissions(Permissions.GROUP_ADMIN);

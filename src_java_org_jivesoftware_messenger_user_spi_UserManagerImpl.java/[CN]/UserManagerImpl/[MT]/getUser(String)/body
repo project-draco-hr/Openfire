@@ -3,14 +3,12 @@
     throw new UserNotFoundException("Username with null value is not valid.");
   }
   username=NodePrep.prep(username);
-  User user=null;
-  Long userIDLong=(Long)name2idCache.get(username);
-  if (userIDLong == null) {
-    long userID=userIDProvider.getUserID(username);
-    user=loadUser(userID,username);
+  User user=(User)userCache.get(username);
+  if (user == null) {
+    user=loadUser(username);
   }
  else {
-    user=(User)id2userCache.get(userIDLong);
+    user=(User)userCache.get(username);
   }
   if (user == null) {
     throw new UserNotFoundException();
