@@ -2,14 +2,13 @@
   super("XMPP Authentication handler");
   info=new IQHandlerInfo("query","jabber:iq:auth");
   probeResponse=DocumentHelper.createElement(QName.get("query","jabber:iq:auth"));
-  probeResponse.addAttribute("type","get");
-  probeResponse.add(DocumentHelper.createElement("username"));
+  probeResponse.addElement("username");
   if (AuthFactory.isPlainSupported()) {
-    probeResponse.add(DocumentHelper.createElement("password"));
+    probeResponse.addElement("password");
   }
   if (AuthFactory.isDigestSupported()) {
-    probeResponse.add(DocumentHelper.createElement("digest"));
+    probeResponse.addElement("digest");
   }
-  probeResponse.add(DocumentHelper.createElement("resource"));
+  probeResponse.addElement("resource");
   anonymousAllowed="true".equals(JiveGlobals.getProperty("xmpp.auth.anonymous"));
 }

@@ -8,7 +8,8 @@
       if (IQ.Type.get == packet.getType()) {
         String username=query.elementTextTrim("username");
         probeResponse.element("username").setText(username);
-        response=IQ.createResultIQ(new IQ(probeResponse));
+        response=IQ.createResultIQ(packet);
+        response.setChildElement(probeResponse);
       }
  else {
         if (iq.elements().isEmpty()) {
@@ -25,7 +26,7 @@
             response=passwordReset(password,packet,username,session);
           }
  else {
-            response=login(username,iq,packet,response,password,session,digest);
+            response=login(username,query,packet,response,password,session,digest);
           }
         }
       }
