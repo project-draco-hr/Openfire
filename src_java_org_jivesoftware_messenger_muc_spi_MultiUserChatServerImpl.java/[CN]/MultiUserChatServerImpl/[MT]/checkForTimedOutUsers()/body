@@ -1,12 +1,24 @@
 {
-  final long deadline=System.currentTimeMillis() - USER_TIMEOUT;
+  if (USER_IDLE == -1) {
+    return;
+  }
+  final long deadline=System.currentTimeMillis() - USER_IDLE;
   final Map userMap=new HashMap(users);
   final Iterator userIter=userMap.values().iterator();
   while (userIter.hasNext()) {
     try {
       MUCUser user=(MUCUser)userIter.next();
       if (user.getLastPacketTime() < deadline) {
-        presenceManager.probePresence(chatServiceAddress,user.getAddress());
+        Iterator<MUCRole> roles=user.getRoles();
+        MUCRole role;
+        while (roles.hasNext()) {
+          role=roles.next();
+          try {
+            role.getChatRoom().kickOccupant(user.getAddress().toStringPrep(),null,null);
+          }
+ catch (          NotAllowedException e) {
+          }
+        }
       }
     }
  catch (    Exception e) {
