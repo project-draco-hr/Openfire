@@ -1,0 +1,34 @@
+{
+  XMLProperties xmlTest=new XMLProperties(in);
+  String[] tabs=xmlTest.getChildrenProperties("tabs");
+  for (int i=0; i < tabs.length; i++) {
+    String propName="tabs." + tabs[i];
+    String id=xmlTest.getProperty(propName + ".id");
+    String name=xmlTest.getProperty(propName + ".name");
+    String description=xmlTest.getProperty(propName + ".description");
+    Item item=new Item(id,name,description,null);
+    getItems().add(item);
+    String[] sidebars=xmlTest.getChildrenProperties(propName + ".sidebars");
+    for (int j=0; j < sidebars.length; j++) {
+      String sidebarName=propName + ".sidebars." + sidebars[j];
+      name=xmlTest.getProperty(sidebarName + ".name");
+      Item subItem=new Item(null,name,null,null);
+      String[] subitems=xmlTest.getChildrenProperties(sidebarName + ".items");
+      for (int k=0; k < subitems.length; k++) {
+        String subitemName=sidebarName + ".items." + subitems[k];
+        String subID=xmlTest.getProperty(subitemName + ".id");
+        String subName=xmlTest.getProperty(subitemName + ".name");
+        String subDescr=xmlTest.getProperty(subitemName + ".description");
+        String subURL=xmlTest.getProperty(subitemName + ".url");
+        Item kItem=new Item(subID,subName,subDescr,subURL,subItem);
+        subItem.getItems().add(kItem);
+        subAddtoModel(subitemName,xmlTest,kItem);
+        if (j == 0 && k == 0) {
+          item.setUrl(subURL);
+        }
+      }
+      subItem.setParent(item);
+      item.getItems().add(subItem);
+    }
+  }
+}

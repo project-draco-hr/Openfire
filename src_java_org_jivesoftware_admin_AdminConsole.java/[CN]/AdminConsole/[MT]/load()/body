@@ -1,0 +1,44 @@
+{
+  InputStream in=ClassUtils.getResourceAsStream("/admin-sidebar.xml");
+  if (in == null) {
+    Log.error("Failed to load admin-sidebar.xml file from Jive Forums classes - admin " + "console will not work correctly.");
+    return;
+  }
+  try {
+    addToModel(in);
+  }
+ catch (  Exception e) {
+    Log.error("Failure when parsing main admin-sidebar.xml file",e);
+  }
+  try {
+    in.close();
+  }
+ catch (  Exception ignored) {
+  }
+  ClassLoader[] classLoaders=getClassLoaders();
+  for (int i=0; i < classLoaders.length; i++) {
+    URL url=null;
+    try {
+      if (classLoaders[i] != null) {
+        Enumeration e=classLoaders[i].getResources("META-INF/admin-sidebar.xml");
+        while (e.hasMoreElements()) {
+          url=(URL)e.nextElement();
+          in=url.openStream();
+          addToModel(in);
+          try {
+            in.close();
+          }
+ catch (          Exception ignored) {
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      String msg="Failed to load admin-sidebar.xml";
+      if (url != null) {
+        msg+=" from resource: " + url.toString();
+      }
+      Log.warn(msg,e);
+    }
+  }
+}
