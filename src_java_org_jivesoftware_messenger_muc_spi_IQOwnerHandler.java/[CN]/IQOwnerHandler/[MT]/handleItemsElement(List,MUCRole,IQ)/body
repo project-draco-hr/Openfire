@@ -80,8 +80,7 @@
     try {
       if (jids.keySet().containsAll(room.owners)) {
         if (!jids.containsValue("owner")) {
-          reply.setError(XMPPError.Code.CONFLICT);
-          return;
+          throw new ConflictException();
         }
       }
       room.lock.readLock().unlock();
@@ -117,12 +116,8 @@
   finally {
       room.lock.readLock().unlock();
     }
-    try {
-      for (      Presence presence : presences) {
-        room.send(presence);
-      }
-    }
- catch (    UnauthorizedException e) {
+    for (    Presence presence : presences) {
+      room.send(presence);
     }
   }
 }
