@@ -16,7 +16,13 @@
       routingTable.getRoute(recipientJID).process((IQ)presence.createDeepCopy());
     }
  else {
-      deliverer.deliver((XMPPPacket)presence.createDeepCopy());
+      try {
+        ChannelHandler handler=routingTable.getRoute(recipientJID);
+        handler.process((XMPPPacket)presence.createDeepCopy());
+      }
+ catch (      NoSuchRouteException e) {
+        deliverer.deliver((XMPPPacket)presence.createDeepCopy());
+      }
     }
   }
  catch (  Exception e) {

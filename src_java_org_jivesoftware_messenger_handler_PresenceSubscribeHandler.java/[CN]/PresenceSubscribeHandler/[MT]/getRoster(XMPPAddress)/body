@@ -5,7 +5,7 @@
     try {
       if (chatbotManager != null) {
         if (chatbotManager.isChatbot(address)) {
-          userID=new Long(chatbotManager.getChatbotID(address.getNamePrep()));
+          userID=chatbotManager.getChatbotID(address.getNamePrep());
         }
       }
     }
@@ -13,7 +13,7 @@
     }
     try {
       if (userID == null && userManager != null) {
-        userID=new Long(userManager.getUserID(address.getNamePrep()));
+        userID=userManager.getUserID(address.getNamePrep());
       }
     }
  catch (    UserNotFoundException e) {
@@ -21,7 +21,7 @@
     if (userID != null) {
       roster=(Roster)CacheManager.getCache("userid2roster").get(userID);
       if (roster == null) {
-        roster=new CachedRosterImpl(userID.longValue(),address.getNamePrep());
+        roster=new CachedRosterImpl(userID,address.getNamePrep());
         CacheManager.getCache("userid2roster").put(userID,roster);
       }
     }
