@@ -1,14 +1,13 @@
 {
-  Document doc=XPPReader.parseDocument(new InputStreamReader(in),AdminConsole.class);
-  String globalAppname=getProperty(doc,"global.appname");
-  if (globalAppname != null) {
-    appName=globalAppname;
+  Element globalEl=(Element)element.selectSingleNode("/adminconsole/global/appname");
+  if (globalEl != null) {
+    appName=globalEl.getText();
   }
-  String globalLogoImage=getProperty(doc,"global.logo-image");
-  if (globalLogoImage != null) {
-    logoImage=globalLogoImage;
+  Element globalLogoImageEl=(Element)element.selectSingleNode("/adminconsole/global/logo-image");
+  if (globalLogoImageEl != null) {
+    logoImage=globalLogoImageEl.getText();
   }
-  List tabs=doc.getRootElement().elements("tab");
+  List tabs=element.elements("tab");
   for (int i=0; i < tabs.size(); i++) {
     Element tab=(Element)tabs.get(i);
     String id=tab.attributeValue("id");
