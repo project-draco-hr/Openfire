@@ -1,20 +1,21 @@
 {
-  SystemTray tray=SystemTray.getDefaultSystemTray();
+  final SystemTray tray=SystemTray.getDefaultSystemTray();
   try {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
   }
  catch (  Exception e) {
     e.printStackTrace();
   }
-  String title="Jive Messenger Server Launcher";
+  String title="Jive Messenger";
   final JFrame frame=new JFrame(title);
   ImageIcon splash=null;
   JLabel splashLabel=null;
   try {
-    ImageIcon icon=new ImageIcon(getClass().getClassLoader().getResource("messenger-16x16.gif"));
     splash=new ImageIcon(getClass().getClassLoader().getResource("splash.gif"));
     splashLabel=new JLabel("",splash,JLabel.LEFT);
-    frame.setIconImage(icon.getImage());
+    onIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_on-16x16.gif"));
+    offIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_off-16x16.gif"));
+    frame.setIconImage(offIcon.getImage());
   }
  catch (  Exception e) {
   }
@@ -76,6 +77,8 @@
  catch (            Exception e) {
             }
             if (stopButton.isEnabled()) {
+              frame.setIconImage(onIcon.getImage());
+              trayIcon.setIcon(onIcon);
               browserButton.setEnabled(true);
               browserMenuItem.setEnabled(true);
             }
@@ -87,6 +90,9 @@
       }
  else       if (e.getActionCommand().equals("Stop")) {
         stopApplication();
+        frame.setIconImage(offIcon.getImage());
+        trayIcon.setIcon(offIcon);
+        frame.setCursor(Cursor.getDefaultCursor());
         browserButton.setEnabled(false);
         startButton.setEnabled(true);
         stopButton.setEnabled(false);
@@ -125,11 +131,10 @@
   stopMenuItem.addActionListener(actionListener);
   startMenuItem.addActionListener(actionListener);
   showMenuItem.addActionListener(actionListener);
-  ImageIcon i=new ImageIcon(getClass().getClassLoader().getResource("messenger-16x16.gif"));
-  TrayIcon ti=new TrayIcon(i,"Jive Messenger",menu);
-  ti.setIconAutoSize(true);
-  ti.addActionListener(actionListener);
-  tray.addTrayIcon(ti);
+  trayIcon=new TrayIcon(offIcon,"Jive Messenger",menu);
+  trayIcon.setIconAutoSize(true);
+  trayIcon.addActionListener(actionListener);
+  tray.addTrayIcon(trayIcon);
   frame.addWindowListener(new WindowAdapter(){
     public void windowClosing(    WindowEvent e){
       stopApplication();
