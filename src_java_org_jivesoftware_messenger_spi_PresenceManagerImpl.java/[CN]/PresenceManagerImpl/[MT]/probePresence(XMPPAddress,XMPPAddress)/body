@@ -1,9 +1,8 @@
 {
   try {
     if (server.isLocal(probee)) {
-      Iterator sessionIter=sessionManager.getSessions(probee.getName().toLowerCase());
-      while (sessionIter.hasNext()) {
-        Session session=(Session)sessionIter.next();
+      Collection<Session> sessions=sessionManager.getSessions(probee.getName().toLowerCase());
+      for (      Session session : sessions) {
         Presence presencePacket=(Presence)session.getPresence().createDeepCopy();
         presencePacket.setSender(session.getAddress());
         try {

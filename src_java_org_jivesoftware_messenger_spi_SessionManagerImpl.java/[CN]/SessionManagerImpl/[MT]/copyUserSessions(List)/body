@@ -3,9 +3,9 @@
   try {
     Iterator users=getSessionUsers();
     while (users.hasNext()) {
-      Iterator sessionItr=getSessions((String)users.next());
-      while (sessionItr.hasNext()) {
-        sessions.add(sessionItr.next());
+      Collection<Session> usrSessions=getSessions((String)users.next());
+      for (      Session session : usrSessions) {
+        sessions.add(session);
       }
     }
   }

@@ -2,11 +2,18 @@
   if (user == null) {
     return null;
   }
-  Presence userPresence=(Presence)onlineUsers.get(user.getUsername());
-  if (userPresence != null) {
-    return userPresence;
+  Presence presence=null;
+  try {
+    for (    Session session : sessionManager.getSessions(user.getUsername())) {
+      if (presence == null) {
+        presence=session.getPresence();
+      }
+ else       if (presence.getShow() > session.getPresence().getShow()) {
+        presence=session.getPresence();
+      }
+    }
   }
- else {
-    return new PresenceImpl(user,null);
+ catch (  UnauthorizedException ue) {
   }
+  return presence;
 }
