@@ -63,7 +63,36 @@
     }
   }
  else {
-    if (MUCRole.MEMBER == newAffiliation) {
+    if (MUCRole.MEMBER == newAffiliation && MUCRole.MEMBER == oldAffiliation) {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      try {
+        con=DbConnectionManager.getConnection();
+        pstmt=con.prepareStatement(UPDATE_MEMBER);
+        pstmt.setString(1,nickname);
+        pstmt.setLong(2,room.getID());
+        pstmt.setString(3,bareJID);
+        pstmt.execute();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle);
+      }
+ finally {
+        try {
+          if (pstmt != null)           pstmt.close();
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+        try {
+          if (con != null)           con.close();
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+ else     if (MUCRole.MEMBER == newAffiliation) {
       Connection con=null;
       PreparedStatement pstmt=null;
       boolean abortTransaction=false;

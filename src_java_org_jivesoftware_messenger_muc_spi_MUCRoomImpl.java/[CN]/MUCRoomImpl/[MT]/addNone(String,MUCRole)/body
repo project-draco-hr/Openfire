@@ -6,7 +6,6 @@
   if (owners.contains(bareJID) && owners.size() == 1) {
     throw new ConflictException();
   }
-  String actorJID=senderRole.getChatUser().getAddress().toBareStringPrep();
   List updatedPresences=null;
   boolean wasMember=members.containsKey(bareJID);
   if (removeOwner(bareJID)) {
@@ -44,6 +43,8 @@
         }
         frag=(MetaDataFragment)presence.getFragment("x","http://jabber.org/protocol/muc#user");
         frag.setProperty("x.status:code","321");
+        MUCUser senderUser=senderRole.getChatUser();
+        String actorJID=(senderUser == null ? null : senderUser.getAddress().toBareStringPrep());
         kickPresence(presence,actorJID);
       }
     }
