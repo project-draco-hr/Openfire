@@ -12,7 +12,7 @@
   if (!(cachedItem.getSubStatus() == RosterItem.SUB_NONE && cachedItem.getAskStatus() == RosterItem.ASK_NONE)) {
     Roster roster=new Roster();
     roster.setType(IQ.Type.set);
-    roster.addItem(cachedItem.getJid(),cachedItem.getNickname(),Roster.Ask.valueOf(cachedItem.getAskStatus().getName()),Roster.Subscription.valueOf(cachedItem.getSubStatus().getName()),cachedItem.getGroups());
+    roster.addItem(cachedItem.getJid(),cachedItem.getNickname(),getAskStatus(cachedItem.getAskStatus()),Roster.Subscription.valueOf(cachedItem.getSubStatus().getName()),cachedItem.getGroups());
     broadcast(roster);
   }
   if (cachedItem.getSubStatus() == RosterItem.SUB_BOTH || cachedItem.getSubStatus() == RosterItem.SUB_TO) {
