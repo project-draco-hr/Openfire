@@ -20,9 +20,20 @@
         continue;
       }
       packet.setFrom(session.getAddress());
-      auditor.audit(packet,session);
-      router.route(packet);
-      session.incrementClientPacketCount();
+      try {
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+        router.route(packet);
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+        session.incrementClientPacketCount();
+      }
+ catch (      PacketRejectedException e) {
+        Message reply=new Message();
+        reply.setID(packet.getID());
+        reply.setTo(session.getAddress());
+        reply.setFrom(packet.getTo());
+        reply.setError(PacketError.Condition.not_allowed);
+        session.process(reply);
+      }
     }
  else     if ("presence".equals(tag)) {
       Presence packet=null;
@@ -39,10 +50,21 @@
         continue;
       }
       packet.setFrom(session.getAddress());
-      auditor.audit(packet,session);
-      router.route(packet);
-      session.incrementClientPacketCount();
-      clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
+      try {
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+        router.route(packet);
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+        session.incrementClientPacketCount();
+        clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
+      }
+ catch (      PacketRejectedException e) {
+        Presence reply=new Presence();
+        reply.setID(packet.getID());
+        reply.setTo(session.getAddress());
+        reply.setFrom(packet.getTo());
+        reply.setError(PacketError.Condition.not_allowed);
+        session.process(reply);
+      }
     }
  else     if ("iq".equals(tag)) {
       IQ packet=null;
@@ -64,9 +86,21 @@
         continue;
       }
       packet.setFrom(session.getAddress());
-      auditor.audit(packet,session);
-      router.route(packet);
-      session.incrementClientPacketCount();
+      try {
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+        router.route(packet);
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+        session.incrementClientPacketCount();
+      }
+ catch (      PacketRejectedException e) {
+        IQ reply=new IQ();
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setID(packet.getID());
+        reply.setTo(session.getAddress());
+        reply.setFrom(packet.getTo());
+        reply.setError(PacketError.Condition.not_allowed);
+        session.process(reply);
+      }
     }
  else {
       throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);

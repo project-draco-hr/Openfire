@@ -3,20 +3,25 @@
     deliverer.deliver(packet);
   }
  else {
+    try {
+      InterceptorManager.getInstance().invokeInterceptors(packet,session,false,false);
 synchronized (writer) {
-      try {
-        xmlSerializer.write(packet.getElement());
-        if (flashClient) {
-          writer.write('\0');
+        try {
+          xmlSerializer.write(packet.getElement());
+          if (flashClient) {
+            writer.write('\0');
+          }
+          xmlSerializer.flush();
         }
-        xmlSerializer.flush();
+ catch (        IOException e) {
+          Log.error(e);
+          close();
+        }
       }
- catch (      IOException e) {
-        Log.error(e);
-        close();
-      }
+      InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
+      session.incrementServerPacketCount();
     }
-    auditor.audit(packet,session);
-    session.incrementServerPacketCount();
+ catch (    PacketRejectedException e) {
+    }
   }
 }
