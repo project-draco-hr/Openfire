@@ -2,7 +2,7 @@
   try {
     Connection conn=new SocketConnection(deliverer,auditManager.getAuditor(),sock,isSecure);
     Session session=sessionManager.createSession(conn);
-    SocketReadThread reader=new SocketReadThread(router,packetFactory,serverName,auditManager.getAuditor(),sock,session);
+    SocketReadThread reader=new SocketReadThread(router,serverName,auditManager.getAuditor(),sock,session);
     reader.setDaemon(true);
     reader.start();
   }

@@ -1,40 +1,34 @@
 {
   while (true) {
-    for (int eventType=xpp.next(); eventType != XMLStreamConstants.START_ELEMENT; eventType=xpp.next()) {
-      if (eventType == XMLStreamConstants.CHARACTERS) {
-        if (!xpp.isWhiteSpace()) {
-          throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.packet.text"));
-        }
+    Document document=reader.parseDocument();
+    if (document != null) {
+      Element doc=document.getRootElement();
+      String tag=doc.getName();
+      if ("message".equals(tag)) {
+        Message packet=new Message(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
       }
- else       if (eventType == XMLStreamConstants.END_DOCUMENT) {
-        return;
+ else       if ("presence".equals(tag)) {
+        Presence packet=new Presence(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
+        clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
       }
-    }
-    String tag=xpp.getLocalName();
-    if ("message".equals(tag)) {
-      Message packet=packetFactory.getMessage(xpp);
-      packet.setFrom(session.getAddress());
-      auditor.audit(packet);
-      router.route(packet);
-      session.incrementClientPacketCount();
-    }
- else     if ("presence".equals(tag)) {
-      Presence packet=packetFactory.getPresence(xpp);
-      packet.setFrom(session.getAddress());
-      auditor.audit(packet);
-      router.route(packet);
-      session.incrementClientPacketCount();
-      clearSignout=(Presence.Type.unavailable == packet.getType() ? true : false);
-    }
- else     if ("iq".equals(tag)) {
-      IQ packet=packetFactory.getIQ(xpp);
-      packet.setFrom(session.getAddress());
-      auditor.audit(packet);
-      router.route(packet);
-      session.incrementClientPacketCount();
-    }
+ else       if ("iq".equals(tag)) {
+        IQ packet=new IQ(doc);
+        packet.setFrom(session.getAddress());
+        auditor.audit(packet);
+        router.route(packet);
+        session.incrementClientPacketCount();
+      }
  else {
-      throw new XMLStreamException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);
+        throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);
+      }
     }
   }
 }
