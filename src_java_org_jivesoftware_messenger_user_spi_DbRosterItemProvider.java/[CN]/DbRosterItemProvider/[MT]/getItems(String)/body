@@ -21,22 +21,7 @@
         itemList.add(item);
       }
   finally {
-        try {
-          if (gs != null) {
-            gs.close();
-          }
-        }
- catch (        Exception e) {
-          Log.error(e);
-        }
-        try {
-          if (gstmt != null) {
-            gstmt.close();
-          }
-        }
- catch (        Exception e) {
-          Log.error(e);
-        }
+        DbConnectionManager.close(pstmt,con);
       }
     }
   }
