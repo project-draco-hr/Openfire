@@ -1,0 +1,13 @@
+{
+  List<MUCRoom> answer=new ArrayList<MUCRoom>(rooms.size() * 2);
+synchronized (rooms) {
+    answer.addAll(rooms.values());
+synchronized (persistentRoomSurrogateCache) {
+      if (persistentRoomSurrogateCache.size() == 0) {
+        populateRoomSurrogateCache();
+      }
+    }
+    answer.addAll(persistentRoomSurrogateCache.values());
+  }
+  return answer;
+}
