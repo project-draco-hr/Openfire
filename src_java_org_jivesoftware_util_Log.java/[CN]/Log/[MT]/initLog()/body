@@ -1,0 +1,67 @@
+{
+  try {
+    logDirectory=JiveGlobals.getLocalProperty("log.directory");
+    if (logDirectory == null) {
+      if (JiveGlobals.getJiveHome() != null) {
+        File jiveHome=new File(JiveGlobals.getJiveHome());
+        if (jiveHome.exists() && jiveHome.canWrite()) {
+          logDirectory=(new File(jiveHome,"logs")).toString();
+        }
+      }
+    }
+    if (!logDirectory.endsWith(File.separator)) {
+      logDirectory=logDirectory + File.separator;
+    }
+    File logDir=new File(logDirectory);
+    if (!logDir.exists()) {
+      logDir.mkdir();
+    }
+    logNameDebug=logDirectory + "jive.debug.log";
+    logNameInfo=logDirectory + "jive.info.log";
+    logNameWarn=logDirectory + "jive.warn.log";
+    logNameError=logDirectory + "jive.error.log";
+    debugPattern=JiveGlobals.getLocalProperty("log.debug.format");
+    infoPattern=JiveGlobals.getLocalProperty("log.info.format");
+    warnPattern=JiveGlobals.getLocalProperty("log.warn.format");
+    errorPattern=JiveGlobals.getLocalProperty("log.error.format");
+    try {
+      maxDebugSize=Long.parseLong(JiveGlobals.getLocalProperty("log.debug.size"));
+    }
+ catch (    NumberFormatException e) {
+    }
+    try {
+      maxInfoSize=Long.parseLong(JiveGlobals.getLocalProperty("log.info.size"));
+    }
+ catch (    NumberFormatException e) {
+    }
+    try {
+      maxWarnSize=Long.parseLong(JiveGlobals.getLocalProperty("log.warn.size"));
+    }
+ catch (    NumberFormatException e) {
+    }
+    try {
+      maxErrorSize=Long.parseLong(JiveGlobals.getLocalProperty("log.error.size"));
+    }
+ catch (    NumberFormatException e) {
+    }
+    debugEnabled="true".equals(JiveGlobals.getLocalProperty("log.debug.enabled"));
+  }
+ catch (  Exception e) {
+  }
+  if (debugPattern == null) {
+    debugPattern="%{time:yyyy.MM.dd HH:mm:ss} %{message}\\n%{throwable}";
+  }
+  if (infoPattern == null) {
+    infoPattern="%{time:yyyy.MM.dd HH:mm:ss} %{message}\\n%{throwable}";
+  }
+  if (warnPattern == null) {
+    warnPattern="%{time:yyyy.MM.dd HH:mm:ss} %{message}\\n%{throwable}";
+  }
+  if (errorPattern == null) {
+    errorPattern="%{time:yyyy.MM.dd HH:mm:ss} [%{method}] %{message}\\n%{throwable}";
+  }
+  createLogger(debugPattern,logNameDebug,maxDebugSize,debugLog,Priority.DEBUG);
+  createLogger(infoPattern,logNameInfo,maxInfoSize,infoLog,Priority.INFO);
+  createLogger(warnPattern,logNameWarn,maxWarnSize,warnLog,Priority.WARN);
+  createLogger(errorPattern,logNameError,maxErrorSize,errorLog,Priority.ERROR);
+}
