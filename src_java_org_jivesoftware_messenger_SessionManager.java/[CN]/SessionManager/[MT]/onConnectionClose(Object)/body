@@ -1,6 +1,12 @@
 {
   try {
     Session session=(Session)handback;
+    if (session.getPresence().isAvailable()) {
+      Presence presence=new Presence();
+      presence.setType(Presence.Type.unavailable);
+      presence.setFrom(session.getAddress());
+      presenceHandler.process(presence);
+    }
     removeSession(session);
   }
  catch (  UnauthorizedException e) {

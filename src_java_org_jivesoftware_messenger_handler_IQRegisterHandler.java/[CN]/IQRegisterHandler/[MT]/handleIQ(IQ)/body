@@ -53,10 +53,6 @@ catch (      UnauthorizedException e) {
       Element iqElement=packet.getChildElement();
       if (iqElement.element("remove") != null) {
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-          Presence presence=new Presence();
-          presence.setType(Presence.Type.unavailable);
-          presence.setFrom(packet.getFrom());
-          presenceHandler.process(presence);
           userManager.deleteUser(userManager.getUser(session.getUsername()));
           rosterManager.deleteRoster(session.getAddress());
           reply=IQ.createResultIQ(packet);
