@@ -3,11 +3,10 @@
     if (server == null) {
       server=(XMPPServer)ServiceLookupFactory.getLookup().lookup(XMPPServer.class);
     }
-    XMPPAddress recipient=server.createJID(username,null);
-    roster.setRecipient(recipient);
-    roster.setOriginatingSession(server.getSession());
+    JID recipient=server.createJID(username,null);
+    roster.setTo(recipient);
     if (sessionManager == null) {
-      sessionManager=(SessionManager)ServiceLookupFactory.getLookup().lookup(SessionManager.class);
+      sessionManager=SessionManager.getInstance();
     }
     sessionManager.userBroadcast(username,roster);
   }

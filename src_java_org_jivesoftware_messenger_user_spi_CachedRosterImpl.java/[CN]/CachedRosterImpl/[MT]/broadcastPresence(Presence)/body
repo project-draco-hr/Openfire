@@ -10,9 +10,9 @@
     while (items.hasNext()) {
       RosterItem item=(RosterItem)items.next();
       if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_FROM) {
-        XMPPAddress searchNode=new XMPPAddress(item.getJid().getName(),item.getJid().getHost(),null);
+        JID searchNode=new JID(item.getJid().getNode(),item.getJid().getDomain(),null);
         Iterator sessions=routingTable.getRoutes(searchNode);
-        packet.setRecipient(item.getJid());
+        packet.setTo(item.getJid());
         while (sessions.hasNext()) {
           ChannelHandler session=(ChannelHandler)sessions.next();
           try {
