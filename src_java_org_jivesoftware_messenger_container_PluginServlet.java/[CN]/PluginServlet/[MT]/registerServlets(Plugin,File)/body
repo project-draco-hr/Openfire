@@ -1,0 +1,33 @@
+{
+  if (!webXML.exists()) {
+    Log.error("Could not register plugin servlets, file " + webXML.getAbsolutePath() + " does not exist.");
+    return;
+  }
+  String pluginName=webXML.getParentFile().getParent();
+  try {
+    SAXReader saxReader=new SAXReader();
+    Document doc=saxReader.read(webXML);
+    List classes=doc.selectNodes("//servlet");
+    Map<String,Class> classMap=new HashMap<String,Class>();
+    for (int i=0; i < classes.size(); i++) {
+      Element servletElement=(Element)classes.get(i);
+      String name=servletElement.element("servlet-name").getTextTrim();
+      String className=servletElement.element("servlet-class").getTextTrim();
+      classMap.put(name,plugin.getClass().getClassLoader().loadClass(className));
+    }
+    List names=doc.selectNodes("//servlet-mapping");
+    for (int i=0; i < names.size(); i++) {
+      Element nameElement=(Element)names.get(i);
+      String name=nameElement.element("servlet-name").getTextTrim();
+      String url=nameElement.element("url-pattern").getTextTrim();
+      Class servletClass=classMap.get(name);
+      Object instance=servletClass.newInstance();
+      if (instance instanceof HttpServlet) {
+        servlets.put(pluginName + url,(HttpServlet)instance);
+      }
+    }
+  }
+ catch (  Throwable e) {
+    e.printStackTrace();
+  }
+}

@@ -1,0 +1,19 @@
+{
+  String pathInfo=request.getPathInfo();
+  if (pathInfo == null) {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+ else {
+    if (pathInfo.endsWith(".jsp")) {
+      handleJSP(pathInfo,request,response);
+    }
+ else     if (pathInfo.endsWith(".gif") || pathInfo.endsWith(".png")) {
+      handleImage(pathInfo,request,response);
+    }
+ else {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+  }
+}
