@@ -1,7 +1,8 @@
 {
   components.remove(subdomain);
-  JID componentJID=new JID(subdomain + "." + XMPPServer.getInstance().getServerInfo().getName());
+  JID componentJID=new JID(subdomain + "." + serverDomain);
   if (XMPPServer.getInstance().getRoutingTable() != null) {
     XMPPServer.getInstance().getRoutingTable().removeRoute(componentJID);
   }
+  XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(componentJID.toBareJID());
 }
