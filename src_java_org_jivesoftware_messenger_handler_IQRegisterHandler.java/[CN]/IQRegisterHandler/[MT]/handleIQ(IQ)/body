@@ -141,7 +141,20 @@ catch (    UserNotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.bad_request);
     }
+catch (    IllegalArgumentException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.jid_malformed);
+    }
+catch (    UnsupportedOperationException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.not_allowed);
+    }
 catch (    Exception e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.internal_server_error);
       Log.error(e);
     }
   }
