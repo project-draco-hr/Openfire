@@ -4,17 +4,16 @@ synchronized (rooms) {
     room=rooms.get(roomName.toLowerCase());
     if (room == null) {
       room=new MUCRoomImpl(this,roomName,router);
-      if (!room.isPersistent()) {
+      try {
+        MUCPersistenceManager.loadFromDB(room);
+      }
+ catch (      IllegalArgumentException e) {
         if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareStringPrep())) {
           if (!allowedToCreate.contains(userjid.toBareStringPrep())) {
             throw new UnauthorizedException();
           }
         }
         room.addFirstOwner(userjid.toBareStringPrep());
-      }
- else {
-        MUCPersistenceManager.updateRoomInMemory(room,true);
-        persistentRoomSurrogateCache.remove(room.getName());
       }
       rooms.put(roomName.toLowerCase(),room);
     }

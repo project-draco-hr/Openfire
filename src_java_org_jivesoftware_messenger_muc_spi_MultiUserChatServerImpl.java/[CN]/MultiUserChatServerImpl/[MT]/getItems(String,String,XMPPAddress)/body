@@ -10,19 +10,6 @@
         answer.add(item);
       }
     }
-synchronized (persistentRoomSurrogateCache) {
-      if (persistentRoomSurrogateCache.size() == 0) {
-        populateRoomSurrogateCache();
-      }
-    }
-    MUCRoom room;
-    for (Iterator it=persistentRoomSurrogateCache.values().iterator(); it.hasNext(); ) {
-      room=(MUCRoom)it.next();
-      item=DocumentHelper.createElement("item");
-      item.addAttribute("jid",room.getRole().getRoleAddress().toStringPrep());
-      item.addAttribute("name",room.getNaturalLanguageName());
-      answer.add(item);
-    }
   }
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);

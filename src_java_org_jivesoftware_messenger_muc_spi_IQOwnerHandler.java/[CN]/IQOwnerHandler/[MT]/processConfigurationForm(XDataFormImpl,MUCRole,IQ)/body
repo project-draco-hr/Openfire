@@ -139,6 +139,13 @@
       jid=(String)it.next();
       presences.addAll(room.addMember(jid,null,senderRole));
     }
+    if (!room.isPersistent() && room.getOccupantsCount() == 0) {
+      try {
+        room.destroyRoom(null,null);
+      }
+ catch (      UnauthorizedException e) {
+      }
+    }
   }
   finally {
     room.lock.writeLock().unlock();

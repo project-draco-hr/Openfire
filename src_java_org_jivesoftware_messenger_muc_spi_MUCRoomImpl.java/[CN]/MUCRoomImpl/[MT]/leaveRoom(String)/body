@@ -7,7 +7,7 @@
       throw new UserNotFoundException();
     }
     removeOccupantRole(leaveRole);
-    if (occupants.isEmpty()) {
+    if (occupants.isEmpty() && !isPersistent()) {
       endTime=System.currentTimeMillis();
       server.removeChatRoom(name);
     }
