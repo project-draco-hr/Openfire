@@ -53,12 +53,28 @@
       }
     }
  else {
-      try {
-        ChannelHandler route=routingTable.getRoute(recipientJID);
-        route.process(packet);
+      boolean handlerFound=false;
+      if (XMPPServer.getInstance().isLocal(recipientJID)) {
+        Session session=sessionManager.getBestRoute(recipientJID);
+        if (session != null) {
+          session.getConnection().deliver(packet);
+          handlerFound=true;
+        }
+ else {
+          Log.info("Packet sent to unreachable address " + packet);
+        }
       }
- catch (      NoSuchRouteException e) {
-        Log.info("Packet sent to unreachable address " + packet);
+ else {
+        try {
+          ChannelHandler route=routingTable.getRoute(recipientJID);
+          route.process(packet);
+          handlerFound=true;
+        }
+ catch (        NoSuchRouteException e) {
+          Log.info("Packet sent to unreachable address " + packet);
+        }
+      }
+      if (!handlerFound) {
         Session session=sessionManager.getSession(packet.getFrom());
         if (session != null) {
           IQ reply=IQ.createResultIQ(packet);
