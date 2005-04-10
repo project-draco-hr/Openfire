@@ -3,8 +3,13 @@
     throw new UnsupportedOperationException("User provider is read-only.");
   }
   try {
+    Date originalCreationDate=this.creationDate;
     UserManager.getUserProvider().setCreationDate(username,creationDate);
     this.creationDate=creationDate;
+    Map params=new HashMap();
+    params.put("type","creationDateModified");
+    params.put("originalValue",originalCreationDate);
+    UserEventDispatcher.dispatchEvent(this,UserEventDispatcher.EventType.user_modified,params);
   }
  catch (  UserNotFoundException unfe) {
     Log.error(unfe);

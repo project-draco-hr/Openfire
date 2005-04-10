@@ -1,0 +1,22 @@
+{
+  Object answer;
+  if (properties.containsKey(key)) {
+    String originalValue=properties.get(key);
+    answer=properties.put((String)key,(String)value);
+    updateProperty((String)key,(String)value);
+    Map params=new HashMap();
+    params.put("type","propertyModified");
+    params.put("propertyKey",key);
+    params.put("originalValue",originalValue);
+    UserEventDispatcher.dispatchEvent(User.this,UserEventDispatcher.EventType.user_modified,params);
+  }
+ else {
+    answer=properties.put((String)key,(String)value);
+    insertProperty((String)key,(String)value);
+    Map params=new HashMap();
+    params.put("type","propertyAdded");
+    params.put("propertyKey",key);
+    UserEventDispatcher.dispatchEvent(User.this,UserEventDispatcher.EventType.user_modified,params);
+  }
+  return answer;
+}

@@ -3,9 +3,10 @@
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(DELETE_PROPERTY);
-    pstmt.setString(1,name);
+    pstmt=con.prepareStatement(UPDATE_PROPERTY);
+    pstmt.setString(1,propValue);
     pstmt.setString(2,propName);
+    pstmt.setString(3,name);
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {

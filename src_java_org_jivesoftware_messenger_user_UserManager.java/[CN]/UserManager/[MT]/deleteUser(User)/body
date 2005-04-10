@@ -9,6 +9,7 @@
  catch (  StringprepException se) {
     throw new IllegalArgumentException("Invalid username: " + username,se);
   }
+  UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_deleting,Collections.emptyMap());
   provider.deleteUser(user.getUsername());
   userCache.remove(user.getUsername());
 }
