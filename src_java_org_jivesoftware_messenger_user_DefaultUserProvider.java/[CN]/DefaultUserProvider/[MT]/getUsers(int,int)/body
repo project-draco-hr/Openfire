@@ -7,16 +7,11 @@
     pstmt=con.prepareStatement(ALL_USERS);
     ResultSet rs=pstmt.executeQuery();
     DbConnectionManager.setFetchSize(rs,startIndex + numResults);
-    for (int i=0; i < startIndex; i++) {
-      rs.next();
-    }
-    for (int i=0; i < numResults; i++) {
-      if (rs.next()) {
-        usernames.add(rs.getString(1));
-      }
- else {
-        break;
-      }
+    DbConnectionManager.scrollResultSet(rs,startIndex);
+    int count=0;
+    while (rs.next() && count < numResults) {
+      usernames.add(rs.getString(1));
+      count++;
     }
     rs.close();
   }
