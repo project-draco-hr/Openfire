@@ -2,7 +2,7 @@
   close();
   int i;
   for (i=0; maxCount < 1 || i < maxCount; i++) {
-    currentAuditFile=new File(JiveGlobals.getMessengerHome() + File.separator + "logs","jive.audit-" + i + ".log");
+    currentAuditFile=new File(JiveGlobals.getHomeDirectory() + File.separator + "logs","jive.audit-" + i + ".log");
     if (!currentAuditFile.exists()) {
       break;
     }
@@ -13,9 +13,9 @@
     }
     for (i--; i >= 0; i--) {
       String previousName="jive.audit-" + i + ".log";
-      File previousFile=new File(JiveGlobals.getMessengerHome() + File.separator + "logs",previousName);
+      File previousFile=new File(JiveGlobals.getHomeDirectory() + File.separator + "logs",previousName);
       previousFile.renameTo(currentAuditFile);
-      currentAuditFile=new File(JiveGlobals.getMessengerHome() + File.separator + "logs",previousName);
+      currentAuditFile=new File(JiveGlobals.getHomeDirectory() + File.separator + "logs",previousName);
     }
   }
   writer=new OutputStreamWriter(new FileOutputStream(currentAuditFile),"UTF-8");

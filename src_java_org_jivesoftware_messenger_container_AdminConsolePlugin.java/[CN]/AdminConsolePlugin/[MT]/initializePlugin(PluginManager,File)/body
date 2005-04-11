@@ -1,7 +1,7 @@
 {
   try {
     System.setProperty("org.apache.commons.logging.LogFactory","org.mortbay.log.Factory");
-    File logDir=new File(JiveGlobals.getMessengerHome(),"logs");
+    File logDir=new File(JiveGlobals.getHomeDirectory(),"logs");
     if (!logDir.exists()) {
       logDir.mkdirs();
     }
@@ -26,11 +26,11 @@
       if (securePort > 0) {
         SunJsseListener listener=new SunJsseListener();
         String keyStoreLocation=JiveGlobals.getProperty("xmpp.socket.ssl.keystore","resources" + File.separator + "security"+ File.separator+ "keystore");
-        keyStoreLocation=JiveGlobals.getMessengerHome() + File.separator + keyStoreLocation;
+        keyStoreLocation=JiveGlobals.getHomeDirectory() + File.separator + keyStoreLocation;
         String keypass=JiveGlobals.getProperty("xmpp.socket.ssl.keypass","changeit");
         keypass=keypass.trim();
         String trustStoreLocation=JiveGlobals.getProperty("xmpp.socket.ssl.truststore","resources" + File.separator + "security"+ File.separator+ "truststore");
-        trustStoreLocation=JiveGlobals.getMessengerHome() + File.separator + trustStoreLocation;
+        trustStoreLocation=JiveGlobals.getHomeDirectory() + File.separator + trustStoreLocation;
         String trustpass=JiveGlobals.getProperty("xmpp.socket.ssl.trustpass","changeit");
         trustpass=trustpass.trim();
         listener.setKeystore(keyStoreLocation);

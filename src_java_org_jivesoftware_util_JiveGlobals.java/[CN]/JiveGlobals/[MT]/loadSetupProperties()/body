@@ -1,0 +1,77 @@
+{
+  if (failedLoading) {
+    return;
+  }
+  if (xmlProperties == null) {
+    if (home == null) {
+      home=new InitPropLoader().getHome();
+    }
+    if (home == null) {
+      try {
+        InitialContext context=new InitialContext();
+        home=(String)context.lookup("java:comp/env/home");
+      }
+ catch (      Exception e) {
+      }
+    }
+    if (home == null) {
+      home=System.getProperty("home");
+    }
+    if (home == null) {
+      try {
+        home=new File("..").getCanonicalPath();
+        if (!new File(home,"conf/" + getConfigName()).exists()) {
+          home=null;
+        }
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
+    }
+    if (home == null) {
+      try {
+        home=new File("").getCanonicalPath();
+        if (!new File(home,"conf/" + getConfigName()).exists()) {
+          home=null;
+        }
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+      }
+    }
+    if (home == null) {
+      failedLoading=true;
+      StringBuilder msg=new StringBuilder();
+      msg.append("Critical Error! The home directory could not be loaded, \n");
+      msg.append("which will prevent the application from working correctly.\n\n");
+      msg.append("You must set home in one of four ways:\n");
+      msg.append("    1) Set a servlet init parameter named home.\n");
+      msg.append("    2) Add a messenger_init.xml file to your classpath, which points \n ");
+      msg.append("       to home. Normally, this file will be in WEB-INF/classes.\n");
+      msg.append("    3) Set the JNDI value \"java:comp/env/home\" with a String \n");
+      msg.append("       that points to your home directory. \n");
+      msg.append("    4) Set the Java system property \"home\".\n\n");
+      msg.append("Further instructions for setting home can be found in the \n");
+      msg.append("installation documentation.");
+      System.err.println(msg.toString());
+      return;
+    }
+    try {
+      File mh=new File(home);
+      if (!mh.exists()) {
+        Log.error("Error - the specified home directory does not exist (" + home + ")");
+      }
+ else {
+        if (!mh.canRead() || !mh.canWrite()) {
+          Log.error("Error - the user running this Jive application can not read and write to the " + "specified jiveHome directory (" + home + "). Please grant the executing user "+ "read and write perms.");
+        }
+      }
+      xmlProperties=new XMLProperties(home + File.separator + "conf"+ File.separator+ getConfigName());
+    }
+ catch (    IOException ioe) {
+      Log.error(ioe);
+      failedLoading=true;
+      return;
+    }
+  }
+}
