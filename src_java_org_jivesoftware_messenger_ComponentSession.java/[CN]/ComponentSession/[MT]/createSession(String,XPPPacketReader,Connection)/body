@@ -2,6 +2,11 @@
   XmlPullParser xpp=reader.getXPPParser();
   Session session;
   String domain=xpp.getAttributeValue("","to");
+  String subdomain=domain;
+  int index=domain.indexOf(serverName);
+  if (index > -1) {
+    subdomain=domain.substring(0,index - 1);
+  }
   Writer writer=connection.getWriter();
   StringBuilder sb=new StringBuilder();
   sb.append("<?xml version='1.0' encoding='");
@@ -32,7 +37,7 @@
     connection.close();
     return null;
   }
-  if (InternalComponentManager.getInstance().getComponent(domain) != null) {
+  if (InternalComponentManager.getInstance().getComponent(subdomain) != null) {
     StreamError error=new StreamError(StreamError.Condition.conflict);
     sb.append(error.toXML());
     sb.append("</stream:stream>");
@@ -42,7 +47,7 @@
     return null;
   }
   session=SessionManager.getInstance().createComponentSession(connection);
-  session.setAddress(new JID(null,domain + "." + XMPPServer.getInstance().getServerInfo().getName(),null));
+  session.setAddress(new JID(null,domain,null));
   try {
     sb=new StringBuilder();
     sb.append("<?xml version='1.0' encoding='");
@@ -75,8 +80,7 @@
       writer.write("<handshake></handshake>");
       writer.flush();
       ExternalComponent component=((ComponentSession)session).getExternalComponent();
-      InternalComponentManager.getInstance().addComponent(domain,component);
-      component.setServiceName(domain);
+      InternalComponentManager.getInstance().addComponent(subdomain,component);
       return session;
     }
   }

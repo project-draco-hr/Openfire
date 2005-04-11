@@ -19,7 +19,7 @@
         session.process(reply);
         continue;
       }
-      packet.setFrom(session.getAddress());
+      session.packetReceived(packet);
       try {
         InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
         router.route(packet);
@@ -49,7 +49,7 @@
         session.process(reply);
         continue;
       }
-      packet.setFrom(session.getAddress());
+      session.packetReceived(packet);
       try {
         InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
         router.route(packet);
@@ -85,7 +85,7 @@
         session.process(reply);
         continue;
       }
-      packet.setFrom(session.getAddress());
+      session.packetReceived(packet);
       try {
         InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
         router.route(packet);

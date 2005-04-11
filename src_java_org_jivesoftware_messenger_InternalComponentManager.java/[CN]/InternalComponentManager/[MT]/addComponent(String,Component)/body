@@ -2,6 +2,7 @@
   components.put(subdomain,component);
   JID componentJID=new JID(subdomain + "." + serverDomain);
   XMPPServer.getInstance().getRoutingTable().addRoute(componentJID,new RoutableComponent(componentJID,component));
+  component.initialize(componentJID,this);
   checkPresences();
   checkDiscoSupport(component,componentJID);
 }
