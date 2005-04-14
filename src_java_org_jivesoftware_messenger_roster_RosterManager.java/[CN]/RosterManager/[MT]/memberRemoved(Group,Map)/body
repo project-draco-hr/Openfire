@@ -1,5 +1,8 @@
 {
   String deletedUser=(String)params.get("member");
+  if (group.getAdmins().contains(deletedUser)) {
+    return;
+  }
   if (!isSharedGroup(group)) {
     for (    Group visibleGroup : getVisibleGroups(group)) {
       removeSharedGroupFromRoster(visibleGroup,deletedUser);

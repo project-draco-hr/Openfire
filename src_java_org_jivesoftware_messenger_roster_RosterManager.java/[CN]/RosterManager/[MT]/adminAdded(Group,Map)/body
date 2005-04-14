@@ -1,5 +1,8 @@
 {
   String addedUser=(String)params.get("admin");
+  if (group.getMembers().contains(addedUser)) {
+    return;
+  }
   if (!isSharedGroup(group)) {
     for (    Group visibleGroup : getVisibleGroups(group)) {
       addSharedGroupToRoster(visibleGroup,addedUser);
