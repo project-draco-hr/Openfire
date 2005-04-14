@@ -8,6 +8,11 @@
       throw new IllegalArgumentException("Invalid resource: " + resource);
     }
   }
+ else {
+    response=IQ.createResultIQ(packet);
+    response.setChildElement(packet.getChildElement().createCopy());
+    response.setError(PacketError.Condition.not_acceptable);
+  }
   if (sessionManager.isActiveRoute(username,resource)) {
     ClientSession oldSession=null;
     try {
