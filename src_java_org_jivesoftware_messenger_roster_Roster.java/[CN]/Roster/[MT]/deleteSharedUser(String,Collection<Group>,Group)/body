@@ -3,11 +3,13 @@
   try {
     RosterItem item=getRosterItem(jid);
     int groupSize=item.getSharedGroups().size() + item.getInvisibleSharedGroups().size();
-    if (item.isOnlyShared() && groupSize == 1) {
+    if (item.isOnlyShared() && groupSize == 1 && !(deletedGroup.isUser(deletedUser) && rosterManager.isGroupPublic(deletedGroup))) {
       deleteRosterItem(jid,false);
     }
  else {
-      item.removeSharedGroup(deletedGroup);
+      if (!(deletedGroup.isUser(deletedUser) && rosterManager.isGroupPublic(deletedGroup))) {
+        item.removeSharedGroup(deletedGroup);
+      }
       for (      Group group : groups) {
         if (!rosterManager.isGroupVisible(group,getUsername())) {
           item.removeSharedGroup(group);
