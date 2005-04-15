@@ -9,11 +9,11 @@
         if (session.getPresence().isAvailable()) {
           presence=userSession.getPresence().createCopy();
           presence.setTo(session.getAddress());
-          session.getConnection().deliver(presence);
+          session.process(presence);
         }
         presence=session.getPresence().createCopy();
         presence.setTo(userSession.getAddress());
-        userSession.getConnection().deliver(presence);
+        userSession.process(presence);
       }
     }
   }
