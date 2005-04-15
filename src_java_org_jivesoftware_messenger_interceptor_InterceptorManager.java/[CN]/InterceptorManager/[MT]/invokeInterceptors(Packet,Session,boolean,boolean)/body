@@ -1,13 +1,29 @@
 {
   for (  PacketInterceptor interceptor : globalInterceptors) {
-    interceptor.interceptPacket(packet,session,read,processed);
+    try {
+      interceptor.interceptPacket(packet,session,read,processed);
+    }
+ catch (    PacketRejectedException e) {
+      throw e;
+    }
+catch (    Exception e) {
+      Log.error("Error in interceptor",e);
+    }
   }
   String username=session.getAddress().getNode();
   if (username != null) {
     Collection<PacketInterceptor> userInterceptors=usersInterceptors.get(username);
     if (userInterceptors != null && !userInterceptors.isEmpty()) {
       for (      PacketInterceptor interceptor : userInterceptors) {
-        interceptor.interceptPacket(packet,session,read,processed);
+        try {
+          interceptor.interceptPacket(packet,session,read,processed);
+        }
+ catch (        PacketRejectedException e) {
+          throw e;
+        }
+catch (        Exception e) {
+          Log.error("Error in interceptor",e);
+        }
       }
     }
   }
