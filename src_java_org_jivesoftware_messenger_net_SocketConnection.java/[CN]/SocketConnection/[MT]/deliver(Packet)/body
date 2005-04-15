@@ -14,8 +14,9 @@ synchronized (writer) {
           xmlSerializer.flush();
         }
  catch (        IOException e) {
-          Log.error(e);
+          Log.warn(e);
           close();
+          deliverer.deliver(packet);
         }
       }
       InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
