@@ -60,7 +60,7 @@
           rosterManager.deleteRoster(session.getAddress());
           GroupManager.getInstance().deleteUser(user);
           reply=IQ.createResultIQ(packet);
-          session.getConnection().deliver(reply);
+          session.process(reply);
           session.getConnection().close();
           reply=null;
         }
@@ -166,7 +166,7 @@ catch (    Exception e) {
     }
   }
   if (reply != null) {
-    session.getConnection().deliver(reply);
+    session.process(reply);
   }
   return null;
 }

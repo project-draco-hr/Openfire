@@ -41,7 +41,7 @@
           }
           Session session=sessionManager.getSession(packet.getFrom());
           if (session != null) {
-            session.getConnection().deliver(reply);
+            session.process(reply);
           }
  else {
             Log.warn("Packet could not be delivered " + packet);
@@ -57,7 +57,7 @@
       if (XMPPServer.getInstance().isLocal(recipientJID)) {
         Session session=sessionManager.getBestRoute(recipientJID);
         if (session != null) {
-          session.getConnection().deliver(packet);
+          session.process(packet);
           handlerFound=true;
         }
  else {
@@ -80,7 +80,7 @@
           IQ reply=IQ.createResultIQ(packet);
           reply.setChildElement(packet.getChildElement().createCopy());
           reply.setError(PacketError.Condition.service_unavailable);
-          session.getConnection().deliver(reply);
+          session.process(reply);
         }
       }
     }
