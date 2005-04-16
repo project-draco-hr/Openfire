@@ -1,26 +1,20 @@
 {
-  try {
-    serverSocket=new ServerSocket(port,-1,bindInterface);
-    while (notTerminated) {
-      try {
-        Socket sock=serverSocket.accept();
-        if (sock != null) {
-          Log.debug("Connect " + sock.toString());
-          connManager.addSocket(sock,false);
-        }
-      }
- catch (      IOException ie) {
-        if (notTerminated) {
-          Log.error(LocaleUtils.getLocalizedString("admin.error.accept"),ie);
-        }
-      }
-catch (      Exception e) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error.accept"),e);
+  while (notTerminated) {
+    try {
+      Socket sock=serverSocket.accept();
+      if (sock != null) {
+        Log.debug("Connect " + sock.toString());
+        connManager.addSocket(sock,false);
       }
     }
-  }
- catch (  IOException e) {
-    Log.error(LocaleUtils.getLocalizedString("admin.error.socket-setup"),e);
+ catch (    IOException ie) {
+      if (notTerminated) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error.accept"),ie);
+      }
+    }
+catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error.accept"),e);
+    }
   }
   try {
     ServerSocket sSock=serverSocket;

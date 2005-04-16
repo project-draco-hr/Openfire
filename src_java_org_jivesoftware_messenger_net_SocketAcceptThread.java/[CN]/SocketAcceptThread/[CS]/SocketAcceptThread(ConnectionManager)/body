@@ -5,13 +5,9 @@
   String interfaceName=JiveGlobals.getProperty("xmpp.socket.plain.interface");
   bindInterface=null;
   if (interfaceName != null) {
-    try {
-      if (interfaceName.trim().length() > 0) {
-        bindInterface=InetAddress.getByName(interfaceName);
-      }
-    }
- catch (    UnknownHostException e) {
-      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    if (interfaceName.trim().length() > 0) {
+      bindInterface=InetAddress.getByName(interfaceName);
     }
   }
+  serverSocket=new ServerSocket(port,-1,bindInterface);
 }
