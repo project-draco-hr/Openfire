@@ -12,6 +12,11 @@
  else {
     appName="Jive Messenger";
   }
+  binDir=new File("").getAbsoluteFile();
+  if (System.getProperty("app.dir") != null) {
+    binDir=new File(System.getProperty("app.dir"));
+  }
+  configFile=new File(new File(binDir.getParent(),"conf"),"jive-messenger.xml").getAbsolutePath();
   frame=new DroppableFrame(){
     public void fileDropped(    File file){
       String fileName=file.getName();
