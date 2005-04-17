@@ -6,7 +6,12 @@
  catch (  Exception e) {
     e.printStackTrace();
   }
-  String title="Jive Messenger";
+  if (System.getProperty("app.name") != null) {
+    appName=System.getProperty("app.name");
+  }
+ else {
+    appName="Jive Messenger";
+  }
   frame=new DroppableFrame(){
     public void fileDropped(    File file){
       String fileName=file.getName();
@@ -16,7 +21,7 @@
     }
   }
 ;
-  frame.setTitle(title);
+  frame.setTitle(appName);
   ImageIcon splash=null;
   JLabel splashLabel=null;
   try {
@@ -47,7 +52,7 @@
     mainPanel.add(splashLabel,BorderLayout.CENTER);
   }
   mainPanel.add(toolbar,BorderLayout.SOUTH);
-  JPopupMenu menu=new JPopupMenu("Messenger Menu");
+  JPopupMenu menu=new JPopupMenu(appName + " Menu");
   final JMenuItem showMenuItem=new JMenuItem("Hide");
   showMenuItem.setActionCommand("Hide/Show");
   menu.add(showMenuItem);
@@ -139,7 +144,7 @@
   stopMenuItem.addActionListener(actionListener);
   startMenuItem.addActionListener(actionListener);
   showMenuItem.addActionListener(actionListener);
-  trayIcon=new TrayIcon(offIcon,"Jive Messenger",menu);
+  trayIcon=new TrayIcon(offIcon,appName,menu);
   trayIcon.setIconAutoSize(true);
   trayIcon.addActionListener(actionListener);
   tray.addTrayIcon(trayIcon);

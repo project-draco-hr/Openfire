@@ -1,8 +1,12 @@
 {
   if (messengerd == null) {
+    File appDir=new File("").getAbsoluteFile();
+    if (System.getProperty("app.dir") != null) {
+      appDir=new File(System.getProperty("app.dir"));
+    }
     try {
-      File windowsExe=new File(new File("").getAbsoluteFile(),"messengerd.exe");
-      File unixExe=new File(new File("").getAbsoluteFile(),"messengerd");
+      File windowsExe=new File(appDir,"messengerd.exe");
+      File unixExe=new File(appDir,"messengerd");
       if (windowsExe.exists()) {
         messengerd=Runtime.getRuntime().exec(new String[]{windowsExe.toString()});
       }
@@ -15,12 +19,12 @@
     }
  catch (    Exception e) {
       try {
-        File libDir=new File("../lib").getAbsoluteFile();
+        File libDir=new File(appDir.getParentFile(),"lib").getAbsoluteFile();
         messengerd=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
       }
  catch (      Exception ex) {
         ex.printStackTrace();
-        JOptionPane.showMessageDialog(null,"Launcher could not start,\nJive Messenger","File not found",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null,"Launcher could not start,\n" + appName,"File not found",JOptionPane.ERROR_MESSAGE);
       }
     }
   }
