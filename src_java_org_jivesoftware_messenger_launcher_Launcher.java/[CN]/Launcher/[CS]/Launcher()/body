@@ -28,18 +28,20 @@
 ;
   frame.setTitle(appName);
   ImageIcon splash=null;
+  JPanel mainPanel=new JPanel();
   JLabel splashLabel=null;
+  cardPanel.setLayout(cardLayout);
   try {
     splash=new ImageIcon(getClass().getClassLoader().getResource("splash.gif"));
-    splashLabel=new JLabel("",splash,JLabel.LEFT);
+    splashLabel=new JLabel("",splash,JLabel.CENTER);
     onIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_on-16x16.gif"));
     offIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_off-16x16.gif"));
     frame.setIconImage(offIcon.getImage());
   }
  catch (  Exception e) {
   }
-  JPanel mainPanel=new JPanel();
   mainPanel.setLayout(new BorderLayout());
+  cardPanel.setBackground(Color.white);
   final JButton startButton=new JButton("Start");
   startButton.setActionCommand("Start");
   final JButton stopButton=new JButton("Stop");
@@ -53,9 +55,7 @@
   toolbar.add(stopButton,new GridBagConstraints(1,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(5,5,5,5),0,0));
   toolbar.add(browserButton,new GridBagConstraints(2,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(5,5,5,5),0,0));
   toolbar.add(quitButton,new GridBagConstraints(3,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(5,5,5,5),0,0));
-  if (splashLabel != null) {
-    mainPanel.add(splashLabel,BorderLayout.CENTER);
-  }
+  mainPanel.add(cardPanel,BorderLayout.CENTER);
   mainPanel.add(toolbar,BorderLayout.SOUTH);
   JPopupMenu menu=new JPopupMenu(appName + " Menu");
   final JMenuItem showMenuItem=new JMenuItem("Hide");
@@ -82,11 +82,11 @@
     public void actionPerformed(    ActionEvent e){
       if ("Start".equals(e.getActionCommand())) {
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        startApplication();
         startButton.setEnabled(false);
         stopButton.setEnabled(true);
         startMenuItem.setEnabled(false);
         stopMenuItem.setEnabled(true);
+        startApplication();
         frame.setIconImage(onIcon.getImage());
         trayIcon.setIcon(onIcon);
         Thread thread=new Thread(){
@@ -164,10 +164,33 @@
     }
   }
 );
-  frame.getContentPane().add(mainPanel);
+  cardPanel.add("main",splashLabel);
+  frame.getContentPane().add(mainPanel,BorderLayout.CENTER);
   frame.pack();
+  frame.setSize(400,300);
   frame.setResizable(false);
   GraphicUtils.centerWindowOnScreen(frame);
   frame.setVisible(true);
+  final ImageIcon icon=new ImageIcon(getClass().getClassLoader().getResource("splash2.gif"));
+  pane=new JTextPane(){
+    public void paintComponent(    Graphics g){
+      final Dimension size=pane.getSize();
+      int x=(size.width - icon.getIconWidth()) / 2;
+      int y=(size.height - icon.getIconHeight()) / 2;
+      g.setColor(Color.white);
+      g.fillRect(0,0,size.width,size.height);
+      g.drawImage(icon.getImage(),x,y,null);
+      setOpaque(false);
+      super.paintComponent(g);
+    }
+  }
+;
+  pane.setEditable(false);
+  final JPanel bevelPanel=new JPanel();
+  bevelPanel.setBackground(Color.white);
+  bevelPanel.setLayout(new BorderLayout());
+  bevelPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+  bevelPanel.add(new JScrollPane(pane),BorderLayout.CENTER);
+  cardPanel.add("running",bevelPanel);
   startButton.doClick();
 }
