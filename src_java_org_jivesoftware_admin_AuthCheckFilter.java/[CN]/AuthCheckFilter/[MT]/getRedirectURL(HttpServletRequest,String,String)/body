@@ -1,11 +1,7 @@
 {
   StringBuilder buf=new StringBuilder();
   try {
-    StringBuffer rURL=request.getRequestURL();
-    int pos=rURL.lastIndexOf("/");
-    if ((pos + 1) <= rURL.length()) {
-      buf.append(rURL.substring(pos + 1,rURL.length()));
-    }
+    buf.append(request.getRequestURI());
     String qs=request.getQueryString();
     if (qs != null) {
       buf.append("?").append(qs);

@@ -1,6 +1,10 @@
 {
   HttpServletRequest request=(HttpServletRequest)req;
   HttpServletResponse response=(HttpServletResponse)res;
+  String loginPage=defaultLoginPage;
+  if (loginPage == null) {
+    loginPage=request.getContextPath() + "/login.jsp";
+  }
   String url=request.getRequestURL().toString();
   boolean doExclude=false;
   for (  String exclude : excludes) {
@@ -13,7 +17,7 @@
     WebManager manager=new WebManager();
     manager.init(request,response,request.getSession(),context);
     if (manager.getUser() == null) {
-      response.sendRedirect(getRedirectURL(request,null));
+      response.sendRedirect(getRedirectURL(request,loginPage,null));
       return;
     }
   }
