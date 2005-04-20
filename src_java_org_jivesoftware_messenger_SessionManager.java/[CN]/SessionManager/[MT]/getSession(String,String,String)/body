@@ -16,7 +16,7 @@
   }
   session=preAuthenticatedSessions.get(buf.toString());
   if (session != null) {
-    return (ClientSession)session;
+    return session;
   }
   if (resource == null) {
     return null;
@@ -32,9 +32,6 @@ synchronized (username.intern()) {
         session=sessionMap.getSession(resource);
       }
     }
-  }
-  if (session == null) {
-    return null;
   }
   return session;
 }

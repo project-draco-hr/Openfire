@@ -1,5 +1,5 @@
 {
-  Packet packet=createServerMessage(subject,body);
+  Message packet=createServerMessage(subject,body);
   try {
     if (address == null || address.getNode() == null || address.getNode().length() < 1) {
       broadcast(packet);
@@ -8,9 +8,9 @@
       userBroadcast(address.getNode(),packet);
     }
  else {
-      getSession(address).process(packet);
+      router.route(packet);
     }
   }
- catch (  Exception e) {
+ catch (  UnauthorizedException e) {
   }
 }
