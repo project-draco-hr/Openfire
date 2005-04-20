@@ -1,12 +1,10 @@
 {
   sessionManager=SessionManager.getInstance();
   serverName=XMPPServer.getInstance().getServerInfo().getName();
-  serviceEnabled=JiveGlobals.getBooleanProperty("registration.notification.enabled",true);
-  setServiceEnabled(serviceEnabled);
-  contact=JiveGlobals.getProperty("registration.notification.contact");
-  if (contact == null) {
-    contact="admin";
-    JiveGlobals.setProperty("registration.notification.contact",contact);
-  }
+  registrationNotificationEnabled=JiveGlobals.getBooleanProperty("registration.notification.enabled",false);
+  setRegistrationNotificationEnabled(registrationNotificationEnabled);
+  registrationWelcomeEnabled=JiveGlobals.getBooleanProperty("registration.welcome.enabled",false);
+  setRegistrationNotificationEnabled(registrationWelcomeEnabled);
+  contact=JiveGlobals.getProperty("registration.notification.contact","admin");
   UserEventDispatcher.addListener(listener);
 }

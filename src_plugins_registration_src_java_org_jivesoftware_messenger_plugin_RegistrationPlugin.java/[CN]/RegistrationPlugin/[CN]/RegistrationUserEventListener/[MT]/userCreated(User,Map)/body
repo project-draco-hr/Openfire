@@ -1,4 +1,8 @@
 {
-  String msg=" A new user with the username of '" + user.getUsername() + "' just registered";
-  sessionManager.sendServerMessage(new JID(getContact() + "@" + serverName),"Registration Notification",msg);
+  if (registrationNotificationEnabled) {
+    sendRegistrationNotificatonMessage(user);
+  }
+  if (registrationWelcomeEnabled) {
+    sendWelcomeMessage(user);
+  }
 }
