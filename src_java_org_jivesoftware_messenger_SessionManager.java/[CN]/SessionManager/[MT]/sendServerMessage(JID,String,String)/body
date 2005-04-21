@@ -8,7 +8,10 @@
       userBroadcast(address.getNode(),packet);
     }
  else {
-      router.route(packet);
+      ClientSession session=getSession(address);
+      if (session != null) {
+        session.process(packet);
+      }
     }
   }
  catch (  UnauthorizedException e) {
