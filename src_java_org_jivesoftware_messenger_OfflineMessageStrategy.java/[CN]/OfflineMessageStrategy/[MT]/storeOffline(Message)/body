@@ -1,31 +1,25 @@
 {
   if (message != null) {
-    Session senderSession=sessionManager.getSession(message.getFrom());
-    if (senderSession == null) {
+    if (message.getTo() == null || serverAddress.equals(message.getTo()) || message.getTo().getNode() == null) {
       return;
     }
-    JID sender=senderSession.getAddress();
-    if (sender == null || sender.getNode() == null) {
+    if (type == Type.bounce) {
+      bounce(message);
     }
- else {
-      if (type == Type.bounce) {
-        bounce(message);
-      }
- else       if (type == Type.store) {
+ else     if (type == Type.store) {
+      store(message);
+    }
+ else     if (type == Type.store_and_bounce) {
+      if (underQuota(message)) {
         store(message);
       }
- else       if (type == Type.store_and_bounce) {
-        if (underQuota(message)) {
-          store(message);
-        }
  else {
-          bounce(message);
-        }
+        bounce(message);
       }
- else       if (type == Type.store_and_drop) {
-        if (underQuota(message)) {
-          store(message);
-        }
+    }
+ else     if (type == Type.store_and_drop) {
+      if (underQuota(message)) {
+        store(message);
       }
     }
   }
