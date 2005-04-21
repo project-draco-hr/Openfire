@@ -3,7 +3,7 @@
   lock.writeLock().lock();
   try {
     if (isDestroyed || (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers())) {
-      throw new NotAllowedException();
+      throw new ServiceUnavailableException();
     }
     boolean isOwner=owners.contains(user.getAddress().toBareJID());
     if (isLocked()) {
