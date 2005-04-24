@@ -172,7 +172,7 @@
   GraphicUtils.centerWindowOnScreen(frame);
   frame.setVisible(true);
   final ImageIcon icon=new ImageIcon(getClass().getClassLoader().getResource("splash2.gif"));
-  pane=new JTextPane(){
+  pane=new DroppableTextPane(){
     public void paintComponent(    Graphics g){
       final Dimension size=pane.getSize();
       int x=(size.width - icon.getIconWidth()) / 2;
@@ -182,6 +182,12 @@
       g.drawImage(icon.getImage(),x,y,null);
       setOpaque(false);
       super.paintComponent(g);
+    }
+    public void fileDropped(    File file){
+      String fileName=file.getName();
+      if (fileName.endsWith(".jar") || fileName.endsWith(".war")) {
+        installPlugin(file);
+      }
     }
   }
 ;

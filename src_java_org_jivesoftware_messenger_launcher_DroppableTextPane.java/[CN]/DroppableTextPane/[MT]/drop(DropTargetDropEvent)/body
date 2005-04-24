@@ -1,0 +1,31 @@
+{
+  try {
+    Transferable transferable=dropTargetDropEvent.getTransferable();
+    if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+      dropTargetDropEvent.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+      List fileList=(List)transferable.getTransferData(DataFlavor.javaFileListFlavor);
+      Iterator iterator=fileList.iterator();
+      while (iterator.hasNext()) {
+        File file=(File)iterator.next();
+        if (file.isFile()) {
+          fileDropped(file);
+        }
+        if (file.isDirectory()) {
+          directoryDropped(file);
+        }
+      }
+      dropTargetDropEvent.getDropTargetContext().dropComplete(true);
+    }
+ else {
+      dropTargetDropEvent.rejectDrop();
+    }
+  }
+ catch (  IOException io) {
+    io.printStackTrace();
+    dropTargetDropEvent.rejectDrop();
+  }
+catch (  UnsupportedFlavorException ufe) {
+    ufe.printStackTrace();
+    dropTargetDropEvent.rejectDrop();
+  }
+}
