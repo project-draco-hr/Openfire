@@ -4,7 +4,12 @@
       interceptor.interceptPacket(packet,session,read,processed);
     }
  catch (    PacketRejectedException e) {
-      throw e;
+      if (processed) {
+        Log.error("Post interceptor cannot reject packet.",e);
+      }
+ else {
+        throw e;
+      }
     }
 catch (    Exception e) {
       Log.error("Error in interceptor",e);
@@ -19,7 +24,12 @@ catch (    Exception e) {
           interceptor.interceptPacket(packet,session,read,processed);
         }
  catch (        PacketRejectedException e) {
-          throw e;
+          if (processed) {
+            Log.error("Post interceptor cannot reject packet.",e);
+          }
+ else {
+            throw e;
+          }
         }
 catch (        Exception e) {
           Log.error("Error in interceptor",e);
