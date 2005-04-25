@@ -1,7 +1,6 @@
 {
   IQ result=null;
   try {
-    JID recipient=packet.getTo();
     IQ.Type type=packet.getType();
     if (type.equals(IQ.Type.set)) {
       User user=userManager.getUser(packet.getFrom().getNode());
@@ -13,6 +12,10 @@
       result=IQ.createResultIQ(packet);
     }
  else     if (type.equals(IQ.Type.get)) {
+      JID recipient=packet.getTo();
+      if (recipient == null) {
+        recipient=packet.getFrom();
+      }
       result=IQ.createResultIQ(packet);
       Element vcard=DocumentHelper.createElement(QName.get("vCard","vcard-temp"));
       result.setChildElement(vcard);
