@@ -36,7 +36,8 @@
     }
     for (int i=0; i < numResults; i++) {
       if (answer.hasMoreElements()) {
-        usernames.add((String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get());
+        String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+        usernames.add(JID.escapeNode(username));
       }
  else {
         break;
