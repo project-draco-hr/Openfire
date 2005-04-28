@@ -4,6 +4,7 @@
     properties=loadPropertiesFromDb(username);
     vcardCache.put(username,properties);
   }
-  properties.remove(name);
-  deletePropertyFromDb(username,name);
+  if (properties.remove(name) != null) {
+    deletePropertyFromDb(username,name);
+  }
 }
