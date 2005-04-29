@@ -1,7 +1,9 @@
 {
   String resource=sender.getResource();
   if (resources.containsKey(resource)) {
-    priorityList.remove(resource);
-    sortSession(resource,priority);
+synchronized (priorityList) {
+      priorityList.remove(resource);
+      sortSession(resource,priority);
+    }
   }
 }

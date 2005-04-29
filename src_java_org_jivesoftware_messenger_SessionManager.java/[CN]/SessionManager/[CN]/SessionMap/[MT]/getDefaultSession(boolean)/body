@@ -6,10 +6,12 @@
     return resources.get(priorityList.getFirst());
   }
  else {
-    for (int i=0; i < priorityList.size(); i++) {
-      ClientSession s=resources.get(priorityList.get(i));
-      if (s.getPresence().isAvailable()) {
-        return s;
+synchronized (priorityList) {
+      for (int i=0; i < priorityList.size(); i++) {
+        ClientSession s=resources.get(priorityList.get(i));
+        if (s != null && s.getPresence().isAvailable()) {
+          return s;
+        }
       }
     }
     return null;
