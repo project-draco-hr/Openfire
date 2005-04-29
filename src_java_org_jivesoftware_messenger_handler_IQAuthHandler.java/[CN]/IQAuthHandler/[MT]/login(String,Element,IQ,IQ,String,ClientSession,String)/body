@@ -23,6 +23,8 @@
       if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
         Connection conn=oldSession.getConnection();
         if (conn != null) {
+          StreamError error=new StreamError(StreamError.Condition.conflict);
+          conn.getWriter().write(error.toXML());
           conn.close();
         }
       }
