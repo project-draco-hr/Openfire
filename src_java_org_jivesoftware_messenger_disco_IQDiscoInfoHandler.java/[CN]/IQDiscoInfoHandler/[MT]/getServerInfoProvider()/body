@@ -3,22 +3,37 @@
     ArrayList identities=new ArrayList();
     ArrayList features=new ArrayList();
     public Iterator getIdentities(    String name,    String node,    JID senderJID){
+      if (name == null) {
 synchronized (identities) {
-        if (identities.isEmpty()) {
-          Element identity=DocumentHelper.createElement("identity");
-          identity.addAttribute("category","services");
-          identity.addAttribute("name","Messenger Server");
-          identity.addAttribute("type","jabber");
-          identities.add(identity);
+          if (identities.isEmpty()) {
+            Element identity=DocumentHelper.createElement("identity");
+            identity.addAttribute("category","services");
+            identity.addAttribute("name","Messenger Server");
+            identity.addAttribute("type","jabber");
+            identities.add(identity);
+          }
         }
+        return identities.iterator();
       }
-      return identities.iterator();
+ else {
+        return userIdentities.iterator();
+      }
     }
     public Iterator getFeatures(    String name,    String node,    JID senderJID){
-      return serverFeatures.iterator();
+      if (name == null) {
+        return serverFeatures.iterator();
+      }
+ else {
+        return userFeatures.iterator();
+      }
     }
-    public boolean hasInfo(    String name,    String node,    JID senderJID) throws UnauthorizedException {
-      return name == null && node == null;
+    public boolean hasInfo(    String name,    String node,    JID senderJID){
+      try {
+        return node == null && (name == null || UserManager.getInstance().getUser(name) != null);
+      }
+ catch (      UserNotFoundException e) {
+        return false;
+      }
     }
     public XDataFormImpl getExtendedInfo(    String name,    String node,    JID senderJID){
       return null;
