@@ -1,13 +1,17 @@
 {
   try {
     ClientSession session=(ClientSession)handback;
-    if (session.getPresence().isAvailable()) {
-      Presence presence=new Presence();
-      presence.setType(Presence.Type.unavailable);
-      presence.setFrom(session.getAddress());
-      presenceHandler.process(presence);
+    try {
+      if (session.getPresence().isAvailable()) {
+        Presence presence=new Presence();
+        presence.setType(Presence.Type.unavailable);
+        presence.setFrom(session.getAddress());
+        presenceHandler.process(presence);
+      }
     }
-    removeSession(session);
+  finally {
+      removeSession(session);
+    }
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error.close"),e);
