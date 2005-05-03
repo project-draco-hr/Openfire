@@ -5,6 +5,7 @@
  else {
     try {
       InterceptorManager.getInstance().invokeInterceptors(packet,session,false,false);
+      boolean errorDelivering=false;
 synchronized (writer) {
         try {
           xmlSerializer.write(packet.getElement());
@@ -14,13 +15,18 @@ synchronized (writer) {
           xmlSerializer.flush();
         }
  catch (        IOException e) {
-          Log.warn(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
-          close();
-          deliverer.deliver(packet);
+          Log.debug(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
+          errorDelivering=true;
         }
       }
-      InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
-      session.incrementServerPacketCount();
+      if (errorDelivering) {
+        close();
+        deliverer.deliver(packet);
+      }
+ else {
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
+        session.incrementServerPacketCount();
+      }
     }
  catch (    PacketRejectedException e) {
     }
