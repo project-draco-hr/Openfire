@@ -28,7 +28,7 @@ catch (      PacketException e) {
       map=directedPresences.get(update.getFrom().toString());
       if (map == null) {
         map=new WeakHashMap<ChannelHandler,Set<String>>();
-        map.put(handler,new HashSet<String>());
+        map.put(handler,new ConcurrentHashSet<String>());
         directedPresences.put(update.getFrom().toString(),map);
       }
       if (Presence.Type.unavailable.equals(update.getType())) {
@@ -44,7 +44,7 @@ catch (      PacketException e) {
       }
  else {
         if (map.get(handler) == null) {
-          map.put(handler,new HashSet<String>());
+          map.put(handler,new ConcurrentHashSet<String>());
         }
         map.get(handler).add(jid);
       }
