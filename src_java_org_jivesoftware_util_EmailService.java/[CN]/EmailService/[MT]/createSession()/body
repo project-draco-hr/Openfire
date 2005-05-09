@@ -1,0 +1,16 @@
+{
+  Properties mailProps=new Properties();
+  mailProps.setProperty("mail.smtp.host",host);
+  mailProps.setProperty("mail.smtp.port",String.valueOf(port));
+  mailProps.setProperty("mail.smtp.sendpartial","true");
+  mailProps.setProperty("mail.debug",String.valueOf(debugEnabled));
+  if (sslEnabled) {
+    Security.setProperty("ssl.SocketFactory.provider",SSL_FACTORY);
+    mailProps.setProperty("mail.smtp.socketFactory.class",SSL_FACTORY);
+    mailProps.setProperty("mail.smtp.socketFactory.fallback","true");
+  }
+  if (username != null) {
+    mailProps.put("mail.smtp.auth","true");
+  }
+  session=Session.getInstance(mailProps,null);
+}
