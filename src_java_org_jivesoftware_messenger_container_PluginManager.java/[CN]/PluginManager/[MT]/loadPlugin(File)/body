@@ -32,6 +32,10 @@
       if (webXML.exists()) {
         PluginServlet.registerServlets(this,plugin,webXML);
       }
+      File customWebXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web-custom.xml");
+      if (customWebXML.exists()) {
+        PluginServlet.registerServlets(this,plugin,customWebXML);
+      }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
         Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");

@@ -9,6 +9,10 @@
     AdminConsole.removeModel(pluginName);
     PluginServlet.unregisterServlets(webXML);
   }
+  File customWebXML=new File(pluginDirectory,"web" + File.separator + "WEB-INF"+ File.separator+ "web-custom.xml");
+  if (customWebXML.exists()) {
+    PluginServlet.unregisterServlets(customWebXML);
+  }
   PluginClassLoader classLoader=classloaders.get(plugin);
   plugin.destroyPlugin();
   classLoader.destroy();
