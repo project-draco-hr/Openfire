@@ -11,10 +11,9 @@
     File pluginDir=new File(messengerHome,"plugins");
     pluginManager=new PluginManager(pluginDir);
     pluginManager.start();
-    DateFormat formatter=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
     List params=new ArrayList();
     params.add(version.getVersionString());
-    params.add(formatter.format(new Date()));
+    params.add(JiveGlobals.formatDateTime(new Date()));
     String startupBanner=LocaleUtils.getLocalizedString("startup.name",params);
     Log.info(startupBanner);
     System.out.println(startupBanner);
