@@ -1,0 +1,31 @@
+{
+  Transport transport=null;
+  try {
+    URLName url=new URLName("smtp",host,port,"",username,password);
+    if (session == null) {
+      createSession();
+    }
+    transport=new com.sun.mail.smtp.SMTPTransport(session,url);
+    transport.connect(host,port,username,password);
+    for (    MimeMessage message : messages) {
+      try {
+        transport.sendMessage(message,message.getRecipients(MimeMessage.RecipientType.TO));
+      }
+ catch (      AddressException ae) {
+        Log.error(ae);
+      }
+catch (      SendFailedException sfe) {
+        Log.error(sfe);
+      }
+    }
+  }
+  finally {
+    if (transport != null) {
+      try {
+        transport.close();
+      }
+ catch (      MessagingException e) {
+      }
+    }
+  }
+}
