@@ -7,21 +7,18 @@
   while (searchIter.hasMoreElements()) {
     String field=(String)searchIter.nextElement();
     String query=(String)searchList.get(field);
-    Iterator foundIter=null;
+    Collection<User> foundUsers=new ArrayList<User>();
     if (userManager != null) {
       if (query.length() > 0 && !query.equals("jabber:iq:search")) {
-        foundIter=userManager.findUsers(new HashSet<String>(Arrays.asList((field))),query).iterator();
+        foundUsers.addAll(userManager.findUsers(new HashSet<String>(Arrays.asList((field))),query));
       }
     }
  else {
-      foundIter=findUsers(field,query).iterator();
+      foundUsers.addAll(findUsers(field,query));
     }
-    if (foundIter != null) {
-      while (foundIter.hasNext()) {
-        User user=(User)foundIter.next();
-        if (!users.contains(user)) {
-          users.add(user);
-        }
+    for (    User user : foundUsers) {
+      if (!users.contains(user)) {
+        users.add(user);
       }
     }
   }

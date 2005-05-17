@@ -2,7 +2,7 @@
   pluginManager=manager;
   componentManager=ComponentManagerFactory.getComponentManager();
   try {
-    componentManager.addComponent(SERVICE_NAME,this);
+    componentManager.addComponent(serviceName,this);
   }
  catch (  Exception e) {
     componentManager.getLog().error(e);
@@ -13,14 +13,16 @@
     XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
     searchForm.setTitle("User Search");
     searchForm.addInstruction(instructions);
-    XFormFieldImpl field=new XFormFieldImpl("search");
+    XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
+    field.setType(FormField.TYPE_HIDDEN);
+    field.addValue("jabber:iq:search");
+    searchForm.addField(field);
+    field=new XFormFieldImpl("search");
     field.setType(FormField.TYPE_TEXT_SINGLE);
     field.setLabel("Search");
     field.setRequired(false);
     searchForm.addField(field);
-    Iterator iter=searchFields.iterator();
-    while (iter.hasNext()) {
-      String searchField=(String)iter.next();
+    for (    String searchField : searchFields) {
       probeResult.addElement(searchField.toLowerCase());
       field=new XFormFieldImpl(searchField);
       field.setType(FormField.TYPE_BOOLEAN);

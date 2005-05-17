@@ -1,9 +1,7 @@
 {
   Element replyQuery=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
   String serverName=XMPPServer.getInstance().getServerInfo().getName();
-  Iterator userIter=users.iterator();
-  while (userIter.hasNext()) {
-    User user=(User)userIter.next();
+  for (  User user : users) {
     Element item=DocumentHelper.createElement("item");
     Attribute jib=DocumentHelper.createAttribute(item,"jid",user.getUsername() + "@" + serverName);
     item.add(jib);

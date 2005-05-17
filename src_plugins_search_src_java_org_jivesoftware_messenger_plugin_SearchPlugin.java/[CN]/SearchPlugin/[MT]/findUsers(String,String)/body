@@ -5,9 +5,8 @@
   }
   int index=query.indexOf("*");
   if (index == -1) {
-    Iterator users=userManager.getUsers().iterator();
-    while (users.hasNext()) {
-      User user=(User)users.next();
+    Collection<User> users=userManager.getUsers();
+    for (    User user : users) {
       if (field.equals("Username")) {
         try {
           foundUsers.add(userManager.getUser(query));
@@ -33,9 +32,8 @@
   }
  else {
     String prefix=query.substring(0,index);
-    Iterator users=userManager.getUsers().iterator();
-    while (users.hasNext()) {
-      User user=(User)users.next();
+    Collection<User> users=userManager.getUsers();
+    for (    User user : users) {
       String userInfo="";
       if (field.equals("Username")) {
         userInfo=user.getUsername();
