@@ -6,6 +6,9 @@
     Session defaultSession=null;
     try {
       SessionMap sessionMap=sessions.get(session.getUsername());
+      if (sessionMap == null) {
+        Log.warn("No SessionMap found for session" + "\n" + session);
+      }
       sessionMap.sessionAvailable(session);
       defaultSession=sessionMap.getDefaultSession(true);
       JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
