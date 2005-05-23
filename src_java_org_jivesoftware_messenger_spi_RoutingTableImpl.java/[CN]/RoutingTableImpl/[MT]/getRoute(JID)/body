@@ -2,6 +2,9 @@
   RoutableChannelHandler route=null;
   String nodeJID=node.getNode() == null ? "" : node.getNode();
   String resourceJID=node.getResource() == null ? "" : node.getResource();
+  if (!node.getDomain().contains(serverName)) {
+    OutgoingServerSession.authenticateDomain(serverName,node.getDomain());
+  }
   routeLock.readLock().lock();
   try {
     Object nameRoutes=routes.get(node.getDomain());
