@@ -1,0 +1,21 @@
+{
+  if (!isClosed()) {
+    boolean errorDelivering=false;
+synchronized (writer) {
+      try {
+        writer.write(text);
+        if (flashClient) {
+          writer.write('\0');
+        }
+        writer.flush();
+      }
+ catch (      IOException e) {
+        Log.debug("Error delivering raw text" + "\n" + this.toString(),e);
+        errorDelivering=true;
+      }
+    }
+    if (errorDelivering) {
+      close();
+    }
+  }
+}
