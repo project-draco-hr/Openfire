@@ -2,7 +2,7 @@
   if (serverName == null) {
     throw new UnauthorizedException("Server not initialized");
   }
-  StreamID id=streamIDFactory.createStreamID();
+  StreamID id=nextStreamID();
   ClientSession session=new ClientSession(serverName,conn,id);
   conn.init(session);
   conn.registerCloseListener(clientSessionListener,session);

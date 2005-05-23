@@ -1,8 +1,9 @@
 {
   super("Secure Socket Listener");
   this.connManager=connManager;
-  int port=JiveGlobals.getIntProperty("xmpp.socket.ssl.port",DEFAULT_PORT);
-  String interfaceName=JiveGlobals.getProperty("xmpp.socket.ssl.interface");
+  this.serverPort=serverPort;
+  int port=serverPort.getPort();
+  String interfaceName=serverPort.getInterfaceName();
   bindInterface=null;
   if (interfaceName != null) {
     try {

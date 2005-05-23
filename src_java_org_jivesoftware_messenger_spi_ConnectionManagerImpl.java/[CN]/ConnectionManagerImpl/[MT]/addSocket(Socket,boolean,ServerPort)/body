@@ -1,0 +1,25 @@
+{
+  try {
+    SocketConnection conn=new SocketConnection(deliverer,sock,isSecure);
+    SocketReader reader=null;
+    String threadName=null;
+    if (serverPort.isClientPort()) {
+      reader=new ClientSocketReader(router,serverName,sock,conn);
+      threadName="Client SR";
+    }
+ else     if (serverPort.isComponentPort()) {
+      reader=new ComponentSocketReader(router,serverName,sock,conn);
+      threadName="Component SR";
+    }
+ else {
+      reader=new ServerSocketReader(router,serverName,sock,conn);
+      threadName="Server SR";
+    }
+    Thread thread=new Thread(reader,threadName);
+    thread.setDaemon(true);
+    thread.start();
+  }
+ catch (  IOException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}
