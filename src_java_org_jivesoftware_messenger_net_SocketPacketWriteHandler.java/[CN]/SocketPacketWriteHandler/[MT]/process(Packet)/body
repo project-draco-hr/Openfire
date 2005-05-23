@@ -1,6 +1,15 @@
 {
   try {
     JID recipient=packet.getTo();
+    if (recipient != null && !recipient.getDomain().contains(serverName)) {
+      try {
+        routingTable.getRoute(recipient).process(packet);
+      }
+ catch (      NoSuchRouteException e) {
+        handleUnprocessedPacket(packet);
+      }
+      return;
+    }
     if (recipient == null || (recipient.getNode() == null && recipient.getResource() == null)) {
       Session senderSession=sessionManager.getSession(packet.getFrom());
       if (senderSession != null && !senderSession.getConnection().isClosed()) {
@@ -13,14 +22,7 @@
  else {
       Session session=sessionManager.getBestRoute(recipient);
       if (session == null) {
-        if (packet instanceof Message) {
-          messageStrategy.storeOffline((Message)packet);
-        }
- else         if (packet instanceof Presence) {
-        }
- else {
-          dropPacket(packet);
-        }
+        handleUnprocessedPacket(packet);
       }
  else {
         try {
