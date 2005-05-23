@@ -1,0 +1,9 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  if (xpp.getNamespace("db") != null) {
+    ServerDialback method=new ServerDialback(connection,serverName);
+    return method.createIncomingSession(reader);
+  }
+  connection.close();
+  return null;
+}

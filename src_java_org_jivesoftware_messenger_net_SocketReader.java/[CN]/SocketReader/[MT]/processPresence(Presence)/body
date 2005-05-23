@@ -1,0 +1,16 @@
+{
+  try {
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+    router.route(packet);
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+    session.incrementClientPacketCount();
+  }
+ catch (  PacketRejectedException e) {
+    Presence reply=new Presence();
+    reply.setID(packet.getID());
+    reply.setTo(session.getAddress());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_allowed);
+    session.process(reply);
+  }
+}

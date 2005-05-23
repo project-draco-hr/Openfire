@@ -1,0 +1,16 @@
+{
+  if (packet.getTo() == null || packet.getFrom() == null) {
+    StreamError error=new StreamError(StreamError.Condition.improper_addressing);
+    connection.deliverRawText(error.toXML());
+    connection.close();
+    open=false;
+    throw new PacketRejectedException("Packet with no TO or FROM attributes");
+  }
+ else   if (!((IncomingServerSession)session).isValidDomain(packet.getFrom().getDomain())) {
+    StreamError error=new StreamError(StreamError.Condition.invalid_from);
+    connection.deliverRawText(error.toXML());
+    connection.close();
+    open=false;
+    throw new PacketRejectedException("Packet with no TO or FROM attributes");
+  }
+}

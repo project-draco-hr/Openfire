@@ -1,0 +1,47 @@
+{
+  try {
+    SessionManager sessionManager=SessionManager.getInstance();
+    OutgoingServerSession session=sessionManager.getOutgoingServerSession(hostname);
+    if (session == null) {
+      IncomingServerSession incomingSession=sessionManager.getIncomingServerSession(hostname);
+      if (incomingSession != null) {
+        for (        String otherHostname : incomingSession.getValidatedDomains()) {
+          session=sessionManager.getOutgoingServerSession(otherHostname);
+          if (session != null) {
+            session.addHostname(hostname);
+            break;
+          }
+        }
+      }
+    }
+    if (session == null) {
+      int port=JiveGlobals.getIntProperty("xmpp.server.socket.remotePort",SocketAcceptThread.DEFAULT_SERVER_PORT);
+synchronized (hostname.intern()) {
+        session=sessionManager.getOutgoingServerSession(hostname);
+        if (session == null) {
+          session=new ServerDialback().createOutgoingSession(domain,hostname,port);
+          if (session != null) {
+            session.addHostname(hostname);
+            session.addAuthenticatedDomain(domain);
+            return true;
+          }
+ else {
+            return false;
+          }
+        }
+      }
+    }
+    if (session.getAuthenticatedDomains().contains(domain)) {
+      return true;
+    }
+    ServerDialback method=new ServerDialback(session.getConnection(),domain);
+    if (method.authenticateDomain(session.reader,domain,hostname,session.getStreamID().getID())) {
+      session.addAuthenticatedDomain(domain);
+      return true;
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error authenticating domain with remote server: " + hostname,e);
+  }
+  return false;
+}

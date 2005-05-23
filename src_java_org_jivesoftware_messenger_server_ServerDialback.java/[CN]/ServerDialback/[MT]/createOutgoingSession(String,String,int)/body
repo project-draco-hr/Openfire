@@ -1,0 +1,50 @@
+{
+  try {
+    Log.debug("OS - Trying to connect to " + hostname + ":"+ port);
+    Socket socket=SocketFactory.getDefault().createSocket(hostname,port);
+    Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
+    connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
+    StringBuilder stream=new StringBuilder();
+    stream.append("<stream:stream");
+    stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
+    stream.append(" xmlns=\"jabber:server\"");
+    stream.append(" xmlns:db=\"jabber:server:dialback\">");
+    connection.deliverRawText(stream.toString());
+    stream=null;
+    XPPPacketReader reader=new XPPPacketReader();
+    reader.setXPPFactory(XmlPullParserFactory.newInstance());
+    reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
+    XmlPullParser xpp=reader.getXPPParser();
+    for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+      eventType=xpp.next();
+    }
+    if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
+      String id=xpp.getAttributeValue("","id");
+      if (authenticateDomain(reader,domain,hostname,id)) {
+        StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
+        OutgoingServerSession session=new OutgoingServerSession(domain,connection,reader,streamID);
+        connection.init(session);
+        session.setAddress(new JID(null,hostname,null));
+        return session;
+      }
+ else {
+        connection.close();
+      }
+    }
+ else {
+      Log.debug("OS - Invalid namespace in packet: " + xpp.getText());
+      StreamError error=new StreamError(StreamError.Condition.invalid_namespace);
+      StringBuilder sb=new StringBuilder();
+      sb.append(error.toXML());
+      connection.deliverRawText(sb.toString());
+      connection.close();
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error connecting to the remote server",e);
+    if (connection != null) {
+      connection.close();
+    }
+  }
+  return null;
+}

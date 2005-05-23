@@ -1,0 +1,24 @@
+{
+  String key=AuthFactory.createDigest(id,secretKey);
+  Log.debug("OS - Sent dialback key to host: " + hostname + " id: "+ id+ " from domain: "+ domain);
+synchronized (reader) {
+    StringBuilder sb=new StringBuilder();
+    sb.append("<db:result");
+    sb.append(" from=\"" + domain + "\"");
+    sb.append(" to=\"" + hostname + "\">");
+    sb.append(key);
+    sb.append("</db:result>");
+    connection.deliverRawText(sb.toString());
+    sb=null;
+    Element doc=reader.parseDocument().getRootElement();
+    if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+      boolean success="valid".equals(doc.attributeValue("type"));
+      Log.debug("OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
+      return success;
+    }
+ else {
+      Log.debug("OS - Unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+      return false;
+    }
+  }
+}

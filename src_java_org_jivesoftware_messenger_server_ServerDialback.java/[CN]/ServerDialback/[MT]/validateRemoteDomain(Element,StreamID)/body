@@ -1,0 +1,56 @@
+{
+  StreamError error;
+  StringBuilder sb;
+  String recipient=doc.attributeValue("to");
+  String hostname=doc.attributeValue("from");
+  Log.debug("RS - Received dialback key from host: " + hostname + " to: "+ recipient);
+  if (!serverName.equals(recipient)) {
+    error=new StreamError(StreamError.Condition.host_unknown);
+    sb=new StringBuilder();
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    Log.debug("RS - Error, hostname not recognized: " + recipient);
+    return false;
+  }
+ else {
+    if (sessionManager.getIncomingServerSession(hostname) != null) {
+      error=new StreamError(StreamError.Condition.not_authorized);
+      sb=new StringBuilder();
+      sb.append(error.toXML());
+      connection.deliverRawText(sb.toString());
+      connection.close();
+      Log.debug("RS - Error, incoming connection already exists from: " + hostname);
+      return false;
+    }
+ else {
+      String key=doc.getTextTrim();
+      DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
+      try {
+        boolean valid=verifyKey(key,streamID.toString(),hostname,address.getHost(),address.getPort());
+        Log.debug("RS - Sending key verification result to OS: " + hostname);
+        sb=new StringBuilder();
+        sb.append("<db:result");
+        sb.append(" from=\"" + serverName + "\"");
+        sb.append(" to=\"" + hostname + "\"");
+        sb.append(" type=\"");
+        sb.append(valid ? "valid" : "invalid");
+        sb.append("\"/>");
+        connection.deliverRawText(sb.toString());
+        if (!valid) {
+          connection.close();
+        }
+        return valid;
+      }
+ catch (      Exception e) {
+        Log.warn("Error verifying key",e);
+        error=new StreamError(StreamError.Condition.remote_connection_failed);
+        sb=new StringBuilder();
+        sb.append(error.toXML());
+        connection.deliverRawText(sb.toString());
+        connection.close();
+        return false;
+      }
+    }
+  }
+}

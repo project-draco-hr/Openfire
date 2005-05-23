@@ -1,0 +1,68 @@
+{
+  open=true;
+  while (open) {
+    Element doc=reader.parseDocument().getRootElement();
+    if (doc == null) {
+      return;
+    }
+    String tag=doc.getName();
+    if ("message".equals(tag)) {
+      Message packet=null;
+      try {
+        packet=new Message(doc);
+      }
+ catch (      IllegalArgumentException e) {
+        Message reply=new Message();
+        reply.setID(doc.attributeValue("id"));
+        reply.setTo(session.getAddress());
+        reply.getElement().addAttribute("from",doc.attributeValue("to"));
+        reply.setError(PacketError.Condition.jid_malformed);
+        session.process(reply);
+        continue;
+      }
+      processMessage(packet);
+    }
+ else     if ("presence".equals(tag)) {
+      Presence packet=null;
+      try {
+        packet=new Presence(doc);
+      }
+ catch (      IllegalArgumentException e) {
+        Presence reply=new Presence();
+        reply.setID(doc.attributeValue("id"));
+        reply.setTo(session.getAddress());
+        reply.getElement().addAttribute("from",doc.attributeValue("to"));
+        reply.setError(PacketError.Condition.jid_malformed);
+        session.process(reply);
+        continue;
+      }
+      processPresence(packet);
+    }
+ else     if ("iq".equals(tag)) {
+      IQ packet=null;
+      try {
+        packet=getIQ(doc);
+      }
+ catch (      IllegalArgumentException e) {
+        IQ reply=new IQ();
+        if (!doc.elements().isEmpty()) {
+          reply.setChildElement(((Element)doc.elements().get(0)).createCopy());
+        }
+        reply.setID(doc.attributeValue("id"));
+        reply.setTo(session.getAddress());
+        if (doc.attributeValue("to") != null) {
+          reply.getElement().addAttribute("from",doc.attributeValue("to"));
+        }
+        reply.setError(PacketError.Condition.jid_malformed);
+        session.process(reply);
+        continue;
+      }
+      processIQ(packet);
+    }
+ else {
+      if (!processUnknowPacket(doc)) {
+        throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.packet.tag") + tag);
+      }
+    }
+  }
+}

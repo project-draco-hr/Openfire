@@ -1,0 +1,18 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+    eventType=xpp.next();
+  }
+  if (!createSession(xpp.getNamespace(null))) {
+    Writer writer=connection.getWriter();
+    StringBuilder sb=new StringBuilder();
+    sb.append("<?xml version='1.0' encoding='");
+    sb.append(CHARSET);
+    sb.append("'?>");
+    StreamError error=new StreamError(StreamError.Condition.bad_namespace_prefix);
+    sb.append(error.toXML());
+    writer.write(sb.toString());
+    writer.flush();
+    connection.close();
+  }
+}
