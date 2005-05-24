@@ -15,6 +15,9 @@
  else     if (Presence.Type.subscribe == type || Presence.Type.unsubscribe == type || Presence.Type.subscribed == type || Presence.Type.unsubscribed == type) {
       subscribeHandler.process(packet);
     }
+ else     if (Presence.Type.probe == type) {
+      presenceManager.handleProbe(packet);
+    }
  else {
       routingTable.getRoute(recipientJID).process(packet);
     }
