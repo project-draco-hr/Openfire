@@ -1,0 +1,18 @@
+{
+  pathInfo=pathInfo.substring(1).toLowerCase();
+  HttpServlet servlet=servlets.get(pathInfo);
+  if (servlet == null) {
+    for (    String key : servlets.keySet()) {
+      int index=key.indexOf("/*");
+      String searchkey=key;
+      if (index != -1) {
+        searchkey=key.substring(0,index);
+      }
+      if (searchkey.startsWith(pathInfo) || pathInfo.startsWith(searchkey)) {
+        servlet=servlets.get(key);
+        break;
+      }
+    }
+  }
+  return servlet;
+}
