@@ -2,6 +2,7 @@
   try {
     Log.debug("OS - Trying to connect to " + hostname + ":"+ port);
     Socket socket=SocketFactory.getDefault().createSocket(hostname,port);
+    socket.setSoTimeout(60000);
     Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     StringBuilder stream=new StringBuilder();
@@ -21,6 +22,7 @@
     if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
       String id=xpp.getAttributeValue("","id");
       if (authenticateDomain(reader,domain,hostname,id)) {
+        socket.setSoTimeout(0);
         StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
         OutgoingServerSession session=new OutgoingServerSession(domain,connection,reader,streamID);
         connection.init(session);
