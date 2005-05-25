@@ -18,6 +18,9 @@
       if (getRoster(recipientJID) == null && type == Presence.Type.subscribed) {
         presenceManager.probePresence(recipientJID,senderJID);
       }
+ else       if (getRoster(recipientJID) == null && type == Presence.Type.unsubscribed) {
+        presenceManager.sendUnavailableFromSessions(recipientJID,senderJID);
+      }
     }
  catch (    NoSuchRouteException e) {
       deliverer.deliver(presence.createCopy());
