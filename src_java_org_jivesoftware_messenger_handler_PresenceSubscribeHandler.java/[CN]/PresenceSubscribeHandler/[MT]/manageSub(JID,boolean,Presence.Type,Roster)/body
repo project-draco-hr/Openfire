@@ -1,4 +1,5 @@
 {
+  boolean modified=false;
   try {
     RosterItem item;
     if (roster.isRosterItem(target)) {
@@ -7,10 +8,11 @@
  else {
       item=roster.createRosterItem(target);
     }
-    updateState(item,type,isSending);
+    modified=updateState(item,type,isSending);
     roster.updateRosterItem(item);
   }
  catch (  UserNotFoundException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
+  return modified;
 }

@@ -27,13 +27,6 @@
     roster.setType(IQ.Type.set);
     roster.addItem(user,org.xmpp.packet.Roster.Subscription.remove);
     broadcast(roster);
-    for (    ClientSession session : sessionManager.getSessions(username)) {
-      Presence presence=new Presence();
-      presence.setFrom(session.getAddress());
-      presence.setTo(item.getJid());
-      presence.setType(Presence.Type.unavailable);
-      server.getPacketRouter().route(presence);
-    }
   }
   return item;
 }

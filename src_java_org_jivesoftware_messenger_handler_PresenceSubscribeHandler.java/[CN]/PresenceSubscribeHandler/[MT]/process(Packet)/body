@@ -4,21 +4,27 @@
     JID senderJID=presence.getFrom();
     JID recipientJID=presence.getTo();
     Presence.Type type=presence.getType();
-    Roster roster=getRoster(senderJID);
     try {
-      if (roster != null) {
-        manageSub(recipientJID,true,type,roster);
+      Roster senderRoster=getRoster(senderJID);
+      boolean senderSubChanged=false;
+      if (senderRoster != null) {
+        senderSubChanged=manageSub(recipientJID,true,type,senderRoster);
       }
-      roster=getRoster(recipientJID);
-      if (roster != null) {
-        manageSub(senderJID,false,type,roster);
+      Roster recipientRoster=getRoster(recipientJID);
+      boolean recipientSubChanged=false;
+      if (recipientRoster != null) {
+        recipientSubChanged=manageSub(senderJID,false,type,recipientRoster);
       }
-      ChannelHandler handler=routingTable.getRoute(recipientJID);
-      handler.process(presence.createCopy());
-      if (getRoster(recipientJID) == null && type == Presence.Type.subscribed) {
-        presenceManager.probePresence(recipientJID,senderJID);
+      if (!(type == Presence.Type.subscribed && recipientRoster != null && !recipientSubChanged)) {
+        ChannelHandler handler=routingTable.getRoute(recipientJID);
+        Presence presenteToSend=presence.createCopy();
+        presenteToSend.setFrom(senderJID.toBareJID());
+        handler.process(presenteToSend);
+        if (type == Presence.Type.subscribed) {
+          presenceManager.probePresence(recipientJID,senderJID);
+        }
       }
- else       if (getRoster(recipientJID) == null && type == Presence.Type.unsubscribed) {
+      if (type == Presence.Type.unsubscribed) {
         presenceManager.sendUnavailableFromSessions(recipientJID,senderJID);
       }
     }
