@@ -1,18 +1,25 @@
 {
-  boolean modified=false;
+  RosterItem item=null;
+  RosterItem.AskType oldAsk=null;
+  RosterItem.SubType oldSub=null;
+  RosterItem.RecvType oldRecv=null;
   try {
-    RosterItem item;
     if (roster.isRosterItem(target)) {
       item=roster.getRosterItem(target);
     }
  else {
       item=roster.createRosterItem(target);
     }
-    modified=updateState(item,type,isSending);
-    roster.updateRosterItem(item);
+    oldAsk=item.getAskStatus();
+    oldSub=item.getSubStatus();
+    oldRecv=item.getRecvStatus();
+    updateState(item,type,isSending);
+    if (oldAsk != item.getAskStatus() || oldSub != item.getSubStatus() || oldRecv != item.getRecvStatus()) {
+      roster.updateRosterItem(item);
+    }
   }
  catch (  UserNotFoundException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
-  return modified;
+  return oldSub != item.getSubStatus();
 }
