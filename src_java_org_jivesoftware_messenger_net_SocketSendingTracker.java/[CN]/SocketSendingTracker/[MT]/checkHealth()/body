@@ -1,0 +1,19 @@
+{
+  for (  Socket socket : sockets.keySet()) {
+    Date startDate=sockets.get(socket);
+    if (startDate != null && System.currentTimeMillis() - startDate.getTime() > JiveGlobals.getIntProperty("xmpp.session.sending-limit",60000)) {
+      if (sockets.get(socket) != null) {
+        try {
+          Log.debug("Closing socket: " + socket + " that started sending data at: "+ startDate);
+          socket.close();
+        }
+ catch (        IOException e) {
+          Log.error("Error closing socket",e);
+        }
+ finally {
+          sockets.remove(socket);
+        }
+      }
+    }
+  }
+}
