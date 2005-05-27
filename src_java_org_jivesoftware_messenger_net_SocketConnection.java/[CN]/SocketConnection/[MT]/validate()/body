@@ -4,6 +4,7 @@
   }
   try {
 synchronized (writer) {
+      SocketSendingTracker.getInstance().socketStartedSending(socket);
       writer.write(" ");
       writer.flush();
     }
@@ -11,6 +12,9 @@ synchronized (writer) {
  catch (  Exception e) {
     Log.warn("Closing no longer valid connection" + "\n" + this.toString(),e);
     close();
+  }
+ finally {
+    SocketSendingTracker.getInstance().socketFinishedSending(socket);
   }
   return !isClosed();
 }

@@ -3,6 +3,7 @@
     boolean errorDelivering=false;
 synchronized (writer) {
       try {
+        SocketSendingTracker.getInstance().socketStartedSending(socket);
         writer.write(text);
         if (flashClient) {
           writer.write('\0');
@@ -12,6 +13,9 @@ synchronized (writer) {
  catch (      IOException e) {
         Log.debug("Error delivering raw text" + "\n" + this.toString(),e);
         errorDelivering=true;
+      }
+ finally {
+        SocketSendingTracker.getInstance().socketFinishedSending(socket);
       }
     }
     if (errorDelivering) {

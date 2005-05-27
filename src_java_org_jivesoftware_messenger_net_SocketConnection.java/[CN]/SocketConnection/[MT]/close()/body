@@ -8,6 +8,7 @@ synchronized (this) {
         }
 synchronized (writer) {
           try {
+            SocketSendingTracker.getInstance().socketStartedSending(socket);
             writer.write("</stream:stream>");
             if (flashClient) {
               writer.write('\0');
@@ -15,6 +16,9 @@ synchronized (writer) {
             xmlSerializer.flush();
           }
  catch (          IOException e) {
+          }
+ finally {
+            SocketSendingTracker.getInstance().socketFinishedSending(socket);
           }
         }
       }
