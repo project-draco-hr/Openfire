@@ -1,3 +1,14 @@
 {
-  writer.flush();
+  if (socket == null) {
+    writer.flush();
+  }
+ else {
+    SocketSendingTracker.getInstance().socketStartedSending(socket);
+    try {
+      writer.flush();
+    }
+  finally {
+      SocketSendingTracker.getInstance().socketFinishedSending(socket);
+    }
+  }
 }
