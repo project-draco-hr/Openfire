@@ -8,7 +8,6 @@
       boolean errorDelivering=false;
 synchronized (writer) {
         try {
-          SocketSendingTracker.getInstance().socketStartedSending(socket);
           xmlSerializer.write(packet.getElement());
           if (flashClient) {
             writer.write('\0');
@@ -18,9 +17,6 @@ synchronized (writer) {
  catch (        IOException e) {
           Log.debug("Error delivering packet" + "\n" + this.toString(),e);
           errorDelivering=true;
-        }
- finally {
-          SocketSendingTracker.getInstance().socketFinishedSending(socket);
         }
       }
       if (errorDelivering) {
