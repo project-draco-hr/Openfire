@@ -1,0 +1,22 @@
+{
+  try {
+    charactersAdded=false;
+    --indentLevel;
+    if (lastOutputNodeType == Node.ELEMENT_NODE) {
+      writePrintln();
+      indent();
+    }
+    boolean hadContent=true;
+    if (hadContent) {
+      writeClose(qName);
+    }
+ else {
+      writeEmptyElementClose(qName);
+    }
+    lastOutputNodeType=Node.ELEMENT_NODE;
+    super.endElement(namespaceURI,localName,qName);
+  }
+ catch (  IOException e) {
+    handleException(e);
+  }
+}

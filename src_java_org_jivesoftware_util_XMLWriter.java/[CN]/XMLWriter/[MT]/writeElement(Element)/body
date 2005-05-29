@@ -1,0 +1,56 @@
+{
+  int size=element.nodeCount();
+  String qualifiedName=element.getQualifiedName();
+  writePrintln();
+  indent();
+  writer.write("<");
+  writer.write(qualifiedName);
+  int previouslyDeclaredNamespaces=namespaceStack.size();
+  Namespace ns=element.getNamespace();
+  if (isNamespaceDeclaration(ns)) {
+    namespaceStack.push(ns);
+    writeNamespace(ns);
+  }
+  boolean textOnly=true;
+  for (int i=0; i < size; i++) {
+    Node node=element.node(i);
+    if (node instanceof Namespace) {
+      Namespace additional=(Namespace)node;
+      if (isNamespaceDeclaration(additional)) {
+        namespaceStack.push(additional);
+        writeNamespace(additional);
+      }
+    }
+ else     if (node instanceof Element) {
+      textOnly=false;
+    }
+ else     if (node instanceof Comment) {
+      textOnly=false;
+    }
+  }
+  writeAttributes(element);
+  lastOutputNodeType=Node.ELEMENT_NODE;
+  if (size <= 0) {
+    writeEmptyElementClose(qualifiedName);
+  }
+ else {
+    writer.write(">");
+    if (textOnly) {
+      writeElementContent(element);
+    }
+ else {
+      ++indentLevel;
+      writeElementContent(element);
+      --indentLevel;
+      writePrintln();
+      indent();
+    }
+    writer.write("</");
+    writer.write(qualifiedName);
+    writer.write(">");
+  }
+  while (namespaceStack.size() > previouslyDeclaredNamespaces) {
+    namespaceStack.pop();
+  }
+  lastOutputNodeType=Node.ELEMENT_NODE;
+}

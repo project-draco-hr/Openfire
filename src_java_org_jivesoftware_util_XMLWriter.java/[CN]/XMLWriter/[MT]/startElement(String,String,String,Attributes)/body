@@ -1,0 +1,18 @@
+{
+  try {
+    charactersAdded=false;
+    writePrintln();
+    indent();
+    writer.write("<");
+    writer.write(qName);
+    writeNamespaces();
+    writeAttributes(attributes);
+    writer.write(">");
+    ++indentLevel;
+    lastOutputNodeType=Node.ELEMENT_NODE;
+    super.startElement(namespaceURI,localName,qName,attributes);
+  }
+ catch (  IOException e) {
+    handleException(e);
+  }
+}
