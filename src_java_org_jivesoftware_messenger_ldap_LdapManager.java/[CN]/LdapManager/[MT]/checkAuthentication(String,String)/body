@@ -15,6 +15,7 @@
     env.put(Context.SECURITY_AUTHENTICATION,"simple");
     env.put(Context.SECURITY_PRINCIPAL,userDN + "," + baseDN);
     env.put(Context.SECURITY_CREDENTIALS,password);
+    env.put("com.sun.jndi.ldap.connect.timeout","10000");
     if (ldapDebugEnabled) {
       env.put("com.sun.jndi.ldap.trace.ber",System.err);
     }
@@ -44,6 +45,7 @@
         env.put(Context.SECURITY_AUTHENTICATION,"simple");
         env.put(Context.SECURITY_PRINCIPAL,userDN + "," + alternateBaseDN);
         env.put(Context.SECURITY_CREDENTIALS,password);
+        env.put("com.sun.jndi.ldap.connect.timeout","10000");
         if (ldapDebugEnabled) {
           env.put("com.sun.jndi.ldap.trace.ber",System.err);
         }
