@@ -1,7 +1,10 @@
 {
+  String realHostname=null;
   try {
     Log.debug("OS - Trying to connect to " + hostname + ":"+ port);
-    Socket socket=SocketFactory.getDefault().createSocket(hostname,port);
+    DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
+    realHostname=address.getHost();
+    Socket socket=SocketFactory.getDefault().createSocket(realHostname,port);
     socket.setSoTimeout(60000);
     Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
@@ -43,7 +46,7 @@
     }
   }
  catch (  Exception e) {
-    Log.error("Error connecting to the remote server: " + hostname,e);
+    Log.error("Error connecting to the remote server: " + hostname + "(DNS lookup: "+ realHostname+ ")",e);
     if (connection != null) {
       connection.close();
     }
