@@ -36,6 +36,23 @@
       if (customWebXML.exists()) {
         PluginServlet.registerServlets(this,plugin,customWebXML);
       }
+      Element developmentNode=(Element)pluginXML.selectSingleNode("/plugin/development");
+      if (developmentNode != null) {
+        Element webRoot=(Element)developmentNode.selectSingleNode("/plugin/development/webRoot");
+        Element classesDir=(Element)developmentNode.selectSingleNode("/plugin/development/classesDir");
+        PluginDevEnvironment dev=new PluginDevEnvironment();
+        String wrd=webRoot.getTextTrim();
+        File webRootDir=new File(wrd);
+        if (webRootDir.exists()) {
+          dev.setWebRoot(webRootDir);
+        }
+        String cd=classesDir.getTextTrim();
+        File classes=new File(cd);
+        if (classes.exists()) {
+          dev.setClassesDir(classes);
+        }
+        pluginDevelopment.put(plugin,dev);
+      }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
         Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
