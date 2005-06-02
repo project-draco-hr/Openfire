@@ -52,9 +52,13 @@
     pstmt.setLong(2,room.getID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
+      String senderJID=rs.getString(1);
+      String nickname=rs.getString(2);
       Date sentDate=new Date(Long.parseLong(rs.getString(3).trim()));
+      String subject=rs.getString(4);
+      String body=rs.getString(5);
       if (room.isLogEnabled()) {
-        room.getRoomHistory().addOldMessage(rs.getString(1),rs.getString(2),sentDate,rs.getString(4),rs.getString(5));
+        room.getRoomHistory().addOldMessage(senderJID,nickname,sentDate,subject,body);
       }
     }
     rs.close();
