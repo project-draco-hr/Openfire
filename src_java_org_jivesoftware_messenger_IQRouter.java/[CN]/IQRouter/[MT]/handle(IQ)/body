@@ -79,7 +79,7 @@
           Log.info("Packet sent to unreachable address " + packet);
         }
       }
-      if (!handlerFound) {
+      if (!handlerFound && IQ.Type.result != packet.getType()) {
         IQ reply=IQ.createResultIQ(packet);
         reply.setChildElement(packet.getChildElement().createCopy());
         reply.setError(PacketError.Condition.service_unavailable);
