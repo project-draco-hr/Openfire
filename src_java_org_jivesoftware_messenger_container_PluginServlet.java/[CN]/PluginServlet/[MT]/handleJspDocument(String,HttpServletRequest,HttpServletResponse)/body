@@ -1,0 +1,44 @@
+{
+  String jspURL=pathInfo.substring(1);
+  int fileSeperator=jspURL.indexOf("/");
+  if (fileSeperator != -1) {
+    String pluginName=jspURL.substring(0,fileSeperator);
+    Plugin plugin=pluginManager.getPlugin(pluginName);
+    File pluginDirectory=pluginManager.getPluginDirectory(plugin);
+    File compiledServletsDirectory=new File(pluginDirectory,"classes");
+    compiledServletsDirectory.mkdirs();
+    String jsp=jspURL.substring(fileSeperator + 1);
+    File jspFile=new File(pluginDirectory + "/web",jsp);
+    String filename=jspFile.getName();
+    int indexOfPeriod=filename.indexOf(".");
+    if (indexOfPeriod != -1) {
+      filename=StringUtils.randomString(10);
+    }
+    JspC jspc=new JspC();
+    if (!jspFile.exists()) {
+      return false;
+    }
+    jspc.setJspFiles(jspFile.getAbsolutePath());
+    jspc.setOutputDir(compiledServletsDirectory.getAbsolutePath());
+    jspc.setClassName(filename);
+    jspc.setCompile(true);
+    jspc.setClassPath(getClasspathForPlugin(plugin));
+    try {
+      jspc.execute();
+      try {
+        Object servletInstance=pluginManager.loadClass("org.apache.jsp." + filename,plugin).newInstance();
+        HttpServlet servlet=(HttpServlet)servletInstance;
+        servlet.init(servletConfig);
+        servlet.service(request,response);
+        return true;
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
+ catch (    JasperException e) {
+      e.printStackTrace();
+    }
+  }
+  return false;
+}
