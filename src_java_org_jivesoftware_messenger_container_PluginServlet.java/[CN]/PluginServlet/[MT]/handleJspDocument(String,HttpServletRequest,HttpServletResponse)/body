@@ -5,28 +5,34 @@
     String pluginName=jspURL.substring(0,fileSeperator);
     Plugin plugin=pluginManager.getPlugin(pluginName);
     File pluginDirectory=pluginManager.getPluginDirectory(plugin);
-    File compiledServletsDirectory=new File(pluginDirectory,"classes");
-    compiledServletsDirectory.mkdirs();
+    File compilationDir=new File(pluginDirectory,"classes");
+    compilationDir.mkdirs();
     String jsp=jspURL.substring(fileSeperator + 1);
+    int indexOfLastSlash=jsp.lastIndexOf("/");
+    String relativeDir="";
+    if (indexOfLastSlash != -1) {
+      relativeDir=jsp.substring(0,indexOfLastSlash);
+      relativeDir=relativeDir.replaceAll("//",".") + '.';
+    }
     File jspFile=new File(pluginDirectory + "/web",jsp);
     String filename=jspFile.getName();
     int indexOfPeriod=filename.indexOf(".");
     if (indexOfPeriod != -1) {
-      filename=StringUtils.randomString(10);
+      filename="dev" + StringUtils.randomString(4);
     }
     JspC jspc=new JspC();
     if (!jspFile.exists()) {
       return false;
     }
     jspc.setJspFiles(jspFile.getAbsolutePath());
-    jspc.setOutputDir(compiledServletsDirectory.getAbsolutePath());
+    jspc.setOutputDir(compilationDir.getAbsolutePath());
     jspc.setClassName(filename);
     jspc.setCompile(true);
     jspc.setClassPath(getClasspathForPlugin(plugin));
     try {
       jspc.execute();
       try {
-        Object servletInstance=pluginManager.loadClass("org.apache.jsp." + filename,plugin).newInstance();
+        Object servletInstance=pluginManager.loadClass("org.apache.jsp." + relativeDir + filename,plugin).newInstance();
         HttpServlet servlet=(HttpServlet)servletInstance;
         servlet.init(servletConfig);
         servlet.service(request,response);
@@ -37,6 +43,7 @@
       }
     }
  catch (    JasperException e) {
+      System.out.println(e.getLocalizedMessage());
       e.printStackTrace();
     }
   }
