@@ -22,6 +22,25 @@
         }
       }
       PluginClassLoader pluginLoader=new PluginClassLoader(pluginDir);
+      Element developmentNode=(Element)pluginXML.selectSingleNode("/plugin/development");
+      PluginDevEnvironment dev=null;
+      if (developmentNode != null) {
+        Element webRoot=(Element)developmentNode.selectSingleNode("/plugin/development/webRoot");
+        Element classesDir=(Element)developmentNode.selectSingleNode("/plugin/development/classesDir");
+        dev=new PluginDevEnvironment();
+        String wrd=webRoot.getTextTrim();
+        File webRootDir=new File(wrd);
+        if (webRootDir.exists()) {
+          dev.setWebRoot(webRootDir);
+        }
+        String cd=classesDir.getTextTrim();
+        File classes=new File(cd);
+        if (classes.exists()) {
+          dev.setClassesDir(classes);
+          pluginLoader.addURL(classes.getAbsoluteFile().toURL());
+        }
+      }
+      pluginLoader.initialize();
       String className=pluginXML.selectSingleNode("/plugin/class").getText();
       plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
       plugin.initializePlugin(this,pluginDir);
@@ -36,21 +55,7 @@
       if (customWebXML.exists()) {
         PluginServlet.registerServlets(this,plugin,customWebXML);
       }
-      Element developmentNode=(Element)pluginXML.selectSingleNode("/plugin/development");
-      if (developmentNode != null) {
-        Element webRoot=(Element)developmentNode.selectSingleNode("/plugin/development/webRoot");
-        Element classesDir=(Element)developmentNode.selectSingleNode("/plugin/development/classesDir");
-        PluginDevEnvironment dev=new PluginDevEnvironment();
-        String wrd=webRoot.getTextTrim();
-        File webRootDir=new File(wrd);
-        if (webRootDir.exists()) {
-          dev.setWebRoot(webRootDir);
-        }
-        String cd=classesDir.getTextTrim();
-        File classes=new File(cd);
-        if (classes.exists()) {
-          dev.setClassesDir(classes);
-        }
+      if (dev != null) {
         pluginDevelopment.put(plugin,dev);
       }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");

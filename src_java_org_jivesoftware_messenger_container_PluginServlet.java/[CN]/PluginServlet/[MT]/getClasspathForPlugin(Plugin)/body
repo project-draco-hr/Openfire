@@ -1,6 +1,7 @@
 {
   StringBuilder builder=new StringBuilder();
   File pluginDirectory=pluginManager.getPluginDirectory(plugin);
+  PluginDevEnvironment env=pluginManager.getDevEnvironment(plugin);
   File libDirectory=new File(pluginDirectory,"lib");
   File[] libs=libDirectory.listFiles();
   for (int i=0; i < libs.length; i++) {
@@ -13,5 +14,6 @@
   builder.append(messengerLib.getAbsolutePath() + "//messenger.jar;");
   builder.append(messengerLib.getAbsolutePath() + "//jasper-compiler.jar;");
   builder.append(messengerLib.getAbsolutePath() + "//jasper-runtime.jar;");
+  builder.append(env.getClassesDir().getAbsolutePath() + ";");
   return builder.toString();
 }
