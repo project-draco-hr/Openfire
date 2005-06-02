@@ -39,12 +39,17 @@
             reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(PacketError.Condition.service_unavailable);
           }
-          Session session=sessionManager.getSession(packet.getFrom());
-          if (session != null) {
-            session.process(reply);
+          try {
+            routingTable.getRoute(packet.getFrom()).process(packet);
           }
+ catch (          NoSuchRouteException e) {
+            Session session=sessionManager.getSession(packet.getFrom());
+            if (session != null) {
+              session.process(reply);
+            }
  else {
-            Log.warn("Packet could not be delivered " + packet);
+              Log.warn("Packet could not be delivered " + packet);
+            }
           }
         }
  else {
@@ -75,12 +80,20 @@
         }
       }
       if (!handlerFound) {
-        Session session=sessionManager.getSession(packet.getFrom());
-        if (session != null) {
-          IQ reply=IQ.createResultIQ(packet);
-          reply.setChildElement(packet.getChildElement().createCopy());
-          reply.setError(PacketError.Condition.service_unavailable);
-          session.process(reply);
+        IQ reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(PacketError.Condition.service_unavailable);
+        try {
+          routingTable.getRoute(packet.getFrom()).process(reply);
+        }
+ catch (        NoSuchRouteException e) {
+          Session session=sessionManager.getSession(packet.getFrom());
+          if (session != null) {
+            session.process(reply);
+          }
+ else {
+            Log.warn("Packet could not be delivered " + reply);
+          }
         }
       }
     }
