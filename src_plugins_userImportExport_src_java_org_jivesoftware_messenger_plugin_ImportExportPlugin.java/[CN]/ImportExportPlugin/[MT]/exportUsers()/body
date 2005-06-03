@@ -1,9 +1,8 @@
 {
   Document document=DocumentHelper.createDocument();
   Element root=document.addElement("JiveMessenger");
-  Iterator users=userManager.getUsers().iterator();
-  while (users.hasNext()) {
-    User user=(User)users.next();
+  Collection<User> users=userManager.getUsers();
+  for (  User user : users) {
     Element userElement=root.addElement("User");
     String userName=user.getUsername();
     userElement.addElement("Jid").addText(userName);
@@ -19,9 +18,8 @@
     userElement.addElement("CreationDate").addText(String.valueOf(user.getCreationDate().getTime()));
     userElement.addElement("ModifiedDate").addText(String.valueOf(user.getModificationDate().getTime()));
     Element rosterElement=userElement.addElement("Roster");
-    Iterator roster=user.getRoster().getRosterItems().iterator();
-    while (roster.hasNext()) {
-      RosterItem ri=(RosterItem)roster.next();
+    Collection<RosterItem> roster=user.getRoster().getRosterItems();
+    for (    RosterItem ri : roster) {
       Element itemElement=rosterElement.addElement("Item");
       itemElement.addAttribute("jid",removeDoman(ri.getJid()));
       itemElement.addAttribute("askstatus",String.valueOf(ri.getAskStatus().getValue()));
@@ -29,9 +27,8 @@
       itemElement.addAttribute("substatus",String.valueOf(ri.getSubStatus().getValue()));
       itemElement.addAttribute("name",ri.getNickname());
       Element groupElement=itemElement.addElement("Group");
-      Iterator groups=ri.getGroups().iterator();
-      while (groups.hasNext()) {
-        String group=(String)groups.next();
+      List<String> groups=ri.getGroups();
+      for (      String group : groups) {
         groupElement.addText(group);
       }
     }
