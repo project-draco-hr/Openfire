@@ -45,7 +45,7 @@
     try {
       jspc.execute();
       try {
-        Object servletInstance=pluginManager.loadClass("org.apache.jsp." + relativeDir + filename,plugin).newInstance();
+        Object servletInstance=pluginManager.loadClass(plugin,"org.apache.jsp." + relativeDir + filename).newInstance();
         HttpServlet servlet=(HttpServlet)servletInstance;
         servlet.init(servletConfig);
         servlet.service(request,response);
