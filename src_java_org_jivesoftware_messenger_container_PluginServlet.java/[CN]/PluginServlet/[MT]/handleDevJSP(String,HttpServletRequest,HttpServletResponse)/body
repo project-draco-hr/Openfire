@@ -5,6 +5,9 @@
     String pluginName=jspURL.substring(0,fileSeperator);
     Plugin plugin=pluginManager.getPlugin(pluginName);
     PluginDevEnvironment environment=pluginManager.getDevEnvironment(plugin);
+    if (environment == null) {
+      return false;
+    }
     File webDir=environment.getWebRoot();
     if (webDir == null || !webDir.exists()) {
       return false;
@@ -33,7 +36,7 @@
       jspc.setJspFiles(jspFile.getCanonicalPath());
     }
  catch (    IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
     jspc.setOutputDir(compilationDir.getAbsolutePath());
     jspc.setClassName(filename);
@@ -49,12 +52,11 @@
         return true;
       }
  catch (      Exception e) {
-        e.printStackTrace();
+        Log.error(e);
       }
     }
  catch (    JasperException e) {
-      System.out.println(e.getLocalizedMessage());
-      e.printStackTrace();
+      Log.error(e);
     }
   }
   return false;
