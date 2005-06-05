@@ -5,6 +5,9 @@
   if (!getSearchFields().containsAll(fields)) {
     throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
   }
+  if (query == null || "".equals(query)) {
+    return Collections.emptyList();
+  }
   query="%" + query.replace('*','%') + "%";
   if (query.endsWith("%%")) {
     query=query.substring(0,query.length() - 1);
