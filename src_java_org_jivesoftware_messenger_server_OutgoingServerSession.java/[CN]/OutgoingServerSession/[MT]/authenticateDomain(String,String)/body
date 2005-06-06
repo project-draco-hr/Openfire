@@ -30,6 +30,13 @@ synchronized (hostname.intern()) {
             return true;
           }
  else {
+            for (            String otherHost : sessionManager.getOutgoingServers()) {
+              if (hostname.contains(otherHost)) {
+                session=sessionManager.getOutgoingServerSession(otherHost);
+                session.addHostname(hostname);
+                return true;
+              }
+            }
             return false;
           }
         }
