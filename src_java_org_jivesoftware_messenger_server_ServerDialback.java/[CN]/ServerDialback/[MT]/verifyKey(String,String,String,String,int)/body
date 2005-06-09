@@ -4,7 +4,7 @@
   StreamError error;
   Log.debug("RS - Trying to connect to Authoritative Server: " + hostname + ":"+ port);
   Socket socket=SocketFactory.getDefault().createSocket(host,port);
-  socket.setSoTimeout(60000);
+  socket.setSoTimeout(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000));
   Log.debug("RS - Connection to AS: " + hostname + ":"+ port+ " successfull");
   try {
     reader=new XPPPacketReader();

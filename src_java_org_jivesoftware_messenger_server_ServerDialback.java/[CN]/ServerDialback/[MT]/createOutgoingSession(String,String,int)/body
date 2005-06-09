@@ -5,7 +5,7 @@
     DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
     realHostname=address.getHost();
     Socket socket=SocketFactory.getDefault().createSocket(realHostname,port);
-    socket.setSoTimeout(60000);
+    socket.setSoTimeout(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000));
     Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     StringBuilder stream=new StringBuilder();
