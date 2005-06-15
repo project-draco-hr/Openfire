@@ -2,4 +2,19 @@
   userManager=XMPPServer.getInstance().getUserManager();
   provider=UserManager.getUserProvider();
   serverName=XMPPServer.getInstance().getServerInfo().getName();
+  if (exportDirectory == null) {
+    if (JiveGlobals.getHomeDirectory() != null) {
+      File messengerHome=new File(JiveGlobals.getHomeDirectory());
+      if (messengerHome.exists() && messengerHome.canWrite()) {
+        exportDirectory=(new File(messengerHome,"export")).toString();
+      }
+    }
+  }
+  if (!exportDirectory.endsWith(File.separator)) {
+    exportDirectory=exportDirectory + File.separator;
+  }
+  File exportDir=new File(exportDirectory);
+  if (!exportDir.exists()) {
+    exportDir.mkdir();
+  }
 }

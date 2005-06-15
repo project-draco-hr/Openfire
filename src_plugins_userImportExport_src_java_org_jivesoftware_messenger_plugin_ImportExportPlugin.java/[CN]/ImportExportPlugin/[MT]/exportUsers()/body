@@ -7,14 +7,15 @@
     String userName=user.getUsername();
     userElement.addElement("Jid").addText(userName);
     try {
-      userElement.addElement("Password").addText(provider.getPassword(userName));
+      userElement.addElement("Password").addText(provider.getPassword(user.getUsername()));
     }
  catch (    UserNotFoundException e) {
       Log.info("User not found: " + userName + ", setting password to their username");
       userElement.addElement("Password").addText(userName);
     }
     userElement.addElement("Email").addText(user.getEmail() == null ? "" : user.getEmail());
-    userElement.addElement("Name").addText(user.getName() == null ? "" : user.getName());
+    String name=user.getName();
+    userElement.addElement("Name").addText(name == null ? "" : name);
     userElement.addElement("CreationDate").addText(String.valueOf(user.getCreationDate().getTime()));
     userElement.addElement("ModifiedDate").addText(String.valueOf(user.getModificationDate().getTime()));
     Element rosterElement=userElement.addElement("Roster");
