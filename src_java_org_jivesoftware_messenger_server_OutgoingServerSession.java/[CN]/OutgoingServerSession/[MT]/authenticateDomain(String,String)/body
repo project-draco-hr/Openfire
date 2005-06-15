@@ -1,5 +1,5 @@
 {
-  if (hostname == null || hostname.length() == 0) {
+  if (hostname == null || hostname.length() == 0 || hostname.trim().indexOf(' ') > -1) {
     return false;
   }
   try {
@@ -30,11 +30,29 @@ synchronized (hostname.intern()) {
             return true;
           }
  else {
+            if (!pattern.matcher(hostname).find()) {
+              return false;
+            }
             for (            String otherHost : sessionManager.getOutgoingServers()) {
               if (hostname.contains(otherHost)) {
                 session=sessionManager.getOutgoingServerSession(otherHost);
                 session.addHostname(hostname);
                 return true;
+              }
+            }
+            int index=hostname.indexOf('.');
+            while (index > -1 && index < hostname.length()) {
+              String newHostname=hostname.substring(index + 1);
+              session=new ServerDialback().createOutgoingSession(domain,newHostname,port);
+              if (session != null) {
+                session.addHostname(hostname);
+                session.addAuthenticatedDomain(domain);
+                sessionManager.outgoingServerSessionCreated(session);
+                session.addHostname(newHostname);
+                return true;
+              }
+ else {
+                index=hostname.indexOf('.',index + 1);
               }
             }
             return false;
