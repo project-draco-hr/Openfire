@@ -4,7 +4,8 @@
   String recipient=doc.attributeValue("to");
   String hostname=doc.attributeValue("from");
   Log.debug("RS - Received dialback key from host: " + hostname + " to: "+ recipient);
-  if (!serverName.equals(recipient)) {
+  boolean host_unknown=isHostUnknown(recipient);
+  if (host_unknown) {
     error=new StreamError(StreamError.Condition.host_unknown);
     sb=new StringBuilder();
     sb.append(error.toXML());
@@ -27,11 +28,11 @@
       String key=doc.getTextTrim();
       DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
       try {
-        boolean valid=verifyKey(key,streamID.toString(),hostname,address.getHost(),address.getPort());
+        boolean valid=verifyKey(key,streamID.toString(),recipient,hostname,address.getHost(),address.getPort());
         Log.debug("RS - Sending key verification result to OS: " + hostname);
         sb=new StringBuilder();
         sb.append("<db:result");
-        sb.append(" from=\"" + serverName + "\"");
+        sb.append(" from=\"" + recipient + "\"");
         sb.append(" to=\"" + hostname + "\"");
         sb.append(" type=\"");
         sb.append(valid ? "valid" : "invalid");

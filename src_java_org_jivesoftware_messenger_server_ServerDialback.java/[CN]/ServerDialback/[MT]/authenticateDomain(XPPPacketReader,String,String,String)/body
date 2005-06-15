@@ -10,14 +10,20 @@ synchronized (reader) {
     sb.append("</db:result>");
     connection.deliverRawText(sb.toString());
     sb=null;
-    Element doc=reader.parseDocument().getRootElement();
-    if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
-      boolean success="valid".equals(doc.attributeValue("type"));
-      Log.debug("OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
-      return success;
-    }
+    try {
+      Element doc=reader.parseDocument().getRootElement();
+      if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+        boolean success="valid".equals(doc.attributeValue("type"));
+        Log.debug("OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
+        return success;
+      }
  else {
-      Log.debug("OS - Unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+        Log.debug("OS - Unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+        return false;
+      }
+    }
+ catch (    SocketTimeoutException e) {
+      Log.debug("OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
       return false;
     }
   }

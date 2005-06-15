@@ -27,7 +27,7 @@
       Log.debug("RS - Asking AS to verify dialback key for id" + streamID);
       StringBuilder sb=new StringBuilder();
       sb.append("<db:verify");
-      sb.append(" from=\"" + serverName + "\"");
+      sb.append(" from=\"" + recipient + "\"");
       sb.append(" to=\"" + hostname + "\"");
       sb.append(" id=\"" + streamID + "\">");
       sb.append(key);
@@ -46,7 +46,7 @@
             writer.flush();
             throw new RemoteConnectionFailedException("Invalid ID");
           }
- else           if (!serverName.equals(doc.attributeValue("to"))) {
+ else           if (isHostUnknown(doc.attributeValue("to"))) {
             error=new StreamError(StreamError.Condition.host_unknown);
             sb=new StringBuilder();
             sb.append(error.toXML());

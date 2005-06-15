@@ -1,0 +1,13 @@
+{
+  boolean host_unknown=!serverName.equals(recipient);
+  if (host_unknown && recipient.contains(serverName)) {
+    try {
+      routingTable.getRoute(new JID(recipient));
+      host_unknown=false;
+    }
+ catch (    NoSuchRouteException e) {
+      host_unknown=true;
+    }
+  }
+  return host_unknown;
+}
