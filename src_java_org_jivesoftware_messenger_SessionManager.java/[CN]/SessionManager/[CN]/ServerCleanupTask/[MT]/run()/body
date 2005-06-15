@@ -1,0 +1,16 @@
+{
+  if (getServerSessionIdleTime() == -1) {
+    return;
+  }
+  final long deadline=System.currentTimeMillis() - getServerSessionIdleTime();
+  for (  OutgoingServerSession session : outgoingServerSessions.values()) {
+    try {
+      if (session.getLastActiveDate().getTime() < deadline) {
+        session.getConnection().close();
+      }
+    }
+ catch (    Throwable e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}
