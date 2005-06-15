@@ -5,5 +5,9 @@
     }
     return true;
   }
+ else   if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
+    ((IncomingServerSession)session).verifyReceivedKey(doc);
+    return true;
+  }
   return false;
 }
