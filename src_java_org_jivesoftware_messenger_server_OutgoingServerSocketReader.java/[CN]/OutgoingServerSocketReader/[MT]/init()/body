@@ -1,0 +1,25 @@
+{
+  Thread thread=new Thread("Outgoing Server Reader"){
+    public void run(){
+      while (open) {
+        Element doc=null;
+        try {
+          doc=reader.parseDocument().getRootElement();
+          if (doc == null) {
+            closeSession();
+          }
+ else {
+            elements.add(doc);
+          }
+        }
+ catch (        Exception e) {
+          Log.error(e);
+          closeSession();
+        }
+      }
+    }
+  }
+;
+  thread.setDaemon(true);
+  thread.start();
+}
