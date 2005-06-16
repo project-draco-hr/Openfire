@@ -5,7 +5,6 @@
     DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
     realHostname=address.getHost();
     Socket socket=SocketFactory.getDefault().createSocket(realHostname,port);
-    socket.setSoTimeout(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000));
     Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     StringBuilder stream=new StringBuilder();
@@ -24,10 +23,10 @@
     }
     if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
       String id=xpp.getAttributeValue("","id");
-      if (authenticateDomain(reader,domain,hostname,id)) {
-        socket.setSoTimeout(0);
+      OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
+      if (authenticateDomain(socketReader,domain,hostname,id)) {
         StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-        OutgoingServerSession session=new OutgoingServerSession(domain,connection,reader,streamID);
+        OutgoingServerSession session=new OutgoingServerSession(domain,connection,socketReader,streamID);
         connection.init(session);
         session.setAddress(new JID(null,hostname,null));
         return session;

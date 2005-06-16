@@ -1,7 +1,7 @@
 {
   String key=AuthFactory.createDigest(id,secretKey);
   Log.debug("OS - Sent dialback key to host: " + hostname + " id: "+ id+ " from domain: "+ domain);
-synchronized (reader) {
+synchronized (socketReader) {
     StringBuilder sb=new StringBuilder();
     sb.append("<db:result");
     sb.append(" from=\"" + domain + "\"");
@@ -11,8 +11,12 @@ synchronized (reader) {
     connection.deliverRawText(sb.toString());
     sb=null;
     try {
-      Element doc=reader.parseDocument().getRootElement();
-      if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+      Element doc=socketReader.getElement(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000),TimeUnit.MILLISECONDS);
+      if (doc == null) {
+        Log.debug("OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
+        return false;
+      }
+ else       if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
         boolean success="valid".equals(doc.attributeValue("type"));
         Log.debug("OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
         return success;
@@ -22,8 +26,8 @@ synchronized (reader) {
         return false;
       }
     }
- catch (    SocketTimeoutException e) {
-      Log.debug("OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
+ catch (    InterruptedException e) {
+      Log.debug("OS - Validation FAILED from: " + hostname + " id: "+ id+ " for domain: "+ domain,e);
       return false;
     }
   }
