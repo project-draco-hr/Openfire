@@ -13,4 +13,14 @@
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
   }
+  for (  IncomingServerSession session : incomingServerSessions.values()) {
+    try {
+      if (session.getLastActiveDate().getTime() < deadline) {
+        session.getConnection().close();
+      }
+    }
+ catch (    Throwable e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
 }
