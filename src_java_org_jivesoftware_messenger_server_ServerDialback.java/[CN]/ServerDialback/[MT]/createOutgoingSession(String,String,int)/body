@@ -44,8 +44,14 @@
       connection.close();
     }
   }
- catch (  Exception e) {
-    Log.error("Error connecting to the remote server: " + hostname + "(DNS lookup: "+ realHostname+ ")",e);
+ catch (  UnknownHostException e) {
+    Log.debug("Error connecting to the remote server: " + hostname + "(DNS lookup: "+ realHostname+ ")",e);
+    if (connection != null) {
+      connection.close();
+    }
+  }
+catch (  Exception e) {
+    Log.error("Error creating outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ")",e);
     if (connection != null) {
       connection.close();
     }
