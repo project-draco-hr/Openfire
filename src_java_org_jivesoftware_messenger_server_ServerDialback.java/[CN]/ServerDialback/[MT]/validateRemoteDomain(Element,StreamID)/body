@@ -4,8 +4,16 @@
   String recipient=doc.attributeValue("to");
   String hostname=doc.attributeValue("from");
   Log.debug("RS - Received dialback key from host: " + hostname + " to: "+ recipient);
-  boolean host_unknown=isHostUnknown(recipient);
-  if (host_unknown) {
+  if (!RemoteServerManager.canAccess(hostname)) {
+    error=new StreamError(StreamError.Condition.host_unknown);
+    sb=new StringBuilder();
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    Log.debug("RS - Error, hostname is not allowed to establish a connection to " + "this server: " + recipient);
+    return false;
+  }
+ else   if (isHostUnknown(recipient)) {
     error=new StreamError(StreamError.Condition.host_unknown);
     sb=new StringBuilder();
     sb.append(error.toXML());
