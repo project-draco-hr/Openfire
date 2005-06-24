@@ -1,0 +1,14 @@
+{
+  deleteConfiguration(domain);
+  RemoteServerConfiguration config=new RemoteServerConfiguration(domain);
+  config.setPermission(Permission.blocked);
+  addConfiguration(config);
+  Session session=SessionManager.getInstance().getIncomingServerSession(domain);
+  if (session != null) {
+    session.getConnection().close();
+  }
+  session=SessionManager.getInstance().getOutgoingServerSession(domain);
+  if (session != null) {
+    session.getConnection().close();
+  }
+}
