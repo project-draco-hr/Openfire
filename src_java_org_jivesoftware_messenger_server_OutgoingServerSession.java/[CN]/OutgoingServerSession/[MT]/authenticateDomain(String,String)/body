@@ -3,6 +3,9 @@
     return false;
   }
   try {
+    if (!RemoteServerManager.canAccess(hostname)) {
+      return false;
+    }
     SessionManager sessionManager=SessionManager.getInstance();
     OutgoingServerSession session=sessionManager.getOutgoingServerSession(hostname);
     if (session == null) {
@@ -18,7 +21,7 @@
       }
     }
     if (session == null) {
-      int port=JiveGlobals.getIntProperty("xmpp.server.socket.remotePort",SocketAcceptThread.DEFAULT_SERVER_PORT);
+      int port=RemoteServerManager.getPortForServer(hostname);
 synchronized (hostname.intern()) {
         session=sessionManager.getOutgoingServerSession(hostname);
         if (session == null) {
