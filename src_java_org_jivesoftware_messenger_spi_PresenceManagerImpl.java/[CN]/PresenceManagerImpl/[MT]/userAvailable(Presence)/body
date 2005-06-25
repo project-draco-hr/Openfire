@@ -1,0 +1,14 @@
+{
+  if (presence.getTo() == null && server.isLocal(presence.getFrom())) {
+    String username=presence.getFrom().getNode();
+    if (username == null) {
+      return;
+    }
+    try {
+      User probeeUser=UserManager.getInstance().getUser(username);
+      probeeUser.getProperties().remove(LAST_PRESENCE_PROP);
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+}

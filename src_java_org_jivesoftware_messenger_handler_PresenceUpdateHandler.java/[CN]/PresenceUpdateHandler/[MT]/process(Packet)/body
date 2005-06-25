@@ -12,9 +12,7 @@
           session.setInitialized(true);
         }
       }
-      if (presence.getTo() == null && localServer.isLocal(presence.getFrom())) {
-        presenceManager.deleteLastUnavailablePresence(presence.getFrom().getNode());
-      }
+      presenceManager.userAvailable(presence);
     }
  else     if (Presence.Type.unavailable == type) {
       broadcastUpdate(presence.createCopy());
@@ -22,11 +20,7 @@
       if (session != null) {
         session.setPresence(presence);
       }
-      if (presence.getTo() == null && localServer.isLocal(presence.getFrom())) {
-        if (!presence.getElement().elements().isEmpty()) {
-          presenceManager.saveLastUnavailablePresence(presence.getFrom().getNode(),presence);
-        }
-      }
+      presenceManager.userUnavailable(presence);
     }
  else {
       presence=presence.createCopy();
