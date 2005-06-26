@@ -5,6 +5,10 @@
   Session session=sessionManager.getSession(packet.getFrom());
   if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
     JID recipientJID=packet.getTo();
+    if (recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
+      sendMessageToAdmins(packet);
+      return;
+    }
     try {
       routingTable.getBestRoute(recipientJID).process(packet);
     }

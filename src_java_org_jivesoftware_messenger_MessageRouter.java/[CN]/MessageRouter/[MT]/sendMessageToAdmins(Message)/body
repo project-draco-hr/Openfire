@@ -1,0 +1,28 @@
+{
+  String jids=JiveGlobals.getProperty("xmpp.forward.admins");
+  if (jids != null && jids.trim().length() > 0) {
+    StringTokenizer tokenizer=new StringTokenizer(jids,", ");
+    while (tokenizer.hasMoreTokens()) {
+      String username=tokenizer.nextToken();
+      Message forward=packet.createCopy();
+      if (username.contains("@")) {
+        forward.setTo(username);
+      }
+ else {
+        forward.setTo(username + "@" + serverName);
+      }
+      route(forward);
+    }
+  }
+ else {
+    jids=JiveGlobals.getXMLProperty("adminConsole.authorizedUsernames");
+    jids=(jids == null || jids.trim().length() == 0) ? "admin" : jids;
+    StringTokenizer tokenizer=new StringTokenizer(jids,",");
+    while (tokenizer.hasMoreTokens()) {
+      String username=tokenizer.nextToken();
+      Message forward=packet.createCopy();
+      forward.setTo(username + "@" + serverName);
+      route(forward);
+    }
+  }
+}
