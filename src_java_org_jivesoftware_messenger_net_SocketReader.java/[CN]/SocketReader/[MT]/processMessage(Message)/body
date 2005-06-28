@@ -6,11 +6,15 @@
     session.incrementClientPacketCount();
   }
  catch (  PacketRejectedException e) {
-    Message reply=new Message();
-    reply.setID(packet.getID());
-    reply.setTo(session.getAddress());
-    reply.setFrom(packet.getTo());
-    reply.setError(PacketError.Condition.not_allowed);
-    session.process(reply);
+    if (e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+      Message reply=new Message();
+      reply.setID(packet.getID());
+      reply.setTo(session.getAddress());
+      reply.setFrom(packet.getTo());
+      reply.setType(packet.getType());
+      reply.setThread(packet.getThread());
+      reply.setBody(e.getRejectionMessage());
+      session.process(reply);
+    }
   }
 }

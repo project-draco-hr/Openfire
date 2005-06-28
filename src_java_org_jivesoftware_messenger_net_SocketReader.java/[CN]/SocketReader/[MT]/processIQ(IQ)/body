@@ -13,5 +13,12 @@
     reply.setFrom(packet.getTo());
     reply.setError(PacketError.Condition.not_allowed);
     session.process(reply);
+    if (e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+      Message notification=new Message();
+      notification.setTo(session.getAddress());
+      notification.setFrom(packet.getTo());
+      notification.setBody(e.getRejectionMessage());
+      session.process(notification);
+    }
   }
 }
