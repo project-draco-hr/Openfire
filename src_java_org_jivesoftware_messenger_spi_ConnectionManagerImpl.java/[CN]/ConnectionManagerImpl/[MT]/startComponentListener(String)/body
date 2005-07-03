@@ -1,6 +1,6 @@
 {
-  if (JiveGlobals.getBooleanProperty("xmpp.component.socket.active",true)) {
-    int port=JiveGlobals.getIntProperty("xmpp.component.socket.port",SocketAcceptThread.DEFAULT_COMPONENT_PORT);
+  if (isComponentListenerEnabled()) {
+    int port=getComponentListenerPort();
     String interfaceName=JiveGlobals.getProperty("xmpp.component.socket.interface");
     ServerPort serverPort=new ServerPort(port,interfaceName,serverName,localIPAddress,false,null,ServerPort.Type.component);
     try {

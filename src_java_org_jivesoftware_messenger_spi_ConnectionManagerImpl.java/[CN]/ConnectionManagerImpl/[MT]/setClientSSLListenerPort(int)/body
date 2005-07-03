@@ -1,0 +1,10 @@
+{
+  if (port == getClientSSLListenerPort()) {
+    return;
+  }
+  JiveGlobals.setProperty("xmpp.socket.ssl.port",String.valueOf(port));
+  stopClientSSLListeners();
+  if (isClientSSLListenerEnabled()) {
+    startClientSSLListeners(localIPAddress);
+  }
+}

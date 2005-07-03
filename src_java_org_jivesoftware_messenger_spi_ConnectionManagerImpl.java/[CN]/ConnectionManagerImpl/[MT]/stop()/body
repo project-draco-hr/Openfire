@@ -1,21 +1,9 @@
 {
   super.stop();
-  if (socketThread != null) {
-    socketThread.shutdown();
-    socketThread=null;
-  }
-  if (sslSocketThread != null) {
-    sslSocketThread.shutdown();
-    sslSocketThread=null;
-  }
-  if (componentSocketThread != null) {
-    componentSocketThread.shutdown();
-    componentSocketThread=null;
-  }
-  if (serverSocketThread != null) {
-    serverSocketThread.shutdown();
-    serverSocketThread=null;
-  }
+  stopClientListeners();
+  stopClientSSLListeners();
+  stopComponentListener();
+  stopServerListener();
   SocketSendingTracker.getInstance().shutdown();
   serverName=null;
 }

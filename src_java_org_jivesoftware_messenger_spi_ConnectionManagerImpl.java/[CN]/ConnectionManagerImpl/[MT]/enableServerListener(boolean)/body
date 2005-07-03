@@ -1,0 +1,13 @@
+{
+  if (enabled == isServerListenerEnabled()) {
+    return;
+  }
+  if (enabled) {
+    JiveGlobals.setProperty("xmpp.server.socket.active","true");
+    startServerListener(localIPAddress);
+  }
+ else {
+    JiveGlobals.setProperty("xmpp.server.socket.active","false");
+    stopServerListener();
+  }
+}
