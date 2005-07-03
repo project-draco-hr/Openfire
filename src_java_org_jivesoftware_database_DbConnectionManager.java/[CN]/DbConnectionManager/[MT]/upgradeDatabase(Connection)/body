@@ -27,16 +27,19 @@
       Log.error(e);
     }
   }
-  if (minorVersion == CURRENT_MINOR_VERSION) {
+  if (majorVersion == CURRENT_MAJOR_VERSION && minorVersion == CURRENT_MINOR_VERSION) {
     return false;
   }
   Log.info("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
+  System.out.println("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
   if (databaseType == DatabaseType.unknown) {
     Log.info("Warning: database type unknown. You must manually upgrade your database.");
+    System.out.println("Warning: database type unknown. You must manually upgrade your " + "database.");
     return false;
   }
  else   if (databaseType == DatabaseType.interbase) {
     Log.info("Warning: automatic upgrades of Interbase are not supported. You " + "must manually upgrade your database.");
+    System.out.println("Warning: automatic upgrades of Interbase are not supported. You " + "must manually upgrade your database.");
     return false;
   }
   for (int i=minorVersion; i < CURRENT_MINOR_VERSION; i++) {
@@ -86,5 +89,7 @@
       }
     }
   }
+  Log.info("Database upgraded successfully.");
+  System.out.println("Database upgraded successfully.");
   return true;
 }
