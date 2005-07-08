@@ -34,6 +34,24 @@
     filter.append("(").append(usernameField).append("={0})");
     this.searchFilter=filter.toString();
   }
+  if (JiveGlobals.getXMLProperty("ldap.groupNameField") != null) {
+    this.groupNameField=JiveGlobals.getXMLProperty("ldap.groupNameField");
+  }
+  if (JiveGlobals.getXMLProperty("ldap.groupMemberField") != null) {
+    this.groupMemberField=JiveGlobals.getXMLProperty("ldap.groupMemberField");
+  }
+  if (JiveGlobals.getXMLProperty("ldap.groupDescriptionField") != null) {
+    this.groupDescriptionField=JiveGlobals.getXMLProperty("ldap.groupDescriptionField");
+  }
+  if (JiveGlobals.getXMLProperty("ldap.posixEnabled") != null) {
+    this.posixEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.posixEnabled"));
+  }
+  if (JiveGlobals.getXMLProperty("ldap.groupSearchFilter") != null) {
+    this.groupSearchFilter=JiveGlobals.getXMLProperty("ldap.groupSearchFilter");
+  }
+ else {
+    this.groupSearchFilter="(" + groupMemberField + "={0})";
+  }
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
   if (adminDN != null && adminDN.trim().equals("")) {
     adminDN=null;
