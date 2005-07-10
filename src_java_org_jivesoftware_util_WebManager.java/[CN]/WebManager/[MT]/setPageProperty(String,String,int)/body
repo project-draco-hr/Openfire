@@ -1,0 +1,25 @@
+{
+  String toStore=pageName + "=" + newValue;
+  User user=getUser();
+  if (user != null) {
+    String values=user.getProperties().get(property);
+    if (values != null) {
+      if (values.contains(toStore)) {
+        return;
+      }
+ else {
+        if (values.contains(pageName)) {
+          int oldValue=getPageProperty(pageName,property,-1);
+          String toRemove=pageName + "=" + oldValue;
+          user.getProperties().put(property,values.replace(toRemove,toStore));
+        }
+ else {
+          user.getProperties().put(property,values + "," + toStore);
+        }
+      }
+    }
+ else     if (values == null) {
+      user.getProperties().put(property,toStore);
+    }
+  }
+}

@@ -1,22 +1,3 @@
 {
-  User user=getUser();
-  if (user != null) {
-    String values=user.getProperties().get("console.rows_per_page");
-    if (values != null) {
-      StringTokenizer tokens=new StringTokenizer(values,",=");
-      while (tokens.hasMoreTokens()) {
-        String page=tokens.nextToken().trim();
-        String rows=tokens.nextToken().trim();
-        if (pageName.equals(page)) {
-          try {
-            return Integer.parseInt(rows);
-          }
- catch (          NumberFormatException e) {
-            return defaultValue;
-          }
-        }
-      }
-    }
-  }
-  return defaultValue;
+  return getPageProperty(pageName,"console.rows_per_page",defaultValue);
 }
