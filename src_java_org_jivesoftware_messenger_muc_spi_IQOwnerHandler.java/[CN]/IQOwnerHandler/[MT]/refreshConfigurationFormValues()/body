@@ -45,6 +45,15 @@
     field=configurationForm.getField("muc#roomconfig_enablelogging");
     field.clearValues();
     field.addValue((room.isLogEnabled() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_reservednick");
+    field.clearValues();
+    field.addValue((room.isLoginRestrictedToNickname() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_canchangenick");
+    field.clearValues();
+    field.addValue((room.canChangeNickname() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_registration");
+    field.clearValues();
+    field.addValue((room.isRegistrationEnabled() ? "1" : "0"));
     field=configurationForm.getField("muc#roomconfig_roomadmins");
     field.clearValues();
     for (    String jid : room.getAdmins()) {

@@ -18,7 +18,10 @@
       pstmt.setInt(11,(room.canAnyoneDiscoverJID() ? 1 : 0));
       pstmt.setInt(12,(room.isLogEnabled() ? 1 : 0));
       pstmt.setInt(13,marshallRolesToBroadcast(room));
-      pstmt.setLong(14,room.getID());
+      pstmt.setInt(14,(room.isLoginRestrictedToNickname() ? 1 : 0));
+      pstmt.setInt(15,(room.canChangeNickname() ? 1 : 0));
+      pstmt.setInt(16,(room.isRegistrationEnabled() ? 1 : 0));
+      pstmt.setLong(17,room.getID());
       pstmt.executeUpdate();
     }
  else {
@@ -48,9 +51,9 @@
       pstmt.setInt(17,(room.isLogEnabled() ? 1 : 0));
       pstmt.setString(18,room.getSubject());
       pstmt.setInt(19,marshallRolesToBroadcast(room));
-      pstmt.setInt(20,0);
-      pstmt.setInt(21,1);
-      pstmt.setInt(22,1);
+      pstmt.setInt(20,(room.isLoginRestrictedToNickname() ? 1 : 0));
+      pstmt.setInt(21,(room.canChangeNickname() ? 1 : 0));
+      pstmt.setInt(22,(room.isRegistrationEnabled() ? 1 : 0));
       pstmt.executeUpdate();
     }
   }

@@ -53,6 +53,9 @@ catch (          RegistrationRequiredException e) {
 catch (          ConflictException e) {
             sendErrorPacket(packet,PacketError.Condition.conflict);
           }
+catch (          NotAcceptableException e) {
+            sendErrorPacket(packet,PacketError.Condition.not_acceptable);
+          }
         }
  else {
         }
@@ -87,7 +90,10 @@ catch (          Exception e) {
               role.getChatRoom().send(role.getPresence().createCopy());
             }
  else {
-              if (role.getChatRoom().hasOccupant(resource)) {
+              if (!role.getChatRoom().canChangeNickname()) {
+                sendErrorPacket(packet,PacketError.Condition.not_acceptable);
+              }
+ else               if (role.getChatRoom().hasOccupant(resource)) {
                 sendErrorPacket(packet,PacketError.Condition.conflict);
               }
  else {

@@ -24,6 +24,12 @@
         throw new ConflictException();
       }
     }
+    if (isLoginRestrictedToNickname()) {
+      String reservedNickname=members.get(user.getAddress().toBareJID());
+      if (reservedNickname != null && !nickname.equals(reservedNickname)) {
+        throw new NotAcceptableException();
+      }
+    }
     MUCRole.Role role;
     MUCRole.Affiliation affiliation;
     if (isOwner) {
