@@ -9,6 +9,12 @@
   maxCount=JiveGlobals.getIntProperty("xmpp.audit.maxcount",MAX_FILE_COUNT);
   logTimeout=JiveGlobals.getIntProperty("xmpp.audit.logtimeout",DEFAULT_LOG_TIMEOUT);
   logDir=JiveGlobals.getProperty("xmpp.audit.logdir",JiveGlobals.getHomeDirectory() + File.separator + "logs");
+  String ignoreString=JiveGlobals.getProperty("xmpp.audit.ignore","");
+  StringTokenizer tokenizer=new StringTokenizer(ignoreString,", ");
+  while (tokenizer.hasMoreTokens()) {
+    String username=tokenizer.nextToken();
+    ignoreList.add(username);
+  }
   auditor=new AuditorImpl(this);
   auditor.setMaxValues(maxSize,maxCount);
   auditor.setLogTimeout(logTimeout);

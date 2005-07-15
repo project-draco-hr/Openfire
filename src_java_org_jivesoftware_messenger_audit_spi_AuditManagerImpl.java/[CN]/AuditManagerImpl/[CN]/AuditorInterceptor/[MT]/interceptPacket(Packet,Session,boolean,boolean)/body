@@ -1,5 +1,9 @@
 {
   if (!processed) {
-    auditor.audit(packet,session);
+    JID from=packet.getFrom();
+    JID to=packet.getTo();
+    if ((from == null || !ignoreList.contains(from.getNode())) && (to == null || !ignoreList.contains(to.getNode()))) {
+      auditor.audit(packet,session);
+    }
   }
 }
