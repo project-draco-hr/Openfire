@@ -22,7 +22,6 @@
     Log.debug("[ExComp] Domain not specified in stanza: " + xpp.getText());
     StreamError error=new StreamError(StreamError.Condition.bad_format);
     sb.append(error.toXML());
-    sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
     connection.close();
@@ -32,7 +31,6 @@
     Log.debug("[ExComp] Component is not allowed to connect with subdomain: " + subdomain);
     StreamError error=new StreamError(StreamError.Condition.host_unknown);
     sb.append(error.toXML());
-    sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
     connection.close();
@@ -43,7 +41,6 @@
     Log.debug("[ExComp] A shared secret for the component was not found.");
     StreamError error=new StreamError(StreamError.Condition.internal_server_error);
     sb.append(error.toXML());
-    sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
     connection.close();
@@ -53,7 +50,6 @@
     Log.debug("[ExComp] Another component is already using domain: " + domain);
     StreamError error=new StreamError(StreamError.Condition.conflict);
     sb.append(error.toXML());
-    sb.append("</stream:stream>");
     writer.write(sb.toString());
     writer.flush();
     connection.close();
@@ -84,7 +80,6 @@
       sb=new StringBuilder();
       StreamError error=new StreamError(StreamError.Condition.not_authorized);
       sb.append(error.toXML());
-      sb.append("</stream:stream>");
       writer.write(sb.toString());
       writer.flush();
       connection.close();
