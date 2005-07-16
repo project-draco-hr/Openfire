@@ -8,6 +8,23 @@
   if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
+  if (!allowedIPs.isEmpty()) {
+    if (!allowedIPs.containsKey(connection.getInetAddress().getHostAddress())) {
+      byte[] address=connection.getInetAddress().getAddress();
+      String range1=address[0] + "." + address[1]+ "."+ address[2]+ ".*";
+      String range2=address[0] + "." + address[1]+ ".*.*";
+      String range3=address[0] + ".*.*.*";
+      if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
+        Log.debug("Closed connection to client attempting to connect from: " + connection.getInetAddress().getHostAddress());
+        StreamError error=new StreamError(StreamError.Condition.not_authorized);
+        StringBuilder sb=new StringBuilder();
+        sb.append(error.toXML());
+        connection.deliverRawText(sb.toString());
+        connection.close();
+        return null;
+      }
+    }
+  }
   String language="en";
   int majorVersion=0;
   int minorVersion=0;
