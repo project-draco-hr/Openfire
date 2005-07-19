@@ -6,6 +6,9 @@
   if (username == null) {
     return;
   }
+ else   if (!XMPPServer.getInstance().getServerInfo().getName().equals(message.getTo().getDomain())) {
+    return;
+  }
   long messageID=SequenceManager.nextID(JiveConstants.OFFLINE);
   String msgXML=message.getElement().asXML();
   Connection con=null;
