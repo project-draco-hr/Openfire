@@ -1,0 +1,73 @@
+{
+  ArrayList<Group> groups=new ArrayList<Group>();
+  boolean debug=Log.isDebugEnabled();
+  if (debug) {
+    Log.debug("Trying to find all groups in the system.");
+  }
+  DirContext ctx=null;
+  NamingEnumeration answer=null;
+  try {
+    ctx=manager.getContext();
+    if (manager.isDebugEnabled()) {
+      Log.debug("Starting LDAP search...");
+      Log.debug("Using groupSearchFilter: " + searchFilter);
+    }
+    answer=ctx.search("",searchFilter,new SearchControls());
+    if (manager.isDebugEnabled()) {
+      Log.debug("... search finished");
+      Log.debug("Starting to populate groups with users.");
+    }
+  }
+ catch (  Exception e) {
+    if (manager.isDebugEnabled())     Log.debug("Error while searching for groups.",e);
+    return groups;
+  }
+  while (answer.hasMoreElements()) {
+    String groupName="";
+    try {
+      Attributes a=(((SearchResult)answer.next()).getAttributes());
+      String name=((String)((a.get(manager.getNameField())).get()));
+      groupName=name;
+      String description;
+      try {
+        name=((String)((a.get(manager.getNameField())).get()));
+        description=((String)((a.get(manager.getGroupDescriptionField())).get()));
+      }
+ catch (      Exception e) {
+        description="";
+      }
+      ArrayList<String> members=new ArrayList<String>();
+      Attribute member=a.get(manager.getGroupMemberField());
+      NamingEnumeration ne=member.getAll();
+      while (ne.hasMore()) {
+        String userName=(String)ne.next();
+        if (!manager.getPosixEnabled()) {
+          StringTokenizer st=new StringTokenizer(userName,",");
+          Attributes attrs=ctx.getAttributes(st.nextToken(),new String[]{manager.getUsernameField()});
+          Attribute a1=attrs.get(manager.getUsernameField());
+          if (a1 != null)           userName=(String)a1.get();
+        }
+        if (userName != null) {
+          try {
+            members.add(JID.escapeNode(userName));
+          }
+ catch (          Exception e) {
+            if (manager.isDebugEnabled())             Log.debug("Error loading user: " + userName,e);
+          }
+        }
+      }
+      Group g=new Group(this,name,description,members,new ArrayList<String>());
+      groups.add(g);
+    }
+ catch (    Exception e) {
+      if (manager.isDebugEnabled())       Log.debug("Error while populating group, " + groupName + ".",e);
+    }
+  }
+  if (manager.isDebugEnabled())   Log.debug("Finished populating group(s) with users.");
+  try {
+    ctx.close();
+  }
+ catch (  Exception e) {
+  }
+  return groups;
+}

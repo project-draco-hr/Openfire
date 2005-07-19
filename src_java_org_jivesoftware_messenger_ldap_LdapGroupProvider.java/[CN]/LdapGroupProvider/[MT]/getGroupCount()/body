@@ -1,0 +1,37 @@
+{
+  if (groupCount != -1 && System.currentTimeMillis() < expiresStamp) {
+    return groupCount;
+  }
+  int count=0;
+  if (manager.isDebugEnabled()) {
+    Log.debug("Trying to get the number of groups in the system.");
+  }
+  DirContext ctx=null;
+  NamingEnumeration answer=null;
+  String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+  try {
+    ctx=manager.getContext();
+    if (manager.isDebugEnabled()) {
+      Log.debug("Starting LDAP search...");
+      Log.debug("Using groupSearchFilter: " + searchFilter);
+    }
+    answer=ctx.search("",searchFilter,new SearchControls());
+    if (manager.isDebugEnabled()) {
+      Log.debug("... search finished");
+    }
+  }
+ catch (  Exception e) {
+    if (manager.isDebugEnabled())     Log.debug("Error while searching for groups.",e);
+  }
+  try {
+    while (answer.hasMoreElements()) {
+      count++;
+      answer.next();
+    }
+  }
+ catch (  Exception e) {
+  }
+  this.groupCount=count;
+  this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
+  return count;
+}
