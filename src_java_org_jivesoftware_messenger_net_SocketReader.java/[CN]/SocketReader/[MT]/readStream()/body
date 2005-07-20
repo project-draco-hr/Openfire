@@ -36,6 +36,13 @@
         session.process(reply);
         continue;
       }
+      try {
+        packet.getType();
+      }
+ catch (      IllegalArgumentException e) {
+        Log.warn("Invalid presence type",e);
+        packet.setType(null);
+      }
       processPresence(packet);
     }
  else     if ("iq".equals(tag)) {
