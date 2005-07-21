@@ -1,2 +1,21 @@
 {
+  response.setContentType("text/xml");
+  PrintWriter out=response.getWriter();
+  if (presence == null) {
+    String username=request.getParameter("username");
+    presence=new Presence(Presence.Type.unavailable);
+    XMPPServer server=XMPPServer.getInstance();
+    try {
+      User user=server.getUserManager().getUser(username);
+      String status=server.getPresenceManager().getLastPresenceStatus(user);
+      if (status != null) {
+        presence.setStatus(status);
+      }
+    }
+ catch (    UserNotFoundException e) {
+    }
+    presence.setFrom(server.createJID(username,null));
+  }
+  out.println(presence.toXML());
+  out.flush();
 }
