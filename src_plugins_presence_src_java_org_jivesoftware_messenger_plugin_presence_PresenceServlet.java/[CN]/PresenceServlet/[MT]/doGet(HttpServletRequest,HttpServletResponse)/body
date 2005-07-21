@@ -1,0 +1,29 @@
+{
+  String sender=request.getParameter("sender");
+  String username=request.getParameter("username");
+  String type=request.getParameter("type");
+  type=type == null ? "img" : type;
+  try {
+    Presence presence=plugin.getUserPresence(sender,username);
+    if ("img".equals(type)) {
+      imageProvider.sendInfo(request,response,presence);
+    }
+ else     if ("xml".equals(type)) {
+      xmlProvider.sendInfo(request,response,presence);
+    }
+ else {
+      Log.warn("The presence servlet received an invalid request of type: " + type);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    if ("img".equals(type)) {
+      imageProvider.sendUserNotFound(request,response);
+    }
+ else     if ("xml".equals(type)) {
+      xmlProvider.sendUserNotFound(request,response);
+    }
+ else {
+      Log.warn("The presence servlet received an invalid request of type: " + type);
+    }
+  }
+}

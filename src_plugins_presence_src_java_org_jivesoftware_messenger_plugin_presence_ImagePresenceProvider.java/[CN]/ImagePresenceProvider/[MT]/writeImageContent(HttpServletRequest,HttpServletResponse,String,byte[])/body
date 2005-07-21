@@ -1,0 +1,12 @@
+{
+  String img=request.getParameter("img");
+  if (img != null) {
+    writeImageContent(img.replace("${presence}",presenceType),defaultImage,response);
+  }
+ else   if (request.getParameter(presenceType) != null) {
+    writeImageContent(request.getParameter(presenceType),defaultImage,response);
+  }
+ else {
+    writeImageContent(null,defaultImage,response);
+  }
+}

@@ -1,0 +1,12 @@
+{
+  if (!isPresencePublic()) {
+    if (sender == null) {
+      throw new UserNotFoundException("Sender is null");
+    }
+ else     if (!presenceManager.canProbePresence(new JID(sender),username)) {
+      throw new UserNotFoundException("Sender is not allowed to probe this user");
+    }
+  }
+  User user=userManager.getUser(username);
+  return presenceManager.getPresence(user);
+}
