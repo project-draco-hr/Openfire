@@ -3,21 +3,15 @@
   PrintWriter out=response.getWriter();
   Presence presence=new Presence();
   presence.setError(PacketError.Condition.forbidden);
-  String username=request.getParameter("username");
-  if (username != null) {
-    try {
-      presence.setFrom(XMPPServer.getInstance().createJID(username,null));
-    }
- catch (    Exception e) {
-    }
+  try {
+    presence.setFrom(new JID(request.getParameter("jid")));
   }
-  String sender=request.getParameter("sender");
-  if (sender != null) {
-    try {
-      presence.setTo(new JID(sender));
-    }
- catch (    Exception e) {
-    }
+ catch (  Exception e) {
+  }
+  try {
+    presence.setTo(new JID(request.getParameter("req_jid")));
+  }
+ catch (  Exception e) {
   }
   out.println(presence.toXML());
   out.flush();
