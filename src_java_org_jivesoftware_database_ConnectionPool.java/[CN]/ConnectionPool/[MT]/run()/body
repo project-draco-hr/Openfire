@@ -27,6 +27,18 @@ synchronized (wrappers[i]) {
             if (lastOpen < i) {
               lastOpen=i;
             }
+            if ("true".equals(JiveGlobals.getXMLProperty("database.defaultProvider.checkOpenConnections")) && !wrappers[i].hasLoggedException) {
+              int timeout=600;
+              try {
+                timeout=Integer.parseInt(JiveGlobals.getXMLProperty("database.defaultProvider.openConnectionTimeLimit"));
+              }
+ catch (              Exception e) {
+              }
+              if (time - wrappers[i].lockTime > timeout * 1000) {
+                wrappers[i].hasLoggedException=true;
+                Log.warn("Connection has been held open for too long: ",wrappers[i].exception);
+              }
+            }
             continue;
           }
           wrappers[i].checkedout=true;

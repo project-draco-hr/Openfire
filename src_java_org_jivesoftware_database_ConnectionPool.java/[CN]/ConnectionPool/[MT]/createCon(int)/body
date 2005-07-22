@@ -33,6 +33,9 @@
  catch (    SQLException e) {
     }
     ConnectionWrapper wrapper=new ConnectionWrapper(con,this);
+    if ("true".equals(JiveGlobals.getXMLProperty("database.defaultProvider.checkOpenConnections"))) {
+      wrapper.exception=new Exception();
+    }
 synchronized (conCountLock) {
       cons[index]=con;
       wrappers[index]=wrapper;

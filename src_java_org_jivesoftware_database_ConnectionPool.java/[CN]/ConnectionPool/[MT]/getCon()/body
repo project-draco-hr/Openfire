@@ -9,6 +9,10 @@ synchronized (wrapper) {
         wrapper.setConnection(cons[i]);
         wrapper.checkedout=true;
         wrapper.lockTime=System.currentTimeMillis();
+        if ("true".equals(JiveGlobals.getXMLProperty("database.defaultProvider.checkOpenConnections"))) {
+          wrapper.exception=new Exception();
+          wrapper.hasLoggedException=false;
+        }
         return wrapper;
       }
     }
