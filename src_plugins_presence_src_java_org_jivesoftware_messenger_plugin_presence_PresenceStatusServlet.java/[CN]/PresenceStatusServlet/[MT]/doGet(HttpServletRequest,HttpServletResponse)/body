@@ -1,11 +1,11 @@
 {
   String sender=request.getParameter("sender");
-  String username=request.getParameter("username");
+  String jid=request.getParameter("jid");
   String type=request.getParameter("type");
-  type=type == null ? "img" : type;
+  type=type == null ? "image" : type;
   try {
-    Presence presence=plugin.getUserPresence(sender,username);
-    if ("img".equals(type)) {
+    Presence presence=plugin.getPresence(sender,jid);
+    if ("image".equals(type)) {
       imageProvider.sendInfo(request,response,presence);
     }
  else     if ("xml".equals(type)) {
@@ -16,7 +16,7 @@
     }
   }
  catch (  UserNotFoundException e) {
-    if ("img".equals(type)) {
+    if ("image".equals(type)) {
       imageProvider.sendUserNotFound(request,response);
     }
  else     if ("xml".equals(type)) {
@@ -27,7 +27,7 @@
     }
   }
 catch (  IllegalArgumentException e) {
-    if ("img".equals(type)) {
+    if ("image".equals(type)) {
       imageProvider.sendUserNotFound(request,response);
     }
  else     if ("xml".equals(type)) {
