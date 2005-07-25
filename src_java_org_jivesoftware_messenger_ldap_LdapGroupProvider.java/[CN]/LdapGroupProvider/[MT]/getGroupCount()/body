@@ -15,7 +15,9 @@
       Log.debug("Starting LDAP search...");
       Log.debug("Using groupSearchFilter: " + searchFilter);
     }
-    answer=ctx.search("",searchFilter,new SearchControls());
+    SearchControls ctrls=new SearchControls();
+    ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    answer=ctx.search("",searchFilter,ctrls);
     if (manager.isDebugEnabled()) {
       Log.debug("... search finished");
     }

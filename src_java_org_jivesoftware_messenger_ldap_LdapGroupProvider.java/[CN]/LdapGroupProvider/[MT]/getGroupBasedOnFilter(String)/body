@@ -1,5 +1,5 @@
 {
-  ArrayList<Group> groups=new ArrayList<Group>();
+  TreeMap<String,Group> groups=new TreeMap<String,Group>();
   boolean debug=Log.isDebugEnabled();
   if (debug) {
     Log.debug("Trying to find all groups in the system.");
@@ -13,8 +13,9 @@
       Log.debug("Using groupSearchFilter: " + searchFilter);
     }
     SearchControls searchControls=new SearchControls();
-    String returnedAtts[]={manager.getNameField(),manager.getGroupDescriptionField(),manager.getGroupMemberField()};
+    String returnedAtts[]={manager.getGroupNameField(),manager.getGroupDescriptionField(),manager.getGroupMemberField()};
     searchControls.setReturningAttributes(returnedAtts);
+    searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
     answer=ctx.search("",searchFilter,searchControls);
     if (manager.isDebugEnabled()) {
       Log.debug("... search finished");
@@ -23,41 +24,52 @@
   }
  catch (  Exception e) {
     if (manager.isDebugEnabled())     Log.debug("Error while searching for groups.",e);
-    return groups;
+    return groups.values();
   }
+  SearchControls ctrls=new SearchControls();
+  ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
+  ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
   while (answer.hasMoreElements()) {
     String name="";
     try {
       Attributes a=(((SearchResult)answer.next()).getAttributes());
       String description;
       try {
-        name=((String)((a.get(manager.getNameField())).get()));
+        name=((String)((a.get(manager.getGroupNameField())).get()));
         description=((String)((a.get(manager.getGroupDescriptionField())).get()));
       }
  catch (      Exception e) {
         description="";
       }
-      ArrayList<String> members=new ArrayList<String>();
+      TreeSet<String> members=new TreeSet<String>();
       Attribute member=a.get(manager.getGroupMemberField());
       NamingEnumeration ne=member.getAll();
       while (ne.hasMore()) {
         String userName=(String)ne.next();
         if (!manager.getPosixEnabled()) {
-          StringTokenizer st=new StringTokenizer(userName,",");
-          Attributes attrs=ctx.getAttributes(st.nextToken(),new String[]{manager.getUsernameField()});
-          Attribute a1=attrs.get(manager.getUsernameField());
-          if (a1 != null)           userName=(String)a1.get();
+          try {
+            Name ldapname=new LdapName(userName);
+            String ldapcn=ldapname.get(ldapname.size() - 1);
+            NamingEnumeration usrAnswer=ctx.search("",ldapcn,ctrls);
+            if (usrAnswer.hasMoreElements()) {
+              userName=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+            }
+          }
+ catch (          Exception e) {
+            if (manager.isDebugEnabled())             Log.debug("Error populating user with DN: " + userName,e);
+          }
         }
         try {
-          User user=userManager.getUser(userName);
+          User user=userManager.getUser(JID.escapeNode(userName));
           members.add(user.getUsername());
         }
  catch (        UserNotFoundException e) {
           if (manager.isDebugEnabled())           Log.debug("User not found: " + userName);
         }
       }
+      if (manager.isDebugEnabled())       Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
       Group g=new Group(this,name,description,members,new ArrayList<String>());
-      groups.add(g);
+      groups.put(name,g);
     }
  catch (    Exception e) {
       if (manager.isDebugEnabled())       Log.debug("Error while populating group, " + name + ".",e);
@@ -69,5 +81,5 @@
   }
  catch (  Exception e) {
   }
-  return groups;
+  return groups.values();
 }
