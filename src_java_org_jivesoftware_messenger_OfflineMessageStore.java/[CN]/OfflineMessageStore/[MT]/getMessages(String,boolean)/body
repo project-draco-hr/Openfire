@@ -1,5 +1,5 @@
 {
-  List<Message> messages=new ArrayList<Message>();
+  List<OfflineMessage> messages=new ArrayList<OfflineMessage>();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -10,7 +10,7 @@
     while (rs.next()) {
       String msgXML=rs.getString(1);
       Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
-      Message message=new Message(saxReader.read(new StringReader(msgXML)).getRootElement());
+      OfflineMessage message=new OfflineMessage(creationDate,saxReader.read(new StringReader(msgXML)).getRootElement());
       Element delay=message.addChildElement("x","jabber:x:delay");
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
 synchronized (dateFormat) {
@@ -19,10 +19,12 @@ synchronized (dateFormat) {
       messages.add(message);
     }
     rs.close();
-    pstmt.close();
-    pstmt=con.prepareStatement(DELETE_OFFLINE);
-    pstmt.setString(1,username);
-    pstmt.executeUpdate();
+    if (delete) {
+      pstmt.close();
+      pstmt=con.prepareStatement(DELETE_OFFLINE);
+      pstmt.setString(1,username);
+      pstmt.executeUpdate();
+    }
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
