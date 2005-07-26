@@ -17,9 +17,11 @@
  else       if (jarFile.lastModified() > dir.lastModified()) {
         unloadPlugin(pluginName);
         System.gc();
-        while (!deleteDir(dir)) {
+        int count=0;
+        while (!deleteDir(dir) && count < 5) {
           Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
           Thread.sleep(5000);
+          count++;
         }
         unzipPlugin(pluginName,jarFile,dir);
       }
@@ -62,9 +64,12 @@
       for (      String pluginName : toDelete) {
         unloadPlugin(pluginName);
         System.gc();
-        while (!deleteDir(new File(pluginDirectory,pluginName))) {
+        int count=0;
+        File dir=new File(pluginDirectory,pluginName);
+        while (!deleteDir(dir) && count < 5) {
           Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
           Thread.sleep(5000);
+          count++;
         }
       }
     }

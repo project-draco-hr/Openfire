@@ -21,7 +21,44 @@
           return;
         }
       }
-      PluginClassLoader pluginLoader=new PluginClassLoader(pluginDir);
+      PluginClassLoader pluginLoader;
+      Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
+      if (parentPluginNode != null) {
+        String parentPlugin=parentPluginNode.getTextTrim();
+        if (plugins.containsKey(parentPlugin)) {
+          pluginLoader=classloaders.get(getPlugin(parentPlugin));
+          pluginLoader.addDirectory(pluginDir);
+        }
+ else {
+          if (pluginDir.getName().compareTo(parentPlugin) < 0) {
+            File file=new File(pluginDir.getParentFile(),parentPlugin + ".jar");
+            if (file.exists()) {
+              return;
+            }
+ else {
+              file=new File(pluginDir.getParentFile(),parentPlugin + ".war");
+              if (file.exists()) {
+                return;
+              }
+ else {
+                String msg="Ignoring plugin " + pluginDir.getName() + ": parent plugin "+ parentPlugin+ " not present.";
+                Log.warn(msg);
+                System.out.println(msg);
+                return;
+              }
+            }
+          }
+ else {
+            String msg="Ignoring plugin " + pluginDir.getName() + ": parent plugin "+ parentPlugin+ " not present.";
+            Log.warn(msg);
+            System.out.println(msg);
+            return;
+          }
+        }
+      }
+ else {
+        pluginLoader=new PluginClassLoader(pluginDir);
+      }
       Element developmentNode=(Element)pluginXML.selectSingleNode("/plugin/development");
       PluginDevEnvironment dev=null;
       if (developmentNode != null) {
@@ -46,7 +83,19 @@
       plugin.initializePlugin(this,pluginDir);
       plugins.put(pluginDir.getName(),plugin);
       pluginDirs.put(plugin,pluginDir);
-      classloaders.put(plugin,pluginLoader);
+      if (parentPluginNode != null) {
+        String parentPlugin=parentPluginNode.getTextTrim();
+        List<String> childrenPlugins=parentPluginMap.get(plugins.get(parentPlugin));
+        if (childrenPlugins == null) {
+          childrenPlugins=new ArrayList<String>();
+          parentPluginMap.put(plugins.get(parentPlugin),childrenPlugins);
+        }
+        childrenPlugins.add(pluginDir.getName());
+        childPluginMap.put(plugin,parentPlugin);
+      }
+ else {
+        classloaders.put(plugin,pluginLoader);
+      }
       File webXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web.xml");
       if (webXML.exists()) {
         PluginServlet.registerServlets(this,plugin,webXML);
