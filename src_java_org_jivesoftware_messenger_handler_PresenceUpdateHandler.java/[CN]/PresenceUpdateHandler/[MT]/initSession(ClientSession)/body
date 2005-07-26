@@ -13,9 +13,11 @@
         presenceManager.probePresence(session.getAddress(),item.getJid());
       }
     }
-    Collection<Message> messages=messageStore.getMessages(username);
-    for (    Message message : messages) {
-      session.process(message);
+    if (session.canFloodOfflineMessages()) {
+      Collection<OfflineMessage> messages=messageStore.getMessages(username,true);
+      for (      Message message : messages) {
+        session.process(message);
+      }
     }
   }
 }
