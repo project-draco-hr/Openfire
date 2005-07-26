@@ -1,6 +1,12 @@
 {
   DiscoItemsProvider discoItemsProvider=new DiscoItemsProvider(){
     public Iterator<Element> getItems(    String name,    String node,    JID senderJID){
+      if (node != null) {
+        if (serverNodeProviders.get(node) != null) {
+          return serverNodeProviders.get(node).getItems(name,node,senderJID);
+        }
+        return null;
+      }
       if (name == null) {
         return serverItems.iterator();
       }

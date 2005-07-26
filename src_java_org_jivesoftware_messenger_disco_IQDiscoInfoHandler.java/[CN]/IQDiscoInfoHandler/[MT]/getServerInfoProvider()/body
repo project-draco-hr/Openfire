@@ -1,8 +1,10 @@
 {
   DiscoInfoProvider discoInfoProvider=new DiscoInfoProvider(){
-    ArrayList identities=new ArrayList();
-    ArrayList features=new ArrayList();
-    public Iterator getIdentities(    String name,    String node,    JID senderJID){
+    ArrayList<Element> identities=new ArrayList<Element>();
+    public Iterator<Element> getIdentities(    String name,    String node,    JID senderJID){
+      if (node != null && serverNodeProviders.get(node) != null) {
+        return serverNodeProviders.get(node).getIdentities(name,node,senderJID);
+      }
       if (name == null) {
 synchronized (identities) {
           if (identities.isEmpty()) {
@@ -19,7 +21,10 @@ synchronized (identities) {
         return userIdentities.iterator();
       }
     }
-    public Iterator getFeatures(    String name,    String node,    JID senderJID){
+    public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
+      if (node != null && serverNodeProviders.get(node) != null) {
+        return serverNodeProviders.get(node).getFeatures(name,node,senderJID);
+      }
       if (name == null) {
         return serverFeatures.iterator();
       }
@@ -28,6 +33,12 @@ synchronized (identities) {
       }
     }
     public boolean hasInfo(    String name,    String node,    JID senderJID){
+      if (node != null) {
+        if (serverNodeProviders.get(node) != null) {
+          return serverNodeProviders.get(node).hasInfo(name,node,senderJID);
+        }
+        return false;
+      }
       try {
         return node == null && (name == null || UserManager.getInstance().getUser(name) != null);
       }
@@ -36,6 +47,9 @@ synchronized (identities) {
       }
     }
     public XDataFormImpl getExtendedInfo(    String name,    String node,    JID senderJID){
+      if (node != null && serverNodeProviders.get(node) != null) {
+        return serverNodeProviders.get(node).getExtendedInfo(name,node,senderJID);
+      }
       return null;
     }
   }
