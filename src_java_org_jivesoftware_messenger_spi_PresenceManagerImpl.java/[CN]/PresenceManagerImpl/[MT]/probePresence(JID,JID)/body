@@ -47,8 +47,7 @@
       component.processPacket(presence);
     }
  else {
-      String serverDomain=server.getServerInfo().getName();
-      if (!probee.getDomain().contains(serverDomain)) {
+      if (server.isRemote(probee)) {
         Presence probePresence=new Presence();
         probePresence.setType(Presence.Type.probe);
         probePresence.setFrom(prober);
