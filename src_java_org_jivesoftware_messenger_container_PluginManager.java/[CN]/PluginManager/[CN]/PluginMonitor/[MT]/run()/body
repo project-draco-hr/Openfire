@@ -1,5 +1,16 @@
 {
   try {
+    String pluginDirs=System.getProperty("pluginDirs");
+    if (pluginDirs != null) {
+      StringTokenizer st=new StringTokenizer(pluginDirs,", ");
+      while (st.hasMoreTokens()) {
+        String dir=st.nextToken();
+        if (!devPlugins.contains(dir)) {
+          loadPlugin(new File(dir));
+          devPlugins.add(dir);
+        }
+      }
+    }
     File[] jars=pluginDirectory.listFiles(new FileFilter(){
       public boolean accept(      File pathname){
         String fileName=pathname.getName().toLowerCase();

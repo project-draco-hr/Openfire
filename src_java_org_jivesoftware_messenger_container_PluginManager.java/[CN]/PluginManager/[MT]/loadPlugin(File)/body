@@ -67,11 +67,17 @@
         dev=new PluginDevEnvironment();
         String wrd=webRoot.getTextTrim();
         File webRootDir=new File(wrd);
+        if (!webRootDir.exists()) {
+          webRootDir=new File(pluginDir,wrd);
+        }
         if (webRootDir.exists()) {
           dev.setWebRoot(webRootDir);
         }
         String cd=classesDir.getTextTrim();
         File classes=new File(cd);
+        if (!classes.exists()) {
+          classes=new File(pluginDir,cd);
+        }
         if (classes.exists()) {
           dev.setClassesDir(classes);
           pluginLoader.addURL(classes.getAbsoluteFile().toURL());
