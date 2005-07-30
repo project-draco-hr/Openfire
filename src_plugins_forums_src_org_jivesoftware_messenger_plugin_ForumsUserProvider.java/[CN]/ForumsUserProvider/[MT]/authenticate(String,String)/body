@@ -1,0 +1,15 @@
+{
+  try {
+    boolean auth=!getWebServices().authenticate(username,password);
+    System.out.println("Auth result was: " + auth);
+    if (auth) {
+      throw new UnauthorizedException();
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    if (e instanceof UnauthorizedException) {
+      throw (UnauthorizedException)e;
+    }
+  }
+}
