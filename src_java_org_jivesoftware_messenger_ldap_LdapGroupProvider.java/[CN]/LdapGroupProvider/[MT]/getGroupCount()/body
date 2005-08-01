@@ -6,32 +6,15 @@
   if (manager.isDebugEnabled()) {
     Log.debug("Trying to get the number of groups in the system.");
   }
-  DirContext ctx=null;
-  NamingEnumeration answer=null;
   String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
-  try {
-    ctx=manager.getContext();
-    if (manager.isDebugEnabled()) {
-      Log.debug("Starting LDAP search...");
-      Log.debug("Using groupSearchFilter: " + searchFilter);
-    }
-    SearchControls ctrls=new SearchControls();
-    ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    answer=ctx.search("",searchFilter,ctrls);
-    if (manager.isDebugEnabled()) {
-      Log.debug("... search finished");
-    }
-  }
- catch (  Exception e) {
-    if (manager.isDebugEnabled())     Log.debug("Error while searching for groups.",e);
-  }
-  try {
-    while (answer.hasMoreElements()) {
-      count++;
+  String returningAttributes[]={manager.getGroupNameField()};
+  NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,returningAttributes);
+  for (; answer.hasMoreElements(); count++) {
+    try {
       answer.next();
     }
-  }
- catch (  Exception e) {
+ catch (    Exception e) {
+    }
   }
   this.groupCount=count;
   this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;

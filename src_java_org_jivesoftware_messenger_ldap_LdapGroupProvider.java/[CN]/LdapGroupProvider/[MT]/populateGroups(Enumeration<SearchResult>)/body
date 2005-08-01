@@ -1,38 +1,23 @@
 {
-  TreeMap<String,Group> groups=new TreeMap<String,Group>();
-  boolean debug=Log.isDebugEnabled();
-  if (debug) {
-    Log.debug("Trying to find all groups in the system.");
+  if (manager.isDebugEnabled()) {
+    Log.debug("Starting to populate groups with users.");
   }
+  TreeMap<String,Group> groups=new TreeMap<String,Group>();
   DirContext ctx=null;
-  NamingEnumeration answer=null;
   try {
     ctx=manager.getContext();
-    if (manager.isDebugEnabled()) {
-      Log.debug("Starting LDAP search...");
-      Log.debug("Using groupSearchFilter: " + searchFilter);
-    }
-    SearchControls searchControls=new SearchControls();
-    String returnedAtts[]={manager.getGroupNameField(),manager.getGroupDescriptionField(),manager.getGroupMemberField()};
-    searchControls.setReturningAttributes(returnedAtts);
-    searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    answer=ctx.search("",searchFilter,searchControls);
-    if (manager.isDebugEnabled()) {
-      Log.debug("... search finished");
-      Log.debug("Starting to populate groups with users.");
-    }
   }
  catch (  Exception e) {
-    if (manager.isDebugEnabled())     Log.debug("Error while searching for groups.",e);
-    return groups.values();
+    return new ArrayList<Group>();
   }
   SearchControls ctrls=new SearchControls();
   ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
   ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+  String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
   while (answer.hasMoreElements()) {
     String name="";
     try {
-      Attributes a=(((SearchResult)answer.next()).getAttributes());
+      Attributes a=(((SearchResult)answer.nextElement()).getAttributes());
       String description;
       try {
         name=((String)((a.get(manager.getGroupNameField())).get()));
@@ -48,12 +33,14 @@
         String userName=(String)ne.next();
         if (!manager.getPosixEnabled()) {
           try {
-            Name ldapname=new LdapName(userName);
+            LdapName ldapname=new LdapName(userName);
             String ldapcn=ldapname.get(ldapname.size() - 1);
-            NamingEnumeration usrAnswer=ctx.search("",ldapcn,ctrls);
+            String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
+            NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
             if (usrAnswer.hasMoreElements()) {
               userName=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
             }
+ else             throw new UserNotFoundException();
           }
  catch (          Exception e) {
             if (manager.isDebugEnabled())             Log.debug("Error populating user with DN: " + userName,e);

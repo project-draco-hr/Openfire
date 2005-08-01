@@ -1,11 +1,15 @@
 {
   ArrayList<Group> returnCollection=new ArrayList<Group>();
-  Collection<Group> groups=getGroups();
-  Iterator<Group> it=groups.iterator();
-  for (int i=0; i < groups.size(); i++) {
-    Group g=it.next();
-    if (i >= start && i <= end)     returnCollection.add(g);
-    if (i > end)     break;
+  String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+  NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,standardAttributes);
+  Vector<SearchResult> v=new Vector<SearchResult>();
+  for (int i=1; answer.hasMoreElements() && i <= (start + num); i++) {
+    try {
+      SearchResult sr=answer.next();
+      if (i >= start)       v.add(sr);
+    }
+ catch (    Exception e) {
+    }
   }
-  return returnCollection;
+  return populateGroups(v.elements());
 }

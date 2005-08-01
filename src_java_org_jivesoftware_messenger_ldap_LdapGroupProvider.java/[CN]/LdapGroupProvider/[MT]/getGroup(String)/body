@@ -1,7 +1,7 @@
 {
   String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
   String searchFilter="(&" + filter + "("+ manager.getGroupNameField()+ "="+ group+ "))";
-  Collection<Group> groups=getGroupBasedOnFilter(searchFilter);
+  Collection<Group> groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
   if (groups.size() > 1)   return null;
   for (  Group g : groups)   return g;
   return null;
