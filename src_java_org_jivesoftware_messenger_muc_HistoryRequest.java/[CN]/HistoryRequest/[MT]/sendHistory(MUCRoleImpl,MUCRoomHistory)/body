@@ -29,7 +29,10 @@
       if (getSeconds() > -1 || getSince() != null) {
         delayInformation=message.getChildElement("x","jabber:x:delay");
         try {
-          Date delayedDate=delayedFormatter.parse(delayInformation.attributeValue("stamp"));
+          Date delayedDate=null;
+synchronized (delayedFormatter) {
+            delayedDate=delayedFormatter.parse(delayInformation.attributeValue("stamp"));
+          }
           if (getSince() != null && delayedDate.before(getSince())) {
             break;
           }
