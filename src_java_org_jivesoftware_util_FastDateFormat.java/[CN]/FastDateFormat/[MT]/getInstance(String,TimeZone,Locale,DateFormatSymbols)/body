@@ -1,0 +1,24 @@
+{
+  Object key=pattern;
+  if (timeZone != null) {
+    key=new Pair(key,timeZone);
+  }
+  if (locale != null) {
+    key=new Pair(key,locale);
+  }
+  if (symbols != null) {
+    key=new Pair(key,symbols);
+  }
+  FastDateFormat format=(FastDateFormat)cInstanceCache.get(key);
+  if (format == null) {
+    if (locale == null) {
+      locale=Locale.getDefault();
+    }
+    if (symbols == null) {
+      symbols=new DateFormatSymbols(locale);
+    }
+    format=new FastDateFormat(pattern,timeZone,locale,symbols);
+    cInstanceCache.put(key,format);
+  }
+  return format;
+}

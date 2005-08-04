@@ -1,0 +1,18 @@
+{
+  if (locale == null) {
+    locale=Locale.getDefault();
+  }
+  mPattern=pattern;
+  mTimeZone=timeZone;
+  mLocale=locale;
+  if (symbols == null) {
+    symbols=new DateFormatSymbols(locale);
+  }
+  List rulesList=parse(pattern,timeZone,locale,symbols);
+  mRules=(Rule[])rulesList.toArray(new Rule[rulesList.size()]);
+  int len=0;
+  for (int i=mRules.length; --i >= 0; ) {
+    len+=mRules[i].estimateLength();
+  }
+  mMaxLengthEstimate=len;
+}

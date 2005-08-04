@@ -1,0 +1,20 @@
+{
+  TimeZone timeZone;
+  if ((timeZone=mTimeZone) != null) {
+    if (timeZone.useDaylightTime() && calendar.get(Calendar.DST_OFFSET) != 0) {
+      buffer.append(mDaylight);
+    }
+ else {
+      buffer.append(mStandard);
+    }
+  }
+ else {
+    timeZone=calendar.getTimeZone();
+    if (timeZone.useDaylightTime() && calendar.get(Calendar.DST_OFFSET) != 0) {
+      buffer.append(getTimeZoneDisplay(timeZone,true,mStyle,mLocale));
+    }
+ else {
+      buffer.append(getTimeZoneDisplay(timeZone,false,mStyle,mLocale));
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  Object key=style;
+  if (timeZone != null) {
+    key=new Pair(key,timeZone);
+  }
+  if (locale == null) {
+    key=new Pair(key,locale);
+  }
+  FastDateFormat format=(FastDateFormat)cDateInstanceCache.get(key);
+  if (format == null) {
+    int ds;
+    try {
+      ds=((Integer)style).intValue();
+    }
+ catch (    ClassCastException e) {
+      throw new IllegalArgumentException("Illegal date style: " + style);
+    }
+    if (locale == null) {
+      locale=Locale.getDefault();
+    }
+    try {
+      String pattern=((SimpleDateFormat)DateFormat.getDateInstance(ds,locale)).toPattern();
+      format=getInstance(pattern,timeZone,locale);
+      cDateInstanceCache.put(key,format);
+    }
+ catch (    ClassCastException e) {
+      throw new IllegalArgumentException("No date pattern for locale: " + locale);
+    }
+  }
+  return format;
+}
