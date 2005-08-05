@@ -11,10 +11,11 @@
     pstmt.setString(4,item.getNickname());
     pstmt.setLong(5,rosterID);
     pstmt.executeUpdate();
+    pstmt.close();
     pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
     pstmt.setLong(1,rosterID);
     pstmt.executeUpdate();
-    insertGroups(rosterID,item.getGroups().iterator(),pstmt,con);
+    insertGroups(rosterID,item.getGroups().iterator(),con);
   }
  catch (  SQLException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
