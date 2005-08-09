@@ -58,16 +58,18 @@
       }
     }
 );
+    Set<String> jarSet=new HashSet<String>();
+    for (    File file : jars) {
+      jarSet.add(file.getName().toLowerCase());
+    }
     List<String> toDelete=new ArrayList<String>();
     for (    File pluginDir : dirs) {
       String pluginName=pluginDir.getName();
       if (pluginName.equals("admin")) {
         continue;
       }
-      File file=new File(pluginDirectory,pluginName + ".jar");
-      if (!file.exists()) {
-        file=new File(pluginDirectory,pluginName + ".war");
-        if (!file.exists()) {
+      if (!jarSet.contains(pluginName + ".jar")) {
+        if (!jarSet.contains(pluginName + ".war")) {
           toDelete.add(pluginName);
         }
       }
