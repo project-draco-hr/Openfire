@@ -3,19 +3,24 @@ synchronized (username.intern()) {
     Element vCardElement=null;
     java.sql.Connection con=null;
     PreparedStatement pstmt=null;
+    SAXReader xmlReader=null;
     try {
+      xmlReader=xmlReaders.take();
       con=DbConnectionManager.getConnection();
       pstmt=con.prepareStatement(LOAD_PROPERTIES);
       pstmt.setString(1,username);
       ResultSet rs=pstmt.executeQuery();
       while (rs.next()) {
-        vCardElement=saxReader.read(new StringReader(rs.getString(1))).getRootElement();
+        vCardElement=xmlReader.read(new StringReader(rs.getString(1))).getRootElement();
       }
     }
  catch (    Exception e) {
       Log.error(e);
     }
  finally {
+      if (xmlReader != null) {
+        xmlReaders.add(xmlReader);
+      }
       try {
         if (pstmt != null) {
           pstmt.close();
