@@ -2,7 +2,9 @@
   List<OfflineMessage> messages=new ArrayList<OfflineMessage>();
   Connection con=null;
   PreparedStatement pstmt=null;
+  SAXReader xmlReader=null;
   try {
+    xmlReader=xmlReaders.take();
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_OFFLINE);
     pstmt.setString(1,username);
@@ -10,7 +12,7 @@
     while (rs.next()) {
       String msgXML=rs.getString(1);
       Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
-      OfflineMessage message=new OfflineMessage(creationDate,saxReader.read(new StringReader(msgXML)).getRootElement());
+      OfflineMessage message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
       Element delay=message.addChildElement("x","jabber:x:delay");
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
 synchronized (dateFormat) {
@@ -30,6 +32,7 @@ synchronized (dateFormat) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
  finally {
+    if (xmlReader != null)     xmlReaders.add(xmlReader);
     try {
       if (pstmt != null) {
         pstmt.close();
