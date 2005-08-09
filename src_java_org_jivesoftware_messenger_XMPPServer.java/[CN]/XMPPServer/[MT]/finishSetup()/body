@@ -1,0 +1,25 @@
+{
+  if (!setupMode) {
+    return;
+  }
+  if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
+    setupMode=false;
+  }
+  if (!setupMode) {
+    try {
+      ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+      verifyDataSource();
+      loadModules();
+      initModules();
+      startModules();
+      startDate=new Date();
+      stopDate=null;
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      Log.error(e);
+      System.out.println(LocaleUtils.getLocalizedString("startup.error"));
+      shutdownServer();
+    }
+  }
+}
