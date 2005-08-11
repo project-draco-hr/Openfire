@@ -2,10 +2,15 @@
   serverName=XMPPServer.getInstance().getServerInfo().getName();
   serverAddress=new JID(serverName);
   router=XMPPServer.getInstance().getMessageRouter();
-  registrationNotificationEnabled=JiveGlobals.getBooleanProperty("registration.notification.enabled",false);
-  setRegistrationNotificationEnabled(registrationNotificationEnabled);
-  registrationWelcomeEnabled=JiveGlobals.getBooleanProperty("registration.welcome.enabled",false);
-  setRegistrationNotificationEnabled(registrationWelcomeEnabled);
-  contact=JiveGlobals.getProperty("registration.notification.contact","admin");
+  String imcs=JiveGlobals.getProperty(IM_CONTACTS);
+  if (imcs != null) {
+    imContacts.addAll(Arrays.asList(imcs.split(",")));
+  }
+  String ecs=JiveGlobals.getProperty(EMAIL_CONTACTS);
+  if (ecs != null) {
+    emailContacts.addAll(Arrays.asList(ecs.split(",")));
+  }
   UserEventDispatcher.addListener(listener);
+  JiveGlobals.deleteProperty("registration.notification.contact");
+  JiveGlobals.deleteProperty("registration.notification.enabled");
 }
