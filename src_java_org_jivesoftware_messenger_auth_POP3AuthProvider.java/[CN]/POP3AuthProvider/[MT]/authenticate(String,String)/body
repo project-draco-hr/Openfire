@@ -9,7 +9,9 @@
       return;
     }
   }
-  Session session=Session.getDefaultInstance(System.getProperties());
+  Properties mailProps=new Properties();
+  mailProps.setProperty("mail.debug",String.valueOf(debugEnabled));
+  Session session=Session.getInstance(mailProps,null);
   Store store;
   try {
     store=session.getStore(useSSL ? "pop3s" : "pop3");
@@ -48,6 +50,7 @@
  catch (  UserNotFoundException unfe) {
     String email=username + "@" + (domain != null ? domain : host);
     try {
+      Log.debug("Automatically creating new user account for " + username);
       userManager.createUser(username,StringUtils.randomString(8),null,email);
     }
  catch (    UserAlreadyExistsException uaee) {

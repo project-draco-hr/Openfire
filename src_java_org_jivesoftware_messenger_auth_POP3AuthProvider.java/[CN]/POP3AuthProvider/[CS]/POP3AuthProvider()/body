@@ -10,6 +10,20 @@
   if (host == null || host.length() < 1) {
     throw new IllegalArgumentException("pop3.host is null or empty");
   }
+  debugEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.debug")).booleanValue();
   domain=JiveGlobals.getXMLProperty("pop3.domain");
   port=JiveGlobals.getXMLProperty("pop3.port",useSSL ? 995 : 110);
+  if (Log.isDebugEnabled()) {
+    Log.debug("Created new POP3AuthProvider instance, fields:");
+    Log.debug("\t host: " + host);
+    Log.debug("\t port: " + port);
+    Log.debug("\t domain: " + domain);
+    Log.debug("\t useSSL: " + useSSL);
+    Log.debug("\t authRequiresDomain: " + authRequiresDomain);
+    Log.debug("\t authCacheEnabled: " + (authCache != null));
+    if (authCache != null) {
+      Log.debug("\t authCacheSize: " + authCache.getCacheSize());
+      Log.debug("\t authCacheMaxLifetime: " + authCache.getMaxLifetime());
+    }
+  }
 }
