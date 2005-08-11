@@ -43,7 +43,7 @@
             Element group=(Element)groupIter.next();
             groups.add(group.getText());
           }
-          rosterItems.add(new RosterItem(new JID(jid + "@" + serverName),RosterItem.SubType.getTypeFromInt(Integer.parseInt(substatus)),RosterItem.AskType.getTypeFromInt(Integer.parseInt(askstatus)),RosterItem.RecvType.getTypeFromInt(Integer.parseInt(recvstatus)),nickname,groups));
+          rosterItems.add(new RosterItem(new JID(jid),RosterItem.SubType.getTypeFromInt(Integer.parseInt(substatus)),RosterItem.AskType.getTypeFromInt(Integer.parseInt(askstatus)),RosterItem.RecvType.getTypeFromInt(Integer.parseInt(recvstatus)),nickname,groups));
         }
       }
     }
@@ -65,7 +65,9 @@
     while (rosterIter.hasNext()) {
       RosterItem ri=(RosterItem)rosterIter.next();
       try {
-        userManager.getUser(removeDoman(ri.getJid()));
+        if (serverName.equals(ri.getJid().getDomain())) {
+          userManager.getUser(removeDoman(ri.getJid()));
+        }
         rosterItemProvider.createItem(userName,ri);
       }
  catch (      UserNotFoundException e) {
