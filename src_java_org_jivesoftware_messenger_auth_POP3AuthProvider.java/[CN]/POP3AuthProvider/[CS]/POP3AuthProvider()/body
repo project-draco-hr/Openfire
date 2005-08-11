@@ -1,0 +1,15 @@
+{
+  if (Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.authCache.enabled")).booleanValue()) {
+    int maxSize=JiveGlobals.getXMLProperty("pop3.authCache.size",512 * 1024);
+    long maxLifetime=(long)JiveGlobals.getXMLProperty("pop3.authCache.maxLifetime",(int)JiveConstants.HOUR * 1);
+    authCache=new Cache("POP3 Auth Cache",maxSize,maxLifetime);
+  }
+  useSSL=Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.ssl")).booleanValue();
+  authRequiresDomain=Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.authRequiresDomain")).booleanValue();
+  host=JiveGlobals.getXMLProperty("pop3.host");
+  if (host == null || host.length() < 1) {
+    throw new IllegalArgumentException("pop3.host is null or empty");
+  }
+  domain=JiveGlobals.getXMLProperty("pop3.domain");
+  port=JiveGlobals.getXMLProperty("pop3.port",useSSL ? 995 : 110);
+}
