@@ -1,0 +1,25 @@
+{
+  try {
+    if (!Shaj.checkPassword(domain,username,password)) {
+      throw new UnauthorizedException();
+    }
+  }
+ catch (  UnauthorizedException ue) {
+    throw ue;
+  }
+catch (  Exception e) {
+    throw new UnauthorizedException(e);
+  }
+  UserManager userManager=UserManager.getInstance();
+  try {
+    userManager.getUser(username);
+  }
+ catch (  UserNotFoundException unfe) {
+    try {
+      Log.debug("Automatically creating new user account for " + username);
+      UserManager.getUserProvider().createUser(username,StringUtils.randomString(8),null,null);
+    }
+ catch (    UserAlreadyExistsException uaee) {
+    }
+  }
+}
