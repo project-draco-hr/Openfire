@@ -30,39 +30,52 @@
       Attribute member=a.get(manager.getGroupMemberField());
       NamingEnumeration ne=member.getAll();
       while (ne.hasMore()) {
-        String userName=(String)ne.next();
-        if (!manager.getPosixEnabled()) {
+        String username=(String)ne.next();
+        if (!manager.isPosixMode()) {
           try {
-            LdapName ldapname=new LdapName(userName);
+            LdapName ldapname=new LdapName(username);
             String ldapcn=ldapname.get(ldapname.size() - 1);
             String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
             NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
             if (usrAnswer.hasMoreElements()) {
-              userName=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+              username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
             }
- else             throw new UserNotFoundException();
+ else {
+              throw new UserNotFoundException();
+            }
           }
  catch (          Exception e) {
-            if (manager.isDebugEnabled())             Log.debug("Error populating user with DN: " + userName,e);
+            if (manager.isDebugEnabled()) {
+              Log.debug("Error populating user with DN: " + username,e);
+            }
           }
         }
         try {
-          User user=userManager.getUser(JID.escapeNode(userName));
-          members.add(user.getUsername());
+          String escapedUsername=JID.escapeNode(username);
+          userManager.getUser(escapedUsername);
+          members.add(escapedUsername);
         }
  catch (        UserNotFoundException e) {
-          if (manager.isDebugEnabled())           Log.debug("User not found: " + userName);
+          if (manager.isDebugEnabled()) {
+            Log.debug("User not found: " + username);
+          }
         }
       }
-      if (manager.isDebugEnabled())       Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
+      if (manager.isDebugEnabled()) {
+        Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
+      }
       Group g=new Group(this,name,description,members,new ArrayList<String>());
       groups.put(name,g);
     }
  catch (    Exception e) {
-      if (manager.isDebugEnabled())       Log.debug("Error while populating group, " + name + ".",e);
+      if (manager.isDebugEnabled()) {
+        Log.debug("Error while populating group, " + name + ".",e);
+      }
     }
   }
-  if (manager.isDebugEnabled())   Log.debug("Finished populating group(s) with users.");
+  if (manager.isDebugEnabled()) {
+    Log.debug("Finished populating group(s) with users.");
+  }
   try {
     ctx.close();
   }
