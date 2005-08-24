@@ -1,7 +1,7 @@
 {
   try {
     JID recipient=packet.getTo();
-    if (server.isRemote(recipient)) {
+    if (server.matchesComponent(recipient) || server.isRemote(recipient)) {
       try {
         routingTable.getRoute(recipient).process(packet);
       }

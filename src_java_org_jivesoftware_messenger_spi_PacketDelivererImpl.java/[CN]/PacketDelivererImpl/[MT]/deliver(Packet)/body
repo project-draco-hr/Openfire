@@ -5,13 +5,5 @@
   if (deliverHandler == null) {
     throw new PacketException("Could not send packet - no route" + packet.toString());
   }
-  JID recipient=packet.getTo();
-  if (recipient != null && recipient.getNode() == null && recipient.getResource() == null) {
-    Component component=componentManager.getComponent(recipient);
-    if (component != null) {
-      component.processPacket(packet);
-      return;
-    }
-  }
   deliverHandler.process(packet);
 }
