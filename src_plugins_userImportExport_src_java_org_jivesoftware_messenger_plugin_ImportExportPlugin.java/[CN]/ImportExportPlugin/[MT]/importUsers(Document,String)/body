@@ -43,6 +43,9 @@
             Element group=(Element)groupIter.next();
             groups.add(group.getText());
           }
+          if (previousDomain != null) {
+            jid=jid.replace(previousDomain,serverName);
+          }
           rosterItems.add(new RosterItem(new JID(jid),RosterItem.SubType.getTypeFromInt(Integer.parseInt(substatus)),RosterItem.AskType.getTypeFromInt(Integer.parseInt(askstatus)),RosterItem.RecvType.getTypeFromInt(Integer.parseInt(recvstatus)),nickname,groups));
         }
       }
