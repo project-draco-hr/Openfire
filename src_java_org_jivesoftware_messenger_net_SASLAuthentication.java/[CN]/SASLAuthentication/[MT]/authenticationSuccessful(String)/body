@@ -1,0 +1,8 @@
+{
+  StringBuilder reply=new StringBuilder();
+  reply.append("<success xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"/>");
+  connection.deliverRawText(reply.toString());
+  if (session instanceof ClientSession) {
+    ((ClientSession)session).setAuthToken(new AuthToken(username));
+  }
+}

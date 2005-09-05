@@ -1,0 +1,72 @@
+{
+  boolean isComplete=false;
+  boolean success=false;
+  while (!isComplete) {
+    if (doc.getNamespace().asXML().equals(SASL_NAMESPACE)) {
+      ElementType type=ElementType.valueof(doc.getName());
+switch (type) {
+case AUTH:
+        String mechanism=doc.attributeValue("mechanism");
+      if (mechanism.equalsIgnoreCase("PLAIN")) {
+        success=doPlainAuthentication(doc);
+        isComplete=true;
+      }
+ else       if (mechanism.equalsIgnoreCase("ANONYMOUS")) {
+        success=doAnonymousAuthentication();
+        isComplete=true;
+      }
+ else {
+        try {
+          Map<String,String> props=new TreeMap<String,String>();
+          props.put(Sasl.QOP,"auth");
+          SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
+          byte[] challenge=ss.evaluateResponse(new byte[0]);
+          sendChallenge(challenge);
+          session.setSessionData("SaslServer",ss);
+        }
+ catch (        SaslException e) {
+          Log.warn("SaslException",e);
+          authenticationFailed();
+        }
+      }
+    break;
+case RESPONSE:
+  SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
+isComplete=true;
+if (ss != null) {
+String response=doc.getTextTrim();
+try {
+  byte[] data=StringUtils.decodeBase64(response).getBytes(CHARSET);
+  if (data == null) {
+    data=new byte[0];
+  }
+  byte[] challenge=ss.evaluateResponse(data);
+  if (ss.isComplete()) {
+    authenticationSuccessful(ss.getAuthorizationID());
+    success=true;
+  }
+ else {
+    sendChallenge(challenge);
+  }
+}
+ catch (SaslException e) {
+  Log.warn("SaslException",e);
+  authenticationFailed();
+}
+}
+ else {
+Log.fatal("SaslServer is null, should be valid object instead.");
+authenticationFailed();
+}
+break;
+default :
+break;
+}
+if (!isComplete) {
+doc=reader.parseDocument().getRootElement();
+}
+}
+session.removeSessionData("SaslServer");
+}
+return success;
+}
