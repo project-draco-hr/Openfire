@@ -1,0 +1,14 @@
+{
+  if (!logging) {
+    return;
+  }
+  if (resultOnce) {
+    resultOnce=false;
+    Log.info("The format of the SSLEngineResult is: \n" + "\t\"getStatus() / getHandshakeStatus()\" +\n" + "\t\"bytesConsumed() / bytesProduced()\"\n");
+  }
+  HandshakeStatus hsStatus=result.getHandshakeStatus();
+  Log.info(str + result.getStatus() + "/"+ hsStatus+ ", "+ result.bytesConsumed()+ "/"+ result.bytesProduced()+ " bytes");
+  if (hsStatus == HandshakeStatus.FINISHED) {
+    Log.info("\t...ready for application data");
+  }
+}

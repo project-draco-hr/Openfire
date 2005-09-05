@@ -1,0 +1,79 @@
+{
+  SSLEngineResult result;
+  if (initialHSComplete) {
+    return initialHSComplete;
+  }
+  if (outgoingNetBB.hasRemaining()) {
+    if (!flush(outgoingNetBB)) {
+      return false;
+    }
+switch (initialHSStatus) {
+case FINISHED:
+      initialHSComplete=true;
+case NEED_UNWRAP:
+    if (sk != null) {
+      sk.interestOps(SelectionKey.OP_READ);
+    }
+  break;
+}
+return initialHSComplete;
+}
+switch (initialHSStatus) {
+case NEED_UNWRAP:
+if (rbc.read(incomingNetBB) == -1) {
+tlsEngine.closeInbound();
+return initialHSComplete;
+}
+needIO: while (initialHSStatus == HandshakeStatus.NEED_UNWRAP) {
+incomingNetBB.flip();
+result=tlsEngine.unwrap(incomingNetBB,appBB);
+incomingNetBB.compact();
+initialHSStatus=result.getHandshakeStatus();
+switch (result.getStatus()) {
+case OK:
+switch (initialHSStatus) {
+case NOT_HANDSHAKING:
+  throw new IOException("Not handshaking during initial handshake");
+case NEED_TASK:
+initialHSStatus=doTasks();
+break;
+case FINISHED:
+initialHSComplete=true;
+break needIO;
+}
+break;
+case BUFFER_UNDERFLOW:
+if (sk != null) {
+sk.interestOps(SelectionKey.OP_READ);
+}
+break needIO;
+default :
+throw new IOException("Received" + result.getStatus() + "during initial handshaking");
+}
+}
+if (initialHSStatus != HandshakeStatus.NEED_WRAP) {
+break;
+}
+case NEED_WRAP:
+outgoingNetBB.clear();
+result=tlsEngine.wrap(hsBB,outgoingNetBB);
+outgoingNetBB.flip();
+initialHSStatus=result.getHandshakeStatus();
+switch (result.getStatus()) {
+case OK:
+if (initialHSStatus == HandshakeStatus.NEED_TASK) {
+initialHSStatus=doTasks();
+}
+if (sk != null) {
+sk.interestOps(SelectionKey.OP_WRITE);
+}
+break;
+default :
+throw new IOException("Received" + result.getStatus() + "during initial handshaking");
+}
+break;
+default :
+throw new RuntimeException("Invalid Handshaking State" + initialHSStatus);
+}
+return initialHSComplete;
+}

@@ -1,0 +1,18 @@
+{
+  return new InputStream(){
+    public synchronized int read() throws IOException {
+      doRead();
+      if (!inAppBB.hasRemaining()) {
+        return -1;
+      }
+      return inAppBB.get();
+    }
+    public synchronized int read(    byte[] bytes,    int off,    int len) throws IOException {
+      doRead();
+      len=Math.min(len,inAppBB.remaining());
+      inAppBB.get(bytes,off,len);
+      return len;
+    }
+  }
+;
+}

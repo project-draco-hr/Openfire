@@ -1,0 +1,20 @@
+{
+  TLSStatus stat=null;
+  ByteBuffer out=output;
+  do {
+    input.flip();
+    out=wrapper.unwrap(input,out);
+    if (input.hasRemaining()) {
+      input.compact();
+    }
+    stat=wrapper.getStatus();
+  }
+ while ((stat == TLSStatus.NEED_READ || stat == TLSStatus.OK) && input.hasRemaining());
+  if (input.hasRemaining()) {
+    input.rewind();
+  }
+ else {
+    input.clear();
+  }
+  return out;
+}

@@ -1,0 +1,20 @@
+{
+  wrapper=new TLSWrapper();
+  tlsEngine=wrapper.getTlsEngine();
+  reader=new TLSStreamReader(wrapper,socket);
+  writer=new TLSStreamWriter(wrapper,socket);
+  rbc=Channels.newChannel(socket.getInputStream());
+  wbc=Channels.newChannel(socket.getOutputStream());
+  initialHSStatus=HandshakeStatus.NEED_UNWRAP;
+  initialHSComplete=false;
+  netBBSize=tlsEngine.getSession().getPacketBufferSize();
+  appBBSize=tlsEngine.getSession().getApplicationBufferSize();
+  incomingNetBB=ByteBuffer.allocate(netBBSize);
+  outgoingNetBB=ByteBuffer.allocate(netBBSize);
+  outgoingNetBB.position(0);
+  outgoingNetBB.limit(0);
+  appBB=ByteBuffer.allocate(appBBSize);
+  while (!initialHSComplete) {
+    initialHSComplete=doHandshake(null);
+  }
+}

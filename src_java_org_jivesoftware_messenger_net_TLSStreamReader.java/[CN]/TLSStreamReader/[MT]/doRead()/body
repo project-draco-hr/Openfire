@@ -1,0 +1,15 @@
+{
+  inNetBB.clear();
+  inAppBB.clear();
+  final int cnt=rbc.read(inNetBB);
+  if (cnt > 0) {
+    ByteBuffer tlsInput=inNetBB;
+    inAppBB=decrypt(tlsInput,inAppBB);
+    inAppBB.flip();
+  }
+ else {
+    if (cnt == -1) {
+      rbc.close();
+    }
+  }
+}
