@@ -1,0 +1,15 @@
+{
+  StringBuilder sb=new StringBuilder();
+  sb.append(geStreamHeader());
+  sb.append("<stream:features>");
+  String specificFeatures=getAvailableStreamFeatures();
+  if (specificFeatures != null) {
+    sb.append(specificFeatures);
+  }
+  sb.append("</stream:features>");
+  connection.deliverRawText(sb.toString());
+  XmlPullParser xpp=reader.getXPPParser();
+  for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+    eventType=xpp.next();
+  }
+}

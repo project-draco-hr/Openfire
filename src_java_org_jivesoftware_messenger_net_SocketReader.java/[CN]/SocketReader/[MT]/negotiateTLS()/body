@@ -1,0 +1,16 @@
+{
+  try {
+    connection.startTLS();
+  }
+ catch (  IOException e) {
+    connection.deliverRawText("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+    connection.close();
+    return false;
+  }
+  XmlPullParser xpp=reader.getXPPParser();
+  xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+  for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+    eventType=xpp.next();
+  }
+  return true;
+}
