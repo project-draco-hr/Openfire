@@ -10,7 +10,7 @@
   IQ reply=IQ.createResultIQ(packet);
   Element child=reply.setChildElement("bind","urn:ietf:params:xml:ns:xmpp-bind");
   String resource=packet.getChildElement().elementTextTrim("resource");
-  if (resource == null && resource.length() == 0) {
+  if (resource == null || resource.length() == 0) {
     resource=session.getAddress().getResource();
   }
  else {
