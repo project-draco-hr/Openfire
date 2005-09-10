@@ -1,0 +1,12 @@
+{
+  if (outAppData.remaining() < increment) {
+    System.out.println("resizing writer");
+    ByteBuffer bb=ByteBuffer.allocate(outAppData.capacity() + wrapper.getAppBuffSize());
+    outAppData.flip();
+    bb.put(outAppData);
+    return bb;
+  }
+ else {
+    return outAppData;
+  }
+}

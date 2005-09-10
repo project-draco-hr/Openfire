@@ -7,6 +7,7 @@
       outAppData.clear();
     }
     public synchronized void write(    byte[] bytes,    int off,    int len) throws IOException {
+      outAppData=resizeApplicationBuffer(bytes.length);
       outAppData.put(bytes,off,len);
       outAppData.flip();
       doWrite(outAppData);
