@@ -8,9 +8,23 @@
       return inAppBB.get();
     }
     public synchronized int read(    byte[] bytes,    int off,    int len) throws IOException {
-      doRead();
+      if (inAppBB.position() == 0) {
+        doRead();
+      }
+ else {
+        inAppBB.flip();
+      }
       len=Math.min(len,inAppBB.remaining());
+      if (len == 0) {
+        return -1;
+      }
       inAppBB.get(bytes,off,len);
+      if (inAppBB.hasRemaining()) {
+        inAppBB.compact();
+      }
+ else {
+        inAppBB.clear();
+      }
       return len;
     }
   }

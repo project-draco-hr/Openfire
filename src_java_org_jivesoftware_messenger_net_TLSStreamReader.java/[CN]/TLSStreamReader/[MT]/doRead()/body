@@ -1,11 +1,13 @@
 {
-  inNetBB.clear();
-  inAppBB.clear();
   final int cnt=rbc.read(inNetBB);
   if (cnt > 0) {
-    ByteBuffer tlsInput=inNetBB;
-    inAppBB=decrypt(tlsInput,inAppBB);
-    inAppBB.flip();
+    inAppBB=decrypt(inNetBB,inAppBB);
+    if (lastStatus == TLSStatus.OK) {
+      inAppBB.flip();
+    }
+ else {
+      doRead();
+    }
   }
  else {
     if (cnt == -1) {

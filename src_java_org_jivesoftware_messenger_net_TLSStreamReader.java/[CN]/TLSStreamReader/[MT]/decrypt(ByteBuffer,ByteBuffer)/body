@@ -1,17 +1,13 @@
 {
-  TLSStatus stat=null;
   ByteBuffer out=output;
+  input.flip();
   do {
-    input.flip();
     out=wrapper.unwrap(input,out);
-    if (input.hasRemaining()) {
-      input.compact();
-    }
-    stat=wrapper.getStatus();
+    lastStatus=wrapper.getStatus();
   }
- while ((stat == TLSStatus.NEED_READ || stat == TLSStatus.OK) && input.hasRemaining());
+ while ((lastStatus == TLSStatus.NEED_READ || lastStatus == TLSStatus.OK) && input.hasRemaining());
   if (input.hasRemaining()) {
-    input.rewind();
+    input.compact();
   }
  else {
     input.clear();
