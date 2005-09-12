@@ -10,6 +10,7 @@ synchronized (username.intern()) {
     }
     resources.addSession(session);
     preAuthenticatedSessions.remove(new JID(null,session.getAddress().getDomain(),session.getStreamID().toString()).toString());
+    SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_created);
     success=true;
   }
   return success;

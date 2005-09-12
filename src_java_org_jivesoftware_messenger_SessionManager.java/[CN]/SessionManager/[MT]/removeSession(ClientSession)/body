@@ -6,6 +6,7 @@
   if (anonymousSessions.containsValue(session)) {
     anonymousSessions.remove(session.getAddress().getResource());
     sessionCount--;
+    SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
   }
  else {
     if (session.getAddress() != null && session.getAddress().getNode() != null) {
@@ -18,6 +19,7 @@ synchronized (username.intern()) {
           if (sessionMap.isEmpty()) {
             sessions.remove(username);
           }
+          SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
         }
       }
     }

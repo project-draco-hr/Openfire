@@ -1,7 +1,6 @@
 {
-  Iterator values=sessions.values().iterator();
-  while (values.hasNext()) {
-    ((SessionMap)values.next()).broadcast(packet);
+  for (  SessionMap sessionMap : sessions.values()) {
+    ((SessionMap)sessionMap).broadcast(packet);
   }
   for (  Session session : anonymousSessions.values()) {
     session.process(packet);
