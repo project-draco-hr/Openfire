@@ -1,10 +1,11 @@
 {
   TimeZone zone=TimeZone.getTimeZone(zoneID);
-  StringBuilder buf=new StringBuilder();
+  StringBuffer buf=new StringBuffer();
   int offset=zone.getRawOffset();
-  if (zone.inDaylightTime(now) && zone.useDaylightTime()) {
+  if (zone.inDaylightTime(new Date()) && zone.useDaylightTime()) {
     offset+=(int)JiveConstants.HOUR;
   }
+  buf.append("(");
   if (offset < 0) {
     buf.append("GMT-");
   }
@@ -21,7 +22,16 @@
  else {
     buf.append(minutes);
   }
-  buf.append(" - ").append(zoneID.replace('_',' ').replace('/',' ')).append(" ");
-  buf.append(zone.getDisplayName(true,TimeZone.SHORT,locale).replace('_',' ').replace('/',' '));
+  buf.append(") ");
+  if ("en".equals(locale.getLanguage())) {
+    String name=nameMap.get(zoneID);
+    if (name == null) {
+      name=zoneID;
+    }
+    buf.append(name);
+  }
+ else {
+    buf.append(zone.getDisplayName(true,TimeZone.LONG,locale).replace('_',' ').replace('/',' '));
+  }
   return buf.toString();
 }

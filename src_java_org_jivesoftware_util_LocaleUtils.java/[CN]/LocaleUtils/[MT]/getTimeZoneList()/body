@@ -1,18 +1,15 @@
 {
+  Locale jiveLocale=JiveGlobals.getLocale();
+  String[][] timeZoneList=timeZoneLists.get(jiveLocale);
   if (timeZoneList == null) {
-synchronized (timeZoneLock) {
-      if (timeZoneList == null) {
-        Date now=new Date();
-        String[] timeZoneIDs=TimeZone.getAvailableIDs();
-        Locale jiveLocale=JiveGlobals.getLocale();
-        timeZoneList=new String[timeZoneIDs.length][2];
-        for (int i=0; i < timeZoneList.length; i++) {
-          String zoneID=timeZoneIDs[i];
-          timeZoneList[i][0]=zoneID;
-          timeZoneList[i][1]=getTimeZoneName(zoneID,now,jiveLocale);
-        }
-      }
+    String[] timeZoneIDs=timeZoneIds;
+    timeZoneList=new String[timeZoneIDs.length][2];
+    for (int i=0; i < timeZoneList.length; i++) {
+      String zoneID=timeZoneIDs[i];
+      timeZoneList[i][0]=zoneID;
+      timeZoneList[i][1]=getTimeZoneName(zoneID,jiveLocale);
     }
+    timeZoneLists.put(jiveLocale,timeZoneList);
   }
   return timeZoneList;
 }
