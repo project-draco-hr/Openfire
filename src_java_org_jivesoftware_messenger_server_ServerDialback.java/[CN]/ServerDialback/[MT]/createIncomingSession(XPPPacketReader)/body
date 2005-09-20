@@ -17,9 +17,11 @@
       if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
         if (validateRemoteDomain(doc,streamID)) {
           String hostname=doc.attributeValue("from");
+          String recipient=doc.attributeValue("to");
           IncomingServerSession session=sessionManager.createIncomingServerSession(connection,streamID);
           session.setAddress(new JID(null,hostname,null));
           session.addValidatedDomain(hostname);
+          session.addLocalDomain(recipient);
           return session;
         }
       }

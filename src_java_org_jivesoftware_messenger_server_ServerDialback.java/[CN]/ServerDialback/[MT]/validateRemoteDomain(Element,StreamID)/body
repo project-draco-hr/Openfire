@@ -23,7 +23,13 @@
     return false;
   }
  else {
-    if (sessionManager.getIncomingServerSession(hostname) != null) {
+    boolean alreadyExists=false;
+    for (    IncomingServerSession session : sessionManager.getIncomingServerSessions(hostname)) {
+      if (session.getLocalDomains().contains(recipient)) {
+        alreadyExists=true;
+      }
+    }
+    if (alreadyExists) {
       error=new StreamError(StreamError.Condition.not_authorized);
       sb=new StringBuilder();
       sb.append(error.toXML());

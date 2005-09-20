@@ -9,8 +9,7 @@
     SessionManager sessionManager=SessionManager.getInstance();
     OutgoingServerSession session=sessionManager.getOutgoingServerSession(hostname);
     if (session == null) {
-      IncomingServerSession incomingSession=sessionManager.getIncomingServerSession(hostname);
-      if (incomingSession != null) {
+      for (      IncomingServerSession incomingSession : sessionManager.getIncomingServerSessions(hostname)) {
         for (        String otherHostname : incomingSession.getValidatedDomains()) {
           session=sessionManager.getOutgoingServerSession(otherHostname);
           if (session != null) {
