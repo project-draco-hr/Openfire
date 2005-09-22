@@ -1,5 +1,5 @@
 {
-  wrapper=new TLSWrapper();
+  wrapper=new TLSWrapper(clientMode);
   tlsEngine=wrapper.getTlsEngine();
   reader=new TLSStreamReader(wrapper,socket);
   writer=new TLSStreamWriter(wrapper,socket);
@@ -14,6 +14,12 @@
   outgoingNetBB.position(0);
   outgoingNetBB.limit(0);
   appBB=ByteBuffer.allocate(appBBSize);
+  if (clientMode) {
+    socket.setSoTimeout(0);
+    socket.setKeepAlive(true);
+    initialHSStatus=HandshakeStatus.NEED_WRAP;
+    tlsEngine.beginHandshake();
+  }
   while (!initialHSComplete) {
     initialHSComplete=doHandshake(null);
   }

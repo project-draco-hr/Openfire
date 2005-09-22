@@ -1,8 +1,6 @@
 {
 synchronized (listeners) {
-    Iterator itr=listeners.keySet().iterator();
-    while (itr.hasNext()) {
-      ConnectionCloseListener listener=(ConnectionCloseListener)itr.next();
+    for (    ConnectionCloseListener listener : listeners.keySet()) {
       listener.onConnectionClose(listeners.get(listener));
     }
   }
