@@ -40,7 +40,7 @@
     }
  else {
       String key=doc.getTextTrim();
-      DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
+      DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname,RemoteServerManager.getPortForServer(hostname));
       try {
         boolean valid=verifyKey(key,streamID.toString(),recipient,hostname,address.getHost(),address.getPort());
         Log.debug("RS - Sending key verification result to OS: " + hostname);
