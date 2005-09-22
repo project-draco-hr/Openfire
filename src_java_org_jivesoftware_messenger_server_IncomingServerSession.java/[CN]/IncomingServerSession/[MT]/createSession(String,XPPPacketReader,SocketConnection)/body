@@ -4,6 +4,16 @@
     ServerDialback method=new ServerDialback(connection,serverName);
     return method.createIncomingSession(reader);
   }
+  String version=xpp.getAttributeValue("","version");
+  int[] serverVersion=version != null ? decodeVersion(version) : new int[]{0,0};
+  if (serverVersion[0] >= 1) {
+    try {
+      return createIncomingSession(connection,serverName);
+    }
+ catch (    Exception e) {
+      Log.error("Error establishing connection from remote server",e);
+    }
+  }
   connection.close();
   return null;
 }
