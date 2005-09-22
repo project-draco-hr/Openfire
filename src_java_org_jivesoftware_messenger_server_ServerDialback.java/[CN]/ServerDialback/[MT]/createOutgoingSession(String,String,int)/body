@@ -4,8 +4,9 @@
     Log.debug("OS - Trying to connect to " + hostname + ":"+ port);
     DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname);
     realHostname=address.getHost();
-    Socket socket=SocketFactory.getDefault().createSocket(realHostname,port);
-    Log.debug("OS - Connection to " + hostname + ":"+ port+ " successfull");
+    Socket socket=new Socket();
+    socket.connect(new InetSocketAddress(realHostname,port),RemoteServerManager.getSocketTimeout());
+    Log.debug("OS - Connection to " + hostname + ":"+ port+ " successful");
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     StringBuilder stream=new StringBuilder();
     stream.append("<stream:stream");

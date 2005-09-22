@@ -3,9 +3,10 @@
   Writer writer=null;
   StreamError error;
   Log.debug("RS - Trying to connect to Authoritative Server: " + hostname + ":"+ port);
-  Socket socket=SocketFactory.getDefault().createSocket(host,port);
-  socket.setSoTimeout(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000));
-  Log.debug("RS - Connection to AS: " + hostname + ":"+ port+ " successfull");
+  Socket socket=new Socket();
+  socket.connect(new InetSocketAddress(host,port),RemoteServerManager.getSocketTimeout());
+  socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
+  Log.debug("RS - Connection to AS: " + hostname + ":"+ port+ " successful");
   try {
     reader=new XPPPacketReader();
     reader.setXPPFactory(FACTORY);

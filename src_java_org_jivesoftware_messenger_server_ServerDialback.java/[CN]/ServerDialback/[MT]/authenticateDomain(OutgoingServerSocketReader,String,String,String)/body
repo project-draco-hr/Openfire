@@ -11,7 +11,7 @@ synchronized (socketReader) {
     connection.deliverRawText(sb.toString());
     sb=null;
     try {
-      Element doc=socketReader.getElement(JiveGlobals.getIntProperty("xmpp.server.read.timeout",60000),TimeUnit.MILLISECONDS);
+      Element doc=socketReader.getElement(RemoteServerManager.getSocketTimeout(),TimeUnit.MILLISECONDS);
       if (doc == null) {
         Log.debug("OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
         return false;
