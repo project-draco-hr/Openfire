@@ -1,0 +1,22 @@
+{
+  if (!(session instanceof IncomingServerSession)) {
+    return false;
+  }
+  String hostname=doc.getTextTrim();
+  if (hostname != null && hostname.length() > 0) {
+    authenticationSuccessful(StringUtils.decodeBase64(hostname));
+    return true;
+  }
+ else {
+    sendChallenge(new byte[0]);
+    doc=reader.parseDocument().getRootElement();
+    if (doc != null && doc.getTextTrim().length() > 0) {
+      authenticationSuccessful(StringUtils.decodeBase64(doc.getTextTrim()));
+      return true;
+    }
+ else {
+      authenticationFailed();
+      return false;
+    }
+  }
+}

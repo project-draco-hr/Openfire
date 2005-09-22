@@ -15,6 +15,10 @@ case AUTH:
         success=doAnonymousAuthentication();
         isComplete=true;
       }
+ else       if (mechanism.equalsIgnoreCase("EXTERNAL")) {
+        success=doExternalAuthentication(doc);
+        isComplete=true;
+      }
  else {
         try {
           Map<String,String> props=new TreeMap<String,String>();

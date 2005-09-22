@@ -9,7 +9,8 @@
   if (XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
     sb.append("<mechanism>ANONYMOUS</mechanism>");
   }
-  if (session.getConnection().isSecure()) {
+  if (session.getConnection().isSecure() && session instanceof IncomingServerSession) {
+    sb.append("<mechanism>EXTERNAL</mechanism>");
   }
   sb.append("</mechanisms>");
   return sb.toString();
