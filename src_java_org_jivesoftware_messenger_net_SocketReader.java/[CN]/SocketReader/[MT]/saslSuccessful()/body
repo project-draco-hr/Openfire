@@ -9,6 +9,12 @@
   sb.append("</stream:features>");
   connection.deliverRawText(sb.toString());
   XmlPullParser xpp=reader.getXPPParser();
+  if (connection.getTLSStreamHandler() == null) {
+    xpp.setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
+  }
+ else {
+    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+  }
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();
   }
