@@ -1,0 +1,51 @@
+{
+  Element features;
+  Log.debug("OS - Indicating we want TLS to " + hostname);
+  connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+  Element proceed=reader.parseDocument().getRootElement();
+  if (proceed != null && proceed.getName().equals("proceed")) {
+    Log.debug("OS - Negotiating TLS with " + hostname);
+    connection.startTLS(true);
+    Log.debug("OS - TLS negotiation with " + hostname + " was successful");
+    connection.deliverRawText(openingStream.toString());
+    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+    for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+      eventType=xpp.next();
+    }
+    features=reader.parseDocument().getRootElement();
+    if (features != null && features.element("mechanisms") != null) {
+      Iterator it=features.element("mechanisms").elementIterator();
+      while (it.hasNext()) {
+        Element mechanism=(Element)it.next();
+        if ("EXTERNAL".equals(mechanism.getTextTrim())) {
+          Log.debug("OS - Starting EXTERNAL SASL with " + hostname);
+          if (doExternalAuthentication(domain,connection,reader)) {
+            Log.debug("OS - EXTERNAL SASL with " + hostname + " was successful");
+            connection.deliverRawText(openingStream.toString());
+            xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+            for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+              eventType=xpp.next();
+            }
+            String id=xpp.getAttributeValue("","id");
+            StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
+            OutgoingServerSession session=new OutgoingServerSession(domain,connection,new OutgoingServerSocketReader(reader),streamID);
+            connection.init(session);
+            session.setAddress(new JID(null,hostname,null));
+            return session;
+          }
+ else {
+            Log.debug("OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
+          }
+        }
+      }
+      Log.debug("OS - Error, EXTERNAL SASL was not offered by " + hostname);
+    }
+ else {
+      Log.debug("OS - Error, no SASL mechanisms were offered by " + hostname);
+    }
+  }
+ else {
+    Log.debug("OS - Error, <proceed> was not received");
+  }
+  return null;
+}
