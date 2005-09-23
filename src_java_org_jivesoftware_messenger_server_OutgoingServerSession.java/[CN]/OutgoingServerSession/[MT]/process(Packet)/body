@@ -1,6 +1,12 @@
 {
   if (conn != null && !conn.isClosed()) {
     try {
+      if (!getAuthenticatedDomains().contains(packet.getFrom().getDomain())) {
+        if (!authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain())) {
+          Log.error("Authentication of subdomain: " + packet.getFrom().getDomain() + " with remote server: "+ packet.getTo().getDomain()+ "has failed. Packet not sent to remote server: "+ packet.toXML());
+          return;
+        }
+      }
       conn.deliver(packet);
     }
  catch (    Exception e) {
