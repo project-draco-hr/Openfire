@@ -1,0 +1,9 @@
+{
+  boolean created=OutgoingServerSession.authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain());
+  if (created) {
+    routingTable.getRoute(packet.getTo()).process(packet);
+  }
+ else {
+    throw new Exception("Failed to create connection to remote server");
+  }
+}
