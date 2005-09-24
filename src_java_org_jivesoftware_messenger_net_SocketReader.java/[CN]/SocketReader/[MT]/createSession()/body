@@ -3,7 +3,20 @@
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();
   }
-  if (!createSession(xpp.getNamespace(null))) {
+  String host=reader.getXPPParser().getAttributeValue("","to");
+  if (validateHost() && !serverName.equals(host) && componentManager.getComponent(host) == null) {
+    Writer writer=connection.getWriter();
+    StringBuilder sb=new StringBuilder();
+    sb.append("<?xml version='1.0' encoding='");
+    sb.append(CHARSET);
+    sb.append("'?>");
+    StreamError error=new StreamError(StreamError.Condition.host_unknown);
+    sb.append(error.toXML());
+    writer.write(sb.toString());
+    writer.flush();
+    connection.close();
+  }
+ else   if (!createSession(xpp.getNamespace(null))) {
     Writer writer=connection.getWriter();
     StringBuilder sb=new StringBuilder();
     sb.append("<?xml version='1.0' encoding='");
