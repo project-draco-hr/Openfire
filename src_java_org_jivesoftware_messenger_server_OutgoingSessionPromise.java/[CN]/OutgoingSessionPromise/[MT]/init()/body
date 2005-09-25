@@ -1,7 +1,10 @@
 {
   routingTable=XMPPServer.getInstance().getRoutingTable();
   int maxThreads=JiveGlobals.getIntProperty("xmpp.server.outgoing.threads",20);
-  threadPool=new ThreadPoolExecutor(1,maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.AbortPolicy());
+  if (maxThreads < 10) {
+    maxThreads=10;
+  }
+  threadPool=new ThreadPoolExecutor(Math.round(maxThreads / 4),maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.AbortPolicy());
   Thread thread=new Thread(new Runnable(){
     public void run(){
       while (!shutdown) {
@@ -15,7 +18,7 @@
                 }
  catch (                Exception e) {
                   returnErrorToSender(packet);
-                  Log.debug("Error sending packet to remote server",e);
+                  Log.debug("Error sending packet to remote server: " + packet,e);
                 }
               }
             }
