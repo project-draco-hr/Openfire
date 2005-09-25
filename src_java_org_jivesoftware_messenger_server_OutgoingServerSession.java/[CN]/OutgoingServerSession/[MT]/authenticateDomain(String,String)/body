@@ -13,8 +13,13 @@
         for (        String otherHostname : incomingSession.getValidatedDomains()) {
           session=sessionManager.getOutgoingServerSession(otherHostname);
           if (session != null) {
-            session.addHostname(hostname);
-            break;
+            if (session.usingServerDialback) {
+              session.addHostname(hostname);
+              break;
+            }
+ else {
+              session=null;
+            }
           }
         }
       }
