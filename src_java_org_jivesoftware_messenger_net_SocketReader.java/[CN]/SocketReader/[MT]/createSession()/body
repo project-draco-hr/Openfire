@@ -4,7 +4,7 @@
     eventType=xpp.next();
   }
   String host=reader.getXPPParser().getAttributeValue("","to");
-  if (validateHost() && !serverName.equals(host) && componentManager.getComponent(host) == null) {
+  if (validateHost() && isHostUnknown(host)) {
     Writer writer=connection.getWriter();
     StringBuilder sb=new StringBuilder();
     sb.append("<?xml version='1.0' encoding='");
