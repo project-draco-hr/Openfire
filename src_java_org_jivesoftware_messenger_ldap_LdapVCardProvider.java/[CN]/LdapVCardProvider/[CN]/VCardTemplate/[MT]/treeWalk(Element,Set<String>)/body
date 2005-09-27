@@ -1,0 +1,17 @@
+{
+  for (int i=0, size=element.nodeCount(); i < size; i++) {
+    Node node=element.node(i);
+    if (node instanceof Element) {
+      Element emement=(Element)node;
+      Attribute attr=emement.attribute("attrs");
+      if (attr != null) {
+        String[] attrs=attr.getStringValue().split(",");
+        for (        String string : attrs) {
+          Log.debug("VCardTemplate: found attribute " + string);
+          set.add(string);
+        }
+      }
+      treeWalk(emement,set);
+    }
+  }
+}
