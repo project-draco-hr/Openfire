@@ -44,10 +44,10 @@
   }
   for (int i=minorVersion; i < CURRENT_MINOR_VERSION; i++) {
     BufferedReader in=null;
-    Statement stmt=null;
+    Statement stmt;
     try {
       String resourceName="/database/upgrade/" + CURRENT_MAJOR_VERSION + "."+ i+ "_to_"+ CURRENT_MAJOR_VERSION+ "."+ (i + 1)+ "/messenger_"+ databaseType+ ".sql";
-      in=new BufferedReader(new InputStreamReader(new DbConnectionManager().getClass().getResourceAsStream(resourceName)));
+      in=new BufferedReader(new InputStreamReader(DbConnectionManager.class.getResourceAsStream(resourceName)));
       boolean done=false;
       while (!done) {
         StringBuilder command=new StringBuilder();

@@ -34,10 +34,12 @@
     fetchSizeSupported=false;
     maxRowsSupported=false;
   }
- else   if (dbName.indexOf("sql server") != -1 && driverName.indexOf("una") != -1) {
+ else   if (dbName.indexOf("sql server") != -1) {
     databaseType=DatabaseType.sqlserver;
-    fetchSizeSupported=true;
-    maxRowsSupported=false;
+    if (driverName.indexOf("una") != -1) {
+      fetchSizeSupported=true;
+      maxRowsSupported=false;
+    }
   }
  else   if (dbName.indexOf("mysql") != -1) {
     databaseType=DatabaseType.mysql;
