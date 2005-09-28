@@ -2,7 +2,7 @@
 synchronized (incomingServerSessions) {
     List<IncomingServerSession> sessions=incomingServerSessions.get(hostname);
     if (sessions == null || sessions.isEmpty()) {
-      List<IncomingServerSession> value=new ArrayList<IncomingServerSession>();
+      List<IncomingServerSession> value=new CopyOnWriteArrayList<IncomingServerSession>();
       value.add(session);
       incomingServerSessions.put(hostname,value);
     }
