@@ -18,6 +18,9 @@
     while (iterator.hasPrevious()) {
       message=(Message)iterator.previous();
       String text=message.getBody() == null ? message.getSubject() : message.getBody();
+      if (text == null) {
+        continue;
+      }
       accumulatedChars+=text.length();
       if (getMaxChars() > -1 && accumulatedChars > getMaxChars()) {
         break;
