@@ -4,7 +4,7 @@
   }
   try {
 synchronized (writer) {
-      SocketSendingTracker.getInstance().socketStartedSending(socket);
+      SocketSendingTracker.getInstance().socketStartedSending(this);
       writer.write(" ");
       writer.flush();
     }
@@ -14,7 +14,7 @@ synchronized (writer) {
     close();
   }
  finally {
-    SocketSendingTracker.getInstance().socketFinishedSending(socket);
+    SocketSendingTracker.getInstance().socketFinishedSending(this);
   }
   return !isClosed();
 }

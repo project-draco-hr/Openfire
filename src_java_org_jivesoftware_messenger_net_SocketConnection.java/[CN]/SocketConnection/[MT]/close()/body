@@ -8,7 +8,7 @@ synchronized (this) {
         }
 synchronized (writer) {
           try {
-            SocketSendingTracker.getInstance().socketStartedSending(socket);
+            SocketSendingTracker.getInstance().socketStartedSending(this);
             writer.write("</stream:stream>");
             if (flashClient) {
               writer.write('\0');
@@ -18,19 +18,14 @@ synchronized (writer) {
  catch (          IOException e) {
           }
  finally {
-            SocketSendingTracker.getInstance().socketFinishedSending(socket);
+            SocketSendingTracker.getInstance().socketFinishedSending(this);
           }
         }
       }
  catch (      Exception e) {
         Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
       }
-      try {
-        socket.close();
-      }
- catch (      Exception e) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
-      }
+      closeConnection();
       wasClosed=true;
     }
   }
