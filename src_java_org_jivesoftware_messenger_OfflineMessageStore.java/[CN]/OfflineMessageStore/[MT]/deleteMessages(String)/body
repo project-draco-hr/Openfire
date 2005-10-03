@@ -6,6 +6,7 @@
     pstmt=con.prepareStatement(DELETE_OFFLINE);
     pstmt.setString(1,username);
     pstmt.executeUpdate();
+    removeUsernameFromSizeCache(username);
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);

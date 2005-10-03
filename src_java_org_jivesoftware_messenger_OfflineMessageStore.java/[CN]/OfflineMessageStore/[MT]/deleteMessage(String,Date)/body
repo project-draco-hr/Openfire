@@ -7,6 +7,7 @@
     pstmt.setString(1,username);
     pstmt.setString(2,StringUtils.dateToMillis(creationDate));
     pstmt.executeUpdate();
+    removeUsernameFromSizeCache(username);
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
