@@ -1,11 +1,7 @@
 {
   HttpServletRequest request=(HttpServletRequest)pageContext.getRequest();
   String beanName=getBean();
-  AdminPageBean pageInfo=(AdminPageBean)request.getAttribute(beanName);
-  String pageID=null;
-  if (pageInfo != null) {
-    pageID=pageInfo.getPageID();
-  }
+  String pageID=(String)request.getAttribute("pageID");
   List tabs=AdminConsole.getModel().selectNodes("//tab");
   if (tabs.size() > 0) {
     JspWriter out=pageContext.getOut();
