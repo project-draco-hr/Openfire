@@ -1,18 +1,17 @@
 {
   if (dataSourceName == null || dataSourceName.equals("")) {
-    error("No name specified for DataSource. JNDI lookup will fail",null);
+    Log.error("No name specified for DataSource. JNDI lookup will fail",null);
     return;
   }
   try {
     Properties contextProperties=new Properties();
-    for (int i=0; i < jndiPropertyKeys.length; i++) {
-      String k=jndiPropertyKeys[i];
-      String v=JiveGlobals.getXMLProperty(k);
-      if (v != null) {
-        contextProperties.setProperty(k,v);
+    for (    String key : jndiPropertyKeys) {
+      String value=JiveGlobals.getXMLProperty(key);
+      if (value != null) {
+        contextProperties.setProperty(key,value);
       }
     }
-    Context context=null;
+    Context context;
     if (contextProperties.size() > 0) {
       context=new InitialContext(contextProperties);
     }
@@ -22,6 +21,6 @@
     dataSource=(DataSource)context.lookup(dataSourceName);
   }
  catch (  Exception e) {
-    error("Could not lookup DataSource at '" + dataSourceName + "'",e);
+    Log.error("Could not lookup DataSource at '" + dataSourceName + "'",e);
   }
 }
