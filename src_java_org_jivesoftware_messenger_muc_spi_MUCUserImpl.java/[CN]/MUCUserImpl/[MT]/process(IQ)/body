@@ -26,11 +26,19 @@
             role.getChatRoom().getIQAdminHandler().handleIQ(packet,role);
           }
  else {
-            sendErrorPacket(packet,PacketError.Condition.bad_request);
+            if (packet.getTo().getResource() != null) {
+              role.getChatRoom().sendPrivatePacket(packet,role);
+            }
+ else {
+              sendErrorPacket(packet,PacketError.Condition.bad_request);
+            }
           }
         }
  catch (        ForbiddenException e) {
           sendErrorPacket(packet,PacketError.Condition.forbidden);
+        }
+catch (        NotFoundException e) {
+          sendErrorPacket(packet,PacketError.Condition.recipient_unavailable);
         }
 catch (        ConflictException e) {
           sendErrorPacket(packet,PacketError.Condition.conflict);
