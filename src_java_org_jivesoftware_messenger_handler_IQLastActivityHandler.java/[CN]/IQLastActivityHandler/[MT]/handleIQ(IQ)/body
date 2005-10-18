@@ -2,7 +2,7 @@
   IQ reply=IQ.createResultIQ(packet);
   Element lastActivity=reply.setChildElement("query","jabber:iq:last");
   String sender=packet.getFrom().getNode();
-  String username=packet.getTo().getNode();
+  String username=packet.getTo() == null ? null : packet.getTo().getNode();
   if (sender == null || username == null) {
     reply.setError(PacketError.Condition.forbidden);
     return reply;
