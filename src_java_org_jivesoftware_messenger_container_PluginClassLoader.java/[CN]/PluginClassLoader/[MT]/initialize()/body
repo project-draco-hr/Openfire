@@ -4,5 +4,10 @@
   for (int i=0; urls.hasNext(); i++) {
     urlArray[i]=(URL)urls.next();
   }
-  classLoader=new URLClassLoader(urlArray,findParentClassLoader());
+  if (classLoader != null) {
+    classLoader=new URLClassLoader(urlArray,classLoader);
+  }
+ else {
+    classLoader=new URLClassLoader(urlArray,findParentClassLoader());
+  }
 }

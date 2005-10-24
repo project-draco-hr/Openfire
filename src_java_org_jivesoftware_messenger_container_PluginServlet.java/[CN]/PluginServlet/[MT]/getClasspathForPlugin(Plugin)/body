@@ -1,18 +1,27 @@
 {
-  StringBuilder builder=new StringBuilder();
+  final StringBuilder classpath=new StringBuilder();
   File pluginDirectory=pluginManager.getPluginDirectory(plugin);
-  PluginDevEnvironment env=pluginManager.getDevEnvironment(plugin);
+  PluginDevEnvironment pluginEnv=pluginManager.getDevEnvironment(plugin);
+  PluginClassLoader pluginClassloader=pluginManager.getPluginClassloader(plugin);
+  Collection col=pluginClassloader.getURLS();
+  for (  Object aCol : col) {
+    URL url=(URL)aCol;
+    File file=new File(url.getFile());
+    classpath.append(file.getAbsolutePath().toString()).append(";");
+  }
   File libDirectory=new File(pluginDirectory,"lib");
   File[] libs=libDirectory.listFiles();
-  for (  File libFile : libs) {
-    builder.append(libFile.getAbsolutePath()).append(';');
+  final int no=libs != null ? libs.length : 0;
+  for (int i=0; i < no; i++) {
+    File libFile=libs[i];
+    classpath.append(libFile.getAbsolutePath()).append(';');
   }
   File messengerRoot=pluginDirectory.getParentFile().getParentFile().getParentFile();
   File messengerLib=new File(messengerRoot,"target//lib");
-  builder.append(messengerLib.getAbsolutePath()).append("//servlet.jar;");
-  builder.append(messengerLib.getAbsolutePath()).append("//messenger.jar;");
-  builder.append(messengerLib.getAbsolutePath()).append("//jasper-compiler.jar;");
-  builder.append(messengerLib.getAbsolutePath()).append("//jasper-runtime.jar;");
-  builder.append(env.getClassesDir().getAbsolutePath()).append(";");
-  return builder.toString();
+  classpath.append(messengerLib.getAbsolutePath()).append("//servlet.jar;");
+  classpath.append(messengerLib.getAbsolutePath()).append("//messenger.jar;");
+  classpath.append(messengerLib.getAbsolutePath()).append("//jasper-compiler.jar;");
+  classpath.append(messengerLib.getAbsolutePath()).append("//jasper-runtime.jar;");
+  classpath.append(pluginEnv.getClassesDir().getAbsolutePath()).append(";");
+  return classpath.toString();
 }

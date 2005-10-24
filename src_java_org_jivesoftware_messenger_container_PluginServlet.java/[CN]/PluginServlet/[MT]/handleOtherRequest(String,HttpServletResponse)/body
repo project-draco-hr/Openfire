@@ -1,12 +1,22 @@
 {
   String[] parts=pathInfo.split("/");
-  if (parts.length != 4) {
+  if (parts.length < 3) {
     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     return;
   }
+  String contextPath="";
+  int index=pathInfo.indexOf(parts[1]);
+  if (index != -1) {
+    contextPath=pathInfo.substring(index + parts[1].length());
+  }
   File pluginDirectory=new File(JiveGlobals.getHomeDirectory(),"plugins");
-  File image=new File(pluginDirectory,parts[1] + File.separator + "web"+ File.separator+ "images"+ File.separator+ parts[3]);
-  if (!image.exists()) {
+  File file=new File(pluginDirectory,parts[1] + File.separator + "web"+ contextPath);
+  Plugin plugin=pluginManager.getPlugin(parts[1]);
+  PluginDevEnvironment environment=pluginManager.getDevEnvironment(plugin);
+  if (environment != null) {
+    file=new File(environment.getWebRoot(),contextPath);
+  }
+  if (!file.exists()) {
     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     return;
   }
@@ -15,14 +25,17 @@
     if (pathInfo.endsWith(".png")) {
       contentType="image/png";
     }
-    response.setHeader("Content-disposition","filename=\"" + image + "\";");
+ else     if (pathInfo.endsWith(".swf")) {
+      contentType="application/x-shockwave-flash";
+    }
+    response.setHeader("Content-disposition","filename=\"" + file + "\";");
     response.setContentType(contentType);
     InputStream in=null;
     ServletOutputStream out=null;
     try {
-      in=new BufferedInputStream(new FileInputStream(image));
+      in=new BufferedInputStream(new FileInputStream(file));
       out=response.getOutputStream();
-      response.setContentLength((int)image.length());
+      response.setContentLength((int)file.length());
       byte[] buf=new byte[1024];
       int len;
       while ((len=in.read(buf)) != -1) {

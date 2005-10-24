@@ -13,15 +13,11 @@
         handleJSP(pathInfo,request,response);
         return;
       }
- else       if (pathInfo.endsWith(".gif") || pathInfo.endsWith(".png")) {
-        handleImage(pathInfo,response);
-        return;
-      }
  else       if (getServlet(pathInfo) != null) {
         handleServlet(pathInfo,request,response);
       }
  else {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        handleOtherRequest(pathInfo,response);
         return;
       }
     }

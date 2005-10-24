@@ -86,6 +86,13 @@
       pluginLoader.initialize();
       String className=pluginXML.selectSingleNode("/plugin/class").getText();
       plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
+      if (parentPluginNode != null) {
+        String parentPlugin=parentPluginNode.getTextTrim();
+        if (plugins.containsKey(parentPlugin)) {
+          pluginLoader=classloaders.get(getPlugin(parentPlugin));
+          classloaders.put(plugin,pluginLoader);
+        }
+      }
       plugin.initializePlugin(this,pluginDir);
       plugins.put(pluginDir.getName(),plugin);
       pluginDirs.put(plugin,pluginDir);
@@ -115,20 +122,24 @@
       }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
+        String pluginName=pluginDir.getName();
+        if (parentPluginNode != null) {
+          pluginName=parentPluginNode.getTextTrim();
+        }
         Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
         if (imageEl != null) {
-          imageEl.setText("plugins/" + pluginDir.getName() + "/"+ imageEl.getText());
+          imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
         }
         imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/login-image");
         if (imageEl != null) {
-          imageEl.setText("plugins/" + pluginDir.getName() + "/"+ imageEl.getText());
+          imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
         }
         List urls=adminElement.selectNodes("//@url");
         for (int i=0; i < urls.size(); i++) {
           Attribute attr=(Attribute)urls.get(i);
-          attr.setValue("plugins/" + pluginDir.getName() + "/"+ attr.getValue());
+          attr.setValue("plugins/" + pluginName + "/"+ attr.getValue());
         }
-        AdminConsole.addModel(pluginDir.getName(),adminElement);
+        AdminConsole.addModel(pluginName,adminElement);
       }
     }
  else {
