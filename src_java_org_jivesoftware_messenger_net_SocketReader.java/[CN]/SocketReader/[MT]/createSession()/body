@@ -15,6 +15,7 @@
     writer.write(sb.toString());
     writer.flush();
     connection.close();
+    Log.warn("Closing session due to incorrect hostname in stream header. Connection: " + connection);
   }
  else   if (!createSession(xpp.getNamespace(null))) {
     Writer writer=connection.getWriter();
@@ -27,5 +28,6 @@
     writer.write(sb.toString());
     writer.flush();
     connection.close();
+    Log.warn("Closing session due to bad_namespace_prefix in stream header. Connection: " + connection);
   }
 }
