@@ -1,14 +1,23 @@
 {
   try {
+    String restarting=LocaleUtils.getLocalizedString("admin.console.restarting");
+    System.out.println(restarting);
+    Log.info(restarting);
     jetty.stop();
     if (plainListener != null) {
       jetty.removeListener(plainListener);
+      plainListener=null;
     }
     if (secureListener != null) {
       jetty.removeListener(secureListener);
+      secureListener=null;
     }
+    jetty.removeContext(context);
     loadListeners();
+    context=jetty.addWebApplication("/",pluginDir.getAbsoluteFile() + File.separator + "webapp");
+    context.setWelcomeFiles(new String[]{"index.jsp"});
     jetty.start();
+    printListenerMessages();
   }
  catch (  Exception e) {
     Log.error(e);

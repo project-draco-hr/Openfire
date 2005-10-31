@@ -6,20 +6,27 @@
     setupMode=false;
   }
   if (!setupMode) {
-    try {
-      ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
-      verifyDataSource();
-      loadModules();
-      initModules();
-      startModules();
-      startDate=new Date();
-      stopDate=null;
+    Thread finishSetup=new Thread(){
+      public void run(){
+        try {
+          if (!JiveGlobals.getXMLProperty("adminConsole.port").equals("9090") || !JiveGlobals.getXMLProperty("adminConsole.securePort").equals("9091")) {
+            Thread.sleep(1000);
+            ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+          }
+          verifyDataSource();
+          loadModules();
+          initModules();
+          startModules();
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+          Log.error(e);
+          shutdownServer();
+        }
+      }
     }
- catch (    Exception e) {
-      e.printStackTrace();
-      Log.error(e);
-      System.out.println(LocaleUtils.getLocalizedString("startup.error"));
-      shutdownServer();
-    }
+;
+    finishSetup.setContextClassLoader(loader);
+    finishSetup.start();
   }
 }
