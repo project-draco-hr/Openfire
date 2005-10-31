@@ -4,14 +4,15 @@
   }
   if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
     setupMode=false;
-  }
-  if (!setupMode) {
+    name=JiveGlobals.getProperty("xmpp.domain");
     Thread finishSetup=new Thread(){
       public void run(){
         try {
-          if (!JiveGlobals.getXMLProperty("adminConsole.port").equals("9090") || !JiveGlobals.getXMLProperty("adminConsole.securePort").equals("9091")) {
-            Thread.sleep(1000);
-            ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+          if (isStandAlone()) {
+            if (!JiveGlobals.getXMLProperty("adminConsole.port").equals("9090") || !JiveGlobals.getXMLProperty("adminConsole.securePort").equals("9091")) {
+              Thread.sleep(1000);
+              ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+            }
           }
           verifyDataSource();
           loadModules();

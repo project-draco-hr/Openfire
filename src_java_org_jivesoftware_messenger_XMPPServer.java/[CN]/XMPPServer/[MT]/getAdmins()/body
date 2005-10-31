@@ -1,0 +1,18 @@
+{
+  Collection<JID> admins=new ArrayList<JID>();
+  String usernames=JiveGlobals.getXMLProperty("admin.authorizedUsernames");
+  usernames=(usernames == null || usernames.trim().length() == 0) ? "admin" : usernames;
+  StringTokenizer tokenizer=new StringTokenizer(usernames,",");
+  while (tokenizer.hasMoreTokens()) {
+    String username=tokenizer.nextToken();
+    admins.add(createJID(username,null));
+  }
+  String jids=JiveGlobals.getXMLProperty("admin.authorizedJIDs");
+  jids=(jids == null || jids.trim().length() == 0) ? "" : jids;
+  tokenizer=new StringTokenizer(jids,",");
+  while (tokenizer.hasMoreTokens()) {
+    String jid=tokenizer.nextToken();
+    admins.add(new JID(jid));
+  }
+  return admins;
+}
