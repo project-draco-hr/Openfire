@@ -1,0 +1,17 @@
+{
+  List<Element> answer=new ArrayList<Element>();
+  if (!NAMESPACE.equals(node)) {
+    answer=Collections.emptyList();
+  }
+ else {
+    Element item;
+    for (    AdHocCommand command : commands.values()) {
+      item=DocumentHelper.createElement("item");
+      item.addAttribute("jid",serverName);
+      item.addAttribute("node",command.getCode());
+      item.addAttribute("name",command.getLabel());
+      answer.add(item);
+    }
+  }
+  return answer.iterator();
+}

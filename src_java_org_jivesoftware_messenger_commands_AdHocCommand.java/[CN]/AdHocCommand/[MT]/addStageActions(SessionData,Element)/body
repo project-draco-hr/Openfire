@@ -1,0 +1,11 @@
+{
+  Element actions=command.addElement("actions");
+  List<Action> validActions=getActions(data);
+  for (  AdHocCommand.Action action : validActions) {
+    actions.addElement(action.name());
+  }
+  Action executeAction=getExecuteAction(data);
+  actions.addAttribute("execute",executeAction.name());
+  data.setAllowedActions(validActions);
+  data.setExecuteAction(executeAction);
+}
