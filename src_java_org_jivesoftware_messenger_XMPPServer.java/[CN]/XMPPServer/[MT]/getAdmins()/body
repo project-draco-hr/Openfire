@@ -1,6 +1,9 @@
 {
   Collection<JID> admins=new ArrayList<JID>();
   String usernames=JiveGlobals.getXMLProperty("admin.authorizedUsernames");
+  if (usernames == null) {
+    usernames=JiveGlobals.getXMLProperty("adminConsole.authorizedUsernames");
+  }
   usernames=(usernames == null || usernames.trim().length() == 0) ? "admin" : usernames;
   StringTokenizer tokenizer=new StringTokenizer(usernames,",");
   while (tokenizer.hasMoreTokens()) {
