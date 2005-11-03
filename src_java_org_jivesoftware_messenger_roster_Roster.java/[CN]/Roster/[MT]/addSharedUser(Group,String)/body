@@ -21,33 +21,43 @@
       Log.error("Group (" + group.getName() + ") includes non-existent username ("+ addedUser+ ")");
     }
   }
-  if (newItem || item.isOnlyShared()) {
-    Collection<Group> userGroups=null;
-    Collection<Group> sharedGroups=new ArrayList<Group>();
-    try {
-      User rosterUser=UserManager.getInstance().getUser(getUsername());
-      GroupManager groupManager=GroupManager.getInstance();
-      userGroups=groupManager.getGroups(rosterUser);
-      sharedGroups.addAll(item.getSharedGroups());
-      sharedGroups.add(group);
-      if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),sharedGroups)) {
-        item.setSubStatus(RosterItem.SUB_BOTH);
-      }
- else       if (group.isUser(addedUser) && !group.isUser(getUsername())) {
-        item.setSubStatus(RosterItem.SUB_TO);
-      }
- else       if (!group.isUser(addedUser) && group.isUser(getUsername())) {
-        item.setSubStatus(RosterItem.SUB_FROM);
-      }
+  RosterItem.SubType prevSubscription=null;
+  if (!newItem) {
+    prevSubscription=item.getSubStatus();
+  }
+  Collection<Group> userGroups=null;
+  Collection<Group> sharedGroups=new ArrayList<Group>();
+  try {
+    User rosterUser=UserManager.getInstance().getUser(getUsername());
+    GroupManager groupManager=GroupManager.getInstance();
+    userGroups=groupManager.getGroups(rosterUser);
+    sharedGroups.addAll(item.getSharedGroups());
+    sharedGroups.add(group);
+    if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),sharedGroups)) {
+      item.setSubStatus(RosterItem.SUB_BOTH);
     }
- catch (    UserNotFoundException e) {
+ else     if (group.isUser(addedUser) && !group.isUser(getUsername())) {
+      item.setSubStatus(RosterItem.SUB_TO);
     }
+ else     if (!group.isUser(addedUser) && group.isUser(getUsername())) {
+      item.setSubStatus(RosterItem.SUB_FROM);
+    }
+  }
+ catch (  UserNotFoundException e) {
   }
   if (item.getSubStatus() != RosterItem.SUB_FROM) {
     item.addSharedGroup(group);
   }
  else {
     item.addInvisibleSharedGroup(group);
+  }
+  if (prevSubscription != null) {
+    if (prevSubscription == RosterItem.SUB_TO && item.getSubStatus() == RosterItem.SUB_FROM) {
+      item.setSubStatus(RosterItem.SUB_BOTH);
+    }
+ else     if (prevSubscription == RosterItem.SUB_FROM && item.getSubStatus() == RosterItem.SUB_TO) {
+      item.setSubStatus(RosterItem.SUB_BOTH);
+    }
   }
   broadcast(item,true);
   if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {

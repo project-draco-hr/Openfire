@@ -18,40 +18,50 @@
       Log.error("Couldn't find a user with username (" + addedUser + ")");
     }
   }
-  if (newItem || item.isOnlyShared()) {
-    Collection<Group> userGroups=null;
-    try {
-      User rosterUser=UserManager.getInstance().getUser(getUsername());
-      GroupManager groupManager=GroupManager.getInstance();
-      userGroups=groupManager.getGroups(rosterUser);
-      if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),groups)) {
-        item.setSubStatus(RosterItem.SUB_BOTH);
-        for (        Group group : groups) {
-          if (rosterManager.isGroupVisible(group,getUsername())) {
-            item.addSharedGroup(group);
-          }
-        }
-        for (        Group group : userGroups) {
-          if (!group.isUser(addedUser) && rosterManager.isGroupVisible(group,addedUser)) {
-            item.addInvisibleSharedGroup(group);
-          }
+  Collection<Group> userGroups=null;
+  try {
+    User rosterUser=UserManager.getInstance().getUser(getUsername());
+    GroupManager groupManager=GroupManager.getInstance();
+    userGroups=groupManager.getGroups(rosterUser);
+    if (rosterManager.hasMutualVisibility(getUsername(),userGroups,jid.getNode(),groups)) {
+      item.setSubStatus(RosterItem.SUB_BOTH);
+      for (      Group group : groups) {
+        if (rosterManager.isGroupVisible(group,getUsername())) {
+          item.addSharedGroup(group);
         }
       }
+      for (      Group group : userGroups) {
+        if (!group.isUser(addedUser) && rosterManager.isGroupVisible(group,addedUser)) {
+          item.addInvisibleSharedGroup(group);
+        }
+      }
+    }
  else {
-        item.setSubStatus(RosterItem.SUB_FROM);
-        for (        Group group : groups) {
-          if (rosterManager.isGroupVisible(group,getUsername())) {
-            item.addSharedGroup(group);
-            item.setSubStatus(RosterItem.SUB_TO);
-          }
+      RosterItem.SubType prevSubscription=null;
+      if (!newItem) {
+        prevSubscription=item.getSubStatus();
+      }
+      item.setSubStatus(RosterItem.SUB_FROM);
+      for (      Group group : groups) {
+        if (rosterManager.isGroupVisible(group,getUsername())) {
+          item.addSharedGroup(group);
+          item.setSubStatus(RosterItem.SUB_TO);
         }
-        if (item.getSubStatus() == RosterItem.SUB_FROM) {
-          item.addInvisibleSharedGroup(addedGroup);
+      }
+      if (item.getSubStatus() == RosterItem.SUB_FROM) {
+        item.addInvisibleSharedGroup(addedGroup);
+      }
+      if (prevSubscription != null) {
+        if (prevSubscription == RosterItem.SUB_TO && item.getSubStatus() == RosterItem.SUB_FROM) {
+          item.setSubStatus(RosterItem.SUB_BOTH);
+        }
+ else         if (prevSubscription == RosterItem.SUB_FROM && item.getSubStatus() == RosterItem.SUB_TO) {
+          item.setSubStatus(RosterItem.SUB_BOTH);
         }
       }
     }
- catch (    UserNotFoundException e) {
-    }
+  }
+ catch (  UserNotFoundException e) {
   }
   broadcast(item,true);
   if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
