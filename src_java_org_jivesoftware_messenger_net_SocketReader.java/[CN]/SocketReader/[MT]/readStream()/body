@@ -43,6 +43,13 @@
         Log.warn("Invalid presence type",e);
         packet.setType(null);
       }
+      try {
+        packet.getShow();
+      }
+ catch (      IllegalArgumentException e) {
+        Log.warn("Invalid presence show",e);
+        packet.setShow(null);
+      }
       processPresence(packet);
     }
  else     if ("iq".equals(tag)) {
