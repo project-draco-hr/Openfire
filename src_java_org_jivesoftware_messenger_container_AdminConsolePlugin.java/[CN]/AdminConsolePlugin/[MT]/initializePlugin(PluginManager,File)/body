@@ -10,7 +10,12 @@
     OutputStreamLogSink logSink=new OutputStreamLogSink(logFile.toString());
     logSink.start();
     LogImpl log=(LogImpl)Factory.getFactory().getInstance("");
-    log.setVerbose(-1);
+    if (!Log.isDebugEnabled()) {
+      log.setVerbose(-1);
+    }
+ else {
+      log.setVerbose(1);
+    }
     log.add(logSink);
     jetty=new Server();
     loadListeners();
