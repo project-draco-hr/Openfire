@@ -10,7 +10,7 @@ synchronized (roomName.intern()) {
  catch (      IllegalArgumentException e) {
         if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
           if (!allowedToCreate.contains(userjid.toBareJID())) {
-            throw new UnauthorizedException();
+            throw new NotAllowedException();
           }
         }
         room.addFirstOwner(userjid.toBareJID());
