@@ -1,5 +1,5 @@
 {
-  if (IQ.Type.error == packet.getType() || IQ.Type.result == packet.getType()) {
+  if (IQ.Type.error == packet.getType()) {
     return;
   }
   lastPacketTime=System.currentTimeMillis();
@@ -11,6 +11,15 @@
  else {
     MUCRole role=roles.get(group.toLowerCase());
     if (role == null) {
+    }
+ else     if (IQ.Type.result == packet.getType()) {
+      if (packet.getTo().getResource() != null) {
+        try {
+          role.getChatRoom().sendPrivatePacket(packet,role);
+        }
+ catch (        NotFoundException e) {
+        }
+      }
     }
  else {
       if (!role.getChatUser().getAddress().equals(packet.getFrom())) {
