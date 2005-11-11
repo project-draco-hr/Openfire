@@ -1,5 +1,11 @@
 {
-  final SystemTray tray=SystemTray.getDefaultSystemTray();
+  SystemTray tray=null;
+  try {
+    tray=SystemTray.getDefaultSystemTray();
+  }
+ catch (  Throwable e) {
+    System.err.println("Error loading system tray library, system tray support disabled.");
+  }
   try {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
   }
@@ -32,13 +38,14 @@
   JLabel splashLabel=null;
   cardPanel.setLayout(cardLayout);
   try {
-    splash=new ImageIcon(getClass().getClassLoader().getResource("splash.gif"));
     splashLabel=new JLabel("",splash,JLabel.CENTER);
+    splash=new ImageIcon(getClass().getClassLoader().getResource("splash.gif"));
     onIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_on-16x16.gif"));
     offIcon=new ImageIcon(getClass().getClassLoader().getResource("messenger_off-16x16.gif"));
     frame.setIconImage(offIcon.getImage());
   }
  catch (  Exception e) {
+    e.printStackTrace();
   }
   mainPanel.setLayout(new BorderLayout());
   cardPanel.setBackground(Color.white);
@@ -94,7 +101,7 @@
             try {
               sleep(8000);
             }
- catch (            Exception e) {
+ catch (            InterruptedException ie) {
             }
             if (stopButton.isEnabled()) {
               browserButton.setEnabled(true);
@@ -152,7 +159,9 @@
   trayIcon=new TrayIcon(offIcon,appName,menu);
   trayIcon.setIconAutoSize(true);
   trayIcon.addActionListener(actionListener);
-  tray.addTrayIcon(trayIcon);
+  if (tray != null) {
+    tray.addTrayIcon(trayIcon);
+  }
   frame.addWindowListener(new WindowAdapter(){
     public void windowClosing(    WindowEvent e){
       stopApplication();
