@@ -1,9 +1,12 @@
 {
-  if (fields.isEmpty()) {
+  if (fields.isEmpty() || query == null || "".equals(query)) {
     return Collections.emptyList();
   }
   if (!searchFields.keySet().containsAll(fields)) {
     throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
+  }
+  if (!query.endsWith("*")) {
+    query=query + "*";
   }
   List<String> usernames=new ArrayList<String>();
   LdapContext ctx=null;
@@ -30,7 +33,7 @@
       String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
       usernames.add(JID.escapeNode(username));
     }
-    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       Collections.sort(usernames);
     }
   }
@@ -47,5 +50,5 @@
  catch (    Exception ignored) {
     }
   }
-  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+  return new UserCollection(usernames.toArray(new String[usernames.size()]));
 }

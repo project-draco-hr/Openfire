@@ -8,12 +8,12 @@
     SearchControls constraints=new SearchControls();
     constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
     constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
-    if (!Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
+    if (!(Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")))) {
       constraints.setCountLimit(startIndex + numResults);
     }
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
     NamingEnumeration answer=ctx.search("",filter,constraints);
-    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")).booleanValue()) {
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       while (answer.hasMoreElements()) {
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
         usernames.add(JID.escapeNode(username));
@@ -54,5 +54,5 @@
  catch (    Exception ignored) {
     }
   }
-  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+  return new UserCollection(usernames.toArray(new String[usernames.size()]));
 }
