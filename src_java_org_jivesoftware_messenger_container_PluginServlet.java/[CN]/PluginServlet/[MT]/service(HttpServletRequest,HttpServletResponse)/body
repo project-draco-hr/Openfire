@@ -2,7 +2,6 @@
   String pathInfo=request.getPathInfo();
   if (pathInfo == null) {
     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    return;
   }
  else {
     try {
@@ -11,20 +10,17 @@
           return;
         }
         handleJSP(pathInfo,request,response);
-        return;
       }
  else       if (getServlet(pathInfo) != null) {
         handleServlet(pathInfo,request,response);
       }
  else {
         handleOtherRequest(pathInfo,response);
-        return;
       }
     }
  catch (    Exception e) {
       Log.error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      return;
     }
   }
 }

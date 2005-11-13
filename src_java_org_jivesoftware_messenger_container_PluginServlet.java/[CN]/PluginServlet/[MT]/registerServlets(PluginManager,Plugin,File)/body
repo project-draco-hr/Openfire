@@ -29,9 +29,9 @@
       String url=nameElement.element("url-pattern").getTextTrim();
       Class servletClass=classMap.get(name);
       Object instance=servletClass.newInstance();
-      if (instance instanceof HttpServlet) {
-        ((HttpServlet)instance).init(servletConfig);
-        servlets.put(pluginName + url,(HttpServlet)instance);
+      if (instance instanceof GenericServlet) {
+        ((GenericServlet)instance).init(servletConfig);
+        servlets.put(pluginName + url,(GenericServlet)instance);
       }
  else {
         Log.warn("Could not load " + (pluginName + url) + ": not a servlet.");
