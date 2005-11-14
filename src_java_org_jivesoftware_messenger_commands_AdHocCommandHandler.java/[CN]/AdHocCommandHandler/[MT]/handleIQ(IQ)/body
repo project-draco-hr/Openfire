@@ -16,6 +16,11 @@
       reply.setError(PacketError.Condition.item_not_found);
     }
  else {
+      if (!command.hasPermission(packet.getFrom())) {
+        reply.setChildElement(iqCommand.createCopy());
+        reply.setError(PacketError.Condition.forbidden);
+        return reply;
+      }
       sessionid=StringUtils.randomString(15);
       Element childElement=reply.setChildElement("command",NAMESPACE);
       if (command.getMaxStages(null) == 0) {
