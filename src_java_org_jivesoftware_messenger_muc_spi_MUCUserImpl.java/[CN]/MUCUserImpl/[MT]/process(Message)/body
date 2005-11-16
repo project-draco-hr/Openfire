@@ -57,19 +57,21 @@
               Element userInfo=packet.getChildElement("x","http://jabber.org/protocol/muc#user");
               MUCRoomImpl room=(MUCRoomImpl)role.getChatRoom();
               if (userInfo != null && userInfo.element("invite") != null) {
-                Element info=userInfo.element("invite");
-                if (room.isMembersOnly()) {
-                  room.lock.writeLock().lock();
-                  try {
-                    room.addMember(info.attributeValue("to"),null,role);
-                  }
-  finally {
-                    room.lock.writeLock().unlock();
-                  }
-                }
                 List<Element> extensions=new ArrayList<Element>(packet.getElement().elements());
                 extensions.remove(userInfo);
-                room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role,extensions);
+                for (Iterator it=userInfo.elementIterator("invite"); it.hasNext(); ) {
+                  Element info=(Element)it.next();
+                  if (room.isMembersOnly()) {
+                    room.lock.writeLock().lock();
+                    try {
+                      room.addMember(info.attributeValue("to"),null,role);
+                    }
+  finally {
+                      room.lock.writeLock().unlock();
+                    }
+                  }
+                  room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role,extensions);
+                }
               }
  else               if (userInfo != null && userInfo.element("decline") != null) {
                 Element info=userInfo.element("decline");
