@@ -1,4 +1,14 @@
 {
+  if (connection.getTlsPolicy() == SocketConnection.TLSPolicy.disabled) {
+    StringBuilder sb=new StringBuilder();
+    StreamError error=new StreamError(StreamError.Condition.not_authorized);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    Log.warn("TLS requested by initiator when TLS was never offered by server. " + "Closing connection : " + connection);
+    return false;
+  }
+  connection.deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
   try {
     connection.startTLS(false);
   }

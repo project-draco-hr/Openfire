@@ -1,4 +1,8 @@
 {
+  if (connection.getTlsPolicy() == SocketConnection.TLSPolicy.required && !connection.isSecure()) {
+    closeNeverSecuredConnection();
+    return;
+  }
   try {
     InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
     router.route(packet);

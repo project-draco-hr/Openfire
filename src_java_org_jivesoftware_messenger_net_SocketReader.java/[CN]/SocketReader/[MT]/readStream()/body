@@ -74,7 +74,6 @@
       processIQ(packet);
     }
  else     if ("starttls".equals(tag)) {
-      connection.deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
       if (negotiateTLS()) {
         tlsNegotiated();
       }
@@ -85,8 +84,7 @@
       continue;
     }
  else     if ("auth".equals(tag)) {
-      SASLAuthentication saslAuth=new SASLAuthentication(session,reader);
-      if (saslAuth.doHandshake(doc)) {
+      if (authenticateClient(doc)) {
         saslSuccessful();
       }
  else {
