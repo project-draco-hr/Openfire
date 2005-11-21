@@ -1,6 +1,11 @@
 {
   if (message != null) {
-    if (message.getTo() == null || serverAddress.equals(message.getTo()) || message.getTo().getNode() == null) {
+    JID recipientJID=message.getTo();
+    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null) {
+      return;
+    }
+    JID senderJID=message.getFrom();
+    if (senderJID != null && mucServiceDomain.equals(senderJID.getDomain())) {
       return;
     }
     if (type == Type.bounce) {
