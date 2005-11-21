@@ -2,7 +2,7 @@
   try {
     ClientSession session=(ClientSession)handback;
     try {
-      if (session.getPresence().isAvailable()) {
+      if (session.getPresence().isAvailable() || !session.wasAvailable()) {
         Presence presence=new Presence();
         presence.setType(Presence.Type.unavailable);
         presence.setFrom(session.getAddress());
