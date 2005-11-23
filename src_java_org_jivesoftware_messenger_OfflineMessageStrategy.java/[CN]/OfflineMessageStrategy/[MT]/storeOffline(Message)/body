@@ -4,8 +4,7 @@
     if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null) {
       return;
     }
-    JID senderJID=message.getFrom();
-    if (senderJID != null && mucServiceDomain.equals(senderJID.getDomain())) {
+    if (Message.Type.groupchat == message.getType() || Message.Type.error == message.getType() || Message.Type.headline == message.getType()) {
       return;
     }
     if (type == Type.bounce) {
