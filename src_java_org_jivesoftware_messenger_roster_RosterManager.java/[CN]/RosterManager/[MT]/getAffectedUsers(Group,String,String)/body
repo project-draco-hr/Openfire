@@ -1,12 +1,12 @@
 {
   if (!"onlyGroup".equals(showInRoster) && !"everybody".equals(showInRoster)) {
-    return new ArrayList<String>();
+    return new ArrayList<JID>();
   }
-  Collection<String> users=new HashSet<String>(group.getMembers());
+  Collection<JID> users=new HashSet<JID>(group.getMembers());
   users.addAll(group.getAdmins());
   if ("everybody".equals(showInRoster)) {
     for (    User user : UserManager.getInstance().getUsers()) {
-      users.add(user.getUsername());
+      users.add(server.createJID(user.getUsername(),null));
     }
   }
  else {

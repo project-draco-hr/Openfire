@@ -1,0 +1,28 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(REMOVE_USER);
+    pstmt.setString(1,groupName);
+    pstmt.setString(2,server.isLocal(user) ? user.getNode() : user.toString());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

@@ -1,29 +1,22 @@
 {
-  String username=(String)member;
-  try {
-    username=Stringprep.nodeprep(username);
-    UserManager.getInstance().getUser(username);
-  }
- catch (  Exception e) {
-    throw new IllegalArgumentException("Invalid user.",e);
-  }
+  JID user=(JID)member;
   boolean alreadyGroupUser=false;
   if (adminCollection) {
-    alreadyGroupUser=members.contains(username);
+    alreadyGroupUser=members.contains(user);
   }
  else {
-    alreadyGroupUser=administrators.contains(username);
+    alreadyGroupUser=administrators.contains(user);
   }
-  if (users.add(username)) {
+  if (users.add(user)) {
     if (alreadyGroupUser) {
-      provider.updateMember(name,username,adminCollection);
+      provider.updateMember(name,user,adminCollection);
     }
  else {
-      provider.addMember(name,username,adminCollection);
+      provider.addMember(name,user,adminCollection);
     }
     if (adminCollection) {
       Map<String,String> params=new HashMap<String,String>();
-      params.put("admin",username);
+      params.put("admin",user.toString());
       if (alreadyGroupUser) {
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_removed,params);
       }
@@ -31,7 +24,7 @@
     }
  else {
       Map<String,String> params=new HashMap<String,String>();
-      params.put("member",username);
+      params.put("member",user.toString());
       if (alreadyGroupUser) {
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_removed,params);
       }
@@ -39,13 +32,13 @@
     }
     if (alreadyGroupUser) {
       if (adminCollection) {
-        if (members.contains(username)) {
-          members.remove(username);
+        if (members.contains(user)) {
+          members.remove(user);
         }
       }
  else {
-        if (administrators.contains(username)) {
-          administrators.remove(username);
+        if (administrators.contains(user)) {
+          administrators.remove(user);
         }
       }
     }

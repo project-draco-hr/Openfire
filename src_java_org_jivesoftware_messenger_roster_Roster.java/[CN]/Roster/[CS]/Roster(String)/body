@@ -8,7 +8,7 @@
   try {
     User rosterUser=UserManager.getInstance().getUser(getUsername());
     sharedGroups=rosterManager.getSharedGroups(rosterUser);
-    userGroups=GroupManager.getInstance().getGroups(rosterUser);
+    userGroups=GroupManager.getInstance().getGroups(getUserJID());
   }
  catch (  UserNotFoundException e) {
     sharedGroups=new ArrayList<Group>();
@@ -29,8 +29,7 @@
   for (  JID jid : sharedUsers.keySet()) {
     try {
       Collection<Group> itemGroups=new ArrayList<Group>();
-      User user=UserManager.getInstance().getUser(jid.getNode());
-      String nickname="".equals(user.getName()) ? jid.getNode() : user.getName();
+      String nickname=getContactNickname(jid);
       RosterItem item=new RosterItem(jid,RosterItem.SUB_TO,RosterItem.ASK_NONE,RosterItem.RECV_NONE,nickname,null);
       for (      Group group : sharedUsers.get(jid)) {
         if (group.isUser(jid)) {
@@ -41,7 +40,7 @@
           item.addInvisibleSharedGroup(group);
         }
       }
-      if (rosterManager.hasMutualVisibility(username,userGroups,jid.getNode(),itemGroups)) {
+      if (rosterManager.hasMutualVisibility(username,userGroups,jid,itemGroups)) {
         item.setSubStatus(RosterItem.SUB_BOTH);
       }
  else {

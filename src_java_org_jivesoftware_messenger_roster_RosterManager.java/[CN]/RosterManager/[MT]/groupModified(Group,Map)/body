@@ -9,13 +9,13 @@
     if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=new HashSet<String>(group.getMembers());
+    Collection<JID> users=new HashSet<JID>(group.getMembers());
     users.addAll(group.getAdmins());
-    Collection<String> affectedUsers=getAffectedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"));
-    for (    String deletedUser : users) {
+    Collection<JID> affectedUsers=getAffectedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"));
+    for (    JID deletedUser : users) {
       groupUserDeleted(group,affectedUsers,deletedUser);
     }
-    for (    String user : users) {
+    for (    JID user : users) {
       groupUserAdded(group,user);
     }
   }
@@ -24,13 +24,13 @@
     if (currentValue.equals(originalValue)) {
       return;
     }
-    Collection<String> users=new HashSet<String>(group.getMembers());
+    Collection<JID> users=new HashSet<JID>(group.getMembers());
     users.addAll(group.getAdmins());
-    Collection<String> affectedUsers=getAffectedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue);
-    for (    String deletedUser : users) {
+    Collection<JID> affectedUsers=getAffectedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue);
+    for (    JID deletedUser : users) {
       groupUserDeleted(group,affectedUsers,deletedUser);
     }
-    for (    String user : users) {
+    for (    JID user : users) {
       groupUserAdded(group,user);
     }
   }
@@ -42,9 +42,12 @@
     if (!isSharedGroup(group)) {
       return;
     }
-    Collection<String> users=getAffectedUsers(group);
-    for (    String updatedUser : users) {
-      Roster roster=(Roster)CacheManager.getCache("username2roster").get(updatedUser);
+    Collection<JID> users=getAffectedUsers(group);
+    for (    JID updatedUser : users) {
+      Roster roster=null;
+      if (server.isLocal(updatedUser)) {
+        roster=(Roster)CacheManager.getCache("username2roster").get(updatedUser.getNode());
+      }
       if (roster != null) {
         roster.shareGroupRenamed(users);
       }

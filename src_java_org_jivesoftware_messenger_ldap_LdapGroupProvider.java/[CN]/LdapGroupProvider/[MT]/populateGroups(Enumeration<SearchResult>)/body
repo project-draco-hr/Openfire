@@ -14,6 +14,8 @@
   ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
   ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
   String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
+  XMPPServer server=XMPPServer.getInstance();
+  String serverName=server.getServerInfo().getName();
   while (answer.hasMoreElements()) {
     String name="";
     try {
@@ -26,7 +28,7 @@
  catch (      Exception e) {
         description="";
       }
-      TreeSet<String> members=new TreeSet<String>();
+      TreeSet<JID> members=new TreeSet<JID>();
       Attribute member=a.get(manager.getGroupMemberField());
       NamingEnumeration ne=member.getAll();
       while (ne.hasMore()) {
@@ -51,9 +53,16 @@
           }
         }
         try {
-          String escapedUsername=JID.escapeNode(username);
-          userManager.getUser(escapedUsername);
-          members.add(escapedUsername);
+          JID userJID=null;
+          if (!username.contains(serverName)) {
+            String escapedUsername=JID.escapeNode(username);
+            userManager.getUser(escapedUsername);
+            userJID=server.createJID(escapedUsername,null);
+          }
+ else {
+            userJID=new JID(username);
+          }
+          members.add(userJID);
         }
  catch (        UserNotFoundException e) {
           if (manager.isDebugEnabled()) {
@@ -64,7 +73,7 @@
       if (manager.isDebugEnabled()) {
         Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
       }
-      Group g=new Group(this,name,description,members,new ArrayList<String>());
+      Group g=new Group(this,name,description,members,new ArrayList<JID>());
       groups.put(name,g);
     }
  catch (    Exception e) {

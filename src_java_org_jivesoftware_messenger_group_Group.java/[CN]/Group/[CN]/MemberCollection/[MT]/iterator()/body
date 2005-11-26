@@ -1,6 +1,6 @@
 {
   return new Iterator(){
-    Iterator iter=users.iterator();
+    Iterator<JID> iter=users.iterator();
     Object current=null;
     public boolean hasNext(){
       return iter.hasNext();
@@ -13,17 +13,17 @@
       if (current == null) {
         throw new IllegalStateException();
       }
-      String user=(String)current;
+      JID user=(JID)current;
       iter.remove();
       provider.deleteMember(name,user);
       if (adminCollection) {
         Map<String,String> params=new HashMap<String,String>();
-        params.put("admin",user);
+        params.put("admin",user.toString());
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_removed,params);
       }
  else {
         Map<String,String> params=new HashMap<String,String>();
-        params.put("member",user);
+        params.put("member",user.toString());
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_removed,params);
       }
     }

@@ -1,5 +1,5 @@
 {
-  List<String> members=new ArrayList<String>();
+  List<JID> members=new ArrayList<JID>();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -13,7 +13,14 @@
     pstmt.setString(1,groupName);
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
-      members.add(rs.getString(1));
+      String user=rs.getString(1);
+      JID userJID=new JID(user);
+      if (user.indexOf('@') == -1) {
+        if (!server.matchesComponent(userJID)) {
+          userJID=server.createJID(user,null);
+        }
+      }
+      members.add(userJID);
     }
     rs.close();
   }

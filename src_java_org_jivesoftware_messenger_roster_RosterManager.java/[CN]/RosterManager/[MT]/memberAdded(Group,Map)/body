@@ -1,11 +1,13 @@
 {
-  String addedUser=(String)params.get("member");
+  JID addedUser=new JID((String)params.get("member"));
   if (group.getAdmins().contains(addedUser)) {
     return;
   }
   if (!isSharedGroup(group)) {
     for (    Group visibleGroup : getVisibleGroups(group)) {
-      addSharedGroupToRoster(visibleGroup,addedUser);
+      Collection<JID> users=new HashSet<JID>(group.getMembers());
+      users.addAll(group.getAdmins());
+      groupUserAdded(visibleGroup,users,addedUser);
     }
   }
  else {

@@ -1,0 +1,31 @@
+{
+  Roster deletedUserRoster=null;
+  if (server.isLocal(deletedUser)) {
+    deletedUserRoster=(Roster)CacheManager.getCache("username2roster").get(deletedUser.getNode());
+  }
+  for (  JID userToUpdate : users) {
+    Roster roster=null;
+    if (server.isLocal(userToUpdate)) {
+      try {
+        UserManager.getInstance().getUser(userToUpdate.getNode());
+      }
+ catch (      UserNotFoundException e) {
+        continue;
+      }
+      roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate.getNode());
+    }
+    if (!server.isLocal(deletedUser)) {
+      sendSubscribeRequest(userToUpdate,deletedUser,false);
+    }
+    if (!server.isLocal(userToUpdate)) {
+      sendSubscribeRequest(deletedUser,userToUpdate,false);
+    }
+    if (roster != null) {
+      roster.deleteSharedUser(group,deletedUser);
+    }
+    if (deletedUserRoster != null) {
+      Collection<Group> groups=GroupManager.getInstance().getGroups(userToUpdate);
+      deletedUserRoster.deleteSharedUser(userToUpdate,groups,group);
+    }
+  }
+}
