@@ -21,17 +21,17 @@
     }
   }
  else   if (strategyType == Type.all) {
-    history.addLast(packet);
+    history.add(packet);
   }
  else   if (strategyType == Type.number) {
     if (history.size() >= strategyMaxNumber) {
-      ListIterator historyIter=history.listIterator();
+      Iterator historyIter=history.iterator();
       while (historyIter.hasNext() && history.size() > strategyMaxNumber) {
         if (historyIter.next() != roomSubject) {
           historyIter.remove();
         }
       }
     }
-    history.addLast(packet);
+    history.add(packet);
   }
 }
