@@ -1,6 +1,9 @@
 {
   if (userJID.getNode() != null && !"".equals(userJID.getNode())) {
     for (    ClientSession session : sessionManager.getSessions(userJID.getNode())) {
+      if (presenceUpdateHandler.hasDirectPresence(session,recipientJID)) {
+        continue;
+      }
       Presence presencePacket=new Presence();
       presencePacket.setType(Presence.Type.unavailable);
       presencePacket.setFrom(session.getAddress());
