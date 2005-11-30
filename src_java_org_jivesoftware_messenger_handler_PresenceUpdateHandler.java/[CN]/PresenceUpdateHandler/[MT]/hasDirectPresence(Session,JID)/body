@@ -1,0 +1,14 @@
+{
+  Map<ChannelHandler,Set<String>> map=directedPresences.get(session.getAddress().toString());
+  if (map != null) {
+    String recipient=recipientJID.toBareJID();
+    for (    Set<String> fullJIDs : map.values()) {
+      for (      String fullJID : fullJIDs) {
+        if (fullJID.contains(recipient)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
