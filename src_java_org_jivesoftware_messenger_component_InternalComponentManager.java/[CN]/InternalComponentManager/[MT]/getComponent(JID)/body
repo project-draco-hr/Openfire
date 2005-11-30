@@ -4,11 +4,13 @@
     return components.get(jid);
   }
  else {
+    if (!jid.contains(serverDomain)) {
+      return null;
+    }
     String serverName=new JID(jid).getDomain();
     int index=serverName.indexOf(".");
     if (index != -1) {
-      String serviceName=serverName.substring(0,index);
-      jid=serviceName;
+      jid=serverName.substring(0,index);
     }
   }
   return components.get(jid);
