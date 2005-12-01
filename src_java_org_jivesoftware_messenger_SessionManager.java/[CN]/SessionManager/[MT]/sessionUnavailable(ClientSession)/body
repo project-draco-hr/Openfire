@@ -8,11 +8,8 @@
       SessionMap sessionMap=sessions.get(session.getUsername());
       if (sessionMap == null) {
         JID userJID=new JID(session.getUsername(),serverName,"");
-        try {
-          routingTable.getRoute(userJID);
+        if (routingTable.getRoute(userJID) != null) {
           routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
-        }
- catch (        NoSuchRouteException e) {
         }
       }
  else       if (sessionMap.getAvailableSessions().isEmpty()) {

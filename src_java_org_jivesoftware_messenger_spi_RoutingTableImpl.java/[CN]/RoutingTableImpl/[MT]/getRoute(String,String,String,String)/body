@@ -1,0 +1,34 @@
+{
+  RoutableChannelHandler route=null;
+  if (!serverName.equals(domain) && routes.get(domain) == null && componentManager.getComponent(domain) == null) {
+    return OutgoingSessionPromise.getInstance();
+  }
+  routeLock.readLock().lock();
+  try {
+    Object nameRoutes=routes.get(domain);
+    if (nameRoutes instanceof ChannelHandler) {
+      route=(RoutableChannelHandler)nameRoutes;
+    }
+ else {
+      Object resourceRoutes=((Hashtable)nameRoutes).get(node);
+      if (resourceRoutes instanceof ChannelHandler) {
+        route=(RoutableChannelHandler)resourceRoutes;
+      }
+ else       if (resourceRoutes != null) {
+        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(resource);
+      }
+ else {
+        route=null;
+      }
+    }
+  }
+ catch (  Exception e) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Route not found for JID: " + jid,e);
+    }
+  }
+ finally {
+    routeLock.readLock().unlock();
+  }
+  return route;
+}

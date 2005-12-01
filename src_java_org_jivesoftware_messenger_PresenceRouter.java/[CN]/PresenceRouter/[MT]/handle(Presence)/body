@@ -7,9 +7,11 @@
         updateHandler.process(packet);
       }
  else {
-        ChannelHandler handler=routingTable.getRoute(recipientJID);
-        handler.process(packet);
-        updateHandler.directedPresenceSent(packet,handler,recipientJID.toString());
+        ChannelHandler route=routingTable.getRoute(recipientJID);
+        if (route != null) {
+          route.process(packet);
+          updateHandler.directedPresenceSent(packet,route,recipientJID.toString());
+        }
       }
     }
  else     if (Presence.Type.subscribe == type || Presence.Type.unsubscribe == type || Presence.Type.subscribed == type || Presence.Type.unsubscribed == type) {
@@ -19,12 +21,13 @@
       presenceManager.handleProbe(packet);
     }
  else {
-      routingTable.getRoute(recipientJID).process(packet);
+      ChannelHandler route=routingTable.getRoute(recipientJID);
+      if (route != null) {
+        route.process(packet);
+      }
     }
   }
- catch (  NoSuchRouteException e) {
-  }
-catch (  Exception e) {
+ catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
     Session session=sessionManager.getSession(packet.getFrom());
     if (session != null) {

@@ -1,17 +1,12 @@
 {
   boolean host_unknown=!serverName.equals(recipient);
   if (host_unknown && recipient.contains(serverName)) {
-    try {
-      RoutableChannelHandler route=routingTable.getRoute(new JID(recipient));
-      if (route instanceof OutgoingSessionPromise) {
-        host_unknown=true;
-      }
- else {
-        host_unknown=false;
-      }
-    }
- catch (    NoSuchRouteException e) {
+    RoutableChannelHandler route=routingTable.getRoute(new JID(recipient));
+    if (route == null || route instanceof OutgoingSessionPromise) {
       host_unknown=true;
+    }
+ else {
+      host_unknown=false;
     }
   }
   return host_unknown;

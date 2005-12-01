@@ -7,7 +7,10 @@
       reply.setFrom(packet.getTo());
       reply.setChildElement(((IQ)packet).getChildElement().createCopy());
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.getRoute(reply.getTo()).process(reply);
+      ChannelHandler route=routingTable.getRoute(reply.getTo());
+      if (route != null) {
+        route.process(reply);
+      }
     }
  else     if (packet instanceof Presence) {
       Presence reply=new Presence();
@@ -15,7 +18,10 @@
       reply.setTo(packet.getFrom());
       reply.setFrom(packet.getTo());
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.getRoute(reply.getTo()).process(reply);
+      ChannelHandler route=routingTable.getRoute(reply.getTo());
+      if (route != null) {
+        route.process(reply);
+      }
     }
  else     if (packet instanceof Message) {
       Message reply=new Message();
@@ -25,11 +31,12 @@
       reply.setType(((Message)packet).getType());
       reply.setThread(((Message)packet).getThread());
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.getRoute(reply.getTo()).process(reply);
+      ChannelHandler route=routingTable.getRoute(reply.getTo());
+      if (route != null) {
+        route.process(reply);
+      }
     }
   }
  catch (  UnauthorizedException e) {
-  }
-catch (  NoSuchRouteException e) {
   }
 }
