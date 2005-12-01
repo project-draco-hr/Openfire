@@ -2,10 +2,11 @@
   try {
     JID recipient=packet.getTo();
     if (server.matchesComponent(recipient) || server.isRemote(recipient)) {
-      try {
-        routingTable.getRoute(recipient).process(packet);
+      ChannelHandler route=routingTable.getRoute(recipient);
+      if (route != null) {
+        route.process(packet);
       }
- catch (      NoSuchRouteException e) {
+ else {
         handleUnprocessedPacket(packet);
       }
       return;
