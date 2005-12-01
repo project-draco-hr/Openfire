@@ -1,15 +1,20 @@
 {
   JID recipientJID=packet.getTo();
+  if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
+    if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
+      IQResultListener iqResultListener=resultListeners.remove(packet.getID());
+      if (iqResultListener != null) {
+        iqResultListener.receivedAnswer(packet);
+        return;
+      }
+    }
+  }
   try {
     if (recipientJID != null) {
-      try {
-        RoutableChannelHandler serviceRoute=routingTable.getRoute(recipientJID);
-        if (!(serviceRoute instanceof ClientSession)) {
-          serviceRoute.process(packet);
-          return;
-        }
-      }
- catch (      NoSuchRouteException e) {
+      RoutableChannelHandler serviceRoute=routingTable.getRoute(recipientJID);
+      if (serviceRoute != null && !(serviceRoute instanceof ClientSession)) {
+        serviceRoute.process(packet);
+        return;
       }
     }
     if (isLocalServer(recipientJID)) {
@@ -39,10 +44,11 @@
             reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(PacketError.Condition.service_unavailable);
           }
-          try {
-            routingTable.getRoute(packet.getFrom()).process(reply);
+          ChannelHandler route=routingTable.getRoute(packet.getFrom());
+          if (route != null) {
+            route.process(reply);
           }
- catch (          NoSuchRouteException e) {
+ else {
             Session session=sessionManager.getSession(packet.getFrom());
             if (session != null) {
               session.process(reply);
@@ -70,12 +76,12 @@
         }
       }
  else {
-        try {
-          ChannelHandler route=routingTable.getRoute(recipientJID);
+        ChannelHandler route=routingTable.getRoute(recipientJID);
+        if (route != null) {
           route.process(packet);
           handlerFound=true;
         }
- catch (        NoSuchRouteException e) {
+ else {
           Log.info("Packet sent to unreachable address " + packet);
         }
       }
@@ -83,10 +89,11 @@
         IQ reply=IQ.createResultIQ(packet);
         reply.setChildElement(packet.getChildElement().createCopy());
         reply.setError(PacketError.Condition.service_unavailable);
-        try {
-          routingTable.getRoute(packet.getFrom()).process(reply);
+        ChannelHandler route=routingTable.getRoute(packet.getFrom());
+        if (route != null) {
+          route.process(reply);
         }
- catch (        NoSuchRouteException e) {
+ else {
           Session session=sessionManager.getSession(packet.getFrom());
           if (session != null) {
             session.process(reply);
