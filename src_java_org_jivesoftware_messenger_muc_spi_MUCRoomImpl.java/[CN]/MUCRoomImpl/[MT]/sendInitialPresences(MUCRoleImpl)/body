@@ -3,7 +3,7 @@
     if (occupant == joinRole) {
       continue;
     }
-    Presence occupantPresence=occupant.getPresence().createCopy();
+    Presence occupantPresence=occupant.getPresence();
     if (hasToCheckRoleToBroadcastPresence()) {
       Element frag=occupantPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
       if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
@@ -11,6 +11,7 @@
       }
     }
     if (!canAnyoneDiscoverJID() && MUCRole.Role.moderator != joinRole.getRole()) {
+      occupantPresence=occupantPresence.createCopy();
       Element frag=occupantPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
       frag.element("item").addAttribute("jid",null);
     }
