@@ -17,9 +17,7 @@
       if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
         Log.debug("Closed connection to client attempting to connect from: " + connection.getInetAddress().getHostAddress());
         StreamError error=new StreamError(StreamError.Condition.not_authorized);
-        StringBuilder sb=new StringBuilder();
-        sb.append(error.toXML());
-        connection.deliverRawText(sb.toString());
+        connection.deliverRawText(error.toXML());
         connection.close();
         return null;
       }
@@ -57,7 +55,7 @@
   connection.setTlsPolicy(tlsPolicy);
   Session session=SessionManager.getInstance().createClientSession(connection);
   Writer writer=connection.getWriter();
-  StringBuilder sb=new StringBuilder();
+  StringBuilder sb=new StringBuilder(200);
   sb.append("<?xml version='1.0' encoding='");
   sb.append(CHARSET);
   sb.append("'?>");
@@ -86,7 +84,7 @@
     writer.flush();
     return session;
   }
-  sb=new StringBuilder();
+  sb=new StringBuilder(300);
   sb.append("<stream:features>");
   if (tlsPolicy != SocketConnection.TLSPolicy.disabled) {
     sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");

@@ -5,7 +5,7 @@
   }
   String host=reader.getXPPParser().getAttributeValue("","to");
   if (validateHost() && isHostUnknown(host)) {
-    StringBuilder sb=new StringBuilder();
+    StringBuilder sb=new StringBuilder(250);
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);
     sb.append("'?>");
@@ -22,7 +22,7 @@
     Log.warn("Closing session due to incorrect hostname in stream header. Connection: " + connection);
   }
  else   if (!createSession(xpp.getNamespace(null))) {
-    StringBuilder sb=new StringBuilder();
+    StringBuilder sb=new StringBuilder(250);
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);
     sb.append("'?>");
