@@ -3,5 +3,10 @@
     return;
   }
   packet.setTo(user.getAddress());
-  router.route(packet);
+  if (session != null && session.getStatus() == Session.STATUS_AUTHENTICATED) {
+    session.process(packet);
+  }
+ else {
+    router.route(packet);
+  }
 }
