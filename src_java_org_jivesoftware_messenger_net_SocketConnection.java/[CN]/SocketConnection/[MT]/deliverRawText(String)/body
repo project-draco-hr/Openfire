@@ -3,7 +3,7 @@
     boolean errorDelivering=false;
 synchronized (writer) {
       try {
-        SocketSendingTracker.getInstance().socketStartedSending(this);
+        writeStarted();
         writer.write(text);
         if (flashClient) {
           writer.write('\0');
@@ -15,7 +15,7 @@ synchronized (writer) {
         errorDelivering=true;
       }
  finally {
-        SocketSendingTracker.getInstance().socketFinishedSending(this);
+        writeFinished();
       }
     }
     if (errorDelivering) {
