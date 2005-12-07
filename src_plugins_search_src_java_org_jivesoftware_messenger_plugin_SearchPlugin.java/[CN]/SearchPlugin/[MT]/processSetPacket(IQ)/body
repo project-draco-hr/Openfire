@@ -1,12 +1,12 @@
 {
-  List<User> users=new ArrayList<User>();
+  Set<User> users=new HashSet<User>();
   Element incomingForm=packet.getChildElement();
   boolean isDataFormQuery=(incomingForm.element(QName.get("x","jabber:x:data")) != null);
   Hashtable<String,String> searchList=extractSearchQuery(incomingForm);
   Enumeration<String> searchIter=searchList.keys();
   while (searchIter.hasMoreElements()) {
-    String field=(String)searchIter.nextElement();
-    String query=(String)searchList.get(field);
+    String field=searchIter.nextElement();
+    String query=searchList.get(field);
     Collection<User> foundUsers=new ArrayList<User>();
     if (userManager != null) {
       if (query.length() > 0 && !query.equals("jabber:iq:search")) {
@@ -17,7 +17,7 @@
       foundUsers.addAll(findUsers(field,query));
     }
     for (    User user : foundUsers) {
-      if (!users.contains(user)) {
+      if (user != null) {
         users.add(user);
       }
     }
