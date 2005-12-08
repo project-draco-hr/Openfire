@@ -1,7 +1,12 @@
 {
 synchronized (listeners) {
     for (    ConnectionCloseListener listener : listeners.keySet()) {
-      listener.onConnectionClose(listeners.get(listener));
+      try {
+        listener.onConnectionClose(listeners.get(listener));
+      }
+ catch (      Exception e) {
+        Log.error("Error notifying listener: " + listener,e);
+      }
     }
   }
 }

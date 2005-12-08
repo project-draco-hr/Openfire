@@ -81,7 +81,6 @@
         open=false;
         session=null;
       }
-      continue;
     }
  else     if ("auth".equals(tag)) {
       if (authenticateClient(doc)) {
@@ -91,7 +90,15 @@
         open=false;
         session=null;
       }
-      continue;
+    }
+ else     if ("compress".equals(tag)) {
+      if (compressClient(doc)) {
+        compressionSuccessful();
+      }
+ else {
+        open=false;
+        session=null;
+      }
     }
  else {
       if (!processUnknowPacket(doc)) {
