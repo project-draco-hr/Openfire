@@ -12,12 +12,17 @@
     pstmt=con.prepareStatement(LOAD_ID);
     pstmt.setInt(1,type);
     ResultSet rs=pstmt.executeQuery();
+    long currentID=1;
     if (!rs.next()) {
-      throw new SQLException("Loading the current ID failed. The " + "jiveID table may not be correctly populated.");
+      rs.close();
+      pstmt.close();
+      createNewID(con,type);
     }
-    long currentID=rs.getLong(1);
-    rs.close();
-    pstmt.close();
+ else {
+      currentID=rs.getLong(1);
+      rs.close();
+      pstmt.close();
+    }
     long newID=currentID + blockSize;
     pstmt=con.prepareStatement(UPDATE_ID);
     pstmt.setLong(1,newID);

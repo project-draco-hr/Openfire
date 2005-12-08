@@ -1,0 +1,12 @@
+{
+  Log.warn("Autocreating jiveID row for type '" + type + "'");
+  PreparedStatement pstmt=null;
+  try {
+    pstmt=con.prepareStatement(CREATE_ID);
+    pstmt.setInt(1,type);
+    pstmt.execute();
+  }
+  finally {
+    DbConnectionManager.closeConnection(pstmt,null);
+  }
+}
