@@ -1,0 +1,217 @@
+{
+  text=null;
+  pcEnd=pcStart=0;
+  usePC=false;
+  bufStart=posEnd;
+  if (pastEndTag) {
+    pastEndTag=false;
+    --depth;
+    namespaceEnd=elNamespaceCount[depth];
+  }
+  if (emptyElementTag) {
+    emptyElementTag=false;
+    pastEndTag=true;
+    return eventType=END_TAG;
+  }
+  if (depth > 0) {
+    if (seenStartTag) {
+      seenStartTag=false;
+      return eventType=parseStartTag();
+    }
+    if (seenEndTag) {
+      seenEndTag=false;
+      return eventType=parseEndTag();
+    }
+    char ch;
+    if (seenMarkup) {
+      seenMarkup=false;
+      ch='<';
+    }
+ else     if (seenAmpersand) {
+      seenAmpersand=false;
+      ch='&';
+    }
+ else {
+      ch=more();
+    }
+    posStart=pos - 1;
+    boolean hadCharData=false;
+    boolean needsMerging=false;
+    MAIN_LOOP:     while (true) {
+      if (ch == '<') {
+        if (hadCharData) {
+          if (tokenize) {
+            seenMarkup=true;
+            return eventType=TEXT;
+          }
+        }
+        ch=more();
+        if (ch == '/') {
+          if (!tokenize && hadCharData) {
+            seenEndTag=true;
+            return eventType=TEXT;
+          }
+          return eventType=parseEndTag();
+        }
+ else         if (ch == '!') {
+          ch=more();
+          if (ch == '-') {
+            parseComment();
+            if (tokenize)             return eventType=COMMENT;
+            if (!usePC && hadCharData) {
+              needsMerging=true;
+            }
+ else {
+              posStart=pos;
+            }
+          }
+ else           if (ch == '[') {
+            parseCDSect(hadCharData);
+            if (tokenize)             return eventType=CDSECT;
+            final int cdStart=posStart;
+            final int cdEnd=posEnd;
+            final int cdLen=cdEnd - cdStart;
+            if (cdLen > 0) {
+              hadCharData=true;
+              if (!usePC) {
+                needsMerging=true;
+              }
+            }
+          }
+ else {
+            throw new XmlPullParserException("unexpected character in markup " + printable(ch),this,null);
+          }
+        }
+ else         if (ch == '?') {
+          parsePI();
+          if (tokenize)           return eventType=PROCESSING_INSTRUCTION;
+          if (!usePC && hadCharData) {
+            needsMerging=true;
+          }
+ else {
+            posStart=pos;
+          }
+        }
+ else         if (isNameStartChar(ch)) {
+          if (!tokenize && hadCharData) {
+            seenStartTag=true;
+            return eventType=TEXT;
+          }
+          return eventType=parseStartTag();
+        }
+ else {
+          throw new XmlPullParserException("unexpected character in markup " + printable(ch),this,null);
+        }
+      }
+ else       if (ch == '&') {
+        if (tokenize && hadCharData) {
+          seenAmpersand=true;
+          return eventType=TEXT;
+        }
+        final int oldStart=posStart + bufAbsoluteStart;
+        final int oldEnd=posEnd + bufAbsoluteStart;
+        final char[] resolvedEntity=parseEntityRef();
+        if (tokenize)         return eventType=ENTITY_REF;
+        if (resolvedEntity == null) {
+          if (entityRefName == null) {
+            entityRefName=newString(buf,posStart,posEnd - posStart);
+          }
+          throw new XmlPullParserException("could not resolve entity named '" + printable(entityRefName) + "'",this,null);
+        }
+        posStart=oldStart - bufAbsoluteStart;
+        posEnd=oldEnd - bufAbsoluteStart;
+        if (!usePC) {
+          if (hadCharData) {
+            joinPC();
+            needsMerging=false;
+          }
+ else {
+            usePC=true;
+            pcStart=pcEnd=0;
+          }
+        }
+        for (int i=0; i < resolvedEntity.length; i++) {
+          if (pcEnd >= pc.length)           ensurePC(pcEnd);
+          pc[pcEnd++]=resolvedEntity[i];
+        }
+        hadCharData=true;
+      }
+ else {
+        if (needsMerging) {
+          joinPC();
+          needsMerging=false;
+        }
+        hadCharData=true;
+        boolean normalizedCR=false;
+        final boolean normalizeInput=tokenize == false || roundtripSupported == false;
+        boolean seenBracket=false;
+        boolean seenBracketBracket=false;
+        do {
+          if (ch == ' ') {
+            return IGNORABLE_WHITESPACE;
+          }
+ else           if (ch == ']') {
+            if (seenBracket) {
+              seenBracketBracket=true;
+            }
+ else {
+              seenBracket=true;
+            }
+          }
+ else           if (seenBracketBracket && ch == '>') {
+            throw new XmlPullParserException("characters ]]> are not allowed in content",this,null);
+          }
+ else {
+            if (seenBracket) {
+              seenBracketBracket=seenBracket=false;
+            }
+          }
+          if (normalizeInput) {
+            if (ch == '\r') {
+              normalizedCR=true;
+              posEnd=pos - 1;
+              if (!usePC) {
+                if (posEnd > posStart) {
+                  joinPC();
+                }
+ else {
+                  usePC=true;
+                  pcStart=pcEnd=0;
+                }
+              }
+              if (pcEnd >= pc.length)               ensurePC(pcEnd);
+              pc[pcEnd++]='\n';
+            }
+ else             if (ch == '\n') {
+              if (!normalizedCR && usePC) {
+                if (pcEnd >= pc.length)                 ensurePC(pcEnd);
+                pc[pcEnd++]='\n';
+              }
+              normalizedCR=false;
+            }
+ else {
+              if (usePC) {
+                if (pcEnd >= pc.length)                 ensurePC(pcEnd);
+                pc[pcEnd++]=ch;
+              }
+              normalizedCR=false;
+            }
+          }
+          ch=more();
+        }
+ while (ch != '<' && ch != '&');
+        posEnd=pos - 1;
+        continue MAIN_LOOP;
+      }
+      ch=more();
+    }
+  }
+ else {
+    if (seenRoot) {
+      return parseEpilog();
+    }
+ else {
+      return parseProlog();
+    }
+  }
+}
