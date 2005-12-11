@@ -5,4 +5,12 @@
     }
     forceClose();
   }
+ else {
+    if (idleTimeout > -1 && socketReader != null && System.currentTimeMillis() - socketReader.getLastActive() > idleTimeout) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("Closing connection that has been idle: " + this);
+      }
+      forceClose();
+    }
+  }
 }

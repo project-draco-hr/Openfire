@@ -15,13 +15,19 @@ case XmlPullParser.PROCESSING_INSTRUCTION:
         if (loc >= 0) {
           document.addProcessingInstruction(text.substring(0,loc),text.substring(loc + 1));
         }
- else         document.addProcessingInstruction(text,"");
+ else {
+          document.addProcessingInstruction(text,"");
+        }
         break;
       }
 case XmlPullParser.COMMENT:
 {
-      if (parent != null)       parent.addComment(pp.getText());
- else       document.addComment(pp.getText());
+      if (parent != null) {
+        parent.addComment(pp.getText());
+      }
+ else {
+        document.addComment(pp.getText());
+      }
       break;
     }
 case XmlPullParser.CDSECT:
@@ -66,7 +72,11 @@ newElement=df.createElement(qname);
 }
 int nsStart=pp.getNamespaceCount(pp.getDepth() - 1);
 int nsEnd=pp.getNamespaceCount(pp.getDepth());
-for (int i=nsStart; i < nsEnd; i++) if (pp.getNamespacePrefix(i) != null) newElement.addNamespace(pp.getNamespacePrefix(i),pp.getNamespaceUri(i));
+for (int i=nsStart; i < nsEnd; i++) {
+if (pp.getNamespacePrefix(i) != null) {
+  newElement.addNamespace(pp.getNamespacePrefix(i),pp.getNamespaceUri(i));
+}
+}
 for (int i=0; i < pp.getAttributeCount(); i++) {
 QName qa=(pp.getAttributePrefix(i) == null) ? df.createQName(pp.getAttributeName(i)) : df.createQName(pp.getAttributeName(i),pp.getAttributePrefix(i),pp.getAttributeNamespace(i));
 newElement.addAttribute(qa,pp.getAttributeValue(i));
@@ -88,6 +98,7 @@ parent=parent.getParent();
 }
 count--;
 if (count < 1) {
+lastActive=System.currentTimeMillis();
 return document;
 }
 break;
@@ -104,6 +115,10 @@ throw new DocumentException("Cannot have text content outside of the root docume
 }
 }
 break;
+}
+case XmlPullParser.IGNORABLE_WHITESPACE:
+{
+lastActive=System.currentTimeMillis();
 }
 default :
 {
