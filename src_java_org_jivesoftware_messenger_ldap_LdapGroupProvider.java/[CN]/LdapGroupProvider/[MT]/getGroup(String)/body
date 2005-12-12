@@ -3,10 +3,10 @@
   String searchFilter="(&" + filter + "("+ manager.getGroupNameField()+ "="+ group+ "))";
   Collection<Group> groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
   if (groups.size() > 1) {
-    return null;
+    throw new GroupNotFoundException("Too many groups with name " + group + " were found.");
   }
   for (  Group g : groups) {
     return g;
   }
-  return null;
+  throw new GroupNotFoundException("Group with name " + group + " not found.");
 }
