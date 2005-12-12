@@ -18,7 +18,7 @@
     connection.deliverRawText(stream.toString());
     stream=null;
     XPPPacketReader reader=new XPPPacketReader();
-    reader.setXPPFactory(XmlPullParserFactory.newInstance());
+    reader.setXPPFactory(FACTORY);
     reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
     XmlPullParser xpp=reader.getXPPParser();
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {

@@ -30,7 +30,6 @@
       openingStream.append(" version=\"1.0\">");
       connection.deliverRawText(openingStream.toString());
       XPPPacketReader reader=new XPPPacketReader();
-      reader.setXPPFactory(XmlPullParserFactory.newInstance());
       reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
       XmlPullParser xpp=reader.getXPPParser();
       for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
