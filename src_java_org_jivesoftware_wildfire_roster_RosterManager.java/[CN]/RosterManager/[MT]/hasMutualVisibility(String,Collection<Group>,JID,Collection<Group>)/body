@@ -1,0 +1,39 @@
+{
+  for (  Group group : groups) {
+    for (    Group otherGroup : otherGroups) {
+      if (!group.isUser(user) || !otherGroup.isUser(otherUser)) {
+        continue;
+      }
+      if (group == otherGroup) {
+        return true;
+      }
+      String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
+      String otherShowInRoster=otherGroup.getProperties().get("sharedRoster.showInRoster");
+      if ("everybody".equals(showInRoster) && "everybody".equals(otherShowInRoster)) {
+        return true;
+      }
+ else       if ("onlyGroup".equals(showInRoster) && "onlyGroup".equals(otherShowInRoster)) {
+        String groupNames=group.getProperties().get("sharedRoster.groupList");
+        String otherGroupNames=otherGroup.getProperties().get("sharedRoster.groupList");
+        if (groupNames != null && otherGroupNames != null) {
+          if (groupNames.contains(otherGroup.getName()) && otherGroupNames.contains(group.getName())) {
+            return true;
+          }
+        }
+      }
+ else       if ("everybody".equals(showInRoster) && "onlyGroup".equals(otherShowInRoster)) {
+        String otherGroupNames=otherGroup.getProperties().get("sharedRoster.groupList");
+        if (otherGroupNames != null && otherGroupNames.contains(group.getName())) {
+          return true;
+        }
+      }
+ else       if ("onlyGroup".equals(showInRoster) && "everybody".equals(otherShowInRoster)) {
+        String groupNames=group.getProperties().get("sharedRoster.groupList");
+        if (groupNames != null && groupNames.contains(otherGroup.getName())) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}

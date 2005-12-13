@@ -1,0 +1,72 @@
+{
+  ClientSession session=sessionManager.getSession(packet.getFrom());
+  if (session == null) {
+    Log.error("Error during resource binding. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+    IQ reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.internal_server_error);
+    return reply;
+  }
+  IQ reply=IQ.createResultIQ(packet);
+  Element child=reply.setChildElement("bind","urn:ietf:params:xml:ns:xmpp-bind");
+  String resource=packet.getChildElement().elementTextTrim("resource");
+  if (resource == null || resource.length() == 0) {
+    resource=session.getAddress().getResource();
+  }
+ else {
+    try {
+      resource=Stringprep.resourceprep(resource);
+    }
+ catch (    StringprepException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.jid_malformed);
+      session.process(reply);
+      return null;
+    }
+  }
+  try {
+    AuthToken authToken=session.getAuthToken();
+    if (authToken.isAnonymous()) {
+      session.setAnonymousAuth();
+    }
+ else {
+      String username=authToken.getUsername();
+      if (sessionManager.isActiveRoute(username,resource)) {
+        ClientSession oldSession=null;
+        try {
+          String domain=localServer.getServerInfo().getName();
+          oldSession=sessionManager.getSession(username,domain,resource);
+          oldSession.incrementConflictCount();
+          int conflictLimit=sessionManager.getConflictKickLimit();
+          if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
+            Connection conn=oldSession.getConnection();
+            if (conn != null) {
+              StreamError error=new StreamError(StreamError.Condition.conflict);
+              conn.getWriter().write(error.toXML());
+              conn.close();
+            }
+          }
+ else {
+            reply.setChildElement(packet.getChildElement().createCopy());
+            reply.setError(PacketError.Condition.conflict);
+            session.process(reply);
+            return null;
+          }
+        }
+ catch (        Exception e) {
+          Log.error("Error during login",e);
+        }
+      }
+      session.setAuthToken(authToken,userManager,resource);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return null;
+  }
+  child.addElement("jid").setText(session.getAddress().toString());
+  session.process(reply);
+  return null;
+}

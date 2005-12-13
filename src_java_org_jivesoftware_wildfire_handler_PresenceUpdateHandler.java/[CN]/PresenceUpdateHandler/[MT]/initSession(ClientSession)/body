@@ -1,0 +1,23 @@
+{
+  if (session.getAddress().getNode() != null && !"".equals(session.getAddress().getNode())) {
+    String username=session.getAddress().getNode();
+    Roster roster=rosterManager.getRoster(username);
+    for (    RosterItem item : roster.getRosterItems()) {
+      if (item.getRecvStatus() == RosterItem.RECV_SUBSCRIBE) {
+        session.process(createSubscribePresence(item.getJid(),true));
+      }
+ else       if (item.getRecvStatus() == RosterItem.RECV_UNSUBSCRIBE) {
+        session.process(createSubscribePresence(item.getJid(),false));
+      }
+      if (item.getSubStatus() == RosterItem.SUB_TO || item.getSubStatus() == RosterItem.SUB_BOTH) {
+        presenceManager.probePresence(session.getAddress(),item.getJid());
+      }
+    }
+    if (session.canFloodOfflineMessages()) {
+      Collection<OfflineMessage> messages=messageStore.getMessages(username,true);
+      for (      Message message : messages) {
+        session.process(message);
+      }
+    }
+  }
+}

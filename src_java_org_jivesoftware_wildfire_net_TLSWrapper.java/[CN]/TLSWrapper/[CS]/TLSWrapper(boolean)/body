@@ -1,0 +1,42 @@
+{
+  if (debug) {
+    System.setProperty("javax.net.debug","all");
+  }
+  try {
+    KeyStore ksKeys=SSLConfig.getKeyStore();
+    String keypass=SSLConfig.getKeyPassword();
+    KeyStore ksTrust=SSLConfig.getTrustStore();
+    String trustpass=SSLConfig.getTrustPassword();
+    KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
+    TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
+    boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
+    if (clientMode && !verify) {
+      tm=new TrustManager[]{new X509TrustManager(){
+        public void checkClientTrusted(        X509Certificate[] x509Certificates,        String string){
+        }
+        public void checkServerTrusted(        X509Certificate[] x509Certificates,        String string){
+        }
+        public X509Certificate[] getAcceptedIssuers(){
+          return new X509Certificate[0];
+        }
+      }
+};
+    }
+    SSLContext tlsContext=SSLContext.getInstance(PROTOCOL);
+    tlsContext.init(km,tm,null);
+    tlsEngine=tlsContext.createSSLEngine();
+    tlsEngine.setUseClientMode(clientMode);
+    SSLSession session=tlsEngine.getSession();
+    netBuffSize=session.getPacketBufferSize();
+    appBuffSize=session.getApplicationBufferSize();
+  }
+ catch (  KeyManagementException e) {
+    Log.error("TLSHandler startup problem.\n" + "  SSLContext initialisation failed.",e);
+  }
+catch (  NoSuchAlgorithmException e) {
+    Log.error("TLSHandler startup problem.\n" + "  The " + PROTOCOL + " does not exist",e);
+  }
+catch (  IOException e) {
+    Log.error("TLSHandler startup problem.\n" + "  the KeyStore or TrustStore does not exist",e);
+  }
+}

@@ -1,0 +1,17 @@
+{
+  ByteBuffer tlsBuffer=null;
+  ByteBuffer tlsOutput=null;
+  do {
+    tlsBuffer=ByteBuffer.allocate(Math.min(buf.remaining(),wrapper.getAppBuffSize()));
+    tlsOutput=ByteBuffer.allocate(wrapper.getNetBuffSize());
+    while (tlsBuffer.hasRemaining() && buf.hasRemaining()) {
+      tlsBuffer.put(buf.get());
+    }
+    tlsBuffer.flip();
+    wrapper.wrap(tlsBuffer,tlsOutput);
+    tlsOutput.flip();
+    writeToSocket(tlsOutput);
+    tlsOutput.clear();
+  }
+ while (buf.hasRemaining());
+}

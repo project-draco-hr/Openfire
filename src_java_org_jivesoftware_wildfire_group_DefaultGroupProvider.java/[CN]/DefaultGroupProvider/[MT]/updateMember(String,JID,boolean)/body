@@ -1,0 +1,29 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_USER);
+    pstmt.setInt(1,administrator ? 1 : 0);
+    pstmt.setString(2,groupName);
+    pstmt.setString(3,server.isLocal(user) ? user.getNode() : user.toString());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

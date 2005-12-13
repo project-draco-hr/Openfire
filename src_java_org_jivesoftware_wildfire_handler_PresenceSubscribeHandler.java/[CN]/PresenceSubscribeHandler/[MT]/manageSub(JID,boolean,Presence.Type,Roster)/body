@@ -1,0 +1,28 @@
+{
+  RosterItem item=null;
+  RosterItem.AskType oldAsk=null;
+  RosterItem.SubType oldSub=null;
+  RosterItem.RecvType oldRecv=null;
+  try {
+    if (roster.isRosterItem(target)) {
+      item=roster.getRosterItem(target);
+    }
+ else {
+      if (Presence.Type.unsubscribed == type) {
+        return false;
+      }
+      item=roster.createRosterItem(target);
+    }
+    oldAsk=item.getAskStatus();
+    oldSub=item.getSubStatus();
+    oldRecv=item.getRecvStatus();
+    updateState(item,type,isSending);
+    if (oldAsk != item.getAskStatus() || oldSub != item.getSubStatus() || oldRecv != item.getRecvStatus()) {
+      roster.updateRosterItem(item);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+  return oldSub != item.getSubStatus();
+}

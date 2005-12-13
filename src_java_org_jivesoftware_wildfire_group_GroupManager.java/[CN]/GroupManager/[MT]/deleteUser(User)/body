@@ -1,0 +1,11 @@
+{
+  JID userJID=XMPPServer.getInstance().createJID(user.getUsername(),null);
+  for (  Group group : getGroups(userJID)) {
+    if (group.getAdmins().contains(userJID)) {
+      group.getAdmins().remove(userJID);
+    }
+ else {
+      group.getMembers().remove(userJID);
+    }
+  }
+}

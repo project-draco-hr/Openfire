@@ -1,0 +1,18 @@
+{
+  if (!isStarted || isSocketStarted || sessionManager == null || deliverer == null || router == null || serverName == null) {
+    return;
+  }
+  isSocketStarted=true;
+  try {
+    localIPAddress=InetAddress.getLocalHost().getHostAddress();
+  }
+ catch (  UnknownHostException e) {
+    if (localIPAddress == null) {
+      localIPAddress="Unknown";
+    }
+  }
+  startServerListener(localIPAddress);
+  startComponentListener(localIPAddress);
+  startClientListeners(localIPAddress);
+  startClientSSLListeners(localIPAddress);
+}

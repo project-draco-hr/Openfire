@@ -1,0 +1,17 @@
+{
+  String jid=componentJID.toBareJID();
+  if (components.containsKey(jid)) {
+    return components.get(jid);
+  }
+ else {
+    if (!jid.contains(serverDomain)) {
+      return null;
+    }
+    String serverName=new JID(jid).getDomain();
+    int index=serverName.indexOf(".");
+    if (index != -1) {
+      jid=serverName.substring(0,index);
+    }
+  }
+  return components.get(jid);
+}

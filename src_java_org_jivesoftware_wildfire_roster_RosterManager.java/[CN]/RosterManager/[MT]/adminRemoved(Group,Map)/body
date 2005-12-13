@@ -1,0 +1,16 @@
+{
+  JID deletedUser=new JID((String)params.get("admin"));
+  if (group.getMembers().contains(deletedUser)) {
+    return;
+  }
+  if (!isSharedGroup(group)) {
+    for (    Group visibleGroup : getVisibleGroups(group)) {
+      Collection<JID> users=new HashSet<JID>(group.getMembers());
+      users.addAll(group.getAdmins());
+      groupUserDeleted(visibleGroup,users,deletedUser);
+    }
+  }
+ else {
+    groupUserDeleted(group,deletedUser);
+  }
+}

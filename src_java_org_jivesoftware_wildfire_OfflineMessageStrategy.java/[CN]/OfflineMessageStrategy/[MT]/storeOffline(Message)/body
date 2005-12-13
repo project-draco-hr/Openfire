@@ -1,0 +1,30 @@
+{
+  if (message != null) {
+    JID recipientJID=message.getTo();
+    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null) {
+      return;
+    }
+    if (Message.Type.groupchat == message.getType() || Message.Type.error == message.getType() || Message.Type.headline == message.getType()) {
+      return;
+    }
+    if (type == Type.bounce) {
+      bounce(message);
+    }
+ else     if (type == Type.store) {
+      store(message);
+    }
+ else     if (type == Type.store_and_bounce) {
+      if (underQuota(message)) {
+        store(message);
+      }
+ else {
+        bounce(message);
+      }
+    }
+ else     if (type == Type.store_and_drop) {
+      if (underQuota(message)) {
+        store(message);
+      }
+    }
+  }
+}

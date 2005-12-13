@@ -1,0 +1,64 @@
+{
+  String jiveConfigName="conf" + File.separator + "wildfire.xml";
+  if (wildfireHome == null) {
+    String homeProperty=System.getProperty("wildfireHome");
+    try {
+      if (homeProperty != null) {
+        wildfireHome=verifyHome(homeProperty,jiveConfigName);
+      }
+    }
+ catch (    FileNotFoundException fe) {
+    }
+  }
+  if (wildfireHome == null) {
+    try {
+      wildfireHome=verifyHome("..",jiveConfigName).getCanonicalFile();
+    }
+ catch (    FileNotFoundException fe) {
+    }
+catch (    IOException ie) {
+    }
+  }
+  if (wildfireHome == null) {
+    InputStream in=null;
+    try {
+      in=getClass().getResourceAsStream("/wildfire_init.xml");
+      if (in != null) {
+        SAXReader reader=new SAXReader();
+        Document doc=reader.read(in);
+        String path=doc.getRootElement().getText();
+        try {
+          if (path != null) {
+            wildfireHome=verifyHome(path,jiveConfigName);
+          }
+        }
+ catch (        FileNotFoundException fe) {
+          fe.printStackTrace();
+        }
+      }
+    }
+ catch (    Exception e) {
+      System.err.println("Error loading wildfire_init.xml to find home.");
+      e.printStackTrace();
+    }
+ finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      }
+ catch (      Exception e) {
+        System.err.println("Could not close open connection");
+        e.printStackTrace();
+      }
+    }
+  }
+  if (wildfireHome == null) {
+    System.err.println("Could not locate home");
+    throw new FileNotFoundException();
+  }
+ else {
+    JiveGlobals.setHomeDirectory(wildfireHome.toString());
+    JiveGlobals.setConfigName(jiveConfigName);
+  }
+}

@@ -1,0 +1,29 @@
+{
+  java.sql.Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ADD_CONFIGURATION);
+    pstmt.setString(1,configuration.getDomain());
+    pstmt.setInt(2,configuration.getRemotePort());
+    pstmt.setString(3,configuration.getPermission().toString());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

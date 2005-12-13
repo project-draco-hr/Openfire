@@ -1,0 +1,58 @@
+{
+  List<String> usernames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    if (!(Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")))) {
+      constraints.setCountLimit(startIndex + numResults);
+    }
+    String filter=MessageFormat.format(manager.getSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+      while (answer.hasMoreElements()) {
+        String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+        usernames.add(JID.escapeNode(username));
+      }
+      Collections.sort(usernames);
+      usernames=usernames.subList(startIndex,startIndex + numResults);
+    }
+ else {
+      for (int i=0; i < startIndex; i++) {
+        if (answer.hasMoreElements()) {
+          answer.next();
+        }
+ else {
+          return Collections.emptyList();
+        }
+      }
+      for (int i=0; i < numResults; i++) {
+        if (answer.hasMoreElements()) {
+          String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+          usernames.add(JID.escapeNode(username));
+        }
+ else {
+          break;
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return new UserCollection(usernames.toArray(new String[usernames.size()]));
+}

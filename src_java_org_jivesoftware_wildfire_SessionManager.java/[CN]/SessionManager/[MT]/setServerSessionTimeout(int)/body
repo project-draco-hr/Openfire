@@ -1,0 +1,11 @@
+{
+  if (getServerSessionTimeout() == timeout) {
+    return;
+  }
+  if (serverCleanupTask != null) {
+    serverCleanupTask.cancel();
+  }
+  serverCleanupTask=new ServerCleanupTask();
+  timer.schedule(serverCleanupTask,getServerSessionTimeout(),getServerSessionTimeout());
+  JiveGlobals.setProperty("xmpp.server.session.timeout",Integer.toString(timeout));
+}

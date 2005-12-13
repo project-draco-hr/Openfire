@@ -1,0 +1,56 @@
+{
+  if (!"propertyModified".equals(params.get("type"))) {
+    return;
+  }
+  String keyChanged=(String)params.get("propertyKey");
+  String originalValue=(String)params.get("originalValue");
+  if ("sharedRoster.showInRoster".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.showInRoster");
+    if (currentValue.equals(originalValue)) {
+      return;
+    }
+    Collection<JID> users=new HashSet<JID>(group.getMembers());
+    users.addAll(group.getAdmins());
+    Collection<JID> affectedUsers=getAffectedUsers(group,originalValue,group.getProperties().get("sharedRoster.groupList"));
+    for (    JID deletedUser : users) {
+      groupUserDeleted(group,affectedUsers,deletedUser);
+    }
+    for (    JID user : users) {
+      groupUserAdded(group,user);
+    }
+  }
+ else   if ("sharedRoster.groupList".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.groupList");
+    if (currentValue.equals(originalValue)) {
+      return;
+    }
+    Collection<JID> users=new HashSet<JID>(group.getMembers());
+    users.addAll(group.getAdmins());
+    Collection<JID> affectedUsers=getAffectedUsers(group,group.getProperties().get("sharedRoster.showInRoster"),originalValue);
+    for (    JID deletedUser : users) {
+      groupUserDeleted(group,affectedUsers,deletedUser);
+    }
+    for (    JID user : users) {
+      groupUserAdded(group,user);
+    }
+  }
+ else   if ("sharedRoster.displayName".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.displayName");
+    if (currentValue.equals(originalValue)) {
+      return;
+    }
+    if (!isSharedGroup(group)) {
+      return;
+    }
+    Collection<JID> users=getAffectedUsers(group);
+    for (    JID updatedUser : users) {
+      Roster roster=null;
+      if (server.isLocal(updatedUser)) {
+        roster=(Roster)CacheManager.getCache("username2roster").get(updatedUser.getNode());
+      }
+      if (roster != null) {
+        roster.shareGroupRenamed(users);
+      }
+    }
+  }
+}

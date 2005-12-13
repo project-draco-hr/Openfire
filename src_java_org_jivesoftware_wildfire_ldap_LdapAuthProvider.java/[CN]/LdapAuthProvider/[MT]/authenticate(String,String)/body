@@ -1,0 +1,24 @@
+{
+  if (username == null || password == null || "".equals(password.trim())) {
+    throw new UnauthorizedException();
+  }
+  if (authCache != null && authCache.containsKey(username)) {
+    String hash=(String)authCache.get(username);
+    if (StringUtils.hash(password).equals(hash)) {
+      return;
+    }
+  }
+  String userDN=null;
+  try {
+    userDN=manager.findUserDN(username);
+    if (!manager.checkAuthentication(userDN,password)) {
+      throw new UnauthorizedException("Username and password don't match");
+    }
+  }
+ catch (  Exception e) {
+    throw new UnauthorizedException(e);
+  }
+  if (authCache != null) {
+    authCache.put(username,StringUtils.hash(password));
+  }
+}

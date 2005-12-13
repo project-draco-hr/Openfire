@@ -1,0 +1,24 @@
+{
+  String answer=null;
+  Element vCardElement=getOrLoadVCard(username);
+  if (vCardElement != null) {
+    Element subElement=null;
+    StringTokenizer tokenizer=new StringTokenizer(name,":");
+    while (tokenizer.hasMoreTokens()) {
+      String tok=tokenizer.nextToken();
+      if (subElement == null) {
+        subElement=vCardElement.element(tok);
+      }
+ else {
+        subElement=subElement.element(tok);
+      }
+      if (subElement == null) {
+        break;
+      }
+    }
+    if (subElement != null) {
+      answer=subElement.getTextTrim();
+    }
+  }
+  return answer;
+}

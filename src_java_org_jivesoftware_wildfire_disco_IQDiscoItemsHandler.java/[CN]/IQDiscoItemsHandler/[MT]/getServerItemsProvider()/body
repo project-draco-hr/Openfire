@@ -1,0 +1,35 @@
+{
+  DiscoItemsProvider discoItemsProvider=new DiscoItemsProvider(){
+    public Iterator<Element> getItems(    String name,    String node,    JID senderJID){
+      if (node != null) {
+        if (serverNodeProviders.get(node) != null) {
+          return serverNodeProviders.get(node).getItems(name,node,senderJID);
+        }
+        return null;
+      }
+      if (name == null) {
+        return serverItems.iterator();
+      }
+ else {
+        List<Element> answer=new ArrayList<Element>();
+        try {
+          User user=UserManager.getInstance().getUser(name);
+          RosterItem item=user.getRoster().getRosterItem(senderJID);
+          if (item.getSubStatus() == RosterItem.SUB_FROM || item.getSubStatus() == RosterItem.SUB_BOTH) {
+            for (            Session session : SessionManager.getInstance().getSessions(name)) {
+              Element element=DocumentHelper.createElement("item");
+              element.addAttribute("jid",session.getAddress().toString());
+              answer.add(element);
+            }
+          }
+          return answer.iterator();
+        }
+ catch (        UserNotFoundException e) {
+          return answer.iterator();
+        }
+      }
+    }
+  }
+;
+  return discoItemsProvider;
+}

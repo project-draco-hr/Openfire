@@ -1,0 +1,77 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    if (room.wasSavedToDB()) {
+      pstmt=con.prepareStatement(UPDATE_ROOM);
+      pstmt.setString(1,StringUtils.dateToMillis(room.getModificationDate()));
+      pstmt.setString(2,room.getNaturalLanguageName());
+      pstmt.setString(3,room.getDescription());
+      pstmt.setInt(4,(room.canOccupantsChangeSubject() ? 1 : 0));
+      pstmt.setInt(5,room.getMaxUsers());
+      pstmt.setInt(6,(room.isPublicRoom() ? 1 : 0));
+      pstmt.setInt(7,(room.isModerated() ? 1 : 0));
+      pstmt.setInt(8,(room.isMembersOnly() ? 1 : 0));
+      pstmt.setInt(9,(room.canOccupantsInvite() ? 1 : 0));
+      pstmt.setString(10,room.getPassword());
+      pstmt.setInt(11,(room.canAnyoneDiscoverJID() ? 1 : 0));
+      pstmt.setInt(12,(room.isLogEnabled() ? 1 : 0));
+      pstmt.setInt(13,marshallRolesToBroadcast(room));
+      pstmt.setInt(14,(room.isLoginRestrictedToNickname() ? 1 : 0));
+      pstmt.setInt(15,(room.canChangeNickname() ? 1 : 0));
+      pstmt.setInt(16,(room.isRegistrationEnabled() ? 1 : 0));
+      pstmt.setLong(17,room.getID());
+      pstmt.executeUpdate();
+    }
+ else {
+      pstmt=con.prepareStatement(ADD_ROOM);
+      pstmt.setLong(1,room.getID());
+      pstmt.setString(2,StringUtils.dateToMillis(room.getCreationDate()));
+      pstmt.setString(3,StringUtils.dateToMillis(room.getModificationDate()));
+      pstmt.setString(4,room.getName());
+      pstmt.setString(5,room.getNaturalLanguageName());
+      pstmt.setString(6,room.getDescription());
+      pstmt.setString(7,StringUtils.dateToMillis(room.getLockedDate()));
+      Date emptyDate=room.getEmptyDate();
+      if (emptyDate == null) {
+        pstmt.setString(8,null);
+      }
+ else {
+        pstmt.setString(8,StringUtils.dateToMillis(emptyDate));
+      }
+      pstmt.setInt(9,(room.canOccupantsChangeSubject() ? 1 : 0));
+      pstmt.setInt(10,room.getMaxUsers());
+      pstmt.setInt(11,(room.isPublicRoom() ? 1 : 0));
+      pstmt.setInt(12,(room.isModerated() ? 1 : 0));
+      pstmt.setInt(13,(room.isMembersOnly() ? 1 : 0));
+      pstmt.setInt(14,(room.canOccupantsInvite() ? 1 : 0));
+      pstmt.setString(15,room.getPassword());
+      pstmt.setInt(16,(room.canAnyoneDiscoverJID() ? 1 : 0));
+      pstmt.setInt(17,(room.isLogEnabled() ? 1 : 0));
+      pstmt.setString(18,room.getSubject());
+      pstmt.setInt(19,marshallRolesToBroadcast(room));
+      pstmt.setInt(20,(room.isLoginRestrictedToNickname() ? 1 : 0));
+      pstmt.setInt(21,(room.canChangeNickname() ? 1 : 0));
+      pstmt.setInt(22,(room.isRegistrationEnabled() ? 1 : 0));
+      pstmt.executeUpdate();
+    }
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  if (!server.isLocal(user)) {
+    return;
+  }
+  try {
+    String username=user.getNode();
+    Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
+    if (roster == null) {
+      roster=new Roster(username);
+    }
+    for (    RosterItem item : roster.getRosterItems()) {
+      try {
+        roster.deleteRosterItem(item.getJid(),false);
+      }
+ catch (      SharedGroupException e) {
+      }
+    }
+    CacheManager.getCache("username2roster").remove(username);
+    RosterItemProvider rosteItemProvider=RosterItemProvider.getInstance();
+    Iterator<String> usernames=rosteItemProvider.getUsernames(user.toBareJID());
+    while (usernames.hasNext()) {
+      username=usernames.next();
+      roster=(Roster)CacheManager.getCache("username2roster").get(username);
+      if (roster == null) {
+        roster=new Roster(username);
+      }
+      try {
+        roster.deleteRosterItem(user,false);
+      }
+ catch (      SharedGroupException e) {
+      }
+    }
+  }
+ catch (  UnsupportedOperationException e) {
+  }
+}

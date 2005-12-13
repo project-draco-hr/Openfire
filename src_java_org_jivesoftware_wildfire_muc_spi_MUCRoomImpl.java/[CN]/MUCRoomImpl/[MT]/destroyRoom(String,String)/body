@@ -1,0 +1,45 @@
+{
+  MUCRole leaveRole=null;
+  Collection<MUCRole> removedRoles=new ArrayList<MUCRole>();
+  lock.writeLock().lock();
+  try {
+    for (    String nickname : occupants.keySet()) {
+      leaveRole=occupants.remove(nickname);
+      if (leaveRole != null) {
+        removedRoles.add(leaveRole);
+        removeOccupantRole(leaveRole);
+      }
+    }
+    endTime=System.currentTimeMillis();
+    server.removeChatRoom(name);
+    isDestroyed=true;
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  for (  MUCRole removedRole : removedRoles) {
+    try {
+      Presence presence=createPresence(Presence.Type.unavailable);
+      presence.setFrom(removedRole.getRoleAddress());
+      Element fragment=presence.addChildElement("x","http://jabber.org/protocol/muc#user");
+      Element item=fragment.addElement("item");
+      item.addAttribute("affiliation","none");
+      item.addAttribute("role","none");
+      if (alternateJID != null && alternateJID.length() > 0) {
+        fragment.addElement("destroy").addAttribute("jid",alternateJID);
+      }
+      if (reason != null && reason.length() > 0) {
+        Element destroy=fragment.element("destroy");
+        if (destroy == null) {
+          destroy=fragment.addElement("destroy");
+        }
+        destroy.addElement("reason").setText(reason);
+      }
+      removedRole.send(presence);
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  MUCPersistenceManager.deleteFromDB(this);
+}

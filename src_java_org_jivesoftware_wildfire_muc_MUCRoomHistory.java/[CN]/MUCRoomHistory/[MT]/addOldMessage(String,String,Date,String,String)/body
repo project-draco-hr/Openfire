@@ -1,0 +1,22 @@
+{
+  Message message=new Message();
+  message.setType(Message.Type.groupchat);
+  message.setSubject(subject);
+  message.setBody(body);
+  if (nickname != null && nickname.trim().length() > 0) {
+    JID roomJID=room.getRole().getRoleAddress();
+    message.setFrom(new JID(roomJID.getNode(),roomJID.getDomain(),nickname));
+  }
+ else {
+    message.setFrom(room.getRole().getRoleAddress());
+  }
+  Element delayInformation=message.addChildElement("x","jabber:x:delay");
+  delayInformation.addAttribute("stamp",UTC_FORMAT.format(sentDate));
+  if (room.canAnyoneDiscoverJID()) {
+    delayInformation.addAttribute("from",senderJID);
+  }
+ else {
+    delayInformation.addAttribute("from",room.getRole().getRoleAddress().toString());
+  }
+  historyStrategy.addMessage(message);
+}

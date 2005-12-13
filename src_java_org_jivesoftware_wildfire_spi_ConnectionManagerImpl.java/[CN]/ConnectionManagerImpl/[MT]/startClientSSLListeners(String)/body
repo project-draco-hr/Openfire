@@ -1,0 +1,24 @@
+{
+  if (isClientSSLListenerEnabled()) {
+    int port=getClientSSLListenerPort();
+    String interfaceName=JiveGlobals.getProperty("xmpp.socket.ssl.interface");
+    String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm");
+    if ("".equals(algorithm) || algorithm == null) {
+      algorithm="TLS";
+    }
+    ServerPort serverPort=new ServerPort(port,interfaceName,serverName,localIPAddress,true,algorithm,ServerPort.Type.client);
+    try {
+      sslSocketThread=new SSLSocketAcceptThread(this,serverPort);
+      ports.add(serverPort);
+      sslSocketThread.setDaemon(true);
+      sslSocketThread.start();
+      List params=new ArrayList();
+      params.add(Integer.toString(sslSocketThread.getPort()));
+      Log.info(LocaleUtils.getLocalizedString("startup.ssl",params));
+    }
+ catch (    Exception e) {
+      System.err.println("Error starting SSL XMPP listener on port " + port + ": "+ e.getMessage());
+      Log.error(LocaleUtils.getLocalizedString("admin.error.ssl"),e);
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  try {
+    String pluginDirs=System.getProperty("pluginDirs");
+    if (pluginDirs != null) {
+      StringTokenizer st=new StringTokenizer(pluginDirs,", ");
+      while (st.hasMoreTokens()) {
+        String dir=st.nextToken();
+        if (!devPlugins.contains(dir)) {
+          loadPlugin(new File(dir));
+          devPlugins.add(dir);
+        }
+      }
+    }
+    File[] jars=pluginDirectory.listFiles(new FileFilter(){
+      public boolean accept(      File pathname){
+        String fileName=pathname.getName().toLowerCase();
+        return (fileName.endsWith(".jar") || fileName.endsWith(".war"));
+      }
+    }
+);
+    if (jars == null) {
+      return;
+    }
+    for (int i=0; i < jars.length; i++) {
+      File jarFile=jars[i];
+      String pluginName=jarFile.getName().substring(0,jarFile.getName().length() - 4).toLowerCase();
+      File dir=new File(pluginDirectory,pluginName);
+      if (!dir.exists()) {
+        unzipPlugin(pluginName,jarFile,dir);
+      }
+ else       if (jarFile.lastModified() > dir.lastModified()) {
+        unloadPlugin(pluginName);
+        System.gc();
+        int count=0;
+        while (!deleteDir(dir) && count < 5) {
+          Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+          Thread.sleep(5000);
+          count++;
+        }
+        unzipPlugin(pluginName,jarFile,dir);
+      }
+    }
+    File[] dirs=pluginDirectory.listFiles(new FileFilter(){
+      public boolean accept(      File pathname){
+        return pathname.isDirectory();
+      }
+    }
+);
+    Arrays.sort(dirs,new Comparator<File>(){
+      public int compare(      File file1,      File file2){
+        if (file1.getName().equals("admin")) {
+          return -1;
+        }
+ else         if (file2.getName().equals("admin")) {
+          return 1;
+        }
+ else         return file1.compareTo(file2);
+      }
+    }
+);
+    Set<String> jarSet=new HashSet<String>();
+    for (    File file : jars) {
+      jarSet.add(file.getName().toLowerCase());
+    }
+    List<String> toDelete=new ArrayList<String>();
+    for (    File pluginDir : dirs) {
+      String pluginName=pluginDir.getName();
+      if (pluginName.equals("admin")) {
+        continue;
+      }
+      if (!jarSet.contains(pluginName + ".jar")) {
+        if (!jarSet.contains(pluginName + ".war")) {
+          toDelete.add(pluginName);
+        }
+      }
+    }
+    for (    String pluginName : toDelete) {
+      unloadPlugin(pluginName);
+      System.gc();
+      int count=0;
+      File dir=new File(pluginDirectory,pluginName);
+      while (!deleteDir(dir) && count < 5) {
+        Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+        Thread.sleep(5000);
+        count++;
+      }
+    }
+    for (int i=0; i < dirs.length; i++) {
+      File dirFile=dirs[i];
+      if (dirFile.exists() && !plugins.containsKey(dirFile.getName())) {
+        loadPlugin(dirFile);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

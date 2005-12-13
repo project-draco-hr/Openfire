@@ -1,0 +1,41 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+    eventType=xpp.next();
+  }
+  String host=reader.getXPPParser().getAttributeValue("","to");
+  if (validateHost() && isHostUnknown(host)) {
+    StringBuilder sb=new StringBuilder(250);
+    sb.append("<?xml version='1.0' encoding='");
+    sb.append(CHARSET);
+    sb.append("'?>");
+    sb.append("<stream:stream ");
+    sb.append("from=\"").append(serverName).append("\" ");
+    sb.append("id=\"").append(StringUtils.randomString(5)).append("\" ");
+    sb.append("xmlns=\"").append(xpp.getNamespace(null)).append("\" ");
+    sb.append("xmlns:stream=\"").append(xpp.getNamespace("stream")).append("\" ");
+    sb.append("version=\"1.0\">");
+    StreamError error=new StreamError(StreamError.Condition.host_unknown);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    Log.warn("Closing session due to incorrect hostname in stream header. Connection: " + connection);
+  }
+ else   if (!createSession(xpp.getNamespace(null))) {
+    StringBuilder sb=new StringBuilder(250);
+    sb.append("<?xml version='1.0' encoding='");
+    sb.append(CHARSET);
+    sb.append("'?>");
+    sb.append("<stream:stream ");
+    sb.append("from=\"").append(serverName).append("\" ");
+    sb.append("id=\"").append(StringUtils.randomString(5)).append("\" ");
+    sb.append("xmlns=\"").append(xpp.getNamespace(null)).append("\" ");
+    sb.append("xmlns:stream=\"").append(xpp.getNamespace("stream")).append("\" ");
+    sb.append("version=\"1.0\">");
+    StreamError error=new StreamError(StreamError.Condition.bad_namespace_prefix);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    Log.warn("Closing session due to bad_namespace_prefix in stream header. Connection: " + connection);
+  }
+}

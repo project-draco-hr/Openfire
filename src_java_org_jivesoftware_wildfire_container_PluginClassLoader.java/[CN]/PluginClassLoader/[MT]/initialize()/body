@@ -1,0 +1,13 @@
+{
+  Iterator urls=list.iterator();
+  URL[] urlArray=new URL[list.size()];
+  for (int i=0; urls.hasNext(); i++) {
+    urlArray[i]=(URL)urls.next();
+  }
+  if (classLoader != null) {
+    classLoader=new URLClassLoader(urlArray,classLoader);
+  }
+ else {
+    classLoader=new URLClassLoader(urlArray,findParentClassLoader());
+  }
+}

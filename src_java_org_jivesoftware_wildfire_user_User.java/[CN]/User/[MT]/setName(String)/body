@@ -1,0 +1,17 @@
+{
+  if (UserManager.getUserProvider().isReadOnly()) {
+    throw new UnsupportedOperationException("User provider is read-only.");
+  }
+  try {
+    String originalName=this.name;
+    UserManager.getUserProvider().setName(username,name);
+    this.name=name;
+    Map params=new HashMap();
+    params.put("type","nameModified");
+    params.put("originalValue",originalName);
+    UserEventDispatcher.dispatchEvent(this,UserEventDispatcher.EventType.user_modified,params);
+  }
+ catch (  UserNotFoundException unfe) {
+    Log.error(unfe);
+  }
+}

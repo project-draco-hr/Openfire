@@ -1,0 +1,43 @@
+{
+  Thread thread=new Thread("Outgoing Server Reader"){
+    public void run(){
+      while (open) {
+        Element doc=null;
+        try {
+          doc=reader.parseDocument().getRootElement();
+          if (doc == null) {
+            closeSession();
+          }
+ else {
+            elements.add(doc);
+          }
+        }
+ catch (        IOException e) {
+          String message="Finishing Outgoing Server Reader. ";
+          if (session != null) {
+            message=message + "Closing session: " + session.toString();
+          }
+ else {
+            message=message + "No session to close.";
+          }
+          Log.debug(message,e);
+          closeSession();
+        }
+catch (        Exception e) {
+          String message="Finishing Outgoing Server Reader. ";
+          if (session != null) {
+            message=message + "Closing session: " + session.toString();
+          }
+ else {
+            message=message + "No session to close.";
+          }
+          Log.error(message,e);
+          closeSession();
+        }
+      }
+    }
+  }
+;
+  thread.setDaemon(true);
+  thread.start();
+}

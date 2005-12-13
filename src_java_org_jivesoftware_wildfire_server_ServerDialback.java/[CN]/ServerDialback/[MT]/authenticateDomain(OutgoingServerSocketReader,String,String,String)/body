@@ -1,0 +1,34 @@
+{
+  String key=AuthFactory.createDigest(id,secretKey);
+  Log.debug("OS - Sent dialback key to host: " + hostname + " id: "+ id+ " from domain: "+ domain);
+synchronized (socketReader) {
+    StringBuilder sb=new StringBuilder();
+    sb.append("<db:result");
+    sb.append(" from=\"").append(domain).append("\"");
+    sb.append(" to=\"").append(hostname).append("\">");
+    sb.append(key);
+    sb.append("</db:result>");
+    connection.deliverRawText(sb.toString());
+    sb=null;
+    try {
+      Element doc=socketReader.getElement(RemoteServerManager.getSocketTimeout(),TimeUnit.MILLISECONDS);
+      if (doc == null) {
+        Log.debug("OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
+        return false;
+      }
+ else       if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+        boolean success="valid".equals(doc.attributeValue("type"));
+        Log.debug("OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
+        return success;
+      }
+ else {
+        Log.debug("OS - Unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+        return false;
+      }
+    }
+ catch (    InterruptedException e) {
+      Log.debug("OS - Validation FAILED from: " + hostname + " id: "+ id+ " for domain: "+ domain,e);
+      return false;
+    }
+  }
+}

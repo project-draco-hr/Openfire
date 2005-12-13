@@ -1,0 +1,38 @@
+{
+  String realm=null;
+  String name=null;
+  for (int i=0; i < callbacks.length; i++) {
+    if (callbacks[i] instanceof RealmCallback) {
+      realm=((RealmCallback)callbacks[i]).getText();
+      if (realm == null) {
+        realm=((RealmCallback)callbacks[i]).getDefaultText();
+      }
+    }
+ else     if (callbacks[i] instanceof NameCallback) {
+      name=((NameCallback)callbacks[i]).getName();
+      if (name == null) {
+        name=((NameCallback)callbacks[i]).getDefaultName();
+      }
+    }
+ else     if (callbacks[i] instanceof PasswordCallback) {
+      try {
+        ((PasswordCallback)callbacks[i]).setPassword(AuthFactory.getPassword(name).toCharArray());
+      }
+ catch (      UserNotFoundException e) {
+        throw new IOException(e.toString());
+      }
+    }
+ else     if (callbacks[i] instanceof AuthorizeCallback) {
+      AuthorizeCallback authCallback=((AuthorizeCallback)callbacks[i]);
+      String authenId=authCallback.getAuthenticationID();
+      String authorId=authCallback.getAuthorizationID();
+      if (authenId.equals(authorId)) {
+        authCallback.setAuthorized(true);
+        authCallback.setAuthorizedID(authorId);
+      }
+    }
+ else {
+      throw new UnsupportedCallbackException(callbacks[i],"Unrecognized Callback");
+    }
+  }
+}

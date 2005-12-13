@@ -1,0 +1,36 @@
+{
+  if (presence == null) {
+    return;
+  }
+  Element frag=null;
+  String jid=null;
+  if (hasToCheckRoleToBroadcastPresence()) {
+    frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
+      try {
+        MUCRole occupant=getOccupant(presence.getFrom().getResource());
+        occupant.send(presence);
+      }
+ catch (      UserNotFoundException e) {
+      }
+      return;
+    }
+  }
+  if (!canAnyoneDiscoverJID()) {
+    if (frag == null) {
+      frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    }
+    jid=frag.element("item").attributeValue("jid");
+  }
+  for (  MUCRole occupant : occupants.values()) {
+    if (!canAnyoneDiscoverJID()) {
+      if (MUCRole.Role.moderator == occupant.getRole()) {
+        frag.element("item").addAttribute("jid",jid);
+      }
+ else {
+        frag.element("item").addAttribute("jid",null);
+      }
+    }
+    occupant.send(presence);
+  }
+}

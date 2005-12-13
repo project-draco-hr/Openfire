@@ -1,0 +1,22 @@
+{
+  if (anonymousSessions.containsValue(session)) {
+    routingTable.addRoute(session.getAddress(),session);
+  }
+ else {
+    Session defaultSession=null;
+    try {
+      SessionMap sessionMap=sessions.get(session.getUsername());
+      if (sessionMap == null) {
+        Log.warn("No SessionMap found for session" + "\n" + session);
+      }
+      sessionMap.sessionAvailable(session);
+      defaultSession=sessionMap.getDefaultSession(true);
+      JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
+      routingTable.addRoute(node,defaultSession);
+      routingTable.addRoute(session.getAddress(),session);
+      broadcastPresenceToOtherResource(session);
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+}

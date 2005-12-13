@@ -1,0 +1,7 @@
+{
+  if (isModerated() && senderRole.getRole().compareTo(MUCRole.Role.participant) > 0) {
+    throw new ForbiddenException();
+  }
+  message.setFrom(senderRole.getRoleAddress());
+  send(message);
+}

@@ -1,0 +1,25 @@
+{
+  IQ replyPacket=null;
+  Element child=packet.getChildElement();
+  Element dataElement=(Element)child.elementIterator().next();
+  if (dataElement != null) {
+    if (IQ.Type.get.equals(packet.getType())) {
+      replyPacket=IQ.createResultIQ(packet);
+      Element dataStored=privateStorage.get(packet.getFrom().getNode(),dataElement);
+      dataStored.setParent(null);
+      child.remove(dataElement);
+      child.setParent(null);
+      replyPacket.setChildElement(child);
+      child.add(dataStored);
+    }
+ else {
+      privateStorage.add(packet.getFrom().getNode(),dataElement);
+      replyPacket=IQ.createResultIQ(packet);
+    }
+  }
+ else {
+    replyPacket=IQ.createResultIQ(packet);
+    replyPacket.setChildElement("query","jabber:iq:private");
+  }
+  return replyPacket;
+}

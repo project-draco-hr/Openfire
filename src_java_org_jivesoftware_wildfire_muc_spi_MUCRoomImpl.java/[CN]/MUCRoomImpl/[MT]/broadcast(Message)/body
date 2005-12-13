@@ -1,0 +1,19 @@
+{
+  for (  MUCRole occupant : occupants.values()) {
+    occupant.send(message);
+  }
+  if (isLogEnabled()) {
+    MUCRole senderRole=null;
+    JID senderAddress=null;
+    if (message.getTo() != null && message.getTo().getResource() != null) {
+      senderRole=occupants.get(message.getTo().getResource());
+    }
+    if (senderRole == null) {
+      senderAddress=getRole().getRoleAddress();
+    }
+ else {
+      senderAddress=senderRole.getChatUser().getAddress();
+    }
+    server.logConversation(this,message,senderAddress);
+  }
+}

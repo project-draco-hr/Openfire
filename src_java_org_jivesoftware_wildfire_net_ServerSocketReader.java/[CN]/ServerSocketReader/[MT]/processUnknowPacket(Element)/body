@@ -1,0 +1,13 @@
+{
+  if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+    if (!((IncomingServerSession)session).validateSubsequentDomain(doc)) {
+      open=false;
+    }
+    return true;
+  }
+ else   if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
+    ((IncomingServerSession)session).verifyReceivedKey(doc);
+    return true;
+  }
+  return false;
+}

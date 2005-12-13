@@ -1,0 +1,36 @@
+{
+  if (MUCRole.Affiliation.owner != role.getAffiliation()) {
+    throw new ForbiddenException();
+  }
+  IQ reply=IQ.createResultIQ(packet);
+  Element element=packet.getChildElement();
+  Element formElement=element.element(QName.get("x","jabber:x:data"));
+  if (formElement != null) {
+    handleDataFormElement(role,formElement);
+  }
+ else {
+    Element destroyElement=element.element("destroy");
+    if (destroyElement != null) {
+      room.destroyRoom(destroyElement.attributeValue("jid"),destroyElement.elementTextTrim("reason"));
+    }
+ else {
+      List itemsList=element.elements("item");
+      if (!itemsList.isEmpty()) {
+        handleItemsElement(itemsList,role,reply);
+      }
+ else {
+        if (!element.elementIterator().hasNext()) {
+          refreshConfigurationFormValues();
+          reply.setChildElement(probeResult.createCopy());
+        }
+ else {
+          reply.setChildElement(packet.getChildElement().createCopy());
+          reply.setError(PacketError.Condition.bad_request);
+        }
+      }
+    }
+  }
+  if (reply.getTo() != null) {
+    router.route(reply);
+  }
+}

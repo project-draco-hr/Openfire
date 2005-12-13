@@ -1,0 +1,25 @@
+{
+  try {
+    process((Packet)presence);
+  }
+ catch (  UnauthorizedException e) {
+    try {
+      Session session=sessionManager.getSession(presence.getFrom());
+      presence=presence.createCopy();
+      if (session != null) {
+        presence.setFrom(new JID(null,session.getServerName(),null));
+        presence.setTo(session.getAddress());
+      }
+ else {
+        JID sender=presence.getFrom();
+        presence.setFrom(presence.getTo());
+        presence.setTo(sender);
+      }
+      presence.setError(PacketError.Condition.not_authorized);
+      deliverer.deliver(presence);
+    }
+ catch (    Exception err) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),err);
+    }
+  }
+}

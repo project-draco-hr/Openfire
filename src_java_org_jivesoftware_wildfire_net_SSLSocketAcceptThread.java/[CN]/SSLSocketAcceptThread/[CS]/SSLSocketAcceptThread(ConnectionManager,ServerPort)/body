@@ -1,0 +1,19 @@
+{
+  super("Secure Socket Listener");
+  this.connManager=connManager;
+  this.serverPort=serverPort;
+  int port=serverPort.getPort();
+  String interfaceName=serverPort.getInterfaceName();
+  bindInterface=null;
+  if (interfaceName != null) {
+    try {
+      if (interfaceName.trim().length() > 0) {
+        bindInterface=InetAddress.getByName(interfaceName);
+      }
+    }
+ catch (    UnknownHostException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+  serverSocket=SSLConfig.createServerSocket(port,bindInterface);
+}

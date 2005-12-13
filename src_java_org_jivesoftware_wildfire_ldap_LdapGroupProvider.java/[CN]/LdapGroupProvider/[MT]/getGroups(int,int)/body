@@ -1,0 +1,16 @@
+{
+  String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+  NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,standardAttributes);
+  Vector<SearchResult> v=new Vector<SearchResult>();
+  for (int i=1; answer.hasMoreElements() && i <= (start + num); i++) {
+    try {
+      SearchResult sr=answer.next();
+      if (i >= start) {
+        v.add(sr);
+      }
+    }
+ catch (    Exception e) {
+    }
+  }
+  return populateGroups(v.elements());
+}

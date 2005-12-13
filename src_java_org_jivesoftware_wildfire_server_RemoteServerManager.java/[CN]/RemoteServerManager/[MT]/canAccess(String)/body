@@ -1,0 +1,26 @@
+{
+  if (!JiveGlobals.getBooleanProperty("xmpp.server.socket.active",true)) {
+    return false;
+  }
+  Permission permission=null;
+  RemoteServerConfiguration config=getConfiguration(domain);
+  if (config != null) {
+    permission=config.getPermission();
+  }
+  if (PermissionPolicy.blacklist == getPermissionPolicy()) {
+    if (Permission.blocked == permission) {
+      return false;
+    }
+ else {
+      return true;
+    }
+  }
+ else {
+    if (Permission.allowed == permission) {
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+}

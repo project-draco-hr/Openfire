@@ -1,0 +1,110 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  boolean isFlashClient=xpp.getPrefix().equals("flash");
+  connection.setFlashClient(isFlashClient);
+  if (!xpp.getName().equals("stream") && !isFlashClient) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-stream"));
+  }
+  if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
+    throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
+  }
+  if (!allowedIPs.isEmpty()) {
+    if (!allowedIPs.containsKey(connection.getInetAddress().getHostAddress())) {
+      byte[] address=connection.getInetAddress().getAddress();
+      String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
+      String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
+      String range3=(address[0] & 0xff) + ".*.*.*";
+      if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
+        Log.debug("Closed connection to client attempting to connect from: " + connection.getInetAddress().getHostAddress());
+        StreamError error=new StreamError(StreamError.Condition.not_authorized);
+        connection.deliverRawText(error.toXML());
+        connection.close();
+        return null;
+      }
+    }
+  }
+  String language="en";
+  int majorVersion=0;
+  int minorVersion=0;
+  for (int i=0; i < xpp.getAttributeCount(); i++) {
+    if ("lang".equals(xpp.getAttributeName(i))) {
+      language=xpp.getAttributeValue(i);
+    }
+    if ("version".equals(xpp.getAttributeName(i))) {
+      try {
+        int[] version=decodeVersion(xpp.getAttributeValue(i));
+        majorVersion=version[0];
+        minorVersion=version[1];
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+    }
+  }
+  if (majorVersion > MAJOR_VERSION) {
+    majorVersion=MAJOR_VERSION;
+    minorVersion=MINOR_VERSION;
+  }
+ else   if (majorVersion == MAJOR_VERSION) {
+    if (minorVersion > MINOR_VERSION) {
+      minorVersion=MINOR_VERSION;
+    }
+  }
+  connection.setLanaguage(language);
+  connection.setXMPPVersion(majorVersion,minorVersion);
+  connection.setTlsPolicy(tlsPolicy);
+  connection.setCompressionPolicy(compressionPolicy);
+  connection.setIdleTimeout(idleTimeout);
+  Session session=SessionManager.getInstance().createClientSession(connection);
+  Writer writer=connection.getWriter();
+  StringBuilder sb=new StringBuilder(200);
+  sb.append("<?xml version='1.0' encoding='");
+  sb.append(CHARSET);
+  sb.append("'?>");
+  if (isFlashClient) {
+    sb.append("<flash:stream xmlns:flash=\"http://www.jabber.com/streams/flash\" ");
+  }
+ else {
+    sb.append("<stream:stream ");
+  }
+  sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"");
+  sb.append(serverName);
+  sb.append("\" id=\"");
+  sb.append(session.getStreamID().toString());
+  sb.append("\" xml:lang=\"");
+  sb.append(language);
+  if (majorVersion != 0) {
+    sb.append("\" version=\"");
+    sb.append(majorVersion).append(".").append(minorVersion);
+  }
+  sb.append("\">");
+  writer.write(sb.toString());
+  if (majorVersion == 0) {
+    if (isFlashClient) {
+      writer.write('\0');
+    }
+    writer.flush();
+    return session;
+  }
+  sb=new StringBuilder(490);
+  sb.append("<stream:features>");
+  if (tlsPolicy != Connection.TLSPolicy.disabled) {
+    sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+    if (tlsPolicy == Connection.TLSPolicy.required) {
+      sb.append("<required/>");
+    }
+    sb.append("</starttls>");
+  }
+  sb.append(SASLAuthentication.getSASLMechanisms(session));
+  String specificFeatures=session.getAvailableStreamFeatures();
+  if (specificFeatures != null) {
+    sb.append(specificFeatures);
+  }
+  sb.append("</stream:features>");
+  writer.write(sb.toString());
+  if (isFlashClient) {
+    writer.write('\0');
+  }
+  writer.flush();
+  return session;
+}

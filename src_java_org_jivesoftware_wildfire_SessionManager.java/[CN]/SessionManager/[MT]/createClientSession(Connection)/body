@@ -1,0 +1,11 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  StreamID id=nextStreamID();
+  ClientSession session=new ClientSession(serverName,conn,id);
+  conn.init(session);
+  conn.registerCloseListener(clientSessionListener,session);
+  preAuthenticatedSessions.put(session.getAddress().toString(),session);
+  return session;
+}

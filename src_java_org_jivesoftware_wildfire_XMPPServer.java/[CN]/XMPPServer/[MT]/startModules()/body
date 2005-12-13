@@ -1,0 +1,15 @@
+{
+  for (  Module module : modules.values()) {
+    boolean started=false;
+    try {
+      module.start();
+    }
+ catch (    Exception e) {
+      if (started && module != null) {
+        module.stop();
+        module.destroy();
+      }
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

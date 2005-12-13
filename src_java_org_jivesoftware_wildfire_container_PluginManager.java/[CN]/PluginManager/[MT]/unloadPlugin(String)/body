@@ -1,0 +1,35 @@
+{
+  Log.debug("Unloading plugin " + pluginName);
+  Plugin plugin=plugins.get(pluginName);
+  if (plugin == null) {
+    return;
+  }
+  if (parentPluginMap.containsKey(plugin)) {
+    for (    String childPlugin : parentPluginMap.get(plugin)) {
+      Log.debug("Unloading child plugin: " + childPlugin);
+      unloadPlugin(childPlugin);
+    }
+    parentPluginMap.remove(plugin);
+  }
+  File webXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web.xml");
+  if (webXML.exists()) {
+    AdminConsole.removeModel(pluginName);
+    PluginServlet.unregisterServlets(webXML);
+  }
+  File customWebXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web-custom.xml");
+  if (customWebXML.exists()) {
+    PluginServlet.unregisterServlets(customWebXML);
+  }
+  plugin.destroyPlugin();
+  PluginClassLoader classLoader=classloaders.get(plugin);
+  if (classLoader != null) {
+    classLoader.destroy();
+  }
+  plugins.remove(pluginName);
+  pluginDirs.remove(plugin);
+  classloaders.remove(plugin);
+  if (childPluginMap.containsKey(plugin)) {
+    unloadPlugin(childPluginMap.get(plugin));
+  }
+  childPluginMap.remove(plugin);
+}

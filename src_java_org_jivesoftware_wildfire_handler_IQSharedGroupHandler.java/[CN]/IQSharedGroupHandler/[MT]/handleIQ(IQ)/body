@@ -1,0 +1,24 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  String username=packet.getFrom().getNode();
+  if (!serverName.equals(packet.getFrom().getDomain()) || username == null) {
+    result.setChildElement(packet.getChildElement().createCopy());
+    result.setError(PacketError.Condition.not_allowed);
+    return result;
+  }
+  try {
+    Collection<Group> groups=rosterManager.getSharedGroups(userManager.getUser(username));
+    Element sharedGroups=result.setChildElement("sharedgroup","http://www.jivesoftware.org/protocol/sharedgroup");
+    for (    Group sharedGroup : groups) {
+      String displayName=sharedGroup.getProperties().get("sharedRoster.displayName");
+      if (displayName != null) {
+        sharedGroups.addElement("group").setText(displayName);
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    result.setChildElement(packet.getChildElement().createCopy());
+    result.setError(PacketError.Condition.not_allowed);
+  }
+  return result;
+}

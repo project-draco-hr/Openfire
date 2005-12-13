@@ -1,0 +1,17 @@
+{
+  if (rosterItems.putIfAbsent(item.getJid().toBareJID(),item) == null) {
+    rosterItems.remove(item.getJid().toBareJID());
+    throw new UserNotFoundException(item.getJid().toBareJID());
+  }
+  if (item.isShared() && item.getID() == 0) {
+    try {
+      rosterItemProvider.createItem(username,item);
+    }
+ catch (    UserAlreadyExistsException e) {
+    }
+  }
+ else {
+    rosterItemProvider.updateItem(username,item);
+  }
+  broadcast(item,true);
+}

@@ -1,0 +1,41 @@
+{
+  if (sizeCache.containsKey(username)) {
+    return (Integer)sizeCache.get(username);
+  }
+  int size=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(SELECT_SIZE_OFFLINE);
+    pstmt.setString(1,username);
+    ResultSet rs=pstmt.executeQuery();
+    if (rs.next()) {
+      size=rs.getInt(1);
+    }
+    rs.close();
+    sizeCache.put(username,size);
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return size;
+}

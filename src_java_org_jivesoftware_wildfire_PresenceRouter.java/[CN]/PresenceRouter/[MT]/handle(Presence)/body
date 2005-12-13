@@ -1,0 +1,40 @@
+{
+  JID recipientJID=packet.getTo();
+  try {
+    Presence.Type type=packet.getType();
+    if (type == null || Presence.Type.unavailable == type) {
+      if (recipientJID == null || recipientJID.getDomain() == null || "".equals(recipientJID.getDomain()) || (recipientJID.getNode() == null && recipientJID.getResource() == null) && serverName.equals(recipientJID.getDomain())) {
+        updateHandler.process(packet);
+      }
+ else {
+        ChannelHandler route=routingTable.getRoute(recipientJID);
+        if (route != null) {
+          route.process(packet);
+          updateHandler.directedPresenceSent(packet,route,recipientJID.toString());
+        }
+      }
+    }
+ else     if (Presence.Type.subscribe == type || Presence.Type.unsubscribe == type || Presence.Type.subscribed == type || Presence.Type.unsubscribed == type) {
+      subscribeHandler.process(packet);
+    }
+ else     if (Presence.Type.probe == type) {
+      presenceManager.handleProbe(packet);
+    }
+ else {
+      ChannelHandler route=routingTable.getRoute(recipientJID);
+      if (route != null) {
+        route.process(packet);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
+    Session session=sessionManager.getSession(packet.getFrom());
+    if (session != null) {
+      Connection conn=session.getConnection();
+      if (conn != null) {
+        conn.close();
+      }
+    }
+  }
+}

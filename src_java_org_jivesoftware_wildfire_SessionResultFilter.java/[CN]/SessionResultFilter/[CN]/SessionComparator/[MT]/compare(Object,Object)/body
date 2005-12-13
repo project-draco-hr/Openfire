@@ -1,0 +1,31 @@
+{
+  Session lhs=(Session)o1;
+  Session rhs=(Session)o2;
+  int comparison;
+switch (sortField) {
+case SessionResultFilter.SORT_CREATION_DATE:
+    comparison=lhs.getCreationDate().compareTo(rhs.getCreationDate());
+  break;
+case SessionResultFilter.SORT_LAST_ACTIVITY_DATE:
+comparison=lhs.getLastActiveDate().compareTo(rhs.getCreationDate());
+break;
+case SessionResultFilter.SORT_NUM_CLIENT_PACKETS:
+comparison=(int)(lhs.getNumClientPackets() - rhs.getNumClientPackets());
+break;
+case SessionResultFilter.SORT_NUM_SERVER_PACKETS:
+comparison=(int)(lhs.getNumServerPackets() - rhs.getNumServerPackets());
+break;
+case SessionResultFilter.SORT_USER:
+comparison=compareString(lhs.getAddress().getNode(),rhs.getAddress().getNode());
+if (comparison == 0) {
+comparison=compareString(lhs.getAddress().getResource(),rhs.getAddress().getResource());
+}
+break;
+default :
+comparison=0;
+}
+if (sortOrder == SessionResultFilter.DESCENDING) {
+comparison*=-1;
+}
+return comparison;
+}

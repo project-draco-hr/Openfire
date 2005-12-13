@@ -1,0 +1,65 @@
+{
+  try {
+    Component component=getPresenceComponent(probee);
+    if (server.isLocal(probee)) {
+      if (probee.getNode() != null && !"".equals(probee.getNode())) {
+        Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
+        if (sessions.isEmpty()) {
+          try {
+            User probeeUser=UserManager.getInstance().getUser(probee.getNode());
+            String presenceXML=probeeUser.getProperties().get(LAST_PRESENCE_PROP);
+            if (presenceXML != null) {
+              try {
+                Document element=DocumentHelper.parseText(presenceXML);
+                Presence presencePacket=new Presence(element.getRootElement());
+                presencePacket.setFrom(probee.toBareJID());
+                presencePacket.setTo(prober);
+                deliverer.deliver(presencePacket);
+              }
+ catch (              Exception e) {
+                Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+              }
+            }
+          }
+ catch (          UserNotFoundException e) {
+          }
+        }
+ else {
+          for (          ClientSession session : sessions) {
+            Presence presencePacket=session.getPresence().createCopy();
+            presencePacket.setFrom(session.getAddress());
+            presencePacket.setTo(prober);
+            try {
+              deliverer.deliver(presencePacket);
+            }
+ catch (            Exception e) {
+              Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+            }
+          }
+        }
+      }
+    }
+ else     if (component != null) {
+      Presence presence=new Presence();
+      presence.setType(Presence.Type.probe);
+      presence.setFrom(prober);
+      presence.setTo(probee);
+      component.processPacket(presence);
+    }
+ else {
+      if (server.isRemote(probee)) {
+        Presence probePresence=new Presence();
+        probePresence.setType(Presence.Type.probe);
+        probePresence.setFrom(prober);
+        probePresence.setTo(probee.toBareJID());
+        deliverer.deliver(probePresence);
+      }
+ else {
+        componentManager.addPresenceRequest(prober,probee);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

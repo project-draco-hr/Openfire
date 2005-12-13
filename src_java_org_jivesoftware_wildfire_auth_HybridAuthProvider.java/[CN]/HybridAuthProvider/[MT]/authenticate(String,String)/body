@@ -1,0 +1,35 @@
+{
+  if (primaryOverrides.contains(username.toLowerCase())) {
+    primaryProvider.authenticate(username,password);
+    return;
+  }
+ else   if (secondaryOverrides.contains(username.toLowerCase())) {
+    secondaryProvider.authenticate(username,password);
+    return;
+  }
+ else   if (tertiaryOverrides.contains(username.toLowerCase())) {
+    tertiaryProvider.authenticate(username,password);
+    return;
+  }
+  try {
+    primaryProvider.authenticate(username,password);
+  }
+ catch (  UnauthorizedException ue) {
+    if (secondaryProvider != null) {
+      try {
+        secondaryProvider.authenticate(username,password);
+      }
+ catch (      UnauthorizedException ue2) {
+        if (tertiaryProvider != null) {
+          tertiaryProvider.authenticate(username,password);
+        }
+ else {
+          throw ue2;
+        }
+      }
+    }
+ else {
+      throw ue;
+    }
+  }
+}

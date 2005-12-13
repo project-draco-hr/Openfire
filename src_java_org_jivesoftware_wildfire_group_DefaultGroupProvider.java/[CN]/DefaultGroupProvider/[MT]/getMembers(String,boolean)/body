@@ -1,0 +1,45 @@
+{
+  List<JID> members=new ArrayList<JID>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    if (adminsOnly) {
+      pstmt=con.prepareStatement(LOAD_ADMINS);
+    }
+ else {
+      pstmt=con.prepareStatement(LOAD_MEMBERS);
+    }
+    pstmt.setString(1,groupName);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String user=rs.getString(1);
+      JID userJID=new JID(user);
+      if (user.indexOf('@') == -1) {
+        if (!server.matchesComponent(userJID)) {
+          userJID=server.createJID(user,null);
+        }
+      }
+      members.add(userJID);
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return members;
+}

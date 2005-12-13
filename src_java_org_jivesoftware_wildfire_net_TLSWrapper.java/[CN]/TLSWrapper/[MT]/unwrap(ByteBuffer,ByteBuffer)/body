@@ -1,0 +1,10 @@
+{
+  ByteBuffer out=app;
+  out=resizeApplicationBuffer(out);
+  tlsEngineResult=tlsEngine.unwrap(net,out);
+  log("server unwrap: ",tlsEngineResult);
+  if (tlsEngineResult.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
+    doTasks();
+  }
+  return out;
+}

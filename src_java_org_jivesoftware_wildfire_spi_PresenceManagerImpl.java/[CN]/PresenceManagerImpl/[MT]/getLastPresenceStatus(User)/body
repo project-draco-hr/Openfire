@@ -1,0 +1,14 @@
+{
+  String answer=null;
+  String presenceXML=user.getProperties().get(LAST_PRESENCE_PROP);
+  if (presenceXML != null) {
+    try {
+      Document element=DocumentHelper.parseText(presenceXML);
+      answer=element.getRootElement().elementTextTrim("status");
+    }
+ catch (    DocumentException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+  return answer;
+}

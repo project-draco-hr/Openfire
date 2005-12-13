@@ -1,0 +1,16 @@
+{
+  JiveGlobals.setProperty("xmpp.server.permission",policy.toString());
+  for (  String hostname : SessionManager.getInstance().getIncomingServers()) {
+    if (!canAccess(hostname)) {
+      for (      Session session : SessionManager.getInstance().getIncomingServerSessions(hostname)) {
+        session.getConnection().close();
+      }
+    }
+  }
+  for (  String hostname : SessionManager.getInstance().getOutgoingServers()) {
+    if (!canAccess(hostname)) {
+      Session session=SessionManager.getInstance().getOutgoingServerSession(hostname);
+      session.getConnection().close();
+    }
+  }
+}

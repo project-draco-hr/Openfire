@@ -1,0 +1,42 @@
+{
+  routingTable=XMPPServer.getInstance().getRoutingTable();
+  int maxThreads=JiveGlobals.getIntProperty("xmpp.server.outgoing.threads",20);
+  if (maxThreads < 10) {
+    maxThreads=10;
+  }
+  threadPool=new ThreadPoolExecutor(Math.round(maxThreads / 4),maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadPoolExecutor.DiscardOldestPolicy());
+  Thread thread=new Thread(new Runnable(){
+    public void run(){
+      while (!shutdown) {
+        try {
+          if (threadPool.getActiveCount() < threadPool.getMaximumPoolSize()) {
+            final Packet packet=packets.take();
+            threadPool.execute(new Runnable(){
+              public void run(){
+                try {
+                  createSessionAndSendPacket(packet);
+                }
+ catch (                Exception e) {
+                  returnErrorToSender(packet);
+                  Log.debug("Error sending packet to remote server: " + packet,e);
+                }
+              }
+            }
+);
+          }
+ else {
+            Thread.sleep(200);
+          }
+        }
+ catch (        InterruptedException e) {
+        }
+catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+  }
+,"Queued Packets Processor");
+  thread.setDaemon(true);
+  thread.start();
+}

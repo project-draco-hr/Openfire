@@ -1,0 +1,34 @@
+{
+  if (!setupMode) {
+    return;
+  }
+  if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
+    name=JiveGlobals.getProperty("xmpp.domain");
+    Thread finishSetup=new Thread(){
+      public void run(){
+        try {
+          if (isStandAlone()) {
+            if (!JiveGlobals.getXMLProperty("adminConsole.port").equals("9090") || !JiveGlobals.getXMLProperty("adminConsole.securePort").equals("9091")) {
+              Thread.sleep(1000);
+              ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+            }
+          }
+          verifyDataSource();
+          loadModules();
+          initModules();
+          startModules();
+          InternalComponentManager.getInstance().start();
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+          Log.error(e);
+          shutdownServer();
+        }
+      }
+    }
+;
+    finishSetup.setContextClassLoader(loader);
+    finishSetup.start();
+    setupMode=false;
+  }
+}

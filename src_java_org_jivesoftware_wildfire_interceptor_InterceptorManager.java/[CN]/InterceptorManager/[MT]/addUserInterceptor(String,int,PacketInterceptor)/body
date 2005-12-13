@@ -1,0 +1,23 @@
+{
+  List<PacketInterceptor> userInterceptors=usersInterceptors.get(username);
+  if (userInterceptors == null) {
+    userInterceptors=new CopyOnWriteArrayList<PacketInterceptor>();
+    usersInterceptors.put(username,userInterceptors);
+  }
+ else {
+    if (index < 0 || (index > userInterceptors.size())) {
+      throw new IndexOutOfBoundsException("Index " + index + " invalid.");
+    }
+    if (interceptor == null) {
+      throw new NullPointerException("Parameter interceptor was null.");
+    }
+    if (userInterceptors.contains(interceptor)) {
+      int oldIndex=userInterceptors.indexOf(interceptor);
+      if (oldIndex < index) {
+        index-=1;
+      }
+      userInterceptors.remove(interceptor);
+    }
+  }
+  userInterceptors.add(index,interceptor);
+}

@@ -1,0 +1,38 @@
+{
+  try {
+    RosterItem item=getRosterItem(deletedUser);
+    int groupSize=item.getSharedGroups().size() + item.getInvisibleSharedGroups().size();
+    if (item.isOnlyShared() && groupSize == 1 && !(deletedGroup.isUser(deletedUser) && rosterManager.isGroupPublic(deletedGroup))) {
+      deleteRosterItem(deletedUser,false);
+    }
+ else {
+      if (!(deletedGroup.isUser(deletedUser) && rosterManager.isGroupPublic(deletedGroup))) {
+        item.removeSharedGroup(deletedGroup);
+      }
+      for (      Group group : groups) {
+        if (!rosterManager.isGroupVisible(group,getUserJID())) {
+          item.removeSharedGroup(group);
+        }
+      }
+      if (item.isOnlyShared()) {
+        Collection<Group> userGroups=userGroups=GroupManager.getInstance().getGroups(getUserJID());
+        if (rosterManager.hasMutualVisibility(getUsername(),userGroups,deletedUser,groups)) {
+          item.setSubStatus(RosterItem.SUB_BOTH);
+        }
+ else {
+          item.setSubStatus(RosterItem.SUB_FROM);
+          for (          Group group : groups) {
+            if (rosterManager.isGroupVisible(group,getUserJID())) {
+              item.setSubStatus(RosterItem.SUB_TO);
+            }
+          }
+        }
+      }
+      broadcast(item,false);
+    }
+  }
+ catch (  SharedGroupException e) {
+  }
+catch (  UserNotFoundException e) {
+  }
+}

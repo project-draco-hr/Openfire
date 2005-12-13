@@ -1,0 +1,41 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  long rosterID=item.getID();
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_ROSTER_ITEM);
+    pstmt.setInt(1,item.getSubStatus().getValue());
+    pstmt.setInt(2,item.getAskStatus().getValue());
+    pstmt.setInt(3,item.getRecvStatus().getValue());
+    pstmt.setString(4,item.getNickname());
+    pstmt.setLong(5,rosterID);
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
+    pstmt.setLong(1,rosterID);
+    pstmt.executeUpdate();
+    insertGroups(rosterID,item.getGroups().iterator(),con);
+  }
+ catch (  SQLException e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

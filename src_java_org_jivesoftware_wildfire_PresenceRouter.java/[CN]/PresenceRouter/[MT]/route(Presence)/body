@@ -1,0 +1,20 @@
+{
+  if (packet == null) {
+    throw new NullPointerException();
+  }
+  Session session=sessionManager.getSession(packet.getFrom());
+  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
+    handle(packet);
+  }
+ else {
+    packet.setTo(session.getAddress());
+    packet.setFrom((JID)null);
+    packet.setError(PacketError.Condition.not_authorized);
+    try {
+      session.process(packet);
+    }
+ catch (    UnauthorizedException ue) {
+      Log.error(ue);
+    }
+  }
+}

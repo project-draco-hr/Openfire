@@ -1,0 +1,16 @@
+{
+  if (ignoreList.equals(usernames)) {
+    return;
+  }
+  ignoreList=usernames;
+  StringBuilder ignoreString=new StringBuilder();
+  for (  String username : ignoreList) {
+    if (ignoreString.length() == 0) {
+      ignoreString.append(username);
+    }
+ else {
+      ignoreString.append(",").append(username);
+    }
+  }
+  JiveGlobals.setProperty("xmpp.audit.ignore",ignoreString.toString());
+}

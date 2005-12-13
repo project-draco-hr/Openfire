@@ -1,0 +1,36 @@
+{
+  if (!room.isPersistent() || !room.wasSavedToDB()) {
+    return;
+  }
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
+    pstmt.setLong(1,room.getID());
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_MEMBERS);
+    pstmt.setLong(1,room.getID());
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(DELETE_ROOM);
+    pstmt.setLong(1,room.getID());
+    pstmt.executeUpdate();
+    room.setSavedToDB(false);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+    abortTransaction=true;
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

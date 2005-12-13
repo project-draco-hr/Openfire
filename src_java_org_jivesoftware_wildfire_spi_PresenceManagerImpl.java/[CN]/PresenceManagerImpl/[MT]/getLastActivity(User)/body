@@ -1,0 +1,13 @@
+{
+  long answer=-1;
+  String offline=user.getProperties().get(LAST_ACTIVITY_PROP);
+  if (offline != null) {
+    try {
+      answer=(System.currentTimeMillis() - Long.parseLong(offline)) / 1000;
+    }
+ catch (    NumberFormatException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+  return answer;
+}

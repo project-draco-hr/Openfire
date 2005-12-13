@@ -1,0 +1,11 @@
+{
+  deleteConfiguration(subdomain);
+  ExternalComponentConfiguration config=new ExternalComponentConfiguration(subdomain);
+  config.setPermission(Permission.blocked);
+  addConfiguration(config);
+  String domain=subdomain + "." + XMPPServer.getInstance().getServerInfo().getName();
+  Session session=SessionManager.getInstance().getComponentSession(domain);
+  if (session != null) {
+    session.getConnection().close();
+  }
+}

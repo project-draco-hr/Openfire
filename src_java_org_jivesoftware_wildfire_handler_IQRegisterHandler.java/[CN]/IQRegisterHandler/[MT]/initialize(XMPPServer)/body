@@ -1,0 +1,41 @@
+{
+  super.initialize(server);
+  userManager=server.getUserManager();
+  rosterManager=server.getRosterManager();
+  sessionManager=server.getSessionManager();
+  if (probeResult == null) {
+    probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
+    probeResult.addElement("username");
+    probeResult.addElement("password");
+    probeResult.addElement("email");
+    probeResult.addElement("name");
+    XDataFormImpl registrationForm=new XDataFormImpl(DataForm.TYPE_FORM);
+    registrationForm.setTitle("XMPP Client Registration");
+    registrationForm.addInstruction("Please provide the following information");
+    XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
+    field.setType(FormField.TYPE_HIDDEN);
+    field.addValue("jabber:iq:register");
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("username");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel("Username");
+    field.setRequired(true);
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("name");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel("Full name");
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("email");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel("Email");
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("password");
+    field.setType(FormField.TYPE_TEXT_PRIVATE);
+    field.setLabel("Password");
+    field.setRequired(true);
+    registrationForm.addField(field);
+    probeResult.add(registrationForm.asXMLElement());
+  }
+  registrationEnabled=JiveGlobals.getBooleanProperty("register.inband",true);
+  canChangePassword=JiveGlobals.getBooleanProperty("register.password",true);
+}

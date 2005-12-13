@@ -1,0 +1,14 @@
+{
+  XMPPServer server=XMPPServer.getInstance();
+  String username=server.isLocal(user) ? JID.unescapeNode(user.getNode()) : user.toString();
+  if (!manager.isPosixMode()) {
+    try {
+      username=manager.findUserDN(username) + "," + manager.getBaseDN();
+    }
+ catch (    Exception e) {
+      return new ArrayList<Group>();
+    }
+  }
+  String filter=MessageFormat.format(manager.getGroupSearchFilter(),username);
+  return populateGroups(searchForGroups(filter,standardAttributes));
+}

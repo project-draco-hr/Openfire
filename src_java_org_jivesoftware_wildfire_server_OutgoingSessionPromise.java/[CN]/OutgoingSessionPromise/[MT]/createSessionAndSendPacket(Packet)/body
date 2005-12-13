@@ -1,0 +1,15 @@
+{
+  boolean created=OutgoingServerSession.authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain());
+  if (created) {
+    ChannelHandler route=routingTable.getRoute(packet.getTo());
+    if (route != null) {
+      route.process(packet);
+    }
+ else {
+      throw new Exception("Failed to create connection to remote server");
+    }
+  }
+ else {
+    throw new Exception("Failed to create connection to remote server");
+  }
+}

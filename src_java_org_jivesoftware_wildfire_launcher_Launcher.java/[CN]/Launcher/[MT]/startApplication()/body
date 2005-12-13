@@ -1,0 +1,91 @@
+{
+  if (wildfired == null) {
+    try {
+      File windowsExe=new File(binDir,"wildfired.exe");
+      File unixExe=new File(binDir,"wildfired");
+      if (windowsExe.exists()) {
+        wildfired=Runtime.getRuntime().exec(new String[]{windowsExe.toString()});
+      }
+ else       if (unixExe.exists()) {
+        wildfired=Runtime.getRuntime().exec(new String[]{unixExe.toString()});
+      }
+ else {
+        throw new FileNotFoundException();
+      }
+    }
+ catch (    Exception e) {
+      try {
+        File libDir=new File(binDir.getParentFile(),"lib").getAbsoluteFile();
+        wildfired=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
+      }
+ catch (      Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null,"Launcher could not start,\n" + appName,"File not found",JOptionPane.ERROR_MESSAGE);
+      }
+    }
+    final SimpleAttributeSet styles=new SimpleAttributeSet();
+    SwingWorker inputWorker=new SwingWorker(){
+      public Object construct(){
+        if (wildfired != null) {
+          try {
+            InputStream in=wildfired.getInputStream();
+            int c;
+            while ((c=in.read()) != -1) {
+              try {
+                StyleConstants.setFontFamily(styles,"courier new");
+                pane.getDocument().insertString(pane.getDocument().getLength(),"" + (char)c,styles);
+              }
+ catch (              BadLocationException e) {
+              }
+            }
+            in.close();
+          }
+ catch (          IOException e) {
+            e.printStackTrace();
+          }
+        }
+        return "ok";
+      }
+    }
+;
+    inputWorker.start();
+    SwingWorker errorWorker=new SwingWorker(){
+      public Object construct(){
+        if (wildfired != null) {
+          try {
+            InputStream in=wildfired.getErrorStream();
+            int c;
+            while ((c=in.read()) != -1) {
+              try {
+                StyleConstants.setForeground(styles,Color.red);
+                pane.getDocument().insertString(pane.getDocument().getLength(),"" + (char)c,styles);
+              }
+ catch (              BadLocationException e) {
+              }
+            }
+            in.close();
+          }
+ catch (          IOException e) {
+            e.printStackTrace();
+          }
+        }
+        return "ok";
+      }
+    }
+;
+    errorWorker.start();
+    if (freshStart) {
+      try {
+        Thread.sleep(1000);
+        cardLayout.show(cardPanel,"running");
+      }
+ catch (      Exception ex) {
+      }
+      freshStart=false;
+    }
+ else {
+      pane.setText("");
+      cardLayout.show(cardPanel,"running");
+    }
+  }
+}

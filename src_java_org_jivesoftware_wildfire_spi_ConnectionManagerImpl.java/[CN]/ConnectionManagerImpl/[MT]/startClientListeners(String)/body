@@ -1,0 +1,20 @@
+{
+  if (isClientListenerEnabled()) {
+    int port=getClientListenerPort();
+    String interfaceName=JiveGlobals.getProperty("xmpp.socket.plain.interface");
+    ServerPort serverPort=new ServerPort(port,interfaceName,serverName,localIPAddress,false,null,ServerPort.Type.client);
+    try {
+      socketThread=new SocketAcceptThread(this,serverPort);
+      ports.add(serverPort);
+      socketThread.setDaemon(true);
+      socketThread.start();
+      List params=new ArrayList();
+      params.add(Integer.toString(socketThread.getPort()));
+      Log.info(LocaleUtils.getLocalizedString("startup.plain",params));
+    }
+ catch (    Exception e) {
+      System.err.println("Error starting XMPP listener on port " + port + ": "+ e.getMessage());
+      Log.error(LocaleUtils.getLocalizedString("admin.error.socket-setup"),e);
+    }
+  }
+}

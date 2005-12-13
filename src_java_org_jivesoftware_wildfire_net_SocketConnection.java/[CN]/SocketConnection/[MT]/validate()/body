@@ -1,0 +1,20 @@
+{
+  if (isClosed()) {
+    return false;
+  }
+  try {
+synchronized (writer) {
+      writeStarted();
+      writer.write(" ");
+      writer.flush();
+    }
+  }
+ catch (  Exception e) {
+    Log.warn("Closing no longer valid connection" + "\n" + this.toString(),e);
+    close();
+  }
+ finally {
+    writeFinished();
+  }
+  return !isClosed();
+}

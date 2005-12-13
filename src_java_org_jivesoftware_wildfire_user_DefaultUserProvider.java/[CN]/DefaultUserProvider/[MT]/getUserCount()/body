@@ -1,0 +1,36 @@
+{
+  int count=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(USER_COUNT);
+    ResultSet rs=pstmt.executeQuery();
+    if (rs.next()) {
+      count=rs.getInt(1);
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return count;
+}

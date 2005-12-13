@@ -1,0 +1,19 @@
+{
+  Message packet=createServerMessage(subject,body);
+  try {
+    if (address == null || address.getNode() == null || address.getNode().length() < 1) {
+      broadcast(packet);
+    }
+ else     if (address.getResource() == null || address.getResource().length() < 1) {
+      userBroadcast(address.getNode(),packet);
+    }
+ else {
+      ClientSession session=getSession(address);
+      if (session != null) {
+        session.process(packet);
+      }
+    }
+  }
+ catch (  UnauthorizedException e) {
+  }
+}

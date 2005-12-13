@@ -1,0 +1,14 @@
+{
+  try {
+    if (packet instanceof IQ) {
+      if (process((IQ)packet)) {
+        return;
+      }
+    }
+    MUCUser user=getChatUser(packet.getFrom());
+    user.process(packet);
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

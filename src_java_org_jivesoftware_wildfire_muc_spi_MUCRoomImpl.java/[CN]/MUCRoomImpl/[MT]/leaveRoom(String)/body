@@ -1,0 +1,31 @@
+{
+  MUCRole leaveRole=null;
+  lock.writeLock().lock();
+  try {
+    leaveRole=occupants.remove(nickname.toLowerCase());
+    if (leaveRole == null) {
+      throw new UserNotFoundException();
+    }
+    removeOccupantRole(leaveRole);
+    if (occupants.isEmpty() && !isPersistent()) {
+      endTime=System.currentTimeMillis();
+      server.removeChatRoom(name);
+    }
+    if (occupants.isEmpty()) {
+      setEmptyDate(new Date());
+    }
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  try {
+    Presence presence=leaveRole.getPresence().createCopy();
+    presence.setType(Presence.Type.unavailable);
+    presence.setStatus(null);
+    leaveRole.send(presence);
+    broadcastPresence(presence);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

@@ -1,0 +1,14 @@
+{
+  if (UserManager.getUserProvider().isReadOnly()) {
+    throw new UnsupportedOperationException("User provider is read-only.");
+  }
+  try {
+    UserManager.getUserProvider().setPassword(username,password);
+    Map params=new HashMap();
+    params.put("type","passwordModified");
+    UserEventDispatcher.dispatchEvent(this,UserEventDispatcher.EventType.user_modified,params);
+  }
+ catch (  UserNotFoundException unfe) {
+    Log.error(unfe);
+  }
+}

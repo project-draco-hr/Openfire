@@ -1,0 +1,40 @@
+{
+  List<String> usernames=new ArrayList<String>(numResults);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,ALL_USERS);
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.setFetchSize(rs,startIndex + numResults);
+    DbConnectionManager.scrollResultSet(rs,startIndex);
+    int count=0;
+    while (rs.next() && count < numResults) {
+      usernames.add(rs.getString(1));
+      count++;
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return new UserCollection((String[])usernames.toArray(new String[usernames.size()]));
+}

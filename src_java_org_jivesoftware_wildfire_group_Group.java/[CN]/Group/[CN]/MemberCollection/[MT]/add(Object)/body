@@ -1,0 +1,48 @@
+{
+  JID user=(JID)member;
+  boolean alreadyGroupUser=false;
+  if (adminCollection) {
+    alreadyGroupUser=members.contains(user);
+  }
+ else {
+    alreadyGroupUser=administrators.contains(user);
+  }
+  if (users.add(user)) {
+    if (alreadyGroupUser) {
+      provider.updateMember(name,user,adminCollection);
+    }
+ else {
+      provider.addMember(name,user,adminCollection);
+    }
+    if (adminCollection) {
+      Map<String,String> params=new HashMap<String,String>();
+      params.put("admin",user.toString());
+      if (alreadyGroupUser) {
+        GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_removed,params);
+      }
+      GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_added,params);
+    }
+ else {
+      Map<String,String> params=new HashMap<String,String>();
+      params.put("member",user.toString());
+      if (alreadyGroupUser) {
+        GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_removed,params);
+      }
+      GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_added,params);
+    }
+    if (alreadyGroupUser) {
+      if (adminCollection) {
+        if (members.contains(user)) {
+          members.remove(user);
+        }
+      }
+ else {
+        if (administrators.contains(user)) {
+          administrators.remove(user);
+        }
+      }
+    }
+    return true;
+  }
+  return false;
+}

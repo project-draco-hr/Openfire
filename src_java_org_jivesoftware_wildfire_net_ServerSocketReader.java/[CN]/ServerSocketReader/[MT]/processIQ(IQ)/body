@@ -1,0 +1,19 @@
+{
+  try {
+    packetReceived(packet);
+    threadPool.execute(new Runnable(){
+      public void run(){
+        try {
+          ServerSocketReader.super.processIQ(packet);
+        }
+ catch (        UnauthorizedException e) {
+          Log.error("Error processing packet",e);
+        }
+      }
+    }
+);
+  }
+ catch (  PacketRejectedException e) {
+    Log.debug("IQ rejected: " + packet.toXML(),e);
+  }
+}

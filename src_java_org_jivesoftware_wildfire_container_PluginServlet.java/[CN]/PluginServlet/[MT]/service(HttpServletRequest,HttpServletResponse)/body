@@ -1,0 +1,26 @@
+{
+  String pathInfo=request.getPathInfo();
+  if (pathInfo == null) {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+  }
+ else {
+    try {
+      if (pathInfo.endsWith(".jsp")) {
+        if (handleDevJSP(pathInfo,request,response)) {
+          return;
+        }
+        handleJSP(pathInfo,request,response);
+      }
+ else       if (getServlet(pathInfo) != null) {
+        handleServlet(pathInfo,request,response);
+      }
+ else {
+        handleOtherRequest(pathInfo,response);
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
+}

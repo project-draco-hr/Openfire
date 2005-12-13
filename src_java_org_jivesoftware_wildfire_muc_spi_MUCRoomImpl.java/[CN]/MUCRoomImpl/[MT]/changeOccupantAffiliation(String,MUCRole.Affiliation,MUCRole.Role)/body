@@ -1,0 +1,13 @@
+{
+  List<Presence> presences=new ArrayList<Presence>();
+  List<MUCRole> roles=occupantsByBareJID.get(bareJID);
+  if (roles == null) {
+    return presences;
+  }
+  for (  MUCRole role : roles) {
+    role.setAffiliation(newAffiliation);
+    role.setRole(newRole);
+    presences.add(role.getPresence().createCopy());
+  }
+  return presences;
+}

@@ -1,0 +1,23 @@
+{
+  Permission permission=null;
+  ExternalComponentConfiguration config=getConfiguration(subdomain);
+  if (config != null) {
+    permission=config.getPermission();
+  }
+  if (PermissionPolicy.blacklist == getPermissionPolicy()) {
+    if (Permission.blocked == permission) {
+      return false;
+    }
+ else {
+      return true;
+    }
+  }
+ else {
+    if (Permission.allowed == permission) {
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+}

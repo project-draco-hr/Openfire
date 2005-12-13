@@ -1,0 +1,18 @@
+{
+  UserManager.getInstance().getUser(probee);
+  Roster roster=(Roster)CacheManager.getCache("username2roster").get(probee);
+  if (roster == null) {
+synchronized (probee.intern()) {
+      roster=(Roster)CacheManager.getCache("username2roster").get(probee);
+      if (roster == null) {
+        roster=new Roster(probee);
+        CacheManager.getCache("username2roster").put(probee,roster);
+      }
+    }
+  }
+  RosterItem item=roster.getRosterItem(prober);
+  if (item.getSubStatus() == RosterItem.SUB_FROM || item.getSubStatus() == RosterItem.SUB_BOTH) {
+    return true;
+  }
+  return false;
+}

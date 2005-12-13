@@ -1,0 +1,18 @@
+{
+  for (  Module module : modules.values()) {
+    boolean isInitialized=false;
+    try {
+      module.initialize(this);
+      isInitialized=true;
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      this.modules.remove(module.getClass());
+      if (isInitialized) {
+        module.stop();
+        module.destroy();
+      }
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

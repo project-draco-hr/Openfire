@@ -1,0 +1,12 @@
+{
+  String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+  String searchFilter="(&" + filter + "("+ manager.getGroupNameField()+ "="+ group+ "))";
+  Collection<Group> groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
+  if (groups.size() > 1) {
+    throw new GroupNotFoundException("Too many groups with name " + group + " were found.");
+  }
+  for (  Group g : groups) {
+    return g;
+  }
+  throw new GroupNotFoundException("Group with name " + group + " not found.");
+}

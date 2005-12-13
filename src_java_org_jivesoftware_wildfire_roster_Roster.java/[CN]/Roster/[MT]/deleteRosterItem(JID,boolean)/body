@@ -1,0 +1,35 @@
+{
+  RosterItem itemToRemove=rosterItems.get(user.toBareJID());
+  if (doChecking && itemToRemove != null && itemToRemove.isShared()) {
+    throw new SharedGroupException("Cannot remove contact that belongs to a shared group");
+  }
+  if (itemToRemove != null) {
+    RosterItem.SubType subType=itemToRemove.getSubStatus();
+    if (subType == RosterItem.SUB_TO || subType == RosterItem.SUB_BOTH) {
+      Presence presence=new Presence();
+      presence.setFrom(server.createJID(username,null));
+      presence.setTo(itemToRemove.getJid());
+      presence.setType(Presence.Type.unsubscribe);
+      server.getPacketRouter().route(presence);
+    }
+    if (subType == RosterItem.SUB_FROM || subType == RosterItem.SUB_BOTH) {
+      Presence presence=new Presence();
+      presence.setFrom(server.createJID(username,null));
+      presence.setTo(itemToRemove.getJid());
+      presence.setType(Presence.Type.unsubscribed);
+      server.getPacketRouter().route(presence);
+    }
+    RosterItem item=rosterItems.remove(user.toBareJID());
+    if (item != null) {
+      if (item.getID() > 0) {
+        rosterItemProvider.deleteItem(username,item.getID());
+      }
+      org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
+      roster.setType(IQ.Type.set);
+      roster.addItem(user,org.xmpp.packet.Roster.Subscription.remove);
+      broadcast(roster);
+    }
+    return item;
+  }
+  return null;
+}

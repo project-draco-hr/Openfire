@@ -1,0 +1,34 @@
+{
+  if (isClosed()) {
+    deliverer.deliver(packet);
+  }
+ else {
+    try {
+      InterceptorManager.getInstance().invokeInterceptors(packet,session,false,false);
+      boolean errorDelivering=false;
+synchronized (writer) {
+        try {
+          xmlSerializer.write(packet.getElement());
+          if (flashClient) {
+            writer.write('\0');
+          }
+          xmlSerializer.flush();
+        }
+ catch (        IOException e) {
+          Log.debug("Error delivering packet" + "\n" + this.toString(),e);
+          errorDelivering=true;
+        }
+      }
+      if (errorDelivering) {
+        close();
+        deliverer.deliver(packet);
+      }
+ else {
+        InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
+        session.incrementServerPacketCount();
+      }
+    }
+ catch (    PacketRejectedException e) {
+    }
+  }
+}

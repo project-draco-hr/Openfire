@@ -1,0 +1,73 @@
+{
+  room.lock.readLock().lock();
+  try {
+    FormField field=configurationForm.getField("muc#roomconfig_roomname");
+    field.clearValues();
+    field.addValue(room.getNaturalLanguageName());
+    field=configurationForm.getField("muc#roomconfig_roomdesc");
+    field.clearValues();
+    field.addValue(room.getDescription());
+    field=configurationForm.getField("muc#roomconfig_changesubject");
+    field.clearValues();
+    field.addValue((room.canOccupantsChangeSubject() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_maxusers");
+    field.clearValues();
+    field.addValue(Integer.toString(room.getMaxUsers()));
+    field=configurationForm.getField("muc#roomconfig_presencebroadcast");
+    field.clearValues();
+    for (    String roleToBroadcast : room.getRolesToBroadcastPresence()) {
+      field.addValue(roleToBroadcast);
+    }
+    field=configurationForm.getField("muc#roomconfig_publicroom");
+    field.clearValues();
+    field.addValue((room.isPublicRoom() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_persistentroom");
+    field.clearValues();
+    field.addValue((room.isPersistent() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_moderatedroom");
+    field.clearValues();
+    field.addValue((room.isModerated() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_membersonly");
+    field.clearValues();
+    field.addValue((room.isMembersOnly() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_allowinvites");
+    field.clearValues();
+    field.addValue((room.canOccupantsInvite() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_passwordprotectedroom");
+    field.clearValues();
+    field.addValue((room.isPasswordProtected() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_roomsecret");
+    field.clearValues();
+    field.addValue(room.getPassword());
+    field=configurationForm.getField("muc#roomconfig_whois");
+    field.clearValues();
+    field.addValue((room.canAnyoneDiscoverJID() ? "anyone" : "moderators"));
+    field=configurationForm.getField("muc#roomconfig_enablelogging");
+    field.clearValues();
+    field.addValue((room.isLogEnabled() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_reservednick");
+    field.clearValues();
+    field.addValue((room.isLoginRestrictedToNickname() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_canchangenick");
+    field.clearValues();
+    field.addValue((room.canChangeNickname() ? "1" : "0"));
+    field=configurationForm.getField("x-muc#roomconfig_registration");
+    field.clearValues();
+    field.addValue((room.isRegistrationEnabled() ? "1" : "0"));
+    field=configurationForm.getField("muc#roomconfig_roomadmins");
+    field.clearValues();
+    for (    String jid : room.getAdmins()) {
+      field.addValue(jid);
+    }
+    field=configurationForm.getField("muc#roomconfig_roomowners");
+    field.clearValues();
+    for (    String jid : room.getOwners()) {
+      field.addValue(jid);
+    }
+    probeResult.remove(probeResult.element(QName.get("x","jabber:x:data")));
+    probeResult.add(configurationForm.asXMLElement());
+  }
+  finally {
+    room.lock.readLock().unlock();
+  }
+}

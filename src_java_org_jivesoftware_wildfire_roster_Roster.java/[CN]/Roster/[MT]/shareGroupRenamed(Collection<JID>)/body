@@ -1,0 +1,15 @@
+{
+  JID userJID=getUserJID();
+  for (  JID user : users) {
+    if (userJID.equals(user)) {
+      continue;
+    }
+    RosterItem item=null;
+    try {
+      item=getRosterItem(user);
+      broadcast(item,true);
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+}

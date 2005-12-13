@@ -1,0 +1,20 @@
+{
+  shutdown=false;
+  checkingThread=new Thread("SocketSendingTracker"){
+    public void run(){
+      while (!shutdown) {
+        checkHealth();
+synchronized (this) {
+          try {
+            wait(10000);
+          }
+ catch (          InterruptedException e) {
+          }
+        }
+      }
+    }
+  }
+;
+  checkingThread.setDaemon(true);
+  checkingThread.start();
+}

@@ -1,0 +1,36 @@
+{
+  HashMap<String,String> map=new HashMap<String,String>();
+  DirContext ctx=null;
+  try {
+    String userDN=manager.findUserDN(username);
+    ctx=manager.getContext();
+    Attributes attrs=ctx.getAttributes(userDN,template.getAttributes());
+    for (    String attribute : template.getAttributes()) {
+      javax.naming.directory.Attribute attr=attrs.get(attribute);
+      String value;
+      if (attr == null) {
+        Log.debug("No ldap value found for attribute '" + attribute + "'");
+        value="";
+      }
+ else {
+        value=(String)attrs.get(attribute).get();
+      }
+      Log.debug("Ldap attribute '" + attribute + "'=>'"+ value+ "'");
+      map.put(attribute,value);
+    }
+    return map;
+  }
+ catch (  Exception e) {
+    Log.error(e);
+    return null;
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.close();
+      }
+    }
+ catch (    Exception e) {
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  if (host == null) {
+    return false;
+  }
+  if (serverName.equals(host)) {
+    return false;
+  }
+  RoutableChannelHandler route=routingTable.getRoute(new JID(host));
+  if (route == null || route instanceof OutgoingSessionPromise) {
+    return true;
+  }
+ else {
+    return false;
+  }
+}

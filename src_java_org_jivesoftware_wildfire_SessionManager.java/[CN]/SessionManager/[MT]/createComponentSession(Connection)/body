@@ -1,0 +1,11 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  StreamID id=nextStreamID();
+  ComponentSession session=new ComponentSession(serverName,conn,id);
+  conn.init(session);
+  conn.registerCloseListener(componentSessionListener,session);
+  componentsSessions.add(session);
+  return session;
+}

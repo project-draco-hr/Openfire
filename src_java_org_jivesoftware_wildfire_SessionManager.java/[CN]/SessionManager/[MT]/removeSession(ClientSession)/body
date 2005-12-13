@@ -1,0 +1,38 @@
+{
+  if (session == null || serverName == null) {
+    return;
+  }
+  SessionMap sessionMap=null;
+  if (anonymousSessions.containsValue(session)) {
+    anonymousSessions.remove(session.getAddress().getResource());
+    sessionCount--;
+    SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
+  }
+ else {
+    if (session.getAddress() != null && session.getAddress().getNode() != null) {
+      String username=session.getAddress().getNode().toLowerCase();
+synchronized (username.intern()) {
+        sessionMap=sessions.get(username);
+        if (sessionMap != null) {
+          sessionMap.removeSession(session);
+          sessionCount--;
+          if (sessionMap.isEmpty()) {
+            sessions.remove(username);
+          }
+          SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
+        }
+      }
+    }
+  }
+  Presence presence=session.getPresence();
+  if (presence == null || presence.isAvailable()) {
+    Presence offline=new Presence();
+    offline.setFrom(session.getAddress());
+    offline.setTo(new JID(null,serverName,null));
+    offline.setType(Presence.Type.unavailable);
+    router.route(offline);
+  }
+ else   if (preAuthenticatedSessions.containsValue(session)) {
+    preAuthenticatedSessions.remove(session.getAddress().toString());
+  }
+}

@@ -1,0 +1,24 @@
+{
+  if (connection.getTlsPolicy() == Connection.TLSPolicy.required && !connection.isSecure()) {
+    closeNeverSecuredConnection();
+    return;
+  }
+  try {
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+    router.route(packet);
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+    session.incrementClientPacketCount();
+  }
+ catch (  PacketRejectedException e) {
+    if (e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+      Message reply=new Message();
+      reply.setID(packet.getID());
+      reply.setTo(session.getAddress());
+      reply.setFrom(packet.getTo());
+      reply.setType(packet.getType());
+      reply.setThread(packet.getThread());
+      reply.setBody(e.getRejectionMessage());
+      session.process(reply);
+    }
+  }
+}

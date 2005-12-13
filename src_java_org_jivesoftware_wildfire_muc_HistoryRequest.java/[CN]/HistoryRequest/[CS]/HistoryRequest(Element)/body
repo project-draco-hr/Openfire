@@ -1,0 +1,25 @@
+{
+  Element history=userFragment.element("history");
+  if (history != null) {
+    if (history.attribute("maxchars") != null) {
+      this.maxChars=Integer.parseInt(history.attributeValue("maxchars"));
+    }
+    if (history.attribute("maxstanzas") != null) {
+      this.maxStanzas=Integer.parseInt(history.attributeValue("maxstanzas"));
+    }
+    if (history.attribute("seconds") != null) {
+      this.seconds=Integer.parseInt(history.attributeValue("seconds"));
+    }
+    if (history.attribute("since") != null) {
+      try {
+synchronized (formatter) {
+          this.since=formatter.parse(history.attributeValue("since"));
+        }
+      }
+ catch (      ParseException pe) {
+        Log.error("Error parsing date from history management",pe);
+        this.since=null;
+      }
+    }
+  }
+}

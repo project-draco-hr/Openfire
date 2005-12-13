@@ -1,0 +1,32 @@
+{
+  if (jmdns != null) {
+    Runnable startService=new Runnable(){
+      public void run(){
+        XMPPServerInfo info=XMPPServer.getInstance().getServerInfo();
+        Iterator ports=info.getServerPorts();
+        int portNum=-1;
+        while (ports.hasNext()) {
+          ServerPort port=(ServerPort)ports.next();
+          if (port.isClientPort() && !port.isSecure()) {
+            portNum=port.getPort();
+          }
+        }
+        try {
+          if (jmdns == null) {
+            jmdns=new JmDNS();
+          }
+          if (portNum != -1) {
+            String serverName=AdminConsole.getAppName();
+            serviceInfo=new ServiceInfo("_xmpp-client._tcp.local.",serverName,portNum,0,0,"XMPP Server");
+            jmdns.registerService(serviceInfo);
+          }
+        }
+ catch (        IOException ioe) {
+          Log.error(ioe);
+        }
+      }
+    }
+;
+    new Thread(startService).start();
+  }
+}

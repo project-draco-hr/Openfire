@@ -1,0 +1,37 @@
+{
+  Type strategyType;
+  int strategyMaxNumber;
+  if (type == Type.defaulType && parent != null) {
+    strategyType=parent.getType();
+    strategyMaxNumber=parent.getMaxNumber();
+  }
+ else {
+    strategyType=type;
+    strategyMaxNumber=maxNumber;
+  }
+  boolean subjectChange=false;
+  if (packet.getSubject() != null && packet.getSubject().length() > 0) {
+    subjectChange=true;
+    roomSubject=packet;
+  }
+  if (strategyType == Type.none) {
+    if (subjectChange) {
+      history.clear();
+      history.add(packet);
+    }
+  }
+ else   if (strategyType == Type.all) {
+    history.add(packet);
+  }
+ else   if (strategyType == Type.number) {
+    if (history.size() >= strategyMaxNumber) {
+      Iterator historyIter=history.iterator();
+      while (historyIter.hasNext() && history.size() > strategyMaxNumber) {
+        if (historyIter.next() != roomSubject) {
+          historyIter.remove();
+        }
+      }
+    }
+    history.add(packet);
+  }
+}

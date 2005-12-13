@@ -1,0 +1,35 @@
+{
+  if (c != null && c.isEnabled() && c.isVisible()) {
+    if (c instanceof Container) {
+      Container cont=(Container)c;
+      if (deepest == false) {
+        if (c instanceof JComponent) {
+          JComponent jc=(JComponent)c;
+          if (jc.isRequestFocusEnabled()) {
+            return jc;
+          }
+        }
+      }
+      int n=cont.getComponentCount();
+      for (int i=0; i < n; i++) {
+        Component child=cont.getComponent(i);
+        Component focused=getFocusableComponentOrChild(child,deepest);
+        if (focused != null) {
+          return focused;
+        }
+      }
+      if (c instanceof JComponent) {
+        if (deepest == true) {
+          JComponent jc=(JComponent)c;
+          if (jc.isRequestFocusEnabled()) {
+            return jc;
+          }
+        }
+      }
+ else {
+        return c;
+      }
+    }
+  }
+  return null;
+}

@@ -1,0 +1,10 @@
+{
+  if (provider.isReadOnly()) {
+    throw new UnsupportedOperationException("VCard provider is read-only.");
+  }
+  Element oldVCard=getOrLoadVCard(username);
+  if (oldVCard != null) {
+    vcardCache.remove(username);
+    provider.deleteVCard(username);
+  }
+}

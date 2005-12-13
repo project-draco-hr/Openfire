@@ -1,0 +1,125 @@
+{
+  if (Presence.Type.error == packet.getType()) {
+    return;
+  }
+  lastPacketTime=System.currentTimeMillis();
+  JID recipient=packet.getTo();
+  String group=recipient.getNode();
+  if (group == null) {
+    if (Presence.Type.unavailable == packet.getType()) {
+      server.removeUser(packet.getFrom());
+    }
+  }
+ else {
+    MUCRole role=roles.get(group.toLowerCase());
+    if (role == null) {
+      if (recipient.getResource() != null && recipient.getResource().trim().length() > 0) {
+        if (packet.isAvailable()) {
+          try {
+            MUCRoom room=server.getChatRoom(group,packet.getFrom());
+            Element mucInfo=packet.getChildElement("x","http://jabber.org/protocol/muc");
+            HistoryRequest historyRequest=null;
+            String password=null;
+            if (mucInfo != null) {
+              password=mucInfo.elementTextTrim("password");
+              if (mucInfo.element("history") != null) {
+                historyRequest=new HistoryRequest(mucInfo);
+              }
+            }
+            role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this,packet.createCopy());
+            roles.put(group.toLowerCase(),role);
+            if (mucInfo == null && room.isLocked() && !room.isManuallyLocked()) {
+              room.unlock(role);
+            }
+          }
+ catch (          UnauthorizedException e) {
+            sendErrorPacket(packet,PacketError.Condition.not_authorized);
+          }
+catch (          ServiceUnavailableException e) {
+            sendErrorPacket(packet,PacketError.Condition.service_unavailable);
+          }
+catch (          UserAlreadyExistsException e) {
+            sendErrorPacket(packet,PacketError.Condition.conflict);
+          }
+catch (          RoomLockedException e) {
+            sendErrorPacket(packet,PacketError.Condition.recipient_unavailable);
+          }
+catch (          ForbiddenException e) {
+            sendErrorPacket(packet,PacketError.Condition.forbidden);
+          }
+catch (          RegistrationRequiredException e) {
+            sendErrorPacket(packet,PacketError.Condition.registration_required);
+          }
+catch (          ConflictException e) {
+            sendErrorPacket(packet,PacketError.Condition.conflict);
+          }
+catch (          NotAcceptableException e) {
+            sendErrorPacket(packet,PacketError.Condition.not_acceptable);
+          }
+catch (          NotAllowedException e) {
+            sendErrorPacket(packet,PacketError.Condition.not_allowed);
+          }
+        }
+ else {
+        }
+      }
+ else {
+        if (packet.isAvailable()) {
+          sendErrorPacket(packet,PacketError.Condition.bad_request);
+        }
+      }
+    }
+ else {
+      if (!role.getChatUser().getAddress().equals(packet.getFrom())) {
+        sendErrorPacket(packet,PacketError.Condition.conflict);
+      }
+ else {
+        if (Presence.Type.unavailable == packet.getType()) {
+          try {
+            roles.remove(group.toLowerCase());
+            role.getChatRoom().leaveRoom(role.getNickname());
+          }
+ catch (          UserNotFoundException e) {
+          }
+catch (          Exception e) {
+            Log.error(e);
+          }
+        }
+ else {
+          try {
+            String resource=(recipient.getResource() == null || recipient.getResource().trim().length() == 0 ? null : recipient.getResource().trim());
+            if (resource == null || role.getNickname().equalsIgnoreCase(resource)) {
+              role.setPresence(packet.createCopy());
+              role.getChatRoom().send(role.getPresence().createCopy());
+            }
+ else {
+              if (!role.getChatRoom().canChangeNickname()) {
+                sendErrorPacket(packet,PacketError.Condition.not_acceptable);
+              }
+ else               if (role.getChatRoom().hasOccupant(resource)) {
+                sendErrorPacket(packet,PacketError.Condition.conflict);
+              }
+ else {
+                Presence presence=role.getPresence().createCopy();
+                presence.setType(Presence.Type.unavailable);
+                presence.setStatus(null);
+                Element frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+                frag.element("item").addAttribute("nick",resource);
+                frag.addElement("status").addAttribute("code","303");
+                role.getChatRoom().send(presence);
+                String oldNick=role.getNickname();
+                role.setPresence(packet.createCopy());
+                role.changeNickname(resource);
+                role.getChatRoom().nicknameChanged(oldNick,resource);
+                role.getChatRoom().send(role.getPresence().createCopy());
+              }
+            }
+          }
+ catch (          Exception e) {
+            Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+          }
+        }
+      }
+    }
+  }
+}

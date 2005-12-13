@@ -1,0 +1,44 @@
+{
+  IQ returnPacket=null;
+  ClientSession session=sessionManager.getSession(packet.getFrom());
+  IQ.Type type=packet.getType();
+  try {
+    if (session.getUsername() == null && IQ.Type.get == type) {
+      IQ reply=IQ.createResultIQ(packet);
+      reply.setChildElement("query","jabber:iq:roster");
+      return reply;
+    }
+    User sessionUser=userManager.getUser(session.getUsername());
+    Roster cachedRoster=sessionUser.getRoster();
+    if (IQ.Type.get == type) {
+      returnPacket=cachedRoster.getReset();
+      returnPacket.setType(IQ.Type.result);
+      returnPacket.setTo(session.getAddress());
+      returnPacket.setID(packet.getID());
+      deliverer.deliver(returnPacket);
+      returnPacket=null;
+    }
+ else     if (IQ.Type.set == type) {
+      for (      org.xmpp.packet.Roster.Item item : packet.getItems()) {
+        if (item.getSubscription() == org.xmpp.packet.Roster.Subscription.remove) {
+          removeItem(cachedRoster,packet.getFrom(),item);
+        }
+ else {
+          if (cachedRoster.isRosterItem(item.getJID())) {
+            RosterItem cachedItem=cachedRoster.getRosterItem(item.getJID());
+            cachedItem.setAsCopyOf(item);
+            cachedRoster.updateRosterItem(cachedItem);
+          }
+ else {
+            cachedRoster.createRosterItem(item);
+          }
+        }
+      }
+      returnPacket=IQ.createResultIQ(packet);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UnauthorizedException(e);
+  }
+  return returnPacket;
+}

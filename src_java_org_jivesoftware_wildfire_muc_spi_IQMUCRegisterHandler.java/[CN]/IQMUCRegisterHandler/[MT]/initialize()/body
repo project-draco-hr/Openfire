@@ -1,0 +1,40 @@
+{
+  if (probeResult == null) {
+    XDataFormImpl registrationForm=new XDataFormImpl(DataForm.TYPE_FORM);
+    registrationForm.setTitle(LocaleUtils.getLocalizedString("muc.form.reg.title"));
+    registrationForm.addInstruction(LocaleUtils.getLocalizedString("muc.form.reg.instruction"));
+    XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
+    field.setType(FormField.TYPE_HIDDEN);
+    field.addValue("http://jabber.org/protocol/muc#register");
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_first");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.first-name"));
+    field.setRequired(true);
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_last");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.last-name"));
+    field.setRequired(true);
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_roomnick");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.nickname"));
+    field.setRequired(true);
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_url");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.url"));
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_email");
+    field.setType(FormField.TYPE_TEXT_SINGLE);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.email"));
+    registrationForm.addField(field);
+    field=new XFormFieldImpl("muc#register_faqentry");
+    field.setType(FormField.TYPE_TEXT_MULTI);
+    field.setLabel(LocaleUtils.getLocalizedString("muc.form.reg.faqentry"));
+    registrationForm.addField(field);
+    probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
+    probeResult.add(registrationForm.asXMLElement());
+  }
+}

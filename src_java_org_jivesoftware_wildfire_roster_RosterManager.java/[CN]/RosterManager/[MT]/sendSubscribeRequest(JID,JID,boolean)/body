@@ -1,0 +1,19 @@
+{
+  Presence presence=new Presence();
+  presence.setFrom(sender);
+  presence.setTo(recipient);
+  if (isSubscribe) {
+    presence.setType(Presence.Type.subscribe);
+  }
+ else {
+    presence.setType(Presence.Type.unsubscribe);
+  }
+  try {
+    ChannelHandler handler=routingTable.getRoute(recipient);
+    if (handler != null) {
+      handler.process(presence);
+    }
+  }
+ catch (  UnauthorizedException e) {
+  }
+}

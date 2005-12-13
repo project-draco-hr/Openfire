@@ -1,0 +1,54 @@
+{
+  if (fields.isEmpty() || query == null || "".equals(query)) {
+    return Collections.emptyList();
+  }
+  if (!searchFields.keySet().containsAll(fields)) {
+    throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
+  }
+  if (!query.endsWith("*")) {
+    query=query + "*";
+  }
+  List<String> usernames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    StringBuilder filter=new StringBuilder();
+    if (fields.size() > 1) {
+      filter.append("(|");
+    }
+    for (    String field : fields) {
+      String attribute=searchFields.get(field);
+      filter.append("(").append(attribute).append("=").append(query).append(")");
+    }
+    if (fields.size() > 1) {
+      filter.append(")");
+    }
+    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    while (answer.hasMoreElements()) {
+      String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+      usernames.add(JID.escapeNode(username));
+    }
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+      Collections.sort(usernames);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return new UserCollection(usernames.toArray(new String[usernames.size()]));
+}

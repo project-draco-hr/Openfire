@@ -1,0 +1,35 @@
+{
+  final JDialog dialog=new JDialog(frame,"Installing Plugin",true);
+  dialog.getContentPane().setLayout(new BorderLayout());
+  JProgressBar bar=new JProgressBar();
+  bar.setIndeterminate(true);
+  bar.setString("Installing Plugin.  Please wait...");
+  bar.setStringPainted(true);
+  dialog.getContentPane().add(bar,BorderLayout.CENTER);
+  dialog.pack();
+  dialog.setSize(225,55);
+  final SwingWorker installerThread=new SwingWorker(){
+    public Object construct(){
+      File pluginsDir=new File(binDir.getParentFile(),"plugins");
+      String tempName=plugin.getName() + ".part";
+      File tempPluginsFile=new File(pluginsDir,tempName);
+      File realPluginsFile=new File(pluginsDir,plugin.getName());
+      try {
+        Thread.sleep(2000);
+        WebManager.copy(plugin.toURL(),tempPluginsFile);
+        tempPluginsFile.renameTo(realPluginsFile);
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+      return realPluginsFile;
+    }
+    public void finished(){
+      dialog.setVisible(false);
+    }
+  }
+;
+  installerThread.start();
+  dialog.setLocationRelativeTo(frame);
+  dialog.setVisible(true);
+}

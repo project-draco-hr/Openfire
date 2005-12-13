@@ -1,0 +1,26 @@
+{
+  element=docFactory.createElement("packet","http://www.jivesoftware.org");
+  if (session.getStreamID() != null) {
+    element.addAttribute("streamID",session.getStreamID().toString());
+  }
+switch (session.getStatus()) {
+case Session.STATUS_AUTHENTICATED:
+    element.addAttribute("status","auth");
+  break;
+case Session.STATUS_CLOSED:
+element.addAttribute("status","closed");
+break;
+case Session.STATUS_CONNECTED:
+element.addAttribute("status","connected");
+packet.setFrom((String)null);
+break;
+case Session.STATUS_STREAMING:
+element.addAttribute("status","stream");
+break;
+default :
+element.addAttribute("status","unknown");
+break;
+}
+element.addAttribute("timestamp",new Date().toString());
+element.add(packet.getElement());
+}

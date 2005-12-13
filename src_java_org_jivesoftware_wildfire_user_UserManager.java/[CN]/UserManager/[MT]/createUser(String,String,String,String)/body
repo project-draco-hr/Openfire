@@ -1,0 +1,15 @@
+{
+  if (provider.isReadOnly()) {
+    throw new UnsupportedOperationException("User provider is read-only.");
+  }
+  try {
+    username=Stringprep.nodeprep(username);
+  }
+ catch (  StringprepException se) {
+    throw new IllegalArgumentException("Invalid username: " + username,se);
+  }
+  User user=provider.createUser(username,password,name,email);
+  userCache.put(username,user);
+  UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_created,Collections.emptyMap());
+  return user;
+}

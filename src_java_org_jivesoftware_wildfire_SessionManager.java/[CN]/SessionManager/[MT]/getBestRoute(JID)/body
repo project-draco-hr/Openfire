@@ -1,0 +1,38 @@
+{
+  if (serverName == null || !serverName.equals(recipient.getDomain())) {
+    return null;
+  }
+  ClientSession session=null;
+  String resource=recipient.getResource();
+  String username=recipient.getNode();
+  if (username == null || "".equals(username)) {
+    if (resource != null) {
+      session=anonymousSessions.get(resource);
+      if (session == null) {
+        session=getSession(recipient);
+      }
+    }
+  }
+ else {
+    username=username.toLowerCase();
+synchronized (username.intern()) {
+      SessionMap sessionMap=sessions.get(username);
+      if (sessionMap != null) {
+        if (resource == null) {
+          session=sessionMap.getDefaultSession(false);
+        }
+ else {
+          session=sessionMap.getSession(resource);
+          if (session == null) {
+            session=sessionMap.getDefaultSession(false);
+          }
+        }
+      }
+    }
+  }
+  if (session != null && session.getConnection().isClosed()) {
+    removeSession(session);
+    return getBestRoute(recipient);
+  }
+  return session;
+}

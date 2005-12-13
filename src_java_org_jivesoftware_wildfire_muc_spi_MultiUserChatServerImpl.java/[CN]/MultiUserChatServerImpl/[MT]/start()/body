@@ -1,0 +1,11 @@
+{
+  super.start();
+  routingTable.addRoute(getAddress(),this);
+  ArrayList<String> params=new ArrayList<String>();
+  params.clear();
+  params.add(getServiceDomain());
+  Log.info(LocaleUtils.getLocalizedString("startup.starting.muc",params));
+  for (  MUCRoom room : MUCPersistenceManager.loadRoomsFromDB(this,this.getCleanupDate(),router)) {
+    rooms.put(room.getName().toLowerCase(),room);
+  }
+}

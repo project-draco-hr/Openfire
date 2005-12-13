@@ -1,0 +1,19 @@
+{
+  if (user == null) {
+    return null;
+  }
+  Presence presence=null;
+  for (  ClientSession session : sessionManager.getSessions(user.getUsername())) {
+    if (presence == null) {
+      presence=session.getPresence();
+    }
+ else {
+      int o1=presence.getShow() != null ? presence.getShow().ordinal() : -1;
+      int o2=session.getPresence().getShow() != null ? session.getPresence().getShow().ordinal() : -1;
+      if (o1 > o2) {
+        presence=session.getPresence();
+      }
+    }
+  }
+  return presence;
+}

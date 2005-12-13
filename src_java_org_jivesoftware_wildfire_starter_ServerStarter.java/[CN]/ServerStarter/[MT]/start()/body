@@ -1,0 +1,24 @@
+{
+  try {
+    final ClassLoader parent=findParentClassLoader();
+    String libDirString=System.getProperty("wildfire.lib.dir");
+    File libDir;
+    if (libDirString != null) {
+      libDir=new File(libDirString);
+      if (!libDir.exists()) {
+        Log.warn("Lib directory " + libDirString + " does not exist. Using default "+ DEFAULT_LIB_DIR);
+        libDir=new File(DEFAULT_LIB_DIR);
+      }
+    }
+ else {
+      libDir=new File(DEFAULT_LIB_DIR);
+    }
+    ClassLoader loader=new JiveClassLoader(parent,libDir);
+    Thread.currentThread().setContextClassLoader(loader);
+    Class containerClass=loader.loadClass("org.jivesoftware.wildfire.XMPPServer");
+    containerClass.newInstance();
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

@@ -1,0 +1,11 @@
+{
+  if (socket == null) {
+    throw new NullPointerException("Socket channel must be non-null");
+  }
+  this.secure=isSecure;
+  this.socket=socket;
+  writer=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),CHARSET));
+  this.deliverer=deliverer;
+  xmlSerializer=new XMLSocketWriter(writer,this);
+  instances.put(this,"");
+}

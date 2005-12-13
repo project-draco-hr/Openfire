@@ -1,0 +1,31 @@
+{
+  super.initialize(server);
+  presenceHandler=server.getPresenceUpdateHandler();
+  router=server.getPacketRouter();
+  userManager=server.getUserManager();
+  routingTable=server.getRoutingTable();
+  serverName=server.getServerInfo().getName();
+  serverAddress=new JID(serverName);
+  if (JiveGlobals.getBooleanProperty("xmpp.audit.active")) {
+    streamIDFactory=new AuditStreamIDFactory();
+  }
+ else {
+    streamIDFactory=new BasicStreamIDFactory();
+  }
+  String conflictLimitProp=JiveGlobals.getProperty("xmpp.session.conflict-limit");
+  if (conflictLimitProp == null) {
+    conflictLimit=0;
+    JiveGlobals.setProperty("xmpp.session.conflict-limit",Integer.toString(conflictLimit));
+  }
+ else {
+    try {
+      conflictLimit=Integer.parseInt(conflictLimitProp);
+    }
+ catch (    NumberFormatException e) {
+      conflictLimit=0;
+      JiveGlobals.setProperty("xmpp.session.conflict-limit",Integer.toString(conflictLimit));
+    }
+  }
+  serverCleanupTask=new ServerCleanupTask();
+  timer.schedule(serverCleanupTask,getServerSessionTimeout(),getServerSessionTimeout());
+}
