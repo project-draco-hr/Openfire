@@ -1,0 +1,46 @@
+{
+  Hashtable<String,String> searchList=new Hashtable<String,String>();
+  Element form=incomingForm.element(QName.get("x","jabber:x:data"));
+  if (form == null) {
+    Element name=incomingForm.element("name");
+    if (name != null) {
+      searchList.put("Name",name.getTextTrim());
+    }
+    Element nick=incomingForm.element("nick");
+    if (nick != null) {
+      searchList.put("Username",nick.getTextTrim());
+    }
+    Element first=incomingForm.element("first");
+    if (first != null) {
+      searchList.put("Name",first.getTextTrim());
+    }
+    Element last=incomingForm.element("last");
+    if (last != null) {
+      searchList.put("Name",last.getTextTrim());
+    }
+    Element email=incomingForm.element("email");
+    if (email != null) {
+      searchList.put("Email",email.getTextTrim());
+    }
+  }
+ else {
+    List<String> searchFields=new ArrayList<String>();
+    String search="";
+    Iterator fields=form.elementIterator("field");
+    while (fields.hasNext()) {
+      Element searchField=(Element)fields.next();
+      String field=searchField.attributeValue("var");
+      String value=searchField.element("value").getTextTrim();
+      if (field.equals("search")) {
+        search=value;
+      }
+ else       if (value.equals("1")) {
+        searchFields.add(field);
+      }
+    }
+    for (    String field : searchFields) {
+      searchList.put(field,search);
+    }
+  }
+  return searchList;
+}

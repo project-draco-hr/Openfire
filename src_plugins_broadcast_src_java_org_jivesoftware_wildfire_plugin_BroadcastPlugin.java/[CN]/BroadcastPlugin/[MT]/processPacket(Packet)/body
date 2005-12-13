@@ -1,0 +1,84 @@
+{
+  if (packet instanceof Message) {
+    Message message=(Message)packet;
+    String toNode=message.getTo().getNode();
+    String fromNode=message.getFrom().getNode();
+    if ("all".equals(toNode)) {
+      if (allowedUsers.size() > 0) {
+        JID address=new JID(message.getFrom().toBareJID());
+        if (!allowedUsers.contains(address)) {
+          Message error=new Message();
+          if (message.getID() != null) {
+            error.setID(message.getID());
+          }
+          error.setError(PacketError.Condition.not_allowed);
+          error.setTo(message.getFrom());
+          error.setSubject("Error sending broadcast message");
+          error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+          try {
+            componentManager.sendPacket(this,error);
+          }
+ catch (          Exception e) {
+            componentManager.getLog().error(e);
+          }
+          return;
+        }
+      }
+      try {
+        sessionManager.broadcast(message);
+      }
+ catch (      UnauthorizedException ue) {
+        Log.error(ue);
+      }
+    }
+ else {
+      try {
+        Group group=groupManager.getGroup(toNode);
+        if (disableGroupPermissions || (groupMembersAllowed && group.isUser(message.getFrom())) || allowedUsers.contains(message.getFrom().toBareJID())) {
+          for (          JID userJID : group.getMembers()) {
+            Message newMessage=message.createCopy();
+            newMessage.setTo(userJID);
+            try {
+              componentManager.sendPacket(this,newMessage);
+            }
+ catch (            Exception e) {
+              componentManager.getLog().error(e);
+            }
+          }
+        }
+ else {
+          Message error=new Message();
+          if (message.getID() != null) {
+            error.setID(message.getID());
+          }
+          error.setTo(message.getFrom());
+          error.setError(PacketError.Condition.not_allowed);
+          error.setSubject("Error sending broadcast message");
+          error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+          try {
+            componentManager.sendPacket(this,error);
+          }
+ catch (          Exception e) {
+            componentManager.getLog().error(e);
+          }
+        }
+      }
+ catch (      GroupNotFoundException gnfe) {
+        Message error=new Message();
+        if (message.getID() != null) {
+          error.setID(message.getID());
+        }
+        error.setTo(message.getFrom());
+        error.setError(PacketError.Condition.not_allowed);
+        error.setSubject("Error sending broadcast message");
+        error.setBody("Address not valid: " + message.getTo());
+        try {
+          componentManager.sendPacket(this,error);
+        }
+ catch (        Exception e) {
+          componentManager.getLog().error(e);
+        }
+      }
+    }
+  }
+}

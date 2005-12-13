@@ -1,0 +1,16 @@
+{
+  if (patternsEnabled && !processed && (packet instanceof Message)) {
+    Message msg=(Message)packet;
+    boolean contentMatched=contentFilter.filter(msg);
+    if (contentMatched && violationNotificationEnabled) {
+      sendViolationNotification(msg);
+    }
+    if (contentMatched && !maskEnabled) {
+      PacketRejectedException rejected=new PacketRejectedException("Message rejected with disallowed content!");
+      if (rejectionNotificationEnabled) {
+        rejected.setRejectionMessage(rejectionMessage);
+      }
+      throw rejected;
+    }
+  }
+}

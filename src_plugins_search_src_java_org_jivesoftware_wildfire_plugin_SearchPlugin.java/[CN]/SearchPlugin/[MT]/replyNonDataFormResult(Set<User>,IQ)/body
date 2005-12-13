@@ -1,0 +1,19 @@
+{
+  Element replyQuery=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  String serverName=XMPPServer.getInstance().getServerInfo().getName();
+  for (  User user : users) {
+    Element item=DocumentHelper.createElement("item");
+    Attribute jib=DocumentHelper.createAttribute(item,"jid",user.getUsername() + "@" + serverName);
+    item.add(jib);
+    Element nick=DocumentHelper.createElement("nick");
+    nick.addText(user.getName());
+    item.add(nick);
+    Element email=DocumentHelper.createElement("email");
+    email.addText(user.getEmail());
+    item.add(email);
+    replyQuery.add(item);
+  }
+  IQ replyPacket=IQ.createResultIQ(packet);
+  replyPacket.setChildElement(replyQuery);
+  return replyPacket;
+}
