@@ -1,16 +1,18 @@
 {
   StringBuilder sb=new StringBuilder(195);
   sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
-  if (UserManager.getUserProvider().supportsPasswordRetrieval()) {
-    sb.append("<mechanism>CRAM-MD5</mechanism>");
-    sb.append("<mechanism>DIGEST-MD5</mechanism>");
-  }
-  sb.append("<mechanism>PLAIN</mechanism>");
-  if (XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
-    sb.append("<mechanism>ANONYMOUS</mechanism>");
-  }
   if (session.getConnection().isSecure() && session instanceof IncomingServerSession) {
     sb.append("<mechanism>EXTERNAL</mechanism>");
+  }
+ else {
+    if (UserManager.getUserProvider().supportsPasswordRetrieval()) {
+      sb.append("<mechanism>CRAM-MD5</mechanism>");
+      sb.append("<mechanism>DIGEST-MD5</mechanism>");
+    }
+    sb.append("<mechanism>PLAIN</mechanism>");
+    if (XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
+      sb.append("<mechanism>ANONYMOUS</mechanism>");
+    }
   }
   sb.append("</mechanisms>");
   return sb.toString();
