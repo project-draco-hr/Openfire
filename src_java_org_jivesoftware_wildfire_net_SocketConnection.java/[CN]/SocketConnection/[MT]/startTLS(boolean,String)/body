@@ -1,7 +1,7 @@
 {
   if (!secure) {
     secure=true;
-    tlsStreamHandler=new TLSStreamHandler(socket,clientMode);
+    tlsStreamHandler=new TLSStreamHandler(socket,clientMode,remoteServer,session instanceof IncomingServerSession);
     writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),CHARSET));
     xmlSerializer=new XMLSocketWriter(writer,this);
   }

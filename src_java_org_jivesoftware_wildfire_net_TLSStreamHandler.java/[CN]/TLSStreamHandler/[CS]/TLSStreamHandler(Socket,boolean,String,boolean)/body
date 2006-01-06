@@ -1,5 +1,5 @@
 {
-  wrapper=new TLSWrapper(clientMode);
+  wrapper=new TLSWrapper(clientMode,needClientAuth,remoteServer);
   tlsEngine=wrapper.getTlsEngine();
   reader=new TLSStreamReader(wrapper,socket);
   writer=new TLSStreamWriter(wrapper,socket);
@@ -19,6 +19,9 @@
     socket.setKeepAlive(true);
     initialHSStatus=HandshakeStatus.NEED_WRAP;
     tlsEngine.beginHandshake();
+  }
+ else   if (needClientAuth) {
+    tlsEngine.setNeedClientAuth(true);
   }
   while (!initialHSComplete) {
     initialHSComplete=doHandshake(null);

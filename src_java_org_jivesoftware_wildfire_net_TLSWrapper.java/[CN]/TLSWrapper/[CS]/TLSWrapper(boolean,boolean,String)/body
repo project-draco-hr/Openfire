@@ -9,18 +9,8 @@
     String trustpass=SSLConfig.getTrustPassword();
     KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
     TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
-    boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
-    if (clientMode && !verify) {
-      tm=new TrustManager[]{new X509TrustManager(){
-        public void checkClientTrusted(        X509Certificate[] x509Certificates,        String string){
-        }
-        public void checkServerTrusted(        X509Certificate[] x509Certificates,        String string){
-        }
-        public X509Certificate[] getAcceptedIssuers(){
-          return new X509Certificate[0];
-        }
-      }
-};
+    if (clientMode || needClientAuth) {
+      tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
     }
     SSLContext tlsContext=SSLContext.getInstance(PROTOCOL);
     tlsContext.init(km,tm,null);
