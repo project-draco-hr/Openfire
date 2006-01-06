@@ -3,14 +3,25 @@
   String serverName=XMPPServer.getInstance().getServerInfo().getName();
   for (  User user : users) {
     Element item=DocumentHelper.createElement("item");
-    Attribute jib=DocumentHelper.createAttribute(item,"jid",user.getUsername() + "@" + serverName);
-    item.add(jib);
-    Element nick=DocumentHelper.createElement("nick");
-    nick.addText(user.getName());
-    item.add(nick);
-    Element email=DocumentHelper.createElement("email");
-    email.addText(user.getEmail());
-    item.add(email);
+    Attribute jid=DocumentHelper.createAttribute(item,"jid",user.getUsername() + "@" + serverName);
+    item.add(jid);
+    for (    String field : reverseFieldLookup.keySet()) {
+      if ("Username".equals(field)) {
+        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        element.addText(user.getUsername());
+        item.add(element);
+      }
+      if ("Name".equals(field)) {
+        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        element.addText(removeNull(user.getName()));
+        item.add(element);
+      }
+      if ("Email".equals(field)) {
+        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        element.addText(removeNull(user.getEmail()));
+        item.add(element);
+      }
+    }
     replyQuery.add(item);
   }
   IQ replyPacket=IQ.createResultIQ(packet);
