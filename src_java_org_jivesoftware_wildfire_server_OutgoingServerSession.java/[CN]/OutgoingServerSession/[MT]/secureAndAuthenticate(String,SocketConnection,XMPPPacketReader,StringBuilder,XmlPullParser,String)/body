@@ -5,7 +5,7 @@
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
     Log.debug("OS - Negotiating TLS with " + hostname);
-    connection.startTLS(true);
+    connection.startTLS(true,hostname);
     Log.debug("OS - TLS negotiation with " + hostname + " was successful");
     connection.deliverRawText(openingStream.toString());
     xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
@@ -36,6 +36,7 @@
           }
  else {
             Log.debug("OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
+            return null;
           }
         }
       }
