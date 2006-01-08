@@ -1,0 +1,17 @@
+{
+  boolean match=false;
+  String content=element.getText();
+  if ((content != null) && (content.length() > 0)) {
+    for (    Pattern pattern : compiledPatterns) {
+      Matcher matcher=pattern.matcher(content);
+      if (matcher.find()) {
+        match=true;
+        if (isMaskingContent()) {
+          content=matcher.replaceAll(mask);
+          element.setText(content);
+        }
+      }
+    }
+  }
+  return match;
+}

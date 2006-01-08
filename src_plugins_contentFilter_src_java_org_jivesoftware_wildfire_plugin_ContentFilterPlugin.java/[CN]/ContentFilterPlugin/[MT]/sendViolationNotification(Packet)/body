@@ -1,0 +1,24 @@
+{
+  String subject="Content filter notification!";
+  String body=null;
+  if (originalPacket instanceof Message) {
+    Message originalMsg=(Message)originalPacket;
+    body="Disallowed content detected in message from:" + originalMsg.getFrom() + " to:"+ originalMsg.getTo()+ ", message was "+ (contentFilter.isMaskingContent() ? "altered." : "rejected.")+ (violationIncludeOriginalPacketEnabled ? "\nOriginal subject:" + (originalMsg.getSubject() != null ? originalMsg.getSubject() : "") + "\nOriginal content:"+ (originalMsg.getBody() != null ? originalMsg.getBody() : "") : "");
+  }
+ else {
+    Presence originalPresence=(Presence)originalPacket;
+    body="Disallowed status detected in presence from:" + originalPresence.getFrom() + ", status was "+ (contentFilter.isMaskingContent() ? "altered." : "rejected.")+ (violationIncludeOriginalPacketEnabled ? "\nOriginal status:" + originalPresence.getStatus() : "");
+  }
+  if (violationNotificationByIMEnabled) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Sending IM notification");
+    }
+    messageRouter.route(createServerMessage(subject,body));
+  }
+  if (violationNotificationByEmailEnabled) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Sending email notification");
+    }
+    sendViolationNotificationEmail(subject,body);
+  }
+}

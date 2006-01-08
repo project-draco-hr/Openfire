@@ -1,0 +1,18 @@
+{
+  List<MimeMessage> messages=new ArrayList<MimeMessage>();
+  EmailService emailService=EmailService.getInstance();
+  MimeMessage message=emailService.createMimeMessage();
+  String encoding=MimeUtility.mimeCharset("iso-8859-1");
+  try {
+    User user=UserManager.getInstance().getUser(violationContact);
+    message.setRecipient(javax.mail.Message.RecipientType.TO,new InternetAddress(user.getEmail()));
+    message.setFrom(new InternetAddress("no_reply@" + violationNotificationFrom,"Wildfire",encoding));
+    message.setText(body);
+    message.setSubject(subject);
+    messages.add(message);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  emailService.sendMessages(messages);
+}
