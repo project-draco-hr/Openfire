@@ -1,8 +1,19 @@
 {
   try {
-    XMLProperties props=new XMLProperties(configFile);
-    String port=props.getProperty("adminConsole.port");
-    String securePort=props.getProperty("adminConsole.securePort");
+    DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+    Document document=factory.newDocumentBuilder().parse(configFile);
+    Element rootElement=document.getDocumentElement();
+    Element adminElement=(Element)rootElement.getElementsByTagName("adminConsole").item(0);
+    String port="-1";
+    String securePort="-1";
+    Element portElement=(Element)adminElement.getElementsByTagName("port").item(0);
+    if (portElement != null) {
+      port=portElement.getTextContent();
+    }
+    Element securePortElement=(Element)adminElement.getElementsByTagName("securePort").item(0);
+    if (securePortElement != null) {
+      securePort=securePortElement.getTextContent();
+    }
     if ("-1".equals(port)) {
       BrowserLauncher.openURL("https://127.0.0.1:" + securePort + "/index.html");
     }
