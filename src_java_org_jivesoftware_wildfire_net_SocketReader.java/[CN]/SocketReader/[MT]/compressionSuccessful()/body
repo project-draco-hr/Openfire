@@ -1,11 +1,14 @@
 {
-  connection.deliverRawText("<compressed xmlns='http://jabber.org/protocol/compress'/>");
   XmlPullParser xpp=reader.getXPPParser();
   if (connection.getTLSStreamHandler() == null) {
-    xpp.setInput(new InputStreamReader(new ZipInputStream(socket.getInputStream()),CHARSET));
+    ZInputStream in=new ZInputStream(socket.getInputStream());
+    in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+    xpp.setInput(new InputStreamReader(in,CHARSET));
   }
  else {
-    xpp.setInput(new InputStreamReader(new ZipInputStream(connection.getTLSStreamHandler().getInputStream()),CHARSET));
+    ZInputStream in=new ZInputStream(connection.getTLSStreamHandler().getInputStream());
+    in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+    xpp.setInput(new InputStreamReader(in,CHARSET));
   }
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();

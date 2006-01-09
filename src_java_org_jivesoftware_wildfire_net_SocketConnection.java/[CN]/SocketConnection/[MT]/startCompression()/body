@@ -1,9 +1,15 @@
 {
   compressed=true;
   if (tlsStreamHandler == null) {
-    writer=new BufferedWriter(new OutputStreamWriter(new ZipOutputStream(socket.getOutputStream()),CHARSET));
+    ZOutputStream out=new ZOutputStream(socket.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
+    out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+    writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
+    xmlSerializer=new XMLSocketWriter(writer,this);
   }
  else {
-    writer=new BufferedWriter(new OutputStreamWriter(new ZipOutputStream(tlsStreamHandler.getOutputStream()),CHARSET));
+    ZOutputStream out=new ZOutputStream(tlsStreamHandler.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
+    out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+    writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
+    xmlSerializer=new XMLSocketWriter(writer,this);
   }
 }
