@@ -12,6 +12,9 @@
   StringBuilder sb=new StringBuilder();
   sb.append("<stream:features>");
   sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+  if (!ServerDialback.isEnabled()) {
+    sb.append("<required/>");
+  }
   sb.append("</starttls>");
   sb.append(SASLAuthentication.getSASLMechanisms(session));
   sb.append("</stream:features>");

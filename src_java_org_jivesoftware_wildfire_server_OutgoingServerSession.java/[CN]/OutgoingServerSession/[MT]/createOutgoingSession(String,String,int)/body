@@ -60,6 +60,9 @@
       }
     }
   }
-  Log.debug("OS - Going to try connecting using server dialback");
-  return new ServerDialback().createOutgoingSession(domain,hostname,port);
+  if (ServerDialback.isEnabled()) {
+    Log.debug("OS - Going to try connecting using server dialback");
+    return new ServerDialback().createOutgoingSession(domain,hostname,port);
+  }
+  return null;
 }
