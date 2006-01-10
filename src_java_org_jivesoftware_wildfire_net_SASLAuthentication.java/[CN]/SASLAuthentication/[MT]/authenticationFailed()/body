@@ -3,5 +3,15 @@
   reply.append("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
   reply.append("<not-authorized/></failure>");
   connection.deliverRawText(reply.toString());
-  connection.close();
+  Integer retries=(Integer)session.getSessionData("authRetries");
+  if (retries == null) {
+    retries=new Integer(1);
+  }
+ else {
+    retries=retries + 1;
+  }
+  session.setSessionData("authRetries",retries);
+  if (retries >= JiveGlobals.getIntProperty("xmpp.auth.retries",3)) {
+    connection.close();
+  }
 }
