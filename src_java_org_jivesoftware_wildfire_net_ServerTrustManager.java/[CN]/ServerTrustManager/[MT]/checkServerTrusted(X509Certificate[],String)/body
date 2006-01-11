@@ -2,7 +2,7 @@
   boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
   if (verify) {
     int nSize=x509Certificates.length;
-    String peerIdentity=getPeerIdentity(x509Certificates[0]);
+    String peerIdentity=TLSStreamHandler.getPeerIdentity(x509Certificates[0]);
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true)) {
       Principal principalLast=null;
       for (int i=nSize - 1; i >= 0; i--) {

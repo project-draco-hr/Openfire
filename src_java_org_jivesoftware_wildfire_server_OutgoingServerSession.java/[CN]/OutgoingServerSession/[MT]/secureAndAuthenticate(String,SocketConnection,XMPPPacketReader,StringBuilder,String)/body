@@ -2,6 +2,7 @@
   Element features;
   Log.debug("OS - Indicating we want TLS to " + hostname);
   connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+  MXParser xpp=(MXParser)reader.getXPPParser();
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
     Log.debug("OS - Negotiating TLS with " + hostname);
@@ -14,6 +15,50 @@
     }
     features=reader.parseDocument().getRootElement();
     if (features != null && features.element("mechanisms") != null) {
+      String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
+      Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
+      if (Connection.CompressionPolicy.optional == compressionPolicy) {
+        Element compression=features.element("compression");
+        if (compression != null) {
+          boolean zlibSupported=false;
+          Iterator it=compression.elementIterator("method");
+          while (it.hasNext()) {
+            Element method=(Element)it.next();
+            if ("zlib".equals(method.getTextTrim())) {
+              zlibSupported=true;
+            }
+          }
+          if (zlibSupported) {
+            connection.deliverRawText("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
+            Element answer=reader.parseDocument().getRootElement();
+            if ("compressed".equals(answer.getName())) {
+              connection.startCompression();
+              Log.debug("OS - Stream compression was successful with " + hostname);
+              connection.deliverRawText(openingStream.toString());
+              ZInputStream in=new ZInputStream(connection.getTLSStreamHandler().getInputStream());
+              in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+              xpp.setInput(new InputStreamReader(in,CHARSET));
+              for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+                eventType=xpp.next();
+              }
+              features=reader.parseDocument().getRootElement();
+              if (features == null || features.element("mechanisms") == null) {
+                Log.debug("OS - Error, EXTERNAL SASL was not offered by " + hostname);
+                return null;
+              }
+            }
+ else {
+              Log.debug("OS - Stream compression was rejected by " + hostname);
+            }
+          }
+ else {
+            Log.debug("OS - Stream compression found but zlib method is not supported by" + hostname);
+          }
+        }
+ else {
+          Log.debug("OS - Stream compression not supoprted by " + hostname);
+        }
+      }
       Iterator it=features.element("mechanisms").elementIterator();
       while (it.hasNext()) {
         Element mechanism=(Element)it.next();
@@ -22,7 +67,7 @@
           if (doExternalAuthentication(domain,connection,reader)) {
             Log.debug("OS - EXTERNAL SASL with " + hostname + " was successful");
             connection.deliverRawText(openingStream.toString());
-            xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+            xpp.resetInput();
             for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
               eventType=xpp.next();
             }

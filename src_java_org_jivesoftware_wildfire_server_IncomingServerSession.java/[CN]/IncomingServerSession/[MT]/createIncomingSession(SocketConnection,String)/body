@@ -9,6 +9,10 @@
   openingStream.append(" id=\"").append(streamID).append("\"");
   openingStream.append(" version=\"1.0\">");
   connection.deliverRawText(openingStream.toString());
+  connection.setTlsPolicy(ServerDialback.isEnabled() ? Connection.TLSPolicy.optional : Connection.TLSPolicy.required);
+  String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
+  Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
+  connection.setCompressionPolicy(compressionPolicy);
   StringBuilder sb=new StringBuilder();
   sb.append("<stream:features>");
   sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
