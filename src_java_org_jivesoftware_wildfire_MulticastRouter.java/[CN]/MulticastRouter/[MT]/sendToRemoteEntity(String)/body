@@ -1,0 +1,15 @@
+{
+  String multicastService=(String)cache.get(domain);
+  if (multicastService != null) {
+    sendToRemoteServer(domain,multicastService);
+  }
+ else {
+    IQ iq=new IQ(IQ.Type.get);
+    iq.setFrom(server.getServerInfo().getName());
+    iq.setTo(domain);
+    iq.setChildElement("query","http://jabber.org/protocol/disco#info");
+    nodes.put(domain,new CopyOnWriteArrayList<String>());
+    iqRouter.addIQResultListener(iq.getID(),this);
+    iqRouter.route(iq);
+  }
+}

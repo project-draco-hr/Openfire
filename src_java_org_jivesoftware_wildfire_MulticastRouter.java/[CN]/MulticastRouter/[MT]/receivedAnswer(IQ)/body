@@ -1,0 +1,81 @@
+{
+  String domain=packet.getFrom().toString();
+  boolean isRoot=true;
+  if (!nodes.containsKey(domain)) {
+    domain=roots.get(domain);
+    isRoot=false;
+  }
+  if ("http://jabber.org/protocol/disco#info".equals(packet.getChildElement().getNamespaceURI())) {
+    boolean supports=false;
+    for (Iterator it=packet.getChildElement().elementIterator("feature"); it.hasNext(); ) {
+      if (NAMESPACE.equals(((Element)it.next()).attributeValue("var"))) {
+        supports=true;
+        break;
+      }
+    }
+    if (supports) {
+      Collection<String> items=nodes.remove(domain);
+      for (      String item : items) {
+        roots.remove(item);
+      }
+      String multicastService=packet.getFrom().toString();
+      cache.put(domain,multicastService);
+      sendToRemoteServer(domain,multicastService);
+    }
+ else {
+      if (isRoot && IQ.Type.error != packet.getType()) {
+        IQ iq=new IQ(IQ.Type.get);
+        iq.setFrom(server.getServerInfo().getName());
+        iq.setTo(packet.getFrom());
+        iq.setChildElement("query","http://jabber.org/protocol/disco#items");
+        iqRouter.addIQResultListener(iq.getID(),this);
+        iqRouter.route(iq);
+      }
+ else       if (!isRoot) {
+        roots.remove(packet.getFrom().toString());
+        Collection<String> items=nodes.get(domain);
+        if (items != null) {
+          items.remove(packet.getFrom().toString());
+          if (items.isEmpty()) {
+            nodes.remove(domain);
+            cache.put(domain,"");
+            sendToRemoteServer(domain,"");
+          }
+        }
+      }
+ else {
+        nodes.remove(domain);
+        cache.put(domain,"");
+        sendToRemoteServer(domain,"");
+      }
+    }
+  }
+ else {
+    Collection<Element> items=packet.getChildElement().elements("item");
+    if (IQ.Type.error == packet.getType() || items.isEmpty()) {
+      nodes.remove(domain);
+      cache.put(domain,"");
+      sendToRemoteServer(domain,"");
+    }
+ else {
+      List<String> jids=new ArrayList<String>();
+      for (      Element item : items) {
+        String jid=item.attributeValue("jid");
+        jids.add(jid);
+        roots.put(jid,domain);
+      }
+      nodes.put(domain,new CopyOnWriteArrayList<String>(jids));
+      for (      Element item : items) {
+        IQ iq=new IQ(IQ.Type.get);
+        iq.setFrom(server.getServerInfo().getName());
+        iq.setTo(item.attributeValue("jid"));
+        Element child=iq.setChildElement("query","http://jabber.org/protocol/disco#info");
+        if (item.attributeValue("node") != null) {
+          child.addAttribute("node",item.attributeValue("node"));
+        }
+        iqRouter.addIQResultListener(iq.getID(),this);
+        iqRouter.route(iq);
+      }
+    }
+  }
+}

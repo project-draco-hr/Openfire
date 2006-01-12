@@ -1,10 +1,20 @@
 {
   JID recipientJID=packet.getTo();
   if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
-    if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
+    Element childElement=packet.getChildElement();
+    if (childElement != null && childElement.element("addresses") != null) {
+      multicastRouter.route(packet);
+      return;
+    }
+ else     if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
       IQResultListener iqResultListener=resultListeners.remove(packet.getID());
       if (iqResultListener != null) {
-        iqResultListener.receivedAnswer(packet);
+        try {
+          iqResultListener.receivedAnswer(packet);
+        }
+ catch (        Exception e) {
+          Log.error("Error processing answer of remote entity",e);
+        }
         return;
       }
     }

@@ -1,0 +1,40 @@
+{
+  Set<String> remoteServers=new HashSet<String>();
+  List<String> targets=new ArrayList<String>();
+  Packet localBroadcast=packet.createCopy();
+  Element addresses=getAddresses(localBroadcast);
+  String localDomain="@" + server.getServerInfo().getName();
+  for (Iterator it=addresses.elementIterator("address"); it.hasNext(); ) {
+    Element address=(Element)it.next();
+    String jid=address.attributeValue("jid");
+    if (jid.contains(localDomain) && address.attributeValue("delivered") == null) {
+      targets.add(jid);
+    }
+ else     if (!jid.contains(localDomain)) {
+      remoteServers.add(new JID(jid).getDomain());
+    }
+    address.addAttribute("delivered","true");
+    if (Type.bcc.toString().equals(address.attributeValue("type"))) {
+      it.remove();
+    }
+  }
+  for (  String jid : targets) {
+    localBroadcast.setTo(jid);
+    packetRouter.route(localBroadcast);
+  }
+  for (  String domain : remoteServers) {
+    boolean shouldDiscover=false;
+synchronized (domain.intern()) {
+      Collection<Packet> packets=remotePackets.get(domain);
+      if (packets == null) {
+        packets=new ArrayList<Packet>();
+        remotePackets.put(domain,packets);
+        shouldDiscover=true;
+      }
+      packets.add(packet);
+    }
+    if (shouldDiscover) {
+      sendToRemoteEntity(domain);
+    }
+  }
+}

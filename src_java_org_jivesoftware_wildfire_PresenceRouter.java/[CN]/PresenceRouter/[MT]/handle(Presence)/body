@@ -1,5 +1,11 @@
 {
   JID recipientJID=packet.getTo();
+  if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
+    if (packet.getElement().element("addresses") != null) {
+      multicastRouter.route(packet);
+      return;
+    }
+  }
   try {
     Presence.Type type=packet.getType();
     if (type == null || Presence.Type.unavailable == type) {
