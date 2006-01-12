@@ -2,7 +2,7 @@
   List<String> duplicateUsers=new ArrayList<String>();
   UserManager userManager=UserManager.getInstance();
   RosterItemProvider rosterItemProvider=RosterItemProvider.getInstance();
-  Map<String,List> rosterMap=new HashMap<String,List>();
+  Map<String,List<RosterItem>> rosterMap=new HashMap<String,List<RosterItem>>();
   Element users=document.getRootElement();
   Iterator usersIter=users.elementIterator("User");
   while (usersIter.hasNext()) {
@@ -61,12 +61,8 @@
       }
     }
   }
-  Iterator i=rosterMap.keySet().iterator();
-  while (i.hasNext()) {
-    String userName=(String)i.next();
-    Iterator rosterIter=rosterMap.get(userName).iterator();
-    while (rosterIter.hasNext()) {
-      RosterItem ri=(RosterItem)rosterIter.next();
+  for (  String userName : rosterMap.keySet()) {
+    for (    RosterItem ri : rosterMap.get(userName)) {
       try {
         if (serverName.equals(ri.getJid().getDomain())) {
           userManager.getUser(removeDoman(ri.getJid()));
