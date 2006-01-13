@@ -2,11 +2,14 @@
   final File installationDirectory=context.getInstallationDirectory();
   File libDirectory=new File(installationDirectory,"lib");
   if (libDirectory.exists() && libDirectory.isDirectory()) {
-    File[] archives=libDirectory.listFiles();
-    int no=archives != null ? archives.length : 0;
-    for (int i=0; i < no; i++) {
-      File file=archives[i];
-      file.delete();
+    File[] jars=libDirectory.listFiles(new FilenameFilter(){
+      public boolean accept(      File dir,      String name){
+        return name.endsWith(".jar");
+      }
+    }
+);
+    for (    File jar : jars) {
+      jar.delete();
     }
   }
   return super.performAction(context,progressInterface);
