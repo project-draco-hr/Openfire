@@ -48,6 +48,12 @@ catch (      PacketException e) {
           Set<String> jids=map.get(handler);
           if (jids != null) {
             jids.remove(jid);
+            if (jids.isEmpty()) {
+              map.remove(handler);
+              if (map.isEmpty()) {
+                directedPresences.remove(update.getFrom().toString());
+              }
+            }
           }
         }
       }

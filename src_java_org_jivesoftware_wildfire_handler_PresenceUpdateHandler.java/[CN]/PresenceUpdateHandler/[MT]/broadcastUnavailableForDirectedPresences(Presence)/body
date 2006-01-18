@@ -3,7 +3,7 @@
     return;
   }
   if (localServer.isLocal(update.getFrom())) {
-    Map<ChannelHandler,Set<String>> map=directedPresences.get(update.getFrom().toString());
+    Map<ChannelHandler,Set<String>> map=directedPresences.remove(update.getFrom().toString());
     if (map != null) {
       for (      ChannelHandler handler : new HashSet<ChannelHandler>(map.keySet())) {
         Set<String> jids=map.get(handler);
@@ -21,7 +21,6 @@
           }
         }
       }
-      directedPresences.remove(update.getFrom().toString());
     }
   }
 }

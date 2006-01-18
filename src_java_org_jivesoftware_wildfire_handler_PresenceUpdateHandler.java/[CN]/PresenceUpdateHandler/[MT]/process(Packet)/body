@@ -4,6 +4,10 @@
     ClientSession session=sessionManager.getSession(presence.getFrom());
     Presence.Type type=presence.getType();
     if (type == null) {
+      if (session != null && session.getStatus() == Session.STATUS_CLOSED) {
+        Log.warn("Rejected available presence: " + presence + " - "+ session);
+        return;
+      }
       broadcastUpdate(presence.createCopy());
       if (session != null) {
         session.setPresence(presence);
