@@ -7,6 +7,10 @@
     try {
       if (user.getLastPacketTime() < deadline) {
         Iterator<MUCRole> roles=user.getRoles();
+        if (!roles.hasNext()) {
+          removeUser(user.getAddress());
+          continue;
+        }
         MUCRole role;
         MUCRoom room;
         Presence kickedPresence;
