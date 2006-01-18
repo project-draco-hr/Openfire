@@ -50,6 +50,10 @@
         Log.warn("Invalid presence show",e);
         packet.setShow(null);
       }
+      if (session.getStatus() == Session.STATUS_CLOSED && packet.isAvailable()) {
+        Log.warn("Ignoring available presence packet of closed session: " + packet);
+        continue;
+      }
       processPresence(packet);
     }
  else     if ("iq".equals(tag)) {
