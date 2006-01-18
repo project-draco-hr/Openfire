@@ -27,7 +27,6 @@
               }
             }
             role=room.joinRoom(recipient.getResource().trim(),password,historyRequest,this,packet.createCopy());
-            roles.put(group.toLowerCase(),role);
             if (mucInfo == null && room.isLocked() && !room.isManuallyLocked()) {
               room.unlock(role);
             }
@@ -76,7 +75,7 @@ catch (          NotAllowedException e) {
  else {
         if (Presence.Type.unavailable == packet.getType()) {
           try {
-            roles.remove(group.toLowerCase());
+            removeRole(group);
             role.getChatRoom().leaveRoom(role.getNickname());
           }
  catch (          UserNotFoundException e) {
