@@ -1,7 +1,9 @@
 {
   try {
-    if (!Shaj.checkPassword(domain,username,password)) {
-      throw new UnauthorizedException();
+synchronized (this) {
+      if (!Shaj.checkPassword(domain,username,password)) {
+        throw new UnauthorizedException();
+      }
     }
   }
  catch (  UnauthorizedException ue) {
