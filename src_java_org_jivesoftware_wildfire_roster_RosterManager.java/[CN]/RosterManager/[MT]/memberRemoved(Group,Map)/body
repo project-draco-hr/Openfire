@@ -1,5 +1,9 @@
 {
-  JID deletedUser=new JID((String)params.get("member"));
+  String member=(String)params.get("member");
+  if (member == null) {
+    return;
+  }
+  JID deletedUser=new JID(member);
   if (group.getAdmins().contains(deletedUser)) {
     return;
   }
