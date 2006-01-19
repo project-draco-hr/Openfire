@@ -1,12 +1,11 @@
 {
   if (isClientSSLListenerEnabled()) {
     int port=getClientSSLListenerPort();
-    String interfaceName=JiveGlobals.getProperty("xmpp.socket.ssl.interface");
     String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm");
     if ("".equals(algorithm) || algorithm == null) {
       algorithm="TLS";
     }
-    ServerPort serverPort=new ServerPort(port,interfaceName,serverName,localIPAddress,true,algorithm,ServerPort.Type.client);
+    ServerPort serverPort=new ServerPort(port,serverName,localIPAddress,true,algorithm,ServerPort.Type.client);
     try {
       sslSocketThread=new SSLSocketAcceptThread(this,serverPort);
       ports.add(serverPort);
