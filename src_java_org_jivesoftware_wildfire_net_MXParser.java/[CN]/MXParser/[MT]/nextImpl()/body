@@ -148,9 +148,10 @@
         boolean seenBracketBracket=false;
         do {
           if (eventType == XmlPullParser.END_TAG && (ch == ' ' || ch == '\n')) {
-            return IGNORABLE_WHITESPACE;
+            lastHeartbeat=System.currentTimeMillis();
+            ;
           }
- else           if (ch == ']') {
+          if (ch == ']') {
             if (seenBracket) {
               seenBracketBracket=true;
             }
