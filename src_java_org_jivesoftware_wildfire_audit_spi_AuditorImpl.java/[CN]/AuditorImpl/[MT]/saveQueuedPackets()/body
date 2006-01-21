@@ -1,14 +1,17 @@
 {
-  int batchSize=logQueue.size();
-  for (int index=0; index < batchSize; index++) {
-    AuditPacket auditPacket=logQueue.poll();
-    if (auditPacket != null) {
-      try {
-        prepareAuditFile();
-        xmlWriter.write(auditPacket.getElement());
+  List<AuditPacket> packets=new ArrayList<AuditPacket>(logQueue.size());
+  logQueue.drainTo(packets);
+  for (  AuditPacket auditPacket : packets) {
+    try {
+      prepareAuditFile();
+      Element element=auditPacket.getElement();
+      if (element != null) {
+        xmlWriter.write(element);
       }
- catch (      IOException e) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+ catch (    IOException e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      if (xmlWriter != null) {
         logQueue.add(auditPacket);
       }
     }
@@ -19,5 +22,6 @@
     }
   }
  catch (  IOException ioe) {
+    Log.error(ioe);
   }
 }
