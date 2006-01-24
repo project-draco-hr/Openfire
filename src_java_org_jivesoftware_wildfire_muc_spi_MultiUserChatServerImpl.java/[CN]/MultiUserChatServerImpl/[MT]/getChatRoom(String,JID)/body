@@ -1,7 +1,7 @@
 {
   MUCRoom room=null;
 synchronized (roomName.intern()) {
-    room=rooms.get(roomName.toLowerCase());
+    room=rooms.get(roomName);
     if (room == null) {
       room=new MUCRoomImpl(this,roomName,router);
       try {
@@ -15,7 +15,7 @@ synchronized (roomName.intern()) {
         }
         room.addFirstOwner(userjid.toBareJID());
       }
-      rooms.put(roomName.toLowerCase(),room);
+      rooms.put(roomName,room);
     }
   }
   return room;

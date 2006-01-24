@@ -1,13 +1,13 @@
 {
-  MUCRoom room=rooms.get(roomName.toLowerCase());
+  MUCRoom room=rooms.get(roomName);
   if (room == null) {
 synchronized (roomName.intern()) {
-      room=rooms.get(roomName.toLowerCase());
+      room=rooms.get(roomName);
       if (room == null) {
         room=new MUCRoomImpl(this,roomName,router);
         try {
           MUCPersistenceManager.loadFromDB((MUCRoomImpl)room);
-          rooms.put(roomName.toLowerCase(),room);
+          rooms.put(roomName,room);
         }
  catch (        IllegalArgumentException e) {
           room=null;
