@@ -1,7 +1,6 @@
 {
   XmlPullParser xpp=reader.getXPPParser();
   StringBuilder sb;
-  StreamError error;
   if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
     StreamID streamID=sessionManager.nextStreamID();
     sb=new StringBuilder();
@@ -35,10 +34,7 @@
         return null;
       }
  else {
-        error=new StreamError(StreamError.Condition.invalid_xml);
-        sb=new StringBuilder();
-        sb.append(error.toXML());
-        connection.deliverRawText(sb.toString());
+        connection.deliverRawText(new StreamError(StreamError.Condition.invalid_xml).toXML());
         connection.close();
         return null;
       }
@@ -50,10 +46,7 @@
     }
   }
  else {
-    error=new StreamError(StreamError.Condition.invalid_namespace);
-    sb=new StringBuilder();
-    sb.append(error.toXML());
-    connection.deliverRawText(sb.toString());
+    connection.deliverRawText(new StreamError(StreamError.Condition.invalid_namespace).toXML());
     connection.close();
     return null;
   }

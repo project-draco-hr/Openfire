@@ -1,7 +1,6 @@
 {
   XMPPPacketReader reader=null;
   Writer writer=null;
-  StreamError error;
   Log.debug("RS - Trying to connect to Authoritative Server: " + hostname + ":"+ port);
   Socket socket=new Socket();
   socket.connect(new InetSocketAddress(host,port),RemoteServerManager.getSocketTimeout());
@@ -40,26 +39,17 @@
         Element doc=reader.parseDocument().getRootElement();
         if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
           if (!streamID.equals(doc.attributeValue("id"))) {
-            error=new StreamError(StreamError.Condition.invalid_id);
-            sb=new StringBuilder();
-            sb.append(error.toXML());
-            writer.write(sb.toString());
+            writer.write(new StreamError(StreamError.Condition.invalid_id).toXML());
             writer.flush();
             throw new RemoteConnectionFailedException("Invalid ID");
           }
  else           if (isHostUnknown(doc.attributeValue("to"))) {
-            error=new StreamError(StreamError.Condition.host_unknown);
-            sb=new StringBuilder();
-            sb.append(error.toXML());
-            writer.write(sb.toString());
+            writer.write(new StreamError(StreamError.Condition.host_unknown).toXML());
             writer.flush();
             throw new RemoteConnectionFailedException("Host unknown");
           }
  else           if (!hostname.equals(doc.attributeValue("from"))) {
-            error=new StreamError(StreamError.Condition.invalid_from);
-            sb=new StringBuilder();
-            sb.append(error.toXML());
-            writer.write(sb.toString());
+            writer.write(new StreamError(StreamError.Condition.invalid_from).toXML());
             writer.flush();
             throw new RemoteConnectionFailedException("Invalid From");
           }
@@ -79,10 +69,7 @@
       }
     }
  else {
-      error=new StreamError(StreamError.Condition.invalid_namespace);
-      StringBuilder sb=new StringBuilder();
-      sb.append(error.toXML());
-      writer.write(sb.toString());
+      writer.write(new StreamError(StreamError.Condition.invalid_namespace).toXML());
       writer.flush();
       throw new RemoteConnectionFailedException("Invalid namespace");
     }

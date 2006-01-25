@@ -1,23 +1,16 @@
 {
-  StreamError error;
   StringBuilder sb;
   String recipient=doc.attributeValue("to");
   String hostname=doc.attributeValue("from");
   Log.debug("RS - Received dialback key from host: " + hostname + " to: "+ recipient);
   if (!RemoteServerManager.canAccess(hostname)) {
-    error=new StreamError(StreamError.Condition.host_unknown);
-    sb=new StringBuilder();
-    sb.append(error.toXML());
-    connection.deliverRawText(sb.toString());
+    connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
     connection.close();
     Log.debug("RS - Error, hostname is not allowed to establish a connection to " + "this server: " + recipient);
     return false;
   }
  else   if (isHostUnknown(recipient)) {
-    error=new StreamError(StreamError.Condition.host_unknown);
-    sb=new StringBuilder();
-    sb.append(error.toXML());
-    connection.deliverRawText(sb.toString());
+    connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
     connection.close();
     Log.debug("RS - Error, hostname not recognized: " + recipient);
     return false;
@@ -30,10 +23,7 @@
       }
     }
     if (alreadyExists) {
-      error=new StreamError(StreamError.Condition.not_authorized);
-      sb=new StringBuilder();
-      sb.append(error.toXML());
-      connection.deliverRawText(sb.toString());
+      connection.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
       connection.close();
       Log.debug("RS - Error, incoming connection already exists from: " + hostname);
       return false;
@@ -59,10 +49,7 @@
       }
  catch (      Exception e) {
         Log.warn("Error verifying key",e);
-        error=new StreamError(StreamError.Condition.remote_connection_failed);
-        sb=new StringBuilder();
-        sb.append(error.toXML());
-        connection.deliverRawText(sb.toString());
+        connection.deliverRawText(new StreamError(StreamError.Condition.remote_connection_failed).toXML());
         connection.close();
         return false;
       }
