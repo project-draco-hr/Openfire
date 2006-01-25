@@ -74,11 +74,7 @@ synchronized (hostname.intern()) {
     if (session.getAuthenticatedDomains().contains(domain)) {
       return true;
     }
-    ServerDialback method=new ServerDialback(session.getConnection(),domain);
-    if (method.authenticateDomain(session.socketReader,domain,hostname,session.getStreamID().getID())) {
-      session.addAuthenticatedDomain(domain);
-      return true;
-    }
+    return session.authenticateSubdomain(domain,hostname);
   }
  catch (  Exception e) {
     Log.error("Error authenticating domain with remote server: " + hostname,e);
