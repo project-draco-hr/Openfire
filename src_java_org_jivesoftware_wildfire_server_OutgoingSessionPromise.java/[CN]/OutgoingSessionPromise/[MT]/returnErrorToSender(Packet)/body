@@ -1,10 +1,16 @@
 {
+  XMPPServer server=XMPPServer.getInstance();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  if (!server.isLocal(from) && !XMPPServer.getInstance().matchesComponent(from) && !server.isLocal(to)&& !XMPPServer.getInstance().matchesComponent(to)) {
+    return;
+  }
   try {
     if (packet instanceof IQ) {
       IQ reply=new IQ();
       reply.setID(((IQ)packet).getID());
-      reply.setTo(packet.getFrom());
-      reply.setFrom(packet.getTo());
+      reply.setTo(from);
+      reply.setFrom(to);
       reply.setChildElement(((IQ)packet).getChildElement().createCopy());
       reply.setError(PacketError.Condition.remote_server_not_found);
       ChannelHandler route=routingTable.getRoute(reply.getTo());
@@ -15,8 +21,8 @@
  else     if (packet instanceof Presence) {
       Presence reply=new Presence();
       reply.setID(packet.getID());
-      reply.setTo(packet.getFrom());
-      reply.setFrom(packet.getTo());
+      reply.setTo(from);
+      reply.setFrom(to);
       reply.setError(PacketError.Condition.remote_server_not_found);
       ChannelHandler route=routingTable.getRoute(reply.getTo());
       if (route != null) {
@@ -26,8 +32,8 @@
  else     if (packet instanceof Message) {
       Message reply=new Message();
       reply.setID(packet.getID());
-      reply.setTo(packet.getFrom());
-      reply.setFrom(packet.getTo());
+      reply.setTo(from);
+      reply.setFrom(to);
       reply.setType(((Message)packet).getType());
       reply.setThread(((Message)packet).getThread());
       reply.setError(PacketError.Condition.remote_server_not_found);
