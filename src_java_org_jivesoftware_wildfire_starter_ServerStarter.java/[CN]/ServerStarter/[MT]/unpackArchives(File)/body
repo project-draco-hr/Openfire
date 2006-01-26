@@ -12,6 +12,10 @@
   for (  File packedFile : packedFiles) {
     try {
       String jarName=packedFile.getName().substring(0,packedFile.getName().length() - ".pack".length());
+      File jarFile=new File(libDir,jarName);
+      if (jarFile.exists()) {
+        jarFile.delete();
+      }
       InputStream in=new BufferedInputStream(new FileInputStream(packedFile));
       JarOutputStream out=new JarOutputStream(new BufferedOutputStream(new FileOutputStream(new File(libDir,jarName))));
       Pack200.Unpacker unpacker=Pack200.newUnpacker();
