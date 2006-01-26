@@ -8,7 +8,13 @@
   rejectionMessage=JiveGlobals.getProperty(REJECTION_MSG_PROPERTY,"Message rejected. This is an automated server response");
   patternsEnabled=JiveGlobals.getBooleanProperty(PATTERNS_ENABLED_PROPERTY,false);
   patterns=JiveGlobals.getProperty(PATTERNS_PROPERTY,"fox,dog");
-  changeContentFilterPatterns();
+  try {
+    changeContentFilterPatterns();
+  }
+ catch (  PatternSyntaxException e) {
+    Log.warn("Reseting to default patterns of ContentFilterPlugin",e);
+    setPatterns("fox,dog");
+  }
   filterStatusEnabled=JiveGlobals.getBooleanProperty(FILTER_STATUS_ENABLED_PROPERTY,false);
   maskEnabled=JiveGlobals.getBooleanProperty(MASK_ENABLED_PROPERTY,false);
   mask=JiveGlobals.getProperty(MASK_PROPERTY,"***");
