@@ -15,14 +15,14 @@
       try {
         Group group=GroupManager.getInstance().getGroup(groupName);
         String displayName=group.getProperties().get("sharedRoster.displayName");
-        if (displayName.equals(groupName)) {
+        if (displayName != null && displayName.equals(groupName)) {
           it.remove();
         }
       }
  catch (      GroupNotFoundException e) {
         for (        Group group : existingGroups) {
           String displayName=group.getProperties().get("sharedRoster.displayName");
-          if (displayName.equals(groupName)) {
+          if (displayName != null && displayName.equals(groupName)) {
             it.remove();
           }
         }
