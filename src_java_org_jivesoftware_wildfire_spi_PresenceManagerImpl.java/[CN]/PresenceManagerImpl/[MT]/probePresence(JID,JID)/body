@@ -1,6 +1,5 @@
 {
   try {
-    Component component=getPresenceComponent(probee);
     if (server.isLocal(probee)) {
       if (probee.getNode() != null && !"".equals(probee.getNode())) {
         Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
@@ -39,23 +38,26 @@
         }
       }
     }
- else     if (component != null) {
-      Presence presence=new Presence();
-      presence.setType(Presence.Type.probe);
-      presence.setFrom(prober);
-      presence.setTo(probee);
-      component.processPacket(presence);
-    }
  else {
-      if (server.isRemote(probee)) {
-        Presence probePresence=new Presence();
-        probePresence.setType(Presence.Type.probe);
-        probePresence.setFrom(prober);
-        probePresence.setTo(probee.toBareJID());
-        deliverer.deliver(probePresence);
+      Component component=getPresenceComponent(probee);
+      if (component != null) {
+        Presence presence=new Presence();
+        presence.setType(Presence.Type.probe);
+        presence.setFrom(prober);
+        presence.setTo(probee);
+        component.processPacket(presence);
       }
  else {
-        componentManager.addPresenceRequest(prober,probee);
+        if (server.isRemote(probee)) {
+          Presence probePresence=new Presence();
+          probePresence.setType(Presence.Type.probe);
+          probePresence.setFrom(prober);
+          probePresence.setTo(probee.toBareJID());
+          deliverer.deliver(probePresence);
+        }
+ else {
+          componentManager.addPresenceRequest(prober,probee);
+        }
       }
     }
   }
