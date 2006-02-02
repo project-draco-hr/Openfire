@@ -21,6 +21,9 @@
  else     if (Presence.Type.unavailable == type) {
       broadcastUpdate(presence.createCopy());
       broadcastUnavailableForDirectedPresences(presence);
+      if (session == null) {
+        session=(ClientSession)XMPPServer.getInstance().getRoutingTable().getRoute(presence.getFrom());
+      }
       if (session != null) {
         session.setPresence(presence);
       }
