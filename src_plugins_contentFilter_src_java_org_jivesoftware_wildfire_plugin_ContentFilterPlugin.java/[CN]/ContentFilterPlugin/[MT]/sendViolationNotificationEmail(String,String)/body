@@ -1,17 +1,7 @@
 {
-  List<MimeMessage> messages=new ArrayList<MimeMessage>();
   try {
-    EmailService emailService=EmailService.getInstance();
-    MimeMessage message=emailService.createMimeMessage();
-    String encoding=MimeUtility.mimeCharset("iso-8859-1");
     User user=UserManager.getInstance().getUser(violationContact);
-    message.setRecipient(javax.mail.Message.RecipientType.TO,new InternetAddress(user.getEmail()));
-    message.setFrom(new InternetAddress("no_reply@" + violationNotificationFrom,"Wildfire",encoding));
-    message.setText(body);
-    message.setSubject(subject);
-    message.setSentDate(new Date());
-    messages.add(message);
-    emailService.sendMessages(messages);
+    EmailService.getInstance().sendMessage(user.getName(),user.getEmail(),"Wildfire","no_reply@" + violationNotificationFrom.getDomain(),subject,body,null);
   }
  catch (  Throwable e) {
     Log.error("Content Filter: Failed to send email, please review Wildfire setup",e);

@@ -1,20 +1,13 @@
 {
-  String msg=" A new user with the username of '" + user.getUsername() + "' just registered";
-  List<MimeMessage> messages=new ArrayList<MimeMessage>();
+  String subject="User Registration";
+  String body=" A new user with the username '" + user.getUsername() + "' just registered.";
   EmailService emailService=EmailService.getInstance();
-  MimeMessage message=emailService.createMimeMessage();
-  String encoding=MimeUtility.mimeCharset("iso-8859-1");
   for (  String toAddress : emailContacts) {
     try {
-      message.setRecipient(javax.mail.Message.RecipientType.TO,new InternetAddress(toAddress));
-      message.setFrom(new InternetAddress("no_reply@" + serverName,"Wildfire",encoding));
-      message.setText(msg);
-      message.setSubject("User Registration");
-      messages.add(message);
+      emailService.sendMessage(null,toAddress,"Wildfire","no_reply@" + serverName,subject,body,null);
     }
  catch (    Exception e) {
       Log.error(e);
     }
   }
-  emailService.sendMessages(messages);
 }
