@@ -1,0 +1,17 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  Element childElement=packet.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  if (sessionManager.getSessionCount(from.getNode()) > 1) {
+    result.setError(PacketError.Condition.conflict);
+  }
+ else {
+    ClientSession session=sessionManager.getSession(from);
+    if (session.getDefaultList() != null) {
+      session.getDefaultList().setDefaultList(false);
+      provider.updatePrivacyList(from.getNode(),session.getDefaultList());
+      session.setDefaultList(null);
+    }
+  }
+  return result;
+}

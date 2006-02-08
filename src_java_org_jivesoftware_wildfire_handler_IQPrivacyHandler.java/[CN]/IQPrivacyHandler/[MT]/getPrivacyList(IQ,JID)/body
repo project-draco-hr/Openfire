@@ -1,0 +1,23 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  Element childElement=packet.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  List<Element> lists=childElement.elements("list");
+  if (lists.size() > 1) {
+    result.setError(PacketError.Condition.bad_request);
+  }
+ else {
+    String listName=lists.get(0).attributeValue("name");
+    PrivacyList list=null;
+    if (listName != null) {
+      list=manager.getPrivacyList(from.getNode(),listName);
+    }
+    if (list != null) {
+      childElement.add(list.asElement());
+    }
+ else {
+      result.setError(PacketError.Condition.item_not_found);
+    }
+  }
+  return result;
+}

@@ -1,0 +1,14 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  Element childElement=packet.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  PrivacyList list=manager.getPrivacyList(from.getNode(),listName);
+  if (list != null) {
+    ClientSession session=sessionManager.getSession(from);
+    session.setActiveList(list);
+  }
+ else {
+    result.setError(PacketError.Condition.item_not_found);
+  }
+  return result;
+}

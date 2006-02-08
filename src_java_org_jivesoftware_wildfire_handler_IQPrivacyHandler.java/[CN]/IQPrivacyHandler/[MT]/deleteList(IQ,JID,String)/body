@@ -1,0 +1,31 @@
+{
+  ClientSession currentSession=null;
+  IQ result=IQ.createResultIQ(packet);
+  Element childElement=packet.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  PrivacyList list=manager.getPrivacyList(from.getNode(),listName);
+  if (list == null) {
+    result.setError(PacketError.Condition.item_not_found);
+    return result;
+  }
+ else {
+    currentSession=sessionManager.getSession(from);
+    for (    ClientSession session : sessionManager.getSessions(from.getNode())) {
+      if (currentSession == session) {
+        continue;
+      }
+      if (list.equals(session.getDefaultList()) || list.equals(session.getActiveList())) {
+        result.setError(PacketError.Condition.conflict);
+        return result;
+      }
+    }
+  }
+  if (list.equals(currentSession.getDefaultList())) {
+    currentSession.setDefaultList(null);
+  }
+  if (list.equals(currentSession.getActiveList())) {
+    currentSession.setActiveList(null);
+  }
+  manager.deletePrivacyList(from.getNode(),listName);
+  return result;
+}

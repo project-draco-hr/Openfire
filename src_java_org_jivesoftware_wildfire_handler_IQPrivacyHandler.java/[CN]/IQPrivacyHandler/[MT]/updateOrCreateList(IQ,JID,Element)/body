@@ -1,0 +1,31 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  Element childElement=packet.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  String listName=listElement.attributeValue("name");
+  PrivacyList list=manager.getPrivacyList(from.getNode(),listName);
+  if (list == null) {
+    list=manager.createPrivacyList(from.getNode(),listName,listElement);
+  }
+ else {
+    list.updateList(listElement);
+    provider.updatePrivacyList(from.getNode(),list);
+    for (    ClientSession session : sessionManager.getSessions(from.getNode())) {
+      if (list.equals(session.getDefaultList())) {
+        session.setDefaultList(list);
+      }
+      if (list.equals(session.getActiveList())) {
+        session.setActiveList(list);
+      }
+    }
+  }
+  IQ pushPacket=new IQ(IQ.Type.set);
+  Element child=pushPacket.setChildElement("query","jabber:iq:privacy");
+  child.addElement("list").addAttribute("name",list.getName());
+  try {
+    sessionManager.userBroadcast(from.getNode(),pushPacket);
+  }
+ catch (  UnauthorizedException e) {
+  }
+  return result;
+}

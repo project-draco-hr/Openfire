@@ -1,0 +1,56 @@
+{
+  IQ.Type type=packet.getType();
+  JID from=packet.getFrom();
+  if (from.getNode() == null) {
+    IQ result=IQ.createResultIQ(packet);
+    result.setChildElement(packet.getChildElement().createCopy());
+    result.setError(PacketError.Condition.service_unavailable);
+    return result;
+  }
+  IQ result=null;
+  if (type.equals(IQ.Type.get)) {
+    Element child=packet.getChildElement();
+    List elements=child.elements();
+    if (elements.isEmpty()) {
+      result=getPrivacyListsNames(packet,from);
+    }
+ else {
+      result=getPrivacyList(packet,from);
+    }
+  }
+ else   if (type.equals(IQ.Type.set)) {
+    Element child=packet.getChildElement();
+    Element activeList=child.element("active");
+    Element defaultList=child.element("default");
+    if (activeList != null) {
+      String listName=activeList.attributeValue("name");
+      if (listName != null) {
+        result=setActiveList(packet,from,listName);
+      }
+ else {
+        result=declineActiveList(packet,from);
+      }
+    }
+ else     if (defaultList != null) {
+      String listName=defaultList.attributeValue("name");
+      if (listName != null) {
+        result=setDefaultList(packet,from,listName);
+      }
+ else {
+        result=declineDefaultList(packet,from);
+      }
+    }
+ else {
+      Element list=child.element("list");
+      String listName=list.attributeValue("name");
+      List items=list.elements();
+      if (!items.isEmpty()) {
+        result=updateOrCreateList(packet,from,list);
+      }
+ else {
+        result=deleteList(packet,from,listName);
+      }
+    }
+  }
+  return result;
+}
