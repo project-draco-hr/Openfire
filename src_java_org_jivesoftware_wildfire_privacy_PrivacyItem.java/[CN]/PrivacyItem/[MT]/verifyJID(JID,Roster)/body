@@ -1,0 +1,34 @@
+{
+  if (type == Type.jid) {
+    if (jidValue.getResource() != null) {
+      return jid.equals(jidValue);
+    }
+ else     if (jidValue.getNode() != null) {
+      return jid.toBareJID().equals(jidValue.toBareJID());
+    }
+ else {
+      return jid.getDomain().equals(jidValue.getDomain());
+    }
+  }
+ else   if (type == Type.group) {
+    Collection<String> contactGroups=null;
+    try {
+      RosterItem item=roster.getRosterItem(jid);
+      contactGroups=item.getGroups();
+    }
+ catch (    UserNotFoundException e) {
+      contactGroups=Collections.emptyList();
+    }
+    return contactGroups.contains(groupValue);
+  }
+ else {
+    RosterItem.SubType contactSubscription=RosterItem.SUB_NONE;
+    try {
+      RosterItem item=roster.getRosterItem(jid);
+      contactSubscription=item.getSubStatus();
+    }
+ catch (    UserNotFoundException e) {
+    }
+    return contactSubscription == subscriptionValue;
+  }
+}

@@ -1,0 +1,37 @@
+{
+  this.allow="allow".equals(itemElement.attributeValue("action"));
+  this.order=Integer.parseInt(itemElement.attributeValue("order"));
+  String typeAttribute=itemElement.attributeValue("type");
+  if (typeAttribute != null) {
+    this.type=Type.valueOf(typeAttribute);
+    String value=itemElement.attributeValue("value");
+    if (type == Type.jid) {
+      this.jidValue=new JID(value);
+    }
+ else     if (type == Type.subscription) {
+      if ("both".equals(value)) {
+        this.subscriptionValue=RosterItem.SUB_BOTH;
+      }
+ else       if ("to".equals(value)) {
+        this.subscriptionValue=RosterItem.SUB_TO;
+      }
+ else       if ("from".equals(value)) {
+        this.subscriptionValue=RosterItem.SUB_FROM;
+      }
+ else {
+        this.subscriptionValue=RosterItem.SUB_NONE;
+      }
+    }
+ else {
+      this.groupValue=value;
+    }
+  }
+  this.filterIQ=itemElement.element("iq") != null;
+  this.filterMessage=itemElement.element("message") != null;
+  this.filterPresence_in=itemElement.element("presence-in") != null;
+  this.filterPresence_out=itemElement.element("presence-out") != null;
+  if (!filterIQ && !filterMessage && !filterPresence_in&& !filterPresence_out) {
+    filterEverything=true;
+  }
+  this.itemElement=itemElement.createCopy();
+}

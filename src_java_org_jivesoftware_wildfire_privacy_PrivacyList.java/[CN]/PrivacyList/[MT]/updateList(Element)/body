@@ -1,0 +1,18 @@
+{
+  items=new ArrayList<PrivacyItem>();
+  List<Element> itemsElements=listElement.elements("item");
+  for (  Element itemElement : itemsElements) {
+    PrivacyItem newItem=new PrivacyItem(itemElement);
+    items.add(newItem);
+    if (roster == null && newItem.isRosterRequired()) {
+      try {
+        roster=XMPPServer.getInstance().getRosterManager().getRoster(userJID.getNode());
+      }
+ catch (      UserNotFoundException e) {
+        Log.warn("Privacy item removed since roster of user was not found: " + userJID.getNode());
+        items.remove(newItem);
+      }
+    }
+  }
+  Collections.sort(items);
+}

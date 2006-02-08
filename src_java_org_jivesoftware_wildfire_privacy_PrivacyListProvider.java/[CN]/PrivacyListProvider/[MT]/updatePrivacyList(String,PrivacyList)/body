@@ -1,0 +1,34 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_PRIVACY_LIST);
+    pstmt.setInt(1,(list.isDefault() ? 1 : 0));
+    pstmt.setString(2,list.asElement().asXML());
+    pstmt.setString(3,username);
+    pstmt.setString(4,list.getName());
+    pstmt.executeUpdate();
+  }
+ catch (  Exception e) {
+    Log.error("Error updating privacy list: " + list.getName() + " of username: "+ username,e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

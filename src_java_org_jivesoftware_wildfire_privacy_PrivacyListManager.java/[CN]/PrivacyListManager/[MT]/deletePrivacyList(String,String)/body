@@ -1,0 +1,8 @@
+{
+  listsCache.remove(getCacheKey(username,listName));
+  provider.deletePrivacyList(username,listName);
+  PrivacyList defaultList=(PrivacyList)listsCache.get(getDefaultCacheKey(username));
+  if (defaultList != null && listName.equals(defaultList.getName())) {
+    listsCache.remove(getDefaultCacheKey(username));
+  }
+}

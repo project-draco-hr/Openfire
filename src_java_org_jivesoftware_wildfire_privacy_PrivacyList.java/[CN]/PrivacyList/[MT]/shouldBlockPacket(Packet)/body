@@ -1,0 +1,17 @@
+{
+  if (packet.getFrom() == null) {
+    return false;
+  }
+  for (  PrivacyItem item : items) {
+    if (item.matchesCondition(packet,roster,userJID)) {
+      if (item.isAllow()) {
+        return false;
+      }
+      if (Log.isDebugEnabled()) {
+        Log.debug("Packet was blocked: " + packet);
+      }
+      return true;
+    }
+  }
+  return false;
+}

@@ -1,0 +1,16 @@
+{
+  String cacheKey=getDefaultCacheKey(username);
+  PrivacyList list=(PrivacyList)listsCache.get(cacheKey);
+  if (list == null) {
+synchronized (username.intern()) {
+      list=(PrivacyList)listsCache.get(cacheKey);
+      if (list == null) {
+        list=provider.loadDefaultPrivacyList(username);
+        if (list != null) {
+          listsCache.put(cacheKey,list);
+        }
+      }
+    }
+  }
+  return list;
+}

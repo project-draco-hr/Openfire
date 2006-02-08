@@ -1,0 +1,26 @@
+{
+  if (filterEverything) {
+    return true;
+  }
+  Class packetClass=packet.getClass();
+  if (Message.class.equals(packetClass)) {
+    return filterMessage;
+  }
+ else   if (Presence.class.equals(packetClass)) {
+    Presence.Type presenceType=((Presence)packet).getType();
+    if (presenceType == null || presenceType == Presence.Type.unavailable) {
+      JID to=packet.getTo();
+      boolean incoming=to != null && to.toBareJID().equals(userJID.toBareJID());
+      if (incoming) {
+        return filterPresence_in;
+      }
+ else {
+        return filterPresence_out;
+      }
+    }
+  }
+ else   if (IQ.class.equals(packetClass)) {
+    return filterIQ;
+  }
+  return false;
+}
