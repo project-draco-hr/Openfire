@@ -7,6 +7,10 @@
     if (Message.Type.groupchat == message.getType() || Message.Type.error == message.getType() || Message.Type.headline == message.getType()) {
       return;
     }
+    PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(recipientJID.getNode());
+    if (list != null && list.shouldBlockPacket(message)) {
+      return;
+    }
     if (type == Type.bounce) {
       bounce(message);
     }

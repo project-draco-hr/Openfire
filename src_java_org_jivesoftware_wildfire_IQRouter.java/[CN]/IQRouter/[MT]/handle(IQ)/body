@@ -39,33 +39,25 @@
         }
       }
  else {
+        if (recipientJID != null && recipientJID.getNode() != null) {
+          PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(recipientJID.getNode());
+          if (list != null && list.shouldBlockPacket(packet)) {
+            if (IQ.Type.set == packet.getType() || IQ.Type.get == packet.getType()) {
+              sendErrorPacket(packet,PacketError.Condition.service_unavailable);
+            }
+            return;
+          }
+        }
         IQHandler handler=getHandler(namespace);
         if (handler == null) {
-          IQ reply=IQ.createResultIQ(packet);
           if (recipientJID == null) {
-            reply.setChildElement(packet.getChildElement().createCopy());
-            reply.setError(PacketError.Condition.service_unavailable);
+            sendErrorPacket(packet,PacketError.Condition.service_unavailable);
           }
  else           if (recipientJID.getNode() == null || "".equals(recipientJID.getNode())) {
-            reply.setChildElement(packet.getChildElement().createCopy());
-            reply.setError(PacketError.Condition.feature_not_implemented);
+            sendErrorPacket(packet,PacketError.Condition.feature_not_implemented);
           }
  else {
-            reply.setChildElement(packet.getChildElement().createCopy());
-            reply.setError(PacketError.Condition.service_unavailable);
-          }
-          ChannelHandler route=routingTable.getRoute(packet.getFrom());
-          if (route != null) {
-            route.process(reply);
-          }
- else {
-            Session session=sessionManager.getSession(packet.getFrom());
-            if (session != null) {
-              session.process(reply);
-            }
- else {
-              Log.warn("Packet could not be delivered " + packet);
-            }
+            sendErrorPacket(packet,PacketError.Condition.service_unavailable);
           }
         }
  else {
@@ -96,22 +88,7 @@
         }
       }
       if (!handlerFound && IQ.Type.result != packet.getType()) {
-        IQ reply=IQ.createResultIQ(packet);
-        reply.setChildElement(packet.getChildElement().createCopy());
-        reply.setError(PacketError.Condition.service_unavailable);
-        ChannelHandler route=routingTable.getRoute(packet.getFrom());
-        if (route != null) {
-          route.process(reply);
-        }
- else {
-          Session session=sessionManager.getSession(packet.getFrom());
-          if (session != null) {
-            session.process(reply);
-          }
- else {
-            Log.warn("Packet could not be delivered " + reply);
-          }
-        }
+        sendErrorPacket(packet,PacketError.Condition.service_unavailable);
       }
     }
   }

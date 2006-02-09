@@ -13,7 +13,10 @@
                 Presence presencePacket=new Presence(element.getRootElement());
                 presencePacket.setFrom(probee.toBareJID());
                 presencePacket.setTo(prober);
-                deliverer.deliver(presencePacket);
+                PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(probee.getNode());
+                if (list == null || !list.shouldBlockPacket(presencePacket)) {
+                  deliverer.deliver(presencePacket);
+                }
               }
  catch (              Exception e) {
                 Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
@@ -28,6 +31,13 @@
             Presence presencePacket=session.getPresence().createCopy();
             presencePacket.setFrom(session.getAddress());
             presencePacket.setTo(prober);
+            PrivacyList list=session.getActiveList();
+            list=list == null ? session.getDefaultList() : list;
+            if (list != null) {
+              if (list.shouldBlockPacket(presencePacket)) {
+                continue;
+              }
+            }
             try {
               deliverer.deliver(presencePacket);
             }

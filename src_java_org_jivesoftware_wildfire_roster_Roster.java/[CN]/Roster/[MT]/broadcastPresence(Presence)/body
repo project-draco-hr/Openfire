@@ -5,11 +5,25 @@
   if (routingTable == null) {
     return;
   }
+  PrivacyList list=null;
+  if (packet.getFrom() != null) {
+    ClientSession session=sessionManager.getSession(packet.getFrom());
+    if (session != null) {
+      list=session.getActiveList();
+      list=list == null ? session.getDefaultList() : list;
+    }
+  }
+  if (list == null) {
+    list=PrivacyListManager.getInstance().getDefaultPrivacyList(username);
+  }
   for (  RosterItem item : rosterItems.values()) {
     if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_FROM) {
       JID searchNode=new JID(item.getJid().getNode(),item.getJid().getDomain(),null);
       Iterator sessions=routingTable.getRoutes(searchNode);
       packet.setTo(item.getJid());
+      if (list != null && list.shouldBlockPacket(packet)) {
+        continue;
+      }
       while (sessions.hasNext()) {
         ChannelHandler session=(ChannelHandler)sessions.next();
         try {

@@ -1,0 +1,18 @@
+{
+  IQ reply=IQ.createResultIQ(originalPacket);
+  reply.setChildElement(originalPacket.getChildElement().createCopy());
+  reply.setError(condition);
+  ChannelHandler route=routingTable.getRoute(originalPacket.getFrom());
+  if (route != null) {
+    route.process(reply);
+  }
+ else {
+    Session session=sessionManager.getSession(originalPacket.getFrom());
+    if (session != null) {
+      session.process(reply);
+    }
+ else {
+      Log.warn("Error packet could not be delivered " + reply);
+    }
+  }
+}
