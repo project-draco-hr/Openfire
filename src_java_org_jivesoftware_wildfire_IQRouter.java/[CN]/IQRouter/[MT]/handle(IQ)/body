@@ -68,10 +68,12 @@
  else {
       boolean handlerFound=false;
       if (XMPPServer.getInstance().isLocal(recipientJID)) {
-        Session session=sessionManager.getBestRoute(recipientJID);
+        ClientSession session=sessionManager.getBestRoute(recipientJID);
         if (session != null) {
-          session.process(packet);
-          handlerFound=true;
+          if (!session.shouldBlockPacket(packet)) {
+            session.process(packet);
+            handlerFound=true;
+          }
         }
  else {
           Log.info("Packet sent to unreachable address " + packet);
