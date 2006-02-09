@@ -1,0 +1,35 @@
+{
+  List<String> identities=new ArrayList<String>();
+  try {
+    Collection altNames=certificate.getSubjectAlternativeNames();
+    if (altNames == null) {
+      return Collections.emptyList();
+    }
+    for (Iterator lists=altNames.iterator(); lists.hasNext(); ) {
+      List item=(List)lists.next();
+      Integer type=(Integer)item.get(0);
+      if (type.intValue() == 0) {
+        try {
+          ASN1InputStream decoder=new ASN1InputStream((byte[])item.toArray()[1]);
+          DEREncodable encoded=decoder.readObject();
+          encoded=((DERSequence)encoded).getObjectAt(1);
+          encoded=((DERTaggedObject)encoded).getObject();
+          encoded=((DERTaggedObject)encoded).getObject();
+          String identity=((DERUTF8String)encoded).getString();
+          identities.add(identity);
+        }
+ catch (        UnsupportedEncodingException e) {
+        }
+catch (        IOException e) {
+        }
+      }
+      if (Log.isDebugEnabled()) {
+        Log.debug("SubjectAltName of invalid type found: " + certificate);
+      }
+    }
+  }
+ catch (  CertificateParsingException e) {
+    Log.error("Error parsing SubjectAltName in certificate: " + certificate,e);
+  }
+  return identities;
+}

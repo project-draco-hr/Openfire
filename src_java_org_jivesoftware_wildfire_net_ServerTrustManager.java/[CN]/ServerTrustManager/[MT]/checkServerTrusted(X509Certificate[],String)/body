@@ -2,7 +2,7 @@
   boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
   if (verify) {
     int nSize=x509Certificates.length;
-    String peerIdentity=TLSStreamHandler.getPeerIdentity(x509Certificates[0]);
+    List<String> peerIdentities=TLSStreamHandler.getPeerIdentities(x509Certificates[0]);
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true)) {
       Principal principalLast=null;
       for (int i=nSize - 1; i >= 0; i--) {
@@ -16,11 +16,11 @@
               x509Certificates[i].verify(publickey);
             }
  catch (            GeneralSecurityException generalsecurityexception) {
-              throw new CertificateException("signature verification failed of " + peerIdentity);
+              throw new CertificateException("signature verification failed of " + peerIdentities);
             }
           }
  else {
-            throw new CertificateException("subject/issuer verification failed of " + peerIdentity);
+            throw new CertificateException("subject/issuer verification failed of " + peerIdentities);
           }
         }
         principalLast=principalSubject;
@@ -31,7 +31,7 @@
       try {
         trusted=trustStore.getCertificateAlias(x509Certificates[nSize - 1]) != null;
         if (!trusted && nSize == 1 && JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
-          Log.warn("Accepting self-signed certificate of remote server: " + peerIdentity);
+          Log.warn("Accepting self-signed certificate of remote server: " + peerIdentities);
           trusted=true;
         }
       }
@@ -39,17 +39,17 @@
         Log.error(e);
       }
       if (!trusted) {
-        throw new CertificateException("root certificate not trusted of " + peerIdentity);
+        throw new CertificateException("root certificate not trusted of " + peerIdentities);
       }
     }
-    if (peerIdentity.startsWith("*.")) {
-      peerIdentity=peerIdentity.replace("*.","");
+    if (peerIdentities.size() == 1 && peerIdentities.get(0).startsWith("*.")) {
+      String peerIdentity=peerIdentities.get(0).replace("*.","");
       if (!server.endsWith(peerIdentity)) {
-        throw new CertificateException("target verification failed of " + peerIdentity);
+        throw new CertificateException("target verification failed of " + peerIdentities);
       }
     }
- else     if (!server.equals(peerIdentity)) {
-      throw new CertificateException("target verification failed of " + peerIdentity);
+ else     if (!peerIdentities.contains(server)) {
+      throw new CertificateException("target verification failed of " + peerIdentities);
     }
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.validity",true)) {
       Date date=new Date();
@@ -58,7 +58,7 @@
           x509Certificates[i].checkValidity(date);
         }
  catch (        GeneralSecurityException generalsecurityexception) {
-          throw new CertificateException("invalid date of " + peerIdentity);
+          throw new CertificateException("invalid date of " + peerIdentities);
         }
       }
     }

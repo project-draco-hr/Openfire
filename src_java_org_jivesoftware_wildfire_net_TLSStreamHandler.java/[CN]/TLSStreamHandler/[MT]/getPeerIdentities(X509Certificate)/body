@@ -1,0 +1,10 @@
+{
+  List<String> names=getSubjectAlternativeNames(x509Certificate);
+  if (names.isEmpty()) {
+    String name=x509Certificate.getSubjectDN().getName();
+    name=name.replace("CN=","");
+    names=new ArrayList<String>();
+    names.add(name);
+  }
+  return names;
+}

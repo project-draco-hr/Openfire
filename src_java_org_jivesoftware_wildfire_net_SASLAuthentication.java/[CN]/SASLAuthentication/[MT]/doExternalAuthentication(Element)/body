@@ -13,7 +13,7 @@
   if (hostname != null && hostname.length() > 0) {
     hostname=StringUtils.decodeBase64(hostname);
     for (    Certificate certificate : connection.getSSLSession().getPeerCertificates()) {
-      if (hostname.equals(TLSStreamHandler.getPeerIdentity((X509Certificate)certificate))) {
+      if (TLSStreamHandler.getPeerIdentities((X509Certificate)certificate).contains(hostname)) {
         authenticationSuccessful(hostname);
         return true;
       }
