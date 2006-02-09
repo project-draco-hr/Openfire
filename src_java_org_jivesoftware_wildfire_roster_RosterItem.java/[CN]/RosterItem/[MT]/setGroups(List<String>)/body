@@ -16,14 +16,22 @@
         Group group=GroupManager.getInstance().getGroup(groupName);
         String displayName=group.getProperties().get("sharedRoster.displayName");
         if (displayName != null && displayName.equals(groupName)) {
-          it.remove();
+          try {
+            it.remove();
+          }
+ catch (          IllegalStateException e) {
+          }
         }
       }
  catch (      GroupNotFoundException e) {
         for (        Group group : existingGroups) {
           String displayName=group.getProperties().get("sharedRoster.displayName");
           if (displayName != null && displayName.equals(groupName)) {
-            it.remove();
+            try {
+              it.remove();
+            }
+ catch (            IllegalStateException ise) {
+            }
           }
         }
       }
