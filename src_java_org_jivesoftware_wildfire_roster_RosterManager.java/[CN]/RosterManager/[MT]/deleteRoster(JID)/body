@@ -4,10 +4,7 @@
   }
   try {
     String username=user.getNode();
-    Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
-    if (roster == null) {
-      roster=new Roster(username);
-    }
+    Roster roster=getRoster(username);
     for (    RosterItem item : roster.getRosterItems()) {
       try {
         roster.deleteRosterItem(item.getJid(),false);
@@ -20,17 +17,18 @@
     Iterator<String> usernames=rosteItemProvider.getUsernames(user.toBareJID());
     while (usernames.hasNext()) {
       username=usernames.next();
-      roster=(Roster)CacheManager.getCache("username2roster").get(username);
-      if (roster == null) {
-        roster=new Roster(username);
-      }
       try {
+        roster=getRoster(username);
         roster.deleteRosterItem(user,false);
       }
  catch (      SharedGroupException e) {
       }
+catch (      UserNotFoundException e) {
+      }
     }
   }
  catch (  UnsupportedOperationException e) {
+  }
+catch (  UserNotFoundException e) {
   }
 }

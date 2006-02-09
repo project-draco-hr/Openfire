@@ -7,8 +7,13 @@
   }
   Roster roster=(Roster)rosterCache.get(username);
   if (roster == null) {
-    roster=new Roster(username);
-    rosterCache.put(username,roster);
+synchronized (username.intern()) {
+      roster=(Roster)rosterCache.get(username);
+      if (roster == null) {
+        roster=new Roster(username);
+        rosterCache.put(username,roster);
+      }
+    }
   }
   if (roster == null) {
     throw new UserNotFoundException(username);
