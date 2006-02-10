@@ -36,31 +36,33 @@ case AUTH:
     break;
 case RESPONSE:
   SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
-isComplete=true;
 if (ss != null) {
-String response=doc.getTextTrim();
-try {
-  byte[] data=StringUtils.decodeBase64(response).getBytes(CHARSET);
-  if (data == null) {
-    data=new byte[0];
-  }
-  byte[] challenge=ss.evaluateResponse(data);
-  if (ss.isComplete()) {
-    authenticationSuccessful(ss.getAuthorizationID());
-    success=true;
-  }
+  boolean ssComplete=ss.isComplete();
+  String response=doc.getTextTrim();
+  try {
+    byte[] data=StringUtils.decodeBase64(response).getBytes(CHARSET);
+    if (data == null) {
+      data=new byte[0];
+    }
+    if (ssComplete) {
+      authenticationSuccessful(ss.getAuthorizationID());
+      success=true;
+      isComplete=true;
+    }
  else {
-    sendChallenge(challenge);
+      byte[] challenge=ss.evaluateResponse(data);
+      sendChallenge(challenge);
+    }
+  }
+ catch (  SaslException e) {
+    Log.warn("SaslException",e);
+    authenticationFailed();
   }
 }
- catch (SaslException e) {
-  Log.warn("SaslException",e);
+ else {
+  isComplete=true;
+  Log.fatal("SaslServer is null, should be valid object instead.");
   authenticationFailed();
-}
-}
- else {
-Log.fatal("SaslServer is null, should be valid object instead.");
-authenticationFailed();
 }
 break;
 default :
