@@ -15,9 +15,7 @@
       OfflineMessage message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
       Element delay=message.addChildElement("x","jabber:x:delay");
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
-synchronized (dateFormat) {
-        delay.addAttribute("stamp",dateFormat.format(creationDate));
-      }
+      delay.addAttribute("stamp",dateFormat.format(creationDate));
       messages.add(message);
     }
     rs.close();
