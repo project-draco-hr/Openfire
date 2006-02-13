@@ -1,0 +1,13 @@
+{
+  byte addr[]=digest.getBytes();
+  byte[] data=new byte[7 + addr.length];
+  data[0]=(byte)5;
+  data[1]=(byte)cmd;
+  data[2]=(byte)0;
+  data[3]=(byte)0x3;
+  data[4]=(byte)addr.length;
+  System.arraycopy(addr,0,data,5,addr.length);
+  data[data.length - 2]=(byte)0;
+  data[data.length - 1]=(byte)0;
+  return data;
+}

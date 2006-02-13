@@ -1,0 +1,58 @@
+{
+  Element childElement=packet.getChildElement();
+  String namespace=null;
+  if (packet.getType() == IQ.Type.error) {
+    return true;
+  }
+  if (childElement != null) {
+    namespace=childElement.getNamespaceURI();
+  }
+  if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+    try {
+      IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(packet);
+      router.route(reply);
+      return true;
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
+    try {
+      IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(packet);
+      router.route(reply);
+      return true;
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if (NAMESPACE.equals(namespace)) {
+    if (packet.getType() == IQ.Type.get) {
+      IQ reply=IQ.createResultIQ(packet);
+      reply.setChildElement("query",NAMESPACE);
+      Element response=DocumentHelper.createElement(QName.get("streamhost"));
+      response.addAttribute("jid",getServiceDomain());
+      response.addAttribute("host",proxyIP);
+      response.addAttribute("port",String.valueOf(proxyPort));
+      reply.getChildElement().add(response);
+      router.route(reply);
+      return true;
+    }
+ else     if (packet.getType() == IQ.Type.set && childElement != null) {
+      String sid=childElement.attributeValue("sid");
+      JID from=packet.getFrom();
+      JID to=new JID(childElement.elementTextTrim("activate"));
+      IQ reply=IQ.createResultIQ(packet);
+      try {
+        connectionManager.activate(from,to,sid);
+      }
+ catch (      IllegalArgumentException ie) {
+        Log.error("Error activating connection",ie);
+        reply.setType(IQ.Type.error);
+        reply.setError(new PacketError(PacketError.Condition.not_allowed));
+      }
+      router.route(reply);
+      return true;
+    }
+  }
+  return false;
+}

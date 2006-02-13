@@ -1,0 +1,42 @@
+{
+  OutputStream out=new DataOutputStream(connection.getOutputStream());
+  InputStream in=new DataInputStream(connection.getInputStream());
+  int b=in.read();
+  if (b != 5) {
+    throw new IOException("Only SOCKS5 supported");
+  }
+  b=in.read();
+  int[] auth=new int[b];
+  for (int i=0; i < b; i++) {
+    auth[i]=in.read();
+  }
+  int authMethod=-1;
+  for (  int anAuth : auth) {
+    authMethod=(anAuth == 0 ? 0 : -1);
+    if (authMethod == 0) {
+      break;
+    }
+  }
+  if (authMethod != 0) {
+    throw new IOException("Authentication method not supported");
+  }
+  byte[] cmd=new byte[2];
+  cmd[0]=(byte)0x05;
+  cmd[1]=(byte)0x00;
+  out.write(cmd);
+  String responseDigest=processIncomingSocks5Message(in);
+  cmd=createOutgoingSocks5Message(0,responseDigest);
+synchronized (connectionLock) {
+    ProxyTransfer transfer=connectionMap.get(responseDigest);
+    if (transfer == null) {
+      connectionMap.put(responseDigest,new ProxyTransfer(responseDigest,connection));
+    }
+ else {
+      transfer.setInitiatorSocket(connection);
+    }
+  }
+  if (!connection.isConnected()) {
+    throw new IOException("Socket closed by remote user");
+  }
+  out.write(cmd);
+}

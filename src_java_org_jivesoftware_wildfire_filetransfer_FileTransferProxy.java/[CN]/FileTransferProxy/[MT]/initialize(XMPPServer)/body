@@ -1,0 +1,14 @@
+{
+  super.initialize(server);
+  proxyServiceName=JiveGlobals.getProperty("xmpp.proxy.service","proxy");
+  routingTable=server.getRoutingTable();
+  router=server.getPacketRouter();
+  try {
+    proxyIP=JiveGlobals.getProperty("xmpp.proxy.externalip",InetAddress.getLocalHost().getHostAddress());
+  }
+ catch (  UnknownHostException e) {
+    Log.error("Couldn't discover local host",e);
+  }
+  proxyPort=JiveGlobals.getIntProperty("xmpp.proxy.port",7777);
+  connectionManager=new ProxyConnectionManager(proxyPort);
+}

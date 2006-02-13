@@ -1,0 +1,36 @@
+{
+  executor.submit(new Runnable(){
+    public void run(){
+      ServerSocket serverSocket=null;
+      try {
+        serverSocket=new ServerSocket(port);
+      }
+ catch (      IOException e) {
+        Log.error("Error creating server socket",e);
+        return;
+      }
+      while (serverSocket != null) {
+        final Socket socket;
+        try {
+          socket=serverSocket.accept();
+        }
+ catch (        IOException e) {
+          Log.error("Error accepting procy connection",e);
+          continue;
+        }
+        executor.submit(new Runnable(){
+          public void run(){
+            try {
+              processConnection(socket);
+            }
+ catch (            IOException ie) {
+              Log.error("Error processing file transfer proxy connection",ie);
+            }
+          }
+        }
+);
+      }
+    }
+  }
+);
+}

@@ -1,0 +1,13 @@
+{
+  InputStream in=transfer.getInitiatorSocket().getInputStream();
+  OutputStream out=transfer.getTargetSocket().getOutputStream();
+  final byte[] b=new byte[1000];
+  int count=0;
+  int amountWritten=0;
+  count=in.read(b);
+  while (count != -1) {
+    out.write(b,0,count);
+    amountWritten+=count;
+    count=in.read(b);
+  }
+}

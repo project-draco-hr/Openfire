@@ -1,0 +1,13 @@
+{
+  if (packet instanceof IQ) {
+    if (handleIQ((IQ)packet)) {
+      return;
+    }
+ else {
+      IQ reply=IQ.createResultIQ((IQ)packet);
+      reply.setChildElement(((IQ)packet).getChildElement().createCopy());
+      reply.setError(PacketError.Condition.feature_not_implemented);
+      router.route(reply);
+    }
+  }
+}

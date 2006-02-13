@@ -1,0 +1,28 @@
+{
+  final String digest=createDigest(sid,initiator,target);
+  ProxyTransfer temp;
+synchronized (connectionLock) {
+    temp=connectionMap.get(digest);
+  }
+  final ProxyTransfer transfer=temp;
+  if (transfer == null || !transfer.isActivatable()) {
+    throw new IllegalArgumentException("Transfer doesn't exist or is missing parameters");
+  }
+  transfer.setInitiatorJID(initiator.toString());
+  transfer.setTargetJID(target.toString());
+  transfer.setTransferSession(sid);
+  transfer.setTransferFuture(executor.submit(new Runnable(){
+    public void run(){
+      try {
+        transfer(transfer);
+      }
+ catch (      IOException e) {
+        Log.error("Error during file transfer",e);
+      }
+ finally {
+        connectionMap.remove(digest);
+      }
+    }
+  }
+));
+}

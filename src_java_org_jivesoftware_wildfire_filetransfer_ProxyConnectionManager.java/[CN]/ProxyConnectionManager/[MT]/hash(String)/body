@@ -1,0 +1,17 @@
+{
+  if (digest == null) {
+    try {
+      digest=MessageDigest.getInstance("SHA-1");
+    }
+ catch (    NoSuchAlgorithmException nsae) {
+      Log.error("Failed to load the SHA-1 MessageDigest. " + "Jive will be unable to function normally.",nsae);
+    }
+  }
+  try {
+    digest.update(data.getBytes("UTF-8"));
+  }
+ catch (  UnsupportedEncodingException e) {
+    Log.error(e);
+  }
+  return encodeHex(digest.digest());
+}
