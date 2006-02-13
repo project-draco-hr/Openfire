@@ -1,0 +1,16 @@
+{
+  Collection<Group> answer=new ArrayList<Group>(groups.size());
+  for (  Group group : groups) {
+synchronized (group.getName().intern()) {
+      Group existingGroup=(Group)groupCache.get(group.getName());
+      if (existingGroup == null) {
+        groupCache.put(group.getName(),group);
+        answer.add(group);
+      }
+ else {
+        answer.add(existingGroup);
+      }
+    }
+  }
+  return answer;
+}
