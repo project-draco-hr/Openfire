@@ -1,30 +1,23 @@
 {
-  Element replyQuery=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
-  String serverName=XMPPServer.getInstance().getServerInfo().getName();
+  IQ replyPacket=IQ.createResultIQ(packet);
+  Element replyQuery=replyPacket.setChildElement("query","jabber:iq:search");
   for (  User user : users) {
-    Element item=DocumentHelper.createElement("item");
-    Attribute jid=DocumentHelper.createAttribute(item,"jid",user.getUsername() + "@" + serverName);
-    item.add(jid);
+    Element item=replyQuery.addElement("item");
+    item.addAttribute("jid",user.getUsername() + "@" + serverName);
     for (    String field : reverseFieldLookup.keySet()) {
       if ("Username".equals(field)) {
-        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        Element element=item.addElement(reverseFieldLookup.get(field));
         element.addText(user.getUsername());
-        item.add(element);
       }
       if ("Name".equals(field)) {
-        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        Element element=item.addElement(reverseFieldLookup.get(field));
         element.addText(removeNull(user.getName()));
-        item.add(element);
       }
       if ("Email".equals(field)) {
-        Element element=DocumentHelper.createElement(reverseFieldLookup.get(field));
+        Element element=item.addElement(reverseFieldLookup.get(field));
         element.addText(removeNull(user.getEmail()));
-        item.add(element);
       }
     }
-    replyQuery.add(item);
   }
-  IQ replyPacket=IQ.createResultIQ(packet);
-  replyPacket.setChildElement(replyQuery);
   return replyPacket;
 }

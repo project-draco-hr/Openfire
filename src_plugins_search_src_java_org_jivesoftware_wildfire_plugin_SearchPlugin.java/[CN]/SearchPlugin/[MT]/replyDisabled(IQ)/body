@@ -1,11 +1,9 @@
 {
-  Element reply=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  IQ replyPacket=IQ.createResultIQ(packet);
+  Element reply=replyPacket.setChildElement("query","jabber:iq:search");
   XDataFormImpl unavailableForm=new XDataFormImpl(DataForm.TYPE_CANCEL);
   unavailableForm.setTitle("User Search");
   unavailableForm.addInstruction("This service is unavailable.");
   reply.add(unavailableForm.asXMLElement());
-  IQ replyPacket=IQ.createResultIQ(packet);
-  replyPacket.setChildElement("query","jabber:iq:search");
-  replyPacket.setChildElement(reply.createCopy());
   return replyPacket;
 }

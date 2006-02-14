@@ -28,9 +28,8 @@
     items.add(fieldEmail);
     searchResults.addItemFields(items);
   }
-  Element reply=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
-  reply.add(searchResults.asXMLElement());
   IQ replyPacket=IQ.createResultIQ(packet);
-  replyPacket.setChildElement(reply);
+  Element reply=replyPacket.setChildElement("query","jabber:iq:search");
+  reply.add(searchResults.asXMLElement());
   return replyPacket;
 }
