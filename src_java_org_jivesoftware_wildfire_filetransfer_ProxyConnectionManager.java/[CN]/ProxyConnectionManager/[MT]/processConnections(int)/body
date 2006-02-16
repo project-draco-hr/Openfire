@@ -1,5 +1,14 @@
 {
-  executor.submit(new Runnable(){
+  if (socketProcess != null) {
+    if (port != proxyPort) {
+      socketProcess.cancel(true);
+      socketProcess=null;
+    }
+ else {
+      return;
+    }
+  }
+  socketProcess=executor.submit(new Runnable(){
     public void run(){
       ServerSocket serverSocket=null;
       try {
@@ -33,4 +42,5 @@
     }
   }
 );
+  proxyPort=port;
 }

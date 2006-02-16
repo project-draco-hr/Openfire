@@ -1,5 +1,7 @@
 {
   super.start();
-  routingTable.addRoute(getAddress(),this);
-  connectionManager.processConnections();
+  if (isEnabled()) {
+    connectionManager.processConnections(getProxyPort());
+    routingTable.addRoute(getAddress(),this);
+  }
 }
