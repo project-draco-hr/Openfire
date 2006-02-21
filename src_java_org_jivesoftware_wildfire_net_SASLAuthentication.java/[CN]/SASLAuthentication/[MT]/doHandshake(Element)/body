@@ -74,6 +74,11 @@ if (!isComplete) {
 doc=reader.parseDocument().getRootElement();
 }
 }
+ else {
+isComplete=true;
+Log.debug("Unknown namespace sent in auth element: " + doc.asXML());
+authenticationFailed();
+}
 }
 session.removeSessionData("SaslServer");
 return success;
