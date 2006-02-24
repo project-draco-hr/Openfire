@@ -1,0 +1,15 @@
+{
+  for (; ; ) {
+    if (writing.compareAndSet(false,true)) {
+      return;
+    }
+ else {
+      if (checkHealth()) {
+        throw new Exception("Probable dead connection was closed");
+      }
+ else {
+        Thread.sleep(1);
+      }
+    }
+  }
+}

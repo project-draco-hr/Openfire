@@ -6,19 +6,23 @@ synchronized (this) {
         if (session != null) {
           session.setStatus(Session.STATUS_CLOSED);
         }
-synchronized (writer) {
-          try {
-            writeStarted();
-            writer.write("</stream:stream>");
-            if (flashClient) {
-              writer.write('\0');
-            }
-            writer.flush();
+        boolean allowedToWrite=false;
+        try {
+          requestWriting();
+          allowedToWrite=true;
+          writeStarted();
+          writer.write("</stream:stream>");
+          if (flashClient) {
+            writer.write('\0');
           }
- catch (          IOException e) {
-          }
+          writer.flush();
+        }
+ catch (        IOException e) {
+        }
  finally {
-            writeFinished();
+          writeFinished();
+          if (allowedToWrite) {
+            releaseWriting();
           }
         }
       }

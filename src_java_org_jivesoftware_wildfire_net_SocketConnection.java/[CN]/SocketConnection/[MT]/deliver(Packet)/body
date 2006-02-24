@@ -6,17 +6,23 @@
     try {
       InterceptorManager.getInstance().invokeInterceptors(packet,session,false,false);
       boolean errorDelivering=false;
-synchronized (writer) {
-        try {
-          xmlSerializer.write(packet.getElement());
-          if (flashClient) {
-            writer.write('\0');
-          }
-          xmlSerializer.flush();
+      boolean allowedToWrite=false;
+      try {
+        requestWriting();
+        allowedToWrite=true;
+        xmlSerializer.write(packet.getElement());
+        if (flashClient) {
+          writer.write('\0');
         }
- catch (        IOException e) {
-          Log.debug("Error delivering packet" + "\n" + this.toString(),e);
-          errorDelivering=true;
+        xmlSerializer.flush();
+      }
+ catch (      Exception e) {
+        Log.debug("Error delivering packet" + "\n" + this.toString(),e);
+        errorDelivering=true;
+      }
+ finally {
+        if (allowedToWrite) {
+          releaseWriting();
         }
       }
       if (errorDelivering) {

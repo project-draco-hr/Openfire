@@ -2,12 +2,13 @@
   if (isClosed()) {
     return false;
   }
+  boolean allowedToWrite=false;
   try {
-synchronized (writer) {
-      writeStarted();
-      writer.write(" ");
-      writer.flush();
-    }
+    requestWriting();
+    allowedToWrite=true;
+    writeStarted();
+    writer.write(" ");
+    writer.flush();
   }
  catch (  Exception e) {
     Log.warn("Closing no longer valid connection" + "\n" + this.toString(),e);
@@ -15,6 +16,9 @@ synchronized (writer) {
   }
  finally {
     writeFinished();
+    if (allowedToWrite) {
+      releaseWriting();
+    }
   }
   return !isClosed();
 }

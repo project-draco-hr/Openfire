@@ -4,6 +4,7 @@
       Log.debug("Closing connection: " + this + " that started sending data at: "+ new Date(writeStarted));
     }
     forceClose();
+    return true;
   }
  else {
     if (idleTimeout > -1 && socketReader != null && System.currentTimeMillis() - socketReader.getLastActive() > idleTimeout) {
@@ -11,6 +12,8 @@
         Log.debug("Closing connection that has been idle: " + this);
       }
       forceClose();
+      return true;
     }
   }
+  return false;
 }
