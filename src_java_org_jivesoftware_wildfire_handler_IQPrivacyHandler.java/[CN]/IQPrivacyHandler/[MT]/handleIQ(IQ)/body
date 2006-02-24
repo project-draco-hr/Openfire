@@ -1,7 +1,7 @@
 {
   IQ.Type type=packet.getType();
   JID from=packet.getFrom();
-  if (from.getNode() == null) {
+  if (from.getNode() == null || !UserManager.getInstance().isRegisteredUser(from.getNode())) {
     IQ result=IQ.createResultIQ(packet);
     result.setChildElement(packet.getChildElement().createCopy());
     result.setError(PacketError.Condition.service_unavailable);

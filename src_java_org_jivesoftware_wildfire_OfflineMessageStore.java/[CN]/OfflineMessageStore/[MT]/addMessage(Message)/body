@@ -2,11 +2,12 @@
   if (message == null) {
     return;
   }
-  String username=message.getTo().getNode();
-  if (username == null) {
+  JID recipient=message.getTo();
+  String username=recipient.getNode();
+  if (username == null || !UserManager.getInstance().isRegisteredUser(recipient)) {
     return;
   }
- else   if (!XMPPServer.getInstance().getServerInfo().getName().equals(message.getTo().getDomain())) {
+ else   if (!XMPPServer.getInstance().getServerInfo().getName().equals(recipient.getDomain())) {
     return;
   }
   long messageID=SequenceManager.nextID(JiveConstants.OFFLINE);

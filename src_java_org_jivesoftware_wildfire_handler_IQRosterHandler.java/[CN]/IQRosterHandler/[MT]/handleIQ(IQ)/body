@@ -3,7 +3,7 @@
     IQ returnPacket=null;
     org.xmpp.packet.Roster roster=(org.xmpp.packet.Roster)packet;
     JID recipientJID=packet.getTo();
-    if (recipientJID == null || recipientJID.getNode() == null) {
+    if (recipientJID == null || recipientJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
       returnPacket=manageRoster(roster);
     }
  else {

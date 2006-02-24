@@ -1,7 +1,7 @@
 {
   if (message != null) {
     JID recipientJID=message.getTo();
-    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null) {
+    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
       return;
     }
     if (Message.Type.groupchat == message.getType() || Message.Type.error == message.getType() || Message.Type.headline == message.getType()) {
