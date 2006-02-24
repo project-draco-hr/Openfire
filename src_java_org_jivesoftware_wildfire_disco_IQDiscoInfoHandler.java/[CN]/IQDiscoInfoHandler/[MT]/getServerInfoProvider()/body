@@ -18,7 +18,12 @@ synchronized (identities) {
         return identities.iterator();
       }
  else {
-        return userIdentities.iterator();
+        if (SessionManager.getInstance().isAnonymousRoute(name)) {
+          return anonymousUserIdentities.iterator();
+        }
+ else {
+          return registeredUserIdentities.iterator();
+        }
       }
     }
     public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
@@ -40,7 +45,7 @@ synchronized (identities) {
         return false;
       }
       try {
-        return node == null && (name == null || UserManager.getInstance().getUser(name) != null);
+        return name == null || UserManager.getInstance().getUser(name) != null || SessionManager.getInstance().isAnonymousRoute(name);
       }
  catch (      UserNotFoundException e) {
         return false;
