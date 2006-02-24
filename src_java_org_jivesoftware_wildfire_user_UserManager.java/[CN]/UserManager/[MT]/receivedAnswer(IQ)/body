@@ -1,0 +1,19 @@
+{
+  JID from=packet.getFrom();
+  Boolean isRegistered=Boolean.FALSE;
+  if (IQ.Type.result == packet.getType()) {
+    Element child=packet.getChildElement();
+    for (Iterator it=child.elementIterator("identity"); it.hasNext(); ) {
+      Element identity=(Element)it.next();
+      String accountType=identity.attributeValue("type");
+      if ("registered".equals(accountType) || "admin".equals(accountType)) {
+        isRegistered=Boolean.TRUE;
+        break;
+      }
+    }
+  }
+  registeredUsersCache.put(from.toBareJID(),isRegistered);
+synchronized (from.toBareJID().intern()) {
+    from.toBareJID().intern().notifyAll();
+  }
+}

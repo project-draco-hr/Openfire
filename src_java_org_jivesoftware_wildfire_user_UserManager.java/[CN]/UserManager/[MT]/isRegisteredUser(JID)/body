@@ -1,0 +1,46 @@
+{
+  Boolean isRegistered=null;
+  XMPPServer server=XMPPServer.getInstance();
+  if (server.isLocal(user)) {
+    isRegistered=(Boolean)registeredUsersCache.get(user.getNode());
+  }
+ else {
+    isRegistered=(Boolean)registeredUsersCache.get(user.toString());
+    if (isRegistered == null) {
+      isRegistered=(Boolean)registeredUsersCache.get(user.toBareJID());
+    }
+  }
+  if (isRegistered == null) {
+    if (server.isLocal(user)) {
+      try {
+        getUser(user.getNode());
+        isRegistered=Boolean.TRUE;
+      }
+ catch (      UserNotFoundException e) {
+        isRegistered=Boolean.FALSE;
+      }
+      registeredUsersCache.put(user.getNode(),isRegistered);
+    }
+ else {
+      IQ iq=new IQ(IQ.Type.get);
+      iq.setFrom(server.getServerInfo().getName());
+      iq.setTo(user.toBareJID());
+      iq.setChildElement("query","http://jabber.org/protocol/disco#info");
+      server.getIQRouter().addIQResultListener(iq.getID(),this);
+synchronized (user.toBareJID().intern()) {
+        server.getIQRouter().route(iq);
+        try {
+          user.toBareJID().intern().wait(600000);
+        }
+ catch (        InterruptedException e) {
+        }
+      }
+      isRegistered=(Boolean)registeredUsersCache.get(user.toBareJID());
+      if (isRegistered == null) {
+        isRegistered=Boolean.FALSE;
+        registeredUsersCache.put(user.toString(),isRegistered);
+      }
+    }
+  }
+  return isRegistered.booleanValue();
+}
