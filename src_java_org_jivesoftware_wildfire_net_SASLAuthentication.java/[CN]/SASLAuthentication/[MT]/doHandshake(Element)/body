@@ -24,7 +24,14 @@ case AUTH:
           Map<String,String> props=new TreeMap<String,String>();
           props.put(Sasl.QOP,"auth");
           SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
-          byte[] challenge=ss.evaluateResponse(new byte[0]);
+          byte[] token=new byte[0];
+          if (doc.isTextOnly()) {
+            token=StringUtils.decodeBase64(doc.getText()).getBytes(CHARSET);
+            if (token == null) {
+              token=new byte[0];
+            }
+          }
+          byte[] challenge=ss.evaluateResponse(token);
           sendChallenge(challenge);
           session.setSessionData("SaslServer",ss);
         }
