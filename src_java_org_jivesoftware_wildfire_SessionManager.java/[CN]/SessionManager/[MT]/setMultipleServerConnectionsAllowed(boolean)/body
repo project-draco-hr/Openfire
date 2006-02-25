@@ -1,9 +1,6 @@
 {
-  if (getServerSessionIdleTime() == idleTime) {
-    return;
-  }
-  JiveGlobals.setProperty("xmpp.server.session.idle",Integer.toString(idleTime));
-  if (idleTime <= 0 && isMultipleServerConnectionsAllowed()) {
+  JiveGlobals.setProperty("xmpp.server.session.allowmultiple",Boolean.toString(allowed));
+  if (allowed && JiveGlobals.getIntProperty("xmpp.server.session.idle",10 * 60 * 1000) <= 0) {
     Log.warn("Allowing multiple S2S connections for each domain, without setting a " + "maximum idle timeout for these connections, is unrecommended! Either " + "set xmpp.server.session.allowmultiple to 'false' or change "+ "xmpp.server.session.idle to a (large) positive value.");
   }
 }

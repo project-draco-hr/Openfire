@@ -22,7 +22,7 @@
         alreadyExists=true;
       }
     }
-    if (alreadyExists) {
+    if (alreadyExists && !sessionManager.isMultipleServerConnectionsAllowed()) {
       connection.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
       connection.close();
       Log.debug("RS - Error, incoming connection already exists from: " + hostname);
