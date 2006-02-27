@@ -11,5 +11,9 @@
   calculateExtendedInformation();
   rJID=new JID(room.getName(),server.getServiceDomain(),nick);
   setPresence(presence);
+  Element element=presence.getElement().element(QName.get("x","http://jivesoftware.org/protocol/muc"));
+  if (element != null) {
+    voiceOnly=element.element("deaf-occupant/") != null;
+  }
   user.addRole(room.getName(),this);
 }

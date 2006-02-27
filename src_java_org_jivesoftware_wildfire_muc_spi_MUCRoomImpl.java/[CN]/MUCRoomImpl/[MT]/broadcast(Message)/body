@@ -1,6 +1,8 @@
 {
   for (  MUCRole occupant : occupants.values()) {
-    occupant.send(message);
+    if (!occupant.isVoiceOnly()) {
+      occupant.send(message);
+    }
   }
   if (isLogEnabled()) {
     MUCRole senderRole=null;
