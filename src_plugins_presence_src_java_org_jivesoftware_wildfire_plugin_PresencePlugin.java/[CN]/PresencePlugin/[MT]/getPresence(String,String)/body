@@ -6,7 +6,7 @@
   if (!hostname.equals(targetJID.getDomain())) {
     throw new UserNotFoundException("Presence of components not supported yet!");
   }
-  if (targetJID.getNode() == null) {
+  if (targetJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(targetJID.getNode())) {
     throw new UserNotFoundException("Username is null");
   }
   if (!isPresencePublic()) {
