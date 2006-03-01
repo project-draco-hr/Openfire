@@ -24,7 +24,7 @@
       result=IQ.createResultIQ(packet);
       Element vcard=DocumentHelper.createElement(QName.get("vCard","vcard-temp"));
       result.setChildElement(vcard);
-      if (recipient != null && recipient.getNode() != null) {
+      if (recipient != null && userManager.isRegisteredUser(recipient.getNode())) {
         User user=userManager.getUser(recipient.getNode());
         VCardManager vManager=VCardManager.getInstance();
         Element userVCard=vManager.getVCard(user.getUsername());

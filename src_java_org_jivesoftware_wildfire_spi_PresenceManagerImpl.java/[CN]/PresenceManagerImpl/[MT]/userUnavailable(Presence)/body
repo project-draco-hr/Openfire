@@ -1,11 +1,11 @@
 {
   if (presence.getTo() == null && server.isLocal(presence.getFrom())) {
     String username=presence.getFrom().getNode();
-    if (username == null || !UserManager.getInstance().isRegisteredUser(username)) {
+    if (username == null || !userManager.isRegisteredUser(username)) {
       return;
     }
     try {
-      User probeeUser=UserManager.getInstance().getUser(username);
+      User probeeUser=userManager.getUser(username);
       if (!presence.getElement().elements().isEmpty()) {
         probeeUser.getProperties().put(LAST_PRESENCE_PROP,presence.toXML());
       }

@@ -1,7 +1,7 @@
 {
   String username=null;
   Roster roster=null;
-  if (localServer.isLocal(address) && address.getNode() != null && !"".equals(address.getNode())) {
+  if (localServer.isLocal(address) && userManager.isRegisteredUser(address.getNode())) {
     username=address.getNode();
     roster=(Roster)CacheManager.getCache("username2roster").get(username);
     if (roster == null) {

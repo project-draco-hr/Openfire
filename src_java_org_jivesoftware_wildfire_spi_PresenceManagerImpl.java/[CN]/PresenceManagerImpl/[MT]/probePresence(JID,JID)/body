@@ -1,11 +1,11 @@
 {
   try {
     if (server.isLocal(probee)) {
-      if (probee.getNode() != null && !"".equals(probee.getNode())) {
+      if (userManager.isRegisteredUser(probee.getNode())) {
         Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
         if (sessions.isEmpty()) {
           try {
-            User probeeUser=UserManager.getInstance().getUser(probee.getNode());
+            User probeeUser=userManager.getUser(probee.getNode());
             String presenceXML=probeeUser.getProperties().get(LAST_PRESENCE_PROP);
             if (presenceXML != null) {
               try {

@@ -39,7 +39,7 @@
         }
       }
  else {
-        if (recipientJID != null && recipientJID.getNode() != null) {
+        if (recipientJID != null && userManager.isRegisteredUser(recipientJID.getNode())) {
           PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(recipientJID.getNode());
           if (list != null && list.shouldBlockPacket(packet)) {
             if (IQ.Type.set == packet.getType() || IQ.Type.get == packet.getType()) {
