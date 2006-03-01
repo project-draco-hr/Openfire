@@ -17,8 +17,11 @@ catch (      Exception e) {
       }
     }
   }
+  if (usersInterceptors.isEmpty()) {
+    return;
+  }
   String username=session.getAddress().getNode();
-  if (username != null) {
+  if (username != null && server.isLocal(session.getAddress())) {
     Collection<PacketInterceptor> userInterceptors=usersInterceptors.get(username);
     if (userInterceptors != null && !userInterceptors.isEmpty()) {
       for (      PacketInterceptor interceptor : userInterceptors) {
