@@ -3,6 +3,9 @@
     return;
   }
   if (localServer.isLocal(update.getFrom())) {
+    if (!RosterManager.isRosterServiceEnabled()) {
+      return;
+    }
     String name=update.getFrom().getNode();
     try {
       if (name != null && !"".equals(name)) {

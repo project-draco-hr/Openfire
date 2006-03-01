@@ -3,14 +3,16 @@
     return null;
   }
   ClientSession session=null;
-  session=preAuthenticatedSessions.get(jid);
-  if (session != null) {
-    return session;
+  if (resource != null) {
+    session=preAuthenticatedSessions.get(resource);
+    if (session != null) {
+      return session;
+    }
   }
   if (resource == null) {
     return null;
   }
-  if (username == null || !UserManager.getInstance().isRegisteredUser(username)) {
+  if (username == null || !userManager.isRegisteredUser(username)) {
     session=anonymousSessions.get(resource);
   }
  else {

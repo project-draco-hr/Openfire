@@ -3,7 +3,7 @@
   JID sender=packet.getFrom();
   IQ.Type type=packet.getType();
   try {
-    if ((sender.getNode() == null || !UserManager.getInstance().isRegisteredUser(sender.getNode())) && IQ.Type.get == type) {
+    if ((sender.getNode() == null || !RosterManager.isRosterServiceEnabled() || !userManager.isRegisteredUser(sender.getNode())) && IQ.Type.get == type) {
       IQ reply=IQ.createResultIQ(packet);
       reply.setChildElement("query","jabber:iq:roster");
       return reply;

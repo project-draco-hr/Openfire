@@ -9,7 +9,7 @@
     SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
   }
  else {
-    if (session.getAddress() != null && session.getAddress().getNode() != null) {
+    if (session.getAddress() != null && userManager.isRegisteredUser(session.getAddress().getNode())) {
       String username=session.getAddress().getNode();
 synchronized (username.intern()) {
         sessionMap=sessions.get(username);
@@ -33,6 +33,6 @@ synchronized (username.intern()) {
     router.route(offline);
   }
  else   if (preAuthenticatedSessions.containsValue(session)) {
-    preAuthenticatedSessions.remove(session.getAddress().toString());
+    preAuthenticatedSessions.remove(session.getAddress().getResource());
   }
 }
