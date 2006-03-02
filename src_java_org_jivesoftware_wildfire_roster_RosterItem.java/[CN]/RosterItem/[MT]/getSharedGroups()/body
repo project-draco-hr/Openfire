@@ -1,3 +1,11 @@
 {
-  return sharedGroups;
+  Collection<Group> groups=new ArrayList<Group>(sharedGroups.size());
+  for (  String groupName : sharedGroups) {
+    try {
+      groups.add(GroupManager.getInstance().getGroup(groupName));
+    }
+ catch (    GroupNotFoundException e) {
+    }
+  }
+  return groups;
 }

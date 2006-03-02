@@ -1,3 +1,11 @@
 {
-  return invisibleSharedGroups;
+  Collection<Group> groups=new ArrayList<Group>(invisibleSharedGroups.size());
+  for (  String groupName : invisibleSharedGroups) {
+    try {
+      groups.add(GroupManager.getInstance().getGroup(groupName));
+    }
+ catch (    GroupNotFoundException e) {
+    }
+  }
+  return groups;
 }
