@@ -1,11 +1,19 @@
 {
-  String ldapURL;
+  StringBuffer ldapURL=new StringBuffer();
   try {
-    ldapURL="ldap://" + host + ":"+ port+ "/"+ URLEncoder.encode(baseDN,"UTF-8");
-    ldapURL=ldapURL.replaceAll("\\+","%20");
+    baseDN=URLEncoder.encode(baseDN,"UTF-8");
+    baseDN=baseDN.replaceAll("\\+","%20");
   }
  catch (  java.io.UnsupportedEncodingException e) {
-    ldapURL="ldap://" + host + ":"+ port+ "/"+ baseDN;
   }
-  return ldapURL;
+  for (  String host : hosts) {
+    ldapURL.append("ldap://");
+    ldapURL.append(host);
+    ldapURL.append(":");
+    ldapURL.append(port);
+    ldapURL.append("/");
+    ldapURL.append(baseDN);
+    ldapURL.append(" ");
+  }
+  return ldapURL.toString();
 }

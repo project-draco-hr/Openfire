@@ -1,5 +1,9 @@
 {
-  this.host=JiveGlobals.getXMLProperty("ldap.host");
+  String host=JiveGlobals.getXMLProperty("ldap.host");
+  StringTokenizer st=new StringTokenizer(host," ,\t\n\r\f");
+  while (st.hasMoreTokens()) {
+    hosts.add(st.nextToken());
+  }
   String portStr=JiveGlobals.getXMLProperty("ldap.port");
   if (portStr != null) {
     try {
@@ -75,7 +79,7 @@
   }
   if (Log.isDebugEnabled()) {
     Log.debug("Created new LdapManager() instance, fields:");
-    Log.debug("\t host: " + host);
+    Log.debug("\t host: " + hosts);
     Log.debug("\t port: " + port);
     Log.debug("\t usernamefield: " + usernameField);
     Log.debug("\t baseDN: " + baseDN);
