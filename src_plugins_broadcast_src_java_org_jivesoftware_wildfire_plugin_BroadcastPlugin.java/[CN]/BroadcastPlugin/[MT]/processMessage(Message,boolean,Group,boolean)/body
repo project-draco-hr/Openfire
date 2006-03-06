@@ -1,0 +1,73 @@
+{
+  if (targetAll) {
+    if (!canProceed) {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setError(PacketError.Condition.not_allowed);
+      error.setTo(message.getFrom());
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        componentManager.getLog().error(e);
+      }
+      return;
+    }
+    try {
+      sessionManager.broadcast(message);
+    }
+ catch (    UnauthorizedException ue) {
+      Log.error(ue);
+    }
+  }
+ else {
+    if (group == null) {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setTo(message.getFrom());
+      error.setError(PacketError.Condition.not_allowed);
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Address not valid: " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        componentManager.getLog().error(e);
+      }
+    }
+ else     if (canProceed) {
+      for (      JID userJID : group.getMembers()) {
+        Message newMessage=message.createCopy();
+        newMessage.setTo(userJID);
+        try {
+          componentManager.sendPacket(this,newMessage);
+        }
+ catch (        Exception e) {
+          componentManager.getLog().error(e);
+        }
+      }
+    }
+ else {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setTo(message.getFrom());
+      error.setError(PacketError.Condition.not_allowed);
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        componentManager.getLog().error(e);
+      }
+    }
+  }
+}
