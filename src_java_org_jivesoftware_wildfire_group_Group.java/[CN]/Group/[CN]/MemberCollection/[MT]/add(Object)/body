@@ -1,6 +1,9 @@
 {
+  if (provider.isReadOnly()) {
+    return false;
+  }
   JID user=(JID)member;
-  boolean alreadyGroupUser=false;
+  boolean alreadyGroupUser;
   if (adminCollection) {
     alreadyGroupUser=members.contains(user);
   }
@@ -42,6 +45,7 @@
         }
       }
     }
+    groupManager.groupCache.remove(user);
     return true;
   }
   return false;

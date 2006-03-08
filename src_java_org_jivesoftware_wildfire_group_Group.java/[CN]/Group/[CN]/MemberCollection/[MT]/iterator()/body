@@ -13,6 +13,9 @@
       if (current == null) {
         throw new IllegalStateException();
       }
+      if (provider.isReadOnly()) {
+        return;
+      }
       JID user=(JID)current;
       iter.remove();
       provider.deleteMember(name,user);
