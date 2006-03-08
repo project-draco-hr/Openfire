@@ -14,18 +14,18 @@
       }
       roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate.getNode());
     }
-    if (!server.isLocal(deletedUser)) {
-      sendSubscribeRequest(userToUpdate,deletedUser,false);
-    }
-    if (!server.isLocal(userToUpdate)) {
-      sendSubscribeRequest(deletedUser,userToUpdate,false);
-    }
     if (roster != null) {
       roster.deleteSharedUser(group,deletedUser);
     }
     if (deletedUserRoster != null) {
       Collection<Group> groups=GroupManager.getInstance().getGroups(userToUpdate);
       deletedUserRoster.deleteSharedUser(userToUpdate,groups,group);
+    }
+    if (!server.isLocal(deletedUser)) {
+      sendSubscribeRequest(userToUpdate,deletedUser,false);
+    }
+    if (!server.isLocal(userToUpdate)) {
+      sendSubscribeRequest(deletedUser,userToUpdate,false);
     }
   }
 }
