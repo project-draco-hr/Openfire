@@ -2,8 +2,9 @@
   Map<JID,List<Group>> sharedGroupUsers=new HashMap<JID,List<Group>>();
   for (  Group group : sharedGroups) {
     Collection<JID> users=rosterManager.getSharedUsersForRoster(group,this);
+    JID userJID=getUserJID();
     for (    JID jid : users) {
-      if (!isRosterItem(jid) && !getUsername().equals(jid.getNode())) {
+      if (!isRosterItem(jid) && !userJID.equals(jid)) {
         List<Group> groups=sharedGroupUsers.get(jid);
         if (groups == null) {
           groups=new ArrayList<Group>();
