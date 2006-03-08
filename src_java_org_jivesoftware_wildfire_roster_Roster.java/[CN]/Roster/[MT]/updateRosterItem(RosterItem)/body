@@ -4,6 +4,10 @@
     throw new UserNotFoundException(item.getJid().toBareJID());
   }
   if (item.isShared() && item.getID() == 0) {
+    String defaultContactName=UserNameManager.getUserName(item.getJid());
+    if (item.isOnlyShared() && defaultContactName.equals(item.getNickname())) {
+      return;
+    }
     try {
       rosterItemProvider.createItem(username,item);
     }
