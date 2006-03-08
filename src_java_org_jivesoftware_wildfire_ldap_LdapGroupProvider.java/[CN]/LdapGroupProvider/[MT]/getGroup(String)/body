@@ -5,8 +5,10 @@
   if (groups.size() > 1) {
     throw new GroupNotFoundException("Too many groups with name " + group + " were found.");
   }
-  for (  Group g : groups) {
-    return g;
+ else   if (groups.isEmpty()) {
+    throw new GroupNotFoundException("Group with name " + group + " not found.");
   }
-  throw new GroupNotFoundException("Group with name " + group + " not found.");
+ else {
+    return groups.iterator().next();
+  }
 }

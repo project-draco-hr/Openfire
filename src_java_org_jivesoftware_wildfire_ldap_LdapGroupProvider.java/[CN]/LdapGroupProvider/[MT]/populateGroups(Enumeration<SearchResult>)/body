@@ -3,7 +3,7 @@
     Log.debug("Starting to populate groups with users.");
   }
   TreeMap<String,Group> groups=new TreeMap<String,Group>();
-  DirContext ctx=null;
+  DirContext ctx;
   try {
     ctx=manager.getContext();
   }
@@ -19,7 +19,7 @@
   while (answer.hasMoreElements()) {
     String name="";
     try {
-      Attributes a=(((SearchResult)answer.nextElement()).getAttributes());
+      Attributes a=answer.nextElement().getAttributes();
       String description;
       try {
         name=((String)((a.get(manager.getGroupNameField())).get()));
@@ -53,7 +53,7 @@
           }
         }
         try {
-          JID userJID=null;
+          JID userJID;
           if (!username.contains(serverName)) {
             String escapedUsername=JID.escapeNode(username);
             userManager.getUser(escapedUsername);
@@ -73,7 +73,7 @@
       if (manager.isDebugEnabled()) {
         Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
       }
-      Group g=new Group(this,name,description,members,new ArrayList<JID>());
+      Group g=new Group(name,description,members,new ArrayList<JID>());
       groups.put(name,g);
     }
  catch (    Exception e) {

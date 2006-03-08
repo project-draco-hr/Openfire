@@ -29,15 +29,5 @@
       Log.error(e);
     }
   }
-  List<Group> groups=new ArrayList<Group>(groupNames.size());
-  GroupManager manager=GroupManager.getInstance();
-  for (  String groupName : groupNames) {
-    try {
-      groups.add(manager.getGroup(groupName));
-    }
- catch (    GroupNotFoundException e) {
-      Log.error(e);
-    }
-  }
-  return groups;
+  return new GroupCollection(groupNames.toArray(new String[groupNames.size()]));
 }
