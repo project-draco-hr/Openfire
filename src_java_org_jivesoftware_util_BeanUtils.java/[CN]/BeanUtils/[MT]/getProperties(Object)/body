@@ -1,0 +1,18 @@
+{
+  Map properties=new HashMap();
+  try {
+    BeanInfo beanInfo=Introspector.getBeanInfo(bean.getClass());
+    PropertyDescriptor[] descriptors=beanInfo.getPropertyDescriptors();
+    String[] names=new String[descriptors.length];
+    for (int i=0; i < names.length; i++) {
+      String name=descriptors[i].getName();
+      Class type=descriptors[i].getPropertyType();
+      Object value=descriptors[i].getReadMethod().invoke(bean,(java.lang.Object[])null);
+      properties.put(name,encode(value));
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return properties;
+}

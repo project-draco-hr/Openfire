@@ -1,0 +1,23 @@
+{
+  if (value instanceof String) {
+    return (String)value;
+  }
+  if (value instanceof Boolean || value instanceof Integer || value instanceof Long|| value instanceof Float|| value instanceof Double) {
+    return value.toString();
+  }
+  if (value instanceof Date) {
+    try {
+      return dateFormatter.format((Date)value);
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  if (value instanceof Color) {
+    Color color=(Color)value;
+    return color.getRed() + "," + color.getGreen()+ ","+ color.getBlue();
+  }
+  if (value instanceof Class) {
+    return ((Class)value).getName();
+  }
+  return null;
+}

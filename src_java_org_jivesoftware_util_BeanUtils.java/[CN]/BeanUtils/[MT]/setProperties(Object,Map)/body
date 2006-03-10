@@ -1,0 +1,20 @@
+{
+  try {
+    for (Iterator iter=properties.keySet().iterator(); iter.hasNext(); ) {
+      String propName=(String)iter.next();
+      try {
+        PropertyDescriptor descriptor=new PropertyDescriptor(propName,bean.getClass());
+        Class propertyType=descriptor.getPropertyType();
+        Object value=decode(propertyType,(String)properties.get(propName));
+        descriptor.getWriteMethod().invoke(bean,new Object[]{value});
+      }
+ catch (      IntrospectionException ie) {
+      }
+catch (      InvocationTargetException ite) {
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}
