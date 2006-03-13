@@ -2,8 +2,8 @@
   if (manager.isDebugEnabled()) {
     Log.debug("Trying to find all groups in the system.");
   }
-  DirContext ctx;
-  NamingEnumeration<SearchResult> answer=null;
+  DirContext ctx=null;
+  NamingEnumeration<SearchResult> answer;
   try {
     ctx=manager.getContext();
     if (manager.isDebugEnabled()) {
@@ -17,11 +17,21 @@
     if (manager.isDebugEnabled()) {
       Log.debug("... search finished");
     }
+    return answer;
   }
  catch (  Exception e) {
     if (manager.isDebugEnabled()) {
       Log.debug("Error while searching for groups.",e);
     }
+    return null;
   }
-  return answer;
+ finally {
+    if (ctx != null) {
+      try {
+        ctx.close();
+      }
+ catch (      Exception ex) {
+      }
+    }
+  }
 }

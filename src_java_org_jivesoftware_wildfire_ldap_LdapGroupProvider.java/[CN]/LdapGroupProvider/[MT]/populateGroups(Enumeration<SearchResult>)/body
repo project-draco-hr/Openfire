@@ -2,93 +2,99 @@
   if (manager.isDebugEnabled()) {
     Log.debug("Starting to populate groups with users.");
   }
-  TreeMap<String,Group> groups=new TreeMap<String,Group>();
-  DirContext ctx;
+  DirContext ctx=null;
   try {
-    ctx=manager.getContext();
-  }
- catch (  Exception e) {
-    return new ArrayList<Group>();
-  }
-  SearchControls ctrls=new SearchControls();
-  ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
-  ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-  String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
-  XMPPServer server=XMPPServer.getInstance();
-  String serverName=server.getServerInfo().getName();
-  while (answer.hasMoreElements()) {
-    String name="";
+    TreeMap<String,Group> groups=new TreeMap<String,Group>();
     try {
-      Attributes a=answer.nextElement().getAttributes();
-      String description;
-      try {
-        name=((String)((a.get(manager.getGroupNameField())).get()));
-        description=((String)((a.get(manager.getGroupDescriptionField())).get()));
-      }
- catch (      Exception e) {
-        description="";
-      }
-      TreeSet<JID> members=new TreeSet<JID>();
-      Attribute member=a.get(manager.getGroupMemberField());
-      NamingEnumeration ne=member.getAll();
-      while (ne.hasMore()) {
-        String username=(String)ne.next();
-        if (!manager.isPosixMode()) {
-          try {
-            LdapName ldapname=new LdapName(username);
-            String ldapcn=ldapname.get(ldapname.size() - 1);
-            String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
-            NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
-            if (usrAnswer.hasMoreElements()) {
-              username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
-            }
- else {
-              throw new UserNotFoundException();
-            }
-          }
- catch (          Exception e) {
-            if (manager.isDebugEnabled()) {
-              Log.debug("Error populating user with DN: " + username,e);
-            }
-          }
-        }
-        try {
-          JID userJID;
-          if (!username.contains(serverName)) {
-            String escapedUsername=JID.escapeNode(username);
-            userManager.getUser(escapedUsername);
-            userJID=server.createJID(escapedUsername,null);
-          }
- else {
-            userJID=new JID(username);
-          }
-          members.add(userJID);
-        }
- catch (        UserNotFoundException e) {
-          if (manager.isDebugEnabled()) {
-            Log.debug("User not found: " + username);
-          }
-        }
-      }
-      if (manager.isDebugEnabled()) {
-        Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
-      }
-      Group g=new Group(name,description,members,new ArrayList<JID>());
-      groups.put(name,g);
+      ctx=manager.getContext();
     }
  catch (    Exception e) {
-      if (manager.isDebugEnabled()) {
-        Log.debug("Error while populating group, " + name + ".",e);
+      return new ArrayList<Group>();
+    }
+    SearchControls ctrls=new SearchControls();
+    ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
+    ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
+    XMPPServer server=XMPPServer.getInstance();
+    String serverName=server.getServerInfo().getName();
+    while (answer.hasMoreElements()) {
+      String name="";
+      try {
+        Attributes a=answer.nextElement().getAttributes();
+        String description;
+        try {
+          name=((String)((a.get(manager.getGroupNameField())).get()));
+          description=((String)((a.get(manager.getGroupDescriptionField())).get()));
+        }
+ catch (        Exception e) {
+          description="";
+        }
+        TreeSet<JID> members=new TreeSet<JID>();
+        Attribute member=a.get(manager.getGroupMemberField());
+        NamingEnumeration ne=member.getAll();
+        while (ne.hasMore()) {
+          String username=(String)ne.next();
+          if (!manager.isPosixMode()) {
+            try {
+              LdapName ldapname=new LdapName(username);
+              String ldapcn=ldapname.get(ldapname.size() - 1);
+              String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
+              NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
+              if (usrAnswer.hasMoreElements()) {
+                username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+              }
+ else {
+                throw new UserNotFoundException();
+              }
+            }
+ catch (            Exception e) {
+              if (manager.isDebugEnabled()) {
+                Log.debug("Error populating user with DN: " + username,e);
+              }
+            }
+          }
+          try {
+            JID userJID;
+            if (!username.contains(serverName)) {
+              String escapedUsername=JID.escapeNode(username);
+              userManager.getUser(escapedUsername);
+              userJID=server.createJID(escapedUsername,null);
+            }
+ else {
+              userJID=new JID(username);
+            }
+            members.add(userJID);
+          }
+ catch (          UserNotFoundException e) {
+            if (manager.isDebugEnabled()) {
+              Log.debug("User not found: " + username);
+            }
+          }
+        }
+        if (manager.isDebugEnabled()) {
+          Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
+        }
+        Group g=new Group(name,description,members,new ArrayList<JID>());
+        groups.put(name,g);
+      }
+ catch (      Exception e) {
+        if (manager.isDebugEnabled()) {
+          Log.debug("Error while populating group, " + name + ".",e);
+        }
       }
     }
+    if (manager.isDebugEnabled()) {
+      Log.debug("Finished populating group(s) with users.");
+    }
+    return groups.values();
   }
-  if (manager.isDebugEnabled()) {
-    Log.debug("Finished populating group(s) with users.");
+  finally {
+    try {
+      if (ctx != null) {
+        ctx.close();
+      }
+    }
+ catch (    Exception e) {
+    }
   }
-  try {
-    ctx.close();
-  }
- catch (  Exception e) {
-  }
-  return groups.values();
 }
