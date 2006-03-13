@@ -53,7 +53,13 @@
         connection.close();
       }
     }
- catch (    Exception e) {
+ catch (    SSLHandshakeException e) {
+      Log.debug("Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+      if (connection != null) {
+        connection.close();
+      }
+    }
+catch (    Exception e) {
       Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
       if (connection != null) {
         connection.close();
