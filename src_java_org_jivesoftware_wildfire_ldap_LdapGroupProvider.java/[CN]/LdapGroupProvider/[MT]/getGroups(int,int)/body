@@ -1,6 +1,13 @@
 {
   String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
-  NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,standardAttributes);
+  NamingEnumeration<SearchResult> answer;
+  try {
+    answer=searchForGroups(searchFilter,standardAttributes);
+  }
+ catch (  NamingException e) {
+    Log.error("Error searching for groups in LDAP",e);
+    return Collections.emptyList();
+  }
   Vector<SearchResult> v=new Vector<SearchResult>();
   for (int i=1; answer.hasMoreElements() && i <= (start + num); i++) {
     try {
@@ -12,5 +19,11 @@
  catch (    Exception e) {
     }
   }
-  return populateGroups(v.elements());
+  try {
+    return populateGroups(v.elements());
+  }
+ catch (  NamingException e) {
+    Log.error("Error populating groups recieved from LDAP",e);
+    return Collections.emptyList();
+  }
 }

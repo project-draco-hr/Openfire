@@ -1,4 +1,9 @@
 {
   String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
-  return populateGroups(searchForGroups(filter,standardAttributes));
+  try {
+    return populateGroups(searchForGroups(filter,standardAttributes));
+  }
+ catch (  NamingException ex) {
+    return Collections.emptyList();
+  }
 }

@@ -8,15 +8,20 @@
   }
   String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
   String returningAttributes[]={manager.getGroupNameField()};
-  NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,returningAttributes);
-  for (; answer.hasMoreElements(); count++) {
-    try {
-      answer.next();
+  try {
+    NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,returningAttributes);
+    for (; answer.hasMoreElements(); count++) {
+      try {
+        answer.next();
+      }
+ catch (      Exception e) {
+      }
     }
- catch (    Exception e) {
-    }
+    this.groupCount=count;
+    this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
   }
-  this.groupCount=count;
-  this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
+ catch (  NamingException ex) {
+    Log.error("Error searching for groups in LDAP",ex);
+  }
   return count;
 }

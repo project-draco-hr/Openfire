@@ -10,5 +10,11 @@
     }
   }
   String filter=MessageFormat.format(manager.getGroupSearchFilter(),username);
-  return populateGroups(searchForGroups(filter,standardAttributes));
+  try {
+    return populateGroups(searchForGroups(filter,standardAttributes));
+  }
+ catch (  NamingException e) {
+    Log.error("Error populating groups recieved from LDAP",e);
+    return Collections.emptyList();
+  }
 }

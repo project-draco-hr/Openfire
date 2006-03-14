@@ -1,7 +1,14 @@
 {
   String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
   String searchFilter="(&" + filter + "("+ manager.getGroupNameField()+ "="+ group+ "))";
-  Collection<Group> groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
+  Collection<Group> groups;
+  try {
+    groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
+  }
+ catch (  NamingException e) {
+    Log.error("Error populating groups from LDAP",e);
+    throw new GroupNotFoundException("Error populating groups from LDAP",e);
+  }
   if (groups.size() > 1) {
     throw new GroupNotFoundException("Too many groups with name " + group + " were found.");
   }
