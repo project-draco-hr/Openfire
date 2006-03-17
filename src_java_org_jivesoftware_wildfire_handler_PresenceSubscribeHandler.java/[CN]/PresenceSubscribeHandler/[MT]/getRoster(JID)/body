@@ -3,15 +3,10 @@
   Roster roster=null;
   if (localServer.isLocal(address) && userManager.isRegisteredUser(address.getNode())) {
     username=address.getNode();
-    roster=(Roster)CacheManager.getCache("username2roster").get(username);
-    if (roster == null) {
-synchronized (address.toString().intern()) {
-        roster=(Roster)CacheManager.getCache("username2roster").get(username);
-        if (roster == null) {
-          roster=new Roster(username);
-          CacheManager.getCache("username2roster").put(username,roster);
-        }
-      }
+    try {
+      roster=rosterManager.getRoster(username);
+    }
+ catch (    UserNotFoundException e) {
     }
   }
   return roster;

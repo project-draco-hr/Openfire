@@ -1,7 +1,7 @@
 {
   Roster deletedUserRoster=null;
   if (server.isLocal(deletedUser)) {
-    deletedUserRoster=(Roster)CacheManager.getCache("username2roster").get(deletedUser.getNode());
+    deletedUserRoster=(Roster)CacheManager.getCache("Roster").get(deletedUser.getNode());
   }
   for (  JID userToUpdate : users) {
     Roster roster=null;
@@ -12,7 +12,7 @@
  catch (      UserNotFoundException e) {
         continue;
       }
-      roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate.getNode());
+      roster=(Roster)CacheManager.getCache("Roster").get(userToUpdate.getNode());
     }
     if (roster != null) {
       roster.deleteSharedUser(group,deletedUser);

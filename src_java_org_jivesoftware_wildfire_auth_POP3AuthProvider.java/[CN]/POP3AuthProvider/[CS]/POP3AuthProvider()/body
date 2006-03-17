@@ -2,7 +2,9 @@
   if (Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.authCache.enabled"))) {
     int maxSize=JiveGlobals.getXMLProperty("pop3.authCache.size",512 * 1024);
     long maxLifetime=(long)JiveGlobals.getXMLProperty("pop3.authCache.maxLifetime",(int)JiveConstants.HOUR);
-    authCache=new Cache("POP3 Auth Cache",maxSize,maxLifetime);
+    String cacheName="POP3 Authentication";
+    CacheManager.initializeCache(cacheName,"pop3",maxSize,maxLifetime);
+    authCache=CacheManager.getCache(cacheName);
   }
   useSSL=Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.ssl"));
   authRequiresDomain=Boolean.valueOf(JiveGlobals.getXMLProperty("pop3.authRequiresDomain"));

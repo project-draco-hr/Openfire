@@ -1,7 +1,7 @@
 {
   Roster addedUserRoster=null;
   if (server.isLocal(addedUser)) {
-    addedUserRoster=(Roster)CacheManager.getCache("username2roster").get(addedUser.getNode());
+    addedUserRoster=(Roster)CacheManager.getCache("Roster").get(addedUser.getNode());
   }
   for (  JID userToUpdate : users) {
     if (!addedUser.equals(userToUpdate)) {
@@ -13,7 +13,7 @@
  catch (        UserNotFoundException e) {
           continue;
         }
-        roster=(Roster)CacheManager.getCache("username2roster").get(userToUpdate.getNode());
+        roster=(Roster)CacheManager.getCache("Roster").get(userToUpdate.getNode());
       }
       if (roster != null) {
         roster.addSharedUser(group,addedUser);
