@@ -1,0 +1,26 @@
+{
+  if (name == null && node != null) {
+    Node pubNode=getNode(node);
+    if (node != null && canDiscoverNode(pubNode)) {
+      XDataFormImpl dataForm=new XDataFormImpl(DataForm.TYPE_RESULT);
+      XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
+      field.setType(FormField.TYPE_HIDDEN);
+      field.addValue("http://jabber.org/protocol/muc#roominfo");
+      dataForm.addField(field);
+      field=new XFormFieldImpl("muc#roominfo_description");
+      field.setLabel(LocaleUtils.getLocalizedString("muc.extended.info.desc"));
+      dataForm.addField(field);
+      field=new XFormFieldImpl("muc#roominfo_subject");
+      field.setLabel(LocaleUtils.getLocalizedString("muc.extended.info.subject"));
+      dataForm.addField(field);
+      field=new XFormFieldImpl("muc#roominfo_occupants");
+      field.setLabel(LocaleUtils.getLocalizedString("muc.extended.info.occupants"));
+      dataForm.addField(field);
+      field=new XFormFieldImpl("x-muc#roominfo_creationdate");
+      field.setLabel(LocaleUtils.getLocalizedString("muc.extended.info.creationdate"));
+      dataForm.addField(field);
+      return dataForm;
+    }
+  }
+  return null;
+}

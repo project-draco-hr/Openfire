@@ -1,0 +1,23 @@
+{
+  List<String> values;
+  if ("pubsub#leaf_node_association_policy".equals(field.getVariable())) {
+    values=field.getValues();
+    if (values.size() > 0) {
+      associationPolicy=LeafNodeAssociationPolicy.valueOf(values.get(0));
+    }
+  }
+ else   if ("pubsub#leaf_node_association_whitelist".equals(field.getVariable())) {
+    associationTrusted=new ArrayList<JID>();
+    for (    String value : field.getValues()) {
+      try {
+        associationTrusted.add(new JID(value));
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+ else   if ("pubsub#leaf_nodes_max".equals(field.getVariable())) {
+    values=field.getValues();
+    maxLeafNodes=values.size() > 0 ? Integer.parseInt(values.get(0)) : -1;
+  }
+}

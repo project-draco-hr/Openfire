@@ -1,0 +1,24 @@
+{
+  super.addFormFields(form,isEditing);
+  FormField formField=form.addField();
+  formField.setVariable("pubsub#persist_items");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.persist_items"));
+  }
+  formField.addValue(persistPublishedItems);
+  formField=form.addField();
+  formField.setVariable("pubsub#max_items");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.max_items"));
+  }
+  formField.addValue(maxPublishedItems);
+  formField=form.addField();
+  formField.setVariable("pubsub#max_payload_size");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.max_payload_size"));
+  }
+  formField.addValue(maxPayloadSize);
+}

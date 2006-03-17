@@ -1,0 +1,29 @@
+{
+  super.addFormFields(form,isEditing);
+  FormField formField=form.addField();
+  formField.setVariable("pubsub#leaf_node_association_policy");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_node_association"));
+    formField.addOption(null,LeafNodeAssociationPolicy.all.name());
+    formField.addOption(null,LeafNodeAssociationPolicy.owners.name());
+    formField.addOption(null,LeafNodeAssociationPolicy.whitelist.name());
+  }
+  formField.addValue(associationPolicy.name());
+  formField=form.addField();
+  formField.setVariable("pubsub#leaf_node_association_whitelist");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_node_whitelist"));
+  }
+  for (  JID contact : associationTrusted) {
+    formField.addValue(contact.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#leaf_nodes_max");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_nodes_max"));
+  }
+  formField.addValue(maxLeafNodes);
+}

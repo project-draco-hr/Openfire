@@ -1,0 +1,55 @@
+{
+  String nodeID=optionsElement.attributeValue("node");
+  String subID=optionsElement.attributeValue("subid");
+  Node node=null;
+  if (nodeID == null) {
+    node=service.getRootCollectionNode();
+  }
+ else {
+    node=service.getNode(nodeID);
+    if (node == null) {
+      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+      return;
+    }
+  }
+  NodeSubscription subscription=null;
+  if (node.isMultipleSubscriptionsEnabled()) {
+    if (subID == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
+ else {
+      subscription=node.getSubscription(subID);
+      if (subscription == null) {
+        Element pubsubError=DocumentHelper.createElement(QName.get("invalid-subid","http://jabber.org/protocol/pubsub#errors"));
+        sendErrorPacket(iq,PacketError.Condition.not_acceptable,pubsubError);
+        return;
+      }
+    }
+  }
+ else {
+    String jidAttribute=optionsElement.attributeValue("jid");
+    if (jidAttribute == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("jid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
+    JID subscriberJID=new JID(jidAttribute);
+    subscription=node.getSubscription(subscriberJID);
+    if (subscription == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("not-subscribed","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.unexpected_request,pubsubError);
+      return;
+    }
+  }
+  if (!subscription.canModify(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Element replyChildElement=childElement.createCopy();
+  reply.setChildElement(replyChildElement);
+  replyChildElement.element("options").add(subscription.getConfigurationForm().getElement());
+  router.route(reply);
+}

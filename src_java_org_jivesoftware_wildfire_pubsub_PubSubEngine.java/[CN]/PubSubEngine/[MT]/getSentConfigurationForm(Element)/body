@@ -1,0 +1,35 @@
+{
+  DataForm completedForm=null;
+  FormField formField=null;
+  Element formElement=configureElement.element(QName.get("x","jabber:x:data"));
+  if (formElement != null) {
+    completedForm=new DataForm(formElement);
+  }
+  String accessModel=configureElement.attributeValue("access");
+  if (accessModel != null) {
+    if (completedForm == null) {
+      completedForm=new DataForm(DataForm.Type.submit);
+      formField=completedForm.addField();
+      formField.setVariable("FORM_TYPE");
+      formField.setType(FormField.Type.hidden);
+      formField.addValue("http://jabber.org/protocol/pubsub#node_config");
+    }
+    if (completedForm.getField("pubsub#access_model") == null) {
+      formField=completedForm.addField();
+      formField.setVariable("pubsub#access_model");
+      formField.addValue(accessModel);
+    }
+ else {
+      Log.debug("Owner sent access model in data form and as attribute: " + configureElement.asXML());
+    }
+    List groups=configureElement.elements("group");
+    if (!groups.isEmpty()) {
+      formField=completedForm.addField();
+      formField.setVariable("pubsub#roster_groups_allowed");
+      for (Iterator it=groups.iterator(); it.hasNext(); ) {
+        formField.addValue(((Element)it.next()).getTextTrim());
+      }
+    }
+  }
+  return completedForm;
+}

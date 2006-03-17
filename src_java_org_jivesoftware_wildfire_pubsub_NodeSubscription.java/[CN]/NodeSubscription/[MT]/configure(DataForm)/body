@@ -1,0 +1,75 @@
+{
+  List<String> values;
+  String booleanValue;
+  options.removeField("FORM_TYPE");
+  FormField collectionField=options.getField("pubsub#subscription_type");
+  if (collectionField != null) {
+    values=collectionField.getValues();
+    if (values.size() > 0) {
+      type=Type.valueOf(values.get(0));
+    }
+    options.removeField("pubsub#subscription_type");
+  }
+  collectionField=options.getField("pubsub#subscription_depth");
+  if (collectionField != null) {
+    values=collectionField.getValues();
+    depth="all".equals(values.get(0)) ? 0 : 1;
+    options.removeField("pubsub#subscription_depth");
+  }
+  for (  FormField field : options.getFields()) {
+    boolean fieldExists=true;
+    if ("pubsub#deliver".equals(field.getVariable())) {
+      values=field.getValues();
+      booleanValue=(values.size() > 0 ? values.get(0) : "1");
+      deliverNotifications="1".equals(booleanValue);
+    }
+ else     if ("pubsub#digest".equals(field.getVariable())) {
+      values=field.getValues();
+      booleanValue=(values.size() > 0 ? values.get(0) : "1");
+      usingDigest="1".equals(booleanValue);
+    }
+ else     if ("pubsub#digest_frequency".equals(field.getVariable())) {
+      values=field.getValues();
+      digestFrequency=values.size() > 0 ? Integer.parseInt(values.get(0)) : 86400000;
+    }
+ else     if ("pubsub#expire".equals(field.getVariable())) {
+      values=field.getValues();
+synchronized (dateFormat) {
+        try {
+          expire=dateFormat.parse(values.get(0));
+        }
+ catch (        ParseException e) {
+          Log.error("Error parsing date",e);
+        }
+      }
+    }
+ else     if ("pubsub#include_body".equals(field.getVariable())) {
+      values=field.getValues();
+      booleanValue=(values.size() > 0 ? values.get(0) : "1");
+      includingBody="1".equals(booleanValue);
+    }
+ else     if ("pubsub#show-values".equals(field.getVariable())) {
+      presenceStates=new ArrayList<String>();
+      for (      String value : field.getValues()) {
+        try {
+          presenceStates.add(value);
+        }
+ catch (        Exception e) {
+        }
+      }
+    }
+ else     if ("x-pubsub#keywords".equals(field.getVariable())) {
+      values=field.getValues();
+      keyword=values.isEmpty() ? null : values.get(0);
+    }
+ else {
+      fieldExists=false;
+    }
+    if (fieldExists) {
+      setConfigurationPending(false);
+    }
+  }
+  if (savedToDB) {
+    PubSubPersistenceManager.saveSubscription(service,node,this,false);
+  }
+}

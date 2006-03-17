@@ -1,0 +1,58 @@
+{
+  String nodeID=unsubscribeElement.attributeValue("node");
+  String subID=unsubscribeElement.attributeValue("subid");
+  Node node=null;
+  if (nodeID == null) {
+    node=service.getRootCollectionNode();
+  }
+ else {
+    node=service.getNode(nodeID);
+    if (node == null) {
+      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+      return;
+    }
+  }
+  NodeSubscription subscription=null;
+  if (node.isMultipleSubscriptionsEnabled()) {
+    if (subID == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
+ else {
+      subscription=node.getSubscription(subID);
+      if (subscription == null) {
+        Element pubsubError=DocumentHelper.createElement(QName.get("invalid-subid","http://jabber.org/protocol/pubsub#errors"));
+        sendErrorPacket(iq,PacketError.Condition.not_acceptable,pubsubError);
+        return;
+      }
+    }
+  }
+ else {
+    String jidAttribute=unsubscribeElement.attributeValue("jid");
+    if (jidAttribute == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("jid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
+    JID subscriberJID=new JID(jidAttribute);
+    subscription=node.getSubscription(subscriberJID);
+    if (subscription == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("not-subscribed","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.unexpected_request,pubsubError);
+      return;
+    }
+  }
+  JID from=iq.getFrom();
+  if (!node.isSubscriptionEnabled() && !service.isServiceAdmin(from)) {
+    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    return;
+  }
+  JID owner=new JID(from.toBareJID());
+  if (!subscription.canModify(from) && !subscription.canModify(owner)) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  node.cancelSubscription(subscription);
+  router.route(IQ.createResultIQ(iq));
+}

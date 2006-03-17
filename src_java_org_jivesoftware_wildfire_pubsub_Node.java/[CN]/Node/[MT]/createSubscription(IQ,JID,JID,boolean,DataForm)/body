@@ -1,0 +1,20 @@
+{
+  if (getAffiliate(owner) == null) {
+    addNoneAffiliation(owner);
+  }
+  NodeSubscription.State subState=NodeSubscription.State.subscribed;
+  if (authorizationRequired) {
+    subState=NodeSubscription.State.pending;
+  }
+ else   if (isSubscriptionConfigurationRequired()) {
+    subState=NodeSubscription.State.unconfigured;
+  }
+  NodeSubscription subscription=addSubscription(owner,subscriber,subState,options);
+  subscription.sendSubscriptionState(originalIQ);
+  if (isSendItemSubscribe()) {
+    PublishedItem lastItem=getLastPublishedItem();
+    if (lastItem != null) {
+      subscription.sendLastPublishedItem(lastItem);
+    }
+  }
+}

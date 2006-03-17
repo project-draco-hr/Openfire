@@ -1,0 +1,24 @@
+{
+  Node node=service.getNode(nodeID);
+  if (node == null) {
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+    return;
+  }
+  if (!node.isAdmin(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  DataForm completedForm=getSentConfigurationForm(configureElement);
+  if (completedForm != null) {
+    try {
+      node.configure(completedForm);
+      router.route(IQ.createResultIQ(iq));
+    }
+ catch (    NotAcceptableException e) {
+      sendErrorPacket(iq,PacketError.Condition.not_acceptable,null);
+    }
+  }
+ else {
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+  }
+}

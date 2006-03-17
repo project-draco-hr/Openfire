@@ -1,0 +1,23 @@
+{
+  String nodeID=deleteElement.attributeValue("node");
+  if (nodeID == null) {
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+    return;
+  }
+  Node node=service.getNode(nodeID);
+  if (node == null) {
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+    return;
+  }
+  if (!node.isAdmin(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  if (node.delete()) {
+    service.removeNode(node.getNodeID());
+    router.route(IQ.createResultIQ(iq));
+  }
+ else {
+    sendErrorPacket(iq,PacketError.Condition.internal_server_error,null);
+  }
+}

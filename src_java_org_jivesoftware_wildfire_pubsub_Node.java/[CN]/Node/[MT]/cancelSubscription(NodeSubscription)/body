@@ -1,0 +1,10 @@
+{
+  subscriptionsByID.remove(subscription.getID());
+  NodeAffiliate affiliate=subscription.getAffiliate();
+  if (affiliate != null && affiliate.getAffiliation() == NodeAffiliate.Affiliation.none && getSubscriptions(subscription.getOwner()).isEmpty()) {
+    removeAffiliation(affiliate);
+  }
+  if (savedToDB) {
+    PubSubPersistenceManager.removeSubscription(service,this,subscription);
+  }
+}

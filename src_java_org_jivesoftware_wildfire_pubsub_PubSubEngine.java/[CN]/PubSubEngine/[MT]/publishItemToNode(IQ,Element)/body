@@ -1,0 +1,59 @@
+{
+  String nodeID=publishElement.attributeValue("node");
+  Node node=null;
+  if (nodeID == null) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,pubsubError);
+    return;
+  }
+ else {
+    node=service.getNode(nodeID);
+    if (node == null) {
+      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+      return;
+    }
+  }
+  JID from=iq.getFrom();
+  JID owner=new JID(from.toBareJID());
+  if (!node.getPublisherModel().canPublish(node,owner) && !service.isServiceAdmin(owner)) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  if (node.isCollectionNode()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","publish");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
+    return;
+  }
+  LeafNode leafNode=(LeafNode)node;
+  Element item=publishElement.element("item");
+  List entries=null;
+  Element payload=null;
+  String itemID=null;
+  if (item != null) {
+    entries=item.elements();
+    payload=entries.isEmpty() ? null : (Element)entries.get(0);
+    itemID=item.attributeValue("id");
+  }
+  if (item == null && leafNode.isItemRequired()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("item-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  if (item != null && !leafNode.isItemRequired()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("item-forbidden","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  if (payload == null && leafNode.isDeliverPayloads()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("payload-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  if (entries.size() > 1) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("invalid-payload","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  leafNode.sendEventNotification(iq,itemID,payload);
+}

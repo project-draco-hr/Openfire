@@ -1,0 +1,76 @@
+{
+  super.initialize(server);
+  serviceName=JiveGlobals.getProperty("xmpp.pubsub.service");
+  if (serviceName == null) {
+    serviceName="pubsub";
+  }
+  String property=JiveGlobals.getProperty("xmpp.pubsub.sysadmin.jid");
+  String[] jids;
+  if (property != null) {
+    jids=property.split(",");
+    for (int i=0; i < jids.length; i++) {
+      sysadmins.add(jids[i].trim().toLowerCase());
+    }
+  }
+  nodeCreationRestricted=Boolean.parseBoolean(JiveGlobals.getProperty("xmpp.pubsub.create.anyone","false"));
+  property=JiveGlobals.getProperty("xmpp.pubsub.create.jid");
+  if (property != null) {
+    jids=property.split(",");
+    for (int i=0; i < jids.length; i++) {
+      allowedToCreate.add(jids[i].trim().toLowerCase());
+    }
+  }
+  routingTable=server.getRoutingTable();
+  router=server.getPacketRouter();
+  engine=new PubSubEngine(this,server.getPacketRouter());
+  leafDefaultConfiguration=PubSubPersistenceManager.loadDefaultConfiguration(this,true);
+  if (leafDefaultConfiguration == null) {
+    leafDefaultConfiguration=new DefaultNodeConfiguration(true);
+    leafDefaultConfiguration.setAccessModel(AccessModel.open);
+    leafDefaultConfiguration.setPublisherModel(PublisherModel.publishers);
+    leafDefaultConfiguration.setDeliverPayloads(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.deliverPayloads",false));
+    leafDefaultConfiguration.setLanguage(JiveGlobals.getProperty("xmpp.pubsub.default.language","English"));
+    leafDefaultConfiguration.setMaxPayloadSize(JiveGlobals.getIntProperty("xmpp.pubsub.default.language",5120));
+    leafDefaultConfiguration.setNotifyConfigChanges(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.configChanges",true));
+    leafDefaultConfiguration.setNotifyDelete(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.delete",true));
+    leafDefaultConfiguration.setNotifyRetract(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.retract",true));
+    leafDefaultConfiguration.setPersistPublishedItems(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.persistItems",false));
+    leafDefaultConfiguration.setMaxPublishedItems(JiveGlobals.getIntProperty("xmpp.pubsub.default.maxPublishedItems",-1));
+    leafDefaultConfiguration.setPresenceBasedDelivery(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.presenceBasedDelivery",false));
+    leafDefaultConfiguration.setSendItemSubscribe(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.sendItemSubscribe",true));
+    leafDefaultConfiguration.setSubscriptionEnabled(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.subscriptionEnabled",true));
+    leafDefaultConfiguration.setReplyPolicy(null);
+    PubSubPersistenceManager.createDefaultConfiguration(this,leafDefaultConfiguration);
+  }
+  collectionDefaultConfiguration=PubSubPersistenceManager.loadDefaultConfiguration(this,false);
+  if (collectionDefaultConfiguration == null) {
+    collectionDefaultConfiguration=new DefaultNodeConfiguration(false);
+    collectionDefaultConfiguration.setAccessModel(AccessModel.open);
+    collectionDefaultConfiguration.setPublisherModel(PublisherModel.publishers);
+    collectionDefaultConfiguration.setDeliverPayloads(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.deliverPayloads",false));
+    collectionDefaultConfiguration.setLanguage(JiveGlobals.getProperty("xmpp.pubsub.default.language","English"));
+    collectionDefaultConfiguration.setNotifyConfigChanges(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.configChanges",true));
+    collectionDefaultConfiguration.setNotifyDelete(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.delete",true));
+    collectionDefaultConfiguration.setNotifyRetract(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.notify.retract",true));
+    collectionDefaultConfiguration.setPresenceBasedDelivery(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.presenceBasedDelivery",false));
+    collectionDefaultConfiguration.setSendItemSubscribe(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.sendItemSubscribe",false));
+    collectionDefaultConfiguration.setSubscriptionEnabled(JiveGlobals.getBooleanProperty("xmpp.pubsub.default.subscriptionEnabled",true));
+    leafDefaultConfiguration.setReplyPolicy(null);
+    leafDefaultConfiguration.setAssociationPolicy(CollectionNode.LeafNodeAssociationPolicy.all);
+    leafDefaultConfiguration.setMaxLeafNodes(JiveGlobals.getIntProperty("xmpp.pubsub.default.maxLeafNodes",-1));
+    PubSubPersistenceManager.createDefaultConfiguration(this,collectionDefaultConfiguration);
+  }
+  PubSubPersistenceManager.loadNodes(this);
+  String rootNodeID=JiveGlobals.getProperty("xmpp.pubsub.root.nodeID","");
+  if (nodes.isEmpty()) {
+    String creator=JiveGlobals.getProperty("xmpp.pubsub.root.creator");
+    JID creatorJID=creator != null ? new JID(creator) : server.getAdmins().iterator().next();
+    rootCollectionNode=new CollectionNode(this,null,rootNodeID,creatorJID);
+    rootCollectionNode.addOwner(creatorJID);
+    rootCollectionNode.saveToDB();
+    addNode(rootCollectionNode);
+  }
+ else {
+    rootCollectionNode=(CollectionNode)getNode(rootNodeID);
+  }
+}

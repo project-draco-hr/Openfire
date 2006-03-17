@@ -1,0 +1,12 @@
+{
+synchronized (publishedItems) {
+    int size=publishedItems.size();
+    if (recentItems > size) {
+      return Collections.unmodifiableList(publishedItems);
+    }
+ else {
+      List<PublishedItem> recent=publishedItems.subList(size - recentItems,size);
+      return new ArrayList<PublishedItem>(recent);
+    }
+  }
+}

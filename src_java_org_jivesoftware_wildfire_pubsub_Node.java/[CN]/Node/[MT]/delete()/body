@@ -1,0 +1,20 @@
+{
+  if (PubSubPersistenceManager.removeNode(service,this)) {
+    if (parent != null) {
+      parent.removeChildNode(this);
+    }
+    for (    Node node : getNodes()) {
+    }
+    if (notifyDelete) {
+      Message message=new Message();
+      Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
+      Element items=event.addElement("delete");
+      items.addAttribute("node",nodeID);
+      broadcastSubscribers(message,true);
+    }
+    affiliates.clear();
+    subscriptionsByID.clear();
+    return true;
+  }
+  return false;
+}

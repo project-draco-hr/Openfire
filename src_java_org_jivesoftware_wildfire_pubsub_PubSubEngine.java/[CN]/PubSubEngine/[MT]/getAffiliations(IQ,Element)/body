@@ -1,0 +1,50 @@
+{
+  JID owner=new JID(iq.getFrom().toBareJID());
+  Collection<NodeSubscription> subscriptions=new ArrayList<NodeSubscription>();
+  Collection<NodeAffiliate> affiliations=new ArrayList<NodeAffiliate>();
+  for (  Node node : service.getNodes()) {
+    Collection<NodeSubscription> nodeSubscriptions=node.getSubscriptions(owner);
+    if (!nodeSubscriptions.isEmpty()) {
+      subscriptions.addAll(nodeSubscriptions);
+    }
+ else {
+      NodeAffiliate nodeAffiliate=node.getAffiliate(owner);
+      if (nodeAffiliate != null) {
+        affiliations.add(nodeAffiliate);
+      }
+    }
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Element replyChildElement=childElement.createCopy();
+  reply.setChildElement(replyChildElement);
+  if (subscriptions.isEmpty() && affiliations.isEmpty()) {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+ else {
+    Element affiliationsElement=replyChildElement.element("affiliations");
+    for (    NodeAffiliate affiliate : affiliations) {
+      Element entity=affiliationsElement.addElement("entity");
+      if (!affiliate.getNode().isRootCollectionNode()) {
+        entity.addAttribute("node",affiliate.getNode().getNodeID());
+      }
+      entity.addAttribute("jid",affiliate.getJID().toString());
+      entity.addAttribute("affiliation",affiliate.getAffiliation().name());
+      entity.addAttribute("subscription",NodeSubscription.State.none.name());
+    }
+    for (    NodeSubscription subscription : subscriptions) {
+      Element entity=affiliationsElement.addElement("entity");
+      Node node=subscription.getNode();
+      NodeAffiliate nodeAffiliate=subscription.getAffiliate();
+      if (!node.isRootCollectionNode()) {
+        entity.addAttribute("node",node.getNodeID());
+      }
+      entity.addAttribute("jid",subscription.getJID().toString());
+      entity.addAttribute("affiliation",nodeAffiliate.getAffiliation().name());
+      entity.addAttribute("subscription",subscription.getState().name());
+      if (node.isMultipleSubscriptionsEnabled()) {
+        entity.addAttribute("subid",subscription.getID());
+      }
+    }
+  }
+  router.route(reply);
+}

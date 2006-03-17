@@ -1,0 +1,63 @@
+{
+  Node node=null;
+  try {
+    String nodeID=rs.getString(1);
+    boolean leaf=rs.getInt(2) == 1;
+    String parent=rs.getString(5);
+    JID creator=new JID(rs.getString(24));
+    CollectionNode parentNode=null;
+    if (parent != null) {
+      parentNode=(CollectionNode)loadedNodes.get(parent);
+      if (parentNode == null) {
+        Log.warn("Node not loaded due to missing parent. NodeID: " + nodeID);
+        return;
+      }
+    }
+    if (leaf) {
+      node=new LeafNode(service,parentNode,nodeID,creator);
+    }
+ else {
+      node=new CollectionNode(service,parentNode,nodeID,creator);
+    }
+    node.setCreationDate(new Date(Long.parseLong(rs.getString(3).trim())));
+    node.setModificationDate(new Date(Long.parseLong(rs.getString(4).trim())));
+    node.setDeliverPayloads(rs.getInt(6) == 1);
+    if (leaf) {
+      ((LeafNode)node).setMaxPayloadSize(rs.getInt(7));
+      ((LeafNode)node).setPersistPublishedItems(rs.getInt(8) == 1);
+      ((LeafNode)node).setMaxPublishedItems(rs.getInt(9));
+    }
+    node.setNotifyConfigChanges(rs.getInt(10) == 1);
+    node.setNotifyDelete(rs.getInt(11) == 1);
+    node.setNotifyRetract(rs.getInt(12) == 1);
+    node.setPresenceBasedDelivery(rs.getInt(13) == 1);
+    node.setSendItemSubscribe(rs.getInt(14) == 1);
+    node.setPublisherModel(PublisherModel.valueOf(rs.getString(15)));
+    node.setSubscriptionEnabled(rs.getInt(16) == 1);
+    node.setSubscriptionConfigurationRequired(rs.getInt(17) == 1);
+    node.setContacts(decodeJIDs(rs.getString(18)));
+    node.setRosterGroupsAllowed(decodeGroups(rs.getString(19)));
+    node.setAccessModel(AccessModel.valueOf(rs.getString(20)));
+    node.setPayloadType(rs.getString(21));
+    node.setBodyXSLT(rs.getString(22));
+    node.setDataformXSLT(rs.getString(23));
+    node.setDescription(rs.getString(25));
+    node.setLanguage(rs.getString(26));
+    node.setName(rs.getString(27));
+    if (rs.getString(28) != null) {
+      node.setReplyPolicy(Node.ItemReplyPolicy.valueOf(rs.getString(28)));
+    }
+    node.setReplyRooms(decodeJIDs(rs.getString(29)));
+    node.setReplyTo(decodeJIDs(rs.getString(30)));
+    if (!leaf) {
+      ((CollectionNode)node).setAssociationPolicy(CollectionNode.LeafNodeAssociationPolicy.valueOf(rs.getString(31)));
+      ((CollectionNode)node).setAssociationTrusted(decodeJIDs(rs.getString(32)));
+      ((CollectionNode)node).setMaxLeafNodes(rs.getInt(33));
+    }
+    loadedNodes.put(node.getNodeID(),node);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+  return;
+}

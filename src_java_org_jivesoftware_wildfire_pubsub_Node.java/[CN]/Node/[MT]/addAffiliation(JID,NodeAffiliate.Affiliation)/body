@@ -1,0 +1,19 @@
+{
+  boolean created=false;
+  NodeAffiliate affiliate=getAffiliate(jid);
+  if (affiliate != null && affiliation == affiliate.getAffiliation()) {
+    return;
+  }
+ else   if (affiliate != null) {
+    affiliate.setAffiliation(affiliation);
+  }
+ else {
+    affiliate=new NodeAffiliate(this,jid);
+    affiliate.setAffiliation(affiliation);
+    addAffiliate(affiliate);
+    created=true;
+  }
+  if (savedToDB) {
+    PubSubPersistenceManager.saveAffiliation(service,this,affiliate,created);
+  }
+}

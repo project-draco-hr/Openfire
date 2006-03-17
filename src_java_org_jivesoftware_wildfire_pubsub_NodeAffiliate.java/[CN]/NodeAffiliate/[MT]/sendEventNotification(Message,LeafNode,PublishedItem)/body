@@ -1,0 +1,29 @@
+{
+  List<NodeSubscription> notifySubscriptions=new ArrayList<NodeSubscription>();
+  for (  NodeSubscription subscription : getSubscriptions()) {
+    if (subscription.canSendEventNotification(node,publishedItem)) {
+      notifySubscriptions.add(subscription);
+    }
+  }
+  if (node.isMultipleSubscriptionsEnabled()) {
+    Map<JID,Collection<String>> groupedSubs=new HashMap<JID,Collection<String>>();
+    for (    NodeSubscription subscription : notifySubscriptions) {
+      Collection<String> subIDs=groupedSubs.get(subscription.getJID());
+      if (subIDs == null) {
+        subIDs=new ArrayList<String>();
+        groupedSubs.put(subscription.getJID(),subIDs);
+      }
+      subIDs.add(subscription.getID());
+    }
+    for (    JID subscriberJID : groupedSubs.keySet()) {
+      Collection<String> subIDs=groupedSubs.get(subscriberJID);
+      node.sendEventNotification(subscriberJID,notification,subIDs);
+    }
+  }
+ else {
+    if (!notifySubscriptions.isEmpty()) {
+      NodeSubscription subscription=notifySubscriptions.get(0);
+      node.sendEventNotification(subscription.getJID(),notification,null);
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle(LocaleUtils.getLocalizedString("pubsub.form.subscription.title"));
+  List<String> params=new ArrayList<String>();
+  params.add(node.getNodeID());
+  form.addInstruction(LocaleUtils.getLocalizedString("pubsub.form.subscription.instruction",params));
+  FormField formField=form.addField();
+  formField.setVariable("FORM_TYPE");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue("http://jabber.org/protocol/pubsub#subscribe_options");
+  formField=form.addField();
+  formField.setVariable("pubsub#deliver");
+  formField.setType(FormField.Type.boolean_type);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.deliver"));
+  formField.addValue(deliverNotifications);
+  formField=form.addField();
+  formField.setVariable("pubsub#digest");
+  formField.setType(FormField.Type.boolean_type);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.digest"));
+  formField.addValue(usingDigest);
+  formField=form.addField();
+  formField.setVariable("pubsub#digest_frequency");
+  formField.setType(FormField.Type.text_single);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.digest_frequency"));
+  formField.addValue(digestFrequency);
+  formField=form.addField();
+  formField.setVariable("pubsub#expire");
+  formField.setType(FormField.Type.text_single);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.expire"));
+  if (expire != null) {
+    formField.addValue(fastDateFormat.format(expire));
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#include_body");
+  formField.setType(FormField.Type.boolean_type);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.include_body"));
+  formField.addValue(includingBody);
+  formField=form.addField();
+  formField.setVariable("pubsub#show-values");
+  formField.setType(FormField.Type.list_multi);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.show-values"));
+  formField.addOption(null,Presence.Show.away.name());
+  formField.addOption(null,Presence.Show.chat.name());
+  formField.addOption(null,Presence.Show.dnd.name());
+  formField.addOption(null,"online");
+  formField.addOption(null,Presence.Show.xa.name());
+  for (  String value : presenceStates) {
+    formField.addValue(value);
+  }
+  if (node.isCollectionNode()) {
+    formField=form.addField();
+    formField.setVariable("pubsub#subscription_type");
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.subscription_type"));
+    formField.addOption(null,Type.items.name());
+    formField.addOption(null,Type.nodes.name());
+    formField.addValue(type);
+    formField=form.addField();
+    formField.setVariable("pubsub#subscription_depth");
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.subscription_depth"));
+    formField.addOption(null,"1");
+    formField.addOption(null,"all");
+    formField.addValue(depth == 1 ? "1" : "all");
+  }
+  if (!node.isCollectionNode() || type == Type.items) {
+    formField=form.addField();
+    formField.setVariable("x-pubsub#keywords");
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.subscription.keywords"));
+    if (keyword != null) {
+      formField.addValue(keyword);
+    }
+  }
+  return form;
+}

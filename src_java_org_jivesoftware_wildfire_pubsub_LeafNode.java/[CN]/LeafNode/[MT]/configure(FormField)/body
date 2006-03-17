@@ -1,0 +1,13 @@
+{
+  List<String> values;
+  String booleanValue;
+  if ("pubsub#persist_items".equals(field.getVariable())) {
+    values=field.getValues();
+    booleanValue=(values.size() > 0 ? values.get(0) : "1");
+    persistPublishedItems="1".equals(booleanValue);
+  }
+ else   if ("pubsub#max_payload_size".equals(field.getVariable())) {
+    values=field.getValues();
+    maxPayloadSize=values.size() > 0 ? Integer.parseInt(values.get(0)) : 5120;
+  }
+}

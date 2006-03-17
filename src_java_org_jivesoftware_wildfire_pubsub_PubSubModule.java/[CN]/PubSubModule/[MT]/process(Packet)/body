@@ -1,0 +1,23 @@
+{
+  try {
+    if (packet instanceof IQ) {
+      if (!engine.process((IQ)packet)) {
+        process((IQ)packet);
+      }
+    }
+ else     if (packet instanceof Presence) {
+      engine.process((Presence)packet);
+    }
+ else {
+      engine.process((Message)packet);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    if (packet instanceof IQ) {
+      IQ reply=IQ.createResultIQ((IQ)packet);
+      reply.setError(PacketError.Condition.internal_server_error);
+      send(reply);
+    }
+  }
+}

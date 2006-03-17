@@ -1,0 +1,18 @@
+{
+  JID nodeOwner=node.getOwners().iterator().next();
+  XMPPServer server=XMPPServer.getInstance();
+  if (server.isLocal(nodeOwner)) {
+    try {
+      Roster roster=server.getRosterManager().getRoster(nodeOwner.getNode());
+      RosterItem item=roster.getRosterItem(owner);
+      return RosterItem.SUB_BOTH == item.getSubStatus() || RosterItem.SUB_FROM == item.getSubStatus();
+    }
+ catch (    UserNotFoundException e) {
+      return false;
+    }
+  }
+ else {
+    Log.warn("Node with access model Presence has a remote user as owner: " + node.getNodeID());
+    return false;
+  }
+}

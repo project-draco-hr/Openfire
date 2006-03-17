@@ -1,0 +1,12 @@
+{
+  IQ reply=IQ.createResultIQ(iqRequest);
+  Element childElement=iqRequest.getChildElement().createCopy();
+  reply.setChildElement(childElement);
+  for (  NodeSubscription subscription : subscriptionsByID.values()) {
+    Element entity=childElement.addElement("entity");
+    entity.addAttribute("jid",subscription.getJID().toString());
+    entity.addAttribute("affiliation",subscription.getAffiliate().getAffiliation().name());
+    entity.addAttribute("subscription",subscription.getState().name());
+    entity.addAttribute("subid",subscription.getID());
+  }
+}

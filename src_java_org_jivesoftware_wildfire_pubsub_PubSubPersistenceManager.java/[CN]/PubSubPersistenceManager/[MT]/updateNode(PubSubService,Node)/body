@@ -1,0 +1,80 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_NODE);
+    pstmt.setString(1,StringUtils.dateToMillis(node.getModificationDate()));
+    pstmt.setString(2,node.getParent() != null ? node.getParent().getNodeID() : null);
+    pstmt.setInt(3,(node.isDeliverPayloads() ? 1 : 0));
+    if (!node.isCollectionNode()) {
+      pstmt.setInt(4,((LeafNode)node).getMaxPayloadSize());
+      pstmt.setInt(5,(((LeafNode)node).isPersistPublishedItems() ? 1 : 0));
+      pstmt.setInt(6,((LeafNode)node).getMaxPublishedItems());
+    }
+ else {
+      pstmt.setInt(4,0);
+      pstmt.setInt(5,0);
+      pstmt.setInt(6,0);
+    }
+    pstmt.setInt(7,(node.isNotifyConfigChanges() ? 1 : 0));
+    pstmt.setInt(8,(node.isNotifyDelete() ? 1 : 0));
+    pstmt.setInt(9,(node.isNotifyRetract() ? 1 : 0));
+    pstmt.setInt(10,(node.isPresenceBasedDelivery() ? 1 : 0));
+    pstmt.setInt(11,(node.isSendItemSubscribe() ? 1 : 0));
+    pstmt.setString(12,node.getPublisherModel().getName());
+    pstmt.setInt(13,(node.isSubscriptionEnabled() ? 1 : 0));
+    pstmt.setInt(14,(node.isSubscriptionConfigurationRequired() ? 1 : 0));
+    pstmt.setString(15,encodeJIDs(node.getContacts()));
+    pstmt.setString(16,encodeGroups(node.getRosterGroupsAllowed()));
+    pstmt.setString(17,node.getAccessModel().getName());
+    pstmt.setString(18,node.getPayloadType());
+    pstmt.setString(19,node.getBodyXSLT());
+    pstmt.setString(20,node.getDataformXSLT());
+    pstmt.setString(21,node.getDescription());
+    pstmt.setString(22,node.getLanguage());
+    pstmt.setString(23,node.getName());
+    if (node.getReplyPolicy() != null) {
+      pstmt.setString(24,node.getReplyPolicy().name());
+    }
+ else {
+      pstmt.setString(24,null);
+    }
+    pstmt.setString(25,encodeJIDs(node.getReplyRooms()));
+    pstmt.setString(26,encodeJIDs(node.getReplyTo()));
+    if (node.isCollectionNode()) {
+      pstmt.setString(27,((CollectionNode)node).getAssociationPolicy().name());
+      pstmt.setString(28,encodeJIDs(((CollectionNode)node).getAssociationTrusted()));
+      pstmt.setInt(29,((CollectionNode)node).getMaxLeafNodes());
+    }
+ else {
+      pstmt.setString(27,null);
+      pstmt.setString(28,null);
+      pstmt.setInt(29,0);
+    }
+    pstmt.setString(30,service.getServiceID());
+    pstmt.setString(31,node.getNodeID());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

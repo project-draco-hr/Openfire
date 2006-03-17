@@ -1,0 +1,15 @@
+{
+  NodeAffiliate nodeAffiliate=node.getAffiliate(entity);
+  if (nodeAffiliate == null || nodeAffiliate.getAffiliation() == NodeAffiliate.Affiliation.outcast) {
+    return false;
+  }
+  if (nodeAffiliate.getAffiliation() == NodeAffiliate.Affiliation.publisher || nodeAffiliate.getAffiliation() == NodeAffiliate.Affiliation.owner) {
+    return true;
+  }
+  for (  NodeSubscription subscription : nodeAffiliate.getSubscriptions()) {
+    if (subscription.isApproved()) {
+      return true;
+    }
+  }
+  return false;
+}

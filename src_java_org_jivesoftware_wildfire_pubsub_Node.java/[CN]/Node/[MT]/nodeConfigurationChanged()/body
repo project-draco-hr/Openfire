@@ -1,0 +1,15 @@
+{
+  if (!notifyConfigChanges || !savedToDB) {
+    return;
+  }
+  Message message=new Message();
+  Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
+  Element items=event.addElement("items");
+  items.addAttribute("node",nodeID);
+  Element item=items.addElement("item");
+  item.addAttribute("id","configuration");
+  if (deliverPayloads) {
+    item.add(getConfigurationChangeForm().getElement());
+  }
+  broadcastSubscribers(message,false);
+}

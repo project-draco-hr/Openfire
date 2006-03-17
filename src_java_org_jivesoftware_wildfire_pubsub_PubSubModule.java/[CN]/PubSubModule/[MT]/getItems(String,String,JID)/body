@@ -1,0 +1,42 @@
+{
+  List<Element> answer=new ArrayList<Element>();
+  if (name == null && node == null) {
+    Element item;
+    for (    Node pubNode : nodes.values()) {
+      if (canDiscoverNode(pubNode)) {
+        item=DocumentHelper.createElement("item");
+        item.addAttribute("jid",getServiceDomain());
+        item.addAttribute("node",pubNode.getNodeID());
+        item.addAttribute("name",pubNode.getName());
+        answer.add(item);
+      }
+    }
+  }
+ else   if (name == null && node != null) {
+    Node pubNode=getNode(node);
+    if (pubNode != null && canDiscoverNode(pubNode)) {
+      if (pubNode.isCollectionNode()) {
+        Element item;
+        for (        Node nestedNode : pubNode.getNodes()) {
+          if (canDiscoverNode(nestedNode)) {
+            item=DocumentHelper.createElement("item");
+            item.addAttribute("jid",getServiceDomain());
+            item.addAttribute("node",nestedNode.getNodeID());
+            item.addAttribute("name",nestedNode.getName());
+            answer.add(item);
+          }
+        }
+      }
+ else {
+        Element item;
+        for (        PublishedItem publishedItem : ((LeafNode)pubNode).getPublishedItems()) {
+          item=DocumentHelper.createElement("item");
+          item.addAttribute("jid",getServiceDomain());
+          item.addAttribute("name",publishedItem.getID());
+          answer.add(item);
+        }
+      }
+    }
+  }
+  return answer.iterator();
+}

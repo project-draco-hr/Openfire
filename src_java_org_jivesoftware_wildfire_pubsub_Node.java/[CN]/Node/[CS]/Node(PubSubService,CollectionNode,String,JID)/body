@@ -1,0 +1,21 @@
+{
+  this.service=service;
+  this.parent=parent;
+  this.nodeID=nodeID;
+  this.creator=creator;
+  long startTime=System.currentTimeMillis();
+  this.creationDate=new Date(startTime);
+  this.modificationDate=new Date(startTime);
+  DefaultNodeConfiguration defaultConfiguration=service.getDefaultNodeConfiguration(!isCollectionNode());
+  this.subscriptionEnabled=defaultConfiguration.isSubscriptionEnabled();
+  this.deliverPayloads=defaultConfiguration.isDeliverPayloads();
+  this.sendItemSubscribe=defaultConfiguration.isSendItemSubscribe();
+  this.notifyConfigChanges=defaultConfiguration.isNotifyConfigChanges();
+  this.notifyDelete=defaultConfiguration.isNotifyDelete();
+  this.notifyRetract=defaultConfiguration.isNotifyRetract();
+  this.presenceBasedDelivery=defaultConfiguration.isPresenceBasedDelivery();
+  this.accessModel=defaultConfiguration.getAccessModel();
+  this.publisherModel=defaultConfiguration.getPublisherModel();
+  this.language=defaultConfiguration.getLanguage();
+  this.replyPolicy=defaultConfiguration.getReplyPolicy();
+}

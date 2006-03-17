@@ -1,0 +1,20 @@
+{
+  IQ result=IQ.createResultIQ(originalRequest);
+  Element child=result.setChildElement("pubsub","http://jabber.org/protocol/pubsub");
+  Element entity=child.addElement("entity");
+  if (!node.isRootCollectionNode()) {
+    entity.addAttribute("node",node.getNodeID());
+  }
+  entity.addAttribute("jid",getJID().toString());
+  NodeAffiliate nodeAffiliate=getAffiliate();
+  entity.addAttribute("affiliation",nodeAffiliate.getAffiliation().name());
+  if (node.isMultipleSubscriptionsEnabled()) {
+    entity.addAttribute("subid",getID());
+  }
+  entity.addAttribute("subscription",getState().name());
+  Element subscribeOptions=entity.addElement("subscribe-options");
+  if (node.isSubscriptionConfigurationRequired() && isConfigurationPending()) {
+    subscribeOptions.addElement("required");
+  }
+  service.send(result);
+}

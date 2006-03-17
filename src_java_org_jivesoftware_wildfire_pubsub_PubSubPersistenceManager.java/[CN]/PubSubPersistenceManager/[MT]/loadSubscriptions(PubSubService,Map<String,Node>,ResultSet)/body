@@ -1,0 +1,32 @@
+{
+  try {
+    String nodeID=rs.getString(1);
+    Node node=nodes.get(nodeID);
+    if (node == null) {
+      Log.warn("Subscription found for a non-existent node: " + nodeID);
+      return;
+    }
+    String subID=rs.getString(2);
+    JID subscriber=new JID(rs.getString(3));
+    JID owner=new JID(rs.getString(4));
+    NodeSubscription.State state=NodeSubscription.State.valueOf(rs.getString(5));
+    NodeSubscription subscription=new NodeSubscription(service,node,owner,subscriber,state,subID);
+    subscription.setConfigurationPending(rs.getInt(6) == 1);
+    subscription.setShouldDeliverNotifications(rs.getInt(7) == 1);
+    subscription.setUsingDigest(rs.getInt(8) == 1);
+    subscription.setDigestFrequency(rs.getInt(9));
+    if (rs.getString(10) != null) {
+      subscription.setExpire(new Date(Long.parseLong(rs.getString(10).trim())));
+    }
+    subscription.setIncludingBody(rs.getInt(11) == 1);
+    subscription.setPresenceStates(decodeWithComma(rs.getString(12)));
+    subscription.setType(NodeSubscription.Type.valueOf(rs.getString(13)));
+    subscription.setDepth(rs.getInt(14));
+    subscription.setKeyword(rs.getString(15));
+    subscription.setSavedToDB(true);
+    node.addSubscription(subscription);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+}

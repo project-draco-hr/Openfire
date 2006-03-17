@@ -1,0 +1,189 @@
+{
+  FormField formField=form.addField();
+  formField.setVariable("FORM_TYPE");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue("http://jabber.org/protocol/pubsub#node_config");
+  formField=form.addField();
+  formField.setVariable("pubsub#title");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.short_name"));
+  }
+  formField.addValue(name);
+  formField=form.addField();
+  formField.setVariable("pubsub#description");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.description"));
+  }
+  formField.addValue(description);
+  formField=form.addField();
+  formField.setVariable("pubsub#subscribe");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.subscribe"));
+  }
+  formField.addValue(subscriptionEnabled);
+  formField=form.addField();
+  formField.setVariable("pubsub#subscription_required");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.subscription_required"));
+  }
+  formField.addValue(subscriptionConfigurationRequired);
+  formField=form.addField();
+  formField.setVariable("pubsub#deliver_payloads");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.deliver_payloads"));
+  }
+  formField.addValue(deliverPayloads);
+  formField=form.addField();
+  formField.setVariable("pubsub#send_item_subscribe");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.send_item_subscribe"));
+  }
+  formField.addValue(sendItemSubscribe);
+  formField=form.addField();
+  formField.setVariable("pubsub#notify_config");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.notify_config"));
+  }
+  formField.addValue(notifyConfigChanges);
+  formField=form.addField();
+  formField.setVariable("pubsub#notify_delete");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.notify_delete"));
+  }
+  formField.addValue(notifyDelete);
+  formField=form.addField();
+  formField.setVariable("pubsub#notify_retract");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.notify_retract"));
+  }
+  formField.addValue(notifyRetract);
+  formField=form.addField();
+  formField.setVariable("pubsub#presence_based_delivery");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.presence_based"));
+  }
+  formField.addValue(presenceBasedDelivery);
+  formField=form.addField();
+  formField.setVariable("pubsub#type");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.type"));
+  }
+  formField.addValue(payloadType);
+  formField=form.addField();
+  formField.setVariable("pubsub#body_xslt");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.body_xslt"));
+  }
+  formField.addValue(bodyXSLT);
+  formField=form.addField();
+  formField.setVariable("pubsub#dataform_xslt");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.dataform_xslt"));
+  }
+  formField.addValue(dataformXSLT);
+  formField=form.addField();
+  formField.setVariable("pubsub#access_model");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.access_model"));
+    formField.addOption(null,AccessModel.authorize.getName());
+    formField.addOption(null,AccessModel.open.getName());
+    formField.addOption(null,AccessModel.presence.getName());
+    formField.addOption(null,AccessModel.roster.getName());
+    formField.addOption(null,AccessModel.whitelist.getName());
+  }
+  formField.addValue(accessModel.getName());
+  formField=form.addField();
+  formField.setVariable("pubsub#publish_model");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.publish_model"));
+    formField.addOption(null,PublisherModel.publishers.getName());
+    formField.addOption(null,PublisherModel.subscribers.getName());
+    formField.addOption(null,PublisherModel.open.getName());
+  }
+  formField.addValue(publisherModel.getName());
+  formField=form.addField();
+  formField.setVariable("pubsub#roster_groups_allowed");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.roster_allowed"));
+  }
+  for (  String group : rosterGroupsAllowed) {
+    formField.addValue(group);
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#contact");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.contact"));
+  }
+  for (  JID contact : contacts) {
+    formField.addValue(contact.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#language");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.language"));
+  }
+  formField.addValue(language);
+  formField=form.addField();
+  formField.setVariable("pubsub#owner");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.owner"));
+  }
+  for (  JID owner : getOwners()) {
+    formField.addValue(owner.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#publisher");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.publisher"));
+  }
+  for (  JID owner : getPublishers()) {
+    formField.addValue(owner.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#itemreply");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.itemreply"));
+  }
+  if (replyPolicy != null) {
+    formField.addValue(replyPolicy.name());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#replyroom");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.replyroom"));
+  }
+  for (  JID owner : getReplyRooms()) {
+    formField.addValue(owner.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#replyto");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.replyto"));
+  }
+  for (  JID owner : getReplyTo()) {
+    formField.addValue(owner.toString());
+  }
+}

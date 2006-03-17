@@ -1,0 +1,17 @@
+{
+  String type=defaultElement.attributeValue("type");
+  type=type == null ? "leaf" : type;
+  boolean isLeafType="leaf".equals(type);
+  DefaultNodeConfiguration config=service.getDefaultNodeConfiguration(isLeafType);
+  if (config == null) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature",isLeafType ? "leaf" : "collections");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
+    return;
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Element replyChildElement=childElement.createCopy();
+  reply.setChildElement(replyChildElement);
+  replyChildElement.element("default").add(config.getConfigurationForm().getElement());
+  router.route(reply);
+}

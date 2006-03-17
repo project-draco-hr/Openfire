@@ -1,0 +1,9 @@
+{
+  Collection<JID> jids=new ArrayList<JID>();
+  for (  NodeSubscription subscription : subscriptionsByID.values()) {
+    if (includeAll || subscription.isApproved()) {
+      jids.add(subscription.getJID());
+    }
+  }
+  service.broadcast(this,message,jids);
+}

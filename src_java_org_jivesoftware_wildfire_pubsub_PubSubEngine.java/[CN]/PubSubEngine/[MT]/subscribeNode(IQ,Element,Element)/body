@@ -1,0 +1,83 @@
+{
+  String nodeID=subscribeElement.attributeValue("node");
+  Node node=null;
+  if (nodeID == null) {
+    node=service.getRootCollectionNode();
+  }
+ else {
+    node=service.getNode(nodeID);
+    if (node == null) {
+      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+      return;
+    }
+  }
+  JID from=iq.getFrom();
+  JID subscriberJID=new JID(subscribeElement.attributeValue("jid"));
+  if (!from.toBareJID().equals(subscriberJID.toBareJID()) && !service.isServiceAdmin(from)) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("invalid-jid","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  JID owner=new JID(subscriberJID.toBareJID());
+  AccessModel accessModel=node.getAccessModel();
+  if (!accessModel.canSubscribe(node,owner,subscriberJID)) {
+    sendErrorPacket(iq,accessModel.getSubsriptionError(),accessModel.getSubsriptionErrorDetail());
+    return;
+  }
+  if (!UserManager.getInstance().isRegisteredUser(subscriberJID)) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  NodeAffiliate nodeAffiliate=node.getAffiliate(owner);
+  if (nodeAffiliate != null && nodeAffiliate.getAffiliation() == NodeAffiliate.Affiliation.outcast) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  if (!node.isSubscriptionEnabled() && !service.isServiceAdmin(from)) {
+    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    return;
+  }
+  DataForm optionsForm=null;
+  Element options=childElement.element("options");
+  if (options != null) {
+    Element formElement=options.element(QName.get("x","jabber:x:data"));
+    if (formElement != null) {
+      optionsForm=new DataForm(formElement);
+    }
+  }
+  if (!node.isCollectionNode() && !node.isMultipleSubscriptionsEnabled()) {
+    NodeSubscription existingSubscription=node.getSubscription(subscriberJID);
+    if (existingSubscription != null) {
+      existingSubscription.sendSubscriptionState(iq);
+      return;
+    }
+  }
+  if (node.isCollectionNode()) {
+    boolean isNodeType=true;
+    if (optionsForm != null) {
+      FormField field=optionsForm.getField("pubsub#subscription_type");
+      if (field != null) {
+        if ("items".equals(field.getValues().get(0))) {
+          isNodeType=false;
+        }
+      }
+    }
+    if (nodeAffiliate != null && isNodeType) {
+      for (      NodeSubscription subscription : nodeAffiliate.getSubscriptions()) {
+        if (isNodeType) {
+          if (NodeSubscription.Type.nodes == subscription.getType()) {
+            sendErrorPacket(iq,PacketError.Condition.conflict,null);
+            return;
+          }
+        }
+ else         if (!node.isMultipleSubscriptionsEnabled()) {
+          if (NodeSubscription.Type.items == subscription.getType()) {
+            subscription.sendSubscriptionState(iq);
+            return;
+          }
+        }
+      }
+    }
+  }
+  node.createSubscription(iq,owner,subscriberJID,accessModel.isAuthorizationRequired(),optionsForm);
+}

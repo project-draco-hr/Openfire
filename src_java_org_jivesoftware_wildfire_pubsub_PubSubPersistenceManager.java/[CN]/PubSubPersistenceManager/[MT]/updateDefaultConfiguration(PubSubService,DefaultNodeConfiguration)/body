@@ -1,0 +1,53 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_DEFAULT_CONF);
+    pstmt.setInt(1,(config.isDeliverPayloads() ? 1 : 0));
+    pstmt.setInt(2,config.getMaxPayloadSize());
+    pstmt.setInt(3,(config.isPersistPublishedItems() ? 1 : 0));
+    pstmt.setInt(4,config.getMaxPublishedItems());
+    pstmt.setInt(5,(config.isNotifyConfigChanges() ? 1 : 0));
+    pstmt.setInt(6,(config.isNotifyDelete() ? 1 : 0));
+    pstmt.setInt(7,(config.isNotifyRetract() ? 1 : 0));
+    pstmt.setInt(8,(config.isPresenceBasedDelivery() ? 1 : 0));
+    pstmt.setInt(9,(config.isSendItemSubscribe() ? 1 : 0));
+    pstmt.setString(10,config.getPublisherModel().getName());
+    pstmt.setInt(11,(config.isSubscriptionEnabled() ? 1 : 0));
+    pstmt.setString(12,config.getAccessModel().getName());
+    pstmt.setString(13,config.getLanguage());
+    if (config.getReplyPolicy() != null) {
+      pstmt.setString(14,config.getReplyPolicy().name());
+    }
+ else {
+      pstmt.setString(14,null);
+    }
+    pstmt.setString(15,config.getAssociationPolicy().name());
+    pstmt.setInt(16,config.getMaxLeafNodes());
+    pstmt.setString(17,service.getServiceID());
+    pstmt.setInt(18,(config.isLeaf() ? 1 : 0));
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

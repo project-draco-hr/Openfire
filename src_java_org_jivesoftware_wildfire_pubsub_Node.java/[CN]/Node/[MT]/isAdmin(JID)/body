@@ -1,0 +1,10 @@
+{
+  if (getOwners().contains(user) || service.isServiceAdmin(user)) {
+    return true;
+  }
+  if (user.getResource() != null) {
+    user=new JID(user.toBareJID());
+    return isAdmin(user);
+  }
+  return false;
+}

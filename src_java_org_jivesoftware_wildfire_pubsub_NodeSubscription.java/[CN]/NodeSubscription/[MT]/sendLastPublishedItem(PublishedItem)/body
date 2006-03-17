@@ -1,0 +1,21 @@
+{
+  if (!canSendEventNotification(publishedItem.getNode(),publishedItem)) {
+    return;
+  }
+  Message notification=new Message();
+  Element event=notification.getElement().addElement("event","http://jabber.org/protocol/pubsub#event");
+  Element items=event.addElement("items");
+  items.addAttribute("node",node.getNodeID());
+  Element item=items.addElement("item");
+  if (((LeafNode)node).isItemRequired()) {
+    item.addAttribute("id",publishedItem.getID());
+  }
+  if (node.isDeliverPayloads() && publishedItem.getPayload() != null) {
+    item.add(publishedItem.getPayload().createCopy());
+  }
+  if (isIncludingBody()) {
+    notification.setBody(LocaleUtils.getLocalizedString("pubsub.notification.message.body"));
+  }
+  notification.getElement().addElement("x","jabber:x:delay").addAttribute("stamp",fastDateFormat.format(publishedItem.getCreationDate()));
+  service.sendNotification(node,notification,jid);
+}

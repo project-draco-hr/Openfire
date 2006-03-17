@@ -1,0 +1,12 @@
+{
+  String id=StringUtils.randomString(40);
+  NodeSubscription subscription=new NodeSubscription(service,this,owner,jid,subscribed,id);
+  if (options != null) {
+    subscription.configure(options);
+  }
+  addSubscription(subscription);
+  if (savedToDB) {
+    PubSubPersistenceManager.saveSubscription(service,this,subscription,true);
+  }
+  return subscription;
+}

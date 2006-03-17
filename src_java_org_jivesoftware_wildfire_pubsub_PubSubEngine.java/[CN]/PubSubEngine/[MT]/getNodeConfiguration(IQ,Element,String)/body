@@ -1,0 +1,16 @@
+{
+  Node node=service.getNode(nodeID);
+  if (node == null) {
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+    return;
+  }
+  if (!node.isAdmin(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Element replyChildElement=childElement.createCopy();
+  reply.setChildElement(replyChildElement);
+  replyChildElement.element("configure").add(node.getConfigurationForm().getElement());
+  router.route(reply);
+}

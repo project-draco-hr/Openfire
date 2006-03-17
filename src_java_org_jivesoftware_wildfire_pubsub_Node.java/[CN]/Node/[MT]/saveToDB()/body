@@ -1,0 +1,15 @@
+{
+  if (!savedToDB) {
+    PubSubPersistenceManager.createNode(service,this);
+    setSavedToDB(true);
+    for (    NodeAffiliate affialiate : affiliates) {
+      PubSubPersistenceManager.saveAffiliation(service,this,affialiate,true);
+    }
+    for (    NodeSubscription subscription : subscriptionsByID.values()) {
+      PubSubPersistenceManager.saveSubscription(service,this,subscription,true);
+    }
+  }
+ else {
+    PubSubPersistenceManager.updateNode(service,this);
+  }
+}

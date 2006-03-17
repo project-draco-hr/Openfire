@@ -1,0 +1,30 @@
+{
+  String nodeID=purgeElement.attributeValue("node");
+  if (nodeID == null) {
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+    return;
+  }
+  Node node=service.getNode(nodeID);
+  if (node == null) {
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+    return;
+  }
+  if (!node.isAdmin(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  if (!((LeafNode)node).isPersistPublishedItems()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","persistent-items");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
+    return;
+  }
+  if (node.isCollectionNode()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","purge-nodes");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
+    return;
+  }
+  ((LeafNode)node).purge();
+  router.route(IQ.createResultIQ(iq));
+}

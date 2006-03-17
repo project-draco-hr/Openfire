@@ -1,0 +1,16 @@
+{
+  Element headers=null;
+  if (subIDs != null) {
+    headers=notification.addChildElement("headers","http://jabber.org/protocol/shim");
+    for (    String subID : subIDs) {
+      Element header=headers.addElement("header");
+      header.addAttribute("name","pubsub#subid");
+      header.setText(subID);
+    }
+  }
+  notification.setTo(subscriberJID);
+  service.send(notification);
+  if (headers != null) {
+    notification.getElement().remove(headers);
+  }
+}

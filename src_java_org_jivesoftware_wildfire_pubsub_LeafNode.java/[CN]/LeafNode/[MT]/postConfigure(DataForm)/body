@@ -1,0 +1,13 @@
+{
+  List<String> values;
+  if (!persistPublishedItems) {
+    maxPublishedItems=1;
+  }
+ else {
+    FormField field=completedForm.getField("pubsub#max_items");
+    if (field != null) {
+      values=field.getValues();
+      maxPublishedItems=values.size() > 0 ? Integer.parseInt(values.get(0)) : 50;
+    }
+  }
+}

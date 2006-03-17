@@ -1,0 +1,52 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  DefaultNodeConfiguration config=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_DEFAULT_CONF);
+    pstmt.setString(1,service.getServiceID());
+    pstmt.setInt(2,(isLeafType ? 1 : 0));
+    ResultSet rs=pstmt.executeQuery();
+    if (rs.next()) {
+      config=new DefaultNodeConfiguration(isLeafType);
+      config.setDeliverPayloads(rs.getInt(1) == 1);
+      config.setMaxPayloadSize(rs.getInt(2));
+      config.setPersistPublishedItems(rs.getInt(3) == 1);
+      config.setMaxPublishedItems(rs.getInt(4));
+      config.setNotifyConfigChanges(rs.getInt(5) == 1);
+      config.setNotifyDelete(rs.getInt(6) == 1);
+      config.setNotifyRetract(rs.getInt(7) == 1);
+      config.setPresenceBasedDelivery(rs.getInt(8) == 1);
+      config.setSendItemSubscribe(rs.getInt(9) == 1);
+      config.setPublisherModel(PublisherModel.valueOf(rs.getString(10)));
+      config.setSubscriptionEnabled(rs.getInt(11) == 1);
+      config.setAccessModel(AccessModel.valueOf(rs.getString(12)));
+      config.setLanguage(rs.getString(13));
+      if (rs.getString(14) != null) {
+        config.setReplyPolicy(Node.ItemReplyPolicy.valueOf(rs.getString(14)));
+      }
+      config.setAssociationPolicy(CollectionNode.LeafNodeAssociationPolicy.valueOf(rs.getString(15)));
+      config.setMaxLeafNodes(rs.getInt(16));
+    }
+    rs.close();
+  }
+ catch (  Exception sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return config;
+}
