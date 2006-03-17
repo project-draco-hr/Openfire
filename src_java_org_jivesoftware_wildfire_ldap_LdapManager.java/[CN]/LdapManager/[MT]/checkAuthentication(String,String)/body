@@ -21,6 +21,12 @@
     if (ldapDebugEnabled) {
       env.put("com.sun.jndi.ldap.trace.ber",System.err);
     }
+    if (connectionPoolEnabled) {
+      env.put("com.sun.jndi.ldap.connect.pool","true");
+    }
+    if (followReferrals) {
+      env.put(Context.REFERRAL,"follow");
+    }
     if (debug) {
       Log.debug("Created context values, attempting to create context...");
     }
@@ -52,6 +58,12 @@
         }
         if (ldapDebugEnabled) {
           env.put("com.sun.jndi.ldap.trace.ber",System.err);
+        }
+        if (connectionPoolEnabled) {
+          env.put("com.sun.jndi.ldap.connect.pool","true");
+        }
+        if (followReferrals) {
+          env.put(Context.REFERRAL,"follow");
         }
         if (debug) {
           Log.debug("Created context values, attempting to create context...");
