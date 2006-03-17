@@ -4,9 +4,17 @@
     throw new UserNotFoundException(item.getJid().toBareJID());
   }
   if (item.isShared() && item.getID() == 0) {
-    String defaultContactName=UserNameManager.getUserName(item.getJid());
-    if (item.isOnlyShared() && defaultContactName.equals(item.getNickname())) {
-      return;
+    if (item.isOnlyShared()) {
+      String defaultContactName=null;
+      try {
+        defaultContactName=UserNameManager.getUserName(item.getJid());
+      }
+ catch (      UserNotFoundException e) {
+        defaultContactName=item.getNickname();
+      }
+      if (defaultContactName.equals(item.getNickname())) {
+        return;
+      }
     }
     try {
       rosterItemProvider.createItem(username,item);

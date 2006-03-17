@@ -8,10 +8,10 @@
     return reply;
   }
   try {
-    User user=UserManager.getInstance().getUser(username);
-    RosterItem item=user.getRoster().getRosterItem(packet.getFrom());
+    RosterItem item=rosterManager.getRoster(username).getRosterItem(packet.getFrom());
     if (item.getSubStatus() == RosterItem.SUB_FROM || item.getSubStatus() == RosterItem.SUB_BOTH) {
       if (sessionManager.getSessions(username).isEmpty()) {
+        User user=UserManager.getInstance().getUser(username);
         long lastActivityTime=presenceManager.getLastActivity(user);
         lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
         String lastStatus=presenceManager.getLastPresenceStatus(user);

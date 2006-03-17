@@ -1,0 +1,34 @@
+{
+  String propertyValue=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_PROPERTY);
+    pstmt.setString(1,username);
+    pstmt.setString(2,propertyName);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      propertyValue=rs.getString(1);
+    }
+    rs.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return propertyValue;
+}

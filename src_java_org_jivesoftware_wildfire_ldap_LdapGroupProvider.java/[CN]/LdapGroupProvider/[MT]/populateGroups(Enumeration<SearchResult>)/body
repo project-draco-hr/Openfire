@@ -52,7 +52,9 @@
             JID userJID;
             if (!username.contains(serverName)) {
               String escapedUsername=JID.escapeNode(username);
-              userManager.getUser(escapedUsername);
+              if (!escapedUsername.equals(username)) {
+                userManager.getUser(escapedUsername);
+              }
               userJID=server.createJID(escapedUsername,null);
             }
  else {

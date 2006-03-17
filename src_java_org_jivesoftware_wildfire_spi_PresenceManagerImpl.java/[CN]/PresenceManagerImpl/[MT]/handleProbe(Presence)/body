@@ -1,16 +1,7 @@
 {
   String username=packet.getTo().getNode();
-  Roster roster=(Roster)CacheManager.getCache("username2roster").get(username);
-  if (roster == null) {
-synchronized (username.intern()) {
-      roster=(Roster)CacheManager.getCache("username2roster").get(username);
-      if (roster == null) {
-        roster=new Roster(username);
-        CacheManager.getCache("username2roster").put(username,roster);
-      }
-    }
-  }
   try {
+    Roster roster=rosterManager.getRoster(username);
     RosterItem item=roster.getRosterItem(packet.getFrom());
     if (item.getSubStatus() == RosterItem.SUB_FROM || item.getSubStatus() == RosterItem.SUB_BOTH) {
       probePresence(packet.getFrom(),packet.getTo());
