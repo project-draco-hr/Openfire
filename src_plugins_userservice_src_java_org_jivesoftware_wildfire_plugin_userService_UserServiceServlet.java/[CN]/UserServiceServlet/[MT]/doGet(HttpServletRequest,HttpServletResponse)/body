@@ -1,0 +1,49 @@
+{
+  String username=request.getParameter("username");
+  String password=request.getParameter("password");
+  String name=request.getParameter("name");
+  String email=request.getParameter("email");
+  String jid=request.getParameter("jid");
+  String type=request.getParameter("type");
+  String secret=request.getParameter("secret");
+  PrintWriter out=response.getWriter();
+  if (!plugin.isEnabled()) {
+    Log.warn("User service plugin is disabled: " + request.getQueryString());
+    replyError("UserServiceDisabled",response,out);
+    return;
+  }
+  if (secret == null || !secret.equals(plugin.getSecret())) {
+    Log.warn("An unauthorised user service request was received: " + request.getQueryString());
+    replyError("RequestNotAuthorised",response,out);
+    return;
+  }
+  try {
+    if ("add".equals(type)) {
+      plugin.createUser(username,password,name,email);
+      replyMessage("ok",response,out);
+    }
+ else     if ("delete".equals(type)) {
+      plugin.deleteUser(jid);
+      replyMessage("ok",response,out);
+    }
+ else     if ("update".equals(type)) {
+      plugin.updateUser(jid,password,name,email);
+      replyMessage("ok",response,out);
+    }
+ else {
+      Log.warn("The userService servlet received an invalid request of type: " + type);
+    }
+  }
+ catch (  UserAlreadyExistsException e) {
+    replyError("UserAlreadyExistsException",response,out);
+  }
+catch (  UserNotFoundException e) {
+    replyError("UserNotFoundException",response,out);
+  }
+catch (  IllegalArgumentException e) {
+    replyError("IllegalArgumentException",response,out);
+  }
+catch (  Exception e) {
+    replyError(e.toString(),response,out);
+  }
+}
