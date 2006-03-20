@@ -3,8 +3,8 @@
     if (isRestartable()) {
       try {
         Class wrapperClass=Class.forName(WRAPPER_CLASSNAME);
-        Method stopMethod=wrapperClass.getMethod("stop",new Class[]{Integer.TYPE});
-        stopMethod.invoke(null,new Object[]{0});
+        Method stopMethod=wrapperClass.getMethod("stop",Integer.TYPE);
+        stopMethod.invoke(null,0);
       }
  catch (      Exception e) {
         Log.error("Could not stop container",e);

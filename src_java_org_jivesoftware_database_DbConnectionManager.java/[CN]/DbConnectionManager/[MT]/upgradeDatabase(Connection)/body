@@ -1,21 +1,27 @@
 {
-  int majorVersion;
-  int minorVersion;
+  int version=0;
   PreparedStatement pstmt=null;
   try {
     pstmt=con.prepareStatement(CHECK_VERSION);
+    pstmt.setString(1,"wildfire");
     ResultSet rs=pstmt.executeQuery();
-    if (!rs.next()) {
-      majorVersion=2;
-      minorVersion=0;
-    }
-    majorVersion=rs.getInt(1);
-    minorVersion=rs.getInt(2);
+    rs.next();
+    version=rs.getInt(1);
     rs.close();
   }
  catch (  SQLException sqle) {
-    majorVersion=2;
-    minorVersion=0;
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+      pstmt=con.prepareStatement(CHECK_VERSION_OLD);
+      ResultSet rs=pstmt.executeQuery();
+      rs.next();
+      version=rs.getInt(1);
+      rs.close();
+    }
+ catch (    SQLException sqle2) {
+    }
   }
  finally {
     try {
@@ -27,30 +33,28 @@
       Log.error(e);
     }
   }
-  if (majorVersion == CURRENT_MAJOR_VERSION && minorVersion == CURRENT_MINOR_VERSION) {
+  if (version == DATABASE_VERSION) {
     return false;
   }
-  Log.info("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
-  System.out.println("Found old database schema (" + majorVersion + "."+ minorVersion+ "). "+ "Upgrading to latest schema.");
+  Log.info(LocaleUtils.getLocalizedString("upgrade.database.old_schema"));
+  System.out.println(LocaleUtils.getLocalizedString("upgrade.database.old_schema"));
   if (databaseType == DatabaseType.unknown) {
-    Log.info("Warning: database type unknown. You must manually upgrade your database.");
-    System.out.println("Warning: database type unknown. You must manually upgrade your " + "database.");
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.unknown_db"));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.unknown_db"));
     return false;
   }
  else   if (databaseType == DatabaseType.interbase) {
-    Log.info("Warning: automatic upgrades of Interbase are not supported. You " + "must manually upgrade your database.");
-    System.out.println("Warning: automatic upgrades of Interbase are not supported. You " + "must manually upgrade your database.");
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.interbase_db"));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.interbase_db"));
     return false;
   }
-  for (int i=minorVersion; i < CURRENT_MINOR_VERSION; i++) {
+  for (int i=version + 1; i <= DATABASE_VERSION; i++) {
     BufferedReader in=null;
     Statement stmt;
     try {
-      String resourceName="/database/upgrade/" + CURRENT_MAJOR_VERSION + "."+ i+ "_to_"+ CURRENT_MAJOR_VERSION+ "."+ (i + 1)+ "/wildfire_"+ databaseType+ ".sql";
+      String resourceName="/database/upgrade/" + i + "/wildfire_"+ databaseType+ ".sql";
       InputStream resource=DbConnectionManager.class.getResourceAsStream(resourceName);
       if (resource == null) {
-        Log.info("Warning: Make sure that database was not modified for release: " + CURRENT_MAJOR_VERSION + "."+ (i + 1)+ ". Upgrade script not found: "+ resourceName);
-        System.out.println("Warning: Make sure that database was not modified for " + "release: " + CURRENT_MAJOR_VERSION + "."+ (i + 1)+ ". Upgrade script not found: "+ resourceName);
         continue;
       }
       in=new BufferedReader(new InputStreamReader(resource));
@@ -76,16 +80,13 @@
           stmt.close();
         }
       }
+      if (version > 6) {
+        stmt=con.createStatement();
+        stmt.execute("UPDATE jiveVersion SET version=" + i + " WHERE name='wildfire'");
+        stmt.close();
+      }
     }
   finally {
-      try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
       if (in != null) {
         try {
           in.close();
@@ -95,7 +96,7 @@
       }
     }
   }
-  Log.info("Database upgraded successfully.");
-  System.out.println("Database upgraded successfully.");
+  Log.info(LocaleUtils.getLocalizedString("upgrade.database.success"));
+  System.out.println(LocaleUtils.getLocalizedString("upgrade.database.success"));
   return true;
 }

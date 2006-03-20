@@ -1,0 +1,57 @@
+{
+  int nI;
+  m_pbox=new int[PBOX_ENTRIES];
+  for (nI=0; nI < PBOX_ENTRIES; nI++) {
+    m_pbox[nI]=pbox_init[nI];
+  }
+  m_sbox1=new int[SBOX_ENTRIES];
+  m_sbox2=new int[SBOX_ENTRIES];
+  m_sbox3=new int[SBOX_ENTRIES];
+  m_sbox4=new int[SBOX_ENTRIES];
+  for (nI=0; nI < SBOX_ENTRIES; nI++) {
+    m_sbox1[nI]=sbox_init_1[nI];
+    m_sbox2[nI]=sbox_init_2[nI];
+    m_sbox3[nI]=sbox_init_3[nI];
+    m_sbox4[nI]=sbox_init_4[nI];
+  }
+  int nLen=bfkey.length;
+  if (nLen == 0)   return;
+  int nKeyPos=0;
+  int nBuild=0;
+  int nJ;
+  for (nI=0; nI < PBOX_ENTRIES; nI++) {
+    for (nJ=0; nJ < 4; nJ++) {
+      nBuild=(nBuild << 8) | (((int)bfkey[nKeyPos]) & 0x0ff);
+      if (++nKeyPos == nLen) {
+        nKeyPos=0;
+      }
+    }
+    m_pbox[nI]^=nBuild;
+  }
+  long lZero=0;
+  for (nI=0; nI < PBOX_ENTRIES; nI+=2) {
+    lZero=encryptBlock(lZero);
+    m_pbox[nI]=(int)(lZero >>> 32);
+    m_pbox[nI + 1]=(int)(lZero & 0x0ffffffffL);
+  }
+  for (nI=0; nI < SBOX_ENTRIES; nI+=2) {
+    lZero=encryptBlock(lZero);
+    m_sbox1[nI]=(int)(lZero >>> 32);
+    m_sbox1[nI + 1]=(int)(lZero & 0x0ffffffffL);
+  }
+  for (nI=0; nI < SBOX_ENTRIES; nI+=2) {
+    lZero=encryptBlock(lZero);
+    m_sbox2[nI]=(int)(lZero >>> 32);
+    m_sbox2[nI + 1]=(int)(lZero & 0x0ffffffffL);
+  }
+  for (nI=0; nI < SBOX_ENTRIES; nI+=2) {
+    lZero=encryptBlock(lZero);
+    m_sbox3[nI]=(int)(lZero >>> 32);
+    m_sbox3[nI + 1]=(int)(lZero & 0x0ffffffffL);
+  }
+  for (nI=0; nI < SBOX_ENTRIES; nI+=2) {
+    lZero=encryptBlock(lZero);
+    m_sbox4[nI]=(int)(lZero >>> 32);
+    m_sbox4[nI + 1]=(int)(lZero & 0x0ffffffffL);
+  }
+}

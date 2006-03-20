@@ -1,0 +1,22 @@
+{
+  int nHi=longHi32(lCipherBlock);
+  int nLo=longLo32(lCipherBlock);
+  nHi^=m_pbox[17];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[16];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[15];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[14];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[13];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[12];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[11];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[10];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[9];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[8];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[7];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[6];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[5];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[4];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[3];
+  nLo^=(((m_sbox1[nHi >>> 24] + m_sbox2[(nHi >>> 16) & 0x0ff]) ^ m_sbox3[(nHi >>> 8) & 0x0ff]) + m_sbox4[nHi & 0x0ff]) ^ m_pbox[2];
+  nHi^=(((m_sbox1[nLo >>> 24] + m_sbox2[(nLo >>> 16) & 0x0ff]) ^ m_sbox3[(nLo >>> 8) & 0x0ff]) + m_sbox4[nLo & 0x0ff]) ^ m_pbox[1];
+  return makeLong(nHi,nLo ^ m_pbox[0]);
+}

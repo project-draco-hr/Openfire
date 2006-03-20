@@ -1,0 +1,20 @@
+{
+  int nStrLen=sPlainText.length();
+  byte[] buf=new byte[((nStrLen << 1) & 0xfffffff8) + 8];
+  int nI;
+  int nPos=0;
+  for (nI=0; nI < nStrLen; nI++) {
+    char cActChar=sPlainText.charAt(nI);
+    buf[nPos++]=(byte)((cActChar >> 8) & 0x0ff);
+    buf[nPos++]=(byte)(cActChar & 0x0ff);
+  }
+  byte bPadVal=(byte)(buf.length - (nStrLen << 1));
+  while (nPos < buf.length) {
+    buf[nPos++]=bPadVal;
+  }
+  m_bfish.setCBCIV(lNewCBCIV);
+  m_bfish.encrypt(buf);
+  byte[] newCBCIV=new byte[BlowfishCBC.BLOCKSIZE];
+  longToByteArray(lNewCBCIV,newCBCIV,0);
+  return bytesToBinHex(newCBCIV,0,BlowfishCBC.BLOCKSIZE) + bytesToBinHex(buf,0,buf.length);
+}

@@ -1,0 +1,10 @@
+{
+  StringBuffer sbuf=new StringBuffer();
+  sbuf.setLength(nNumOfBytes << 1);
+  int nPos=0;
+  for (int nI=0; nI < nNumOfBytes; nI++) {
+    sbuf.setCharAt(nPos++,HEXTAB[(data[nI + nStartPos] >> 4) & 0x0f]);
+    sbuf.setCharAt(nPos++,HEXTAB[data[nI + nStartPos] & 0x0f]);
+  }
+  return sbuf.toString();
+}

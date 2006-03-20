@@ -1,18 +1,15 @@
 {
-  File realHome=null;
-  File guess=new File(homeGuess);
-  File configFileGuess=new File(guess,jiveConfigName);
-  if (configFileGuess.exists()) {
-    realHome=guess;
-  }
-  File wildfireHome=new File(guess,jiveConfigName);
-  if (!wildfireHome.exists()) {
+  File wildfireHome=new File(homeGuess);
+  File configFile=new File(wildfireHome,jiveConfigName);
+  if (!configFile.exists()) {
     throw new FileNotFoundException();
   }
-  try {
-    return new File(realHome.getCanonicalPath());
-  }
- catch (  Exception ex) {
-    throw new FileNotFoundException();
+ else {
+    try {
+      return new File(wildfireHome.getCanonicalPath());
+    }
+ catch (    Exception ex) {
+      throw new FileNotFoundException();
+    }
   }
 }

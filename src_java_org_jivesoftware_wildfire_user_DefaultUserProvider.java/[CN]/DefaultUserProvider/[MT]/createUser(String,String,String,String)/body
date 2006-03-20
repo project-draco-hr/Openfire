@@ -7,6 +7,12 @@
     throw new UserAlreadyExistsException("Username " + username + " already exists");
   }
  catch (  UserNotFoundException unfe) {
+    boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
+    String encryptedPassword=null;
+    if (!usePlainPassword) {
+      encryptedPassword=getCipher().encryptString(password);
+      password=null;
+    }
     Date now=new Date();
     Connection con=null;
     PreparedStatement pstmt=null;
@@ -14,21 +20,32 @@
       con=DbConnectionManager.getConnection();
       pstmt=con.prepareStatement(INSERT_USER);
       pstmt.setString(1,username);
-      pstmt.setString(2,password);
-      if (name == null) {
+      if (password == null) {
+        pstmt.setNull(2,Types.VARCHAR);
+      }
+ else {
+        pstmt.setString(2,password);
+      }
+      if (encryptedPassword == null) {
         pstmt.setNull(3,Types.VARCHAR);
       }
  else {
-        pstmt.setString(3,name);
+        pstmt.setString(3,encryptedPassword);
       }
-      if (email == null) {
+      if (name == null) {
         pstmt.setNull(4,Types.VARCHAR);
       }
  else {
-        pstmt.setString(4,email);
+        pstmt.setString(4,name);
       }
-      pstmt.setString(5,StringUtils.dateToMillis(now));
+      if (email == null) {
+        pstmt.setNull(5,Types.VARCHAR);
+      }
+ else {
+        pstmt.setString(5,email);
+      }
       pstmt.setString(6,StringUtils.dateToMillis(now));
+      pstmt.setString(7,StringUtils.dateToMillis(now));
       pstmt.execute();
     }
  catch (    Exception e) {

@@ -1,0 +1,27 @@
+{
+  int nLen=(sCipherText.length() >> 1) & ~7;
+  if (nLen < BlowfishECB.BLOCKSIZE)   return null;
+  byte[] cbciv=new byte[BlowfishCBC.BLOCKSIZE];
+  int nNumOfBytes=binHexToBytes(sCipherText,cbciv,0,0,BlowfishCBC.BLOCKSIZE);
+  if (nNumOfBytes < BlowfishCBC.BLOCKSIZE)   return null;
+  m_bfish.setCBCIV(cbciv);
+  nLen-=BlowfishCBC.BLOCKSIZE;
+  if (nLen == 0) {
+    return "";
+  }
+  byte[] buf=new byte[nLen];
+  nNumOfBytes=binHexToBytes(sCipherText,buf,BlowfishCBC.BLOCKSIZE * 2,0,nLen);
+  if (nNumOfBytes < nLen) {
+    return null;
+  }
+  m_bfish.decrypt(buf);
+  int nPadByte=(int)buf[buf.length - 1] & 0x0ff;
+  if ((nPadByte > 8) || (nPadByte < 0)) {
+    nPadByte=0;
+  }
+  nNumOfBytes-=nPadByte;
+  if (nNumOfBytes < 0) {
+    return "";
+  }
+  return byteArrayToUNCString(buf,0,nNumOfBytes);
+}

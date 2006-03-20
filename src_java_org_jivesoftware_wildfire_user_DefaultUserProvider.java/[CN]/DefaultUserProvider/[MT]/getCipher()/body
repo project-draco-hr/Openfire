@@ -1,0 +1,18 @@
+{
+  if (cipher != null) {
+    return cipher;
+  }
+  String keyString;
+  try {
+    keyString=JiveGlobals.getProperty("passwordKey");
+    if (keyString == null) {
+      keyString=StringUtils.randomString(15);
+      JiveGlobals.setProperty("passwordKey",keyString);
+    }
+    cipher=new Blowfish(keyString);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return cipher;
+}

@@ -12,7 +12,14 @@
     if (!rs.next()) {
       throw new UserNotFoundException(username);
     }
-    return rs.getString(1);
+    String plainText=rs.getString(1);
+    String encrypted=rs.getString(2);
+    if (encrypted != null) {
+      return getCipher().decryptString(encrypted);
+    }
+ else {
+      return plainText;
+    }
   }
  catch (  SQLException sqle) {
     throw new UserNotFoundException(sqle);
