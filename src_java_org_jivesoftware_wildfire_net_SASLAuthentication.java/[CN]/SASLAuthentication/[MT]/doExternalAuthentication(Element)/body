@@ -12,6 +12,13 @@
   }
   if (hostname != null && hostname.length() > 0) {
     hostname=StringUtils.decodeBase64(hostname);
+    if (session instanceof IncomingServerSession) {
+      boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
+      if (!verify) {
+        authenticationSuccessful(hostname);
+        return true;
+      }
+    }
     for (    Certificate certificate : connection.getSSLSession().getPeerCertificates()) {
       if (TLSStreamHandler.getPeerIdentities((X509Certificate)certificate).contains(hostname)) {
         authenticationSuccessful(hostname);
