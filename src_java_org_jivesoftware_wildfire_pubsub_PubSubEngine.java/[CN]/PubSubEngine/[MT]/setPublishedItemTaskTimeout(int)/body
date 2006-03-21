@@ -1,0 +1,11 @@
+{
+  if (this.items_task_timeout == timeout) {
+    return;
+  }
+  if (publishedItemTask != null) {
+    publishedItemTask.cancel();
+  }
+  this.items_task_timeout=timeout;
+  publishedItemTask=new PublishedItemTask();
+  timer.schedule(publishedItemTask,items_task_timeout,items_task_timeout);
+}

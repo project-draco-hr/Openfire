@@ -1,0 +1,54 @@
+{
+  String nodeID=retractElement.attributeValue("node");
+  Node node=null;
+  if (nodeID == null) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,pubsubError);
+    return;
+  }
+ else {
+    node=service.getNode(nodeID);
+    if (node == null) {
+      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+      return;
+    }
+  }
+  Iterator itemElements=retractElement.elementIterator("item");
+  if (!itemElements.hasNext()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("item-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
+  if (node.isCollectionNode()) {
+    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    return;
+  }
+  LeafNode leafNode=(LeafNode)node;
+  if (!leafNode.isItemRequired()) {
+    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    return;
+  }
+  List<PublishedItem> items=new ArrayList<PublishedItem>();
+  while (itemElements.hasNext()) {
+    Element itemElement=(Element)itemElements.next();
+    String itemID=itemElement.attributeValue("id");
+    if (itemID != null) {
+      PublishedItem item=node.getPublishedItem(itemID);
+      if (item == null) {
+        sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+        return;
+      }
+ else {
+        if (item.canDelete(iq.getFrom())) {
+          items.add(item);
+        }
+ else {
+          sendErrorPacket(iq,PacketError.Condition.not_authorized,null);
+          return;
+        }
+      }
+    }
+  }
+  router.route(IQ.createResultIQ(iq));
+  leafNode.deleteItems(items);
+}

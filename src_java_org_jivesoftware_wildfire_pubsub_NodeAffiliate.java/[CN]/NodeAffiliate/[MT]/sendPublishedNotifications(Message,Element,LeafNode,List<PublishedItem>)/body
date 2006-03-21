@@ -1,0 +1,33 @@
+{
+  if (!publishedItems.isEmpty()) {
+    Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(node,publishedItems);
+    for (    List<NodeSubscription> nodeSubscriptions : itemsBySubs.keySet()) {
+      Element items=event.addElement("items");
+      items.addAttribute("node",node.getNodeID());
+      for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
+        Element item=items.addElement("item");
+        if (node.isItemRequired()) {
+          item.addAttribute("id",publishedItem.getID());
+        }
+        if (node.isPayloadDelivered()) {
+          item.add(publishedItem.getPayload().createCopy());
+        }
+      }
+      sendEventNotification(notification,node,nodeSubscriptions);
+      event.remove(items);
+    }
+  }
+ else {
+    List<NodeSubscription> affectedSubscriptions=new ArrayList<NodeSubscription>();
+    ;
+    for (    NodeSubscription subscription : getSubscriptions()) {
+      if (subscription.canSendEventNotification(node,null)) {
+        affectedSubscriptions.add(subscription);
+      }
+    }
+    Element items=event.addElement("items");
+    items.addAttribute("node",node.getNodeID());
+    sendEventNotification(notification,node,affectedSubscriptions);
+    event.remove(items);
+  }
+}

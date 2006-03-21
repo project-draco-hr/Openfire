@@ -5,15 +5,17 @@
     }
     for (    Node node : getNodes()) {
     }
-    if (notifyDelete) {
+    if (isNotifiedOfDelete()) {
       Message message=new Message();
       Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
       Element items=event.addElement("delete");
       items.addAttribute("node",nodeID);
       broadcastSubscribers(message,true);
     }
+    service.removeNode(getNodeID());
     affiliates.clear();
     subscriptionsByID.clear();
+    subscriptionsByJID.clear();
     return true;
   }
   return false;

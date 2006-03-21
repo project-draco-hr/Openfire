@@ -10,7 +10,7 @@
     pstmt.setString(4,StringUtils.dateToMillis(node.getCreationDate()));
     pstmt.setString(5,StringUtils.dateToMillis(node.getModificationDate()));
     pstmt.setString(6,node.getParent() != null ? node.getParent().getNodeID() : null);
-    pstmt.setInt(7,(node.isDeliverPayloads() ? 1 : 0));
+    pstmt.setInt(7,(node.isPayloadDelivered() ? 1 : 0));
     if (!node.isCollectionNode()) {
       pstmt.setInt(8,((LeafNode)node).getMaxPayloadSize());
       pstmt.setInt(9,(((LeafNode)node).isPersistPublishedItems() ? 1 : 0));
@@ -21,9 +21,9 @@
       pstmt.setInt(9,0);
       pstmt.setInt(10,0);
     }
-    pstmt.setInt(11,(node.isNotifyConfigChanges() ? 1 : 0));
-    pstmt.setInt(12,(node.isNotifyDelete() ? 1 : 0));
-    pstmt.setInt(13,(node.isNotifyRetract() ? 1 : 0));
+    pstmt.setInt(11,(node.isNotifiedOfConfigChanges() ? 1 : 0));
+    pstmt.setInt(12,(node.isNotifiedOfDelete() ? 1 : 0));
+    pstmt.setInt(13,(node.isNotifiedOfRetract() ? 1 : 0));
     pstmt.setInt(14,(node.isPresenceBasedDelivery() ? 1 : 0));
     pstmt.setInt(15,(node.isSendItemSubscribe() ? 1 : 0));
     pstmt.setString(16,node.getPublisherModel().getName());

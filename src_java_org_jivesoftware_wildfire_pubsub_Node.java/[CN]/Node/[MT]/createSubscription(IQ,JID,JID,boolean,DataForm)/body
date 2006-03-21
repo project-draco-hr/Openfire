@@ -10,7 +10,9 @@
     subState=NodeSubscription.State.unconfigured;
   }
   NodeSubscription subscription=addSubscription(owner,subscriber,subState,options);
-  subscription.sendSubscriptionState(originalIQ);
+  if (originalIQ != null) {
+    subscription.sendSubscriptionState(originalIQ);
+  }
   if (isSendItemSubscribe()) {
     PublishedItem lastItem=getLastPublishedItem();
     if (lastItem != null) {

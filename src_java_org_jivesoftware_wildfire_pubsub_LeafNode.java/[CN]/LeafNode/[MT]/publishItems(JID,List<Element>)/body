@@ -1,0 +1,42 @@
+{
+  List<PublishedItem> newPublishedItems=new ArrayList<PublishedItem>();
+  if (isItemRequired()) {
+    String itemID;
+    Element payload;
+    PublishedItem newItem=null;
+    for (    Element item : itemElements) {
+      itemID=item.attributeValue("id");
+      List entries=item.elements();
+      payload=entries.isEmpty() ? null : (Element)entries.get(0);
+synchronized (publishedItems) {
+        if (itemID == null) {
+          itemID=StringUtils.randomString(15);
+        }
+        while (itemsByID.get(itemID) != null) {
+          itemID=StringUtils.randomString(15);
+        }
+        newItem=new PublishedItem(this,publisher,itemID,new Date());
+        newItem.setPayload(payload);
+        newPublishedItems.add(newItem);
+        while (!publishedItems.isEmpty() && maxPublishedItems >= publishedItems.size()) {
+          PublishedItem removedItem=publishedItems.remove(0);
+          itemsByID.remove(removedItem.getID());
+          service.getPubSubEngine().queueItemToRemove(removedItem);
+        }
+        addPublishedItem(newItem);
+        service.getPubSubEngine().queueItemToAdd(newItem);
+      }
+    }
+  }
+  Message message=new Message();
+  Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
+  Set<NodeAffiliate> affiliatesToNotify=new HashSet<NodeAffiliate>(affiliates);
+  for (  CollectionNode parentNode : getParents()) {
+    for (    NodeSubscription subscription : parentNode.getSubscriptions()) {
+      affiliatesToNotify.add(subscription.getAffiliate());
+    }
+  }
+  for (  NodeAffiliate affiliate : affiliatesToNotify) {
+    affiliate.sendPublishedNotifications(message,event,this,newPublishedItems);
+  }
+}

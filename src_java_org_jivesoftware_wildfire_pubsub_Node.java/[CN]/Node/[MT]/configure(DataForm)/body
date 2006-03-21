@@ -21,7 +21,6 @@
     }
     for (    FormField field : completedForm.getFields()) {
       if ("FORM_TYPE".equals(field.getVariable())) {
-        continue;
       }
  else       if ("pubsub#deliver_payloads".equals(field.getVariable())) {
         values=field.getValues();
@@ -47,11 +46,6 @@
         values=field.getValues();
         booleanValue=(values.size() > 0 ? values.get(0) : "1");
         presenceBasedDelivery="1".equals(booleanValue);
-      }
- else       if ("pubsub#send_item_subscribe".equals(field.getVariable())) {
-        values=field.getValues();
-        booleanValue=(values.size() > 0 ? values.get(0) : "1");
-        sendItemSubscribe="1".equals(booleanValue);
       }
  else       if ("pubsub#subscribe".equals(field.getVariable())) {
         values=field.getValues();
@@ -147,11 +141,11 @@
     }
     if (ownersSent) {
       Collection<JID> oldOwners=getOwners();
-      oldOwners.remove(owners);
+      oldOwners.removeAll(owners);
       for (      JID jid : oldOwners) {
         removeOwner(jid);
       }
-      owners.remove(getOwners());
+      owners.removeAll(getOwners());
       for (      JID jid : owners) {
         addOwner(jid);
       }
@@ -167,11 +161,11 @@
         }
       }
       Collection<JID> oldPublishers=getPublishers();
-      oldPublishers.remove(publishers);
+      oldPublishers.removeAll(publishers);
       for (      JID jid : oldPublishers) {
         removePublisher(jid);
       }
-      publishers.remove(getPublishers());
+      publishers.removeAll(getPublishers());
       for (      JID jid : publishers) {
         addPublisher(jid);
       }

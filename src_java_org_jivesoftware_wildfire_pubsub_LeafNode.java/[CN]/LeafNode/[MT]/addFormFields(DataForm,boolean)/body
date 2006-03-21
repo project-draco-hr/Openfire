@@ -1,6 +1,13 @@
 {
   super.addFormFields(form,isEditing);
   FormField formField=form.addField();
+  formField.setVariable("pubsub#send_item_subscribe");
+  if (isEditing) {
+    formField.setType(FormField.Type.boolean_type);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.send_item_subscribe"));
+  }
+  formField.addValue(sendItemSubscribe);
+  formField=form.addField();
   formField.setVariable("pubsub#persist_items");
   if (isEditing) {
     formField.setType(FormField.Type.boolean_type);

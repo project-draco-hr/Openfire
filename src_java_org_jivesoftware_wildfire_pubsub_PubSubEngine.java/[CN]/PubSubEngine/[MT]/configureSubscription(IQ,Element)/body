@@ -49,15 +49,7 @@
   }
   Element formElement=optionsElement.element(QName.get("x","jabber:x:data"));
   if (formElement != null) {
-    boolean wasUnconfigured=subscription.isConfigurationPending();
-    subscription.configure(new DataForm(formElement));
-    router.route(IQ.createResultIQ(iq));
-    if (wasUnconfigured && !subscription.isConfigurationPending()) {
-      PublishedItem lastItem=node.getLastPublishedItem();
-      if (lastItem != null) {
-        subscription.sendLastPublishedItem(lastItem);
-      }
-    }
+    subscription.configure(iq,new DataForm(formElement));
   }
  else {
     sendErrorPacket(iq,PacketError.Condition.bad_request,null);

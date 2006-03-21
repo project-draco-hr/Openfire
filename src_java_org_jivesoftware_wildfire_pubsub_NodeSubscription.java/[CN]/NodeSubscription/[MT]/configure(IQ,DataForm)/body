@@ -1,0 +1,13 @@
+{
+  boolean wasUnconfigured=isConfigurationPending();
+  configure(options);
+  if (originalIQ != null) {
+    service.send(IQ.createResultIQ(originalIQ));
+  }
+  if (wasUnconfigured && !isConfigurationPending() && node.isSendItemSubscribe()) {
+    PublishedItem lastItem=node.getLastPublishedItem();
+    if (lastItem != null) {
+      sendLastPublishedItem(lastItem);
+    }
+  }
+}

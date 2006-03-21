@@ -10,7 +10,7 @@
   if ("http://jabber.org/protocol/pubsub".equals(namespace)) {
     Element action=childElement.element("publish");
     if (action != null) {
-      publishItemToNode(iq,action);
+      publishItemsToNode(iq,action);
       return true;
     }
     action=childElement.element("subscribe");
@@ -50,6 +50,7 @@
     }
     action=childElement.element("retract");
     if (action != null) {
+      deleteItems(iq,action);
       return true;
     }
     sendErrorPacket(iq,PacketError.Condition.bad_request,null);

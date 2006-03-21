@@ -6,7 +6,7 @@
     pstmt=con.prepareStatement(UPDATE_NODE);
     pstmt.setString(1,StringUtils.dateToMillis(node.getModificationDate()));
     pstmt.setString(2,node.getParent() != null ? node.getParent().getNodeID() : null);
-    pstmt.setInt(3,(node.isDeliverPayloads() ? 1 : 0));
+    pstmt.setInt(3,(node.isPayloadDelivered() ? 1 : 0));
     if (!node.isCollectionNode()) {
       pstmt.setInt(4,((LeafNode)node).getMaxPayloadSize());
       pstmt.setInt(5,(((LeafNode)node).isPersistPublishedItems() ? 1 : 0));
@@ -17,9 +17,9 @@
       pstmt.setInt(5,0);
       pstmt.setInt(6,0);
     }
-    pstmt.setInt(7,(node.isNotifyConfigChanges() ? 1 : 0));
-    pstmt.setInt(8,(node.isNotifyDelete() ? 1 : 0));
-    pstmt.setInt(9,(node.isNotifyRetract() ? 1 : 0));
+    pstmt.setInt(7,(node.isNotifiedOfConfigChanges() ? 1 : 0));
+    pstmt.setInt(8,(node.isNotifiedOfDelete() ? 1 : 0));
+    pstmt.setInt(9,(node.isNotifiedOfRetract() ? 1 : 0));
     pstmt.setInt(10,(node.isPresenceBasedDelivery() ? 1 : 0));
     pstmt.setInt(11,(node.isSendItemSubscribe() ? 1 : 0));
     pstmt.setString(12,node.getPublisherModel().getName());

@@ -1,13 +1,18 @@
 {
+  boolean success=false;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(DELETE_ITEM);
+    pstmt=con.prepareStatement(ADD_ITEM);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,item.getNode().getNodeID());
     pstmt.setString(3,item.getID());
+    pstmt.setString(4,item.getPublisher().toString());
+    pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));
+    pstmt.setString(6,item.getPayloadXML());
     pstmt.executeUpdate();
+    success=true;
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
@@ -30,4 +35,5 @@
       Log.error(e);
     }
   }
+  return success;
 }
