@@ -1,6 +1,13 @@
 {
   deleteExpiredEntries();
-  int objectSize=calculateSize(value);
-  CacheObject cacheObject=new CacheObject(value,objectSize);
-  return map.containsValue(cacheObject);
+  if (value == null) {
+    return containsNullValue();
+  }
+  Iterator it=values().iterator();
+  while (it.hasNext()) {
+    if (value.equals(it.next())) {
+      return true;
+    }
+  }
+  return false;
 }

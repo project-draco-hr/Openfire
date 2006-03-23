@@ -5,7 +5,18 @@
       return it.hasNext();
     }
     public V next(){
-      return it.next().object;
+      if (it.hasNext()) {
+        CacheObject<V> object=it.next();
+        if (object == null) {
+          return null;
+        }
+ else {
+          return object.object;
+        }
+      }
+ else {
+        throw new NoSuchElementException();
+      }
     }
     public void remove(){
       throw new UnsupportedOperationException();
