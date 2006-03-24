@@ -1,0 +1,12 @@
+{
+synchronized (sharedGroupsKey) {
+    Collection<Group> groups=userGroupCache.get(sharedGroupsKey);
+    if (groups == null) {
+      Set<String> groupsNames=Group.getSharedGroupsNames();
+      groups=provider.getGroups(groupsNames);
+      groups=cacheAndEnsureIdentity(groups);
+      userGroupCache.put(sharedGroupsKey,groups);
+    }
+    return groups;
+  }
+}

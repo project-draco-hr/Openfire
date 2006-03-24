@@ -5,10 +5,10 @@
   if (rosterCache == null) {
     throw new UserNotFoundException("Could not load caches");
   }
-  Roster roster=(Roster)rosterCache.get(username);
+  Roster roster=rosterCache.get(username);
   if (roster == null) {
 synchronized (username.intern()) {
-      roster=(Roster)rosterCache.get(username);
+      roster=rosterCache.get(username);
       if (roster == null) {
         roster=new Roster(username);
         rosterCache.put(username,roster);
