@@ -12,6 +12,7 @@
     String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
     XMPPServer server=XMPPServer.getInstance();
     String serverName=server.getServerInfo().getName();
+    Pattern pattern=Pattern.compile("(?i)(^" + manager.getUsernameField() + "=)([^,]+)(.+)");
     while (answer.hasMoreElements()) {
       String name="";
       try {
@@ -31,15 +32,21 @@
           String username=(String)ne.next();
           if (!manager.isPosixMode()) {
             try {
-              LdapName ldapname=new LdapName(username);
-              String ldapcn=ldapname.get(ldapname.size() - 1);
-              String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
-              NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
-              if (usrAnswer.hasMoreElements()) {
-                username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+              Matcher matcher=pattern.matcher(username);
+              if (matcher.matches() && matcher.groupCount() == 3) {
+                username=matcher.group(2);
               }
  else {
-                throw new UserNotFoundException();
+                LdapName ldapname=new LdapName(username);
+                String ldapcn=ldapname.get(ldapname.size() - 1);
+                String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
+                NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
+                if (usrAnswer.hasMoreElements()) {
+                  username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+                }
+ else {
+                  throw new UserNotFoundException();
+                }
               }
             }
  catch (            Exception e) {
