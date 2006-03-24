@@ -1,9 +1,11 @@
 {
-  Collection<Group> groups=userGroupCache.get(globalGroupKey);
-  if (groups == null) {
-    groups=provider.getGroups();
-    groups=cacheAndEnsureIdentity(groups);
-    userGroupCache.put(globalGroupKey,groups);
+synchronized (globalGroupKey) {
+    Collection<Group> groups=userGroupCache.get(globalGroupKey);
+    if (groups == null) {
+      groups=provider.getGroups();
+      groups=cacheAndEnsureIdentity(groups);
+      userGroupCache.put(globalGroupKey,groups);
+    }
+    return groups;
   }
-  return groups;
 }
