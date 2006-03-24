@@ -1,0 +1,13 @@
+{
+  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcAuthProvider.jdbcDriver.className");
+  try {
+    Class.forName(jdbcDriver).newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+    return;
+  }
+  jdbcConnString=JiveGlobals.getXMLProperty("jdbcAuthProvider.jdbcConnString");
+  authSQL=JiveGlobals.getXMLProperty("jdbcAuthProvider.authorizeSQL");
+  passSQL=JiveGlobals.getXMLProperty("jdbcAuthProvider.passwordSQL");
+}

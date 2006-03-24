@@ -1,0 +1,42 @@
+{
+  if (username == null || password == null) {
+    throw new UnauthorizedException();
+  }
+  username=username.trim().toLowerCase();
+  Connection conn=null;
+  PreparedStatement pstmt=null;
+  try {
+    conn=DriverManager.getConnection(jdbcConnString);
+    pstmt=conn.prepareStatement(authSQL);
+    pstmt.setString(1,username);
+    pstmt.setString(2,password);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new UnauthorizedException();
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error("Exception in JDBCAuthProvider",e);
+    throw new UnauthorizedException();
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  createUser(username);
+}
