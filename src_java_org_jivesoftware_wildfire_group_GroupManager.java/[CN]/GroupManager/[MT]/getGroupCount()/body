@@ -1,3 +1,7 @@
 {
-  return provider.getGroupCount();
+  Collection<Group> groups=userGroupCache.get(globalGroupKey);
+  if (groups == null) {
+    return provider.getGroupCount();
+  }
+  return groups.size();
 }

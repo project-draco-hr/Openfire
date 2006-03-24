@@ -1,5 +1,9 @@
 {
-  Collection<Group> groups=provider.getGroups(user);
-  groups=cacheAndEnsureIdentity(groups);
+  Collection<Group> groups=userGroupCache.get(user);
+  if (groups == null) {
+    groups=provider.getGroups(user);
+    groups=cacheAndEnsureIdentity(groups);
+    userGroupCache.put(user.toString(),groups);
+  }
   return groups;
 }

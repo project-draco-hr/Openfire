@@ -2,6 +2,9 @@
   String cacheName="Group";
   CacheManager.initializeCache(cacheName,"group",128 * 1024);
   groupCache=CacheManager.getCache(cacheName);
+  cacheName="User Group Cache";
+  CacheManager.initializeCache(cacheName,"userGroup",128 * 1024,1000 * 60 * 60* 3);
+  userGroupCache=CacheManager.getCache(cacheName);
   String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.wildfire.group.DefaultGroupProvider");
   try {
     Class c=ClassUtils.forName(className);
@@ -11,4 +14,27 @@
     Log.error("Error loading group provider: " + className,e);
     provider=new DefaultGroupProvider();
   }
+  GroupEventDispatcher.addListener(new GroupEventListener(){
+    public void groupCreated(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+    public void groupDeleting(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+    public void groupModified(    Group group,    Map params){
+    }
+    public void memberAdded(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+    public void memberRemoved(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+    public void adminAdded(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+    public void adminRemoved(    Group group,    Map params){
+      userGroupCache.clear();
+    }
+  }
+);
 }
