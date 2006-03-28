@@ -18,7 +18,7 @@ synchronized (publishedItems) {
         newItem=new PublishedItem(this,publisher,itemID,new Date());
         newItem.setPayload(payload);
         newPublishedItems.add(newItem);
-        while (!publishedItems.isEmpty() && maxPublishedItems >= publishedItems.size()) {
+        while (!publishedItems.isEmpty() && publishedItems.size() >= maxPublishedItems) {
           PublishedItem removedItem=publishedItems.remove(0);
           itemsByID.remove(removedItem.getID());
           service.getPubSubEngine().queueItemToRemove(removedItem);

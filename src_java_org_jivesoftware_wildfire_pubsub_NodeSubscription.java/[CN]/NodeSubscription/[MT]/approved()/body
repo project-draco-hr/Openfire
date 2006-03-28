@@ -1,0 +1,15 @@
+{
+  if (state == State.subscribed) {
+    return;
+  }
+  state=State.subscribed;
+  if (savedToDB) {
+    PubSubPersistenceManager.saveSubscription(service,node,this,false);
+  }
+  if (node.isSendItemSubscribe() && isActive()) {
+    PublishedItem lastItem=node.getLastPublishedItem();
+    if (lastItem != null) {
+      sendLastPublishedItem(lastItem);
+    }
+  }
+}

@@ -101,5 +101,9 @@
     sendErrorPacket(iq,PacketError.Condition.bad_request,null);
     return true;
   }
+ else   if ("http://jabber.org/protocol/commands".equals(namespace)) {
+    IQ reply=manager.process(iq);
+    router.route(reply);
+  }
   return false;
 }

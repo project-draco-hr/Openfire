@@ -4,10 +4,15 @@
   if (originalIQ != null) {
     service.send(IQ.createResultIQ(originalIQ));
   }
-  if (wasUnconfigured && !isConfigurationPending() && node.isSendItemSubscribe()) {
-    PublishedItem lastItem=node.getLastPublishedItem();
-    if (lastItem != null) {
-      sendLastPublishedItem(lastItem);
+  if (wasUnconfigured) {
+    if (isAuthorizationPending()) {
+      sendAuthorizationRequest();
+    }
+    if (node.isSendItemSubscribe() && isActive()) {
+      PublishedItem lastItem=node.getLastPublishedItem();
+      if (lastItem != null) {
+        sendLastPublishedItem(lastItem);
+      }
     }
   }
 }

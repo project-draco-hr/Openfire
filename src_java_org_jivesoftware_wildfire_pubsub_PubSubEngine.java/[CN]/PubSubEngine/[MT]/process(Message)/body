@@ -1,2 +1,33 @@
 {
+  if (message.getType() == Message.Type.error) {
+  }
+ else   if (message.getType() == Message.Type.normal) {
+    DataForm authForm=(DataForm)message.getExtension("x","jabber:x:data");
+    if (authForm != null && authForm.getType() == DataForm.Type.submit) {
+      String formType=authForm.getField("FORM_TYPE").getValues().get(0);
+      if ("http://jabber.org/protocol/pubsub#subscribe_authorization".equals(formType)) {
+        String nodeID=authForm.getField("pubsub#node").getValues().get(0);
+        String subID=authForm.getField("pubsub#subid").getValues().get(0);
+        String allow=authForm.getField("pubsub#allow").getValues().get(0);
+        boolean approved;
+        if ("1".equals(allow) || "true".equals(allow)) {
+          approved=true;
+        }
+ else         if ("0".equals(allow) || "false".equals(allow)) {
+          approved=false;
+        }
+ else {
+          Log.warn("Invalid allow value in completed authorization form: " + message.toXML());
+          return;
+        }
+        Node node=service.getNode(nodeID);
+        if (node != null) {
+          NodeSubscription subscription=node.getSubscription(subID);
+          if (subscription != null) {
+            node.approveSubscription(subscription,approved);
+          }
+        }
+      }
+    }
+  }
 }

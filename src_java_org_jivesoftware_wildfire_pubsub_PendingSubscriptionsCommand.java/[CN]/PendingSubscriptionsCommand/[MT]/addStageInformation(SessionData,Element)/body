@@ -1,0 +1,15 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.title"));
+  form.addInstruction(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.instruction"));
+  FormField formField=form.addField();
+  formField.setVariable("pubsub#node");
+  formField.setType(FormField.Type.list_single);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.node"));
+  for (  Node node : service.getNodes()) {
+    if (!node.isCollectionNode() && node.isAdmin(data.getOwner())) {
+      formField.addOption(null,node.getNodeID());
+    }
+  }
+  command.add(form.getElement());
+}

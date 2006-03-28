@@ -1,0 +1,32 @@
+{
+  Element note=command.addElement("note");
+  List<String> nodeIDs=data.getData().get("pubsub#node");
+  if (nodeIDs.isEmpty()) {
+    note.addAttribute("type","error");
+    note.setText(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.error.idrequired"));
+  }
+ else   if (nodeIDs.size() > 1) {
+    note.addAttribute("type","error");
+    note.setText(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.error.manyIDs"));
+  }
+ else {
+    Node node=service.getNode(nodeIDs.get(0));
+    if (node != null) {
+      if (node.isAdmin(data.getOwner())) {
+        note.addAttribute("type","info");
+        note.setText(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.success"));
+        for (        NodeSubscription subscription : node.getPendingSubscriptions()) {
+          subscription.sendAuthorizationRequest(data.getOwner());
+        }
+      }
+ else {
+        note.addAttribute("type","error");
+        note.setText(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.error.forbidden"));
+      }
+    }
+ else {
+      note.addAttribute("type","error");
+      note.setText(LocaleUtils.getLocalizedString("pubsub.command.pending-subscriptions.error.badid"));
+    }
+  }
+}

@@ -11,22 +11,21 @@
       pstmt.setString(4,subscription.getJID().toString());
       pstmt.setString(5,subscription.getOwner().toString());
       pstmt.setString(6,subscription.getState().name());
-      pstmt.setInt(7,(subscription.isConfigurationPending() ? 1 : 0));
-      pstmt.setInt(8,(subscription.shouldDeliverNotifications() ? 1 : 0));
-      pstmt.setInt(9,(subscription.isUsingDigest() ? 1 : 0));
-      pstmt.setInt(10,subscription.getDigestFrequency());
+      pstmt.setInt(7,(subscription.shouldDeliverNotifications() ? 1 : 0));
+      pstmt.setInt(8,(subscription.isUsingDigest() ? 1 : 0));
+      pstmt.setInt(9,subscription.getDigestFrequency());
       Date expireDate=subscription.getExpire();
       if (expireDate == null) {
-        pstmt.setString(11,null);
+        pstmt.setString(10,null);
       }
  else {
-        pstmt.setString(11,StringUtils.dateToMillis(expireDate));
+        pstmt.setString(10,StringUtils.dateToMillis(expireDate));
       }
-      pstmt.setInt(12,(subscription.isIncludingBody() ? 1 : 0));
-      pstmt.setString(13,encodeWithComma(subscription.getPresenceStates()));
-      pstmt.setString(14,subscription.getType().name());
-      pstmt.setInt(15,subscription.getDepth());
-      pstmt.setString(16,subscription.getKeyword());
+      pstmt.setInt(11,(subscription.isIncludingBody() ? 1 : 0));
+      pstmt.setString(12,encodeWithComma(subscription.getPresenceStates()));
+      pstmt.setString(13,subscription.getType().name());
+      pstmt.setInt(14,subscription.getDepth());
+      pstmt.setString(15,subscription.getKeyword());
       pstmt.executeUpdate();
       subscription.setSavedToDB(true);
     }
@@ -42,25 +41,24 @@
         pstmt=con.prepareStatement(UPDATE_SUBSCRIPTION);
         pstmt.setString(1,subscription.getOwner().toString());
         pstmt.setString(2,subscription.getState().name());
-        pstmt.setInt(3,(subscription.isConfigurationPending() ? 1 : 0));
-        pstmt.setInt(4,(subscription.shouldDeliverNotifications() ? 1 : 0));
-        pstmt.setInt(5,(subscription.isUsingDigest() ? 1 : 0));
-        pstmt.setInt(6,subscription.getDigestFrequency());
+        pstmt.setInt(3,(subscription.shouldDeliverNotifications() ? 1 : 0));
+        pstmt.setInt(4,(subscription.isUsingDigest() ? 1 : 0));
+        pstmt.setInt(5,subscription.getDigestFrequency());
         Date expireDate=subscription.getExpire();
         if (expireDate == null) {
-          pstmt.setString(7,null);
+          pstmt.setString(6,null);
         }
  else {
-          pstmt.setString(7,StringUtils.dateToMillis(expireDate));
+          pstmt.setString(6,StringUtils.dateToMillis(expireDate));
         }
-        pstmt.setInt(8,(subscription.isIncludingBody() ? 1 : 0));
-        pstmt.setString(9,encodeWithComma(subscription.getPresenceStates()));
-        pstmt.setString(10,subscription.getType().name());
-        pstmt.setInt(11,subscription.getDepth());
-        pstmt.setString(12,subscription.getKeyword());
-        pstmt.setString(13,service.getServiceID());
-        pstmt.setString(14,node.getNodeID());
-        pstmt.setString(15,subscription.getID());
+        pstmt.setInt(7,(subscription.isIncludingBody() ? 1 : 0));
+        pstmt.setString(8,encodeWithComma(subscription.getPresenceStates()));
+        pstmt.setString(9,subscription.getType().name());
+        pstmt.setInt(10,subscription.getDepth());
+        pstmt.setString(11,subscription.getKeyword());
+        pstmt.setString(12,service.getServiceID());
+        pstmt.setString(13,node.getNodeID());
+        pstmt.setString(14,subscription.getID());
         pstmt.executeUpdate();
       }
     }

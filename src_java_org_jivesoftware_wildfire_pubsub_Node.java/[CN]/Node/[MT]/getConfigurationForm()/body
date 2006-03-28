@@ -4,6 +4,10 @@
   List<String> params=new ArrayList<String>();
   params.add(getNodeID());
   form.addInstruction(LocaleUtils.getLocalizedString("pubsub.form.conf.instruction",params));
+  FormField formField=form.addField();
+  formField.setVariable("FORM_TYPE");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue("http://jabber.org/protocol/pubsub#node_config");
   addFormFields(form,true);
   return form;
 }

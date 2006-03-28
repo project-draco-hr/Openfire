@@ -2,8 +2,13 @@
   addAffiliation(jid,NodeAffiliate.Affiliation.publisher);
   Collection<NodeSubscription> subscriptions=getSubscriptions(jid);
   if (subscriptions.isEmpty()) {
-    addSubscription(jid,jid,NodeSubscription.State.subscribed,null);
+    createSubscription(null,jid,jid,false,null);
   }
  else {
+    for (    NodeSubscription subscription : getSubscriptions(jid)) {
+      if (subscription.isAuthorizationPending()) {
+        subscription.approved();
+      }
+    }
   }
 }

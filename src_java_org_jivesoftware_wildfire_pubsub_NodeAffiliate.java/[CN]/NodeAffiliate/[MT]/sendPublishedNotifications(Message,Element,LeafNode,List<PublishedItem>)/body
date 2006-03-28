@@ -3,7 +3,7 @@
     Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(node,publishedItems);
     for (    List<NodeSubscription> nodeSubscriptions : itemsBySubs.keySet()) {
       Element items=event.addElement("items");
-      items.addAttribute("node",node.getNodeID());
+      items.addAttribute("node",getNode().getNodeID());
       for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
         Element item=items.addElement("item");
         if (node.isItemRequired()) {
@@ -11,6 +11,9 @@
         }
         if (node.isPayloadDelivered()) {
           item.add(publishedItem.getPayload().createCopy());
+        }
+        if (node != getNode()) {
+          item.addAttribute("node",node.getNodeID());
         }
       }
       sendEventNotification(notification,node,nodeSubscriptions);

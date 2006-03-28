@@ -66,7 +66,12 @@ synchronized (dateFormat) {
       fieldExists=false;
     }
     if (fieldExists) {
-      setConfigurationPending(false);
+      if (node.getAccessModel().isAuthorizationRequired()) {
+        state=State.pending;
+      }
+ else {
+        state=State.subscribed;
+      }
     }
   }
   if (savedToDB) {

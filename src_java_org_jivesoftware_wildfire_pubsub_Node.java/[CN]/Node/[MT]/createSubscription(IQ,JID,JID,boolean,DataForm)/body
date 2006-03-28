@@ -9,11 +9,22 @@
  else   if (isSubscriptionConfigurationRequired()) {
     subState=NodeSubscription.State.unconfigured;
   }
-  NodeSubscription subscription=addSubscription(owner,subscriber,subState,options);
+  String id=StringUtils.randomString(40);
+  NodeSubscription subscription=new NodeSubscription(service,this,owner,subscriber,subState,id);
+  if (options != null) {
+    subscription.configure(options);
+  }
+  addSubscription(subscription);
+  if (savedToDB) {
+    PubSubPersistenceManager.saveSubscription(service,this,subscription,true);
+  }
   if (originalIQ != null) {
     subscription.sendSubscriptionState(originalIQ);
   }
-  if (isSendItemSubscribe()) {
+  if (subscription.isAuthorizationPending()) {
+    subscription.sendAuthorizationRequest();
+  }
+  if (isSendItemSubscribe() && subscription.isActive()) {
     PublishedItem lastItem=getLastPublishedItem();
     if (lastItem != null) {
       subscription.sendLastPublishedItem(lastItem);

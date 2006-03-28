@@ -1,0 +1,29 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle(LocaleUtils.getLocalizedString("pubsub.form.authorization.title"));
+  form.addInstruction(LocaleUtils.getLocalizedString("pubsub.form.authorization.instruction"));
+  FormField formField=form.addField();
+  formField.setVariable("FORM_TYPE");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue("http://jabber.org/protocol/pubsub#subscribe_authorization");
+  formField=form.addField();
+  formField.setVariable("pubsub#subid");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue(subscription.getID());
+  formField=form.addField();
+  formField.setVariable("pubsub#node");
+  formField.setType(FormField.Type.text_single);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.authorization.node"));
+  formField.addValue(getNodeID());
+  formField=form.addField();
+  formField.setVariable("pusub#subscriber_jid");
+  formField.setType(FormField.Type.jid_single);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.authorization.subscriber"));
+  formField.addValue(subscription.getJID().toString());
+  formField=form.addField();
+  formField.setVariable("pubsub#allow");
+  formField.setType(FormField.Type.boolean_type);
+  formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.authorization.allow"));
+  formField.addValue(Boolean.FALSE);
+  return form;
+}

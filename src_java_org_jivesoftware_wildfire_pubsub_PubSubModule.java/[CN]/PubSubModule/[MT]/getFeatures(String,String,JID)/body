@@ -2,19 +2,24 @@
   ArrayList<String> features=new ArrayList<String>();
   if (name == null && node == null) {
     features.add("http://jabber.org/protocol/pubsub");
-    features.add("http://jabber.org/protocol/pubsub#collections");
+    if (isCollectionNodesSupported()) {
+      features.add("http://jabber.org/protocol/pubsub#collections");
+    }
     features.add("http://jabber.org/protocol/pubsub#config-node");
-    features.add("http://jabber.org/protocol/pubsub#config-node");
+    features.add("http://jabber.org/protocol/pubsub#create-and-configure");
     features.add("http://jabber.org/protocol/pubsub#create-nodes");
-    features.add("http://jabber.org/protocol/pubsub#delete-any");
     features.add("http://jabber.org/protocol/pubsub#delete-nodes");
-    features.add("http://jabber.org/protocol/pubsub#instant-nodes");
+    if (isInstantNodeSupported()) {
+      features.add("http://jabber.org/protocol/pubsub#instant-nodes");
+    }
     features.add("http://jabber.org/protocol/pubsub#item-ids");
     features.add("http://jabber.org/protocol/pubsub#meta-data");
+    features.add("http://jabber.org/protocol/pubsub#modify-affiliations");
     features.add("http://jabber.org/protocol/pubsub#multi-subscribe");
     features.add("http://jabber.org/protocol/pubsub#outcast-affiliation");
     features.add("http://jabber.org/protocol/pubsub#persistent-items");
     features.add("http://jabber.org/protocol/pubsub#presence-notifications");
+    features.add("http://jabber.org/protocol/pubsub#publish");
     features.add("http://jabber.org/protocol/pubsub#publisher-affiliation");
     features.add("http://jabber.org/protocol/pubsub#purge-nodes");
     features.add("http://jabber.org/protocol/pubsub#retract-items");
@@ -22,6 +27,8 @@
     features.add("http://jabber.org/protocol/pubsub#retrieve-items");
     features.add("http://jabber.org/protocol/pubsub#subscribe");
     features.add("http://jabber.org/protocol/pubsub#subscription-options");
+    String modelName=getDefaultNodeConfiguration(true).getAccessModel().getName();
+    features.add("http://jabber.org/protocol/pubsub#default_access_model_" + modelName);
   }
  else   if (name == null && node != null) {
     Node pubNode=getNode(node);

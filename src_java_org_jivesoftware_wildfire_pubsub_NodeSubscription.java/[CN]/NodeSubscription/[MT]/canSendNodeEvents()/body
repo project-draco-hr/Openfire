@@ -1,0 +1,15 @@
+{
+  if (!isActive()) {
+    return false;
+  }
+  if (!shouldDeliverNotifications()) {
+    return false;
+  }
+  if (!getPresenceStates().isEmpty()) {
+    String show=service.getShowPresence(jid);
+    if (show == null || !getPresenceStates().contains(show)) {
+      return false;
+    }
+  }
+  return true;
+}

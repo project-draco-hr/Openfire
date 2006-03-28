@@ -1,11 +1,12 @@
 {
   List<Element> answer=new ArrayList<Element>();
+  String serviceDomain=getServiceDomain();
   if (name == null && node == null) {
     Element item;
-    for (    Node pubNode : nodes.values()) {
+    for (    Node pubNode : rootCollectionNode.getNodes()) {
       if (canDiscoverNode(pubNode)) {
         item=DocumentHelper.createElement("item");
-        item.addAttribute("jid",getServiceDomain());
+        item.addAttribute("jid",serviceDomain);
         item.addAttribute("node",pubNode.getNodeID());
         item.addAttribute("name",pubNode.getName());
         answer.add(item);
@@ -20,7 +21,7 @@
         for (        Node nestedNode : pubNode.getNodes()) {
           if (canDiscoverNode(nestedNode)) {
             item=DocumentHelper.createElement("item");
-            item.addAttribute("jid",getServiceDomain());
+            item.addAttribute("jid",serviceDomain);
             item.addAttribute("node",nestedNode.getNodeID());
             item.addAttribute("name",nestedNode.getName());
             answer.add(item);
@@ -31,11 +32,14 @@
         Element item;
         for (        PublishedItem publishedItem : ((LeafNode)pubNode).getPublishedItems()) {
           item=DocumentHelper.createElement("item");
-          item.addAttribute("jid",getServiceDomain());
+          item.addAttribute("jid",serviceDomain);
           item.addAttribute("name",publishedItem.getID());
           answer.add(item);
         }
       }
+    }
+ else {
+      return null;
     }
   }
   return answer.iterator();
