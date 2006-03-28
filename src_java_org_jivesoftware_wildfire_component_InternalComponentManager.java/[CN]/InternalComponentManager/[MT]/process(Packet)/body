@@ -10,12 +10,17 @@
       }
       if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
         Element identity=childElement.element("identity");
-        XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(packet.getFrom().toBareJID(),identity.attributeValue("name"));
-        if (component instanceof ComponentSession.ExternalComponent) {
-          ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
-          externalComponent.setName(identity.attributeValue("name"));
-          externalComponent.setType(identity.attributeValue("type"));
-          externalComponent.setCategory(identity.attributeValue("category"));
+        try {
+          XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(packet.getFrom().toBareJID(),identity.attributeValue("name"));
+          if (component instanceof ComponentSession.ExternalComponent) {
+            ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
+            externalComponent.setName(identity.attributeValue("name"));
+            externalComponent.setType(identity.attributeValue("type"));
+            externalComponent.setCategory(identity.attributeValue("category"));
+          }
+        }
+ catch (        Exception e) {
+          Log.error("Error processing disco packet of external component: " + packet.toXML(),e);
         }
       }
     }
