@@ -5,7 +5,9 @@
   PrivacyList list=manager.getPrivacyList(from.getNode(),listName);
   if (list != null) {
     ClientSession session=sessionManager.getSession(from);
-    session.setActiveList(list);
+    if (session != null) {
+      session.setActiveList(list);
+    }
   }
  else {
     result.setError(PacketError.Condition.item_not_found);
