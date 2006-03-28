@@ -2,6 +2,13 @@
   String username="";
   String password="";
   String response=doc.getTextTrim();
+  if (response == null || response.length() == 0) {
+    sendChallenge(new byte[0]);
+    doc=reader.parseDocument().getRootElement();
+    if (doc != null && doc.getTextTrim().length() > 0) {
+      response=doc.getTextTrim();
+    }
+  }
   if (response != null && response.length() > 0) {
     String data=StringUtils.decodeBase64(response);
     StringTokenizer tokens=new StringTokenizer(data,"\0");
