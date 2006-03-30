@@ -1,4 +1,10 @@
 {
-  removeAffiliation(jid,NodeAffiliate.Affiliation.publisher);
-  removeSubscriptions(jid);
+  NodeAffiliate affiliate=getAffiliate(jid);
+  if (affiliate.getSubscriptions().isEmpty()) {
+    removeAffiliation(jid,NodeAffiliate.Affiliation.publisher);
+    removeSubscriptions(jid);
+  }
+ else {
+    addNoneAffiliation(jid);
+  }
 }

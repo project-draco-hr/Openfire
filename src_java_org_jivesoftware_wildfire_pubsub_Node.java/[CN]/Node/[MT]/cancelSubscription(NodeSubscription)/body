@@ -8,4 +8,7 @@
   if (savedToDB) {
     PubSubPersistenceManager.removeSubscription(service,this,subscription);
   }
+  if (isPresenceBasedDelivery() && getSubscriptions(subscription.getOwner()).isEmpty()) {
+    service.presenceSubscriptionNotRequired(this,subscription.getOwner());
+  }
 }

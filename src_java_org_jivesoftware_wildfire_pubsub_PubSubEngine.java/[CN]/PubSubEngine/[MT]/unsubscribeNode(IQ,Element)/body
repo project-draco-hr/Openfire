@@ -1,7 +1,7 @@
 {
   String nodeID=unsubscribeElement.attributeValue("node");
   String subID=unsubscribeElement.attributeValue("subid");
-  Node node=null;
+  Node node;
   if (nodeID == null) {
     node=service.getRootCollectionNode();
   }
@@ -12,7 +12,7 @@
       return;
     }
   }
-  NodeSubscription subscription=null;
+  NodeSubscription subscription;
   if (node.isMultipleSubscriptionsEnabled()) {
     if (subID == null) {
       Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));

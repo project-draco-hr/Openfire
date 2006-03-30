@@ -1,0 +1,10 @@
+{
+  Collection<NodeSubscription> subscriptions=new ArrayList<NodeSubscription>();
+  subscriptions.addAll(getSubscriptions(child));
+  for (  CollectionNode parentNode : getParents()) {
+    subscriptions.addAll(parentNode.getSubscriptions(child));
+  }
+  for (  NodeSubscription subscription : subscriptions) {
+    service.sendNotification(subscription.getNode(),notification,subscription.getJID());
+  }
+}

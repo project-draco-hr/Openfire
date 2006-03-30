@@ -1,0 +1,11 @@
+{
+  for (  Node node : service.getNodes()) {
+    NodeAffiliate affiliate=node.getAffiliate(user);
+    if (affiliate == null) {
+      continue;
+    }
+    for (    NodeSubscription subscription : affiliate.getSubscriptions()) {
+      node.cancelSubscription(subscription);
+    }
+  }
+}

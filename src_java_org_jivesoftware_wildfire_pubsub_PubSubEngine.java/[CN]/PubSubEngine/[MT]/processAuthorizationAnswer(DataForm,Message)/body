@@ -1,0 +1,23 @@
+{
+  String nodeID=authForm.getField("pubsub#node").getValues().get(0);
+  String subID=authForm.getField("pubsub#subid").getValues().get(0);
+  String allow=authForm.getField("pubsub#allow").getValues().get(0);
+  boolean approved;
+  if ("1".equals(allow) || "true".equals(allow)) {
+    approved=true;
+  }
+ else   if ("0".equals(allow) || "false".equals(allow)) {
+    approved=false;
+  }
+ else {
+    Log.warn("Invalid allow value in completed authorization form: " + message.toXML());
+    return;
+  }
+  Node node=service.getNode(nodeID);
+  if (node != null) {
+    NodeSubscription subscription=node.getSubscription(subID);
+    if (subscription != null) {
+      node.approveSubscription(subscription,approved);
+    }
+  }
+}

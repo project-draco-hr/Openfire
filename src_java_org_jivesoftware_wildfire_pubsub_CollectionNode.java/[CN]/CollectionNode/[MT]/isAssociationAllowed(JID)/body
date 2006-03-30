@@ -1,0 +1,11 @@
+{
+  if (associationPolicy == LeafNodeAssociationPolicy.all) {
+    return true;
+  }
+ else   if (associationPolicy == LeafNodeAssociationPolicy.owners) {
+    return isAdmin(user);
+  }
+ else {
+    return isAdmin(user) || associationTrusted.contains(user);
+  }
+}

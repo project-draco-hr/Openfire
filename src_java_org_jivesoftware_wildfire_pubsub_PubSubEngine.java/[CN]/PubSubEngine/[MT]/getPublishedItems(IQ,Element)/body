@@ -1,7 +1,6 @@
 {
   String nodeID=itemsElement.attributeValue("node");
-  String subID=itemsElement.attributeValue("subid");
-  Node node=null;
+  Node node;
   if (nodeID == null) {
     node=service.getRootCollectionNode();
   }
@@ -25,30 +24,12 @@
     sendErrorPacket(iq,accessModel.getSubsriptionError(),accessModel.getSubsriptionErrorDetail());
     return;
   }
-  NodeSubscription subscription=null;
-  if (node.isMultipleSubscriptionsEnabled()) {
-    if (subID == null) {
-      Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
-      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
-      return;
-    }
- else {
-      subscription=node.getSubscription(subID);
-      if (subscription == null) {
-        Element pubsubError=DocumentHelper.createElement(QName.get("invalid-subid","http://jabber.org/protocol/pubsub#errors"));
-        sendErrorPacket(iq,PacketError.Condition.not_acceptable,pubsubError);
-        return;
-      }
-    }
+  NodeAffiliate affiliate=node.getAffiliate(owner);
+  if (affiliate != null && affiliate.getAffiliation() == NodeAffiliate.Affiliation.outcast) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
   }
- else {
-    subscription=node.getSubscription(subscriberJID);
-    if (subscription == null) {
-      Element pubsubError=DocumentHelper.createElement(QName.get("not-subscribed","http://jabber.org/protocol/pubsub#errors"));
-      sendErrorPacket(iq,PacketError.Condition.not_authorized,pubsubError);
-      return;
-    }
-  }
+  LeafNode leafNode=(LeafNode)node;
   boolean forceToIncludePayload=false;
   List<PublishedItem> items=null;
   String max_items=itemsElement.attributeValue("max_items");
@@ -63,24 +44,24 @@
     }
   }
   if (max_items != null) {
-    items=node.getPublishedItems(recentItems);
+    items=leafNode.getPublishedItems(recentItems);
   }
  else {
     List requestedItems=itemsElement.elements("item");
     if (requestedItems.isEmpty()) {
-      items=node.getPublishedItems();
+      items=leafNode.getPublishedItems();
     }
  else {
       forceToIncludePayload=true;
       for (Iterator it=requestedItems.iterator(); it.hasNext(); ) {
         Element element=(Element)it.next();
         String itemID=element.attributeValue("id");
-        PublishedItem item=node.getPublishedItem(itemID);
+        PublishedItem item=leafNode.getPublishedItem(itemID);
         if (item != null) {
           items.add(item);
         }
       }
     }
   }
-  subscription.sendPublishedItems(iq,items,forceToIncludePayload);
+  leafNode.sendPublishedItems(iq,items,forceToIncludePayload);
 }

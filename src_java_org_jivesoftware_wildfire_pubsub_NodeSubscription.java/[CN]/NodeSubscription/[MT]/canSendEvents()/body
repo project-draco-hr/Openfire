@@ -1,0 +1,20 @@
+{
+  if (!isActive()) {
+    return false;
+  }
+  if (!shouldDeliverNotifications()) {
+    return false;
+  }
+  if (!getPresenceStates().isEmpty()) {
+    Collection<String> shows=service.getShowPresences(jid);
+    if (shows.isEmpty() || Collections.disjoint(getPresenceStates(),shows)) {
+      return false;
+    }
+  }
+  if (node.isPresenceBasedDelivery()) {
+    if (service.getShowPresences(jid).isEmpty()) {
+      return false;
+    }
+  }
+  return true;
+}

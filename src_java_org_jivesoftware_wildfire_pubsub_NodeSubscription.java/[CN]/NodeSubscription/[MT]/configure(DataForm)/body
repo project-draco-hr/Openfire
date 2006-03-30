@@ -1,6 +1,7 @@
 {
   List<String> values;
   String booleanValue;
+  boolean wasUsingPresence=!presenceStates.isEmpty();
   options.removeField("FORM_TYPE");
   FormField collectionField=options.getField("pubsub#subscription_type");
   if (collectionField != null) {
@@ -66,7 +67,7 @@ synchronized (dateFormat) {
       fieldExists=false;
     }
     if (fieldExists) {
-      if (node.getAccessModel().isAuthorizationRequired()) {
+      if (node.getAccessModel().isAuthorizationRequired() && !node.isAdmin(owner)) {
         state=State.pending;
       }
  else {
@@ -76,5 +77,13 @@ synchronized (dateFormat) {
   }
   if (savedToDB) {
     PubSubPersistenceManager.saveSubscription(service,node,this,false);
+  }
+  if (!node.isPresenceBasedDelivery() && wasUsingPresence != !presenceStates.isEmpty()) {
+    if (presenceStates.isEmpty()) {
+      service.presenceSubscriptionNotRequired(node,owner);
+    }
+ else {
+      service.presenceSubscriptionRequired(node,owner);
+    }
   }
 }

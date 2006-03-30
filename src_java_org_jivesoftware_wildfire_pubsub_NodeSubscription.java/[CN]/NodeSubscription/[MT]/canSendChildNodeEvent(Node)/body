@@ -1,0 +1,18 @@
+{
+  if (!node.isCollectionNode()) {
+    return false;
+  }
+  if (!canSendEvents()) {
+    return false;
+  }
+  if (Type.nodes != type) {
+    return false;
+  }
+  if (getDepth() == 1 && !node.isChildNode(originatingNode)) {
+    return false;
+  }
+  if (getDepth() == 0 && !node.isDescendantNode(originatingNode)) {
+    return false;
+  }
+  return true;
+}

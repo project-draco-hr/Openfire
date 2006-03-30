@@ -12,6 +12,10 @@
       items.addAttribute("node",nodeID);
       broadcastNodeEvent(message,true);
     }
+    if (parent != null) {
+      parent.childNodeDeleted(this);
+    }
+    cancelPresenceSubscriptions();
     service.removeNode(getNodeID());
     affiliates.clear();
     subscriptionsByID.clear();

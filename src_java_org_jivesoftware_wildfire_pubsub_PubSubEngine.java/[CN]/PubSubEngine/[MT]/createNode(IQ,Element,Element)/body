@@ -63,6 +63,17 @@
     sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
     return;
   }
+  if (parentNode != null && !collectionType) {
+    if (!parentNode.isAssociationAllowed(from)) {
+      sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+      return;
+    }
+    if (parentNode.isMaxLeafNodeReached()) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("max-nodes-exceeded","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.conflict,pubsubError);
+      return;
+    }
+  }
   boolean conflict=false;
   Node newNode=null;
   try {

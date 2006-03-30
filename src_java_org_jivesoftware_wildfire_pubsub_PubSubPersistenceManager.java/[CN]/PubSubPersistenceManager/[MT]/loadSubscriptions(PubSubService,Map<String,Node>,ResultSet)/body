@@ -9,6 +9,10 @@
     String subID=rs.getString(2);
     JID subscriber=new JID(rs.getString(3));
     JID owner=new JID(rs.getString(4));
+    if (node.getAffiliate(owner) == null) {
+      Log.warn("Subscription found for a non-existent affiliate: " + owner + " in node: "+ nodeID);
+      return;
+    }
     NodeSubscription.State state=NodeSubscription.State.valueOf(rs.getString(5));
     NodeSubscription subscription=new NodeSubscription(service,node,owner,subscriber,state,subID);
     subscription.setShouldDeliverNotifications(rs.getInt(6) == 1);

@@ -1,5 +1,11 @@
 {
+  if (node.isAdmin(owner)) {
+    return true;
+  }
   JID nodeOwner=node.getOwners().iterator().next();
+  if (nodeOwner.toBareJID().equals(owner.toBareJID())) {
+    return true;
+  }
   XMPPServer server=XMPPServer.getInstance();
   if (server.isLocal(nodeOwner)) {
     try {

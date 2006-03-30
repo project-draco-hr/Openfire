@@ -1,0 +1,9 @@
+{
+  Map<String,String> fullPresences=barePresences.get(user.toString());
+  if (fullPresences == null || fullPresences.isEmpty()) {
+    Presence subscription=new Presence(Presence.Type.subscribe);
+    subscription.setTo(user);
+    subscription.setFrom(getAddress());
+    send(subscription);
+  }
+}

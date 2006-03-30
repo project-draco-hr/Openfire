@@ -1,4 +1,5 @@
 {
+  boolean wasPresenceBased=isPresenceBasedDelivery();
   if (DataForm.Type.cancel.equals(completedForm.getType())) {
   }
  else   if (DataForm.Type.submit.equals(completedForm.getType())) {
@@ -175,4 +176,12 @@
     nodeConfigurationChanged();
   }
   saveToDB();
+  if (wasPresenceBased != isPresenceBasedDelivery()) {
+    if (isPresenceBasedDelivery()) {
+      addPresenceSubscriptions();
+    }
+ else {
+      cancelPresenceSubscriptions();
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {
   String nodeID=publishElement.attributeValue("node");
-  Node node=null;
+  Node node;
   if (nodeID == null) {
     Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
     sendErrorPacket(iq,PacketError.Condition.item_not_found,pubsubError);
@@ -38,8 +38,8 @@
     return;
   }
   List<Element> items=new ArrayList<Element>();
-  List entries=null;
-  Element payload=null;
+  List entries;
+  Element payload;
   while (itemElements.hasNext()) {
     Element item=(Element)itemElements.next();
     entries=item.elements();

@@ -1,0 +1,16 @@
+{
+  IQ result=IQ.createResultIQ(originalRequest);
+  Element childElement=originalRequest.getChildElement().createCopy();
+  result.setChildElement(childElement);
+  Element items=childElement.element("items");
+  for (  PublishedItem publishedItem : publishedItems) {
+    Element item=items.addElement("item");
+    if (isItemRequired()) {
+      item.addAttribute("id",publishedItem.getID());
+    }
+    if ((forceToIncludePayload || isPayloadDelivered()) && publishedItem.getPayload() != null) {
+      item.add(publishedItem.getPayload().createCopy());
+    }
+  }
+  service.send(result);
+}

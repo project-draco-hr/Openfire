@@ -1,36 +1,35 @@
 {
   if (!publishedItems.isEmpty()) {
-    Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(node,publishedItems);
+    Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(leafNode,publishedItems);
     for (    List<NodeSubscription> nodeSubscriptions : itemsBySubs.keySet()) {
       Element items=event.addElement("items");
       items.addAttribute("node",getNode().getNodeID());
       for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
         Element item=items.addElement("item");
-        if (node.isItemRequired()) {
+        if (leafNode.isItemRequired()) {
           item.addAttribute("id",publishedItem.getID());
         }
-        if (node.isPayloadDelivered()) {
+        if (leafNode.isPayloadDelivered()) {
           item.add(publishedItem.getPayload().createCopy());
         }
-        if (node != getNode()) {
-          item.addAttribute("node",node.getNodeID());
+        if (leafNode != getNode()) {
+          item.addAttribute("node",leafNode.getNodeID());
         }
       }
-      sendEventNotification(notification,node,nodeSubscriptions);
+      sendEventNotification(notification,nodeSubscriptions);
       event.remove(items);
     }
   }
  else {
     List<NodeSubscription> affectedSubscriptions=new ArrayList<NodeSubscription>();
-    ;
     for (    NodeSubscription subscription : getSubscriptions()) {
-      if (subscription.canSendEventNotification(node,null)) {
+      if (subscription.canSendPublicationEvent(leafNode,null)) {
         affectedSubscriptions.add(subscription);
       }
     }
     Element items=event.addElement("items");
-    items.addAttribute("node",node.getNodeID());
-    sendEventNotification(notification,node,affectedSubscriptions);
+    items.addAttribute("node",leafNode.getNodeID());
+    sendEventNotification(notification,affectedSubscriptions);
     event.remove(items);
   }
 }

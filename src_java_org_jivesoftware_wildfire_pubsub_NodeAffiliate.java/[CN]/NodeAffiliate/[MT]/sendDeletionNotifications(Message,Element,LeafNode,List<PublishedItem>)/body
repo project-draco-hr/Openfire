@@ -1,16 +1,16 @@
 {
   if (!publishedItems.isEmpty()) {
-    Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(node,publishedItems);
+    Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=getItemsBySubscriptions(leafNode,publishedItems);
     for (    List<NodeSubscription> nodeSubscriptions : itemsBySubs.keySet()) {
       Element items=event.addElement("items");
-      items.addAttribute("node",node.getNodeID());
+      items.addAttribute("node",leafNode.getNodeID());
       for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
         Element item=items.addElement("retract");
-        if (node.isItemRequired()) {
+        if (leafNode.isItemRequired()) {
           item.addAttribute("id",publishedItem.getID());
         }
       }
-      sendEventNotification(notification,node,nodeSubscriptions);
+      sendEventNotification(notification,nodeSubscriptions);
       event.remove(items);
     }
   }
