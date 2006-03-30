@@ -2,7 +2,7 @@
   if (session == null || serverName == null) {
     return;
   }
-  SessionMap sessionMap=null;
+  SessionMap sessionMap;
   if (anonymousSessions.containsValue(session)) {
     anonymousSessions.remove(session.getAddress().getResource());
     sessionCount--;
@@ -19,8 +19,10 @@ synchronized (username.intern()) {
           if (sessionMap.isEmpty()) {
             sessions.remove(username);
           }
-          SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
         }
+      }
+      if (sessionMap != null) {
+        SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
       }
     }
   }

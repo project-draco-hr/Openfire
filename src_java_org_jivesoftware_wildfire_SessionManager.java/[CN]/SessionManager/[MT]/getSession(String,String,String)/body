@@ -2,14 +2,26 @@
   if (serverName == null || !serverName.equals(domain)) {
     return null;
   }
-  StringBuilder buf=new StringBuilder(40);
-  if (username != null) {
-    username=username.toLowerCase();
-    buf.append(username).append("@");
-  }
-  buf.append(domain);
+  ClientSession session=null;
   if (resource != null) {
-    buf.append("/").append(resource);
+    session=preAuthenticatedSessions.get(resource);
+    if (session != null) {
+      return session;
+    }
   }
-  return getSession(buf.toString(),username,domain,resource);
+  if (resource == null) {
+    return null;
+  }
+  if (username == null || !userManager.isRegisteredUser(username)) {
+    session=anonymousSessions.get(resource);
+  }
+ else {
+synchronized (username.intern()) {
+      SessionMap sessionMap=sessions.get(username);
+      if (sessionMap != null) {
+        session=sessionMap.getSession(resource);
+      }
+    }
+  }
+  return session;
 }

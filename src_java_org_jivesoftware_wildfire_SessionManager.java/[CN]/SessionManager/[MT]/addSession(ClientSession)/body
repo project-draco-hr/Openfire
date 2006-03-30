@@ -1,7 +1,6 @@
 {
-  boolean success=false;
   String username=session.getAddress().getNode();
-  SessionMap resources=null;
+  SessionMap resources;
 synchronized (username.intern()) {
     resources=sessions.get(username);
     if (resources == null) {
@@ -10,8 +9,6 @@ synchronized (username.intern()) {
     }
     resources.addSession(session);
     preAuthenticatedSessions.remove(session.getStreamID().toString());
-    SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_created);
-    success=true;
   }
-  return success;
+  SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_created);
 }

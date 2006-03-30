@@ -1,9 +1,9 @@
 {
   username=username.trim().toLowerCase();
-  User user=(User)userCache.get(username);
+  User user=userCache.get(username);
   if (user == null) {
 synchronized (username.intern()) {
-      user=(User)userCache.get(username);
+      user=userCache.get(username);
       if (user == null) {
         user=provider.loadUser(username);
         userCache.put(username,user);

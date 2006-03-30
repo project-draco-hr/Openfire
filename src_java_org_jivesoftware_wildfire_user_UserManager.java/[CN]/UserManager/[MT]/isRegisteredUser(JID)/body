@@ -1,13 +1,13 @@
 {
-  Boolean isRegistered=null;
+  Boolean isRegistered;
   XMPPServer server=XMPPServer.getInstance();
   if (server.isLocal(user)) {
-    isRegistered=(Boolean)registeredUsersCache.get(user.getNode());
+    isRegistered=registeredUsersCache.get(user.getNode());
   }
  else {
-    isRegistered=(Boolean)registeredUsersCache.get(user.toString());
+    isRegistered=registeredUsersCache.get(user.toString());
     if (isRegistered == null) {
-      isRegistered=(Boolean)registeredUsersCache.get(user.toBareJID());
+      isRegistered=registeredUsersCache.get(user.toBareJID());
     }
   }
   if (isRegistered == null) {
@@ -35,12 +35,12 @@ synchronized (user.toBareJID().intern()) {
  catch (        InterruptedException e) {
         }
       }
-      isRegistered=(Boolean)registeredUsersCache.get(user.toBareJID());
+      isRegistered=registeredUsersCache.get(user.toBareJID());
       if (isRegistered == null) {
         isRegistered=Boolean.FALSE;
         registeredUsersCache.put(user.toString(),isRegistered);
       }
     }
   }
-  return isRegistered.booleanValue();
+  return isRegistered;
 }
