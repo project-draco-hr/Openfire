@@ -7,7 +7,7 @@
   }
   Roster roster=rosterCache.get(username);
   if (roster == null) {
-synchronized (username.intern()) {
+synchronized ((username + " ro").intern()) {
       roster=rosterCache.get(username);
       if (roster == null) {
         roster=new Roster(username);
