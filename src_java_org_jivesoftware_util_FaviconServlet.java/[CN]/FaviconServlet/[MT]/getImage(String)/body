@@ -1,0 +1,21 @@
+{
+  try {
+    URLConnection urlConnection=new URL(url).openConnection();
+    urlConnection.setReadTimeout(1000);
+    urlConnection.connect();
+    DataInputStream di=new DataInputStream(urlConnection.getInputStream());
+    ByteArrayOutputStream byteStream=new ByteArrayOutputStream();
+    DataOutputStream out=new DataOutputStream(byteStream);
+    int len;
+    byte[] b=new byte[1024];
+    while ((len=di.read(b)) != -1) {
+      out.write(b,0,len);
+    }
+    di.close();
+    out.flush();
+    return byteStream.toByteArray();
+  }
+ catch (  IOException e) {
+    return null;
+  }
+}
