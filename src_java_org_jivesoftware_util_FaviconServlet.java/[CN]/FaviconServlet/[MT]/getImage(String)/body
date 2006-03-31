@@ -4,7 +4,7 @@
     client.executeMethod(get);
     return get.getResponseBody();
   }
- catch (  Exception e) {
+ catch (  IllegalStateException e) {
     try {
       URLConnection urlConnection=new URL(url).openConnection();
       urlConnection.setReadTimeout(1000);
@@ -24,5 +24,8 @@
  catch (    IOException ioe) {
       return null;
     }
+  }
+catch (  IOException ioe) {
+    return null;
   }
 }
