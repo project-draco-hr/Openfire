@@ -1,6 +1,10 @@
 {
+  if (missesCache.get(host) != null) {
+    return defaultImage;
+  }
   byte[] bytes=getImage("http://" + host + "/favicon.ico");
   if (bytes == null) {
+    missesCache.put(host,Boolean.TRUE);
     bytes=defaultImage;
   }
   return bytes;

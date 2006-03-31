@@ -1,8 +1,14 @@
 {
   try {
     GetMethod get=new GetMethod(url);
-    client.executeMethod(get);
-    return get.getResponseBody();
+    get.setFollowRedirects(true);
+    int response=client.executeMethod(get);
+    if (response < 400) {
+      return get.getResponseBody();
+    }
+ else {
+      return null;
+    }
   }
  catch (  IllegalStateException e) {
     try {
