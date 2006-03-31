@@ -2,22 +2,21 @@
   ChannelHandler route=null;
   String nodeJID=node.getNode() == null ? "" : node.getNode();
   String resourceJID=node.getResource() == null ? "" : node.getResource();
-  routeLock.writeLock().lock();
   try {
     Object nameRoutes=routes.get(node.getDomain());
-    if (nameRoutes instanceof Hashtable) {
-      Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
-      if (resourceRoutes instanceof Hashtable) {
-        route=(ChannelHandler)((Hashtable)resourceRoutes).remove(resourceJID);
-        if (((Hashtable)resourceRoutes).isEmpty()) {
-          ((Hashtable)nameRoutes).remove(nodeJID);
-          if (((Hashtable)nameRoutes).isEmpty()) {
+    if (nameRoutes instanceof ConcurrentHashMap) {
+      Object resourceRoutes=((Map)nameRoutes).get(nodeJID);
+      if (resourceRoutes instanceof ConcurrentHashMap) {
+        route=(ChannelHandler)((Map)resourceRoutes).remove(resourceJID);
+        if (((Map)resourceRoutes).isEmpty()) {
+          ((Map)nameRoutes).remove(nodeJID);
+          if (((Map)nameRoutes).isEmpty()) {
             routes.remove(node.getDomain());
           }
         }
       }
  else {
-        ((Hashtable)nameRoutes).remove(nodeJID);
+        ((Map)nameRoutes).remove(nodeJID);
       }
     }
  else     if (nameRoutes != null) {
@@ -28,9 +27,6 @@
   }
  catch (  Exception e) {
     Log.error("Error removing route",e);
-  }
- finally {
-    routeLock.writeLock().unlock();
   }
   return route;
 }

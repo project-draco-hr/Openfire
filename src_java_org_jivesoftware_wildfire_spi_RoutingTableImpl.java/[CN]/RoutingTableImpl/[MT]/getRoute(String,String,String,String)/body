@@ -3,19 +3,18 @@
   if (!serverName.equals(domain) && routes.get(domain) == null && componentManager.getComponent(domain) == null) {
     return OutgoingSessionPromise.getInstance();
   }
-  routeLock.readLock().lock();
   try {
     Object nameRoutes=routes.get(domain);
     if (nameRoutes instanceof ChannelHandler) {
       route=(RoutableChannelHandler)nameRoutes;
     }
  else     if (nameRoutes != null) {
-      Object resourceRoutes=((Hashtable)nameRoutes).get(node);
+      Object resourceRoutes=((Map)nameRoutes).get(node);
       if (resourceRoutes instanceof ChannelHandler) {
         route=(RoutableChannelHandler)resourceRoutes;
       }
  else       if (resourceRoutes != null) {
-        route=(RoutableChannelHandler)((Hashtable)resourceRoutes).get(resource);
+        route=(RoutableChannelHandler)((Map)resourceRoutes).get(resource);
       }
  else {
         route=null;
@@ -26,9 +25,6 @@
     if (Log.isDebugEnabled()) {
       Log.debug("Route not found for JID: " + jid,e);
     }
-  }
- finally {
-    routeLock.readLock().unlock();
   }
   return route;
 }

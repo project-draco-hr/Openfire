@@ -1,26 +1,30 @@
 {
   String nodeJID=node.getNode() == null ? "" : node.getNode();
   String resourceJID=node.getResource() == null ? "" : node.getResource();
-  routeLock.writeLock().lock();
-  try {
-    if (destination instanceof ClientSession) {
-      Object nameRoutes=routes.get(node.getDomain());
-      if (nameRoutes == null) {
-        nameRoutes=new Hashtable();
-        routes.put(node.getDomain(),nameRoutes);
+  if (destination instanceof ClientSession) {
+    Object nameRoutes=routes.get(node.getDomain());
+    if (nameRoutes == null) {
+synchronized (node.getDomain().intern()) {
+        nameRoutes=routes.get(node.getDomain());
+        if (nameRoutes == null) {
+          nameRoutes=new ConcurrentHashMap();
+          routes.put(node.getDomain(),nameRoutes);
+        }
       }
-      Object resourceRoutes=((Hashtable)nameRoutes).get(nodeJID);
-      if (resourceRoutes == null) {
-        resourceRoutes=new Hashtable();
-        ((Hashtable)nameRoutes).put(nodeJID,resourceRoutes);
+    }
+    Object resourceRoutes=((Map)nameRoutes).get(nodeJID);
+    if (resourceRoutes == null) {
+synchronized (nodeJID.intern()) {
+        resourceRoutes=((Map)nameRoutes).get(nodeJID);
+        if (resourceRoutes == null) {
+          resourceRoutes=new ConcurrentHashMap();
+          ((Map)nameRoutes).put(nodeJID,resourceRoutes);
+        }
       }
-      ((Hashtable)resourceRoutes).put(resourceJID,destination);
     }
- else {
-      routes.put(node.getDomain(),destination);
-    }
+    ((Map)resourceRoutes).put(resourceJID,destination);
   }
-  finally {
-    routeLock.writeLock().unlock();
+ else {
+    routes.put(node.getDomain(),destination);
   }
 }
