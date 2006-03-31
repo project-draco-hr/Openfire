@@ -3,6 +3,9 @@ synchronized (incomingServerSessions) {
     List<IncomingServerSession> sessions=incomingServerSessions.get(hostname);
     if (sessions != null) {
       sessions.remove(session);
+      if (sessions.isEmpty()) {
+        incomingServerSessions.remove(hostname);
+      }
     }
   }
 }
