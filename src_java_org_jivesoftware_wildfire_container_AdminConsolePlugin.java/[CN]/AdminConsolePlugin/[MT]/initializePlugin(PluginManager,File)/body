@@ -19,14 +19,17 @@
     File logFile=new File(logDir,"admin-console.log");
     OutputStreamLogSink logSink=new OutputStreamLogSink(logFile.toString());
     logSink.start();
-    LogImpl log=(LogImpl)Factory.getFactory().getInstance("");
-    if (!Log.isDebugEnabled()) {
-      log.setVerbose(-1);
-    }
+    Object logImpl=Factory.getFactory().getInstance("");
+    if (logImpl instanceof LogImpl) {
+      LogImpl log=(LogImpl)logImpl;
+      if (!Log.isDebugEnabled()) {
+        log.setVerbose(-1);
+      }
  else {
-      log.setVerbose(1);
+        log.setVerbose(1);
+      }
+      log.add(logSink);
     }
-    log.add(logSink);
     jetty=new Server();
     loadListeners();
     if (Boolean.getBoolean("developmentMode")) {
