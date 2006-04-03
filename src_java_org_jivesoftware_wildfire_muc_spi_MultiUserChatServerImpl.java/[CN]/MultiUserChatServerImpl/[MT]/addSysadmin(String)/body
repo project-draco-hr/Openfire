@@ -1,6 +1,9 @@
 {
   sysadmins.add(userJID.trim().toLowerCase());
+  ArrayList<String> tempList=new ArrayList<String>(sysadmins);
+  Collections.sort(tempList);
+  sysadmins=new CopyOnWriteArrayList<String>(tempList);
   String[] jids=new String[sysadmins.size()];
-  jids=(String[])sysadmins.toArray(jids);
+  jids=sysadmins.toArray(jids);
   JiveGlobals.setProperty("xmpp.muc.sysadmin.jid",fromArray(jids));
 }
