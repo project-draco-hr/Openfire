@@ -9,6 +9,9 @@
       reply.add(new PacketError(PacketError.Condition.bad_request).getElement());
       connection.deliverRawText(reply.asXML());
     }
+ else     if (extraDomain.equals(initialDomain)) {
+      connection.deliverRawText("<bind/>");
+    }
  else     if (extraDomain.endsWith(initialDomain)) {
       if (component.getSubdomains().contains(extraDomain)) {
         Element reply=doc.createCopy();
