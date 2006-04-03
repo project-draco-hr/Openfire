@@ -1,3 +1,40 @@
 {
+  if ("bind".equals(doc.getName())) {
+    ComponentSession componentSession=(ComponentSession)session;
+    ComponentSession.ExternalComponent component=componentSession.getExternalComponent();
+    String initialDomain=component.getInitialSubdomain();
+    String extraDomain=doc.attributeValue("name");
+    if (extraDomain == null || "".equals(extraDomain)) {
+      Element reply=doc.createCopy();
+      reply.add(new PacketError(PacketError.Condition.bad_request).getElement());
+      connection.deliverRawText(reply.asXML());
+    }
+ else     if (extraDomain.endsWith(initialDomain)) {
+      if (component.getSubdomains().contains(extraDomain)) {
+        Element reply=doc.createCopy();
+        reply.add(new PacketError(PacketError.Condition.conflict).getElement());
+        connection.deliverRawText(reply.asXML());
+      }
+ else {
+        try {
+          InternalComponentManager.getInstance().addComponent(extraDomain,component);
+          component.addSubdomain(extraDomain);
+          connection.deliverRawText("<bind/>");
+        }
+ catch (        ComponentException e) {
+          Log.error("Error binding extra domain: " + extraDomain + " to component: "+ component,e);
+          Element reply=doc.createCopy();
+          reply.add(new PacketError(PacketError.Condition.internal_server_error).getElement());
+          connection.deliverRawText(reply.asXML());
+        }
+      }
+    }
+ else {
+      Element reply=doc.createCopy();
+      reply.add(new PacketError(PacketError.Condition.forbidden).getElement());
+      connection.deliverRawText(reply.asXML());
+    }
+    return true;
+  }
   return false;
 }

@@ -1,8 +1,11 @@
 {
   JiveGlobals.setProperty("xmpp.component.permission",policy.toString());
   for (  ComponentSession session : SessionManager.getInstance().getComponentSessions()) {
-    if (!canAccess(session.getExternalComponent().getSubdomain())) {
-      session.getConnection().close();
+    for (    String domain : session.getExternalComponent().getSubdomains()) {
+      if (!canAccess(domain)) {
+        session.getConnection().close();
+        break;
+      }
     }
   }
 }
