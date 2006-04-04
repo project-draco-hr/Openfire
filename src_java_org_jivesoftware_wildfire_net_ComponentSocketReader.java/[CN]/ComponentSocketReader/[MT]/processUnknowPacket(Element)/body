@@ -20,7 +20,12 @@
       }
  else {
         try {
-          InternalComponentManager.getInstance().addComponent(extraDomain,component);
+          String subdomain=extraDomain;
+          int index=extraDomain.indexOf(serverName);
+          if (index > -1) {
+            subdomain=extraDomain.substring(0,index - 1);
+          }
+          InternalComponentManager.getInstance().addComponent(subdomain,component);
           connection.deliverRawText("<bind/>");
         }
  catch (        ComponentException e) {
