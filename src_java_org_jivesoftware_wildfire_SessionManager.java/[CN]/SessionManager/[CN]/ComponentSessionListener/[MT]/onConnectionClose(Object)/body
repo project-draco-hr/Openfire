@@ -1,9 +1,10 @@
 {
   ComponentSession session=(ComponentSession)handback;
   try {
-    String domain=session.getAddress().getDomain();
-    String subdomain=domain.substring(0,domain.indexOf(serverName) - 1);
-    InternalComponentManager.getInstance().removeComponent(subdomain);
+    for (    String domain : session.getExternalComponent().getSubdomains()) {
+      String subdomain=domain.substring(0,domain.indexOf(serverName) - 1);
+      InternalComponentManager.getInstance().removeComponent(subdomain);
+    }
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error.close"),e);
