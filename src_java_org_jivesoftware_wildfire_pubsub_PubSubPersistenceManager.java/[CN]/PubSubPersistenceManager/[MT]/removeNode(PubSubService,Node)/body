@@ -6,22 +6,22 @@
     con=DbConnectionManager.getTransactionConnection();
     pstmt=con.prepareStatement(DELETE_NODE);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
     pstmt.close();
     pstmt=con.prepareStatement(DELETE_ITEMS);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
     pstmt.close();
     pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
     pstmt.close();
     pstmt=con.prepareStatement(DELETE_SUBSCRIPTIONS);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

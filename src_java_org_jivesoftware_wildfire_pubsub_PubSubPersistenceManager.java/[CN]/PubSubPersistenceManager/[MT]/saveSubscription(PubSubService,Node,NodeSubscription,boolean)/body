@@ -6,7 +6,7 @@
     if (create) {
       pstmt=con.prepareStatement(ADD_SUBSCRIPTION);
       pstmt.setString(1,service.getServiceID());
-      pstmt.setString(2,node.getNodeID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
       pstmt.setString(3,subscription.getID());
       pstmt.setString(4,subscription.getJID().toString());
       pstmt.setString(5,subscription.getOwner().toString());
@@ -33,7 +33,7 @@
       if (NodeSubscription.State.none == subscription.getState()) {
         pstmt=con.prepareStatement(DELETE_SUBSCRIPTION);
         pstmt.setString(1,service.getServiceID());
-        pstmt.setString(2,node.getNodeID());
+        pstmt.setString(2,encodeNodeID(node.getNodeID()));
         pstmt.setString(2,subscription.getID());
         pstmt.executeUpdate();
       }
@@ -57,7 +57,7 @@
         pstmt.setInt(10,subscription.getDepth());
         pstmt.setString(11,subscription.getKeyword());
         pstmt.setString(12,service.getServiceID());
-        pstmt.setString(13,node.getNodeID());
+        pstmt.setString(13,encodeNodeID(node.getNodeID()));
         pstmt.setString(14,subscription.getID());
         pstmt.executeUpdate();
       }

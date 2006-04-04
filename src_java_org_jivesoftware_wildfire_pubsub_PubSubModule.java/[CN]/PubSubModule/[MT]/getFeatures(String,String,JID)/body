@@ -9,6 +9,7 @@
     features.add("http://jabber.org/protocol/pubsub#create-and-configure");
     features.add("http://jabber.org/protocol/pubsub#create-nodes");
     features.add("http://jabber.org/protocol/pubsub#delete-nodes");
+    features.add("http://jabber.org/protocol/pubsub#get-pending");
     if (isInstantNodeSupported()) {
       features.add("http://jabber.org/protocol/pubsub#instant-nodes");
     }
@@ -30,9 +31,9 @@
     String modelName=getDefaultNodeConfiguration(true).getAccessModel().getName();
     features.add("http://jabber.org/protocol/pubsub#default_access_model_" + modelName);
   }
- else   if (name == null && node != null) {
+ else   if (name == null) {
     Node pubNode=getNode(node);
-    if (node != null && canDiscoverNode(pubNode)) {
+    if (canDiscoverNode(pubNode)) {
       features.add("http://jabber.org/protocol/pubsub");
     }
   }

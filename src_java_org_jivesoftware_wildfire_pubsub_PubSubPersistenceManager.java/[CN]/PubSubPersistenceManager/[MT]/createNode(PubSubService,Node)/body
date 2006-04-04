@@ -5,11 +5,11 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(ADD_NODE);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.setInt(3,(node.isCollectionNode() ? 0 : 1));
     pstmt.setString(4,StringUtils.dateToMillis(node.getCreationDate()));
     pstmt.setString(5,StringUtils.dateToMillis(node.getModificationDate()));
-    pstmt.setString(6,node.getParent() != null ? node.getParent().getNodeID() : null);
+    pstmt.setString(6,node.getParent() != null ? encodeNodeID(node.getParent().getNodeID()) : null);
     pstmt.setInt(7,(node.isPayloadDelivered() ? 1 : 0));
     if (!node.isCollectionNode()) {
       pstmt.setInt(8,((LeafNode)node).getMaxPayloadSize());

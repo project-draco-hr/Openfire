@@ -5,7 +5,7 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(UPDATE_NODE);
     pstmt.setString(1,StringUtils.dateToMillis(node.getModificationDate()));
-    pstmt.setString(2,node.getParent() != null ? node.getParent().getNodeID() : null);
+    pstmt.setString(2,node.getParent() != null ? encodeNodeID(node.getParent().getNodeID()) : null);
     pstmt.setInt(3,(node.isPayloadDelivered() ? 1 : 0));
     if (!node.isCollectionNode()) {
       pstmt.setInt(4,((LeafNode)node).getMaxPayloadSize());
@@ -53,7 +53,7 @@
       pstmt.setInt(29,0);
     }
     pstmt.setString(30,service.getServiceID());
-    pstmt.setString(31,node.getNodeID());
+    pstmt.setString(31,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

@@ -90,7 +90,12 @@
     }
     action=childElement.element("entities");
     if (action != null) {
-      getAffiliatedEntities(iq,action);
+      if (IQ.Type.get == iq.getType()) {
+        getAffiliatedEntities(iq,action);
+      }
+ else {
+        modifyAffiliations(iq,action);
+      }
       return true;
     }
     action=childElement.element("purge");

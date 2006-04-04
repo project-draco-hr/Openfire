@@ -13,6 +13,10 @@
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;
   }
+  if (node.isRootCollectionNode()) {
+    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    return;
+  }
   if (node.delete()) {
     router.route(IQ.createResultIQ(iq));
   }

@@ -6,7 +6,7 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(ADD_ITEM);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,item.getNode().getNodeID());
+    pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
     pstmt.setString(3,item.getID());
     pstmt.setString(4,item.getPublisher().toString());
     pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));

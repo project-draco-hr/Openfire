@@ -10,9 +10,11 @@
       maxPublishedItems=values.size() > 0 ? Integer.parseInt(values.get(0)) : 50;
     }
   }
-  while (!publishedItems.isEmpty() && publishedItems.size() > maxPublishedItems) {
-    PublishedItem removedItem=publishedItems.remove(0);
-    itemsByID.remove(removedItem.getID());
-    service.getPubSubEngine().queueItemToRemove(removedItem);
+synchronized (publishedItems) {
+    while (!publishedItems.isEmpty() && publishedItems.size() > maxPublishedItems) {
+      PublishedItem removedItem=publishedItems.remove(0);
+      itemsByID.remove(removedItem.getID());
+      service.getPubSubEngine().queueItemToRemove(removedItem);
+    }
   }
 }

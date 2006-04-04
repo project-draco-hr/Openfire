@@ -1,0 +1,16 @@
+{
+  Collection<NodeSubscription> subscriptions=getSubscriptions(user);
+  if (!subscriptions.isEmpty()) {
+    if (presenceBasedDelivery) {
+      return true;
+    }
+ else {
+      for (      NodeSubscription subscription : subscriptions) {
+        if (!subscription.getPresenceStates().isEmpty()) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}

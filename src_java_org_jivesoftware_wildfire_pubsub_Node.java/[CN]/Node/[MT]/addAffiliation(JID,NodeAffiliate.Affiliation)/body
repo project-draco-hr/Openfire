@@ -2,7 +2,7 @@
   boolean created=false;
   NodeAffiliate affiliate=getAffiliate(jid);
   if (affiliate != null && affiliation == affiliate.getAffiliation()) {
-    return;
+    return affiliate;
   }
  else   if (affiliate != null) {
     affiliate.setAffiliation(affiliation);
@@ -16,4 +16,5 @@
   if (savedToDB) {
     PubSubPersistenceManager.saveAffiliation(service,this,affiliate,created);
   }
+  return affiliate;
 }

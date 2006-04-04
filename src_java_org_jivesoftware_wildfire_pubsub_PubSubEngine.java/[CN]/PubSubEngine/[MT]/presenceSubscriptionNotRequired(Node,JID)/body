@@ -1,0 +1,11 @@
+{
+  for (  Node hostedNode : service.getNodes()) {
+    if (hostedNode.isPresenceBasedDelivery(user)) {
+      return;
+    }
+  }
+  Presence subscription=new Presence(Presence.Type.unsubscribe);
+  subscription.setTo(user);
+  subscription.setFrom(service.getAddress());
+  service.send(subscription);
+}

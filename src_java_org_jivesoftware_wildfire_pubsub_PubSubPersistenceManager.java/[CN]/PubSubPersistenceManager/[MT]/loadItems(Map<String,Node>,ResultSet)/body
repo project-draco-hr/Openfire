@@ -2,7 +2,7 @@
   SAXReader xmlReader=null;
   try {
     xmlReader=xmlReaders.take();
-    String nodeID=rs.getString(5);
+    String nodeID=decodeNodeID(rs.getString(5));
     LeafNode node=(LeafNode)nodes.get(nodeID);
     if (node == null) {
       Log.warn("Published Item found for a non-existent node: " + nodeID);

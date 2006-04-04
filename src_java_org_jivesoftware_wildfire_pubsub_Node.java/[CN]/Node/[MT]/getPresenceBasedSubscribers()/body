@@ -1,0 +1,22 @@
+{
+  Collection<JID> affiliatesJID=new ArrayList<JID>();
+  if (presenceBasedDelivery) {
+    for (    NodeAffiliate affiliate : affiliates) {
+      if (!affiliate.getSubscriptions().isEmpty()) {
+        affiliatesJID.add(affiliate.getJID());
+      }
+    }
+  }
+ else {
+    for (    NodeAffiliate affiliate : affiliates) {
+      Collection<NodeSubscription> subscriptions=affiliate.getSubscriptions();
+      for (      NodeSubscription subscription : subscriptions) {
+        if (!subscription.getPresenceStates().isEmpty()) {
+          affiliatesJID.add(affiliate.getJID());
+          break;
+        }
+      }
+    }
+  }
+  return affiliatesJID;
+}

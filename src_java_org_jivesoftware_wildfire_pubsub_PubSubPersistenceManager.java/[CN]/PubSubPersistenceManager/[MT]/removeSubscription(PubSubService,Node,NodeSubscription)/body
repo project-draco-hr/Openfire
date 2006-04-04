@@ -5,7 +5,7 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(DELETE_SUBSCRIPTION);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.setString(3,subscription.getID());
     pstmt.executeUpdate();
   }
