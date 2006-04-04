@@ -78,12 +78,12 @@
         }
       }
  else {
-        String username=null;
+        String username;
         String password=null;
         String email=null;
         String name=null;
-        User newUser=null;
-        XDataFormImpl registrationForm=null;
+        User newUser;
+        XDataFormImpl registrationForm;
         FormField field;
         Element formElement=iqElement.element("x");
         if (formElement != null) {
@@ -135,22 +135,17 @@
           }
  else {
             User user=userManager.getUser(session.getUsername());
-            if (user != null) {
-              if (user.getUsername().equalsIgnoreCase(username)) {
-                if (password != null && password.trim().length() > 0) {
-                  user.setPassword(password);
-                }
-                if (!onlyPassword) {
-                  user.setEmail(email);
-                }
-                newUser=user;
+            if (user.getUsername().equalsIgnoreCase(username)) {
+              if (password != null && password.trim().length() > 0) {
+                user.setPassword(password);
               }
- else {
-                newUser=userManager.createUser(username,password,null,email);
+              if (!onlyPassword) {
+                user.setEmail(email);
               }
+              newUser=user;
             }
  else {
-              throw new UnauthorizedException();
+              newUser=userManager.createUser(username,password,null,email);
             }
           }
         }
