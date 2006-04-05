@@ -5,8 +5,9 @@
   auditPresence=JiveGlobals.getBooleanProperty("xmpp.audit.presence");
   auditIQ=JiveGlobals.getBooleanProperty("xmpp.audit.iq");
   auditXPath=JiveGlobals.getBooleanProperty("xmpp.audit.xpath");
-  maxSize=JiveGlobals.getIntProperty("xmpp.audit.maxsize",MAX_FILE_SIZE);
-  maxCount=JiveGlobals.getIntProperty("xmpp.audit.maxcount",MAX_FILE_COUNT);
+  maxTotalSize=JiveGlobals.getIntProperty("xmpp.audit.totalsize",MAX_TOTAL_SIZE);
+  maxFileSize=JiveGlobals.getIntProperty("xmpp.audit.filesize",MAX_FILE_SIZE);
+  maxDays=JiveGlobals.getIntProperty("xmpp.audit.days",MAX_DAYS);
   logTimeout=JiveGlobals.getIntProperty("xmpp.audit.logtimeout",DEFAULT_LOG_TIMEOUT);
   logDir=JiveGlobals.getProperty("xmpp.audit.logdir",JiveGlobals.getHomeDirectory() + File.separator + "logs");
   String ignoreString=JiveGlobals.getProperty("xmpp.audit.ignore","");
@@ -16,9 +17,9 @@
     ignoreList.add(username);
   }
   auditor=new AuditorImpl(this);
-  auditor.setMaxValues(maxSize,maxCount);
-  auditor.setLogTimeout(logTimeout);
+  auditor.setMaxValues(maxTotalSize,maxFileSize,maxDays);
   auditor.setLogDir(logDir);
+  auditor.setLogTimeout(logTimeout);
   interceptor=new AuditorInterceptor();
   if (enabled) {
     InterceptorManager.getInstance().addInterceptor(interceptor);

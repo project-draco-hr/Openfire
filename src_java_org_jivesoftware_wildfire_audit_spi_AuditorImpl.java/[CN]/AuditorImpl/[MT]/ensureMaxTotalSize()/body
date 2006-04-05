@@ -1,0 +1,30 @@
+{
+  FilenameFilter filter=new FilenameFilter(){
+    public boolean accept(    File dir,    String name){
+      return name.startsWith("jive.audit-") && name.endsWith(".log");
+    }
+  }
+;
+  File[] files=baseFolder.listFiles(filter);
+  long totalLength=0;
+  for (  File file : files) {
+    totalLength=totalLength + file.length();
+  }
+  if (totalLength > maxTotalSize) {
+    List<File> sortedFiles=new ArrayList<File>(Arrays.asList(files));
+    Collections.sort(sortedFiles,new Comparator(){
+      public int compare(      Object o1,      Object o2){
+        return ((File)o1).getName().compareTo(((File)o2).getName());
+      }
+    }
+);
+    while (totalLength > maxTotalSize && !sortedFiles.isEmpty()) {
+      File fileToDelete=sortedFiles.remove(0);
+      totalLength=totalLength - fileToDelete.length();
+      if (fileToDelete.equals(currentAuditFile)) {
+        close();
+      }
+      fileToDelete.delete();
+    }
+  }
+}

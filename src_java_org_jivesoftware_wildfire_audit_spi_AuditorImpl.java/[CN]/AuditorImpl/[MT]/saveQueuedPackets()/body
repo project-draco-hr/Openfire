@@ -3,7 +3,7 @@
   logQueue.drainTo(packets);
   for (  AuditPacket auditPacket : packets) {
     try {
-      prepareAuditFile();
+      prepareAuditFile(auditPacket.getCreationDate());
       Element element=auditPacket.getElement();
       if (element != null) {
         xmlWriter.write(element);
