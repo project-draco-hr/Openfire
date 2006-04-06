@@ -1,8 +1,11 @@
 {
   String nodeID=itemsElement.attributeValue("node");
+  String subID=itemsElement.attributeValue("subid");
   Node node;
   if (nodeID == null) {
-    node=service.getRootCollectionNode();
+    Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
   }
  else {
     node=service.getNode(nodeID);
@@ -29,6 +32,27 @@
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;
   }
+  NodeSubscription subscription=null;
+  if (node.isMultipleSubscriptionsEnabled()) {
+    if (subID == null) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
+ else {
+      subscription=node.getSubscription(subID);
+      if (subscription == null) {
+        Element pubsubError=DocumentHelper.createElement(QName.get("invalid-subid","http://jabber.org/protocol/pubsub#errors"));
+        sendErrorPacket(iq,PacketError.Condition.not_acceptable,pubsubError);
+        return;
+      }
+    }
+  }
+  if (subscription != null && !subscription.isActive()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("not-subscribed","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.not_authorized,pubsubError);
+    return;
+  }
   LeafNode leafNode=(LeafNode)node;
   boolean forceToIncludePayload=false;
   List<PublishedItem> items=null;
@@ -44,14 +68,15 @@
     }
   }
   if (max_items != null) {
-    items=leafNode.getPublishedItems(recentItems);
+    items=new ArrayList<PublishedItem>(leafNode.getPublishedItems(recentItems));
   }
  else {
     List requestedItems=itemsElement.elements("item");
     if (requestedItems.isEmpty()) {
-      items=leafNode.getPublishedItems();
+      items=new ArrayList<PublishedItem>(leafNode.getPublishedItems());
     }
  else {
+      items=new ArrayList<PublishedItem>();
       forceToIncludePayload=true;
       for (Iterator it=requestedItems.iterator(); it.hasNext(); ) {
         Element element=(Element)it.next();
@@ -60,6 +85,14 @@
         if (item != null) {
           items.add(item);
         }
+      }
+    }
+  }
+  if (subscription != null && subscription.getKeyword() != null) {
+    for (Iterator<PublishedItem> it=items.iterator(); it.hasNext(); ) {
+      PublishedItem item=it.next();
+      if (!subscription.isKeywordMatched(item)) {
+        it.remove();
       }
     }
   }

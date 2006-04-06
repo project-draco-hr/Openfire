@@ -61,7 +61,7 @@
     if (action != null) {
       String nodeID=action.attributeValue("node");
       if (nodeID == null) {
-        if (!service.isServiceAdmin(iq.getFrom())) {
+        if (!service.isServiceAdmin(iq.getFrom()) || !service.isCollectionNodesSupported()) {
           Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
           sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
           return true;

@@ -3,7 +3,7 @@
   Node node;
   if (nodeID == null) {
     Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
-    sendErrorPacket(iq,PacketError.Condition.item_not_found,pubsubError);
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
     return;
   }
  else {
@@ -20,12 +20,16 @@
     return;
   }
   if (node.isCollectionNode()) {
-    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","persistent-items");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
     return;
   }
   LeafNode leafNode=(LeafNode)node;
   if (!leafNode.isItemRequired()) {
-    sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","persistent-items");
+    sendErrorPacket(iq,PacketError.Condition.feature_not_implemented,pubsubError);
     return;
   }
   List<PublishedItem> items=new ArrayList<PublishedItem>();
@@ -43,10 +47,15 @@
           items.add(item);
         }
  else {
-          sendErrorPacket(iq,PacketError.Condition.not_authorized,null);
+          sendErrorPacket(iq,PacketError.Condition.forbidden,null);
           return;
         }
       }
+    }
+ else {
+      Element pubsubError=DocumentHelper.createElement(QName.get("item-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
     }
   }
   router.route(IQ.createResultIQ(iq));

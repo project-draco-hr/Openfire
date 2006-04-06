@@ -3,7 +3,14 @@
   String subID=unsubscribeElement.attributeValue("subid");
   Node node;
   if (nodeID == null) {
-    node=service.getRootCollectionNode();
+    if (service.isCollectionNodesSupported()) {
+      node=service.getRootCollectionNode();
+    }
+ else {
+      Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+      return;
+    }
   }
  else {
     node=service.getNode(nodeID);
