@@ -4,7 +4,31 @@
   }
   if (object != null && object instanceof SessionResultFilter) {
     SessionResultFilter o=(SessionResultFilter)object;
-    return sortField == o.sortField && sortOrder == o.sortOrder && startIndex == o.startIndex && numResults == o.numResults && username == o.username && ((creationDateRangeMin == null && o.creationDateRangeMin == null) || creationDateRangeMin.equals(o.creationDateRangeMin)) && ((creationDateRangeMax == null && o.creationDateRangeMax == null) || creationDateRangeMax.equals(o.creationDateRangeMax)) && ((lastActivityDateRangeMin == null && o.lastActivityDateRangeMin == null) || lastActivityDateRangeMin.equals(o.lastActivityDateRangeMin)) && ((lastActivityDateRangeMax == null && o.lastActivityDateRangeMax == null) || lastActivityDateRangeMax.equals(o.lastActivityDateRangeMax));
+    if (sortField != o.sortField) {
+      return false;
+    }
+    if (sortOrder != o.sortOrder) {
+      return false;
+    }
+    if (numResults != o.numResults) {
+      return false;
+    }
+    if (!compare(username,o.username)) {
+      return false;
+    }
+    if (!compare(creationDateRangeMin,o.creationDateRangeMin)) {
+      return false;
+    }
+    if (!compare(creationDateRangeMax,o.creationDateRangeMax)) {
+      return false;
+    }
+    if (!compare(lastActivityDateRangeMin,o.lastActivityDateRangeMin)) {
+      return false;
+    }
+    if (!compare(lastActivityDateRangeMax,o.lastActivityDateRangeMax)) {
+      return false;
+    }
+    return true;
   }
  else {
     return false;
