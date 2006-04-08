@@ -22,7 +22,10 @@
     if (encryptedPassword == null) {
       pstmt.setNull(2,Types.VARCHAR);
     }
-    pstmt.setString(2,username);
+ else {
+      pstmt.setString(2,encryptedPassword);
+    }
+    pstmt.setString(3,username);
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

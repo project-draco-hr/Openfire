@@ -1,0 +1,35 @@
+{
+  List<String> usernames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls constraints=new SearchControls();
+    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String filter=MessageFormat.format(manager.getSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    while (answer.hasMoreElements()) {
+      String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+      usernames.add(JID.escapeNode(username));
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+    Collections.sort(usernames);
+  }
+  return usernames;
+}
