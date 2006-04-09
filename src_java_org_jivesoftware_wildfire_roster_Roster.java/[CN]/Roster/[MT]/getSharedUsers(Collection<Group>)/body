@@ -4,7 +4,8 @@
     Collection<JID> users=rosterManager.getSharedUsersForRoster(group,this);
     JID userJID=getUserJID();
     for (    JID jid : users) {
-      if (!isRosterItem(jid) && !userJID.equals(jid)) {
+      boolean isRosterItem=rosterItems.containsKey(jid.toBareJID());
+      if (!isRosterItem && !userJID.equals(jid)) {
         List<Group> groups=sharedGroupUsers.get(jid);
         if (groups == null) {
           groups=new ArrayList<Group>();

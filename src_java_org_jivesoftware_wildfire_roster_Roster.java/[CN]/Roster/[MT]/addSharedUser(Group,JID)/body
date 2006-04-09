@@ -50,8 +50,13 @@
       item.setSubStatus(RosterItem.SUB_BOTH);
     }
   }
-  broadcast(item,true);
-  if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
-    probePresence(item.getJid());
+  if (item.isOnlyShared() && item.getSubStatus() == RosterItem.SUB_FROM) {
+    rosterItems.remove(item.getJid().toBareJID());
+  }
+ else {
+    broadcast(item,true);
+    if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
+      probePresence(item.getJid());
+    }
   }
 }

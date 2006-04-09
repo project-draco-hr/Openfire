@@ -3,16 +3,9 @@
   rosterManager=XMPPServer.getInstance().getRosterManager();
   sessionManager=SessionManager.getInstance();
   this.username=username;
-  Collection<Group> sharedGroups=null;
-  Collection<Group> userGroups=null;
-  try {
-    User rosterUser=UserManager.getInstance().getUser(getUsername());
-    sharedGroups=rosterManager.getSharedGroups(rosterUser);
-    userGroups=GroupManager.getInstance().getGroups(getUserJID());
-  }
- catch (  UserNotFoundException e) {
-    sharedGroups=new ArrayList<Group>();
-  }
+  Collection<Group> sharedGroups=rosterManager.getSharedGroups(username);
+  Collection<Group> userGroups=GroupManager.getInstance().getGroups(getUserJID());
+  ;
   rosterItemProvider=RosterItemProvider.getInstance();
   Iterator items=rosterItemProvider.getItems(username);
   while (items.hasNext()) {
@@ -29,7 +22,7 @@
   for (  JID jid : sharedUsers.keySet()) {
     try {
       Collection<Group> itemGroups=new ArrayList<Group>();
-      String nickname=UserNameManager.getUserName(jid);
+      String nickname="";
       RosterItem item=new RosterItem(jid,RosterItem.SUB_TO,RosterItem.ASK_NONE,RosterItem.RECV_NONE,nickname,null);
       for (      Group group : sharedUsers.get(jid)) {
         if (group.isUser(jid)) {
@@ -54,7 +47,10 @@
           item.setSubStatus(RosterItem.SUB_FROM);
         }
       }
-      rosterItems.put(item.getJid().toBareJID(),item);
+      if (item.getSubStatus() != RosterItem.SUB_FROM) {
+        item.setNickname(UserNameManager.getUserName(jid));
+        rosterItems.put(item.getJid().toBareJID(),item);
+      }
     }
  catch (    UserNotFoundException e) {
       Log.error("Groups (" + sharedUsers.get(jid) + ") include non-existent username ("+ jid.getNode()+ ")");

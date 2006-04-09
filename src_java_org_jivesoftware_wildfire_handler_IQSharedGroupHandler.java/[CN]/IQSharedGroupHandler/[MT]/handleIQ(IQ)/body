@@ -6,19 +6,13 @@
     result.setError(PacketError.Condition.not_allowed);
     return result;
   }
-  try {
-    Collection<Group> groups=rosterManager.getSharedGroups(userManager.getUser(username));
-    Element sharedGroups=result.setChildElement("sharedgroup","http://www.jivesoftware.org/protocol/sharedgroup");
-    for (    Group sharedGroup : groups) {
-      String displayName=sharedGroup.getProperties().get("sharedRoster.displayName");
-      if (displayName != null) {
-        sharedGroups.addElement("group").setText(displayName);
-      }
+  Collection<Group> groups=rosterManager.getSharedGroups(username);
+  Element sharedGroups=result.setChildElement("sharedgroup","http://www.jivesoftware.org/protocol/sharedgroup");
+  for (  Group sharedGroup : groups) {
+    String displayName=sharedGroup.getProperties().get("sharedRoster.displayName");
+    if (displayName != null) {
+      sharedGroups.addElement("group").setText(displayName);
     }
-  }
- catch (  UserNotFoundException e) {
-    result.setChildElement(packet.getChildElement().createCopy());
-    result.setError(PacketError.Condition.not_allowed);
   }
   return result;
 }

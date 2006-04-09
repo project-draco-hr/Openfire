@@ -1,0 +1,12 @@
+{
+  Map<String,String> properties=sharedGroup.getProperties();
+  String showInRoster=properties.get("sharedRoster.showInRoster");
+  if ("everybody".equals(showInRoster)) {
+    return true;
+  }
+  if ("onlyGroup".equals(showInRoster)) {
+    Collection<Group> visibleGroups=parseGroups(properties.get("sharedRoster.groupList"));
+    return !Collections.disjoint(visibleGroups,groups);
+  }
+  return false;
+}

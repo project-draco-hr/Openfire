@@ -4,13 +4,13 @@
   for (  Group group : groups) {
     String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
     if ("onlyGroup".equals(showInRoster)) {
-      if (group.isUser(user.getUsername())) {
+      if (group.isUser(username)) {
         answer.add(group);
       }
  else {
         Collection<Group> groupList=parseGroups(group.getProperties().get("sharedRoster.groupList"));
         for (        Group groupInList : groupList) {
-          if (groupInList.isUser(user.getUsername())) {
+          if (groupInList.isUser(username)) {
             answer.add(group);
           }
         }
