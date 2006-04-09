@@ -1,14 +1,10 @@
 {
   Collection<Group> answer=new HashSet<Group>();
-  if (groupNames != null) {
-    StringTokenizer tokenizer=new StringTokenizer(groupNames,",");
-    while (tokenizer.hasMoreTokens()) {
-      String groupName=tokenizer.nextToken();
-      try {
-        answer.add(GroupManager.getInstance().getGroup(groupName));
-      }
- catch (      GroupNotFoundException e) {
-      }
+  for (  String groupName : parseGroupNames(groupNames)) {
+    try {
+      answer.add(GroupManager.getInstance().getGroup(groupName));
+    }
+ catch (    GroupNotFoundException e) {
     }
   }
   return answer;
