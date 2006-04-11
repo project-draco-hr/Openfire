@@ -1,0 +1,17 @@
+{
+  DataForm form=new DataForm(DataForm.Type.result);
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setLabel(getLabel());
+  field.setVariable("onlineusersnum");
+  Collection<ClientSession> sessions=SessionManager.getInstance().getSessions();
+  Set<String> users=new HashSet<String>(sessions.size());
+  for (  ClientSession session : sessions) {
+    users.add(session.getAddress().toBareJID());
+  }
+  field.addValue(users.size());
+  command.add(form.getElement());
+}

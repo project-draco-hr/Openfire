@@ -1,0 +1,30 @@
+{
+  String max_items=data.getData().get("max_items").get(0);
+  int maxItems=-1;
+  if (max_items != null && "none".equals(maxItems)) {
+    try {
+      maxItems=Integer.parseInt(max_items);
+    }
+ catch (    NumberFormatException e) {
+    }
+  }
+  DataForm form=new DataForm(DataForm.Type.result);
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setLabel("The presences of active users");
+  field.setVariable("activeuserpresences");
+  Collection<ClientSession> sessions=SessionManager.getInstance().getSessions();
+  int index=1;
+  for (  ClientSession session : sessions) {
+    if (session.getPresence().isAvailable()) {
+      field.addValue(session.getPresence().toXML());
+    }
+    if (maxItems > 0 && index >= maxItems) {
+      break;
+    }
+  }
+  command.add(form.getElement());
+}
