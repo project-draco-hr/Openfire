@@ -1,0 +1,31 @@
+{
+  JID owner=new JID(iq.getFrom().toBareJID());
+  Collection<NodeSubscription> subscriptions=new ArrayList<NodeSubscription>();
+  for (  Node node : service.getNodes()) {
+    subscriptions.addAll(node.getSubscriptions(owner));
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Element replyChildElement=childElement.createCopy();
+  reply.setChildElement(replyChildElement);
+  if (subscriptions.isEmpty()) {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+ else {
+    Element affiliationsElement=replyChildElement.element("subscriptions");
+    for (    NodeSubscription subscription : subscriptions) {
+      Element subElement=affiliationsElement.addElement("subscription");
+      Node node=subscription.getNode();
+      NodeAffiliate nodeAffiliate=subscription.getAffiliate();
+      if (!node.isRootCollectionNode()) {
+        subElement.addAttribute("node",node.getNodeID());
+      }
+      subElement.addAttribute("jid",subscription.getJID().toString());
+      subElement.addAttribute("affiliation",nodeAffiliate.getAffiliation().name());
+      subElement.addAttribute("subscription",subscription.getState().name());
+      if (node.isMultipleSubscriptionsEnabled()) {
+        subElement.addAttribute("subid",subscription.getID());
+      }
+    }
+  }
+  router.route(reply);
+}
