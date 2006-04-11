@@ -5,7 +5,6 @@
   SessionMap sessionMap;
   if (anonymousSessions.containsValue(session)) {
     anonymousSessions.remove(session.getAddress().getResource());
-    sessionCount--;
     SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
   }
  else {
@@ -15,7 +14,6 @@ synchronized (username.intern()) {
         sessionMap=sessions.get(username);
         if (sessionMap != null) {
           sessionMap.removeSession(session);
-          sessionCount--;
           if (sessionMap.isEmpty()) {
             sessions.remove(username);
           }
