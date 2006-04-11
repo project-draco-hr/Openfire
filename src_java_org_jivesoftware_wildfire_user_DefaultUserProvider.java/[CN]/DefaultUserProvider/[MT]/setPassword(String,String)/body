@@ -5,8 +5,11 @@
   boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
   String encryptedPassword=null;
   if (!usePlainPassword) {
-    encryptedPassword=getCipher().encryptString(password);
-    password=null;
+    Blowfish cipher=getCipher();
+    if (cipher != null) {
+      encryptedPassword=cipher.encryptString(password);
+      password=null;
+    }
   }
   Connection con=null;
   PreparedStatement pstmt=null;

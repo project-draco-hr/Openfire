@@ -8,6 +8,9 @@
     if (keyString == null) {
       keyString=StringUtils.randomString(15);
       JiveGlobals.setProperty("passwordKey",keyString);
+      if (!keyString.equals(JiveGlobals.getProperty("passwordKey"))) {
+        return null;
+      }
     }
     cipher=new Blowfish(keyString);
   }

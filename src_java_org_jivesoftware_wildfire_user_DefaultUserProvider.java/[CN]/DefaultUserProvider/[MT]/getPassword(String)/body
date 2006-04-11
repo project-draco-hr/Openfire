@@ -15,11 +15,12 @@
     String plainText=rs.getString(1);
     String encrypted=rs.getString(2);
     if (encrypted != null) {
-      return getCipher().decryptString(encrypted);
+      Blowfish cipher=getCipher();
+      if (cipher != null) {
+        return cipher.decryptString(encrypted);
+      }
     }
- else {
-      return plainText;
-    }
+    return plainText;
   }
  catch (  SQLException sqle) {
     throw new UserNotFoundException(sqle);
