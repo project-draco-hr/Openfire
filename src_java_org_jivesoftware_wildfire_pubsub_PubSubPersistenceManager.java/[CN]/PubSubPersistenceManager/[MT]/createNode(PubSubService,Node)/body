@@ -1,8 +1,9 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
   try {
-    con=DbConnectionManager.getConnection();
+    con=DbConnectionManager.getTransactionConnection();
     pstmt=con.prepareStatement(ADD_NODE);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
@@ -30,37 +31,33 @@
     pstmt.setInt(17,(node.isSubscriptionEnabled() ? 1 : 0));
     pstmt.setInt(18,(node.isSubscriptionConfigurationRequired() ? 1 : 0));
     pstmt.setString(19,node.getAccessModel().getName());
-    pstmt.setString(20,encodeJIDs(node.getContacts()));
-    pstmt.setString(21,encodeGroups(node.getRosterGroupsAllowed()));
-    pstmt.setString(22,node.getPayloadType());
-    pstmt.setString(23,node.getBodyXSLT());
-    pstmt.setString(24,node.getDataformXSLT());
-    pstmt.setString(25,node.getCreator().toString());
-    pstmt.setString(26,node.getDescription());
-    pstmt.setString(27,node.getLanguage());
-    pstmt.setString(28,node.getName());
+    pstmt.setString(20,node.getPayloadType());
+    pstmt.setString(21,node.getBodyXSLT());
+    pstmt.setString(22,node.getDataformXSLT());
+    pstmt.setString(23,node.getCreator().toString());
+    pstmt.setString(24,node.getDescription());
+    pstmt.setString(25,node.getLanguage());
+    pstmt.setString(26,node.getName());
     if (node.getReplyPolicy() != null) {
-      pstmt.setString(29,node.getReplyPolicy().name());
+      pstmt.setString(27,node.getReplyPolicy().name());
     }
  else {
-      pstmt.setString(29,null);
+      pstmt.setString(27,null);
     }
-    pstmt.setString(30,encodeJIDs(node.getReplyRooms()));
-    pstmt.setString(31,encodeJIDs(node.getReplyTo()));
     if (node.isCollectionNode()) {
-      pstmt.setString(32,((CollectionNode)node).getAssociationPolicy().name());
-      pstmt.setString(33,encodeJIDs(((CollectionNode)node).getAssociationTrusted()));
-      pstmt.setInt(34,((CollectionNode)node).getMaxLeafNodes());
+      pstmt.setString(28,((CollectionNode)node).getAssociationPolicy().name());
+      pstmt.setInt(29,((CollectionNode)node).getMaxLeafNodes());
     }
  else {
-      pstmt.setString(32,null);
-      pstmt.setString(33,null);
-      pstmt.setInt(34,0);
+      pstmt.setString(28,null);
+      pstmt.setInt(29,0);
     }
     pstmt.executeUpdate();
+    saveAssociatedElements(con,node,service);
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
+    abortTransaction=true;
   }
  finally {
     try {
@@ -71,13 +68,6 @@
  catch (    Exception e) {
       Log.error(e);
     }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }
 }

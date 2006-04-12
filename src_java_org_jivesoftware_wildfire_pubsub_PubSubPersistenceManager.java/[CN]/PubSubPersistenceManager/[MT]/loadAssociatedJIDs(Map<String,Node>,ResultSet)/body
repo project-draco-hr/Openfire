@@ -1,0 +1,27 @@
+{
+  try {
+    String nodeID=decodeNodeID(rs.getString(1));
+    Node node=nodes.get(nodeID);
+    if (node == null) {
+      Log.warn("JID associated to a non-existent node: " + nodeID);
+      return;
+    }
+    JID jid=new JID(rs.getString(2));
+    String associationType=rs.getString(3);
+    if ("contacts".equals(associationType)) {
+      node.addContact(jid);
+    }
+ else     if ("replyRooms".equals(associationType)) {
+      node.addReplyRoom(jid);
+    }
+ else     if ("replyTo".equals(associationType)) {
+      node.addReplyTo(jid);
+    }
+ else     if ("associationTrusted".equals(associationType)) {
+      ((CollectionNode)node).addAssociationTrusted(jid);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex);
+  }
+}

@@ -4,7 +4,7 @@
     String nodeID=decodeNodeID(rs.getString(1));
     boolean leaf=rs.getInt(2) == 1;
     String parent=decodeNodeID(rs.getString(5));
-    JID creator=new JID(rs.getString(24));
+    JID creator=new JID(rs.getString(22));
     CollectionNode parentNode=null;
     if (parent != null) {
       parentNode=(CollectionNode)loadedNodes.get(parent);
@@ -35,24 +35,19 @@
     node.setPublisherModel(PublisherModel.valueOf(rs.getString(15)));
     node.setSubscriptionEnabled(rs.getInt(16) == 1);
     node.setSubscriptionConfigurationRequired(rs.getInt(17) == 1);
-    node.setContacts(decodeJIDs(rs.getString(18)));
-    node.setRosterGroupsAllowed(decodeGroups(rs.getString(19)));
-    node.setAccessModel(AccessModel.valueOf(rs.getString(20)));
-    node.setPayloadType(rs.getString(21));
-    node.setBodyXSLT(rs.getString(22));
-    node.setDataformXSLT(rs.getString(23));
-    node.setDescription(rs.getString(25));
-    node.setLanguage(rs.getString(26));
-    node.setName(rs.getString(27));
-    if (rs.getString(28) != null) {
-      node.setReplyPolicy(Node.ItemReplyPolicy.valueOf(rs.getString(28)));
+    node.setAccessModel(AccessModel.valueOf(rs.getString(18)));
+    node.setPayloadType(rs.getString(19));
+    node.setBodyXSLT(rs.getString(20));
+    node.setDataformXSLT(rs.getString(21));
+    node.setDescription(rs.getString(23));
+    node.setLanguage(rs.getString(24));
+    node.setName(rs.getString(25));
+    if (rs.getString(26) != null) {
+      node.setReplyPolicy(Node.ItemReplyPolicy.valueOf(rs.getString(26)));
     }
-    node.setReplyRooms(decodeJIDs(rs.getString(29)));
-    node.setReplyTo(decodeJIDs(rs.getString(30)));
     if (!leaf) {
-      ((CollectionNode)node).setAssociationPolicy(CollectionNode.LeafNodeAssociationPolicy.valueOf(rs.getString(31)));
-      ((CollectionNode)node).setAssociationTrusted(decodeJIDs(rs.getString(32)));
-      ((CollectionNode)node).setMaxLeafNodes(rs.getInt(33));
+      ((CollectionNode)node).setAssociationPolicy(CollectionNode.LeafNodeAssociationPolicy.valueOf(rs.getString(27)));
+      ((CollectionNode)node).setMaxLeafNodes(rs.getInt(28));
     }
     loadedNodes.put(node.getNodeID(),node);
   }

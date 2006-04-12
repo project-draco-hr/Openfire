@@ -12,6 +12,22 @@
     }
     rs.close();
     pstmt.close();
+    pstmt=con.prepareStatement(LOAD_NODES_JIDS);
+    pstmt.setString(1,service.getServiceID());
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      loadAssociatedJIDs(nodes,rs);
+    }
+    rs.close();
+    pstmt.close();
+    pstmt=con.prepareStatement(LOAD_NODES_GROUPS);
+    pstmt.setString(1,service.getServiceID());
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      loadAssociatedGroups(nodes,rs);
+    }
+    rs.close();
+    pstmt.close();
     pstmt=con.prepareStatement(LOAD_AFFILIATIONS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();

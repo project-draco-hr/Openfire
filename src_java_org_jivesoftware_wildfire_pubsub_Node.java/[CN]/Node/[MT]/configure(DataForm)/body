@@ -85,14 +85,14 @@
  else       if ("pubsub#roster_groups_allowed".equals(field.getVariable())) {
         rosterGroupsAllowed=new ArrayList<String>();
         for (        String value : field.getValues()) {
-          rosterGroupsAllowed.add(value);
+          addAllowedRosterGroup(value);
         }
       }
  else       if ("pubsub#contact".equals(field.getVariable())) {
         contacts=new ArrayList<JID>();
         for (        String value : field.getValues()) {
           try {
-            contacts.add(new JID(value));
+            addContact(new JID(value));
           }
  catch (          Exception e) {
           }
@@ -120,7 +120,7 @@
         replyRooms=new ArrayList<JID>();
         for (        String value : field.getValues()) {
           try {
-            replyRooms.add(new JID(value));
+            addReplyRoom(new JID(value));
           }
  catch (          Exception e) {
           }
@@ -130,7 +130,7 @@
         replyTo=new ArrayList<JID>();
         for (        String value : field.getValues()) {
           try {
-            replyTo.add(new JID(value));
+            addReplyTo(new JID(value));
           }
  catch (          Exception e) {
           }

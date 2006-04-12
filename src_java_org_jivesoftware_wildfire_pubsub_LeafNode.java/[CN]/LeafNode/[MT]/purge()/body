@@ -2,7 +2,7 @@
   List<PublishedItem> toDelete=null;
 synchronized (publishedItems) {
     if (publishedItems.size() > 1) {
-      toDelete=publishedItems.subList(0,publishedItems.size() - 1);
+      toDelete=new ArrayList<PublishedItem>(publishedItems.subList(0,publishedItems.size() - 1));
       publishedItems.removeAll(toDelete);
       itemsByID=new HashMap<String,PublishedItem>();
       itemsByID.put(publishedItems.get(0).getID(),publishedItems.get(0));
