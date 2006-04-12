@@ -8,13 +8,13 @@ synchronized (connectionLock) {
   if (transfer == null || !transfer.isActivatable()) {
     throw new IllegalArgumentException("Transfer doesn't exist or is missing parameters");
   }
-  transfer.setInitiatorJID(initiator.toString());
-  transfer.setTargetJID(target.toString());
-  transfer.setTransferSession(sid);
+  transfer.setInitiator(initiator.toString());
+  transfer.setTarget(target.toString());
+  transfer.setSessionID(sid);
   transfer.setTransferFuture(executor.submit(new Runnable(){
     public void run(){
       try {
-        transfer(transfer);
+        transfer.doTransfer();
       }
  catch (      IOException e) {
         Log.error("Error during file transfer",e);

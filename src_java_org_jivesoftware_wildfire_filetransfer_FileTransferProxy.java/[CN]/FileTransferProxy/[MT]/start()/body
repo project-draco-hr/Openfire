@@ -3,7 +3,8 @@
   if (isEnabled()) {
     connectionManager.processConnections(getProxyPort());
     routingTable.addRoute(getAddress(),this);
-    XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(getAddress().toString(),"Socks 5 Bytestreams Proxy");
+    XMPPServer server=XMPPServer.getInstance();
+    server.getIQDiscoItemsHandler().addComponentItem(getAddress().toString(),"Socks 5 Bytestreams Proxy");
   }
  else {
     XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(getAddress().toString());

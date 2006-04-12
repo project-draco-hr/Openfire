@@ -1,0 +1,11 @@
+{
+  FileTransfer transfer=retrieveFileTransfer(transferDigest);
+  if (isMatchProxyTransfer() && transfer == null) {
+    throw new UnauthorizedException("Unable to match proxy transfer with a file transfer");
+  }
+ else   if (transfer == null) {
+    return;
+  }
+  transfer.setProgress(proxyTransfer);
+  cacheFileTransfer(transferDigest,transfer);
+}

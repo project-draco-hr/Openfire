@@ -10,7 +10,7 @@
   }
   socketProcess=executor.submit(new Runnable(){
     public void run(){
-      ServerSocket serverSocket=null;
+      ServerSocket serverSocket;
       try {
         serverSocket=new ServerSocket(port);
       }
@@ -18,7 +18,7 @@
         Log.error("Error creating server socket",e);
         return;
       }
-      while (serverSocket != null) {
+      while (serverSocket.isBound()) {
         final Socket socket;
         try {
           socket=serverSocket.accept();
@@ -34,6 +34,11 @@
             }
  catch (            IOException ie) {
               Log.error("Error processing file transfer proxy connection",ie);
+              try {
+                socket.close();
+              }
+ catch (              IOException e) {
+              }
             }
           }
         }

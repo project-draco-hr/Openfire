@@ -1,0 +1,17 @@
+{
+  if (!processed && incoming && packet instanceof IQ) {
+    IQ iq=(IQ)packet;
+    Element childElement=iq.getChildElement();
+    String namespace=childElement.getNamespaceURI();
+    if ("http://jabber.org/protocol/si".equals(namespace)) {
+      if (iq.getType().equals(IQ.Type.set)) {
+        JID from=iq.getFrom();
+        JID to=iq.getTo();
+        String packetID=iq.getID();
+        if (!transferManager.acceptIncomingFileTransferRequest(packetID,from,to,childElement)) {
+          throw new PacketRejectedException();
+        }
+      }
+    }
+  }
+}

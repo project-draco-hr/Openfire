@@ -1,0 +1,14 @@
+{
+  ProxyTransfer provider;
+  try {
+    Class c=ClassUtils.forName(className);
+    provider=(ProxyTransfer)c.newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Error loading proxy transfer provider: " + className,e);
+    provider=new DefaultProxyTransfer();
+  }
+  provider.setTransferDigest(transferDigest);
+  provider.setTargetSocket(initiatorSocket);
+  return provider;
+}

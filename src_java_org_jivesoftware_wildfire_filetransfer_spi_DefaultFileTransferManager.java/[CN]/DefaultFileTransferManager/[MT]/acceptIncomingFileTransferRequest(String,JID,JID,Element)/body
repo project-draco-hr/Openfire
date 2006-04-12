@@ -1,0 +1,16 @@
+{
+  String streamID=siElement.attributeValue("id");
+  String mimeType=siElement.attributeValue("mime-type");
+  String profile=siElement.attributeValue("profile");
+  if ("http://jabber.org/protocol/si/profile/file-transfer".equals(profile)) {
+    Element fileTransferElement=getChildElement(siElement,"http://jabber.org/protocol/si/profile/file-transfer");
+    if (fileTransferElement == null) {
+      return false;
+    }
+    String fileName=fileTransferElement.attributeValue("name");
+    long size=Long.parseLong(fileTransferElement.attributeValue("size"));
+    FileTransfer transfer=new FileTransfer(from.toString(),to.toString(),streamID,fileName,size,mimeType);
+    cacheFileTransfer(ProxyConnectionManager.createDigest(streamID,from,to),transfer);
+  }
+  return true;
+}

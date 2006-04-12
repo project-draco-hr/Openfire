@@ -25,18 +25,24 @@
   cmd[1]=(byte)0x00;
   out.write(cmd);
   String responseDigest=processIncomingSocks5Message(in);
-  cmd=createOutgoingSocks5Message(0,responseDigest);
+  try {
 synchronized (connectionLock) {
-    ProxyTransfer transfer=connectionMap.get(responseDigest);
-    if (transfer == null) {
-      connectionMap.put(responseDigest,new ProxyTransfer(responseDigest,connection));
-    }
+      ProxyTransfer transfer=connectionMap.get(responseDigest);
+      if (transfer == null) {
+        transfer=createProxyTransfer(responseDigest,connection);
+        transferManager.registerProxyTransfer(responseDigest,transfer);
+        connectionMap.put(responseDigest,transfer);
+      }
  else {
-      transfer.setInitiatorSocket(connection);
+        transfer.setInitiatorSocket(connection);
+      }
     }
+    cmd=createOutgoingSocks5Message(0,responseDigest);
+    out.write(cmd);
   }
-  if (!connection.isConnected()) {
-    throw new IOException("Socket closed by remote user");
+ catch (  UnauthorizedException eu) {
+    cmd=createOutgoingSocks5Message(2,responseDigest);
+    out.write(cmd);
+    throw new IOException("Illegal proxy transfer");
   }
-  out.write(cmd);
 }
