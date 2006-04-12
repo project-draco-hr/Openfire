@@ -1,63 +1,58 @@
 {
+  ClientSession session=sessionManager.getSession(packet.getFrom());
+  if (session == null) {
+    Log.error("Error during authentication. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+    IQ reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.internal_server_error);
+    return reply;
+  }
+  IQ response=null;
   try {
-    ClientSession session=sessionManager.getSession(packet.getFrom());
-    if (session == null) {
-      Log.error("Error during authentication. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
-      IQ reply=IQ.createResultIQ(packet);
-      reply.setChildElement(packet.getChildElement().createCopy());
-      reply.setError(PacketError.Condition.internal_server_error);
-      return reply;
+    Element iq=packet.getElement();
+    Element query=iq.element("query");
+    Element queryResponse=probeResponse.createCopy();
+    if (IQ.Type.get == packet.getType()) {
+      String username=query.elementTextTrim("username");
+      if (username != null) {
+        queryResponse.element("username").setText(username);
+      }
+      response=IQ.createResultIQ(packet);
+      response.setChildElement(queryResponse);
+      if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+        response.setTo((JID)null);
+      }
     }
-    IQ response=null;
-    try {
-      Element iq=packet.getElement();
-      Element query=iq.element("query");
-      Element queryResponse=probeResponse.createCopy();
-      if (IQ.Type.get == packet.getType()) {
+ else {
+      if (query.elements().isEmpty()) {
+        response=anonymousLogin(session,packet);
+      }
+ else {
         String username=query.elementTextTrim("username");
-        if (username != null) {
-          queryResponse.element("username").setText(username);
+        String password=query.elementTextTrim("password");
+        String digest=null;
+        if (query.element("digest") != null) {
+          digest=query.elementTextTrim("digest").toLowerCase();
         }
-        response=IQ.createResultIQ(packet);
-        response.setChildElement(queryResponse);
-        if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
-          response.setTo((JID)null);
-        }
-      }
- else {
-        if (query.elements().isEmpty()) {
-          response=anonymousLogin(session,packet);
+        if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+          response=passwordReset(password,packet,username,session);
         }
  else {
-          String username=query.elementTextTrim("username");
-          String password=query.elementTextTrim("password");
-          String digest=null;
-          if (query.element("digest") != null) {
-            digest=query.elementTextTrim("digest").toLowerCase();
-          }
-          if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-            response=passwordReset(password,packet,username,session);
-          }
- else {
-            response=login(username,query,packet,response,password,session,digest);
-          }
+          response=login(username,query,packet,response,password,session,digest);
         }
       }
     }
- catch (    UserNotFoundException e) {
-      response=IQ.createResultIQ(packet);
-      response.setChildElement(packet.getChildElement().createCopy());
-      response.setError(PacketError.Condition.not_authorized);
-    }
-catch (    UnauthorizedException e) {
-      response=IQ.createResultIQ(packet);
-      response.setChildElement(packet.getChildElement().createCopy());
-      response.setError(PacketError.Condition.not_authorized);
-    }
-    session.process(response);
   }
- catch (  Exception e) {
-    Log.error("Error handling authentication IQ packet",e);
+ catch (  UserNotFoundException e) {
+    response=IQ.createResultIQ(packet);
+    response.setChildElement(packet.getChildElement().createCopy());
+    response.setError(PacketError.Condition.not_authorized);
   }
+catch (  UnauthorizedException e) {
+    response=IQ.createResultIQ(packet);
+    response.setChildElement(packet.getChildElement().createCopy());
+    response.setError(PacketError.Condition.not_authorized);
+  }
+  session.process(response);
   return null;
 }

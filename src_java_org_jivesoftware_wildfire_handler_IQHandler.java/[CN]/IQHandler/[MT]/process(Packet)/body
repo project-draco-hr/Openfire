@@ -1,9 +1,9 @@
 {
   IQ iq=(IQ)packet;
   try {
-    iq=handleIQ(iq);
-    if (iq != null) {
-      deliverer.deliver(iq);
+    IQ reply=handleIQ(iq);
+    if (reply != null) {
+      deliverer.deliver(reply);
     }
   }
  catch (  org.jivesoftware.wildfire.auth.UnauthorizedException e) {
@@ -12,10 +12,7 @@
         IQ response=IQ.createResultIQ(iq);
         response.setChildElement(iq.getChildElement().createCopy());
         response.setError(PacketError.Condition.not_authorized);
-        Session session=sessionManager.getSession(iq.getFrom());
-        if (!session.getConnection().isClosed()) {
-          session.process(response);
-        }
+        sessionManager.getSession(iq.getFrom()).process(response);
       }
  catch (      Exception de) {
         Log.error(LocaleUtils.getLocalizedString("admin.error"),de);
@@ -25,5 +22,13 @@
   }
 catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    try {
+      IQ response=IQ.createResultIQ(iq);
+      response.setChildElement(iq.getChildElement().createCopy());
+      response.setError(PacketError.Condition.internal_server_error);
+      sessionManager.getSession(iq.getFrom()).process(response);
+    }
+ catch (    Exception e1) {
+    }
   }
 }
