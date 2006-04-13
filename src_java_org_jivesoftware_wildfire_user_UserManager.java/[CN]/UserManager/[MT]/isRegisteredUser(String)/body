@@ -2,16 +2,11 @@
   if (username == null || "".equals(username)) {
     return false;
   }
-  Boolean isRegistered=registeredUsersCache.get(username);
-  if (isRegistered == null) {
-    try {
-      getUser(username);
-      isRegistered=Boolean.TRUE;
-    }
- catch (    UserNotFoundException e) {
-      isRegistered=Boolean.FALSE;
-    }
-    registeredUsersCache.put(username,isRegistered);
+  try {
+    getUser(username);
+    return true;
   }
-  return isRegistered;
+ catch (  UserNotFoundException e) {
+    return false;
+  }
 }
