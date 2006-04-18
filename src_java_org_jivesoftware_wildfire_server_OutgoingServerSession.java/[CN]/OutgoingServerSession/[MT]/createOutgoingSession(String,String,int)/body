@@ -29,6 +29,8 @@
       openingStream.append(" to=\"").append(hostname).append("\"");
       openingStream.append(" version=\"1.0\">");
       connection.deliverRawText(openingStream.toString());
+      int soTimeout=socket.getSoTimeout();
+      socket.setSoTimeout(5000);
       XMPPPacketReader reader=new XMPPPacketReader();
       reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
       XmlPullParser xpp=reader.getXPPParser();
@@ -37,6 +39,7 @@
       }
       String serverVersion=xpp.getAttributeValue("","version");
       if (serverVersion != null && decodeVersion(serverVersion)[0] >= 1) {
+        socket.setSoTimeout(soTimeout);
         Element features=reader.parseDocument().getRootElement();
         if (features != null && features.element("starttls") != null) {
           OutgoingServerSession answer;

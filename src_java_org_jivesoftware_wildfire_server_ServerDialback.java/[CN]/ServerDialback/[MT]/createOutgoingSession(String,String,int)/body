@@ -16,7 +16,8 @@
     stream.append(" xmlns=\"jabber:server\"");
     stream.append(" xmlns:db=\"jabber:server:dialback\">");
     connection.deliverRawText(stream.toString());
-    stream=null;
+    int soTimeout=socket.getSoTimeout();
+    socket.setSoTimeout(5000);
     XMPPPacketReader reader=new XMPPPacketReader();
     reader.setXPPFactory(FACTORY);
     reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
@@ -25,6 +26,7 @@
       eventType=xpp.next();
     }
     if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
+      socket.setSoTimeout(soTimeout);
       String id=xpp.getAttributeValue("","id");
       OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
       if (authenticateDomain(socketReader,domain,hostname,id)) {
