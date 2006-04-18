@@ -3,7 +3,9 @@
   Collection<Group> sharedGroups=new ArrayList<Group>(userGroups.size());
   for (  Group group : userGroups) {
     if (rosterManager.isPulicSharedGroup(group)) {
-      return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
+      if (server.isLocal(user)) {
+        return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
+      }
     }
  else     if (rosterManager.isSharedGroup(group)) {
       sharedGroups.add(group);
@@ -11,9 +13,6 @@
   }
   if (!sharedGroups.isEmpty()) {
     Collection<Group> contactGroups=GroupManager.getInstance().getGroups(user);
-    if (contactGroups == null) {
-      return null;
-    }
     for (    Group sharedGroup : sharedGroups) {
       if (rosterManager.isSharedGroupVisible(sharedGroup,contactGroups)) {
         return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
