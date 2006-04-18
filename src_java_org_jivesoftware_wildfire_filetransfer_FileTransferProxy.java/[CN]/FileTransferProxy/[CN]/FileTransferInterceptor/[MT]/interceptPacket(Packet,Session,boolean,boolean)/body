@@ -2,6 +2,9 @@
   if (!processed && incoming && packet instanceof IQ) {
     IQ iq=(IQ)packet;
     Element childElement=iq.getChildElement();
+    if (childElement == null) {
+      return;
+    }
     String namespace=childElement.getNamespaceURI();
     if ("http://jabber.org/protocol/si".equals(namespace)) {
       if (iq.getType().equals(IQ.Type.set)) {
