@@ -1,7 +1,8 @@
 {
-  if (writeStarted > -1 && System.currentTimeMillis() - writeStarted > JiveGlobals.getIntProperty("xmpp.session.sending-limit",60000)) {
+  long writeTimestamp=writeStarted;
+  if (writeTimestamp > -1 && System.currentTimeMillis() - writeTimestamp > JiveGlobals.getIntProperty("xmpp.session.sending-limit",60000)) {
     if (Log.isDebugEnabled()) {
-      Log.debug("Closing connection: " + this + " that started sending data at: "+ new Date(writeStarted));
+      Log.debug("Closing connection: " + this + " that started sending data at: "+ new Date(writeTimestamp));
     }
     forceClose();
     return true;
