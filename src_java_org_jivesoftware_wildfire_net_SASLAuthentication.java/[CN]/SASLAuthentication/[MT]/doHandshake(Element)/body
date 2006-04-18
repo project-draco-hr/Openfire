@@ -26,7 +26,7 @@ case AUTH:
           SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
           byte[] token=new byte[0];
           if (doc.isTextOnly()) {
-            token=StringUtils.decodeBase64(doc.getText()).getBytes(CHARSET);
+            token=StringUtils.decodeBase64(doc.getText());
             if (token == null) {
               token=new byte[0];
             }
@@ -48,7 +48,7 @@ if (ss != null) {
   boolean ssComplete=ss.isComplete();
   String response=doc.getTextTrim();
   try {
-    byte[] data=StringUtils.decodeBase64(response).getBytes(CHARSET);
+    byte[] data=StringUtils.decodeBase64(response);
     if (data == null) {
       data=new byte[0];
     }

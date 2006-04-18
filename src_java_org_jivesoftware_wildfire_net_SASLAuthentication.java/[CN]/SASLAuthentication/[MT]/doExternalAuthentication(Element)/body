@@ -11,7 +11,7 @@
     }
   }
   if (hostname != null && hostname.length() > 0) {
-    hostname=StringUtils.decodeBase64(hostname);
+    hostname=new String(StringUtils.decodeBase64(hostname),CHARSET);
     if (session instanceof IncomingServerSession) {
       boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
       if (!verify) {
