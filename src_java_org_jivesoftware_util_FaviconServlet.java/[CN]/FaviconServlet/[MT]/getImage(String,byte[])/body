@@ -1,11 +1,22 @@
 {
-  if (missesCache.get(host) != null) {
+  if (missesCache.get(host) != null && missesCache.get(host) > 1) {
     return defaultImage;
+  }
+  if (hitsCache.containsKey(host)) {
+    return hitsCache.get(host);
   }
   byte[] bytes=getImage("http://" + host + "/favicon.ico");
   if (bytes == null) {
-    missesCache.put(host,Boolean.TRUE);
+    if (missesCache.get(host) != null) {
+      missesCache.put(host,2);
+    }
+ else {
+      missesCache.put(host,1);
+    }
     bytes=defaultImage;
+  }
+ else {
+    hitsCache.put(host,bytes);
   }
   return bytes;
 }
