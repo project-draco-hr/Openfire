@@ -3,7 +3,7 @@
     return;
   }
   Log.debug("Loading plugin " + pluginDir.getName());
-  Plugin plugin=null;
+  Plugin plugin;
   try {
     File pluginConfig=new File(pluginDir,"plugin.xml");
     if (pluginConfig.exists()) {
@@ -135,8 +135,8 @@
           imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
         }
         List urls=adminElement.selectNodes("//@url");
-        for (int i=0; i < urls.size(); i++) {
-          Attribute attr=(Attribute)urls.get(i);
+        for (        Object url : urls) {
+          Attribute attr=(Attribute)url;
           attr.setValue("plugins/" + pluginName + "/"+ attr.getValue());
         }
         AdminConsole.addModel(pluginName,adminElement);

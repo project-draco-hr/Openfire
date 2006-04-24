@@ -1,4 +1,9 @@
 {
   executor=new ScheduledThreadPoolExecutor(1);
-  executor.scheduleWithFixedDelay(new PluginMonitor(),0,15,TimeUnit.SECONDS);
+  if (Boolean.getBoolean("developmentMode")) {
+    executor.scheduleWithFixedDelay(new PluginMonitor(),0,5,TimeUnit.SECONDS);
+  }
+ else {
+    executor.scheduleWithFixedDelay(new PluginMonitor(),0,30,TimeUnit.SECONDS);
+  }
 }

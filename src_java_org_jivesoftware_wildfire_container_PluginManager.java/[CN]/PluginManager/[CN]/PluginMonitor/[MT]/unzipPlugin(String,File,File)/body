@@ -17,7 +17,7 @@
         FileOutputStream out=new FileOutputStream(entryFile);
         InputStream zin=zipFile.getInputStream(entry);
         byte[] b=new byte[512];
-        int len=0;
+        int len;
         while ((len=zin.read(b)) != -1) {
           out.write(b,0,len);
         }
@@ -27,7 +27,6 @@
       }
     }
     zipFile.close();
-    zipFile=null;
   }
  catch (  Exception e) {
     Log.error(e);
