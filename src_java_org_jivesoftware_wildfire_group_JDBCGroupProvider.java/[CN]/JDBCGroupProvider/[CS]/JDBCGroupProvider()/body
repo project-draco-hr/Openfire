@@ -1,0 +1,17 @@
+{
+  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcGroupProvider.jdbcDriver.className");
+  try {
+    Class.forName(jdbcDriver).newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+    return;
+  }
+  jdbcConnString=JiveGlobals.getXMLProperty("jdbcGroupProvider.jdbcConnString");
+  groupCountSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.groupCountSQL");
+  allGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.allGroupsSQL");
+  userGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.userGroupsSQL");
+  descriptionSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.descriptionSQL");
+  loadMembersSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.loadMembersSQL");
+  loadAdminsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.loadAdminsSQL");
+}

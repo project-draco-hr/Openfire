@@ -1,0 +1,45 @@
+{
+  List<String> groupNames=new ArrayList<String>();
+  Connection conn=null;
+  PreparedStatement pstmt=null;
+  try {
+    conn=DriverManager.getConnection(jdbcConnString);
+    pstmt=conn.prepareStatement(allGroupsSQL);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      groupNames.add(rs.getString(1));
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  List<Group> groups=new ArrayList<Group>(groupNames.size());
+  for (  String groupName : groupNames) {
+    try {
+      groups.add(getGroup(groupName));
+    }
+ catch (    GroupNotFoundException e) {
+      Log.error(e);
+    }
+  }
+  return groups;
+}

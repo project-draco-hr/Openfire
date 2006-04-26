@@ -1,0 +1,49 @@
+{
+  List<JID> members=new ArrayList<JID>();
+  Connection conn=null;
+  PreparedStatement pstmt=null;
+  try {
+    conn=DriverManager.getConnection(jdbcConnString);
+    if (adminsOnly) {
+      if (loadAdminsSQL == null) {
+        return members;
+      }
+      pstmt=conn.prepareStatement(loadAdminsSQL);
+    }
+ else {
+      pstmt=conn.prepareStatement(loadMembersSQL);
+    }
+    pstmt.setString(1,groupName);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String user=rs.getString(1);
+      if (user != null) {
+        JID userJID=new JID(user);
+        members.add(userJID);
+      }
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return members;
+}

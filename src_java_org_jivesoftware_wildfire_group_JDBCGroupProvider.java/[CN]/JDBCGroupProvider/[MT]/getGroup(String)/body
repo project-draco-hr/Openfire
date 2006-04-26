@@ -1,0 +1,39 @@
+{
+  String description=null;
+  Connection conn=null;
+  PreparedStatement pstmt=null;
+  try {
+    conn=DriverManager.getConnection(jdbcConnString);
+    pstmt=conn.prepareStatement(descriptionSQL);
+    pstmt.setString(1,name);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new GroupNotFoundException("Group with name " + name + " not found.");
+    }
+    description=rs.getString(1);
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (conn != null) {
+        conn.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  Collection<JID> members=getMembers(name,false);
+  Collection<JID> administrators=getMembers(name,true);
+  return new Group(name,description,members,administrators);
+}
