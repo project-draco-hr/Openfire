@@ -1,0 +1,12 @@
+{
+  instance=this;
+  String className=JiveGlobals.getXMLProperty("provider.vcard.className",DefaultVCardProvider.class.getName());
+  try {
+    Class c=ClassUtils.forName(className);
+    provider=(VCardProvider)c.newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Error loading vcard provider: " + className,e);
+    provider=new DefaultVCardProvider();
+  }
+}

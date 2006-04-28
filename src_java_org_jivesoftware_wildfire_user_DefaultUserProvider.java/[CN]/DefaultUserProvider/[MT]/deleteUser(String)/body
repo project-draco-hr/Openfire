@@ -6,11 +6,6 @@
   PreparedStatement pstmt=null;
   boolean abortTransaction=false;
   try {
-    try {
-      VCardManager.getInstance().deleteVCard(username);
-    }
- catch (    UnsupportedOperationException e) {
-    }
     con=DbConnectionManager.getTransactionConnection();
     pstmt=con.prepareStatement(DELETE_USER_PROPS);
     pstmt.setString(1,username);
