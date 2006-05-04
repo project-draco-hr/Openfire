@@ -32,7 +32,7 @@
  else {
       String username=authToken.getUsername();
       if (sessionManager.isActiveRoute(username,resource)) {
-        ClientSession oldSession=null;
+        ClientSession oldSession;
         try {
           String domain=localServer.getServerInfo().getName();
           oldSession=sessionManager.getSession(username,domain,resource);
@@ -42,7 +42,7 @@
             Connection conn=oldSession.getConnection();
             if (conn != null) {
               StreamError error=new StreamError(StreamError.Condition.conflict);
-              conn.getWriter().write(error.toXML());
+              conn.deliverRawText(error.toXML());
               conn.close();
             }
           }
