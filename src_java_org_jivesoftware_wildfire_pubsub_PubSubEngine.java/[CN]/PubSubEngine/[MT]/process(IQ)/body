@@ -93,13 +93,23 @@
       deleteNode(iq,action);
       return true;
     }
-    action=childElement.element("entities");
+    action=childElement.element("subscriptions");
     if (action != null) {
       if (IQ.Type.get == iq.getType()) {
-        getAffiliatedEntities(iq,action);
+        getNodeSubscriptions(iq,action);
       }
  else {
-        modifyAffiliations(iq,action);
+        modifyNodeSubscriptions(iq,action);
+      }
+      return true;
+    }
+    action=childElement.element("affiliations");
+    if (action != null) {
+      if (IQ.Type.get == iq.getType()) {
+        getNodeAffiliations(iq,action);
+      }
+ else {
+        modifyNodeAffiliations(iq,action);
       }
       return true;
     }

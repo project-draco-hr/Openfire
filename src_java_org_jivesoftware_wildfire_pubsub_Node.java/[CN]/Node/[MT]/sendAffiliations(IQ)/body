@@ -1,0 +1,13 @@
+{
+  IQ reply=IQ.createResultIQ(iqRequest);
+  Element childElement=iqRequest.getChildElement().createCopy();
+  reply.setChildElement(childElement);
+  for (  NodeAffiliate affiliate : affiliates) {
+    if (affiliate.getAffiliation() == NodeAffiliate.Affiliation.none) {
+      continue;
+    }
+    Element entity=childElement.addElement("affiliation");
+    entity.addAttribute("jid",affiliate.getJID().toString());
+    entity.addAttribute("affiliation",affiliate.getAffiliation().name());
+  }
+}

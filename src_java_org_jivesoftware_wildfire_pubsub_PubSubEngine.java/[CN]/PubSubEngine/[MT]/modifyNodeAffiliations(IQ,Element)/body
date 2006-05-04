@@ -1,0 +1,57 @@
+{
+  String nodeID=entitiesElement.attributeValue("node");
+  if (nodeID == null) {
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+    return;
+  }
+  Node node=service.getNode(nodeID);
+  if (node == null) {
+    sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+    return;
+  }
+  if (!node.isAdmin(iq.getFrom())) {
+    sendErrorPacket(iq,PacketError.Condition.forbidden,null);
+    return;
+  }
+  IQ reply=IQ.createResultIQ(iq);
+  Collection<JID> invalidAffiliates=new ArrayList<JID>();
+  for (Iterator it=entitiesElement.elementIterator("affiliation"); it.hasNext(); ) {
+    Element affiliation=(Element)it.next();
+    JID owner=new JID(affiliation.attributeValue("jid"));
+    String newAffiliation=affiliation.attributeValue("affiliation");
+    NodeAffiliate affiliate=node.getAffiliate(owner);
+    if (affiliate != null && !affiliate.getAffiliation().name().equals(newAffiliation)) {
+      if (affiliate.getAffiliation() == NodeAffiliate.Affiliation.owner && node.getOwners().size() == 1) {
+        invalidAffiliates.add(owner);
+        continue;
+      }
+    }
+    if ("owner".equals(newAffiliation)) {
+      node.addOwner(owner);
+    }
+ else     if ("publisher".equals(newAffiliation)) {
+      node.addPublisher(owner);
+    }
+ else     if ("none".equals(newAffiliation)) {
+      node.addNoneAffiliation(owner);
+    }
+ else {
+      node.addOutcast(owner);
+    }
+  }
+  if (!invalidAffiliates.isEmpty()) {
+    reply.setError(PacketError.Condition.not_acceptable);
+    Element child=reply.setChildElement("pubsub","http://jabber.org/protocol/pubsub#owner");
+    Element entities=child.addElement("affiliations");
+    if (!node.isRootCollectionNode()) {
+      entities.addAttribute("node",node.getNodeID());
+    }
+    for (    JID affiliateJID : invalidAffiliates) {
+      NodeAffiliate affiliate=node.getAffiliate(affiliateJID);
+      Element entity=entities.addElement("affiliation");
+      entity.addAttribute("jid",affiliate.getJID().toString());
+      entity.addAttribute("affiliation",affiliate.getAffiliation().name());
+    }
+  }
+  router.route(reply);
+}
