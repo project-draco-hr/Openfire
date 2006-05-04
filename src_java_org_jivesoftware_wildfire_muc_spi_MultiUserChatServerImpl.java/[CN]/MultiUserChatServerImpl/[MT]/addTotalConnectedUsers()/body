@@ -1,0 +1,24 @@
+{
+  Statistic statistic=new Statistic(){
+    public String getKey(){
+      return usersStatKey;
+    }
+    public String getName(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.name");
+    }
+    public Type getStatType(){
+      return Type.COUNT;
+    }
+    public String getDescription(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.description");
+    }
+    public String getUnits(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.label");
+    }
+    public double sample(    long timePeriod){
+      return getNumberConnectedUsers();
+    }
+  }
+;
+  StatisticsManager.getInstance().addStatistic(statistic);
+}

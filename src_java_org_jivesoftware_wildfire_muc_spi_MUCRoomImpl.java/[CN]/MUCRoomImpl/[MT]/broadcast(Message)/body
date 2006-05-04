@@ -6,7 +6,7 @@
   }
   if (isLogEnabled()) {
     MUCRole senderRole=null;
-    JID senderAddress=null;
+    JID senderAddress;
     if (message.getTo() != null && message.getTo().getResource() != null) {
       senderRole=occupants.get(message.getTo().getResource());
     }
@@ -18,4 +18,5 @@
     }
     server.logConversation(this,message,senderAddress);
   }
+  server.messageBroadcastedTo(occupants.size());
 }

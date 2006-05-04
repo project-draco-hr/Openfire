@@ -6,11 +6,11 @@
   for (  MUCUser user : users.values()) {
     try {
       if (user.getLastPacketTime() < deadline) {
-        Iterator<MUCRole> roles=user.getRoles();
-        if (!roles.hasNext()) {
+        if (!user.isJoined()) {
           removeUser(user.getAddress());
           continue;
         }
+        Iterator<MUCRole> roles=user.getRoles();
         MUCRole role;
         MUCRoom room;
         Presence kickedPresence;
