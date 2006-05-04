@@ -1,13 +1,7 @@
 {
   XmlPullParser xpp=reader.getXPPParser();
-  Session session;
   String domain=xpp.getAttributeValue("","to");
   Log.debug("[ExComp] Starting registration of new external component for domain: " + domain);
-  String subdomain=domain;
-  int index=domain.indexOf(serverName);
-  if (index > -1) {
-    subdomain=domain.substring(0,index - 1);
-  }
   Writer writer=connection.getWriter();
   StringBuilder sb=new StringBuilder();
   sb.append("<?xml version='1.0' encoding='");
@@ -26,6 +20,11 @@
     writer.flush();
     connection.close();
     return null;
+  }
+  String subdomain=domain;
+  int index=domain.indexOf(serverName);
+  if (index > -1) {
+    subdomain=domain.substring(0,index - 1);
   }
   if (!ExternalComponentManager.canAccess(subdomain)) {
     Log.debug("[ExComp] Component is not allowed to connect with subdomain: " + subdomain);
@@ -55,7 +54,7 @@
     connection.close();
     return null;
   }
-  session=SessionManager.getInstance().createComponentSession(connection);
+  Session session=SessionManager.getInstance().createComponentSession(connection);
   session.setAddress(new JID(null,domain,null));
   try {
     Log.debug("[ExComp] Send stream header with ID: " + session.getStreamID() + " for component with domain: "+ domain);
@@ -77,10 +76,7 @@
     String anticipatedDigest=AuthFactory.createDigest(session.getStreamID().getID(),secretKey);
     if (!anticipatedDigest.equalsIgnoreCase(digest)) {
       Log.debug("[ExComp] Incorrect handshake for component with domain: " + domain);
-      sb=new StringBuilder();
-      StreamError error=new StreamError(StreamError.Condition.not_authorized);
-      sb.append(error.toXML());
-      writer.write(sb.toString());
+      writer.write(new StreamError(StreamError.Condition.not_authorized).toXML());
       writer.flush();
       connection.close();
       return null;
