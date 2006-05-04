@@ -2,6 +2,10 @@
   if (!secure) {
     secure=true;
     tlsStreamHandler=new TLSStreamHandler(socket,clientMode,remoteServer,session instanceof IncomingServerSession);
+    if (!clientMode) {
+      deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
+    }
+    tlsStreamHandler.start();
     writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),CHARSET));
     xmlSerializer=new XMLSocketWriter(writer,this);
   }
