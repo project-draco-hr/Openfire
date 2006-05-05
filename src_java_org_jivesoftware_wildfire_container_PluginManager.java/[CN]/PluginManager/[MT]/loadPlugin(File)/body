@@ -28,8 +28,7 @@
       String classesDirKey=pluginName + ".classes";
       String webRoot=System.getProperty(webRootKey);
       String classesDir=System.getProperty(classesDirKey);
-      boolean inDevelopmentMode=webRoot != null && classesDir != null;
-      if (inDevelopmentMode) {
+      if (webRoot != null) {
         final File compilationClassesDir=new File(pluginDir,"classes");
         if (!compilationClassesDir.exists()) {
           compilationClassesDir.mkdir();
@@ -39,7 +38,7 @@
         String parentPlugin=parentPluginNode.getTextTrim();
         if (plugins.containsKey(parentPlugin)) {
           pluginLoader=classloaders.get(getPlugin(parentPlugin));
-          pluginLoader.addDirectory(pluginDir,inDevelopmentMode);
+          pluginLoader.addDirectory(pluginDir,classesDir != null);
         }
  else {
           if (pluginDir.getName().compareTo(parentPlugin) < 0) {
@@ -70,25 +69,30 @@
       }
  else {
         pluginLoader=new PluginClassLoader();
-        pluginLoader.addDirectory(pluginDir,inDevelopmentMode);
+        pluginLoader.addDirectory(pluginDir,classesDir != null);
       }
       PluginDevEnvironment dev=null;
-      if (inDevelopmentMode) {
+      if (webRoot != null || classesDir != null) {
         dev=new PluginDevEnvironment();
-        File webRootDir=new File(webRoot);
-        if (!webRootDir.exists()) {
-          webRootDir=new File(pluginDir,webRoot);
+        System.out.println(pluginName + " is running in development mode.");
+        if (webRoot != null) {
+          File webRootDir=new File(webRoot);
+          if (!webRootDir.exists()) {
+            webRootDir=new File(pluginDir,webRoot);
+          }
+          if (webRootDir.exists()) {
+            dev.setWebRoot(webRootDir);
+          }
         }
-        if (webRootDir.exists()) {
-          dev.setWebRoot(webRootDir);
-        }
-        File classes=new File(classesDir);
-        if (!classes.exists()) {
-          classes=new File(pluginDir,classesDir);
-        }
-        if (classes.exists()) {
-          dev.setClassesDir(classes);
-          pluginLoader.addURL(classes.getAbsoluteFile().toURL());
+        if (classesDir != null) {
+          File classes=new File(classesDir);
+          if (!classes.exists()) {
+            classes=new File(pluginDir,classesDir);
+          }
+          if (classes.exists()) {
+            dev.setClassesDir(classes);
+            pluginLoader.addURL(classes.getAbsoluteFile().toURL());
+          }
         }
       }
       pluginLoader.initialize();
