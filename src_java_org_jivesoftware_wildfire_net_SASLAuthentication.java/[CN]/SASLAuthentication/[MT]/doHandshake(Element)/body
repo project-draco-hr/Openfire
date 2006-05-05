@@ -8,11 +8,21 @@ switch (type) {
 case AUTH:
         String mechanism=doc.attributeValue("mechanism");
       if (mechanism.equalsIgnoreCase("PLAIN")) {
-        success=doPlainAuthentication(doc);
+        if (getSupportedMechanisms().contains("PLAIN")) {
+          success=doPlainAuthentication(doc);
+        }
+ else {
+          success=false;
+        }
         isComplete=true;
       }
  else       if (mechanism.equalsIgnoreCase("ANONYMOUS")) {
-        success=doAnonymousAuthentication();
+        if (getSupportedMechanisms().contains("ANONYMOUS")) {
+          success=doAnonymousAuthentication();
+        }
+ else {
+          success=false;
+        }
         isComplete=true;
       }
  else       if (mechanism.equalsIgnoreCase("EXTERNAL")) {
@@ -20,25 +30,35 @@ case AUTH:
         isComplete=true;
       }
  else {
-        try {
-          Map<String,String> props=new TreeMap<String,String>();
-          props.put(Sasl.QOP,"auth");
-          SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
-          byte[] token=new byte[0];
-          if (doc.isTextOnly()) {
-            token=StringUtils.decodeBase64(doc.getText());
-            if (token == null) {
-              token=new byte[0];
+        if (getSupportedMechanisms().contains(mechanism)) {
+          try {
+            Map<String,String> props=new TreeMap<String,String>();
+            props.put(Sasl.QOP,"auth");
+            if (mechanism.equals("GSSAPI")) {
+              props.put(Sasl.SERVER_AUTH,"TRUE");
             }
+            SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
+            byte[] token=new byte[0];
+            if (doc.isTextOnly()) {
+              token=StringUtils.decodeBase64(doc.getTextTrim());
+              if (token == null) {
+                token=new byte[0];
+              }
+            }
+            byte[] challenge=ss.evaluateResponse(token);
+            sendChallenge(challenge);
+            session.setSessionData("SaslServer",ss);
           }
-          byte[] challenge=ss.evaluateResponse(token);
-          sendChallenge(challenge);
-          session.setSessionData("SaslServer",ss);
+ catch (          SaslException e) {
+            isComplete=true;
+            Log.warn("SaslException",e);
+            authenticationFailed();
+          }
         }
- catch (        SaslException e) {
+ else {
+          Log.warn("Client wants to do a MECH we don't support: '" + mechanism + "'");
           isComplete=true;
-          Log.warn("SaslException",e);
-          authenticationFailed();
+          success=false;
         }
       }
     break;
@@ -48,18 +68,25 @@ if (ss != null) {
   boolean ssComplete=ss.isComplete();
   String response=doc.getTextTrim();
   try {
-    byte[] data=StringUtils.decodeBase64(response);
-    if (data == null) {
-      data=new byte[0];
-    }
     if (ssComplete) {
-      authenticationSuccessful(ss.getAuthorizationID());
+      authenticationSuccessful(ss.getAuthorizationID(),null);
       success=true;
       isComplete=true;
     }
  else {
+      byte[] data=StringUtils.decodeBase64(response);
+      if (data == null) {
+        data=new byte[0];
+      }
       byte[] challenge=ss.evaluateResponse(data);
-      sendChallenge(challenge);
+      if (ss.isComplete()) {
+        authenticationSuccessful(ss.getAuthorizationID(),challenge);
+        success=true;
+        isComplete=true;
+      }
+ else {
+        sendChallenge(challenge);
+      }
     }
   }
  catch (  SaslException e) {

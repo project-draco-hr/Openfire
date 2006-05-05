@@ -15,13 +15,13 @@
     if (session instanceof IncomingServerSession) {
       boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
       if (!verify) {
-        authenticationSuccessful(hostname);
+        authenticationSuccessful(hostname,null);
         return true;
       }
     }
     for (    Certificate certificate : connection.getSSLSession().getPeerCertificates()) {
       if (TLSStreamHandler.getPeerIdentities((X509Certificate)certificate).contains(hostname)) {
-        authenticationSuccessful(hostname);
+        authenticationSuccessful(hostname,null);
         return true;
       }
     }

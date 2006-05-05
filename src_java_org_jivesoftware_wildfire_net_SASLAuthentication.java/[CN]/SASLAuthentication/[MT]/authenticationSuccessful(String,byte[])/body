@@ -1,5 +1,13 @@
 {
-  connection.deliverRawText("<success xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"/>");
+  StringBuilder reply=new StringBuilder(80);
+  reply.append("<success xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"");
+  if (successData != null) {
+    reply.append(">").append(successData).append("</success>");
+  }
+ else {
+    reply.append("/>");
+  }
+  connection.deliverRawText(reply.toString());
   if (session instanceof ClientSession) {
     ((ClientSession)session).setAuthToken(new AuthToken(username));
   }

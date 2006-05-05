@@ -1,17 +1,27 @@
 {
+  if (!(session instanceof ClientSession) && !(session instanceof IncomingServerSession)) {
+    return "";
+  }
   StringBuilder sb=new StringBuilder(195);
   sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
   if (session.getConnection().isSecure() && session instanceof IncomingServerSession) {
     sb.append("<mechanism>EXTERNAL</mechanism>");
   }
  else {
-    if (UserManager.getUserProvider().supportsPasswordRetrieval()) {
-      sb.append("<mechanism>CRAM-MD5</mechanism>");
-      sb.append("<mechanism>DIGEST-MD5</mechanism>");
-    }
-    sb.append("<mechanism>PLAIN</mechanism>");
-    if (XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
-      sb.append("<mechanism>ANONYMOUS</mechanism>");
+    for (    String mech : getSupportedMechanisms()) {
+      if (mech.equals("CRAM-MD5") || mech.equals("DIGEST-MD5")) {
+        if (!UserManager.getUserProvider().supportsPasswordRetrieval()) {
+          continue;
+        }
+      }
+ else       if (mech.equals("ANONYMOUS")) {
+        if (!XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
+          continue;
+        }
+      }
+      sb.append("<mechanism>");
+      sb.append(mech);
+      sb.append("</mechanism>");
     }
   }
   sb.append("</mechanisms>");
