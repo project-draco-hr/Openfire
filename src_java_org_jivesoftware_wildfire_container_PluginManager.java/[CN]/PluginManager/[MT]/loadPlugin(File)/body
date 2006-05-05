@@ -23,11 +23,17 @@
       }
       PluginClassLoader pluginLoader;
       Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
+      String pluginName=pluginDir.getName();
+      String webRootKey=pluginName + ".webRoot";
+      String classesDirKey=pluginName + ".classes";
+      String webRoot=System.getProperty(webRootKey);
+      String classesDir=System.getProperty(classesDirKey);
+      boolean inDevelopmentMode=webRoot != null && classesDir != null;
       if (parentPluginNode != null) {
         String parentPlugin=parentPluginNode.getTextTrim();
         if (plugins.containsKey(parentPlugin)) {
           pluginLoader=classloaders.get(getPlugin(parentPlugin));
-          pluginLoader.addDirectory(pluginDir);
+          pluginLoader.addDirectory(pluginDir,inDevelopmentMode);
         }
  else {
           if (pluginDir.getName().compareTo(parentPlugin) < 0) {
@@ -57,26 +63,22 @@
         }
       }
  else {
-        pluginLoader=new PluginClassLoader(pluginDir);
+        pluginLoader=new PluginClassLoader();
+        pluginLoader.addDirectory(pluginDir,inDevelopmentMode);
       }
-      Element developmentNode=(Element)pluginXML.selectSingleNode("/plugin/development");
       PluginDevEnvironment dev=null;
-      if (developmentNode != null) {
-        Element webRoot=(Element)developmentNode.selectSingleNode("/plugin/development/webRoot");
-        Element classesDir=(Element)developmentNode.selectSingleNode("/plugin/development/classesDir");
+      if (inDevelopmentMode) {
         dev=new PluginDevEnvironment();
-        String wrd=webRoot.getTextTrim();
-        File webRootDir=new File(wrd);
+        File webRootDir=new File(webRoot);
         if (!webRootDir.exists()) {
-          webRootDir=new File(pluginDir,wrd);
+          webRootDir=new File(pluginDir,webRoot);
         }
         if (webRootDir.exists()) {
           dev.setWebRoot(webRootDir);
         }
-        String cd=classesDir.getTextTrim();
-        File classes=new File(cd);
+        File classes=new File(classesDir);
         if (!classes.exists()) {
-          classes=new File(pluginDir,cd);
+          classes=new File(pluginDir,classesDir);
         }
         if (classes.exists()) {
           dev.setClassesDir(classes);
@@ -122,7 +124,6 @@
       }
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
-        String pluginName=pluginDir.getName();
         if (parentPluginNode != null) {
           pluginName=parentPluginNode.getTextTrim();
         }

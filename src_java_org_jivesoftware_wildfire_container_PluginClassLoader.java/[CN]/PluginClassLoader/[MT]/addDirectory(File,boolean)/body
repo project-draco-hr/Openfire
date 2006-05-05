@@ -14,7 +14,14 @@
     if (jars != null) {
       for (int i=0; i < jars.length; i++) {
         if (jars[i] != null && jars[i].isFile()) {
-          list.add(jars[i].toURL());
+          if (developmentMode) {
+            if (!jars[i].getName().equals("plugin-" + directory.getName() + ".jar")) {
+              list.add(jars[i].toURL());
+            }
+          }
+ else {
+            list.add(jars[i].toURL());
+          }
         }
       }
     }
