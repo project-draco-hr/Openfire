@@ -2,10 +2,10 @@
   String realHostname=null;
   int realPort=port;
   try {
-    Log.debug("OS - Trying to connect to " + hostname + ":"+ port);
     DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname,port);
     realHostname=address.getHost();
     realPort=address.getPort();
+    Log.debug("OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
     Socket socket=new Socket();
     socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
     Log.debug("OS - Connection to " + hostname + ":"+ port+ " successful");
