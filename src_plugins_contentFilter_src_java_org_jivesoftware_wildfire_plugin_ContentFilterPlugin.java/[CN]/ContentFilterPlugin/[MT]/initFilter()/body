@@ -12,11 +12,15 @@
     changeContentFilterPatterns();
   }
  catch (  PatternSyntaxException e) {
-    Log.warn("Reseting to default patterns of ContentFilterPlugin",e);
+    Log.warn("Resetting to default patterns of ContentFilterPlugin",e);
     setPatterns("fox,dog");
   }
   filterStatusEnabled=JiveGlobals.getBooleanProperty(FILTER_STATUS_ENABLED_PROPERTY,false);
   maskEnabled=JiveGlobals.getBooleanProperty(MASK_ENABLED_PROPERTY,false);
   mask=JiveGlobals.getProperty(MASK_PROPERTY,"***");
+  allowOnMatch=JiveGlobals.getBooleanProperty(ALLOW_ON_MATCH_PROPERTY,false);
+  if (maskEnabled) {
+    allowOnMatch=true;
+  }
   changeContentFilterMask();
 }
