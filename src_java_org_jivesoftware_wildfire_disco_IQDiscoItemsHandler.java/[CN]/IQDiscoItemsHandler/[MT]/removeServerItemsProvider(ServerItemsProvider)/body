@@ -1,7 +1,11 @@
 {
   DiscoServerItem discoItem;
-  for (Iterator it=provider.getItems(); it.hasNext(); ) {
-    discoItem=(DiscoServerItem)it.next();
+  Iterator<DiscoServerItem> items=provider.getItems();
+  if (items == null) {
+    return;
+  }
+  while (items.hasNext()) {
+    discoItem=items.next();
     removeComponentItem(discoItem.getJID());
     String host=new JID(discoItem.getJID()).getDomain();
     infoHandler.removeProvider(host);
