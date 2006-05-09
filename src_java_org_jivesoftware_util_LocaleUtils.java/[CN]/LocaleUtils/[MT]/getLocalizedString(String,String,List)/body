@@ -1,0 +1,13 @@
+{
+  Locale locale=JiveGlobals.getLocale();
+  String i18nFile=pluginName + "_i18n";
+  final XMPPServer xmppServer=XMPPServer.getInstance();
+  PluginManager pluginManager=xmppServer.getPluginManager();
+  Plugin plugin=pluginManager.getPlugin(pluginName);
+  if (plugin == null) {
+    throw new NullPointerException("Plugin could not be located.");
+  }
+  ClassLoader pluginClassLoader=pluginManager.getPluginClassloader(plugin).getClassLoader();
+  ResourceBundle bundle=ResourceBundle.getBundle(i18nFile,locale,pluginClassLoader);
+  return getLocalizedString(key,locale,arguments,bundle);
+}
