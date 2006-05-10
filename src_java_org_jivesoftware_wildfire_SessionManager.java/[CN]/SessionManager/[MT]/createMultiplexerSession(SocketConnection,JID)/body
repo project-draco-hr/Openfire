@@ -1,0 +1,21 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  StreamID id=nextStreamID();
+  ConnectionMultiplexerSession session=new ConnectionMultiplexerSession(serverName,conn,id);
+  conn.init(session);
+  conn.registerCloseListener(multiplexerSessionListener,session);
+  List<ConnectionMultiplexerSession> sessions=connnectionManagerSessions.get(address.getDomain());
+  if (sessions == null) {
+synchronized (address.getDomain().intern()) {
+      sessions=connnectionManagerSessions.get(address.getDomain());
+      if (sessions == null) {
+        sessions=new CopyOnWriteArrayList<ConnectionMultiplexerSession>();
+        connnectionManagerSessions.put(address.getDomain(),sessions);
+      }
+    }
+  }
+  sessions.add(session);
+  return session;
+}

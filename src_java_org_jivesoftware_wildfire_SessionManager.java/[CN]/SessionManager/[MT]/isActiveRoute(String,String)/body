@@ -6,16 +6,14 @@
  else {
     username=username.toLowerCase();
     Session session=null;
-synchronized (username.intern()) {
-      SessionMap sessionMap=sessions.get(username);
-      if (sessionMap != null) {
-        if (resource == null) {
-          hasRoute=!sessionMap.isEmpty();
-        }
+    SessionMap sessionMap=sessions.get(username);
+    if (sessionMap != null) {
+      if (resource == null) {
+        hasRoute=!sessionMap.isEmpty();
+      }
  else {
-          if (sessionMap.hasSession(resource)) {
-            session=sessionMap.getSession(resource);
-          }
+        if (sessionMap.hasSession(resource)) {
+          session=sessionMap.getSession(resource);
         }
       }
     }

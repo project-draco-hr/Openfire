@@ -9,19 +9,15 @@
       return session;
     }
   }
-  if (resource == null) {
+  if (resource == null || username == null) {
     return null;
   }
-  if (username == null || !userManager.isRegisteredUser(username)) {
-    session=anonymousSessions.get(resource);
+  SessionMap sessionMap=sessions.get(username);
+  if (sessionMap != null) {
+    session=sessionMap.getSession(resource);
   }
- else {
-synchronized (username.intern()) {
-      SessionMap sessionMap=sessions.get(username);
-      if (sessionMap != null) {
-        session=sessionMap.getSession(resource);
-      }
-    }
+ else   if (!userManager.isRegisteredUser(username)) {
+    session=anonymousSessions.get(resource);
   }
   return session;
 }

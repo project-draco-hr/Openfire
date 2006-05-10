@@ -1,0 +1,10 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  ClientSession session=new ClientSession(serverName,conn,id);
+  conn.init(session);
+  conn.registerCloseListener(clientSessionListener,session);
+  preAuthenticatedSessions.put(session.getAddress().getResource(),session);
+  return session;
+}

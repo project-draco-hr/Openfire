@@ -2,14 +2,15 @@
   if (sender.getNode() == null || !userManager.isRegisteredUser(sender.getNode())) {
     return;
   }
+  Session defaultSession;
   String username=sender.getNode();
-synchronized (username.intern()) {
-    SessionMap resources=sessions.get(username);
-    if (resources == null) {
-      return;
-    }
-    resources.changePriority(sender,priority);
-    Session defaultSession=resources.getDefaultSession(true);
-    routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
+  SessionMap resources=sessions.get(username);
+  if (resources == null) {
+    return;
   }
+synchronized (username.intern()) {
+    resources.changePriority(sender,priority);
+    defaultSession=resources.getDefaultSession(true);
+  }
+  routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
 }
