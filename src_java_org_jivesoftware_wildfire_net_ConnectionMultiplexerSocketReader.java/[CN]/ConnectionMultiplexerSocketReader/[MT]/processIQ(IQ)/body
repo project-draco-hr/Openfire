@@ -1,0 +1,30 @@
+{
+  if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+    IQ reply=new IQ();
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return;
+  }
+  threadPool.execute(new Runnable(){
+    public void run(){
+      try {
+        JID from=packet.getFrom();
+        if (from != null && from.equals(session.getAddress())) {
+          packetHandler.handle(packet);
+        }
+ else {
+          incrementClientPacketCount(from);
+        }
+        ConnectionMultiplexerSocketReader.super.processIQ(packet);
+      }
+ catch (      UnauthorizedException e) {
+        Log.error("Error processing packet",e);
+      }
+    }
+  }
+);
+}
