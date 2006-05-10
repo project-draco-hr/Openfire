@@ -10,13 +10,7 @@ synchronized (providerLock) {
     try {
       con=connectionProvider.getConnection();
       setMetaData(con);
-      try {
-        upgradeDatabase(con);
-      }
- catch (      Exception e) {
-        Log.error(LocaleUtils.getLocalizedString("upgrade.database.failure"),e);
-        System.out.println(LocaleUtils.getLocalizedString("upgrade.database.failure"));
-      }
+      schemaManager.checkWildfireSchema(con);
     }
  catch (    Exception e) {
       Log.error(e);
