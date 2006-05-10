@@ -1,0 +1,17 @@
+{
+synchronized (algorithm.intern()) {
+    MessageDigest digest=digests.get(algorithm);
+    if (digest == null) {
+      try {
+        digest=MessageDigest.getInstance(algorithm);
+        digests.put(algorithm,digest);
+      }
+ catch (      NoSuchAlgorithmException nsae) {
+        Log.error("Failed to load the " + algorithm + " MessageDigest. "+ "Jive will be unable to function normally.",nsae);
+        return null;
+      }
+    }
+    digest.update(bytes);
+    return encodeHex(digest.digest());
+  }
+}

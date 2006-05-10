@@ -1,22 +1,9 @@
 {
-synchronized (algorithm.intern()) {
-    MessageDigest digest=digests.get(algorithm);
-    if (digest == null) {
-      try {
-        digest=MessageDigest.getInstance(algorithm);
-        digests.put(algorithm,digest);
-      }
- catch (      NoSuchAlgorithmException nsae) {
-        Log.error("Failed to load the MD5 MessageDigest. " + "Jive will be unable to function normally.",nsae);
-        return null;
-      }
-    }
-    try {
-      digest.update(data.getBytes("utf-8"));
-    }
- catch (    UnsupportedEncodingException e) {
-      Log.error(e);
-    }
-    return encodeHex(digest.digest());
+  try {
+    return hash(data.getBytes("utf-8"),algorithm);
   }
+ catch (  UnsupportedEncodingException e) {
+    Log.error(e);
+  }
+  return data;
 }
