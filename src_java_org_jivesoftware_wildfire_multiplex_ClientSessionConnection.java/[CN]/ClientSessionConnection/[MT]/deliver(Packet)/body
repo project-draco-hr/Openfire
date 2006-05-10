@@ -1,0 +1,19 @@
+{
+  ConnectionMultiplexerSession multiplexerSession=multiplexerManager.getMultiplexerSession(connectionManagerName);
+  if (multiplexerSession != null) {
+    if (packet.getTo() == null) {
+      IQ wrapper=new IQ(IQ.Type.set);
+      wrapper.setFrom(serverName);
+      wrapper.setTo(connectionManagerName);
+      Element child=wrapper.setChildElement("session","http://jabber.org/protocol/connectionmanager");
+      child.addAttribute("id",session.getStreamID().getID());
+      Element send=child.addElement("send");
+      send.add(packet.getElement().createCopy());
+      multiplexerSession.deliver(wrapper);
+    }
+ else {
+      multiplexerSession.deliver(packet);
+    }
+    session.incrementServerPacketCount();
+  }
+}

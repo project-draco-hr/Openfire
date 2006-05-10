@@ -1,0 +1,14 @@
+{
+  if (connectionManagerDomain == null) {
+    handleUnprocessedPacket(packet);
+  }
+ else {
+    ConnectionMultiplexerSession session=multiplexerManager.getMultiplexerSession(connectionManagerDomain);
+    if (session == null || session.getConnection().isClosed()) {
+      handleUnprocessedPacket(packet);
+    }
+ else {
+      session.deliver(packet);
+    }
+  }
+}

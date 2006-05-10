@@ -1,0 +1,23 @@
+{
+  if (packet instanceof Message) {
+    messageStrategy.storeOffline((Message)packet);
+  }
+ else   if (packet instanceof Presence) {
+  }
+ else   if (packet instanceof IQ) {
+    IQ iq=(IQ)packet;
+    Element child=iq.getChildElement();
+    if (child != null && "session".equals(child.getName()) && "http://jabber.org/protocol/connectionmanager".equals(child.getNamespacePrefix())) {
+      Element send=child.element("send");
+      if (send != null) {
+        Element wrappedElement=(Element)send.elements().get(0);
+        if ("message".equals(wrappedElement.getName())) {
+          handleUnprocessedPacket(new Message(wrappedElement));
+        }
+      }
+    }
+ else {
+      Log.warn(LocaleUtils.getLocalizedString("admin.error.routing") + "\n" + packet.toString());
+    }
+  }
+}

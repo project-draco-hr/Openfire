@@ -1,0 +1,9 @@
+{
+  ConnectionMultiplexerSession session=multiplexerManager.getMultiplexerSession(connectionManagerDomain);
+  if (session != null) {
+    session.deliver(reply);
+  }
+ else {
+    Log.warn("No multiplexer session found. Packet not delivered: " + reply.toXML());
+  }
+}

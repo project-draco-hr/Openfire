@@ -1,0 +1,9 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  reply.setChildElement(packet.getChildElement().createCopy());
+  reply.setError(error);
+  if (extraError != null) {
+    reply.getError().getElement().add(extraError);
+  }
+  deliver(reply);
+}

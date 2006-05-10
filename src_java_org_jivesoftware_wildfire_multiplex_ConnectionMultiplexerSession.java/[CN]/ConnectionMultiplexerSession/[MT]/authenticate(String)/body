@@ -1,0 +1,16 @@
+{
+  String anticipatedDigest=AuthFactory.createDigest(getStreamID().getID(),getSecretKey());
+  if (!anticipatedDigest.equalsIgnoreCase(digest)) {
+    Log.debug("[ConMng] Incorrect handshake for connection manager with domain: " + getAddress().getDomain());
+    conn.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
+    conn.close();
+    return false;
+  }
+ else {
+    setStatus(Session.STATUS_AUTHENTICATED);
+    conn.deliverRawText("<handshake></handshake>");
+    Log.debug("[ConMng] Connection manager was AUTHENTICATED with domain: " + getAddress());
+    sendClientOptions();
+    return true;
+  }
+}

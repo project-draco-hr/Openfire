@@ -1,0 +1,21 @@
+{
+  try {
+    Connection connection=new ClientSessionConnection(connectionManagerDomain);
+    ClientSession session=SessionManager.getInstance().createClientSession(connection,new BasicStreamID(streamID));
+    streamIDs.put(streamID,connectionManagerDomain);
+    Map<String,ClientSession> sessions=sessionsByManager.get(connectionManagerDomain);
+    if (sessions == null) {
+synchronized (connectionManagerDomain.intern()) {
+        sessions=sessionsByManager.get(connectionManagerDomain);
+        if (sessions == null) {
+          sessions=new ConcurrentHashMap<String,ClientSession>();
+          sessionsByManager.put(connectionManagerDomain,sessions);
+        }
+      }
+    }
+    sessions.put(streamID,session);
+  }
+ catch (  UnauthorizedException e) {
+    Log.error("Error creating virtual client session",e);
+  }
+}

@@ -1,0 +1,32 @@
+{
+  IQ options=new IQ(IQ.Type.set);
+  Element child=options.setChildElement("configuration","http://jabber.org/protocol/connectionmanager");
+  if (ClientSession.getTLSPolicy() != Connection.TLSPolicy.disabled) {
+    Element tls=child.addElement("starttls","urn:ietf:params:xml:ns:xmpp-tls");
+    if (ClientSession.getTLSPolicy() != Connection.TLSPolicy.required) {
+      tls.addElement("required");
+    }
+  }
+  Collection<String> mechanisms=SASLAuthentication.getSupportedMechanisms();
+  if (!mechanisms.isEmpty()) {
+    Element sasl=child.addElement("mechanisms","urn:ietf:params:xml:ns:xmpp-sasl");
+    for (    String mechanism : mechanisms) {
+      sasl.addElement("mechanism").setText(mechanism);
+    }
+  }
+  if (ClientSession.getCompressionPolicy() == Connection.CompressionPolicy.optional) {
+    Element comp=child.addElement("compression","http://jabber.org/features/compress");
+    comp.addElement("method").setText("zlib");
+  }
+  if (XMPPServer.getInstance().getIQAuthHandler().isAllowAnonymous()) {
+    child.addElement("auth","http://jabber.org/features/iq-auth");
+  }
+  if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
+    child.addElement("register","http://jabber.org/features/iq-register");
+  }
+  try {
+    conn.deliver(options);
+  }
+ catch (  UnauthorizedException e) {
+  }
+}
