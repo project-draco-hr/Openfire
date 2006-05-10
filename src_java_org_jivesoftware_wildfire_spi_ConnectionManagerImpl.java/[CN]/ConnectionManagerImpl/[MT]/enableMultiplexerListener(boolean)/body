@@ -1,0 +1,13 @@
+{
+  if (enabled == isMultiplexerListenerEnabled()) {
+    return;
+  }
+  if (enabled) {
+    JiveGlobals.setProperty("xmpp.multiplex.socket.active","true");
+    startMultiplexerListener(localIPAddress);
+  }
+ else {
+    JiveGlobals.setProperty("xmpp.multiplex.socket.active","false");
+    stopMultiplexerListener();
+  }
+}

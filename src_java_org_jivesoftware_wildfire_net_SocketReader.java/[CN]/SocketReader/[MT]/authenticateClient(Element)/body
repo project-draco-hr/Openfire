@@ -3,6 +3,20 @@
     closeNeverSecuredConnection();
     return false;
   }
-  SASLAuthentication saslAuth=new SASLAuthentication(session,reader);
-  return saslAuth.doHandshake(doc);
+  boolean isComplete=false;
+  boolean success=false;
+  while (!isComplete) {
+    SASLAuthentication.Status status=SASLAuthentication.handle(session,doc);
+    if (status == SASLAuthentication.Status.needResponse) {
+      doc=reader.parseDocument().getRootElement();
+      if (doc == null) {
+        isComplete=true;
+      }
+    }
+ else {
+      isComplete=true;
+      success=status == SASLAuthentication.Status.authenticated;
+    }
+  }
+  return success;
 }

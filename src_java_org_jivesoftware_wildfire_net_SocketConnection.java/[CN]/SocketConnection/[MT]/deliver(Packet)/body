@@ -1,6 +1,6 @@
 {
   if (isClosed()) {
-    deliverer.deliver(packet);
+    backupDeliverer.deliver(packet);
   }
  else {
     try {
@@ -27,7 +27,7 @@
       }
       if (errorDelivering) {
         close();
-        deliverer.deliver(packet);
+        backupDeliverer.deliver(packet);
       }
  else {
         InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
