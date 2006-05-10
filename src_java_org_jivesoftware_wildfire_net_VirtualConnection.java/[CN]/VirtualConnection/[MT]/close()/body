@@ -1,0 +1,21 @@
+{
+  boolean wasClosed=false;
+synchronized (this) {
+    if (!isClosed()) {
+      try {
+        if (session != null) {
+          session.setStatus(Session.STATUS_CLOSED);
+        }
+        closeVirtualConnection();
+        closed=true;
+      }
+ catch (      Exception e) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
+      }
+      wasClosed=true;
+    }
+  }
+  if (wasClosed) {
+    notifyCloseListeners();
+  }
+}
