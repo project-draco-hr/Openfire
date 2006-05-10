@@ -1,0 +1,103 @@
+{
+  int currentVersion=-1;
+  PreparedStatement pstmt=null;
+  try {
+    pstmt=con.prepareStatement(CHECK_VERSION);
+    pstmt.setString(1,schemaKey);
+    ResultSet rs=pstmt.executeQuery();
+    rs.next();
+    currentVersion=rs.getInt(1);
+    rs.close();
+  }
+ catch (  SQLException sqle) {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+      pstmt=con.prepareStatement(CHECK_VERSION_OLD);
+      ResultSet rs=pstmt.executeQuery();
+      rs.next();
+      currentVersion=rs.getInt(1);
+      rs.close();
+    }
+ catch (    SQLException sqle2) {
+    }
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  if (currentVersion == requiredVersion) {
+    return false;
+  }
+ else   if (currentVersion == -1) {
+    Log.error(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
+    String resourceName=schemaKey + "_" + DbConnectionManager.getDatabaseType()+ ".sql";
+    InputStream resource=resourceLoader.loadResource(resourceName);
+    if (resource == null) {
+      return false;
+    }
+    try {
+      executeSQLScript(con,resource);
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      return false;
+    }
+ finally {
+      try {
+        resource.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.success"));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.success"));
+    return true;
+  }
+ else {
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.old_schema",Arrays.asList(currentVersion,schemaKey,requiredVersion)));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.old_schema",Arrays.asList(currentVersion,schemaKey,requiredVersion)));
+    if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.unknown) {
+      Log.info(LocaleUtils.getLocalizedString("upgrade.database.unknown_db"));
+      System.out.println(LocaleUtils.getLocalizedString("upgrade.database.unknown_db"));
+      return false;
+    }
+ else     if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.interbase) {
+      Log.info(LocaleUtils.getLocalizedString("upgrade.database.interbase_db"));
+      System.out.println(LocaleUtils.getLocalizedString("upgrade.database.interbase_db"));
+      return false;
+    }
+    for (int i=currentVersion + 1; i <= DATABASE_VERSION; i++) {
+      String resourceName="/database/upgrade/" + i + "/"+ schemaKey+ "_"+ DbConnectionManager.getDatabaseType()+ ".sql";
+      InputStream resource=resourceLoader.loadResource(resourceName);
+      if (resource == null) {
+        continue;
+      }
+      try {
+        executeSQLScript(con,resource);
+      }
+ catch (      Exception e) {
+        Log.error(e);
+        return false;
+      }
+ finally {
+        try {
+          resource.close();
+        }
+ catch (        Exception e) {
+        }
+      }
+    }
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.success"));
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.success"));
+    return true;
+  }
+}

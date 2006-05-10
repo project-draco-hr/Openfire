@@ -1,0 +1,15 @@
+{
+  try {
+    return checkSchema(con,"wildfire",DATABASE_VERSION,new ResourceLoader(){
+      public InputStream loadResource(      String resourceName){
+        return SchemaManager.class.getResourceAsStream("/database/" + resourceName);
+      }
+    }
+);
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("upgrade.database.failure"),e);
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.failure"));
+  }
+  return false;
+}

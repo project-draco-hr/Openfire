@@ -1,0 +1,26 @@
+{
+  final PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  String schemaKey=pluginManager.getDatabaseKey(plugin);
+  int schemaVersion=pluginManager.getDatabaseVersion(plugin);
+  if (schemaKey == null || schemaVersion == -1) {
+    return false;
+  }
+  Connection con=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    return checkSchema(con,schemaKey,schemaVersion,new ResourceLoader(){
+      public InputStream loadResource(      String resourceName){
+        return pluginManager.getPluginClassloader(plugin).getClassLoader().getResourceAsStream(resourceName);
+      }
+    }
+);
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("upgrade.database.failure"),e);
+    System.out.println(LocaleUtils.getLocalizedString("upgrade.database.failure"));
+  }
+ finally {
+    DbConnectionManager.closeConnection(con);
+  }
+  return false;
+}
