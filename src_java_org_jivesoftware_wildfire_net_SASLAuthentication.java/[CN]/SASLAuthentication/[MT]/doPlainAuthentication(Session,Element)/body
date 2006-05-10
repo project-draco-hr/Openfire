@@ -1,0 +1,25 @@
+{
+  String username;
+  String password;
+  String response=doc.getTextTrim();
+  if (response == null || response.length() == 0) {
+    sendChallenge(session,new byte[0]);
+    return Status.needResponse;
+  }
+  String data=new String(StringUtils.decodeBase64(response),CHARSET);
+  StringTokenizer tokens=new StringTokenizer(data,"\0");
+  if (tokens.countTokens() > 2) {
+    tokens.nextToken();
+  }
+  username=tokens.nextToken();
+  password=tokens.nextToken();
+  try {
+    AuthToken token=AuthFactory.authenticate(username,password);
+    authenticationSuccessful(session,token.getUsername(),null);
+    return Status.authenticated;
+  }
+ catch (  UnauthorizedException e) {
+    authenticationFailed(session);
+    return Status.failed;
+  }
+}

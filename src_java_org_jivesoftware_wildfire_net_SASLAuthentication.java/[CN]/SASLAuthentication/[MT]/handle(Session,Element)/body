@@ -1,0 +1,119 @@
+{
+  Status status;
+  String mechanism;
+  if (doc.getNamespace().asXML().equals(SASL_NAMESPACE)) {
+    ElementType type=ElementType.valueof(doc.getName());
+switch (type) {
+case AUTH:
+      mechanism=doc.attributeValue("mechanism");
+    session.setSessionData("SaslMechanism",mechanism);
+  if (mechanism.equalsIgnoreCase("PLAIN") && getSupportedMechanisms().contains("PLAIN")) {
+    status=doPlainAuthentication(session,doc);
+  }
+ else   if (mechanism.equalsIgnoreCase("ANONYMOUS") && getSupportedMechanisms().contains("ANONYMOUS")) {
+    status=doAnonymousAuthentication(session);
+  }
+ else   if (mechanism.equalsIgnoreCase("EXTERNAL")) {
+    status=doExternalAuthentication(session,doc);
+  }
+ else   if (getSupportedMechanisms().contains(mechanism)) {
+    try {
+      Map<String,String> props=new TreeMap<String,String>();
+      props.put(Sasl.QOP,"auth");
+      if (mechanism.equals("GSSAPI")) {
+        props.put(Sasl.SERVER_AUTH,"TRUE");
+      }
+      SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
+      byte[] token=new byte[0];
+      if (doc.isTextOnly()) {
+        token=StringUtils.decodeBase64(doc.getTextTrim());
+        if (token == null) {
+          token=new byte[0];
+        }
+      }
+      byte[] challenge=ss.evaluateResponse(token);
+      sendChallenge(session,challenge);
+      session.setSessionData("SaslServer",ss);
+      status=Status.needResponse;
+    }
+ catch (    SaslException e) {
+      Log.warn("SaslException",e);
+      authenticationFailed(session);
+      status=Status.failed;
+    }
+  }
+ else {
+    Log.warn("Client wants to do a MECH we don't support: '" + mechanism + "'");
+    authenticationFailed(session);
+    status=Status.failed;
+  }
+break;
+case RESPONSE:
+mechanism=(String)session.getSessionData("SaslMechanism");
+if (mechanism.equalsIgnoreCase("PLAIN") && getSupportedMechanisms().contains("PLAIN")) {
+status=doPlainAuthentication(session,doc);
+}
+ else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
+status=doExternalAuthentication(session,doc);
+}
+ else if (getSupportedMechanisms().contains(mechanism)) {
+SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
+if (ss != null) {
+boolean ssComplete=ss.isComplete();
+String response=doc.getTextTrim();
+try {
+  if (ssComplete) {
+    authenticationSuccessful(session,ss.getAuthorizationID(),null);
+    status=Status.authenticated;
+  }
+ else {
+    byte[] data=StringUtils.decodeBase64(response);
+    if (data == null) {
+      data=new byte[0];
+    }
+    byte[] challenge=ss.evaluateResponse(data);
+    if (ss.isComplete()) {
+      authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
+      status=Status.authenticated;
+    }
+ else {
+      sendChallenge(session,challenge);
+      status=Status.needResponse;
+    }
+  }
+}
+ catch (SaslException e) {
+  Log.warn("SaslException",e);
+  authenticationFailed(session);
+  status=Status.failed;
+}
+}
+ else {
+Log.fatal("SaslServer is null, should be valid object instead.");
+authenticationFailed(session);
+status=Status.failed;
+}
+}
+ else {
+Log.warn("Client responded to a MECH we don't support: '" + mechanism + "'");
+authenticationFailed(session);
+status=Status.failed;
+}
+break;
+default :
+authenticationFailed(session);
+status=Status.failed;
+break;
+}
+}
+ else {
+Log.debug("Unknown namespace sent in auth element: " + doc.asXML());
+authenticationFailed(session);
+status=Status.failed;
+}
+if (status == Status.failed || status == Status.authenticated) {
+session.removeSessionData("SaslServer");
+session.removeSessionData("SaslMechanism");
+}
+return status;
+}
