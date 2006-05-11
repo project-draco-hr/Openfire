@@ -30,6 +30,17 @@ catch (    Exception e) {
         VCardManager vManager=VCardManager.getInstance();
         Element userVCard=vManager.getVCard(recipient.getNode());
         if (userVCard != null) {
+          Element filter=packet.getChildElement().element(QName.get("filter","vcard-temp-filter"));
+          if (filter != null) {
+            userVCard=userVCard.createCopy();
+            for (Iterator toFilter=filter.elementIterator(); toFilter.hasNext(); ) {
+              Element field=(Element)toFilter.next();
+              Element fieldToRemove=userVCard.element(field.getName());
+              if (fieldToRemove != null) {
+                fieldToRemove.detach();
+              }
+            }
+          }
           result.setChildElement(userVCard);
         }
       }
