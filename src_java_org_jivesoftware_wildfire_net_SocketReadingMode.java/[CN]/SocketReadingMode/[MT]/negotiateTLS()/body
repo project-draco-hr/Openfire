@@ -1,0 +1,19 @@
+{
+  if (socketReader.connection.getTlsPolicy() == Connection.TLSPolicy.disabled) {
+    StreamError error=new StreamError(StreamError.Condition.not_authorized);
+    socketReader.connection.deliverRawText(error.toXML());
+    socketReader.connection.close();
+    Log.warn("TLS requested by initiator when TLS was never offered by server. " + "Closing connection : " + socketReader.connection);
+    return false;
+  }
+  try {
+    socketReader.connection.startTLS(false,null);
+  }
+ catch (  IOException e) {
+    Log.error("Error while negotiating TLS",e);
+    socketReader.connection.deliverRawText("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+    socketReader.connection.close();
+    return false;
+  }
+  return true;
+}

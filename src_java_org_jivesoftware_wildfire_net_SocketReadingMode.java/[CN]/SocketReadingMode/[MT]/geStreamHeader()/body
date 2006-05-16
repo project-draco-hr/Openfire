@@ -1,0 +1,24 @@
+{
+  StringBuilder sb=new StringBuilder(200);
+  sb.append("<?xml version='1.0' encoding='");
+  sb.append(CHARSET);
+  sb.append("'?>");
+  if (socketReader.connection.isFlashClient()) {
+    sb.append("<flash:stream xmlns:flash=\"http://www.jabber.com/streams/flash\" ");
+  }
+ else {
+    sb.append("<stream:stream ");
+  }
+  sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"");
+  sb.append(socketReader.getNamespace());
+  sb.append("\" from=\"");
+  sb.append(socketReader.session.getServerName());
+  sb.append("\" id=\"");
+  sb.append(socketReader.session.getStreamID().toString());
+  sb.append("\" xml:lang=\"");
+  sb.append(socketReader.connection.getLanguage());
+  sb.append("\" version=\"");
+  sb.append(Session.MAJOR_VERSION).append(".").append(Session.MINOR_VERSION);
+  sb.append("\">");
+  return sb.toString();
+}

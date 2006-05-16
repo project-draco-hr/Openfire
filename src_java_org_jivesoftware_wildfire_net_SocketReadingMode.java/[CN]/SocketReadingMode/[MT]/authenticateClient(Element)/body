@@ -1,0 +1,22 @@
+{
+  if (socketReader.connection.getTlsPolicy() == Connection.TLSPolicy.required && !socketReader.connection.isSecure()) {
+    socketReader.closeNeverSecuredConnection();
+    return false;
+  }
+  boolean isComplete=false;
+  boolean success=false;
+  while (!isComplete) {
+    SASLAuthentication.Status status=SASLAuthentication.handle(socketReader.session,doc);
+    if (status == SASLAuthentication.Status.needResponse) {
+      doc=socketReader.reader.parseDocument().getRootElement();
+      if (doc == null) {
+        isComplete=true;
+      }
+    }
+ else {
+      isComplete=true;
+      success=status == SASLAuthentication.Status.authenticated;
+    }
+  }
+  return success;
+}

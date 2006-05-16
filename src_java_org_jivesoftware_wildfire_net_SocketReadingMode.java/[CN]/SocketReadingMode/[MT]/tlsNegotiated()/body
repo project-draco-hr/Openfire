@@ -1,0 +1,12 @@
+{
+  StringBuilder sb=new StringBuilder(620);
+  sb.append(geStreamHeader());
+  sb.append("<stream:features>");
+  sb.append(SASLAuthentication.getSASLMechanisms(socketReader.session));
+  String specificFeatures=socketReader.session.getAvailableStreamFeatures();
+  if (specificFeatures != null) {
+    sb.append(specificFeatures);
+  }
+  sb.append("</stream:features>");
+  socketReader.connection.deliverRawText(sb.toString());
+}

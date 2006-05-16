@@ -1,0 +1,46 @@
+{
+  try {
+    socketReader.reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
+    try {
+      socketReader.createSession();
+    }
+ catch (    IOException e) {
+      Log.debug("Error creating session",e);
+      throw e;
+    }
+    if (socketReader.session != null) {
+      readStream();
+    }
+  }
+ catch (  EOFException eof) {
+  }
+catch (  SocketException se) {
+  }
+catch (  AsynchronousCloseException ace) {
+  }
+catch (  XmlPullParserException ie) {
+  }
+catch (  Exception e) {
+    if (socketReader.session != null) {
+      Log.warn(LocaleUtils.getLocalizedString("admin.error.stream") + ". Session: " + socketReader.session,e);
+    }
+  }
+ finally {
+    if (socketReader.session != null) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("Logging off " + socketReader.session.getAddress() + " on "+ socketReader.connection);
+      }
+      try {
+        socketReader.session.getConnection().close();
+      }
+ catch (      Exception e) {
+        Log.warn(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + socket.toString());
+      }
+    }
+ else {
+      socketReader.connection.close();
+      Log.error(LocaleUtils.getLocalizedString("admin.error.connection") + "\n" + socket.toString());
+    }
+    socketReader.shutdown();
+  }
+}

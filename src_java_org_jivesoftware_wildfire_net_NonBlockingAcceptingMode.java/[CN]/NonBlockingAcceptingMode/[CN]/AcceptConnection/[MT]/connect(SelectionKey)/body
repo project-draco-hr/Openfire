@@ -1,0 +1,19 @@
+{
+  ServerSocketChannel sChannel=(ServerSocketChannel)key.channel();
+  SocketChannel socketChannel=sChannel.accept();
+  Socket sock=socketChannel.socket();
+  socketChannel.configureBlocking(false);
+  SelectionKey sockKey=socketChannel.register(selector,SelectionKey.OP_READ);
+  if (sock != null) {
+    System.out.println("Connect " + sock.toString());
+    Log.debug("Connect " + sock.toString());
+    try {
+      SocketReader reader=connManager.createSocketReader(sock,false,serverPort,false);
+      SelectorAction action=new ReadAction(reader);
+      sockKey.attach(action);
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error.accept"),e);
+    }
+  }
+}

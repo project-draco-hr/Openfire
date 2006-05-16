@@ -1,0 +1,136 @@
+{
+  byteBuffer.limit(rawByteBuffer.length);
+  byteBuffer.rewind();
+  int readByte=inputChannel.read(byteBuffer);
+  if (readByte == -1) {
+    throw new IOException("ReadByte == -1.Socket Close");
+  }
+ else   if (readByte <= 0) {
+    return;
+  }
+ else   if (readByte == 1 && rawByteBuffer[0] == ' ') {
+    return;
+  }
+  byteBuffer.flip();
+  byte[] bhs=byteBuffer.array();
+  byteBuffer.rewind();
+  CharBuffer charBuffer=encoder.decode(byteBuffer);
+  charBuffer.flip();
+  char[] buf=charBuffer.array();
+  buffer.append(buf);
+  char ch;
+  for (int i=0; i < readByte; i++) {
+    ch=buf[i];
+    if (status == TAIL) {
+      if (ch == head.charAt(tailCount)) {
+        tailCount++;
+        if (tailCount == head.length()) {
+          int end=buffer.length() - readByte + (i + 1);
+          String msg=buffer.substring(startLastMsg,end);
+          foundMsg(msg);
+          startLastMsg=end;
+        }
+      }
+ else {
+        tailCount=0;
+        status=INSIDE;
+      }
+    }
+ else     if (status == PRETAIL) {
+      if (ch == CDATA_START[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == CDATA_START.length) {
+          status=INSIDE_CDATA;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+        status=INSIDE;
+      }
+      if (ch == '/') {
+        status=TAIL;
+      }
+    }
+ else     if (status == VERIFY_CLOSE_TAG) {
+      if (ch == '>') {
+        int end=buffer.length() - readByte + (i + 1);
+        String msg=buffer.substring(startLastMsg,end);
+        foundMsg(msg);
+        startLastMsg=end;
+      }
+ else {
+        status=INSIDE;
+      }
+    }
+ else     if (status == INSIDE_PARAM_VALUE) {
+      if (ch == '"') {
+        status=INSIDE;
+        continue;
+      }
+    }
+ else     if (status == INSIDE_CDATA) {
+      if (ch == CDATA_END[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == CDATA_END.length) {
+          status=INSIDE;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+      }
+    }
+ else     if (status == INSIDE) {
+      if (ch == CDATA_START[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == CDATA_START.length) {
+          status=INSIDE_CDATA;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+      }
+      if (ch == '"') {
+        status=INSIDE_PARAM_VALUE;
+      }
+ else       if (ch == '>') {
+        if (insideRootTag && "stream:stream>".equals(head.toString())) {
+          int end=buffer.length() - readByte + (i + 1);
+          String msg=buffer.substring(startLastMsg,end);
+          foundMsg(msg);
+          startLastMsg=end;
+        }
+        insideRootTag=false;
+      }
+ else       if (ch == '<') {
+        status=PRETAIL;
+      }
+ else       if (ch == '/' && insideRootTag) {
+        status=VERIFY_CLOSE_TAG;
+      }
+    }
+ else     if (status == HEAD) {
+      if (ch == ' ' || ch == '>') {
+        head.append(">");
+        status=INSIDE;
+        insideRootTag=true;
+        continue;
+      }
+      head.append((char)ch);
+    }
+ else     if (status == INIT) {
+      if (ch != ' ' && ch != '\r' && ch != '\n' && ch != '<') {
+        invalidateBuffer();
+        return;
+      }
+      if (ch == '<') {
+        status=HEAD;
+      }
+    }
+  }
+}

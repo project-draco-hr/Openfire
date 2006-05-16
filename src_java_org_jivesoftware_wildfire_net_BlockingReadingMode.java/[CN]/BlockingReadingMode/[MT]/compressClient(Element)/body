@@ -1,0 +1,17 @@
+{
+  boolean answer=super.compressClient(doc);
+  if (answer) {
+    XmlPullParser xpp=socketReader.reader.getXPPParser();
+    if (socketReader.connection.getTLSStreamHandler() == null) {
+      ZInputStream in=new ZInputStream(socket.getInputStream());
+      in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      xpp.setInput(new InputStreamReader(in,CHARSET));
+    }
+ else {
+      ZInputStream in=new ZInputStream(socketReader.connection.getTLSStreamHandler().getInputStream());
+      in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      xpp.setInput(new InputStreamReader(in,CHARSET));
+    }
+  }
+  return answer;
+}

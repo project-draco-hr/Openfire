@@ -1,0 +1,36 @@
+{
+  socketReader.open=true;
+  while (socketReader.open) {
+    Element doc=socketReader.reader.parseDocument().getRootElement();
+    if (doc == null) {
+      return;
+    }
+    String tag=doc.getName();
+    if ("starttls".equals(tag)) {
+      if (negotiateTLS()) {
+        tlsNegotiated();
+      }
+ else {
+        socketReader.open=false;
+        socketReader.session=null;
+      }
+    }
+ else     if ("auth".equals(tag)) {
+      if (authenticateClient(doc)) {
+        saslSuccessful();
+      }
+ else       if (socketReader.connection.isClosed()) {
+        socketReader.open=false;
+        socketReader.session=null;
+      }
+    }
+ else     if ("compress".equals(tag)) {
+      if (compressClient(doc)) {
+        compressionSuccessful();
+      }
+    }
+ else {
+      socketReader.process(doc);
+    }
+  }
+}

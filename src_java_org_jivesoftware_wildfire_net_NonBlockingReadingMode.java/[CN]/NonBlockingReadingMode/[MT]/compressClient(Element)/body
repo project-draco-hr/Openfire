@@ -1,0 +1,25 @@
+{
+  boolean answer=super.compressClient(doc);
+  if (answer) {
+    XmlPullParser xpp=socketReader.reader.getXPPParser();
+    if (socketReader.connection.getTLSStreamHandler() == null) {
+      InputStream is;
+      if (socketChannel != null) {
+        is=new ChannelInputStream(socketChannel);
+      }
+ else {
+        is=socket.getInputStream();
+      }
+      ZInputStream in=new ZInputStream(is);
+      in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      xpp.setInput(new InputStreamReader(in,CHARSET));
+    }
+ else {
+      ZInputStream in=new ZInputStream(socketReader.connection.getTLSStreamHandler().getInputStream());
+      in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      xpp.setInput(new InputStreamReader(in,CHARSET));
+      xmlLightWeightParser.setInput(in,CHARSET);
+    }
+  }
+  return answer;
+}
