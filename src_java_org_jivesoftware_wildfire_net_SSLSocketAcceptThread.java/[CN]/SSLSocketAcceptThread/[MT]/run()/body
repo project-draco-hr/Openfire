@@ -5,7 +5,11 @@
     try {
       Socket sock=serverSocket.accept();
       Log.debug("SSL Connect " + sock.toString());
-      connManager.addSocket(sock,true,serverPort);
+      SocketReader reader=connManager.createSocketReader(sock,true,serverPort,true);
+      Thread thread=new Thread(reader,reader.getName());
+      thread.setDaemon(true);
+      thread.setPriority(Thread.NORM_PRIORITY);
+      thread.start();
     }
  catch (    SSLException se) {
       long exceptionTime=System.currentTimeMillis();

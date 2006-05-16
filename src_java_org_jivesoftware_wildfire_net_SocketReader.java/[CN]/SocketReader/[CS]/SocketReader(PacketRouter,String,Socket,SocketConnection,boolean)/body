@@ -1,0 +1,14 @@
+{
+  this.serverName=serverName;
+  this.router=router;
+  this.connection=connection;
+  connection.setSocketReader(this);
+  reader=new XMPPPacketReader();
+  reader.setXPPFactory(factory);
+  if (useBlockingMode) {
+    readingMode=new BlockingReadingMode(socket,this);
+  }
+ else {
+    readingMode=new NonBlockingReadingMode(socket,this);
+  }
+}

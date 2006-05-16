@@ -1,5 +1,10 @@
 {
   wrapper=tlsWrapper;
-  wbc=Channels.newChannel(socket.getOutputStream());
+  if (socket.getChannel() != null) {
+    wbc=socket.getChannel();
+  }
+ else {
+    wbc=Channels.newChannel(socket.getOutputStream());
+  }
   outAppData=ByteBuffer.allocate(tlsWrapper.getAppBuffSize());
 }

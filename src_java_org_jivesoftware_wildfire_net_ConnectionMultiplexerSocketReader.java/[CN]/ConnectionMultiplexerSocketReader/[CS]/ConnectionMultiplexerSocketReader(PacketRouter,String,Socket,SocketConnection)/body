@@ -1,8 +1,0 @@
-{
-  super(router,serverName,socket,connection);
-  int coreThreads=JiveGlobals.getIntProperty("xmpp.multiplex.processing.core.threads",10);
-  int maxThreads=JiveGlobals.getIntProperty("xmpp.multiplex.processing.max.threads",100);
-  int queueSize=JiveGlobals.getIntProperty("xmpp.multiplex.processing.queue",50);
-  threadPool=new ThreadPoolExecutor(coreThreads,maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(queueSize),new ThreadPoolExecutor.CallerRunsPolicy());
-  sessionManager=XMPPServer.getInstance().getSessionManager();
-}

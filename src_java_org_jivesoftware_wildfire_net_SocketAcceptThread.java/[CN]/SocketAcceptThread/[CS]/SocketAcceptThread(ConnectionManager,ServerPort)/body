@@ -1,6 +1,5 @@
 {
   super("Socket Listener at port " + serverPort.getPort());
-  this.connManager=connManager;
   this.serverPort=serverPort;
   String interfaceName=JiveGlobals.getXMLProperty("network.interface");
   InetAddress bindInterface=null;
@@ -9,5 +8,11 @@
       bindInterface=InetAddress.getByName(interfaceName);
     }
   }
-  serverSocket=new ServerSocket(serverPort.getPort(),-1,bindInterface);
+  boolean useBlockingMode=JiveGlobals.getBooleanProperty("xmpp.socket.blocking",true);
+  if (useBlockingMode) {
+    acceptingMode=new BlockingAcceptingMode(connManager,serverPort,bindInterface);
+  }
+ else {
+    acceptingMode=new NonBlockingAcceptingMode(connManager,serverPort,bindInterface);
+  }
 }

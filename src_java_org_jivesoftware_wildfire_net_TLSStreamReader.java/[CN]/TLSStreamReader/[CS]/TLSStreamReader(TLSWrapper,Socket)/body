@@ -1,6 +1,11 @@
 {
   wrapper=tlsWrapper;
-  rbc=Channels.newChannel(socket.getInputStream());
+  if (socket.getChannel() != null) {
+    rbc=socket.getChannel();
+  }
+ else {
+    rbc=Channels.newChannel(socket.getInputStream());
+  }
   inNetBB=ByteBuffer.allocate(wrapper.getNetBuffSize());
   inAppBB=ByteBuffer.allocate(wrapper.getAppBuffSize());
 }
