@@ -1,0 +1,39 @@
+{
+  String password=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DriverManager.getConnection(jdbcConnectionString);
+    pstmt=con.prepareStatement(passwordSQL);
+    pstmt.setString(1,username);
+    ResultSet rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new UnauthorizedException();
+    }
+    password=rs.getString(1);
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error("Exception in JDBCAuthProvider",e);
+    throw new UnauthorizedException();
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return password;
+}

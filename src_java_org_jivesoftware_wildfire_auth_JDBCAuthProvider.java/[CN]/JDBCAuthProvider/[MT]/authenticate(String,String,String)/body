@@ -1,46 +1,15 @@
 {
+  if (passwordType != PasswordType.plain) {
+    throw new UnsupportedOperationException("Digest authentication not supported for " + "password type " + passwordType);
+  }
   if (username == null || token == null || digest == null) {
     throw new UnauthorizedException();
   }
   username=username.trim().toLowerCase();
-  Connection conn=null;
-  PreparedStatement pstmt=null;
-  try {
-    conn=DriverManager.getConnection(jdbcConnString);
-    pstmt=conn.prepareStatement(passSQL);
-    pstmt.setString(1,username);
-    ResultSet rs=pstmt.executeQuery();
-    if (!rs.next()) {
-      throw new UnauthorizedException();
-    }
-    String pass=rs.getString(1);
-    String anticipatedDigest=AuthFactory.createDigest(token,pass);
-    if (!digest.equalsIgnoreCase(anticipatedDigest)) {
-      throw new UnauthorizedException();
-    }
-    rs.close();
-  }
- catch (  SQLException e) {
-    Log.error("Exception in JDBCAuthProvider",e);
+  String password=getPassword(username);
+  String anticipatedDigest=AuthFactory.createDigest(token,password);
+  if (!digest.equalsIgnoreCase(anticipatedDigest)) {
     throw new UnauthorizedException();
-  }
- finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (conn != null) {
-        conn.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
   }
   createUser(username);
 }
