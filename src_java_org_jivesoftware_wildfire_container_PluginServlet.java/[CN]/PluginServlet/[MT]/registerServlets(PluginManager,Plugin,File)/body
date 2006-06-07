@@ -28,6 +28,10 @@
       String name=nameElement.element("servlet-name").getTextTrim();
       String url=nameElement.element("url-pattern").getTextTrim();
       Class servletClass=classMap.get(name);
+      if (servletClass == null) {
+        Log.error("Unable to load servlet, " + name + ", servlet-class not found.");
+        continue;
+      }
       Object instance=servletClass.newInstance();
       if (instance instanceof GenericServlet) {
         ((GenericServlet)instance).init(servletConfig);
