@@ -2,12 +2,13 @@
   IQ reply=IQ.createResultIQ(iqRequest);
   Element childElement=iqRequest.getChildElement().createCopy();
   reply.setChildElement(childElement);
+  Element subscriptions=childElement.element("subscriptions");
   for (  NodeAffiliate affiliate : affiliates) {
     for (    NodeSubscription subscription : affiliate.getSubscriptions()) {
       if (subscription.isAuthorizationPending()) {
         continue;
       }
-      Element entity=childElement.addElement("subscription");
+      Element entity=subscriptions.addElement("subscription");
       entity.addAttribute("jid",subscription.getJID().toString());
       entity.addAttribute("subscription",subscription.getState().name());
       if (isMultipleSubscriptionsEnabled()) {
