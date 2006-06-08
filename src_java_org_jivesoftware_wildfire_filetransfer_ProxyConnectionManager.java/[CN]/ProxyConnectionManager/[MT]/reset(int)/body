@@ -1,0 +1,19 @@
+{
+  if (socketProcess != null) {
+    if (port != proxyPort) {
+      socketProcess.cancel(true);
+      socketProcess=null;
+    }
+ else {
+      return;
+    }
+  }
+  if (serverSocket != null) {
+    try {
+      serverSocket.close();
+    }
+ catch (    IOException e) {
+      Log.warn("Error closing proxy listening socket",e);
+    }
+  }
+}

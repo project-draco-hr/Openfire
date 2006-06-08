@@ -1,16 +1,10 @@
 {
-  if (socketProcess != null) {
-    if (port != proxyPort) {
-      socketProcess.cancel(true);
-      socketProcess=null;
-    }
- else {
-      return;
-    }
+  if (port == proxyPort) {
+    return;
   }
+  reset(port);
   socketProcess=executor.submit(new Runnable(){
     public void run(){
-      ServerSocket serverSocket;
       try {
         serverSocket=new ServerSocket(port);
       }
@@ -48,4 +42,5 @@
   }
 );
   proxyPort=port;
+  StatisticsManager.getInstance().addStatistic(proxyTransferRate,proxyTracker);
 }

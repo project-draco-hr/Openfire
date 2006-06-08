@@ -1,0 +1,12 @@
+{
+  if (JIVEPROPERTY_PROXY_ENABLED.equalsIgnoreCase(property)) {
+    Object value=params.get("value");
+    boolean isEnabled=(value != null ? Boolean.parseBoolean(value.toString()) : DEFAULT_IS_PROXY_ENABLED);
+    setEnabled(isEnabled && isFileTransferEnabled());
+  }
+ else   if (JIVEPROPERTY_FILE_TRANSFER_ENABLED.equalsIgnoreCase(property)) {
+    Object value=params.get("value");
+    boolean isEnabled=(value != null ? Boolean.parseBoolean(value.toString()) : DEFAULT_IS_FILE_TRANSFER_ENABLED);
+    setEnabledFileTransfer(isEnabled);
+  }
+}

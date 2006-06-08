@@ -1,10 +1,7 @@
 {
   super.start();
   if (isEnabled()) {
-    connectionManager.processConnections(getProxyPort());
-    routingTable.addRoute(getAddress(),this);
-    XMPPServer server=XMPPServer.getInstance();
-    server.getIQDiscoItemsHandler().addServerItemsProvider(this);
+    startProxy();
   }
  else {
     XMPPServer.getInstance().getIQDiscoItemsHandler().removeServerItemsProvider(this);

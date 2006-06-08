@@ -6,7 +6,10 @@
       return;
     }
     String namespace=childElement.getNamespaceURI();
-    if ("http://jabber.org/protocol/si".equals(namespace)) {
+    if (!isFileTransferEnabled && FILETRANSFER_NAMESPACES.contains(namespace)) {
+      throw new PacketRejectedException("File Transfer Disabled");
+    }
+    if (NAMESPACE_SI.equals(namespace)) {
       if (iq.getType().equals(IQ.Type.set)) {
         JID from=iq.getFrom();
         JID to=iq.getTo();
