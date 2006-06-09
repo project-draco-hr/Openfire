@@ -1,0 +1,15 @@
+{
+  if (internalDNS == null) {
+    return "";
+  }
+  StringBuilder sb=new StringBuilder(100);
+  for (  String key : internalDNS.keySet()) {
+    if (sb.length() > 0) {
+      sb.append(",");
+    }
+    sb.append(key).append(",");
+    sb.append(internalDNS.get(key).getHost()).append(",");
+    sb.append(internalDNS.get(key).getPort());
+  }
+  return sb.toString();
+}
