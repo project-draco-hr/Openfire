@@ -1,0 +1,20 @@
+{
+  Element wildfire=xmlResponse.element("wildfire");
+  if (wildfire != null) {
+    String latestVersion=wildfire.attributeValue("latest");
+    String changelog=wildfire.attributeValue("changelog");
+    String url=wildfire.attributeValue("url");
+    Update update=new Update("Wildfire",latestVersion,changelog,url);
+    toUpdate.add(update);
+  }
+  Iterator plugins=xmlResponse.elementIterator("plugin");
+  while (plugins.hasNext()) {
+    Element plugin=(Element)plugins.next();
+    String pluginName=plugin.attributeValue("name");
+    String latestVersion=plugin.attributeValue("latest");
+    String changelog=plugin.attributeValue("changelog");
+    String url=plugin.attributeValue("url");
+    Update update=new Update(pluginName,latestVersion,changelog,url);
+    toUpdate.add(update);
+  }
+}

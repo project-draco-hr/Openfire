@@ -1,0 +1,47 @@
+{
+  thread=new Thread("Update Manager"){
+    public void run(){
+      try {
+        Thread.sleep(15000);
+        Element xmlResponse=loadResponse();
+        if (xmlResponse != null) {
+          parseResponse(xmlResponse);
+          checkForManualUpdates();
+        }
+        while (isServiceEnabled()) {
+          waitForNextChecking();
+          if (isServiceEnabled()) {
+            try {
+              checkForUpdates(true);
+            }
+ catch (            Exception e) {
+              Log.error("Error checking for updates",e);
+            }
+          }
+        }
+      }
+ catch (      InterruptedException e) {
+        Log.error(e);
+      }
+ finally {
+        thread=null;
+      }
+    }
+    private void waitForNextChecking() throws InterruptedException {
+      long lastCheck=Long.parseLong(JiveGlobals.getProperty("update.lastCheck","0"));
+      if (lastCheck == 0) {
+        Thread.sleep(45000);
+      }
+ else {
+        long elapsed=System.currentTimeMillis() - lastCheck;
+        int frequency=getCheckFrequency() * 60 * 60* 1000;
+        if (elapsed < frequency) {
+          Thread.sleep(frequency - elapsed);
+        }
+      }
+    }
+  }
+;
+  thread.setDaemon(true);
+  thread.start();
+}

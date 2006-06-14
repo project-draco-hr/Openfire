@@ -1,0 +1,26 @@
+{
+  boolean installed=false;
+  HttpClient httpClient=new HttpClient();
+  GetMethod getMethod=new GetMethod(url);
+  try {
+    int statusCode=httpClient.executeMethod(getMethod);
+    if (statusCode == 200) {
+      InputStream in=getMethod.getResponseBodyAsStream();
+      String pluginFilename=url.substring(url.lastIndexOf("/") + 1);
+      installed=XMPPServer.getInstance().getPluginManager().installPlugin(in,pluginFilename);
+      in.close();
+      if (installed) {
+        for (        Update update : toUpdate) {
+          if (update.getURL().equals(url)) {
+            update.setDownloaded(true);
+          }
+        }
+        saveResponse();
+      }
+    }
+  }
+ catch (  IOException e) {
+    Log.warn("Error downloading new plugin version",e);
+  }
+  return installed;
+}

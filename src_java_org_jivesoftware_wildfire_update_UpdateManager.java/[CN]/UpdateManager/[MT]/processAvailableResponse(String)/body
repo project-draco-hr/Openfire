@@ -1,0 +1,27 @@
+{
+  List<AvailablePlugin> answer=new ArrayList<AvailablePlugin>();
+  Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
+  Iterator plugins=xmlResponse.elementIterator("plugin");
+  while (plugins.hasNext()) {
+    Element plugin=(Element)plugins.next();
+    String pluginName=plugin.attributeValue("name");
+    String latestVersion=plugin.attributeValue("latest");
+    String icon=plugin.attributeValue("icon");
+    String readme=plugin.attributeValue("readme");
+    String changelog=plugin.attributeValue("changelog");
+    String url=plugin.attributeValue("url");
+    boolean isCommercial="true".equals(plugin.attributeValue("commercial"));
+    String description=plugin.attributeValue("description");
+    String author=plugin.attributeValue("author");
+    String minServerVersion=plugin.attributeValue("minServerVersion");
+    AvailablePlugin available=new AvailablePlugin(pluginName,description,latestVersion,author,icon,changelog,readme,isCommercial,minServerVersion,url);
+    answer.add(available);
+  }
+  Collections.sort(answer,new Comparator(){
+    public int compare(    Object o1,    Object o2){
+      return ((AvailablePlugin)o1).getName().compareTo(((AvailablePlugin)o2).getName());
+    }
+  }
+);
+  return answer;
+}

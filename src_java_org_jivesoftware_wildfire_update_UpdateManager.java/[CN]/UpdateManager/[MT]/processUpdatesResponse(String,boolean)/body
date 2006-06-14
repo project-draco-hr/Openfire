@@ -1,0 +1,18 @@
+{
+  toUpdate=new ArrayList<Update>();
+  Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
+  parseResponse(xmlResponse);
+  saveResponse();
+  if (notificationsEnabled && isNotificationEnabled() && !toUpdate.isEmpty()) {
+    Collection<JID> admins=XMPPServer.getInstance().getAdmins();
+    for (    Update update : toUpdate) {
+      Message notification=new Message();
+      notification.setFrom(serverName);
+      notification.setBody(getNotificationMessage() + " " + update.getComponentName()+ " "+ update.getLatestVersion());
+      for (      JID jid : admins) {
+        notification.setTo(jid);
+        router.route(notification);
+      }
+    }
+  }
+}

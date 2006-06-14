@@ -1,0 +1,12 @@
+{
+  XMPPServer server=XMPPServer.getInstance();
+  Element xmlRequest=docFactory.createDocument().addElement("version");
+  Element wildfire=xmlRequest.addElement("wildfire");
+  wildfire.addAttribute("current",server.getServerInfo().getVersion().getVersionString());
+  for (  Plugin plugin : server.getPluginManager().getPlugins()) {
+    Element pluginElement=xmlRequest.addElement("plugin");
+    pluginElement.addAttribute("name",server.getPluginManager().getName(plugin));
+    pluginElement.addAttribute("current",server.getPluginManager().getVersion(plugin));
+  }
+  return xmlRequest.asXML();
+}
