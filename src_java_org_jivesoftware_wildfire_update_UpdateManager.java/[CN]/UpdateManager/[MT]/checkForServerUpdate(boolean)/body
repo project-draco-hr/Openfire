@@ -1,0 +1,11 @@
+{
+  String requestXML=getServerUpdateRequest();
+  HttpClient httpClient=new HttpClient();
+  PostMethod postMethod=new PostMethod(updateServiceURL);
+  NameValuePair[] data={new NameValuePair("type","update"),new NameValuePair("query",requestXML)};
+  postMethod.setRequestBody(data);
+  if (httpClient.executeMethod(postMethod) == 200) {
+    String responseBody=postMethod.getResponseBodyAsString();
+    processServerUpdateResponse(responseBody,notificationsEnabled);
+  }
+}

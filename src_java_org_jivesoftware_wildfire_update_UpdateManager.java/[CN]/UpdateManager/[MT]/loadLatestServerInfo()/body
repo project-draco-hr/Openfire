@@ -1,0 +1,40 @@
+{
+  Document xmlResponse;
+  File file=new File(JiveGlobals.getHomeDirectory() + File.separator + "conf","server-update.xml");
+  if (!file.exists()) {
+    return;
+  }
+  if (!file.canRead()) {
+    Log.warn("Cannot retrieve server updates. File must be readable: " + file.getName());
+    return;
+  }
+  FileReader reader=null;
+  try {
+    reader=new FileReader(file);
+    SAXReader xmlReader=new SAXReader();
+    xmlResponse=xmlReader.read(reader);
+  }
+ catch (  Exception e) {
+    Log.error("Error reading server-update.xml",e);
+    return;
+  }
+ finally {
+    if (reader != null) {
+      try {
+        reader.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+  Element wildfire=xmlResponse.getRootElement().element("wildfire");
+  if (wildfire != null) {
+    String latestVersion=wildfire.attributeValue("latest");
+    String changelog=wildfire.attributeValue("changelog");
+    String url=wildfire.attributeValue("url");
+    String serverVersion=XMPPServer.getInstance().getServerInfo().getVersion().getVersionString();
+    if (serverVersion.compareTo(latestVersion) < 0) {
+      serverUpdate=new Update("Wildfire",latestVersion,changelog,url);
+    }
+  }
+}

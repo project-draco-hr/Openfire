@@ -1,5 +1,5 @@
 {
-  List<AvailablePlugin> answer=new ArrayList<AvailablePlugin>();
+  availablePlugins=new HashMap<String,AvailablePlugin>();
   Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
   Iterator plugins=xmlResponse.elementIterator("plugin");
   while (plugins.hasNext()) {
@@ -15,13 +15,20 @@
     String author=plugin.attributeValue("author");
     String minServerVersion=plugin.attributeValue("minServerVersion");
     AvailablePlugin available=new AvailablePlugin(pluginName,description,latestVersion,author,icon,changelog,readme,isCommercial,minServerVersion,url);
-    answer.add(available);
+    availablePlugins.put(pluginName,available);
   }
-  Collections.sort(answer,new Comparator(){
-    public int compare(    Object o1,    Object o2){
-      return ((AvailablePlugin)o1).getName().compareTo(((AvailablePlugin)o2).getName());
+  buildPluginsUpdateList();
+  if (notificationsEnabled && isNotificationEnabled() && !pluginUpdates.isEmpty()) {
+    Collection<JID> admins=XMPPServer.getInstance().getAdmins();
+    for (    Update update : pluginUpdates) {
+      Message notification=new Message();
+      notification.setFrom(serverName);
+      notification.setBody(getNotificationMessage() + " " + update.getComponentName()+ " "+ update.getLatestVersion());
+      for (      JID jid : admins) {
+        notification.setTo(jid);
+        router.route(notification);
+      }
     }
   }
-);
-  return answer;
+  saveAvailablePluginsInfo();
 }

@@ -3,16 +3,14 @@
     public void run(){
       try {
         Thread.sleep(15000);
-        Element xmlResponse=loadResponse();
-        if (xmlResponse != null) {
-          parseResponse(xmlResponse);
-          checkForManualUpdates();
-        }
+        loadSavedInfo();
         while (isServiceEnabled()) {
           waitForNextChecking();
           if (isServiceEnabled()) {
             try {
-              checkForUpdates(true);
+              checkForServerUpdate(true);
+              checkForPluginsUpdates(true);
+              JiveGlobals.setProperty("update.lastCheck",String.valueOf(System.currentTimeMillis()));
             }
  catch (            Exception e) {
               Log.error("Error checking for updates",e);

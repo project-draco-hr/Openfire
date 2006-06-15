@@ -1,0 +1,44 @@
+{
+  Element xml=docFactory.createDocument().addElement("available");
+  for (  AvailablePlugin plugin : availablePlugins.values()) {
+    Element component=xml.addElement("plugin");
+    component.addAttribute("name",plugin.getName());
+    component.addAttribute("latest",plugin.getLatestVersion());
+    component.addAttribute("changelog",plugin.getChangelog());
+    component.addAttribute("url",plugin.getURL());
+    component.addAttribute("author",plugin.getAuthor());
+    component.addAttribute("description",plugin.getDescription());
+    component.addAttribute("icon",plugin.getIcon());
+    component.addAttribute("minServerVersion",plugin.getMinServerVersion());
+    component.addAttribute("readme",plugin.getReadme());
+    component.addAttribute("commercial",Boolean.toString(plugin.isCommercial()));
+  }
+  Writer writer=null;
+  try {
+    File file=new File(JiveGlobals.getHomeDirectory(),"conf");
+    if (!file.exists()) {
+      file.mkdir();
+    }
+    file=new File(JiveGlobals.getHomeDirectory() + File.separator + "conf","available-plugins.xml");
+    if (file.exists()) {
+      file.delete();
+    }
+    writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+    OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
+    XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
+    xmlWriter.write(xml);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    if (writer != null) {
+      try {
+        writer.close();
+      }
+ catch (      IOException e1) {
+        Log.error(e1);
+      }
+    }
+  }
+}

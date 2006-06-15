@@ -1,0 +1,13 @@
+{
+  pluginUpdates=new ArrayList<Update>();
+  XMPPServer server=XMPPServer.getInstance();
+  for (  Plugin plugin : server.getPluginManager().getPlugins()) {
+    String pluginName=server.getPluginManager().getName(plugin);
+    AvailablePlugin latestPlugin=availablePlugins.get(pluginName);
+    String currentVersion=server.getPluginManager().getVersion(plugin);
+    if (latestPlugin != null && latestPlugin.getLatestVersion().compareTo(currentVersion) > 0) {
+      Update update=new Update(pluginName,latestPlugin.getLatestVersion(),latestPlugin.getChangelog(),latestPlugin.getURL());
+      pluginUpdates.add(update);
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  Document xmlResponse;
+  File file=new File(JiveGlobals.getHomeDirectory() + File.separator + "conf","available-plugins.xml");
+  if (!file.exists()) {
+    return;
+  }
+  if (!file.canRead()) {
+    Log.warn("Cannot retrieve available plugins. File must be readable: " + file.getName());
+    return;
+  }
+  FileReader reader=null;
+  try {
+    reader=new FileReader(file);
+    SAXReader xmlReader=new SAXReader();
+    xmlResponse=xmlReader.read(reader);
+  }
+ catch (  Exception e) {
+    Log.error("Error reading available-plugins.xml",e);
+    return;
+  }
+ finally {
+    if (reader != null) {
+      try {
+        reader.close();
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+  Iterator it=xmlResponse.getRootElement().elementIterator("plugin");
+  while (it.hasNext()) {
+    Element plugin=(Element)it.next();
+    String pluginName=plugin.attributeValue("name");
+    String latestVersion=plugin.attributeValue("latest");
+    String icon=plugin.attributeValue("icon");
+    String readme=plugin.attributeValue("readme");
+    String changelog=plugin.attributeValue("changelog");
+    String url=plugin.attributeValue("url");
+    boolean isCommercial="true".equals(plugin.attributeValue("commercial"));
+    String description=plugin.attributeValue("description");
+    String author=plugin.attributeValue("author");
+    String minServerVersion=plugin.attributeValue("minServerVersion");
+    AvailablePlugin available=new AvailablePlugin(pluginName,description,latestVersion,author,icon,changelog,readme,isCommercial,minServerVersion,url);
+    availablePlugins.put(pluginName,available);
+  }
+}

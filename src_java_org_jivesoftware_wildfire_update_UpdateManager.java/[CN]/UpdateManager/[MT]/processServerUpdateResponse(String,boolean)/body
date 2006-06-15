@@ -1,0 +1,22 @@
+{
+  serverUpdate=null;
+  Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
+  Element wildfire=xmlResponse.element("wildfire");
+  if (wildfire != null) {
+    String latestVersion=wildfire.attributeValue("latest");
+    String changelog=wildfire.attributeValue("changelog");
+    String url=wildfire.attributeValue("url");
+    serverUpdate=new Update("Wildfire",latestVersion,changelog,url);
+  }
+  if (notificationsEnabled && isNotificationEnabled() && serverUpdate != null) {
+    Collection<JID> admins=XMPPServer.getInstance().getAdmins();
+    Message notification=new Message();
+    notification.setFrom(serverName);
+    notification.setBody(getNotificationMessage() + " " + serverUpdate.getComponentName()+ " "+ serverUpdate.getLatestVersion());
+    for (    JID jid : admins) {
+      notification.setTo(jid);
+      router.route(notification);
+    }
+  }
+  saveLatestServerInfo();
+}

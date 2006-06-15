@@ -1,20 +1,10 @@
 {
   Element xmlResponse=docFactory.createDocument().addElement("version");
-  for (  Update update : toUpdate) {
-    if (update.isDownloaded()) {
-      continue;
-    }
-    Element component;
-    if (update.isServer()) {
-      component=xmlResponse.addElement("wildfire");
-    }
- else {
-      component=xmlResponse.addElement("plugin");
-      component.addAttribute("name",update.getComponentName());
-    }
-    component.addAttribute("latest",update.getLatestVersion());
-    component.addAttribute("changelog",update.getChangelog());
-    component.addAttribute("url",update.getURL());
+  if (serverUpdate != null) {
+    Element component=xmlResponse.addElement("wildfire");
+    component.addAttribute("latest",serverUpdate.getLatestVersion());
+    component.addAttribute("changelog",serverUpdate.getChangelog());
+    component.addAttribute("url",serverUpdate.getURL());
   }
   Writer writer=null;
   try {
@@ -22,7 +12,7 @@
     if (!file.exists()) {
       file.mkdir();
     }
-    file=new File(JiveGlobals.getHomeDirectory() + File.separator + "conf","updates.xml");
+    file=new File(JiveGlobals.getHomeDirectory() + File.separator + "conf","server-update.xml");
     if (file.exists()) {
       file.delete();
     }
