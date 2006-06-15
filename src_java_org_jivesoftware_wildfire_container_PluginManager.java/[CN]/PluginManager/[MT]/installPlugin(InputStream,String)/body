@@ -1,0 +1,19 @@
+{
+  try {
+    byte[] b=new byte[1024];
+    int len;
+    String absolutePath=pluginDirectory + File.separator + pluginFilename;
+    OutputStream out=new FileOutputStream(absolutePath + ".part");
+    while ((len=in.read(b)) != -1) {
+      out.write(b,0,len);
+    }
+    out.close();
+    new File(absolutePath).delete();
+    new File(absolutePath + ".part").renameTo(new File(absolutePath));
+  }
+ catch (  IOException e) {
+    Log.error("Error installing new version of plugin: " + pluginFilename,e);
+    return false;
+  }
+  return true;
+}
