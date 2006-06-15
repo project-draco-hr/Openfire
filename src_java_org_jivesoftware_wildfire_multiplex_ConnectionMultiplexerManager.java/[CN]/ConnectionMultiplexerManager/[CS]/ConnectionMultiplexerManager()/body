@@ -1,3 +1,24 @@
 {
   sessionManager=XMPPServer.getInstance().getSessionManager();
+  Thread hearbeatThread=new Thread(){
+    public void run(){
+      while (true) {
+        try {
+          Thread.sleep(30000);
+          for (          ConnectionMultiplexerSession session : sessionManager.getConnectionMultiplexerSessions()) {
+            session.getConnection().deliverRawText(" ");
+          }
+        }
+ catch (        InterruptedException e) {
+        }
+catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+  }
+;
+  hearbeatThread.setDaemon(true);
+  hearbeatThread.setPriority(Thread.NORM_PRIORITY);
+  hearbeatThread.start();
 }

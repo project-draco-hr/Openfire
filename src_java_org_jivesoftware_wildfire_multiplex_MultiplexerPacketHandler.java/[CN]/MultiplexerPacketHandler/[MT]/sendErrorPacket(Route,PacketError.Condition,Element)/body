@@ -1,0 +1,11 @@
+{
+  Route reply=new Route(packet.getStreamID());
+  reply.setID(packet.getID());
+  reply.setFrom(packet.getTo());
+  reply.setTo(packet.getFrom());
+  reply.setError(error);
+  if (extraError != null) {
+    reply.getError().getElement().add(extraError);
+  }
+  deliver(reply);
+}

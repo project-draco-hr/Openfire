@@ -1,5 +1,5 @@
 {
-  String anticipatedDigest=AuthFactory.createDigest(getStreamID().getID(),getSecretKey());
+  String anticipatedDigest=AuthFactory.createDigest(getStreamID().getID(),ConnectionMultiplexerManager.getDefaultSecret());
   if (!anticipatedDigest.equalsIgnoreCase(digest)) {
     Log.debug("[ConMng] Incorrect handshake for connection manager with domain: " + getAddress().getDomain());
     conn.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());

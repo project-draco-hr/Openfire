@@ -27,41 +27,6 @@
             multiplexerManager.closeClientSession(connectionManagerDomain,streamID);
             sendResultPacket(iq);
           }
- else           if (child.element("send") != null) {
-            List wrappedElements=child.element("send").elements();
-            if (wrappedElements.size() != 1) {
-              Element extraError=DocumentHelper.createElement(QName.get("invalid-payload","http://jabber.org/protocol/connectionmanager#errors"));
-              sendErrorPacket(iq,PacketError.Condition.bad_request,extraError);
-            }
- else {
-              Element wrappedElement=(Element)wrappedElements.get(0);
-              String tag=wrappedElement.getName();
-              try {
-                if ("auth".equals(tag) || "response".equals(tag)) {
-                  SASLAuthentication.handle(session,wrappedElement);
-                }
- else                 if ("iq".equals(tag)) {
-                  processIQ(session,getIQ(wrappedElement));
-                }
- else                 if ("message".equals(tag)) {
-                  processMessage(session,new Message(wrappedElement));
-                }
- else                 if ("presence".equals(tag)) {
-                  processPresence(session,new Presence(wrappedElement));
-                }
- else {
-                  Element extraError=DocumentHelper.createElement(QName.get("unknown-stanza","http://jabber.org/protocol/connectionmanager#errors"));
-                  sendErrorPacket(iq,PacketError.Condition.bad_request,extraError);
-                  return;
-                }
-              }
- catch (              UnsupportedEncodingException e) {
-                Log.error("Error processing wrapped packet: " + wrappedElement.asXML(),e);
-                sendErrorPacket(iq,PacketError.Condition.internal_server_error,null);
-              }
-            }
-            sendResultPacket(iq);
-          }
  else           if (child.element("failed") != null) {
             List wrappedElements=child.element("failed").elements();
             if (wrappedElements.size() != 1) {

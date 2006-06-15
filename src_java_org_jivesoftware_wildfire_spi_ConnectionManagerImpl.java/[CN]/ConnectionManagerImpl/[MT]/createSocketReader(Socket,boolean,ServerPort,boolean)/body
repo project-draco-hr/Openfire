@@ -1,18 +1,18 @@
 {
   if (serverPort.isClientPort()) {
     SocketConnection conn=new SocketConnection(deliverer,sock,isSecure);
-    return new ClientSocketReader(router,serverName,sock,conn,useBlockingMode);
+    return new ClientSocketReader(router,routingTable,serverName,sock,conn,useBlockingMode);
   }
  else   if (serverPort.isComponentPort()) {
     SocketConnection conn=new SocketConnection(deliverer,sock,isSecure);
-    return new ComponentSocketReader(router,serverName,sock,conn,useBlockingMode);
+    return new ComponentSocketReader(router,routingTable,serverName,sock,conn,useBlockingMode);
   }
  else   if (serverPort.isServerPort()) {
     SocketConnection conn=new SocketConnection(deliverer,sock,isSecure);
-    return new ServerSocketReader(router,serverName,sock,conn,useBlockingMode);
+    return new ServerSocketReader(router,routingTable,serverName,sock,conn,useBlockingMode);
   }
  else {
     SocketConnection conn=new SocketConnection(new MultiplexerPacketDeliverer(),sock,isSecure);
-    return new ConnectionMultiplexerSocketReader(router,serverName,sock,conn,useBlockingMode);
+    return new ConnectionMultiplexerSocketReader(router,routingTable,serverName,sock,conn,useBlockingMode);
   }
 }

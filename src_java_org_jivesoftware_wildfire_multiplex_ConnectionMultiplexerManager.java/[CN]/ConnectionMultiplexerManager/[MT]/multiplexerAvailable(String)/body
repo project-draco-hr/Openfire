@@ -1,0 +1,12 @@
+{
+  Map<String,ClientSession> sessions=sessionsByManager.get(connectionManagerName);
+  if (sessions == null) {
+synchronized (connectionManagerName.intern()) {
+      sessions=sessionsByManager.get(connectionManagerName);
+      if (sessions == null) {
+        sessions=new ConcurrentHashMap<String,ClientSession>();
+        sessionsByManager.put(connectionManagerName,sessions);
+      }
+    }
+  }
+}

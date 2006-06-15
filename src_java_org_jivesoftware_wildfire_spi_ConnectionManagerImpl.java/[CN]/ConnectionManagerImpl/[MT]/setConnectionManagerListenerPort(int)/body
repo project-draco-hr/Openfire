@@ -1,0 +1,10 @@
+{
+  if (port == getConnectionManagerListenerPort()) {
+    return;
+  }
+  JiveGlobals.setProperty("xmpp.multiplex.socket.port",String.valueOf(port));
+  stopConnectionManagerListener();
+  if (isConnectionManagerListenerEnabled()) {
+    startConnectionManagerListener(localIPAddress);
+  }
+}

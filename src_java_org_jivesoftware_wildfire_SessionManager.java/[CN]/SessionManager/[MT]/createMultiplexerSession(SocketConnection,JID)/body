@@ -13,6 +13,7 @@ synchronized (address.getDomain().intern()) {
       if (sessions == null) {
         sessions=new CopyOnWriteArrayList<ConnectionMultiplexerSession>();
         connnectionManagerSessions.put(address.getDomain(),sessions);
+        ConnectionMultiplexerManager.getInstance().multiplexerAvailable(address.getDomain());
       }
     }
   }
