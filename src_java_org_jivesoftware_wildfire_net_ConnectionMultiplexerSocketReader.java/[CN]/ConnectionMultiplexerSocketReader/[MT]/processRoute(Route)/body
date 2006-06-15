@@ -1,7 +1,6 @@
 {
   if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
-    IQ reply=new IQ();
-    reply.setChildElement(packet.getChildElement().createCopy());
+    Route reply=new Route(packet.getStreamID());
     reply.setID(packet.getID());
     reply.setTo(packet.getFrom());
     reply.setFrom(packet.getTo());
@@ -11,7 +10,7 @@
   }
   threadPool.execute(new Runnable(){
     public void run(){
-      packetHandler.handle(packet);
+      packetHandler.route(packet);
     }
   }
 );

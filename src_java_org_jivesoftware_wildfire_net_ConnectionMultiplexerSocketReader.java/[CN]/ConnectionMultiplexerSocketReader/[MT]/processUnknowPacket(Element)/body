@@ -1,6 +1,20 @@
 {
-  if ("handshake".equals(doc.getName())) {
+  String tag=doc.getName();
+  if ("route".equals(tag)) {
+    try {
+      processRoute(new Route(doc));
+      return true;
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if ("handshake".equals(tag)) {
     open=((ConnectionMultiplexerSession)session).authenticate(doc.getStringValue());
+    return true;
+  }
+ else   if ("error".equals(tag) && "stream".equals(doc.getNamespacePrefix())) {
+    session.getConnection().close();
+    open=false;
     return true;
   }
   return false;
