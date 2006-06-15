@@ -2,13 +2,11 @@
   ConnectionMultiplexerSession multiplexerSession=multiplexerManager.getMultiplexerSession(connectionManagerName);
   if (multiplexerSession != null) {
     StringBuilder sb=new StringBuilder(200 + text.length());
-    sb.append("<iq type=\"set\" from=\"").append(serverName);
+    sb.append("<route from=\"").append(serverName);
     sb.append("\" to=\"").append(connectionManagerName);
-    sb.append("\" id=\"").append(StringUtils.randomString(10));
-    sb.append("\"><session xmlns=\"http://jabber.org/protocol/connectionmanager\" id=\"");
-    sb.append(session.getStreamID().getID()).append("\"><send>");
+    sb.append("\" streamid=\"").append(session.getStreamID().getID()).append("\">");
     sb.append(text);
-    sb.append("</send></session></iq>");
+    sb.append("</route>");
     multiplexerSession.getConnection().deliverRawText(sb.toString());
   }
 }
