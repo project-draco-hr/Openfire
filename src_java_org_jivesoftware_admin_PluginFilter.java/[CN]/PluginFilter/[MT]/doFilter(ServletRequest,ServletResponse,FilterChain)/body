@@ -1,0 +1,12 @@
+{
+  boolean continueChain=true;
+  for (  SimpleFilter filter : pluginFilters) {
+    if (!filter.doFilter(servletRequest,servletResponse)) {
+      continueChain=false;
+      break;
+    }
+  }
+  if (continueChain) {
+    filterChain.doFilter(servletRequest,servletResponse);
+  }
+}
