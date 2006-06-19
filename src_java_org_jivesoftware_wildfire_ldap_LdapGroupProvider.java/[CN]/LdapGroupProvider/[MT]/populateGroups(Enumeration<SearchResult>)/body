@@ -6,9 +6,14 @@
   try {
     TreeMap<String,Group> groups=new TreeMap<String,Group>();
     ctx=manager.getContext();
-    SearchControls ctrls=new SearchControls();
-    ctrls.setReturningAttributes(new String[]{manager.getUsernameField()});
-    ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    SearchControls searchControls=new SearchControls();
+    searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
     String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
     XMPPServer server=XMPPServer.getInstance();
     String serverName=server.getServerInfo().getName();
@@ -40,7 +45,7 @@
                 LdapName ldapname=new LdapName(username);
                 String ldapcn=ldapname.get(ldapname.size() - 1);
                 String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
-                NamingEnumeration usrAnswer=ctx.search("",combinedFilter,ctrls);
+                NamingEnumeration usrAnswer=ctx.search("",combinedFilter,searchControls);
                 if (usrAnswer.hasMoreElements()) {
                   username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
                 }

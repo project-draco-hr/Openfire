@@ -6,11 +6,16 @@
   DirContext ctx=null;
   try {
     ctx=manager.getContext();
-    SearchControls constraints=new SearchControls();
-    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
-    NamingEnumeration answer=ctx.search("",filter,constraints);
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
     while (answer.hasMoreElements()) {
       count++;
       answer.nextElement();

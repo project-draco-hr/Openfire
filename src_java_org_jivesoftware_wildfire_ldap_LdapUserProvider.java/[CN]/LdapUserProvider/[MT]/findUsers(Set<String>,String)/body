@@ -14,9 +14,14 @@
     ctx=manager.getContext();
     Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
     ctx.setRequestControls(searchControl);
-    SearchControls constraints=new SearchControls();
-    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
     StringBuilder filter=new StringBuilder();
     if (fields.size() > 1) {
       filter.append("(|");
@@ -28,7 +33,7 @@
     if (fields.size() > 1) {
       filter.append(")");
     }
-    NamingEnumeration answer=ctx.search("",filter.toString(),constraints);
+    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
     while (answer.hasMoreElements()) {
       String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
       usernames.add(JID.escapeNode(username));

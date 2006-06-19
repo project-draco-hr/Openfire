@@ -5,14 +5,19 @@
     ctx=manager.getContext();
     Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
     ctx.setRequestControls(searchControl);
-    SearchControls constraints=new SearchControls();
-    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    constraints.setReturningAttributes(new String[]{manager.getUsernameField()});
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
     if (!(Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")))) {
-      constraints.setCountLimit(startIndex + numResults);
+      searchControls.setCountLimit(startIndex + numResults);
     }
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
-    NamingEnumeration answer=ctx.search("",filter,constraints);
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
     if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       while (answer.hasMoreElements()) {
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();

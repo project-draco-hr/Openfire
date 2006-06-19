@@ -10,7 +10,12 @@
       Log.debug("Starting LDAP search...");
     }
     SearchControls constraints=new SearchControls();
-    constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    if (subTreeSearch) {
+      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
     constraints.setReturningAttributes(new String[]{usernameField});
     NamingEnumeration answer=ctx.search("",searchFilter,new String[]{username},constraints);
     if (debug) {

@@ -12,7 +12,12 @@
     }
     SearchControls searchControls=new SearchControls();
     searchControls.setReturningAttributes(returningAttributes);
-    searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
     answer=ctx.search("",searchFilter,searchControls);
     if (manager.isDebugEnabled()) {
       Log.debug("... search finished");
