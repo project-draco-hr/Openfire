@@ -12,21 +12,6 @@
     Log.error("Error deleting privacy list: " + listName + " of username: "+ username,e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
 }
