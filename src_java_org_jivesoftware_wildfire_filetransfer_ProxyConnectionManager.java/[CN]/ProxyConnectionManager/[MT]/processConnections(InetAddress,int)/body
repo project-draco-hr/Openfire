@@ -2,11 +2,11 @@
   if (port == proxyPort) {
     return;
   }
-  reset(port);
+  reset();
   socketProcess=executor.submit(new Runnable(){
     public void run(){
       try {
-        serverSocket=new ServerSocket(port);
+        serverSocket=new ServerSocket(port,-1,bindInterface);
       }
  catch (      IOException e) {
         Log.error("Error creating server socket",e);
