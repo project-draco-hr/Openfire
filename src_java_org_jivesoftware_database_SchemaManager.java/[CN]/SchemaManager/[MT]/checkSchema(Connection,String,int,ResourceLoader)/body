@@ -5,23 +5,27 @@
     pstmt=con.prepareStatement(CHECK_VERSION);
     pstmt.setString(1,schemaKey);
     ResultSet rs=pstmt.executeQuery();
-    rs.next();
-    currentVersion=rs.getInt(1);
+    if (rs.next()) {
+      currentVersion=rs.getInt(1);
+    }
     rs.close();
   }
  catch (  SQLException sqle) {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
+    if (schemaKey.equals("wildfire")) {
+      try {
+        if (pstmt != null) {
+          pstmt.close();
+        }
+        pstmt=con.prepareStatement(CHECK_VERSION_OLD);
+        ResultSet rs=pstmt.executeQuery();
+        if (rs.next()) {
+          currentVersion=rs.getInt(1);
+        }
+        rs.close();
       }
-      pstmt=con.prepareStatement(CHECK_VERSION_OLD);
-      ResultSet rs=pstmt.executeQuery();
-      rs.next();
-      currentVersion=rs.getInt(1);
-      rs.close();
-    }
- catch (    SQLException sqle2) {
-      Log.warn("Error verifying server version",sqle2);
+ catch (      SQLException sqle2) {
+        Log.warn("Error verifying server version",sqle2);
+      }
     }
   }
  finally {
@@ -38,7 +42,7 @@
     return false;
   }
  else   if (currentVersion == -1) {
-    Log.error(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
+    Log.info(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
     System.out.println(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
     String resourceName=schemaKey + "_" + DbConnectionManager.getDatabaseType()+ ".sql";
     InputStream resource=resourceLoader.loadResource(resourceName);
