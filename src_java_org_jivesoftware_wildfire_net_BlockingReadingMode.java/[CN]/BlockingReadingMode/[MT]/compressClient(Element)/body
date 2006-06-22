@@ -3,7 +3,7 @@
   if (answer) {
     XmlPullParser xpp=socketReader.reader.getXPPParser();
     if (socketReader.connection.getTLSStreamHandler() == null) {
-      ZInputStream in=new ZInputStream(socket.getInputStream());
+      ZInputStream in=new ZInputStream(ServerTrafficCounter.wrapInputStream(socket.getInputStream()));
       in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
       xpp.setInput(new InputStreamReader(in,CHARSET));
     }

@@ -20,7 +20,7 @@
     socket.setSoTimeout(5000);
     XMPPPacketReader reader=new XMPPPacketReader();
     reader.setXPPFactory(FACTORY);
-    reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
+    reader.getXPPParser().setInput(new InputStreamReader(ServerTrafficCounter.wrapInputStream(socket.getInputStream()),CHARSET));
     XmlPullParser xpp=reader.getXPPParser();
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();

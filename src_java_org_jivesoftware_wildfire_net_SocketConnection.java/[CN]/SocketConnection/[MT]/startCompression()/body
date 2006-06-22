@@ -1,7 +1,7 @@
 {
   compressed=true;
   if (tlsStreamHandler == null) {
-    ZOutputStream out=new ZOutputStream(socket.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
+    ZOutputStream out=new ZOutputStream(ServerTrafficCounter.wrapOutputStream(socket.getOutputStream()),JZlib.Z_BEST_COMPRESSION);
     out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
     writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
     xmlSerializer=new XMLSocketWriter(writer,this);
