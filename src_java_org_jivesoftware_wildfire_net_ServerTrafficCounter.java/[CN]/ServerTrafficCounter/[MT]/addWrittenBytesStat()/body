@@ -1,0 +1,21 @@
+{
+  Statistic statistic=new Statistic(){
+    public String getName(){
+      return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.name");
+    }
+    public Type getStatType(){
+      return Type.rate;
+    }
+    public String getDescription(){
+      return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.description");
+    }
+    public String getUnits(){
+      return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.label");
+    }
+    public double sample(){
+      return outgoingCounter.getAndSet(0);
+    }
+  }
+;
+  StatisticsManager.getInstance().addMultiStatistic(outgoingStatKey,trafficStatGroup,statistic);
+}
