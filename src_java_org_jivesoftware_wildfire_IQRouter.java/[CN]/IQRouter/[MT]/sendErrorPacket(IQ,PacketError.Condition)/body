@@ -2,6 +2,10 @@
   IQ reply=IQ.createResultIQ(originalPacket);
   reply.setChildElement(originalPacket.getChildElement().createCopy());
   reply.setError(condition);
+  if (serverName.equals(originalPacket.getFrom().toString())) {
+    handle(reply);
+    return;
+  }
   ChannelHandler route=routingTable.getRoute(originalPacket.getFrom());
   if (route != null) {
     route.process(reply);
