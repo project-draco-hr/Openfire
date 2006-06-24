@@ -7,22 +7,34 @@
     if (appName != null) {
       Element existingAppName=(Element)generatedModel.selectSingleNode("//adminconsole/global/appname");
       existingAppName.setText(appName.getText());
+      if (appName.attributeValue("plugin") != null) {
+        existingAppName.addAttribute("plugin",appName.attributeValue("plugin"));
+      }
     }
     Element appLogoImage=(Element)element.selectSingleNode("//adminconsole/global/logo-image");
     if (appLogoImage != null) {
       Element existingLogoImage=(Element)generatedModel.selectSingleNode("//adminconsole/global/logo-image");
       existingLogoImage.setText(appLogoImage.getText());
+      if (appLogoImage.attributeValue("plugin") != null) {
+        existingLogoImage.addAttribute("plugin",appLogoImage.attributeValue("plugin"));
+      }
     }
     Element appLoginImage=(Element)element.selectSingleNode("//adminconsole/global/login-image");
     if (appLoginImage != null) {
       Element existingLoginImage=(Element)generatedModel.selectSingleNode("//adminconsole/global/login-image");
       existingLoginImage.setText(appLoginImage.getText());
+      if (appLoginImage.attributeValue("plugin") != null) {
+        existingLoginImage.addAttribute("plugin",appLoginImage.attributeValue("plugin"));
+      }
     }
     Element appVersion=(Element)element.selectSingleNode("//adminconsole/global/version");
     if (appVersion != null) {
       Element existingVersion=(Element)generatedModel.selectSingleNode("//adminconsole/global/version");
       if (existingVersion != null) {
         existingVersion.setText(appVersion.getText());
+        if (appVersion.attributeValue("plugin") != null) {
+          existingVersion.addAttribute("plugin",appVersion.attributeValue("plugin"));
+        }
       }
  else {
         ((Element)generatedModel.selectSingleNode("//adminconsole/global")).add(appVersion.createCopy());

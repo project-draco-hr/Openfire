@@ -140,18 +140,34 @@
         if (parentPluginNode != null) {
           pluginName=parentPluginNode.getTextTrim();
         }
+        Element appName=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/appname");
+        if (appName != null) {
+          appName.addAttribute("plugin",pluginName);
+        }
         Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
         if (imageEl != null) {
           imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
+          imageEl.addAttribute("plugin",pluginName);
         }
         imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/login-image");
         if (imageEl != null) {
           imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
+          imageEl.addAttribute("plugin",pluginName);
         }
         List urls=adminElement.selectNodes("//@url");
         for (        Object url : urls) {
           Attribute attr=(Attribute)url;
           attr.setValue("plugins/" + pluginName + "/"+ attr.getValue());
+        }
+        String[] elementNames=new String[]{"tab","sidebar","item"};
+        for (int i=0; i < elementNames.length; i++) {
+          List values=adminElement.selectNodes("//" + elementNames[i]);
+          for (          Object value : values) {
+            Element element=(Element)value;
+            if (element.attribute("name") != null || element.attribute("value") != null) {
+              element.addAttribute("plugin",pluginName);
+            }
+          }
         }
         AdminConsole.addModel(pluginName,adminElement);
       }

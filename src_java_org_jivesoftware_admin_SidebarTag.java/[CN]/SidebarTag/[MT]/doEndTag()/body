@@ -34,22 +34,24 @@
           for (Iterator iter=items.iterator(); iter.hasNext(); ) {
             Element sidebar=(Element)iter.next();
             String header=sidebar.attributeValue("name");
+            String pluginName=sidebar.attributeValue("plugin");
             String hcss=getHeadercss();
             if (hcss == null) {
               hcss="";
             }
-            buf.append("<li class=\"").append(hcss).append("\">").append(clean(i18n(header))).append("</li>");
+            buf.append("<li class=\"").append(hcss).append("\">").append(clean(AdminConsole.getAdminText(header,pluginName))).append("</li>");
             for (Iterator subitems=sidebar.elementIterator(); subitems.hasNext(); ) {
               Element item=(Element)subitems.next();
               String subitemID=item.attributeValue("id");
               String subitemName=item.attributeValue("name");
               String subitemURL=item.attributeValue("url");
               String subitemDescr=item.attributeValue("description");
+              pluginName=item.attributeValue("plugin");
               String value=getBodyContent().getString();
               if (value != null) {
                 value=StringUtils.replace(value,"[id]",clean(subitemID));
-                value=StringUtils.replace(value,"[name]",clean(i18n(subitemName)));
-                value=StringUtils.replace(value,"[description]",clean(i18n(subitemDescr)));
+                value=StringUtils.replace(value,"[name]",clean(AdminConsole.getAdminText(subitemName,pluginName)));
+                value=StringUtils.replace(value,"[description]",clean(AdminConsole.getAdminText(subitemDescr,pluginName)));
                 value=StringUtils.replace(value,"[url]",request.getContextPath() + "/" + clean(subitemURL));
               }
               String css=getCss();
@@ -65,7 +67,8 @@
                 if (hadNext) {
                   buf.append("<ul class=\"subitems\">\n");
                   String subheader=subcurrent.getParent().attributeValue("name");
-                  buf.append("<li class=\"").append(hcss).append("\">").append(clean(i18n(subheader))).append("</li>");
+                  pluginName=subcurrent.getParent().attributeValue("plugin");
+                  buf.append("<li class=\"").append(hcss).append("\">").append(clean(AdminConsole.getAdminText(subheader,pluginName))).append("</li>");
                 }
                 String extraParams=(String)request.getAttribute("extraParams");
                 while (siblings.hasNext()) {
@@ -74,6 +77,7 @@
                   String sibName=sibling.attributeValue("name");
                   String sibDescr=sibling.attributeValue("description");
                   String sibURL=sibling.attributeValue("url");
+                  pluginName=sibling.attributeValue("plugin");
                   if (extraParams != null) {
                     sibURL+=((sibURL.indexOf('?') > -1 ? "&" : "?") + extraParams);
                   }
@@ -85,8 +89,8 @@
                   String svalue=getSubsidebarTag().getBody();
                   if (svalue != null) {
                     svalue=StringUtils.replace(svalue,"[id]",clean(sibID));
-                    svalue=StringUtils.replace(svalue,"[name]",clean(i18n(sibName)));
-                    svalue=StringUtils.replace(svalue,"[description]",clean(i18n(sibDescr)));
+                    svalue=StringUtils.replace(svalue,"[name]",clean(AdminConsole.getAdminText(sibName,pluginName)));
+                    svalue=StringUtils.replace(svalue,"[description]",clean(AdminConsole.getAdminText(sibDescr,pluginName)));
                     svalue=StringUtils.replace(svalue,"[url]",request.getContextPath() + "/" + clean(sibURL));
                   }
                   buf.append("<li class=\"").append(subcss).append("\">").append(svalue).append("</li>\n");

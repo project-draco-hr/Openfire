@@ -1,7 +1,8 @@
 {
   Element globalVersion=(Element)generatedModel.selectSingleNode("//adminconsole/global/version");
   if (globalVersion != null) {
-    return globalVersion.getText();
+    String pluginName=globalVersion.attributeValue("plugin");
+    return getAdminText(globalVersion.getText(),pluginName);
   }
  else {
     XMPPServer xmppServer=XMPPServer.getInstance();
