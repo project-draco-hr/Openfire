@@ -6,14 +6,9 @@
     availableSession=new ArrayList<ClientSession>(sessionMap.getAvailableSessions());
     for (    ClientSession userSession : availableSession) {
       if (userSession != session) {
-        if (session.getPresence().isAvailable()) {
-          presence=userSession.getPresence().createCopy();
-          presence.setTo(session.getAddress());
-          session.process(presence);
-        }
-        presence=session.getPresence().createCopy();
-        presence.setTo(userSession.getAddress());
-        userSession.process(presence);
+        presence=userSession.getPresence().createCopy();
+        presence.setTo(session.getAddress());
+        session.process(presence);
       }
     }
   }

@@ -14,13 +14,11 @@
       }
  else       if (sessionMap.getAvailableSessions().isEmpty()) {
         routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
-        broadcastPresenceToOtherResource(session);
       }
  else {
         sessionMap.sessionUnavailable(session);
         Session defaultSession=sessionMap.getDefaultSession(true);
         routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
-        broadcastPresenceToOtherResource(session);
       }
     }
  catch (    UserNotFoundException e) {

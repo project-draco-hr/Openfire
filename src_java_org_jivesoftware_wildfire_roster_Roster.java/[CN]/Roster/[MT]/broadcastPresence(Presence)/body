@@ -6,8 +6,9 @@
     return;
   }
   PrivacyList list=null;
-  if (packet.getFrom() != null) {
-    ClientSession session=sessionManager.getSession(packet.getFrom());
+  JID from=packet.getFrom();
+  if (from != null) {
+    ClientSession session=sessionManager.getSession(from);
     if (session != null) {
       list=session.getActiveList();
       list=list == null ? session.getDefaultList() : list;
@@ -34,5 +35,8 @@
         }
       }
     }
+  }
+  if (from != null) {
+    sessionManager.broadcastPresenceToOtherResources(from,packet);
   }
 }

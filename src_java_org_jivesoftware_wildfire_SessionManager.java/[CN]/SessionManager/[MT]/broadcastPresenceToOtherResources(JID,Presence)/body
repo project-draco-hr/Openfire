@@ -1,0 +1,13 @@
+{
+  Collection<ClientSession> availableSession;
+  SessionMap sessionMap=sessions.get(originatingResource.getNode());
+  if (sessionMap != null) {
+    availableSession=new ArrayList<ClientSession>(sessionMap.getAvailableSessions());
+    for (    ClientSession userSession : availableSession) {
+      if (userSession.getAddress() != originatingResource) {
+        presence.setTo(userSession.getAddress());
+        userSession.process(presence);
+      }
+    }
+  }
+}
