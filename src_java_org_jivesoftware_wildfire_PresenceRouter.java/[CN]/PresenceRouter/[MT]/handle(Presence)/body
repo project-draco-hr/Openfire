@@ -13,13 +13,12 @@
         updateHandler.process(packet);
       }
  else {
-        ChannelHandler route=routingTable.getRoute(recipientJID);
-        if (route != null) {
-          Session session=sessionManager.getSession(packet.getFrom());
-          if (session != null && session.getStatus() == Session.STATUS_CLOSED) {
-            Log.warn("Rejected available presence: " + packet + " - "+ session);
-            return;
-          }
+        Session session=sessionManager.getSession(packet.getFrom());
+        if (session != null && session.getStatus() == Session.STATUS_CLOSED) {
+          Log.warn("Rejected available presence: " + packet + " - "+ session);
+          return;
+        }
+        for (        ChannelHandler route : routingTable.getRoutes(recipientJID)) {
           updateHandler.directedPresenceSent(packet,route,recipientJID.toString());
           route.process(packet);
         }

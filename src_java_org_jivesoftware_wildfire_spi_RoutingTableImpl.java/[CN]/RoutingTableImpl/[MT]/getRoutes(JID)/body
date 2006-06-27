@@ -1,6 +1,8 @@
 {
   if (!serverName.equals(node.getDomain()) && routes.get(node.getDomain()) == null && componentManager.getComponent(node) == null) {
-    return Arrays.asList(OutgoingSessionPromise.getInstance()).iterator();
+    List<ChannelHandler> list=new ArrayList<ChannelHandler>();
+    list.add(OutgoingSessionPromise.getInstance());
+    return list;
   }
   LinkedList list=null;
   Object nameRoutes=routes.get(node.getDomain());
@@ -35,9 +37,9 @@
     }
   }
   if (list == null) {
-    return Collections.EMPTY_LIST.iterator();
+    return Collections.emptyList();
   }
  else {
-    return list.iterator();
+    return list;
   }
 }
