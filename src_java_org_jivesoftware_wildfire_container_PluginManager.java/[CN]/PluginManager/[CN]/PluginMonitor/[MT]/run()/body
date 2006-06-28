@@ -1,5 +1,12 @@
 {
+synchronized (this) {
+    if (running) {
+      return;
+    }
+    running=true;
+  }
   try {
+    running=true;
     String pluginDirs=System.getProperty("pluginDirs");
     if (pluginDirs != null) {
       StringTokenizer st=new StringTokenizer(pluginDirs,", ");
@@ -80,7 +87,7 @@
       File dir=new File(pluginDirectory,pluginName);
       while (!deleteDir(dir) && count < 5) {
         Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         count++;
       }
     }
@@ -92,5 +99,8 @@
   }
  catch (  Throwable e) {
     Log.error(e);
+  }
+synchronized (this) {
+    running=false;
   }
 }

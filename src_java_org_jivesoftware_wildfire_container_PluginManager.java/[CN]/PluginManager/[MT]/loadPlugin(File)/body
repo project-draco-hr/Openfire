@@ -122,6 +122,7 @@
  else {
         classloaders.put(plugin,pluginLoader);
       }
+      DbConnectionManager.getSchemaManager().checkPluginSchema(plugin);
       File webXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web.xml");
       if (webXML.exists()) {
         PluginServlet.registerServlets(this,plugin,webXML);
@@ -133,7 +134,6 @@
       if (dev != null) {
         pluginDevelopment.put(plugin,dev);
       }
-      DbConnectionManager.getSchemaManager().checkPluginSchema(plugin);
       plugin.initializePlugin(this,pluginDir);
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
