@@ -11,6 +11,12 @@
     throw new NullPointerException("Plugin could not be located: " + pluginName);
   }
   ClassLoader pluginClassLoader=pluginManager.getPluginClassloader(plugin).getClassLoader();
-  ResourceBundle bundle=ResourceBundle.getBundle(i18nFile,locale,pluginClassLoader);
-  return getLocalizedString(key,locale,arguments,bundle);
+  try {
+    ResourceBundle bundle=ResourceBundle.getBundle(i18nFile,locale,pluginClassLoader);
+    return getLocalizedString(key,locale,arguments,bundle);
+  }
+ catch (  MissingResourceException mre) {
+    Log.error(mre);
+    return key;
+  }
 }
