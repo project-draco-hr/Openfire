@@ -19,6 +19,9 @@
         }
       }
       if (!done && !command.toString().equals("")) {
+        if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.oracle) {
+          command.deleteCharAt(command.length() - 1);
+        }
         Statement stmt=con.createStatement();
         stmt.execute(command.toString());
         stmt.close();
