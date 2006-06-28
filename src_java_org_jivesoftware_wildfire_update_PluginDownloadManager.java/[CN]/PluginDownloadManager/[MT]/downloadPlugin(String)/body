@@ -1,0 +1,18 @@
+{
+  UpdateManager updateManager=XMPPServer.getInstance().getUpdateManager();
+  updateManager.downloadPlugin(url);
+  Update returnUpdate=null;
+  for (  Update update : updateManager.getPluginUpdates()) {
+    if (update.getURL().equals(url)) {
+      returnUpdate=update;
+      break;
+    }
+  }
+  try {
+    updateManager.checkForPluginsUpdates(true);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return returnUpdate;
+}
