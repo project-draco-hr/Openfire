@@ -10,7 +10,9 @@
     con=DbConnectionManager.getConnection();
     return checkSchema(con,schemaKey,schemaVersion,new ResourceLoader(){
       public InputStream loadResource(      String resourceName){
-        return pluginManager.getPluginClassloader(plugin).getClassLoader().getResourceAsStream(resourceName);
+        PluginClassLoader pluginClassLoader=pluginManager.getPluginClassloader(plugin);
+        ClassLoader classLoader=pluginClassLoader.getClassLoader();
+        return classLoader.getResourceAsStream(resourceName);
       }
     }
 );

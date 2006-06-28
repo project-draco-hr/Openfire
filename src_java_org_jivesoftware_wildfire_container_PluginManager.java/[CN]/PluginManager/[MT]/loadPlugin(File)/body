@@ -107,7 +107,6 @@
           classloaders.put(plugin,pluginLoader);
         }
       }
-      plugin.initializePlugin(this,pluginDir);
       plugins.put(pluginDir.getName(),plugin);
       pluginDirs.put(plugin,pluginDir);
       if (parentPluginNode != null) {
@@ -135,6 +134,7 @@
         pluginDevelopment.put(plugin,dev);
       }
       DbConnectionManager.getSchemaManager().checkPluginSchema(plugin);
+      plugin.initializePlugin(this,pluginDir);
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
         if (parentPluginNode != null) {
