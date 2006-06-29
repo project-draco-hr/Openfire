@@ -122,7 +122,10 @@
  else {
         classloaders.put(plugin,pluginLoader);
       }
-      DbConnectionManager.getSchemaManager().checkPluginSchema(plugin);
+      if (!DbConnectionManager.getSchemaManager().checkPluginSchema(plugin)) {
+        Log.error(LocaleUtils.getLocalizedString("upgrade.database.failure"));
+        System.out.println(LocaleUtils.getLocalizedString("upgrade.database.failure"));
+      }
       File webXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web.xml");
       if (webXML.exists()) {
         PluginServlet.registerServlets(this,plugin,webXML);
