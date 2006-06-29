@@ -4,7 +4,22 @@
     throw new UserNotFoundException("Domain does not matches local server domain");
   }
   if (!hostname.equals(targetJID.getDomain())) {
-    throw new UserNotFoundException("Presence of components not supported yet!");
+    presenceManager.probePresence(new JID("presence." + hostname),targetJID);
+    int count=0;
+    while (!probedPresence.containsKey(jid)) {
+      try {
+        Thread.sleep(100);
+      }
+ catch (      InterruptedException e) {
+      }
+      count++;
+      if (count > 300) {
+        throw new UserNotFoundException("Request for user presence has timed-out.");
+      }
+    }
+    Presence presence=probedPresence.get(jid);
+    probedPresence.remove(jid);
+    return presence;
   }
   if (targetJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(targetJID.getNode())) {
     throw new UserNotFoundException("Username is null");

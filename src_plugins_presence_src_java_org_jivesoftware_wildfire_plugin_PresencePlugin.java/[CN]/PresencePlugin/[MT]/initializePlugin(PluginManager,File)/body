@@ -1,6 +1,15 @@
 {
+  pluginManager=manager;
   XMPPServer server=XMPPServer.getInstance();
   userManager=server.getUserManager();
   presenceManager=server.getPresenceManager();
   hostname=server.getServerInfo().getName();
+  probedPresence=new HashMap<String,Presence>();
+  componentManager=ComponentManagerFactory.getComponentManager();
+  try {
+    componentManager.addComponent("presence",this);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
 }
