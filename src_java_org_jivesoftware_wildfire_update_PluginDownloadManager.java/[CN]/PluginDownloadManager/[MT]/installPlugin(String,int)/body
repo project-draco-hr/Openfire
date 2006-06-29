@@ -1,5 +1,9 @@
 {
   UpdateManager updateManager=XMPPServer.getInstance().getUpdateManager();
-  updateManager.downloadPlugin(url);
-  return hashCode;
+  boolean worked=updateManager.downloadPlugin(url);
+  final DownloadStatus status=new DownloadStatus();
+  status.setHashCode(hashCode);
+  status.setSuccessfull(worked);
+  status.setUrl(url);
+  return status;
 }
