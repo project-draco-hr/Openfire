@@ -1,33 +1,3 @@
 {
-  if (mechanisms == null) {
-    mechanisms=new ArrayList<String>();
-    String available=JiveGlobals.getXMLProperty("sasl.mechs");
-    if (available == null) {
-      mechanisms.add("ANONYMOUS");
-      mechanisms.add("PLAIN");
-      mechanisms.add("DIGEST-MD5");
-      mechanisms.add("CRAM-MD5");
-      return mechanisms;
-    }
-    StringTokenizer st=new StringTokenizer(available," ,\t\n\r\f");
-    while (st.hasMoreTokens()) {
-      String mech=st.nextToken().toUpperCase();
-      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("GSSAPI")) {
-        Log.debug("SASLAuthentication: Added " + mech + " to mech list");
-        mechanisms.add(mech);
-      }
-    }
-    if (getSupportedMechanisms().contains("GSSAPI")) {
-      if (JiveGlobals.getXMLProperty("sasl.gssapi.config") != null) {
-        System.setProperty("java.security.krb5.debug",JiveGlobals.getXMLProperty("sasl.gssapi.debug","false"));
-        System.setProperty("java.security.auth.login.config",JiveGlobals.getXMLProperty("sasl.gssapi.config"));
-        System.setProperty("javax.security.auth.useSubjectCredsOnly",JiveGlobals.getXMLProperty("sasl.gssapi.useSubjectCredsOnly","false"));
-      }
- else {
-        Log.debug("SASLAuthentication: Removed GSSAPI from mech list");
-        mechanisms.remove("GSSAPI");
-      }
-    }
-  }
   return mechanisms;
 }
