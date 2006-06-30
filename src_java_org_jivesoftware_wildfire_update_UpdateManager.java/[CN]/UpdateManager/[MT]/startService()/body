@@ -4,22 +4,17 @@
       try {
         Thread.sleep(15000);
         loadSavedInfo();
-        while (true) {
+        while (isServiceEnabled()) {
+          waitForNextChecking();
           if (isServiceEnabled()) {
-            waitForNextChecking();
-            if (isServiceEnabled()) {
-              try {
-                checkForServerUpdate(true);
-                checkForPluginsUpdates(true);
-                JiveGlobals.setProperty("update.lastCheck",String.valueOf(System.currentTimeMillis()));
-              }
- catch (              Exception e) {
-                Log.error("Error checking for updates",e);
-              }
+            try {
+              checkForServerUpdate(true);
+              checkForPluginsUpdates(true);
+              JiveGlobals.setProperty("update.lastCheck",String.valueOf(System.currentTimeMillis()));
             }
-          }
- else {
-            Thread.sleep(300000);
+ catch (            Exception e) {
+              Log.error("Error checking for updates",e);
+            }
           }
         }
       }
