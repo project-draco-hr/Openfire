@@ -1,0 +1,18 @@
+{
+  if (type == null) {
+    return true;
+  }
+  boolean isPresence=packet.getClass().equals(Presence.class);
+  boolean incoming=true;
+  if (packet.getFrom() != null) {
+    incoming=!userJID.toBareJID().equals(packet.getFrom().toBareJID());
+  }
+  boolean matches=false;
+  if (isPresence && !incoming && (filterEverything || filterPresence_out)) {
+    matches=verifyJID(packet.getTo(),roster);
+  }
+  if (!matches && incoming && (filterEverything || filterPresence_in || filterIQ|| filterMessage)) {
+    matches=verifyJID(packet.getFrom(),roster);
+  }
+  return matches;
+}
