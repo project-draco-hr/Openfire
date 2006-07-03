@@ -6,18 +6,18 @@
   }
   Collection<JID> users=new HashSet<JID>(group.getMembers());
   users.addAll(group.getAdmins());
-  if ("everybody".equals(showInRoster)) {
-    if (group.isUser(roster.getUsername())) {
+  if (group.isUser(roster.getUsername())) {
+    if ("everybody".equals(showInRoster)) {
       for (      String username : UserManager.getInstance().getUsernames()) {
         users.add(server.createJID(username,null));
       }
     }
-  }
  else {
-    Collection<Group> groupList=parseGroups(groupNames);
-    for (    Group groupInList : groupList) {
-      users.addAll(groupInList.getMembers());
-      users.addAll(groupInList.getAdmins());
+      Collection<Group> groupList=parseGroups(groupNames);
+      for (      Group groupInList : groupList) {
+        users.addAll(groupInList.getMembers());
+        users.addAll(groupInList.getAdmins());
+      }
     }
   }
   return users;
