@@ -13,7 +13,9 @@
       Element nameElement=(Element)names.get(i);
       String url=nameElement.element("url-pattern").getTextTrim();
       GenericServlet servlet=servlets.get(pluginName + url);
-      servlet.destroy();
+      if (servlet != null) {
+        servlet.destroy();
+      }
       servlets.remove(pluginName + url);
       servlet=null;
     }
