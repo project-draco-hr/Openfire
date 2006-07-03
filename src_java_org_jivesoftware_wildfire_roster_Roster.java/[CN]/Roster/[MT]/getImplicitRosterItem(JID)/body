@@ -1,23 +1,6 @@
 {
-  Collection<Group> userGroups=GroupManager.getInstance().getGroups(getUserJID());
-  Collection<Group> sharedGroups=new ArrayList<Group>(userGroups.size());
-  for (  Group group : userGroups) {
-    if (rosterManager.isPulicSharedGroup(group)) {
-      if (server.isLocal(user)) {
-        return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
-      }
-    }
- else     if (rosterManager.isSharedGroup(group)) {
-      sharedGroups.add(group);
-    }
-  }
-  if (!sharedGroups.isEmpty()) {
-    Collection<Group> contactGroups=GroupManager.getInstance().getGroups(user);
-    for (    Group sharedGroup : sharedGroups) {
-      if (rosterManager.isSharedGroupVisible(sharedGroup,contactGroups)) {
-        return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
-      }
-    }
+  if (implicitFrom.containsKey(user.toBareJID())) {
+    return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
   }
   return null;
 }

@@ -34,6 +34,20 @@
       }
     }
   }
+  for (  String contact : implicitFrom.keySet()) {
+    packet.setTo(contact);
+    if (list != null && list.shouldBlockPacket(packet)) {
+      continue;
+    }
+    for (    ChannelHandler session : routingTable.getRoutes(new JID(contact))) {
+      try {
+        session.process(packet);
+      }
+ catch (      Exception e) {
+        Log.debug(e);
+      }
+    }
+  }
   if (from != null) {
     sessionManager.broadcastPresenceToOtherResources(from,packet);
   }
