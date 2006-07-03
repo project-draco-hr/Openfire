@@ -52,7 +52,12 @@
   }
   connection.setLanaguage(language);
   connection.setXMPPVersion(majorVersion,minorVersion);
-  connection.setTlsPolicy(tlsPolicy);
+  if (!connection.isSecure()) {
+    connection.setTlsPolicy(tlsPolicy);
+  }
+ else {
+    connection.setTlsPolicy(Connection.TLSPolicy.disabled);
+  }
   connection.setCompressionPolicy(compressionPolicy);
   connection.setIdleTimeout(idleTimeout);
   Session session=SessionManager.getInstance().createClientSession(connection);
@@ -88,9 +93,9 @@
   }
   sb=new StringBuilder(490);
   sb.append("<stream:features>");
-  if (tlsPolicy != Connection.TLSPolicy.disabled) {
+  if (connection.getTlsPolicy() != Connection.TLSPolicy.disabled) {
     sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
-    if (tlsPolicy == Connection.TLSPolicy.required) {
+    if (connection.getTlsPolicy() == Connection.TLSPolicy.required) {
       sb.append("<required/>");
     }
     sb.append("</starttls>");
