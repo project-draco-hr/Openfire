@@ -1,0 +1,18 @@
+{
+  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.jdbcDriver.className");
+  try {
+    Class.forName(jdbcDriver).newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+    return;
+  }
+  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.jdbcConnString");
+  loadUserSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.loadUser");
+  userCountSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.userCount");
+  allUsersSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.allUsers");
+  searchSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.search");
+  usernameField=JiveGlobals.getXMLProperty("jdbcUserProvider.usernameField");
+  nameField=JiveGlobals.getXMLProperty("jdbcUserProvider.nameField");
+  emailField=JiveGlobals.getXMLProperty("jdbcUserProvider.emailField");
+}
