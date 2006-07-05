@@ -6,7 +6,13 @@
     throw new UnauthorizedException();
   }
   username=username.trim().toLowerCase();
-  String password=getPassword(username);
+  String password;
+  try {
+    password=getPassword(username);
+  }
+ catch (  UserNotFoundException unfe) {
+    throw new UnauthorizedException();
+  }
   String anticipatedDigest=AuthFactory.createDigest(token,password);
   if (!digest.equalsIgnoreCase(anticipatedDigest)) {
     throw new UnauthorizedException();

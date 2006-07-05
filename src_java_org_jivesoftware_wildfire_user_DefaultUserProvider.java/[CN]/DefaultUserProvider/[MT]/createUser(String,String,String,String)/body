@@ -10,10 +10,11 @@
     boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
     String encryptedPassword=null;
     if (!usePlainPassword) {
-      Blowfish cipher=getCipher();
-      if (cipher != null) {
-        encryptedPassword=cipher.encryptString(password);
+      try {
+        encryptedPassword=AuthFactory.encryptPassword(password);
         password=null;
+      }
+ catch (      UnsupportedOperationException uoe) {
       }
     }
     Date now=new Date();

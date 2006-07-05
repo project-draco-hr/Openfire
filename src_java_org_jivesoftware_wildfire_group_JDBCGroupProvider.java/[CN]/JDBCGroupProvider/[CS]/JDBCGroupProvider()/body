@@ -1,5 +1,5 @@
 {
-  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcGroupProvider.jdbcDriver.className");
+  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
   }
@@ -7,7 +7,7 @@
     Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
     return;
   }
-  jdbcConnString=JiveGlobals.getXMLProperty("jdbcGroupProvider.jdbcConnString");
+  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.connectionString");
   groupCountSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.groupCountSQL");
   allGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.allGroupsSQL");
   userGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.userGroupsSQL");

@@ -3,7 +3,13 @@
     throw new UnauthorizedException();
   }
   username=username.trim().toLowerCase();
-  String userPassword=getPassword(username);
+  String userPassword;
+  try {
+    userPassword=getPassword(username);
+  }
+ catch (  UserNotFoundException unfe) {
+    throw new UnauthorizedException();
+  }
   if (passwordType == PasswordType.md5) {
     password=StringUtils.hash(password,"MD5");
   }

@@ -1,39 +1,24 @@
 {
   List<String> groupNames=new ArrayList<String>();
-  Connection conn=null;
+  Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   try {
-    conn=DriverManager.getConnection(jdbcConnString);
-    pstmt=DbConnectionManager.createScrollablePreparedStatement(conn,allGroupsSQL);
-    ResultSet rs=pstmt.executeQuery();
+    con=DriverManager.getConnection(connectionString);
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,allGroupsSQL);
+    rs=pstmt.executeQuery();
     DbConnectionManager.scrollResultSet(rs,start);
     int count=0;
     while (rs.next() && count < num) {
       groupNames.add(rs.getString(1));
       count++;
     }
-    rs.close();
   }
  catch (  SQLException e) {
     Log.error(e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (conn != null) {
-        conn.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   List<Group> groups=new ArrayList<Group>(groupNames.size());
   for (  String groupName : groupNames) {

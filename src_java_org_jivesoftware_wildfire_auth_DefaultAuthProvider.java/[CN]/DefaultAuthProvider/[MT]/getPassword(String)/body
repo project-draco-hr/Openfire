@@ -15,9 +15,10 @@
     String plainText=rs.getString(1);
     String encrypted=rs.getString(2);
     if (encrypted != null) {
-      Blowfish cipher=getCipher();
-      if (cipher != null) {
-        return cipher.decryptString(encrypted);
+      try {
+        return AuthFactory.decryptPassword(encrypted);
+      }
+ catch (      UnsupportedOperationException uoe) {
       }
     }
     return plainText;

@@ -4,7 +4,7 @@
   }
   username=username.trim().toLowerCase();
   try {
-    String password=userProvider.getPassword(username);
+    String password=getPassword(username);
     String anticipatedDigest=AuthFactory.createDigest(token,password);
     if (!digest.equalsIgnoreCase(anticipatedDigest)) {
       throw new UnauthorizedException();

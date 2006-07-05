@@ -3,12 +3,15 @@
     throw new UnsupportedOperationException("User provider is read-only.");
   }
   try {
-    UserManager.getUserProvider().setPassword(username,password);
-    Map params=new HashMap();
+    AuthFactory.getAuthProvider().setPassword(username,password);
+    Map<String,Object> params=new HashMap<String,Object>();
     params.put("type","passwordModified");
     UserEventDispatcher.dispatchEvent(this,UserEventDispatcher.EventType.user_modified,params);
   }
- catch (  UserNotFoundException unfe) {
+ catch (  UnsupportedOperationException uoe) {
+    Log.error(uoe);
+  }
+catch (  UserNotFoundException unfe) {
     Log.error(unfe);
   }
 }

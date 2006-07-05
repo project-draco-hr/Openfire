@@ -2,38 +2,23 @@
   String password=null;
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   try {
-    con=DriverManager.getConnection(jdbcConnectionString);
+    con=DriverManager.getConnection(connectionString);
     pstmt=con.prepareStatement(passwordSQL);
     pstmt.setString(1,username);
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     if (!rs.next()) {
-      throw new UnauthorizedException();
+      throw new UserNotFoundException();
     }
     password=rs.getString(1);
-    rs.close();
   }
  catch (  SQLException e) {
     Log.error("Exception in JDBCAuthProvider",e);
-    throw new UnauthorizedException();
+    throw new UserNotFoundException();
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return password;
 }
