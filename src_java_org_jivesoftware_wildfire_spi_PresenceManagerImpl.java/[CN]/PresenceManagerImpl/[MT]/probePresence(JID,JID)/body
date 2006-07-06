@@ -1,6 +1,15 @@
 {
   try {
     if (server.isLocal(probee)) {
+      Collection<JID> proberFullJIDs=new ArrayList<JID>();
+      if (prober.getResource() == null && server.isLocal(prober)) {
+        for (        ClientSession session : sessionManager.getSessions(prober.getNode())) {
+          proberFullJIDs.add(session.getAddress());
+        }
+      }
+ else {
+        proberFullJIDs.add(prober);
+      }
       Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
       if (sessions.isEmpty()) {
         String presenceXML=userManager.getUserProperty(probee.getNode(),LAST_PRESENCE_PROP);
@@ -9,10 +18,12 @@
             Document element=DocumentHelper.parseText(presenceXML);
             Presence presencePacket=new Presence(element.getRootElement());
             presencePacket.setFrom(probee.toBareJID());
-            presencePacket.setTo(prober);
             PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(probee.getNode());
-            if (list == null || !list.shouldBlockPacket(presencePacket)) {
-              deliverer.deliver(presencePacket);
+            for (            JID receipient : proberFullJIDs) {
+              presencePacket.setTo(receipient);
+              if (list == null || !list.shouldBlockPacket(presencePacket)) {
+                deliverer.deliver(presencePacket);
+              }
             }
           }
  catch (          Exception e) {
@@ -24,19 +35,21 @@
         for (        ClientSession session : sessions) {
           Presence presencePacket=session.getPresence().createCopy();
           presencePacket.setFrom(session.getAddress());
-          presencePacket.setTo(prober);
           PrivacyList list=session.getActiveList();
           list=list == null ? session.getDefaultList() : list;
-          if (list != null) {
-            if (list.shouldBlockPacket(presencePacket)) {
-              continue;
+          for (          JID receipient : proberFullJIDs) {
+            presencePacket.setTo(receipient);
+            if (list != null) {
+              if (list.shouldBlockPacket(presencePacket)) {
+                continue;
+              }
             }
-          }
-          try {
-            deliverer.deliver(presencePacket);
-          }
- catch (          Exception e) {
-            Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+            try {
+              deliverer.deliver(presencePacket);
+            }
+ catch (            Exception e) {
+              Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+            }
           }
         }
       }

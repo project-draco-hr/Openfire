@@ -7,12 +7,23 @@
       Presence presencePacket=new Presence();
       presencePacket.setType(Presence.Type.unavailable);
       presencePacket.setFrom(session.getAddress());
-      presencePacket.setTo(recipientJID);
-      try {
-        deliverer.deliver(presencePacket);
+      Collection<JID> recipientFullJIDs=new ArrayList<JID>();
+      if (server.isLocal(recipientJID)) {
+        for (        ClientSession targetSession : sessionManager.getSessions(recipientJID.getNode())) {
+          recipientFullJIDs.add(targetSession.getAddress());
+        }
       }
- catch (      Exception e) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+ else {
+        recipientFullJIDs.add(recipientJID);
+      }
+      for (      JID jid : recipientFullJIDs) {
+        presencePacket.setTo(jid);
+        try {
+          deliverer.deliver(presencePacket);
+        }
+ catch (        Exception e) {
+          Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+        }
       }
     }
   }
