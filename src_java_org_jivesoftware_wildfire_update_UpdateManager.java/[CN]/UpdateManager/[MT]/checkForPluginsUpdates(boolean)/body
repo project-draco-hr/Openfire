@@ -1,6 +1,11 @@
 {
   String requestXML=getAvailablePluginsUpdateRequest();
   HttpClient httpClient=new HttpClient();
+  if (isUsingProxy()) {
+    HostConfiguration hc=new HostConfiguration();
+    hc.setProxy(getProxyHost(),getProxyPort());
+    httpClient.setHostConfiguration(hc);
+  }
   PostMethod postMethod=new PostMethod(updateServiceURL);
   NameValuePair[] data={new NameValuePair("type","available"),new NameValuePair("query",requestXML)};
   postMethod.setRequestBody(data);
