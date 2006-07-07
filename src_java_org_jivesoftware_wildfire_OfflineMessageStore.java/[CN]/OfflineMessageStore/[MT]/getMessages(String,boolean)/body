@@ -19,7 +19,7 @@
       messages.add(message);
     }
     rs.close();
-    if (delete) {
+    if (delete && !messages.isEmpty()) {
       pstmt.close();
       pstmt=con.prepareStatement(DELETE_OFFLINE);
       pstmt.setString(1,username);
@@ -31,23 +31,10 @@
     Log.error("Error retrieving offline messages of username: " + username,e);
   }
  finally {
-    if (xmlReader != null)     xmlReaders.add(xmlReader);
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
+    if (xmlReader != null) {
+      xmlReaders.add(xmlReader);
     }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
   return messages;
 }

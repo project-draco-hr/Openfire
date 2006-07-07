@@ -2,6 +2,7 @@
   OfflineMessage message=null;
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   SAXReader xmlReader=null;
   try {
     xmlReader=xmlReaders.take();
@@ -9,7 +10,7 @@
     pstmt=con.prepareStatement(LOAD_OFFLINE_MESSAGE);
     pstmt.setString(1,username);
     pstmt.setString(2,StringUtils.dateToMillis(creationDate));
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     while (rs.next()) {
       String msgXML=rs.getString(1);
       message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
@@ -17,29 +18,15 @@
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
       delay.addAttribute("stamp",dateFormat.format(creationDate));
     }
-    rs.close();
   }
  catch (  Exception e) {
     Log.error("Error retrieving offline messages of username: " + username + " creationDate: "+ creationDate,e);
   }
  finally {
-    if (xmlReader != null)     xmlReaders.add(xmlReader);
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
+    if (xmlReader != null) {
+      xmlReaders.add(xmlReader);
     }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return message;
 }
