@@ -1,4 +1,7 @@
 {
+  if (privacyListCount.get() == 0) {
+    return;
+  }
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -14,4 +17,5 @@
  finally {
     DbConnectionManager.closeConnection(pstmt,con);
   }
+  privacyListCount.set(-1);
 }
