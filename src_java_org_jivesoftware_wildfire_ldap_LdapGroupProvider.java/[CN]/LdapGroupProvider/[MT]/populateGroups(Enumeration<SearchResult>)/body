@@ -62,7 +62,8 @@
           }
           try {
             JID userJID;
-            if (!username.contains(serverName)) {
+            int position=username.indexOf("@" + serverName);
+            if (position == -1) {
               String escapedUsername=JID.escapeNode(username);
               if (!escapedUsername.equals(username)) {
                 userManager.getUser(escapedUsername);
@@ -70,8 +71,9 @@
               userJID=server.createJID(escapedUsername,null);
             }
  else {
-              String escapedUsername=JID.escapeNode(username);
-              userJID=new JID(escapedUsername);
+              String node=username.substring(0,position);
+              String escapedUsername=JID.escapeNode(node);
+              userJID=new JID(escapedUsername + "@" + serverName);
             }
             members.add(userJID);
           }
