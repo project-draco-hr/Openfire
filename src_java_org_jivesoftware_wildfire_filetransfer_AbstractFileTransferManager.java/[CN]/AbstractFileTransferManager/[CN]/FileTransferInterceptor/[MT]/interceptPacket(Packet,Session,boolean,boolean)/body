@@ -6,7 +6,7 @@
       return;
     }
     String namespace=childElement.getNamespaceURI();
-    if (!isFileTransferEnabled && FILETRANSFER_NAMESPACES.contains(namespace)) {
+    if (!isFileTransferEnabled() && FILETRANSFER_NAMESPACES.contains(namespace)) {
       throw new PacketRejectedException("File Transfer Disabled");
     }
     if (NAMESPACE_SI.equals(namespace)) {
@@ -14,7 +14,7 @@
         JID from=iq.getFrom();
         JID to=iq.getTo();
         String packetID=iq.getID();
-        if (!transferManager.acceptIncomingFileTransferRequest(packetID,from,to,childElement)) {
+        if (!acceptIncomingFileTransferRequest(packetID,from,to,childElement)) {
           throw new PacketRejectedException();
         }
       }
