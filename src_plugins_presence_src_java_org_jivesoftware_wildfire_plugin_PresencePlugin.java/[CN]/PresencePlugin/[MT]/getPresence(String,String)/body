@@ -4,20 +4,21 @@
     throw new UserNotFoundException("Domain does not matches local server domain");
   }
   if (!hostname.equals(targetJID.getDomain())) {
-    presenceManager.probePresence(new JID("presence." + hostname),targetJID);
+    presenceManager.probePresence(componentJID,targetJID);
     int count=0;
-    while (!probedPresence.containsKey(jid)) {
+    Presence presence=probedPresence.get(jid);
+    while (presence == null) {
+      if (count > 300) {
+        throw new UserNotFoundException("Request for component presence has timed-out.");
+      }
       try {
         Thread.sleep(100);
       }
  catch (      InterruptedException e) {
       }
+      presence=probedPresence.get(jid);
       count++;
-      if (count > 300) {
-        throw new UserNotFoundException("Request for user presence has timed-out.");
-      }
     }
-    Presence presence=probedPresence.get(jid);
     probedPresence.remove(jid);
     return presence;
   }

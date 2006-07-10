@@ -1,6 +1,8 @@
 {
   if (packet instanceof Presence) {
     Presence presence=(Presence)packet;
-    probedPresence.put(presence.getFrom().toString(),presence);
+    if (presence.isAvailable() || presence.getType() == Presence.Type.unavailable || presence.getType() == Presence.Type.error) {
+      probedPresence.put(presence.getFrom().toString(),presence);
+    }
   }
 }

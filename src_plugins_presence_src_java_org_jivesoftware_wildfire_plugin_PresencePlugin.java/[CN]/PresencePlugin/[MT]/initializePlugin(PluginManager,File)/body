@@ -4,10 +4,11 @@
   userManager=server.getUserManager();
   presenceManager=server.getPresenceManager();
   hostname=server.getServerInfo().getName();
-  probedPresence=new HashMap<String,Presence>();
+  probedPresence=new ConcurrentHashMap<String,Presence>();
+  componentJID=new JID(subdomain + "." + hostname);
   componentManager=ComponentManagerFactory.getComponentManager();
   try {
-    componentManager.addComponent("presence",this);
+    componentManager.addComponent(subdomain,this);
   }
  catch (  Exception e) {
     componentManager.getLog().error(e);
