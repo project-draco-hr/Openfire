@@ -1,0 +1,6 @@
+{
+  logger.finer(message.toString());
+  GatewaySession session=PersistenceManager.Factory.get(this).getRegistrar().getGatewaySession(message.getFrom());
+  session.getLegacyEndpoint().sendPacket(message);
+  return;
+}

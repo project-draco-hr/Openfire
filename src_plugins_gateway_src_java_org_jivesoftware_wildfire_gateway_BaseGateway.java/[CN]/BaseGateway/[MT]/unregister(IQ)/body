@@ -1,0 +1,21 @@
+{
+  IQ reply=IQ.createResultIQ(iq);
+  PersistenceManager.Factory.get(this).remove(iq.getFrom());
+  Collection<Packet> results=new ArrayList<Packet>();
+  results.add(reply);
+  Presence unsubscribed, unsubscribe, unavailable;
+  unavailable=new Presence(Presence.Type.unavailable);
+  unavailable.setTo(reply.getTo());
+  unavailable.setFrom(reply.getFrom());
+  unsubscribed=new Presence(Presence.Type.unsubscribed);
+  unsubscribed.setTo(reply.getTo());
+  unsubscribed.setFrom(reply.getFrom());
+  unsubscribe=new Presence(Presence.Type.unsubscribe);
+  unsubscribe.setTo(reply.getTo());
+  unsubscribe.setFrom(reply.getFrom());
+  results.add(unsubscribe);
+  results.add(unsubscribed);
+  results.add(unavailable);
+  logger.log(Level.INFO,"basegateway.unregister",iq.getFrom());
+  return results;
+}

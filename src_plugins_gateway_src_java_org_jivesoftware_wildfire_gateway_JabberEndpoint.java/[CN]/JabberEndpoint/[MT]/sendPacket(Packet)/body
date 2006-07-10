@@ -1,0 +1,12 @@
+{
+  if (valve.isOpen()) {
+    while (!queue.isEmpty()) {
+      this.componentManager.sendPacket(this.component,queue.poll());
+    }
+    this.componentManager.sendPacket(this.component,packet);
+  }
+ else {
+    queue.add(packet);
+    logger.log(Level.FINE,"jabberendpoint.sendpacketenqueue",packet.getFrom());
+  }
+}

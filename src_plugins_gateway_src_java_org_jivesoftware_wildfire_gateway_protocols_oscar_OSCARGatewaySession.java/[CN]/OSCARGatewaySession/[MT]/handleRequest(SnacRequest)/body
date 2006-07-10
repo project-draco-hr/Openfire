@@ -1,0 +1,22 @@
+{
+  int family=request.getCommand().getFamily();
+  if (snacMgr.isPending(family)) {
+    snacMgr.addRequest(request);
+    return;
+  }
+  BasicFlapConnection conn=snacMgr.getConn(family);
+  if (conn != null) {
+    conn.sendRequest(request);
+  }
+ else {
+    if (!(request.getCommand() instanceof ServiceRequest)) {
+      Log.debug("requesting " + Integer.toHexString(family) + " service.");
+      snacMgr.setPending(family,true);
+      snacMgr.addRequest(request);
+      request(new ServiceRequest(family));
+    }
+ else {
+      Log.error("eep! can't find a service redirector server.");
+    }
+  }
+}

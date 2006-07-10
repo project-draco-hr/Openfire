@@ -1,0 +1,30 @@
+{
+  ContactManager contactManager=null;
+  Registrar registrar=null;
+  try {
+    byte[] rawKey=Preferences.systemNodeForPackage(this.getClass()).getByteArray(".key",null);
+    if (rawKey == null) {
+      logger.log(GatewayLevel.SECURITY,"persistencemanager.nokey");
+      return;
+    }
+    SecretKeySpec key=new SecretKeySpec(rawKey,"AES");
+    Cipher c=Cipher.getInstance("AES");
+    c.init(Cipher.DECRYPT_MODE,key);
+    CipherInputStream cis=new CipherInputStream(new FileInputStream(db),c);
+    ObjectInputStream is=new ObjectInputStream(cis);
+    contactManager=(ContactManager)is.readObject();
+    registrar=(Registrar)is.readObject();
+    is.close();
+  }
+ catch (  Exception e) {
+    if (db.exists()) {
+      db.delete();
+    }
+    logger.log(Level.WARNING,"persistencemanager.loadrosterfailed",e);
+  }
+ finally {
+    this.contactManager=(contactManager != null) ? contactManager : new ContactManager();
+    this.registrar=(registrar != null) ? registrar : new Registrar();
+    this.registrar.setGateway(gateway);
+  }
+}

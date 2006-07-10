@@ -1,0 +1,14 @@
+{
+  SnacPacket packet=e.getSnacPacket();
+  Log.debug("got snac response type " + Integer.toHexString(packet.getFamily()) + "/"+ Integer.toHexString(packet.getCommand())+ ": "+ e.getSnacCommand());
+  SnacCommand cmd=e.getSnacCommand();
+  if (cmd instanceof RateInfoCmd) {
+    RateInfoCmd ric=(RateInfoCmd)cmd;
+    RateClassInfo[] rateClasses=ric.getRateClassInfos();
+    int[] classes=new int[rateClasses.length];
+    for (int i=0; i < rateClasses.length; i++) {
+      classes[i]=rateClasses[i].getRateClass();
+    }
+    request(new RateAck(classes));
+  }
+}

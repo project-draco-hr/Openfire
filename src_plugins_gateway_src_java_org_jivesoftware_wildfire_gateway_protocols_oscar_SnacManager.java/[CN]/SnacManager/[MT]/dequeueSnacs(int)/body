@@ -1,0 +1,8 @@
+{
+  SnacRequest[] pending=pendingSnacs.getPending(familyCode);
+  pendingSnacs.setPending(familyCode,false);
+  for (Iterator it=listeners.iterator(); it.hasNext(); ) {
+    PendingSnacListener listener=(PendingSnacListener)it.next();
+    listener.dequeueSnacs(pending);
+  }
+}

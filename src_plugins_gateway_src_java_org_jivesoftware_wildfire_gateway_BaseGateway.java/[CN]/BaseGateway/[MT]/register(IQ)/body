@@ -1,0 +1,70 @@
+{
+  Collection<Packet> response=new ArrayList<Packet>();
+  IQ reply=IQ.createResultIQ(iq);
+  Element responseElement=DocumentHelper.createElement(QName.get("query","jabber:iq:register"));
+  if (iq.getType().equals(IQ.Type.set)) {
+    String username=null;
+    String password=null;
+    try {
+      DataForm form=new DataForm(iq.getChildElement().element("x"));
+      List<FormField> fields=form.getFields();
+      for (      FormField field : fields) {
+        String var=field.getVariable();
+        if (var.equalsIgnoreCase("username")) {
+          username=field.getValues().get(0);
+        }
+ else         if (var.equalsIgnoreCase("password")) {
+          password=field.getValues().get(0);
+        }
+      }
+    }
+ catch (    Exception e) {
+      logger.log(Level.FINER,"basegateway.dataformnotused",e);
+    }
+    if (username == null || password == null) {
+      Element usernameElement=iq.getChildElement().element("username");
+      Element passwordElement=iq.getChildElement().element("password");
+      if (usernameElement != null) {
+        username=usernameElement.getTextTrim();
+      }
+      if (passwordElement != null) {
+        password=passwordElement.getTextTrim();
+      }
+    }
+    if (username == null || password == null) {
+      IQ result=IQ.createResultIQ(iq);
+      result.setError(Condition.bad_request);
+      response.add(result);
+    }
+ else {
+      logger.log(Level.INFO,"basegateway.register",username.trim());
+      SubscriptionInfo info=new SubscriptionInfo(username.trim(),password);
+      PersistenceManager.Factory.get(this).getRegistrar().add(iq.getFrom(),info);
+      reply.setChildElement(responseElement);
+      response.add(reply);
+      Presence subscribe=new Presence(Presence.Type.subscribe);
+      subscribe.setTo(iq.getFrom());
+      subscribe.setFrom(iq.getTo());
+      response.add(subscribe);
+    }
+  }
+ else   if (iq.getType().equals(IQ.Type.get)) {
+    DataForm form=new DataForm(DataForm.Type.form);
+    form.addInstruction("Please enter your AIM Screenname and Password");
+    FormField usernameField=form.addField();
+    usernameField.setLabel("Username");
+    usernameField.setVariable("username");
+    usernameField.setType(FormField.Type.text_single);
+    FormField passwordField=form.addField();
+    passwordField.setLabel("Password");
+    passwordField.setVariable("password");
+    passwordField.setType(FormField.Type.text_private);
+    responseElement.addElement("instruction").addText("Please enter your AIM screenname and password");
+    responseElement.addElement("username");
+    responseElement.addElement("password");
+    responseElement.add(form.getElement());
+    reply.setChildElement(responseElement);
+    response.add(reply);
+  }
+  return response;
+}

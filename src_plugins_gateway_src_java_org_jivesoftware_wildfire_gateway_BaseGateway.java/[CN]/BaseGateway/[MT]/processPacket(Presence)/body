@@ -1,0 +1,82 @@
+{
+  List<Presence> p=new ArrayList<Presence>();
+  JID from=presence.getFrom();
+  logger.finest(presence.toString());
+  if (!rosterManager.getRegistrar().isRegistered(NormalizedJID.wrap(from))) {
+    logger.log(Level.INFO,"basegateway.unabletofind",from);
+    if (!Presence.Type.unavailable.equals(presence.getType())) {
+      logger.log(Level.INFO,"basegateway.unauthorizedrequest",new Object[]{presence.getType(),from.toString()});
+      Presence result=new Presence();
+      result=new Presence();
+      result.setError(Condition.not_authorized);
+      result.setStatus(bundle.getString("basegateway.registerfirst"));
+      p.add(result);
+    }
+    return p;
+  }
+  GatewaySession sessionInfo=rosterManager.getRegistrar().getGatewaySession(from);
+  if (sessionInfo == null) {
+    logger.log(Level.WARNING,"basegateway.unabletolocatesession",from);
+    return p;
+  }
+  if (Presence.Type.subscribe.equals(presence.getType())) {
+    if (presence.getTo().equals(this.jid)) {
+      sessionInfo.getSubscriptionInfo().serverRegistered=true;
+    }
+ else {
+      Presence subscribe=new Presence(Presence.Type.subscribe);
+      subscribe.setTo(presence.getFrom());
+      subscribe.setFrom(presence.getTo());
+      p.add(subscribe);
+    }
+    Presence reply=new Presence(Presence.Type.subscribed);
+    reply.setTo(presence.getFrom());
+    reply.setFrom(presence.getTo());
+    p.add(reply);
+  }
+ else   if (Presence.Type.subscribed.equals(presence.getType())) {
+    if (presence.getTo().equals(this.jid)) {
+      sessionInfo.getSubscriptionInfo().clientRegistered=true;
+    }
+ else {
+      logger.log(Level.FINE,"basegateway.subscribed");
+    }
+  }
+ else   if (Presence.Type.unavailable.equals(presence.getType())) {
+    if (sessionInfo.isConnected()) {
+      sessionInfo.logout();
+    }
+    Presence reply=new Presence(Presence.Type.unavailable);
+    reply.setTo(presence.getFrom());
+    reply.setFrom(presence.getTo());
+    p.add(reply);
+  }
+ else   if (presence.getTo().getNode() == null) {
+    Presence result=new Presence();
+    result.setTo(presence.getFrom());
+    result.setFrom(this.jid);
+    p.add(result);
+    logger.log(Level.FINE,"basegateway.gatewaypresence");
+  }
+ else {
+    GatewaySession session=rosterManager.getRegistrar().getGatewaySession(presence.getFrom());
+    try {
+      ForeignContact fc=session.getContact(presence.getTo());
+      Status status=fc.getStatus();
+      Presence p2=new Presence();
+      p2.setFrom(presence.getTo());
+      p2.setTo(presence.getFrom());
+      if (status.isOnline()) {
+        p2.setStatus(status.getValue());
+      }
+ else {
+        p2.setType(Presence.Type.unavailable);
+      }
+      p.add(p2);
+    }
+ catch (    Exception e) {
+      logger.log(Level.WARNING,"basegateway.statusexception",new Object[]{presence.getTo(),presence.getFrom(),e.getLocalizedMessage()});
+    }
+  }
+  return p;
+}

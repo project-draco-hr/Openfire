@@ -1,0 +1,23 @@
+{
+  String namespace=getNS(iq);
+  List<Packet> response=new ArrayList<Packet>();
+  if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+    response.add(handleServiceDiscovery(iq));
+  }
+ else   if ("jabber:iq:agents".equals(namespace)) {
+    response.add(handleLegacyServiceDiscovery(iq));
+  }
+ else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
+    response.add(handleDiscoveryItems(iq));
+  }
+ else   if ("jabber:iq:register".equals(namespace)) {
+    response.addAll(handleRegisterInBand(iq));
+  }
+ else   if ("jabber:iq:version".equals(namespace)) {
+    response.add(handleVersion(iq));
+  }
+ else   if ("jabber:iq:browse".equals(namespace)) {
+    response.add(handleBrowse(iq));
+  }
+  return response;
+}

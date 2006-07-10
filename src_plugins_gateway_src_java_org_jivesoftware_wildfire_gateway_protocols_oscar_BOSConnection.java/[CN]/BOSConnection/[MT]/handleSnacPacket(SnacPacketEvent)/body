@@ -1,0 +1,10 @@
+{
+  super.handleSnacPacket(e);
+  SnacCommand cmd=e.getSnacCommand();
+  if (cmd instanceof ServerReadyCmd) {
+    request(new ParamInfoRequest());
+    request(new LocRightsRequest());
+    request(new SsiRightsRequest());
+    request(new SsiDataRequest());
+  }
+}

@@ -1,0 +1,18 @@
+{
+  logger.log(Level.FINEST,"basegateway.maintenancestart");
+  for (  SubscriptionInfo si : rosterManager.getRegistrar().getAllGatewaySessions()) {
+    if (!si.clientRegistered) {
+      Presence p=new Presence();
+      p.setType(Presence.Type.subscribe);
+      p.setTo(si.jid);
+      p.setFrom(this.jid);
+      try {
+        componentManager.sendPacket(this,p);
+      }
+ catch (      ComponentException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  logger.log(Level.FINEST,"basegateway.maintenancestop");
+}

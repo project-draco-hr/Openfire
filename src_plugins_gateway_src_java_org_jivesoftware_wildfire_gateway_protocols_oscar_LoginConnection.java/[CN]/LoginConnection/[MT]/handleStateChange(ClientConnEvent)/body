@@ -1,0 +1,16 @@
+{
+  Log.debug("state changed to: " + e.getNewState() + " ("+ e.getReason()+ ")");
+  if (e.getNewState() == ClientFlapConn.STATE_CONNECTED) {
+    Log.debug("connected, sending flap version and key request");
+    getFlapProcessor().sendFlap(new LoginFlapCmd());
+    request(new KeyRequest(session.getLegacyName()));
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_FAILED) {
+    Log.info("connection failed: " + e.getReason());
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_NOT_CONNECTED) {
+    if (!loggedin) {
+      Log.info("connection lost: " + e.getReason());
+    }
+  }
+}

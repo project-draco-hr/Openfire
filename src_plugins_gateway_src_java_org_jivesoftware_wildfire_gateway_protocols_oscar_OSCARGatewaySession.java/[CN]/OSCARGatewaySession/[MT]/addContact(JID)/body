@@ -1,0 +1,17 @@
+{
+  Log.debug("addContact called");
+  Integer newBuddyId=highestBuddyId + 1;
+  Integer groupId=-1;
+  for (  GroupItem g : groups) {
+    if (g.getGroupName() == "Transport Buddies") {
+      groupId=g.getId();
+    }
+  }
+  if (groupId == -1) {
+    Integer newGroupId=highestGroupId + 1;
+    request(new CreateItemsCmd(new SsiItem[]{new GroupItem("Transport Buddies",newGroupId).toSsiItem()}));
+    highestGroupId=newGroupId;
+    groupId=newGroupId;
+  }
+  request(new CreateItemsCmd(new SsiItem[]{new BuddyItem(jid.getNode(),newBuddyId,groupId).toSsiItem()}));
+}

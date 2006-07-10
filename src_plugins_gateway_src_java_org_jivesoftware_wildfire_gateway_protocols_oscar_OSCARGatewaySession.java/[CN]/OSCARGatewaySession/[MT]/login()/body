@@ -1,0 +1,13 @@
+{
+  Log.debug("Login called");
+  if (!isConnected()) {
+    Log.debug("Connecting...");
+    loginConn=new LoginConnection("login.oscar.aol.com",5190,this);
+    loginConn.connect();
+    getJabberEndpoint().getValve().open();
+    connected=true;
+  }
+ else {
+    Log.warn(this.jid + " is already logged in");
+  }
+}

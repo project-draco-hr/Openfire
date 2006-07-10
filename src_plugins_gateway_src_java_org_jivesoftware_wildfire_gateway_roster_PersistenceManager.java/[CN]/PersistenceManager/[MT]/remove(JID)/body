@@ -1,0 +1,11 @@
+{
+  String bareJID=jid.toBareJID();
+  try {
+    NormalizedJID njid=NormalizedJID.wrap(jid);
+    contactManager.remove(njid);
+    registrar.remove(jid);
+  }
+ catch (  Exception e) {
+    logger.severe("Unable to remove " + bareJID + ": "+ e.getLocalizedMessage());
+  }
+}

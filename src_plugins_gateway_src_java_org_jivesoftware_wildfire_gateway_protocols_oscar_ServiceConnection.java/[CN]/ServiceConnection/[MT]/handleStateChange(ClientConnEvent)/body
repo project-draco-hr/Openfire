@@ -1,0 +1,12 @@
+{
+  Log.debug("0x" + Integer.toHexString(serviceFamily) + " service connection state changed to "+ e.getNewState()+ ": "+ e.getReason());
+  if (e.getNewState() == ClientFlapConn.STATE_FAILED) {
+    session.serviceFailed(this);
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_CONNECTED) {
+    session.serviceConnected(this);
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_NOT_CONNECTED) {
+    session.serviceDied(this);
+  }
+}

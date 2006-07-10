@@ -1,0 +1,26 @@
+{
+  SnacCommand cmd=e.getSnacCommand();
+  Log.debug("snac response: " + Integer.toHexString(cmd.getFamily()) + "/"+ Integer.toHexString(cmd.getCommand())+ ": "+ cmd);
+  if (cmd instanceof KeyResponse) {
+    KeyResponse kr=(KeyResponse)cmd;
+    ByteBlock authkey=kr.getKey();
+    ClientVersionInfo version=new ClientVersionInfo("AOL Instant Messenger, version 5.2.3292/WIN32",5,1,0,3292,238);
+    request(new AuthRequest(session.getLegacyName(),session.getLegacyPassword(),version,authkey));
+  }
+ else   if (cmd instanceof AuthResponse) {
+    AuthResponse ar=(AuthResponse)cmd;
+    int error=ar.getErrorCode();
+    if (error != -1) {
+      Log.error("connection error! code: " + error);
+      if (ar.getErrorUrl() != null) {
+        Log.error("Error URL: " + ar.getErrorUrl());
+      }
+    }
+ else {
+      loggedin=true;
+      session.startBosConn(ar.getServer(),ar.getPort(),ar.getCookie());
+      Log.info("connecting to " + ar.getServer() + ":"+ ar.getPort());
+    }
+    disconnect();
+  }
+}

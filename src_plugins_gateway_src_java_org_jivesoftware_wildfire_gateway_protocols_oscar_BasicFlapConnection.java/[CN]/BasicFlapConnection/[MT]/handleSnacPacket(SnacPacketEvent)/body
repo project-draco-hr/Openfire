@@ -1,0 +1,90 @@
+{
+  SnacPacket packet=e.getSnacPacket();
+  Log.debug("got snac packet type " + Integer.toHexString(packet.getFamily()) + "/"+ Integer.toHexString(packet.getCommand())+ ": "+ e.getSnacCommand());
+  SnacCommand cmd=e.getSnacCommand();
+  if (cmd instanceof ServerReadyCmd) {
+    ServerReadyCmd src=(ServerReadyCmd)cmd;
+    setSnacFamilies(src.getSnacFamilies());
+    SnacFamilyInfo[] familyInfos=SnacFamilyInfoFactory.getDefaultFamilyInfos(src.getSnacFamilies());
+    setSnacFamilyInfos(familyInfos);
+    session.registerSnacFamilies(this);
+    request(new ClientVersionsCmd(familyInfos));
+    request(new RateInfoRequest());
+  }
+ else   if (cmd instanceof RecvImIcbm) {
+    RecvImIcbm icbm=(RecvImIcbm)cmd;
+    String sn=icbm.getSenderInfo().getScreenname();
+    InstantMessage message=icbm.getMessage();
+    String msg=null;
+    msg=OscarTools.stripHtml(message.getMessage());
+    Message jmessage=new Message();
+    jmessage.setTo(session.getSessionJID());
+    jmessage.setBody(msg);
+    jmessage.setType(Message.Type.chat);
+    jmessage.setFrom(this.session.getGateway().whois(sn));
+    try {
+      session.getJabberEndpoint().sendPacket(jmessage);
+    }
+ catch (    Exception ex) {
+      Log.error("Unable to send packet.");
+    }
+    String str=dateFormat.format(new Date()) + " IM from " + sn+ ": "+ msg;
+    Log.debug(str);
+  }
+ else   if (cmd instanceof WarningNotification) {
+    WarningNotification wn=(WarningNotification)cmd;
+    MiniUserInfo warner=wn.getWarner();
+    if (warner == null) {
+      Log.debug("*** You were warned anonymously to " + wn.getNewLevel() + "%");
+    }
+ else {
+      Log.debug("*** " + warner.getScreenname() + " warned you up to "+ wn.getNewLevel()+ "%");
+    }
+  }
+ else   if (cmd instanceof BuddyStatusCmd) {
+    BuddyStatusCmd bsc=(BuddyStatusCmd)cmd;
+    FullUserInfo info=bsc.getUserInfo();
+    String sn=info.getScreenname();
+    ExtraInfoBlock[] extraInfos=info.getExtraInfoBlocks();
+    if (extraInfos != null) {
+      for (int i=0; i < extraInfos.length; i++) {
+        ExtraInfoBlock extraInfo=extraInfos[i];
+        ExtraInfoData data=extraInfo.getExtraData();
+        if (extraInfo.getType() == ExtraInfoBlock.TYPE_AVAILMSG) {
+          ByteBlock msgBlock=data.getData();
+          int len=BinaryTools.getUShort(msgBlock,0);
+          byte[] msgBytes=msgBlock.subBlock(2,len).toByteArray();
+          String msg;
+          try {
+            msg=new String(msgBytes,"UTF-8");
+          }
+ catch (          UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+            return;
+          }
+          if (msg.length() > 0) {
+            Log.debug(info.getScreenname() + " availability: " + msg);
+          }
+        }
+      }
+    }
+    if (info.getCapabilityBlocks() != null) {
+      List known=Arrays.asList(new CapabilityBlock[]{CapabilityBlock.BLOCK_ICQCOMPATIBLE});
+      List caps=new ArrayList(Arrays.asList(info.getCapabilityBlocks()));
+      caps.removeAll(known);
+      if (!caps.isEmpty()) {
+        Log.debug(sn + " has " + caps.size()+ " unknown caps:");
+        for (Iterator it=caps.iterator(); it.hasNext(); ) {
+          Log.debug("- " + it.next());
+        }
+      }
+    }
+  }
+ else   if (cmd instanceof BuddyOfflineCmd) {
+    BuddyOfflineCmd boc=(BuddyOfflineCmd)cmd;
+  }
+ else   if (cmd instanceof RateChange) {
+    RateChange rc=(RateChange)cmd;
+    Log.debug("rate change: current avg is " + rc.getRateInfo().getCurrentAvg());
+  }
+}

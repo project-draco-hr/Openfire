@@ -1,0 +1,10 @@
+{
+  IQ reply=IQ.createResultIQ(iq);
+  Element responseElement=DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/disco#info"));
+  responseElement.addElement("identity").addAttribute("category","gateway").addAttribute("type",this.getType()).addAttribute("name",this.getDescription());
+  responseElement.addElement("feature").addAttribute("var","jabber:iq:time");
+  responseElement.addElement("feature").addAttribute("var","jabber:iq:version");
+  responseElement.addElement("feature").addAttribute("var","jabber:iq:register");
+  reply.setChildElement(responseElement);
+  return reply;
+}

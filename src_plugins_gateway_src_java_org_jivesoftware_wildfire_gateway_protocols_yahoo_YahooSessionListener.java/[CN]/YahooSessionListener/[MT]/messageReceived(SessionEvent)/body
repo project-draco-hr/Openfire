@@ -1,0 +1,15 @@
+{
+  logger.finest(sessionEvent.toString());
+  try {
+    Message message=new Message();
+    message.setTo(gatewaySession.getSessionJID());
+    message.setBody(sessionEvent.getMessage());
+    message.setType(Message.Type.chat);
+    message.setFrom(this.gatewaySession.getGateway().whois(sessionEvent.getFrom()));
+    gatewaySession.getJabberEndpoint().sendPacket(message);
+    logger.fine(message.getElement().asXML());
+  }
+ catch (  Exception e) {
+    logger.severe("unable to send message: " + e.getLocalizedMessage());
+  }
+}
