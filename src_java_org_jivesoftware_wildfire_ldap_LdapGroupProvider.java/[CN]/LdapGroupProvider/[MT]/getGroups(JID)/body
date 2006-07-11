@@ -9,7 +9,7 @@
     try {
       String userDN=manager.findUserDN(username);
       if (JiveGlobals.getXMLProperty("ldap.wrapUserDN",true)) {
-        Matcher matcher=userDNPattern.matcher(username);
+        Matcher matcher=userDNPattern.matcher(userDN);
         while (matcher.find()) {
           userDN=matcher.replaceFirst(matcher.group(1) + "\"" + matcher.group(2)+ "\"");
           matcher.reset(userDN);
