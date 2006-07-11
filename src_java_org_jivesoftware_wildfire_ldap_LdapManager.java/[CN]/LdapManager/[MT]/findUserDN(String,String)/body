@@ -37,11 +37,15 @@
     if (userDN.startsWith("ldap://")) {
       userDN=userDN.replace("," + baseDN,"");
       userDN=userDN.substring(userDN.lastIndexOf("/") + 1);
-      return userDN;
     }
- else {
-      return userDN;
+    if (encloseUserDN) {
+      Matcher matcher=userDNPattern.matcher(userDN);
+      userDN=matcher.replaceAll("$1\"$2\",");
+      if (userDN.endsWith(",")) {
+        userDN=userDN.substring(0,userDN.length() - 1);
+      }
     }
+    return userDN;
   }
  catch (  Exception e) {
     if (debug) {
