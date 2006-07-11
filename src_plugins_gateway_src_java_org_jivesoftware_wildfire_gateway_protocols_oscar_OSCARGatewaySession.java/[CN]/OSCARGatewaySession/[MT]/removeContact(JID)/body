@@ -1,7 +1,7 @@
 {
   Log.debug("removeContact called");
   for (  ForeignContact c : contacts) {
-    if (c.getName() == jid.getNode()) {
+    if (c.getName().equals(jid.getNode())) {
       OSCARForeignContact oc=(OSCARForeignContact)c;
       request(new DeleteItemsCmd(new SsiItem[]{oc.getSSIItem()}));
       contacts.remove(contacts.indexOf(c));
