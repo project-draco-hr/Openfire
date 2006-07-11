@@ -8,14 +8,18 @@
       return;
     }
   }
-  String userDN=null;
+  String userDN;
   try {
     userDN=manager.findUserDN(username);
     if (!manager.checkAuthentication(userDN,password)) {
       throw new UnauthorizedException("Username and password don't match");
     }
   }
- catch (  Exception e) {
+ catch (  CommunicationException e) {
+    Log.error("Error connecting to LDAP server",e);
+    throw new UnauthorizedException(e);
+  }
+catch (  Exception e) {
     throw new UnauthorizedException(e);
   }
   if (authCache != null) {
