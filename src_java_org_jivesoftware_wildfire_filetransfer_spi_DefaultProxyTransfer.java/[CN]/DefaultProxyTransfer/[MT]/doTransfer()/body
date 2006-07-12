@@ -2,8 +2,8 @@
   if (!isActivatable()) {
     throw new IOException("Transfer missing party");
   }
-  InputStream in=getInitiatorSocket().getInputStream();
-  OutputStream out=new ProxyOutputStream(getTargetSocket().getOutputStream());
+  InputStream in=getInputStream();
+  OutputStream out=new ProxyOutputStream(getOutputStream());
   final byte[] b=new byte[BUFFER_SIZE];
   int count=0;
   amountWritten=0;
@@ -13,6 +13,6 @@
     count=in.read(b);
   }
  while (count >= 0);
-  getInitiatorSocket().close();
-  getTargetSocket().close();
+  getInputStream().close();
+  getOutputStream().close();
 }
