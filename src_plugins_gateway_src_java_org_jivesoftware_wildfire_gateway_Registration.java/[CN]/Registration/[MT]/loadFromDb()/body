@@ -13,7 +13,7 @@
     this.jid=new JID(rs.getString(1));
     this.gatewayType=GatewayType.valueOf(rs.getString(2));
     this.username=rs.getString(3);
-    this.password=rs.getString(4);
+    this.password=AuthFactory.decryptPassword(rs.getString(4));
     this.registrationDate=new Date(rs.getLong(5));
     long loginDate=rs.getLong(6);
     if (rs.wasNull()) {

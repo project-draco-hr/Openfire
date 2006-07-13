@@ -10,7 +10,13 @@
     pstmt.setString(2,jid.toString());
     pstmt.setString(3,gatewayType.name());
     pstmt.setString(4,username);
-    pstmt.setString(5,password);
+    if (password != null) {
+      String encryptedPassword=AuthFactory.encryptPassword(password);
+      pstmt.setString(5,encryptedPassword);
+    }
+ else {
+      pstmt.setNull(5,Types.VARCHAR);
+    }
     pstmt.setLong(6,registrationDate.getTime());
     pstmt.executeUpdate();
   }

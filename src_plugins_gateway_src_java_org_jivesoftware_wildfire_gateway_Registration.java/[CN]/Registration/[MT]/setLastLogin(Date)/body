@@ -1,3 +1,18 @@
 {
   this.lastLogin=lastLogin;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(SET_LAST_LOGIN);
+    pstmt.setNull(1,Types.VARCHAR);
+    pstmt.setLong(2,registrationID);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
 }
