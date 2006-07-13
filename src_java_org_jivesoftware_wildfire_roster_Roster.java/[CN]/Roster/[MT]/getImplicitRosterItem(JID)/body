@@ -1,6 +1,9 @@
 {
-  if (implicitFrom.containsKey(user.toBareJID())) {
-    return new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
+  Set<String> invisibleSharedGroups=implicitFrom.get(user.toBareJID());
+  if (invisibleSharedGroups != null) {
+    RosterItem rosterItem=new RosterItem(user,RosterItem.SUB_FROM,RosterItem.ASK_NONE,RosterItem.RECV_NONE,"",null);
+    rosterItem.setInvisibleSharedGroupsNames(invisibleSharedGroups);
+    return rosterItem;
   }
   return null;
 }

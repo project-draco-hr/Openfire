@@ -52,10 +52,11 @@
   }
   if (item.isOnlyShared() && item.getSubStatus() == RosterItem.SUB_FROM) {
     rosterItems.remove(item.getJid().toBareJID());
-    implicitFrom.put(item.getJid().toBareJID(),item.getJid().toBareJID());
+    implicitFrom.put(item.getJid().toBareJID(),item.getInvisibleSharedGroupsNames());
   }
  else {
     implicitFrom.remove(item.getJid().toBareJID());
+    rosterItems.put(item.getJid().toBareJID(),item);
     broadcast(item,true);
     if (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO) {
       probePresence(item.getJid());

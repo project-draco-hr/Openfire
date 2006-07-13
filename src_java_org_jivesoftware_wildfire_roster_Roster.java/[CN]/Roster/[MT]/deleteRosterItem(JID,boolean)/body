@@ -1,6 +1,6 @@
 {
   RosterItem itemToRemove=rosterItems.get(user.toBareJID());
-  if (doChecking && itemToRemove != null && itemToRemove.isShared()) {
+  if (doChecking && itemToRemove != null && !itemToRemove.getSharedGroups().isEmpty()) {
     throw new SharedGroupException("Cannot remove contact that belongs to a shared group");
   }
   if (itemToRemove != null) {
@@ -30,6 +30,17 @@
       broadcast(roster);
     }
     return item;
+  }
+ else {
+    if (implicitFrom.remove(user.toBareJID()) != null) {
+      if (!server.isLocal(user)) {
+        Presence presence=new Presence();
+        presence.setFrom(server.createJID(username,null));
+        presence.setTo(user);
+        presence.setType(Presence.Type.unsubscribed);
+        server.getPacketRouter().route(presence);
+      }
+    }
   }
   return null;
 }

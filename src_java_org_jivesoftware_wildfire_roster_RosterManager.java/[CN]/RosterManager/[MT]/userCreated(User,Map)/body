@@ -1,0 +1,25 @@
+{
+  JID newUserJID=server.createJID(newUser.getUsername(),null);
+  for (  Group group : getPublicSharedGroups()) {
+    Collection<JID> users=new HashSet<JID>(group.getMembers());
+    users.addAll(group.getAdmins());
+    for (    JID userToUpdate : users) {
+      Roster roster=null;
+      if (server.isLocal(userToUpdate)) {
+        try {
+          UserManager.getInstance().getUser(userToUpdate.getNode());
+        }
+ catch (        UserNotFoundException e) {
+          continue;
+        }
+        roster=(Roster)CacheManager.getCache("Roster").get(userToUpdate.getNode());
+      }
+      if (roster != null) {
+        roster.addSharedUser(group,newUserJID);
+      }
+      if (!server.isLocal(userToUpdate)) {
+        sendSubscribeRequest(newUserJID,userToUpdate,true);
+      }
+    }
+  }
+}

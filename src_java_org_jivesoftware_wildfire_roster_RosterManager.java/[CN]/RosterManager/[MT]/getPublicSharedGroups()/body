@@ -1,0 +1,11 @@
+{
+  Collection<Group> answer=new HashSet<Group>();
+  Collection<Group> groups=GroupManager.getInstance().getSharedGroups();
+  for (  Group group : groups) {
+    String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
+    if ("everybody".equals(showInRoster)) {
+      answer.add(group);
+    }
+  }
+  return answer;
+}

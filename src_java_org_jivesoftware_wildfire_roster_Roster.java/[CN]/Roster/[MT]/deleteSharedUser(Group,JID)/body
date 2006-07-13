@@ -3,7 +3,7 @@
     RosterItem item=getRosterItem(deletedUser);
     int groupSize=item.getSharedGroups().size() + item.getInvisibleSharedGroups().size();
     if (item.isOnlyShared() && groupSize == 1) {
-      if (!item.getSharedGroups().contains(sharedGroup)) {
+      if (!item.getSharedGroups().contains(sharedGroup) && !item.getInvisibleSharedGroups().contains(sharedGroup)) {
         return;
       }
       deleteRosterItem(deletedUser,false);
