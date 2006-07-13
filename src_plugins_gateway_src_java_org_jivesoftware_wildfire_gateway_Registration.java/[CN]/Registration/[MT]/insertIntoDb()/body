@@ -1,0 +1,24 @@
+{
+  this.registrationID=SequenceManager.nextID(this);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(INSERT_REGISTRATION);
+    pstmt.setLong(1,registrationID);
+    pstmt.setString(2,jid.toString());
+    pstmt.setString(3,gatewayType.name());
+    pstmt.setString(4,username);
+    pstmt.setString(5,password);
+    pstmt.setLong(6,registrationDate.getTime());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+  }
+}
