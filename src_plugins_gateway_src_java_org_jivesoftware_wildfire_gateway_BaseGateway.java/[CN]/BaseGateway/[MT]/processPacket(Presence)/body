@@ -1,11 +1,11 @@
 {
   List<Presence> p=new ArrayList<Presence>();
   JID from=presence.getFrom();
-  logger.finest(presence.toString());
+  Log.debug(presence.toString());
   if (!rosterManager.getRegistrar().isRegistered(NormalizedJID.wrap(from))) {
-    logger.log(Level.INFO,"basegateway.unabletofind",from);
+    Log.info(LocaleUtils.getLocalizedString("basegateway.unabletofind","gateway",Arrays.asList(from)));
     if (!Presence.Type.unavailable.equals(presence.getType())) {
-      logger.log(Level.INFO,"basegateway.unauthorizedrequest",new Object[]{presence.getType(),from.toString()});
+      Log.info(LocaleUtils.getLocalizedString("basegateway.unauthorizedrequest","gateway",Arrays.asList(new Object[]{presence.getType(),from.toString()})));
       Presence result=new Presence();
       result.setError(Condition.not_authorized);
       result.setStatus(LocaleUtils.getLocalizedString("basegateway.registerfirst","gateway"));
@@ -15,7 +15,7 @@
   }
   GatewaySession sessionInfo=rosterManager.getRegistrar().getGatewaySession(from);
   if (sessionInfo == null) {
-    logger.log(Level.WARNING,"basegateway.unabletolocatesession",from);
+    Log.warn(LocaleUtils.getLocalizedString("basegateway.unabletolocatesession","gateway",Arrays.asList(from)));
     return p;
   }
   if (Presence.Type.subscribe.equals(presence.getType())) {
@@ -38,7 +38,7 @@
       sessionInfo.getSubscriptionInfo().clientRegistered=true;
     }
  else {
-      logger.log(Level.FINE,"basegateway.subscribed");
+      Log.debug(LocaleUtils.getLocalizedString("basegateway.subscribed","gateway"));
     }
   }
  else   if (Presence.Type.unavailable.equals(presence.getType())) {
@@ -55,7 +55,7 @@
     result.setTo(presence.getFrom());
     result.setFrom(this.jid);
     p.add(result);
-    logger.log(Level.FINE,"basegateway.gatewaypresence");
+    Log.debug(LocaleUtils.getLocalizedString("basegateway.gatewaypresence","gateway"));
   }
  else {
     GatewaySession session=rosterManager.getRegistrar().getGatewaySession(presence.getFrom());
@@ -74,7 +74,7 @@
       p.add(p2);
     }
  catch (    Exception e) {
-      logger.log(Level.WARNING,"basegateway.statusexception",new Object[]{presence.getTo(),presence.getFrom(),e.getLocalizedMessage()});
+      Log.warn(LocaleUtils.getLocalizedString("basegateway.statusexception","gateway",Arrays.asList(new Object[]{presence.getTo(),presence.getFrom(),e.getLocalizedMessage()})));
     }
   }
   return p;

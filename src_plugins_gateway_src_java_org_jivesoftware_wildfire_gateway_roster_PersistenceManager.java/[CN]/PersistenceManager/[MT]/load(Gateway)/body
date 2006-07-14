@@ -4,7 +4,7 @@
   try {
     byte[] rawKey=Preferences.systemNodeForPackage(this.getClass()).getByteArray(".key",null);
     if (rawKey == null) {
-      logger.log(GatewayLevel.SECURITY,"persistencemanager.nokey");
+      Log.error(LocaleUtils.getLocalizedString("persistencemanager.nokey","gateway"));
       return;
     }
     SecretKeySpec key=new SecretKeySpec(rawKey,"AES");
@@ -20,7 +20,7 @@
     if (db.exists()) {
       db.delete();
     }
-    logger.log(Level.WARNING,"persistencemanager.loadrosterfailed",e);
+    Log.warn(LocaleUtils.getLocalizedString("persistencemanager.loadrosterfailed","gateway"),e);
   }
  finally {
     this.contactManager=(contactManager != null) ? contactManager : new ContactManager();

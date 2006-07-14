@@ -1,12 +1,12 @@
 {
-  logger.log(Level.FINE,packet.toString());
+  Log.debug(packet.toString());
   if (packet instanceof Message) {
     Message m=(Message)packet;
     try {
       session.sendMessage(packet.getTo().getNode(),m.getBody());
     }
  catch (    IOException ioe) {
-      logger.warning(ioe.getLocalizedMessage());
+      Log.warn(ioe.getLocalizedMessage());
     }
   }
 }

@@ -19,7 +19,7 @@
       }
     }
  catch (    Exception e) {
-      logger.log(Level.FINER,"basegateway.dataformnotused",e);
+      Log.debug(LocaleUtils.getLocalizedString("basegateway.dataformnotused","gateway"),e);
     }
     if (username == null || password == null) {
       Element usernameElement=iq.getChildElement().element("username");
@@ -37,7 +37,7 @@
       response.add(result);
     }
  else {
-      logger.log(Level.INFO,"basegateway.register",username.trim());
+      Log.info(LocaleUtils.getLocalizedString("basegateway.register","gateway",Arrays.asList(username.trim())));
       SubscriptionInfo info=new SubscriptionInfo(username.trim(),password);
       PersistenceManager.Factory.get(this).getRegistrar().add(iq.getFrom(),info);
       reply.setChildElement(responseElement);

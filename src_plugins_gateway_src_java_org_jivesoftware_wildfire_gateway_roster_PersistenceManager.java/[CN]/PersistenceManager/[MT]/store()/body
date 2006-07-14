@@ -2,7 +2,7 @@
   Preferences prefs=Preferences.systemNodeForPackage(this.getClass());
   byte[] rawKey=prefs.getByteArray(".key",null);
   if (rawKey == null) {
-    logger.log(GatewayLevel.SECURITY,"persistencemanager.gennewkey");
+    Log.error(LocaleUtils.getLocalizedString("persistencemanager.gennewkey","gateway"));
     KeyGenerator kg=KeyGenerator.getInstance("AES");
     SecretKey key=kg.generateKey();
     rawKey=key.getEncoded();
