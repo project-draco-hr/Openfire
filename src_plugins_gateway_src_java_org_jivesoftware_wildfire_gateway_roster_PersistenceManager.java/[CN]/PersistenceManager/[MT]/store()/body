@@ -1,18 +1,5 @@
 {
-  Preferences prefs=Preferences.systemNodeForPackage(this.getClass());
-  byte[] rawKey=prefs.getByteArray(".key",null);
-  if (rawKey == null) {
-    Log.error(LocaleUtils.getLocalizedString("persistencemanager.gennewkey","gateway"));
-    KeyGenerator kg=KeyGenerator.getInstance("AES");
-    SecretKey key=kg.generateKey();
-    rawKey=key.getEncoded();
-    prefs.putByteArray(".key",rawKey);
-  }
-  SecretKeySpec key=new SecretKeySpec(rawKey,"AES");
-  Cipher c=Cipher.getInstance("AES");
-  c.init(Cipher.ENCRYPT_MODE,key);
-  CipherOutputStream os=new CipherOutputStream(new FileOutputStream(db),c);
-  ObjectOutputStream oos=new ObjectOutputStream(os);
+  ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream(db));
   oos.writeObject(contactManager);
   oos.writeObject(registrar);
   oos.flush();

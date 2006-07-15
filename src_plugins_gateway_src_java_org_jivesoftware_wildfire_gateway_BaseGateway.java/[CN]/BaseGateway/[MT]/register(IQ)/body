@@ -38,19 +38,54 @@
     }
  else {
       Log.info(LocaleUtils.getLocalizedString("basegateway.register","gateway",Arrays.asList(username.trim())));
-      SubscriptionInfo info=new SubscriptionInfo(username.trim(),password);
+      SubscriptionInfo info=new SubscriptionInfo(username.trim(),password,iq.getFrom());
       PersistenceManager.Factory.get(this).getRegistrar().add(iq.getFrom(),info);
       reply.setChildElement(responseElement);
       response.add(reply);
-      Presence subscribe=new Presence(Presence.Type.subscribe);
-      subscribe.setTo(iq.getFrom());
-      subscribe.setFrom(iq.getTo());
-      response.add(subscribe);
+      try {
+        Roster roster=rosterManager.getRoster(iq.getFrom().getNode());
+        try {
+          RosterItem gwitem=roster.getRosterItem(iq.getTo());
+          if (gwitem.getSubStatus() != RosterItem.SUB_BOTH) {
+            gwitem.setSubStatus(RosterItem.SUB_BOTH);
+          }
+          if (gwitem.getAskStatus() != RosterItem.ASK_NONE) {
+            gwitem.setAskStatus(RosterItem.ASK_NONE);
+          }
+          roster.updateRosterItem(gwitem);
+        }
+ catch (        UserNotFoundException e) {
+          try {
+            RosterItem gwitem=roster.createRosterItem(iq.getTo(),true);
+            gwitem.setSubStatus(RosterItem.SUB_BOTH);
+            gwitem.setAskStatus(RosterItem.ASK_NONE);
+            roster.updateRosterItem(gwitem);
+          }
+ catch (          UserAlreadyExistsException ee) {
+            Log.error("getRosterItem claims user exists, but couldn't find via getRosterItem?");
+            IQ result=IQ.createResultIQ(iq);
+            result.setError(Condition.bad_request);
+            response.add(result);
+          }
+catch (          Exception ee) {
+            Log.error("createRosterItem caused exception: " + ee.getMessage());
+            IQ result=IQ.createResultIQ(iq);
+            result.setError(Condition.bad_request);
+            response.add(result);
+          }
+        }
+      }
+ catch (      UserNotFoundException e) {
+        Log.error("Someone attempted to register with the gateway who is not registered with the server: " + iq.getFrom());
+        IQ result=IQ.createResultIQ(iq);
+        result.setError(Condition.bad_request);
+        response.add(result);
+      }
     }
   }
  else   if (iq.getType().equals(IQ.Type.get)) {
     DataForm form=new DataForm(DataForm.Type.form);
-    form.addInstruction("Please enter your AIM Screenname and Password");
+    form.addInstruction("Please enter your legacy account username and password");
     FormField usernameField=form.addField();
     usernameField.setLabel("Username");
     usernameField.setVariable("username");
@@ -59,7 +94,7 @@
     passwordField.setLabel("Password");
     passwordField.setVariable("password");
     passwordField.setType(FormField.Type.text_private);
-    responseElement.addElement("instruction").addText("Please enter your AIM screenname and password");
+    responseElement.addElement("instruction").addText("Please enter your legacy account username and password");
     responseElement.addElement("username");
     responseElement.addElement("password");
     responseElement.add(form.getElement());

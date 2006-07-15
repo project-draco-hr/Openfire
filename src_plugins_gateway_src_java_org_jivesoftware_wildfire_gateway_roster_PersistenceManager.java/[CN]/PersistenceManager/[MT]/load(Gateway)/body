@@ -2,16 +2,7 @@
   ContactManager contactManager=null;
   Registrar registrar=null;
   try {
-    byte[] rawKey=Preferences.systemNodeForPackage(this.getClass()).getByteArray(".key",null);
-    if (rawKey == null) {
-      Log.error(LocaleUtils.getLocalizedString("persistencemanager.nokey","gateway"));
-      return;
-    }
-    SecretKeySpec key=new SecretKeySpec(rawKey,"AES");
-    Cipher c=Cipher.getInstance("AES");
-    c.init(Cipher.DECRYPT_MODE,key);
-    CipherInputStream cis=new CipherInputStream(new FileInputStream(db),c);
-    ObjectInputStream is=new ObjectInputStream(cis);
+    ObjectInputStream is=new ObjectInputStream(new FileInputStream(db));
     contactManager=(ContactManager)is.readObject();
     registrar=(Registrar)is.readObject();
     is.close();

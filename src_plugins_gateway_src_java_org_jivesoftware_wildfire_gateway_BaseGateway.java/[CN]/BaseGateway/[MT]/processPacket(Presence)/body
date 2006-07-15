@@ -2,7 +2,7 @@
   List<Presence> p=new ArrayList<Presence>();
   JID from=presence.getFrom();
   Log.debug(presence.toString());
-  if (!rosterManager.getRegistrar().isRegistered(NormalizedJID.wrap(from))) {
+  if (!persistenceManager.getRegistrar().isRegistered(NormalizedJID.wrap(from))) {
     Log.info(LocaleUtils.getLocalizedString("basegateway.unabletofind","gateway",Arrays.asList(from)));
     if (!Presence.Type.unavailable.equals(presence.getType())) {
       Log.info(LocaleUtils.getLocalizedString("basegateway.unauthorizedrequest","gateway",Arrays.asList(new Object[]{presence.getType(),from.toString()})));
@@ -13,68 +13,121 @@
     }
     return p;
   }
-  GatewaySession sessionInfo=rosterManager.getRegistrar().getGatewaySession(from);
+  GatewaySession sessionInfo=persistenceManager.getRegistrar().getGatewaySession(from);
   if (sessionInfo == null) {
     Log.warn(LocaleUtils.getLocalizedString("basegateway.unabletolocatesession","gateway",Arrays.asList(from)));
     return p;
   }
-  if (Presence.Type.subscribe.equals(presence.getType())) {
-    if (presence.getTo().equals(this.jid)) {
-      sessionInfo.getSubscriptionInfo().serverRegistered=true;
+  if (presence.getTo().getNode() == null) {
+    if (presence.getType() == null && persistenceManager.getRegistrar().isRegistered(NormalizedJID.wrap(from))) {
+      GatewaySession session=persistenceManager.getRegistrar().getGatewaySession(presence.getFrom());
+      Presence result=new Presence();
+      result.setTo(presence.getFrom());
+      result.setFrom(this.jid);
+      p.add(result);
+      Log.debug(LocaleUtils.getLocalizedString("basegateway.gatewaypresence","gateway"));
     }
- else {
-      Presence subscribe=new Presence(Presence.Type.subscribe);
-      subscribe.setTo(presence.getFrom());
-      subscribe.setFrom(presence.getTo());
-      p.add(subscribe);
+ else     if (Presence.Type.unavailable.equals(presence.getType())) {
+      if (sessionInfo.isConnected()) {
+        sessionInfo.logout();
+      }
+      Presence reply=new Presence(Presence.Type.unavailable);
+      reply.setTo(presence.getFrom());
+      reply.setFrom(presence.getTo());
+      p.add(reply);
     }
-    Presence reply=new Presence(Presence.Type.subscribed);
-    reply.setTo(presence.getFrom());
-    reply.setFrom(presence.getTo());
-    p.add(reply);
   }
- else   if (Presence.Type.subscribed.equals(presence.getType())) {
-    if (presence.getTo().equals(this.jid)) {
-      sessionInfo.getSubscriptionInfo().clientRegistered=true;
-    }
  else {
+    if (Presence.Type.subscribe.equals(presence.getType())) {
+      GatewaySession session=persistenceManager.getRegistrar().getGatewaySession(presence.getFrom());
+      try {
+        session.addContact(presence.getTo());
+      }
+ catch (      Exception e) {
+        Log.error("Failed to add: " + presence.getTo());
+      }
+      try {
+        Roster roster=rosterManager.getRoster(presence.getFrom().getNode());
+        try {
+          RosterItem gwitem=roster.getRosterItem(presence.getTo());
+          if (gwitem.getSubStatus() != RosterItem.SUB_BOTH) {
+            gwitem.setSubStatus(RosterItem.SUB_BOTH);
+          }
+          if (gwitem.getAskStatus() != RosterItem.ASK_NONE) {
+            gwitem.setAskStatus(RosterItem.ASK_NONE);
+          }
+          roster.updateRosterItem(gwitem);
+        }
+ catch (        UserNotFoundException e) {
+          try {
+            RosterItem gwitem=roster.createRosterItem(presence.getTo(),true);
+            gwitem.setSubStatus(RosterItem.SUB_BOTH);
+            gwitem.setAskStatus(RosterItem.ASK_NONE);
+            roster.updateRosterItem(gwitem);
+          }
+ catch (          UserAlreadyExistsException ee) {
+            Log.error("getRosterItem claims user exists, but couldn't find via getRosterItem?");
+          }
+catch (          Exception ee) {
+            Log.error("createRosterItem caused exception: " + ee.getMessage());
+          }
+        }
+      }
+ catch (      UserNotFoundException e) {
+        Log.error("Someone attempted to register with the gateway who is not registered with the server: " + presence.getFrom());
+      }
+      Presence reply=new Presence(Presence.Type.subscribed);
+      reply.setTo(presence.getFrom());
+      reply.setFrom(presence.getTo());
+      p.add(reply);
+    }
+ else     if (Presence.Type.unsubscribe.equals(presence.getType())) {
+      GatewaySession session=persistenceManager.getRegistrar().getGatewaySession(presence.getFrom());
+      try {
+        session.removeContact(presence.getTo());
+      }
+ catch (      Exception e) {
+        Log.error("Failed to remove: " + presence.getTo());
+      }
+      try {
+        Roster roster=rosterManager.getRoster(presence.getFrom().getNode());
+        try {
+          roster.deleteRosterItem(presence.getTo(),false);
+        }
+ catch (        Exception e) {
+          Log.error("deleteRosterItem caused exception: " + e.getMessage());
+        }
+      }
+ catch (      UserNotFoundException e) {
+        Log.error("Someone attempted to register with the gateway who is not registered with the server: " + presence.getFrom());
+      }
+      Presence reply=new Presence(Presence.Type.unsubscribed);
+      reply.setTo(presence.getFrom());
+      reply.setFrom(presence.getTo());
+      p.add(reply);
+    }
+ else     if (Presence.Type.subscribed.equals(presence.getType())) {
       Log.debug(LocaleUtils.getLocalizedString("basegateway.subscribed","gateway"));
     }
-  }
- else   if (Presence.Type.unavailable.equals(presence.getType())) {
-    if (sessionInfo.isConnected()) {
-      sessionInfo.logout();
-    }
-    Presence reply=new Presence(Presence.Type.unavailable);
-    reply.setTo(presence.getFrom());
-    reply.setFrom(presence.getTo());
-    p.add(reply);
-  }
- else   if (presence.getTo().getNode() == null) {
-    Presence result=new Presence();
-    result.setTo(presence.getFrom());
-    result.setFrom(this.jid);
-    p.add(result);
-    Log.debug(LocaleUtils.getLocalizedString("basegateway.gatewaypresence","gateway"));
-  }
  else {
-    GatewaySession session=rosterManager.getRegistrar().getGatewaySession(presence.getFrom());
-    try {
-      ForeignContact fc=session.getContact(presence.getTo());
-      Status status=fc.getStatus();
-      Presence p2=new Presence();
-      p2.setFrom(presence.getTo());
-      p2.setTo(presence.getFrom());
-      if (status.isOnline()) {
-        p2.setStatus(status.getValue());
-      }
+      GatewaySession session=persistenceManager.getRegistrar().getGatewaySession(presence.getFrom());
+      try {
+        ForeignContact fc=session.getContact(presence.getTo());
+        Status status=fc.getStatus();
+        Presence p2=new Presence();
+        p2.setFrom(presence.getTo());
+        p2.setTo(presence.getFrom());
+        if (status.isOnline()) {
+          p2.setStatus(status.getValue());
+        }
  else {
-        p2.setType(Presence.Type.unavailable);
+          p2.setType(Presence.Type.unavailable);
+        }
+        p.add(p2);
       }
-      p.add(p2);
-    }
- catch (    Exception e) {
-      Log.warn(LocaleUtils.getLocalizedString("basegateway.statusexception","gateway",Arrays.asList(new Object[]{presence.getTo(),presence.getFrom(),e.getLocalizedMessage()})));
+ catch (      Exception e) {
+        Log.warn(LocaleUtils.getLocalizedString("basegateway.statusexception","gateway",Arrays.asList(new Object[]{presence.getTo(),presence.getFrom(),e.getLocalizedMessage()})));
+      }
     }
   }
   return p;

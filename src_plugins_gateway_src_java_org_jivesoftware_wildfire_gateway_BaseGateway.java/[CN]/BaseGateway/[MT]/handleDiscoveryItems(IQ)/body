@@ -1,13 +1,6 @@
 {
   IQ reply=IQ.createResultIQ(iq);
   Element responseElement=DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/disco#info"));
-  Roster roster=this.rosterManager.getContactManager().getRoster(iq.getFrom());
-  for (  ForeignContact entry : roster.getAll()) {
-    Element item=responseElement.addElement("item");
-    item.addAttribute("jid",entry.getJid().toBareJID());
-    item.addAttribute("name",entry.getName());
-    responseElement.add(item);
-  }
   reply.setChildElement(responseElement);
   Log.debug(reply.toString());
   return reply;
