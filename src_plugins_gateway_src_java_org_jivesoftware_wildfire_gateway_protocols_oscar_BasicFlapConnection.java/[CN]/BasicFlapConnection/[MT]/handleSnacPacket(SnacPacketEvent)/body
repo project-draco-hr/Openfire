@@ -7,7 +7,7 @@
     setSnacFamilies(src.getSnacFamilies());
     SnacFamilyInfo[] familyInfos=SnacFamilyInfoFactory.getDefaultFamilyInfos(src.getSnacFamilies());
     setSnacFamilyInfos(familyInfos);
-    session.registerSnacFamilies(this);
+    oscarSession.registerSnacFamilies(this);
     request(new ClientVersionsCmd(familyInfos));
     request(new RateInfoRequest());
   }
@@ -18,16 +18,11 @@
     String msg=null;
     msg=OscarTools.stripHtml(message.getMessage());
     Message jmessage=new Message();
-    jmessage.setTo(session.getSessionJID());
+    jmessage.setTo(oscarSession.getRegistration().getJID());
     jmessage.setBody(msg);
     jmessage.setType(Message.Type.chat);
-    jmessage.setFrom(this.session.getGateway().whois(sn));
-    try {
-      session.getJabberEndpoint().sendPacket(jmessage);
-    }
- catch (    Exception ex) {
-      Log.error("Unable to send packet.");
-    }
+    jmessage.setFrom(this.oscarSession.getTransport().convertIDToJID(sn));
+    oscarSession.getTransport().sendPacket((Packet)jmessage);
     String str=dateFormat.format(new Date()) + " IM from " + sn+ ": "+ msg;
     Log.debug(str);
   }

@@ -5,7 +5,7 @@
     KeyResponse kr=(KeyResponse)cmd;
     ByteBlock authkey=kr.getKey();
     ClientVersionInfo version=new ClientVersionInfo("AOL Instant Messenger, version 5.2.3292/WIN32",5,1,0,3292,238);
-    request(new AuthRequest(session.getLegacyName(),session.getLegacyPassword(),version,authkey));
+    request(new AuthRequest(oscarSession.getRegistration().getUsername(),oscarSession.getRegistration().getPassword(),version,authkey));
   }
  else   if (cmd instanceof AuthResponse) {
     AuthResponse ar=(AuthResponse)cmd;
@@ -18,7 +18,7 @@
     }
  else {
       loggedin=true;
-      session.startBosConn(ar.getServer(),ar.getPort(),ar.getCookie());
+      oscarSession.startBosConn(ar.getServer(),ar.getPort(),ar.getCookie());
       Log.info("connecting to " + ar.getServer() + ":"+ ar.getPort());
     }
     disconnect();

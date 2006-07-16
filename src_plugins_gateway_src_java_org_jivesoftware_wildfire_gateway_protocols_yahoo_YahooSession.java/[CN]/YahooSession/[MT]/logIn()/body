@@ -1,0 +1,23 @@
+{
+  if (!isLoggedIn() && !loggingIn && loginAttempts <= 3) {
+    loggingIn=true;
+    new Thread(){
+      public void run(){
+        try {
+          loginAttempts++;
+          yahooSession.login(registration.getUsername(),registration.getPassword());
+          loggedIn=true;
+        }
+ catch (        LoginRefusedException e) {
+          yahooSession.reset();
+          Log.warn("Yahoo login failed for " + registration.getJID());
+        }
+catch (        IOException e) {
+          Log.error("Yahoo login caused IO exception: " + e.toString());
+        }
+        loggingIn=false;
+      }
+    }
+.run();
+  }
+}

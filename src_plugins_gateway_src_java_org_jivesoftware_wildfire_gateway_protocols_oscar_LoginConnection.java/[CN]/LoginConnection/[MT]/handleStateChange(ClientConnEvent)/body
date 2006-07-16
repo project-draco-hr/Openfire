@@ -3,7 +3,7 @@
   if (e.getNewState() == ClientFlapConn.STATE_CONNECTED) {
     Log.debug("connected, sending flap version and key request");
     getFlapProcessor().sendFlap(new LoginFlapCmd());
-    request(new KeyRequest(session.getLegacyName()));
+    request(new KeyRequest(oscarSession.getRegistration().getUsername()));
   }
  else   if (e.getNewState() == ClientFlapConn.STATE_FAILED) {
     Log.info("connection failed: " + e.getReason());

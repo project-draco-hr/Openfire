@@ -1,0 +1,26 @@
+{
+  if (!enabled || running) {
+    return;
+  }
+  BaseTransport transport=null;
+  Log.debug("Loading class " + nameOfClass);
+  try {
+    transport=(BaseTransport)Class.forName(nameOfClass).newInstance();
+  }
+ catch (  ClassNotFoundException e) {
+    Log.error("Unable to find class: " + nameOfClass);
+  }
+catch (  InstantiationException e) {
+    Log.error("Unable to instantiate class: " + nameOfClass);
+  }
+catch (  IllegalAccessException e) {
+    Log.error("Unable to access class: " + nameOfClass);
+  }
+  try {
+    componentManager.addComponent(serviceName,transport);
+    running=true;
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
+}

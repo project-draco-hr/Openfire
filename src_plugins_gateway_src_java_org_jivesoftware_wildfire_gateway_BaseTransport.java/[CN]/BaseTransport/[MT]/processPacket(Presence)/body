@@ -1,0 +1,47 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  if (packet.getType() == Presence.Type.error) {
+    return reply;
+  }
+  try {
+    TransportSession session=sessionManager.getSession(from);
+    if (to.getNode() == null) {
+      Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
+      if (!registrations.iterator().hasNext()) {
+        return reply;
+      }
+      Registration registration=registrations.iterator().next();
+      if (packet.getType() == null) {
+        if (session == null) {
+          session=this.registrationLoggedIn(registration);
+          sessionManager.storeSession(registration.getJID(),session);
+        }
+      }
+ else       if (packet.getType() == Presence.Type.unavailable) {
+        if (session != null && session.isLoggedIn()) {
+          this.registrationLoggedOut(session);
+        }
+        sessionManager.removeSession(registration.getJID());
+      }
+ else {
+      }
+    }
+ else {
+      if (session == null) {
+      }
+ else       if (packet.getType() == Presence.Type.subscribe) {
+        session.addContact(packet.getTo());
+      }
+ else       if (packet.getType() == Presence.Type.unsubscribe) {
+        session.removeContact(packet.getTo());
+      }
+ else {
+      }
+    }
+  }
+ catch (  NotFoundException e) {
+  }
+  return reply;
+}

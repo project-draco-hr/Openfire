@@ -1,0 +1,12 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  try {
+    TransportSession session=sessionManager.getSession(from);
+    session.sendMessage(to,packet.getBody());
+  }
+ catch (  NotFoundException e) {
+  }
+  return reply;
+}

@@ -1,0 +1,24 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  if (packet.getType() == IQ.Type.error) {
+    return reply;
+  }
+  Element child=packet.getChildElement();
+  String xmlns=null;
+  if (child != null) {
+    xmlns=child.getNamespaceURI();
+  }
+  if (xmlns == null) {
+    return reply;
+  }
+  if (xmlns.equals(DISCO_INFO)) {
+    reply.add(handleDiscoInfo(packet));
+  }
+ else   if (xmlns.equals(DISCO_ITEMS)) {
+    reply.add(handleDiscoItems(packet));
+  }
+ else   if (xmlns.equals(IQ_REGISTER)) {
+    reply.add(handleIQRegister(packet));
+  }
+  return reply;
+}
