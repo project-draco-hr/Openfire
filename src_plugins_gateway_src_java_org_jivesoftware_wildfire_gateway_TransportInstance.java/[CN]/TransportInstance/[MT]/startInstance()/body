@@ -6,6 +6,7 @@
   Log.debug("Loading class " + nameOfClass);
   try {
     transport=(BaseTransport)Class.forName(nameOfClass).newInstance();
+    transport.setup(this.type,this.description);
   }
  catch (  ClassNotFoundException e) {
     Log.error("Unable to find class: " + nameOfClass);
@@ -17,7 +18,7 @@ catch (  IllegalAccessException e) {
     Log.error("Unable to access class: " + nameOfClass);
   }
   try {
-    componentManager.addComponent(serviceName,transport);
+    componentManager.addComponent(this.type.toString(),transport);
     running=true;
   }
  catch (  Exception e) {
