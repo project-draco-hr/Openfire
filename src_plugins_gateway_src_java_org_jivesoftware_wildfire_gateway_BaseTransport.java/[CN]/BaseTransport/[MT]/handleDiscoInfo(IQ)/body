@@ -1,4 +1,12 @@
 {
-  IQ reply=IQ.createResultIQ(packet);
+  List<Packet> reply=new ArrayList<Packet>();
+  if (packet.getTo().getNode() == null) {
+    IQ result=IQ.createResultIQ(packet);
+    Element response=DocumentHelper.createElement(QName.get("query",DISCO_INFO));
+    response.addElement("identity").addAttribute("category","gateway").addAttribute("type",this.transportType.toString()).addAttribute("name",this.description);
+    response.addElement("feature").addAttribute("var",IQ_REGISTER);
+    result.setChildElement(response);
+    reply.add(result);
+  }
   return reply;
 }
