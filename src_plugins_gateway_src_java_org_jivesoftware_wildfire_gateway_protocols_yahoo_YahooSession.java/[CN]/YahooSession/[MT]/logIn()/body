@@ -7,6 +7,10 @@
           loginAttempts++;
           yahooSession.login(registration.getUsername(),registration.getPassword());
           loggedIn=true;
+          Presence p=new Presence();
+          p.setTo(registration.getJID());
+          p.setFrom(getTransport().getJID());
+          getTransport().sendPacket(p);
         }
  catch (        LoginRefusedException e) {
           yahooSession.reset();

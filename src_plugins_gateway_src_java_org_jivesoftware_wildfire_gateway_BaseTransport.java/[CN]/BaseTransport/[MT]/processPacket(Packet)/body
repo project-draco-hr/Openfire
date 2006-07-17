@@ -13,6 +13,11 @@
  else {
       Log.info("Received an unhandled packet: " + packet.toString());
     }
+    if (reply.size() > 0) {
+      for (      Packet p : reply) {
+        this.sendPacket(p);
+      }
+    }
   }
  catch (  Exception e) {
     Log.error("Error occured while processing packet: " + e.toString());

@@ -2,33 +2,51 @@
   List<Packet> reply=new ArrayList<Packet>();
   JID from=packet.getFrom();
   JID to=packet.getTo();
+  Log.debug("Got Presence packet: " + packet.toString());
   if (packet.getType() == Presence.Type.error) {
     return reply;
   }
   try {
-    TransportSession session=sessionManager.getSession(from);
     if (to.getNode() == null) {
+      Log.debug("Message to gateway");
       Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
       if (!registrations.iterator().hasNext()) {
+        Log.debug("Unable to find registration.");
         return reply;
       }
       Registration registration=registrations.iterator().next();
       if (packet.getType() == null) {
-        if (session == null) {
+        Log.debug("Got available.");
+        TransportSession session=null;
+        try {
+          session=sessionManager.getSession(from);
+        }
+ catch (        NotFoundException e) {
           session=this.registrationLoggedIn(registration);
-          sessionManager.storeSession(registration.getJID(),session);
+          sessionManager.storeSession(from,session);
         }
       }
  else       if (packet.getType() == Presence.Type.unavailable) {
-        if (session != null && session.isLoggedIn()) {
-          this.registrationLoggedOut(session);
+        Log.debug("Got unavailable.");
+        TransportSession session=null;
+        try {
+          session=sessionManager.getSession(from);
+          if (session.isLoggedIn()) {
+            this.registrationLoggedOut(session);
+          }
+          sessionManager.removeSession(from);
         }
-        sessionManager.removeSession(registration.getJID());
+ catch (        NotFoundException e) {
+          Log.debug("Ignoring unavailable presence for inactive seession.");
+        }
       }
  else {
+        Log.debug("Ignoring this packet.");
       }
     }
  else {
+      Log.debug("Message to user at gateway");
+      TransportSession session=sessionManager.getSession(from);
       if (session == null) {
       }
  else       if (packet.getType() == Presence.Type.subscribe) {
@@ -42,6 +60,7 @@
     }
   }
  catch (  NotFoundException e) {
+    Log.error("Exception while processing packet: " + e.toString());
   }
   return reply;
 }

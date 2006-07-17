@@ -2,11 +2,13 @@
   List<Packet> reply=new ArrayList<Packet>();
   JID from=packet.getFrom();
   JID to=packet.getTo();
+  Log.debug("Got Message packet: " + packet.toString());
   try {
     TransportSession session=sessionManager.getSession(from);
     session.sendMessage(to,packet.getBody());
   }
  catch (  NotFoundException e) {
+    Log.debug("Unable to find session.");
   }
   return reply;
 }
