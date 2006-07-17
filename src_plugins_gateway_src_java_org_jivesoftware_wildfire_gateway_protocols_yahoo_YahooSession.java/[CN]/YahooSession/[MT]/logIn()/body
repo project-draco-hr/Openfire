@@ -8,13 +8,14 @@
           yahooSession.login(registration.getUsername(),registration.getPassword());
           loggedIn=true;
           Presence p=new Presence();
-          p.setTo(registration.getJID());
+          p.setTo(getJID());
           p.setFrom(getTransport().getJID());
+          Log.debug("Logged in, sending: " + p.toString());
           getTransport().sendPacket(p);
         }
  catch (        LoginRefusedException e) {
           yahooSession.reset();
-          Log.warn("Yahoo login failed for " + registration.getJID());
+          Log.warn("Yahoo login failed for " + getJID());
         }
 catch (        IOException e) {
           Log.error("Yahoo login caused IO exception: " + e.toString());
