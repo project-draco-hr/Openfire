@@ -4,6 +4,6 @@
   m.setType(Message.Type.chat);
   m.setTo(yahooSession.getJID());
   m.setFrom(yahooSession.getTransport().convertIDToJID(event.getFrom()));
-  m.setBody(event.getMessage());
+  m.setBody(messageDecoder.decodeToText(event.getMessage()));
   yahooSession.getTransport().sendPacket(m);
 }
