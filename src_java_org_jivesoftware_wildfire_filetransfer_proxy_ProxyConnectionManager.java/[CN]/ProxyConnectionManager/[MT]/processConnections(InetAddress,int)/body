@@ -7,20 +7,23 @@
   reset();
   socketProcess=executor.submit(new Runnable(){
     public void run(){
+      ServerSocket serverSocket;
       try {
-        serverSocket=new ServerSocket(port,-1,bindInterface);
+        serverChannel=ServerSocketChannel.open();
+        serverSocket=serverChannel.socket();
+        serverSocket.bind(new InetSocketAddress(bindInterface,port));
       }
  catch (      IOException e) {
-        Log.error("Error creating server socket",e);
+        Log.error("Error binding server socket",e);
         return;
       }
       while (serverSocket.isBound()) {
-        final Socket socket;
+        final SocketChannel channel;
         try {
-          socket=serverSocket.accept();
+          channel=serverChannel.accept();
         }
  catch (        IOException e) {
-          if (!serverSocket.isClosed()) {
+          if (serverChannel.isOpen()) {
             Log.error("Error accepting proxy connection",e);
             continue;
           }
@@ -31,12 +34,12 @@
         executor.submit(new Runnable(){
           public void run(){
             try {
-              processConnection(socket);
+              processConnection(channel);
             }
  catch (            IOException ie) {
               Log.error("Error processing file transfer proxy connection",ie);
               try {
-                socket.close();
+                channel.close();
               }
  catch (              IOException e) {
               }
