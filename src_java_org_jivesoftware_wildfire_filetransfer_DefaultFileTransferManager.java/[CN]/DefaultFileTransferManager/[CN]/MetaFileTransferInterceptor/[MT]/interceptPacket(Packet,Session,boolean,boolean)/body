@@ -1,0 +1,21 @@
+{
+  if (!processed && incoming && packet instanceof IQ) {
+    IQ iq=(IQ)packet;
+    Element childElement=iq.getChildElement();
+    if (childElement == null) {
+      return;
+    }
+    String namespace=childElement.getNamespaceURI();
+    if (NAMESPACE_SI.equals(namespace)) {
+      if (iq.getType().equals(IQ.Type.set)) {
+        JID from=iq.getFrom();
+        JID to=iq.getTo();
+        String packetID=iq.getID();
+        FileTransfer transfer=createFileTransfer(packetID,from,to,childElement);
+        if (transfer == null || !acceptIncomingFileTransferRequest(transfer)) {
+          throw new PacketRejectedException();
+        }
+      }
+    }
+  }
+}

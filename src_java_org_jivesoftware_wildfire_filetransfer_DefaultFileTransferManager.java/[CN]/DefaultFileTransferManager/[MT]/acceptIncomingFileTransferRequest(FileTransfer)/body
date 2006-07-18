@@ -1,0 +1,16 @@
+{
+  try {
+    fireFileTransferMetaIntercept(transfer);
+  }
+ catch (  FileTransferRejectedException e) {
+    return false;
+  }
+  if (transfer != null) {
+    String streamID=transfer.getSessionID();
+    JID from=new JID(transfer.getInitiator());
+    JID to=new JID(transfer.getTarget());
+    cacheFileTransfer(ProxyConnectionManager.createDigest(streamID,from,to),transfer);
+    return true;
+  }
+  return false;
+}

@@ -1,0 +1,25 @@
+{
+  super.initialize(server);
+  proxyServiceName=JiveGlobals.getProperty("xmpp.proxy.service","proxy");
+  routingTable=server.getRoutingTable();
+  router=server.getPacketRouter();
+  String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+  bindInterface=null;
+  if (interfaceName != null) {
+    if (interfaceName.trim().length() > 0) {
+      try {
+        bindInterface=InetAddress.getByName(interfaceName);
+      }
+ catch (      UnknownHostException e) {
+        Log.error("Error binding to network.interface",e);
+      }
+    }
+  }
+  try {
+    proxyIP=JiveGlobals.getProperty("xmpp.proxy.externalip",(bindInterface != null ? bindInterface.getHostAddress() : InetAddress.getLocalHost().getHostAddress()));
+  }
+ catch (  UnknownHostException e) {
+    Log.error("Couldn't discover local host",e);
+  }
+  connectionManager=new ProxyConnectionManager(getFileTransferManager(server));
+}
