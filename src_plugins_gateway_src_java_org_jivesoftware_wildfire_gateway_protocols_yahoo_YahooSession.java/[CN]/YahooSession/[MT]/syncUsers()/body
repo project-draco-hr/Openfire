@@ -1,9 +1,60 @@
 {
+  List<TransportBuddy> legacyusers=new ArrayList<TransportBuddy>();
+  for (  YahooGroup group : yahooSession.getGroups()) {
+    for (Enumeration e=group.getMembers().elements(); e.hasMoreElements(); ) {
+      YahooUser user=(YahooUser)e.nextElement();
+      legacyusers.add(new TransportBuddy(user.getId(),user.getId(),group.getName()));
+    }
+  }
+  try {
+    getTransport().syncLegacyRoster(getJID(),legacyusers);
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("Unable to sync yahoo contact list for " + getJID());
+  }
   for (  YahooUser user : (Collection<YahooUser>)yahooSession.getUsers().values()) {
-    try {
-      getTransport().addOrUpdateRosterItem(getJID(),user.getId(),user.getId(),null);
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().convertIDToJID(user.getId()));
+    String custommsg=user.getCustomStatusMessage();
+    if (custommsg != null) {
+      p.setStatus(custommsg);
     }
- catch (    Exception e) {
+    long statusid=user.getStatus();
+    if (statusid == StatusConstants.STATUS_AVAILABLE) {
     }
+ else     if (statusid == StatusConstants.STATUS_BRB) {
+      p.setShow(Presence.Show.away);
+    }
+ else     if (statusid == StatusConstants.STATUS_BUSY) {
+      p.setShow(Presence.Show.dnd);
+    }
+ else     if (statusid == StatusConstants.STATUS_IDLE) {
+      p.setShow(Presence.Show.away);
+    }
+ else     if (statusid == StatusConstants.STATUS_OFFLINE) {
+      p.setType(Presence.Type.unavailable);
+    }
+ else     if (statusid == StatusConstants.STATUS_NOTATDESK) {
+      p.setShow(Presence.Show.away);
+    }
+ else     if (statusid == StatusConstants.STATUS_NOTINOFFICE) {
+      p.setShow(Presence.Show.away);
+    }
+ else     if (statusid == StatusConstants.STATUS_ONPHONE) {
+      p.setShow(Presence.Show.away);
+    }
+ else     if (statusid == StatusConstants.STATUS_ONVACATION) {
+      p.setShow(Presence.Show.xa);
+    }
+ else     if (statusid == StatusConstants.STATUS_OUTTOLUNCH) {
+      p.setShow(Presence.Show.xa);
+    }
+ else     if (statusid == StatusConstants.STATUS_STEPPEDOUT) {
+      p.setShow(Presence.Show.away);
+    }
+ else {
+    }
+    getTransport().sendPacket(p);
   }
 }

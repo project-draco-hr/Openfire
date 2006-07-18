@@ -1,0 +1,40 @@
+{
+  if (buddystore.containsKey(sn)) {
+    FullUserInfo info=buddystore.get(sn);
+    buddystore.put(info.getScreenname(),info);
+    Presence p=new Presence();
+    p.setTo(oscarSession.getJID());
+    p.setFrom(oscarSession.getTransport().convertIDToJID(info.getScreenname()));
+    if (info.getAwayStatus() == true) {
+      p.setShow(Presence.Show.away);
+    }
+    ExtraInfoBlock[] extraInfo=info.getExtraInfoBlocks();
+    if (extraInfo != null) {
+      for (      ExtraInfoBlock i : extraInfo) {
+        ExtraInfoData data=i.getExtraData();
+        if (i.getType() == ExtraInfoBlock.TYPE_AVAILMSG) {
+          ByteBlock msgBlock=data.getData();
+          int len=BinaryTools.getUShort(msgBlock,0);
+          byte[] msgBytes=msgBlock.subBlock(2,len).toByteArray();
+          String msg;
+          try {
+            msg=new String(msgBytes,"UTF-8");
+          }
+ catch (          UnsupportedEncodingException e1) {
+            continue;
+          }
+          if (msg.length() > 0) {
+            p.setStatus(msg);
+          }
+        }
+      }
+    }
+    oscarSession.getTransport().sendPacket(p);
+  }
+ else {
+    Presence p=new Presence(Presence.Type.unavailable);
+    p.setTo(oscarSession.getJID());
+    p.setFrom(oscarSession.getTransport().convertIDToJID(sn));
+    oscarSession.getTransport().sendPacket(p);
+  }
+}

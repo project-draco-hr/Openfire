@@ -3,21 +3,33 @@
     Roster roster=rosterManager.getRoster(userjid.getNode());
     try {
       RosterItem gwitem=roster.getRosterItem(contactjid);
+      Boolean changed=false;
       if (gwitem.getSubStatus() != RosterItem.SUB_BOTH) {
         gwitem.setSubStatus(RosterItem.SUB_BOTH);
+        changed=true;
       }
       if (gwitem.getAskStatus() != RosterItem.ASK_NONE) {
         gwitem.setAskStatus(RosterItem.ASK_NONE);
+        changed=true;
       }
-      gwitem.setNickname(nickname);
+      if (!gwitem.getNickname().equals(nickname)) {
+        gwitem.setNickname(nickname);
+        changed=true;
+      }
+      List<String> curgroups=gwitem.getGroups();
       List<String> groups=new ArrayList<String>();
       groups.add(group);
-      try {
-        gwitem.setGroups(groups);
+      if (curgroups != groups) {
+        try {
+          gwitem.setGroups(groups);
+          changed=true;
+        }
+ catch (        Exception ee) {
+        }
       }
- catch (      Exception ee) {
+      if (changed) {
+        roster.updateRosterItem(gwitem);
       }
-      roster.updateRosterItem(gwitem);
     }
  catch (    UserNotFoundException e) {
       try {

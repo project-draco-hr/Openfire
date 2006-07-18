@@ -53,7 +53,20 @@
         Element response=DocumentHelper.createElement(QName.get("query",IQ_REGISTER));
         result.setChildElement(response);
         reply.add(result);
-        registrationManager.createRegistration(packet.getFrom(),this.transportType,username,password);
+        Collection<Registration> registrations=registrationManager.getRegistrations(packet.getFrom(),this.transportType);
+        Boolean foundReg=false;
+        for (        Registration registration : registrations) {
+          if (!registration.getUsername().equals(username)) {
+            registrationManager.deleteRegistration(registration);
+          }
+ else {
+            registration.setPassword(password);
+            foundReg=true;
+          }
+        }
+        if (!foundReg) {
+          registrationManager.createRegistration(packet.getFrom(),this.transportType,username,password);
+        }
         try {
           addOrUpdateRosterItem(packet.getFrom(),packet.getTo(),this.getDescription(),"Transports");
         }

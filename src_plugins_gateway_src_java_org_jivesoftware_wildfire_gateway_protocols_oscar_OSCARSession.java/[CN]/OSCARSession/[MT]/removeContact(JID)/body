@@ -1,9 +1,9 @@
 {
   Log.debug("removeContact called");
-  for (  BuddyItem i : buddies) {
+  for (  BuddyItem i : buddies.values()) {
     if (i.getScreenname().equals(jid.getNode())) {
       request(new DeleteItemsCmd(new SsiItem[]{i.toSsiItem()}));
-      buddies.remove(buddies.indexOf(i));
+      buddies.remove(i.getId());
     }
   }
 }

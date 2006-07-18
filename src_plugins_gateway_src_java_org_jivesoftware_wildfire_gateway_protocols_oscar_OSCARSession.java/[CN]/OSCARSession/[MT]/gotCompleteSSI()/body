@@ -1,0 +1,19 @@
+{
+  List<TransportBuddy> legacyusers=new ArrayList<TransportBuddy>();
+  for (  BuddyItem buddy : buddies.values()) {
+    Log.debug("CompleteSSI: adding " + buddy.getScreenname());
+    String nickname=buddy.getAlias();
+    if (nickname == null) {
+      nickname=buddy.getScreenname();
+    }
+    int groupid=buddy.getGroupId();
+    String groupname=groups.get(groupid).getGroupName();
+    legacyusers.add(new TransportBuddy(buddy.getScreenname(),nickname,groupname));
+  }
+  try {
+    getTransport().syncLegacyRoster(getJID(),legacyusers);
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("Unable to sync oscar contact list for " + getJID());
+  }
+}

@@ -1,0 +1,51 @@
+{
+  try {
+    Roster roster=rosterManager.getRoster(userjid.getNode());
+    Map<JID,TransportBuddy> legacymap=new HashMap<JID,TransportBuddy>();
+    for (    TransportBuddy buddy : legacyitems) {
+      Log.debug("ROSTERSYNC: Mapping " + buddy.getName());
+      legacymap.put(new JID(buddy.getName(),this.jid.getDomain(),null),buddy);
+    }
+    for (    RosterItem ri : roster.getRosterItems()) {
+      if (!ri.getJid().getDomain().equals(this.jid.getDomain())) {
+        continue;
+      }
+      if (ri.getJid().getNode() == null) {
+        continue;
+      }
+      JID jid=new JID(ri.getJid().toBareJID());
+      if (legacymap.containsKey(jid)) {
+        Log.debug("ROSTERSYNC: We found, updating " + jid.toString());
+        TransportBuddy buddy=legacymap.get(jid);
+        try {
+          this.addOrUpdateRosterItem(userjid,buddy.getName(),buddy.getNickname(),buddy.getGroup());
+        }
+ catch (        UserNotFoundException e) {
+          Log.error("Failed updating roster item");
+        }
+        legacymap.remove(jid);
+      }
+ else {
+        Log.debug("ROSTERSYNC: We did not find, removing " + jid.toString());
+        try {
+          this.removeFromRoster(userjid,jid);
+        }
+ catch (        UserNotFoundException e) {
+          Log.error("Failed removing roster item");
+        }
+      }
+    }
+    for (    TransportBuddy buddy : legacymap.values()) {
+      Log.debug("ROSTERSYNC: We have new, adding " + buddy.getName());
+      try {
+        this.addOrUpdateRosterItem(userjid,buddy.getName(),buddy.getNickname(),buddy.getGroup());
+      }
+ catch (      UserNotFoundException e) {
+        Log.error("Failed adding new roster item");
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("Could not find roster for " + userjid.toString());
+  }
+}

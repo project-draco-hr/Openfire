@@ -39,13 +39,18 @@
  else   if (cmd instanceof BuddyStatusCmd) {
     BuddyStatusCmd bsc=(BuddyStatusCmd)cmd;
     FullUserInfo info=bsc.getUserInfo();
-    String sn=info.getScreenname();
-    ExtraInfoBlock[] extraInfos=info.getExtraInfoBlocks();
-    if (extraInfos != null) {
-      for (int i=0; i < extraInfos.length; i++) {
-        ExtraInfoBlock extraInfo=extraInfos[i];
-        ExtraInfoData data=extraInfo.getExtraData();
-        if (extraInfo.getType() == ExtraInfoBlock.TYPE_AVAILMSG) {
+    buddystore.put(info.getScreenname(),info);
+    Presence p=new Presence();
+    p.setTo(oscarSession.getJID());
+    p.setFrom(oscarSession.getTransport().convertIDToJID(info.getScreenname()));
+    if (info.getAwayStatus() == true) {
+      p.setShow(Presence.Show.away);
+    }
+    ExtraInfoBlock[] extraInfo=info.getExtraInfoBlocks();
+    if (extraInfo != null) {
+      for (      ExtraInfoBlock i : extraInfo) {
+        ExtraInfoData data=i.getExtraData();
+        if (i.getType() == ExtraInfoBlock.TYPE_AVAILMSG) {
           ByteBlock msgBlock=data.getData();
           int len=BinaryTools.getUShort(msgBlock,0);
           byte[] msgBytes=msgBlock.subBlock(2,len).toByteArray();
@@ -54,29 +59,23 @@
             msg=new String(msgBytes,"UTF-8");
           }
  catch (          UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-            return;
+            continue;
           }
           if (msg.length() > 0) {
-            Log.debug(info.getScreenname() + " availability: " + msg);
+            p.setStatus(msg);
           }
         }
       }
     }
-    if (info.getCapabilityBlocks() != null) {
-      List known=Arrays.asList(new CapabilityBlock[]{CapabilityBlock.BLOCK_ICQCOMPATIBLE});
-      List caps=new ArrayList(Arrays.asList(info.getCapabilityBlocks()));
-      caps.removeAll(known);
-      if (!caps.isEmpty()) {
-        Log.debug(sn + " has " + caps.size()+ " unknown caps:");
-        for (Iterator it=caps.iterator(); it.hasNext(); ) {
-          Log.debug("- " + it.next());
-        }
-      }
-    }
+    oscarSession.getTransport().sendPacket(p);
   }
  else   if (cmd instanceof BuddyOfflineCmd) {
     BuddyOfflineCmd boc=(BuddyOfflineCmd)cmd;
+    buddystore.remove(boc.getScreenname());
+    Presence p=new Presence(Presence.Type.unavailable);
+    p.setTo(oscarSession.getJID());
+    p.setFrom(oscarSession.getTransport().convertIDToJID(boc.getScreenname()));
+    oscarSession.getTransport().sendPacket(p);
   }
  else   if (cmd instanceof RateChange) {
     RateChange rc=(RateChange)cmd;

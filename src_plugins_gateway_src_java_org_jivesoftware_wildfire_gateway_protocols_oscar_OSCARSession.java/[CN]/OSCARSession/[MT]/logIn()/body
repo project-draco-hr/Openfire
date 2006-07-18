@@ -1,10 +1,14 @@
 {
-  Log.debug("Login called");
   if (!isLoggedIn()) {
     Log.debug("Connecting...");
     loginConn=new LoginConnection("login.oscar.aol.com",5190,this);
     loginConn.connect();
     loggedIn=true;
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().getJID());
+    Log.debug("Logged in, sending: " + p.toString());
+    getTransport().sendPacket(p);
   }
  else {
     Log.warn(this.jid + " is already logged in");

@@ -1,12 +1,6 @@
 {
-  buddies.add(buddy);
-  String nickname=buddy.getAlias();
-  try {
-    getTransport().addOrUpdateRosterItem(getJID(),buddy.getScreenname(),nickname,null);
-  }
- catch (  UserNotFoundException e) {
-    Log.error("Unable to add " + buddy.getScreenname() + " to roster.");
-  }
+  Log.debug("Found buddy item: " + buddy.toString());
+  buddies.put(buddy.getId(),buddy);
   if (buddy.getId() > highestBuddyId) {
     highestBuddyId=buddy.getId();
   }

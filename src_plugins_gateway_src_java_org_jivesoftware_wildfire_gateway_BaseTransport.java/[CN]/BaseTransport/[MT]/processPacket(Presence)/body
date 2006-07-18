@@ -8,7 +8,7 @@
   }
   try {
     if (to.getNode() == null) {
-      Log.debug("Message to gateway");
+      Log.debug("Presence to gateway");
       Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
       if (!registrations.iterator().hasNext()) {
         Log.debug("Unable to find registration.");
@@ -61,9 +61,13 @@
       }
     }
  else {
-      Log.debug("Message to user at gateway");
+      Log.debug("Presence to user at gateway");
       TransportSession session=sessionManager.getSession(from);
       if (session == null) {
+        Log.error("No session for incoming packet: " + packet.toString());
+      }
+ else       if (packet.getType() == Presence.Type.probe) {
+        session.retrieveContactStatus(packet.getTo());
       }
  else       if (packet.getType() == Presence.Type.subscribe) {
         session.addContact(packet.getTo());
