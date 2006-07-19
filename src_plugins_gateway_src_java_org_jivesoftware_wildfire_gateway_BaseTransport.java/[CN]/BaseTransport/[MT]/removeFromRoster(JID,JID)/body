@@ -2,7 +2,7 @@
   try {
     Roster roster=rosterManager.getRoster(userjid.getNode());
     for (    RosterItem ri : roster.getRosterItems()) {
-      if (ri.getJid() == contactjid) {
+      if (ri.getJid().toBareJID().equals(contactjid.toBareJID())) {
         try {
           roster.deleteRosterItem(ri.getJid(),false);
         }

@@ -1,0 +1,13 @@
+{
+  try {
+    msnManager.signIn(registration.getUsername(),registration.getPassword(),ContactStatus.ONLINE);
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().getJID());
+    getTransport().sendPacket(p);
+    msnManager.setStatus(ContactStatus.ONLINE);
+  }
+ catch (  MSNException e) {
+    Log.error("MSN exception thrown while logging in: " + e.toString());
+  }
+}

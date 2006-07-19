@@ -62,24 +62,25 @@
     }
  else {
       Log.debug("Presence to user at gateway");
-      TransportSession session=sessionManager.getSession(from);
-      if (session == null) {
-        Log.error("No session for incoming packet: " + packet.toString());
-      }
- else       if (packet.getType() == Presence.Type.probe) {
-        session.retrieveContactStatus(packet.getTo());
-      }
- else       if (packet.getType() == Presence.Type.subscribe) {
-        session.addContact(packet.getTo());
-      }
- else       if (packet.getType() == Presence.Type.unsubscribe) {
-        session.removeContact(packet.getTo());
-      }
+      try {
+        TransportSession session=sessionManager.getSession(from);
+        if (packet.getType() == Presence.Type.probe) {
+          session.retrieveContactStatus(packet.getTo());
+        }
+ else         if (packet.getType() == Presence.Type.subscribe) {
+          session.addContact(packet.getTo());
+        }
+ else         if (packet.getType() == Presence.Type.unsubscribe) {
+          session.removeContact(packet.getTo());
+        }
  else {
+        }
+      }
+ catch (      NotFoundException e) {
       }
     }
   }
- catch (  NotFoundException e) {
+ catch (  Exception e) {
     Log.error("Exception while processing packet: " + e.toString());
   }
   return reply;

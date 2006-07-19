@@ -13,16 +13,13 @@
  else   if (cmd instanceof YourInfoCmd) {
     YourInfoCmd yic=(YourInfoCmd)cmd;
     FullUserInfo info=yic.getUserInfo();
-    Log.debug("got my user info: " + info);
   }
  else   if (cmd instanceof UserInfoCmd) {
     UserInfoCmd uic=(UserInfoCmd)cmd;
     String sn=uic.getUserInfo().getScreenname();
-    Log.debug("user info for " + sn + ": "+ uic.getInfoData());
   }
  else   if (cmd instanceof ServiceRedirect) {
     ServiceRedirect sr=(ServiceRedirect)cmd;
-    Log.debug("connecting to " + sr.getRedirectHost() + " for 0x"+ Integer.toHexString(sr.getSnacFamily()));
     oscarSession.connectToService(sr.getSnacFamily(),sr.getRedirectHost(),sr.getCookie());
   }
  else   if (cmd instanceof SsiDataCmd) {
@@ -36,10 +33,8 @@
  else       if (obj instanceof GroupItem) {
         oscarSession.gotGroup((GroupItem)obj);
       }
-      Log.debug("- " + (obj == null ? (Object)items[i] : (Object)obj));
     }
     if (sdc.getLastModDate() != 0) {
-      Log.debug("done with SSI");
       request(new ActivateSsiCmd());
       clientReady();
       oscarSession.gotCompleteSSI();

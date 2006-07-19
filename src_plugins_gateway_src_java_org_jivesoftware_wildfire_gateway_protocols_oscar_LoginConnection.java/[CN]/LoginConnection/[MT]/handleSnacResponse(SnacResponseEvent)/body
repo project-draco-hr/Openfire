@@ -1,6 +1,5 @@
 {
   SnacCommand cmd=e.getSnacCommand();
-  Log.debug("snac response: " + Integer.toHexString(cmd.getFamily()) + "/"+ Integer.toHexString(cmd.getCommand())+ ": "+ cmd);
   if (cmd instanceof KeyResponse) {
     KeyResponse kr=(KeyResponse)cmd;
     ByteBlock authkey=kr.getKey();
@@ -19,7 +18,7 @@
  else {
       loggedin=true;
       oscarSession.startBosConn(ar.getServer(),ar.getPort(),ar.getCookie());
-      Log.info("connecting to " + ar.getServer() + ":"+ ar.getPort());
+      Log.info("OSCAR connection to " + ar.getServer() + ":"+ ar.getPort());
     }
     disconnect();
   }
