@@ -4,7 +4,9 @@
     IQ result=IQ.createResultIQ(packet);
     Element response=DocumentHelper.createElement(QName.get("query",DISCO_INFO));
     response.addElement("identity").addAttribute("category","gateway").addAttribute("type",this.transportType.toString()).addAttribute("name",this.description);
+    response.addElement("feature").addAttribute("var",IQ_GATEWAY);
     response.addElement("feature").addAttribute("var",IQ_REGISTER);
+    response.addElement("feature").addAttribute("var",IQ_VERSION);
     result.setChildElement(response);
     reply.add(result);
   }

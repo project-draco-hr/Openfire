@@ -21,9 +21,17 @@
     Log.debug("Matched Disco Items");
     reply.addAll(handleDiscoItems(packet));
   }
+ else   if (xmlns.equals(IQ_GATEWAY)) {
+    Log.debug("Matched IQ Gateway");
+    reply.addAll(handleIQGateway(packet));
+  }
  else   if (xmlns.equals(IQ_REGISTER)) {
     Log.debug("Matched IQ Register");
     reply.addAll(handleIQRegister(packet));
+  }
+ else   if (xmlns.equals(IQ_VERSION)) {
+    Log.debug("Matched IQ Version");
+    reply.addAll(handleIQVersion(packet));
   }
  else {
     Log.debug("Matched nothing");

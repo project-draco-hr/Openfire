@@ -1,0 +1,13 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  if (packet.getType() == IQ.Type.get) {
+    IQ result=IQ.createResultIQ(packet);
+    Element query=DocumentHelper.createElement(QName.get("query",IQ_VERSION));
+    query.addElement("name").addText("Wildfire " + this.getDescription());
+    query.addElement("version").addText(this.getVersionString());
+    query.addElement("os").addText(System.getProperty("os.name"));
+    result.setChildElement(query);
+    reply.add(result);
+  }
+  return reply;
+}

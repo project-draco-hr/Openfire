@@ -33,6 +33,21 @@
  else {
     String username=null;
     String password=null;
+    try {
+      DataForm form=new DataForm(packet.getChildElement().element("x"));
+      List<FormField> fields=form.getFields();
+      for (      FormField field : fields) {
+        String var=field.getVariable();
+        if (var.equals("username")) {
+          username=field.getValues().get(0);
+        }
+ else         if (var.equals("password")) {
+          password=field.getValues().get(0);
+        }
+      }
+    }
+ catch (    Exception e) {
+    }
     if (packet.getType() == IQ.Type.set) {
       Element userEl=packet.getChildElement().element("username");
       Element passEl=packet.getChildElement().element("password");
@@ -76,12 +91,26 @@
           eresult.setError(Condition.bad_request);
           reply.add(eresult);
         }
+        Presence p=new Presence(Presence.Type.probe);
+        p.setTo(packet.getFrom());
+        p.setFrom(packet.getTo());
+        reply.add(p);
       }
     }
  else     if (packet.getType() == IQ.Type.get) {
       Element response=DocumentHelper.createElement(QName.get("query",IQ_REGISTER));
       IQ result=IQ.createResultIQ(packet);
-      response.addElement("instruction").addText("Please enter your " + this.getName() + " username and password.");
+      DataForm form=new DataForm(DataForm.Type.form);
+      form.addInstruction("Please enter your " + this.getName() + " username and password.");
+      FormField usernameField=form.addField();
+      usernameField.setLabel("Username");
+      usernameField.setVariable("username");
+      usernameField.setType(FormField.Type.text_single);
+      FormField passwordField=form.addField();
+      passwordField.setLabel("Password");
+      passwordField.setVariable("password");
+      passwordField.setType(FormField.Type.text_private);
+      response.addElement("instructions").addText("Please enter your " + this.getName() + " username and password.");
       response.addElement("username");
       response.addElement("password");
       result.setChildElement(response);
