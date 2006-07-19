@@ -1,5 +1,5 @@
 {
-  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.jdbcDriver.className");
+  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
   }
@@ -7,7 +7,7 @@
     Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
     return;
   }
-  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.jdbcConnString");
+  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.connectionString");
   passwordSQL=JiveGlobals.getXMLProperty("jdbcAuthProvider.passwordSQL");
   passwordType=PasswordType.plain;
   try {
