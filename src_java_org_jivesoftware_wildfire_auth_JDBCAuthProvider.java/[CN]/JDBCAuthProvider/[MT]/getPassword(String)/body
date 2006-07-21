@@ -2,26 +2,5 @@
   if (!supportsPasswordRetrieval()) {
     throw new UnsupportedOperationException();
   }
-  String password=null;
-  Connection con=null;
-  PreparedStatement pstmt=null;
-  ResultSet rs=null;
-  try {
-    con=DriverManager.getConnection(connectionString);
-    pstmt=con.prepareStatement(passwordSQL);
-    pstmt.setString(1,username);
-    rs=pstmt.executeQuery();
-    if (!rs.next()) {
-      throw new UserNotFoundException();
-    }
-    password=rs.getString(1);
-  }
- catch (  SQLException e) {
-    Log.error("Exception in JDBCAuthProvider",e);
-    throw new UserNotFoundException();
-  }
- finally {
-    DbConnectionManager.closeConnection(rs,pstmt,con);
-  }
-  return password;
+  return getPasswordValue(username);
 }
