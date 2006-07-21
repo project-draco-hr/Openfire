@@ -1,0 +1,31 @@
+{
+  final PresenceType pType=presenceType;
+  if (!isLoggedIn() && !loggingIn && loginAttempts <= 3) {
+    loggingIn=true;
+    new Thread(){
+      public void run(){
+        try {
+          loginAttempts++;
+          yahooSession.login(registration.getUsername(),registration.getPassword());
+          loggedIn=true;
+          Presence p=new Presence();
+          p.setTo(getJID());
+          p.setFrom(getTransport().getJID());
+          Log.debug("Logged in, sending: " + p.toString());
+          getTransport().sendPacket(p);
+          yahooSession.setStatus(((YahooTransport)getTransport()).convertJabStatusToYahoo(pType));
+          syncUsers();
+        }
+ catch (        LoginRefusedException e) {
+          yahooSession.reset();
+          Log.warn("Yahoo login failed for " + getJID());
+        }
+catch (        IOException e) {
+          Log.error("Yahoo login caused IO exception:",e);
+        }
+        loggingIn=false;
+      }
+    }
+.run();
+  }
+}

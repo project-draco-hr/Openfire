@@ -20,9 +20,10 @@
         TransportSession session=null;
         try {
           session=sessionManager.getSession(from);
+          session.updateStatus(getPresenceType(packet),packet.getStatus());
         }
  catch (        NotFoundException e) {
-          session=this.registrationLoggedIn(registration,from);
+          session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus());
           sessionManager.storeSession(from,session);
         }
       }
