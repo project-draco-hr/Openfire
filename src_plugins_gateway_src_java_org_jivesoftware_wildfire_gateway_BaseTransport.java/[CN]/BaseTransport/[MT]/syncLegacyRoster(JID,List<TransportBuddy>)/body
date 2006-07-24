@@ -4,7 +4,7 @@
     Map<JID,TransportBuddy> legacymap=new HashMap<JID,TransportBuddy>();
     for (    TransportBuddy buddy : legacyitems) {
       Log.debug("ROSTERSYNC: Mapping " + buddy.getName());
-      legacymap.put(new JID(buddy.getName(),this.jid.getDomain(),null),buddy);
+      legacymap.put(convertIDToJID(buddy.getName()),buddy);
     }
     for (    RosterItem ri : roster.getRosterItems()) {
       if (!ri.getJid().getDomain().equals(this.jid.getDomain())) {
