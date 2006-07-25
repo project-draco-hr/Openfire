@@ -2,13 +2,11 @@
   List<Packet> reply=new ArrayList<Packet>();
   JID from=packet.getFrom();
   JID to=packet.getTo();
-  Log.debug("Got Presence packet: " + packet.toString());
   if (packet.getType() == Presence.Type.error) {
     return reply;
   }
   try {
     if (to.getNode() == null) {
-      Log.debug("Presence to gateway");
       Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
       if (!registrations.iterator().hasNext()) {
         Log.debug("Unable to find registration.");
@@ -16,7 +14,6 @@
       }
       Registration registration=registrations.iterator().next();
       if (packet.getType() == null) {
-        Log.debug("Got available.");
         TransportSession session=null;
         try {
           session=sessionManager.getSession(from);
@@ -28,7 +25,6 @@
         }
       }
  else       if (packet.getType() == Presence.Type.unavailable) {
-        Log.debug("Got unavailable.");
         TransportSession session=null;
         try {
           session=sessionManager.getSession(from);
@@ -42,7 +38,6 @@
         }
       }
  else       if (packet.getType() == Presence.Type.probe) {
-        Log.debug("Got probe.");
         TransportSession session=null;
         try {
           session=sessionManager.getSession(from);
@@ -58,11 +53,10 @@
         }
       }
  else {
-        Log.debug("Ignoring this packet.");
+        Log.debug("Ignoring this packet:" + packet.toString());
       }
     }
  else {
-      Log.debug("Presence to user at gateway");
       try {
         TransportSession session=sessionManager.getSession(from);
         if (packet.getType() == Presence.Type.probe) {

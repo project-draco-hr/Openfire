@@ -16,6 +16,7 @@
           Log.debug("Logged in, sending: " + p.toString());
           getTransport().sendPacket(p);
           yahooSession.setStatus(((YahooTransport)getTransport()).convertJabStatusToYahoo(pType));
+          getRegistration().setLastLogin(new Date());
           syncUsers();
         }
  catch (        LoginRefusedException e) {

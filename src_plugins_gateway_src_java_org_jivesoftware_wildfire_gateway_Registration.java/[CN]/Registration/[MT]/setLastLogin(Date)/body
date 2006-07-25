@@ -5,7 +5,7 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(SET_LAST_LOGIN);
-    pstmt.setNull(1,Types.VARCHAR);
+    pstmt.setLong(1,lastLogin.getTime());
     pstmt.setLong(2,registrationID);
     pstmt.executeUpdate();
   }

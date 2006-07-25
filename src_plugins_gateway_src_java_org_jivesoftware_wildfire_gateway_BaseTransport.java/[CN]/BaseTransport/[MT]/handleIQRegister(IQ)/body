@@ -3,26 +3,12 @@
   Element remove=packet.getChildElement().element("remove");
   if (remove != null) {
     IQ result=IQ.createResultIQ(packet);
-    Collection<Registration> registrations=registrationManager.getRegistrations(packet.getFrom(),this.transportType);
-    for (    Registration reg : registrations) {
-      registrationManager.deleteRegistration(reg);
-    }
     Presence unavailable=new Presence(Presence.Type.unavailable);
     unavailable.setTo(packet.getFrom());
     unavailable.setFrom(packet.getTo());
     reply.add(unavailable);
     try {
-      Roster roster=rosterManager.getRoster(packet.getFrom().getNode());
-      for (      RosterItem ri : roster.getRosterItems()) {
-        if (ri.getJid().getDomain() == this.jid.getDomain()) {
-          try {
-            roster.deleteRosterItem(ri.getJid(),false);
-          }
- catch (          Exception e) {
-            Log.error("Error removing roster item: " + ri.toString());
-          }
-        }
-      }
+      this.deleteRegistration(packet.getFrom());
     }
  catch (    UserNotFoundException e) {
       Log.error("Error cleaning up contact list of: " + packet.getFrom());
@@ -68,22 +54,8 @@
         Element response=DocumentHelper.createElement(QName.get("query",IQ_REGISTER));
         result.setChildElement(response);
         reply.add(result);
-        Collection<Registration> registrations=registrationManager.getRegistrations(packet.getFrom(),this.transportType);
-        Boolean foundReg=false;
-        for (        Registration registration : registrations) {
-          if (!registration.getUsername().equals(username)) {
-            registrationManager.deleteRegistration(registration);
-          }
- else {
-            registration.setPassword(password);
-            foundReg=true;
-          }
-        }
-        if (!foundReg) {
-          registrationManager.createRegistration(packet.getFrom(),this.transportType,username,password);
-        }
         try {
-          addOrUpdateRosterItem(packet.getFrom(),packet.getTo(),this.getDescription(),"Transports");
+          this.addNewRegistration(packet.getFrom(),username,password);
         }
  catch (        UserNotFoundException e) {
           Log.error("Someone attempted to register with the gateway who is not registered with the server: " + packet.getFrom());

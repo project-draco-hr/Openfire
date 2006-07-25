@@ -1,10 +1,17 @@
 {
+  this.username=username;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(DELETE_REGISTRATION);
-    pstmt.setLong(1,registration.getRegistrationID());
+    pstmt=con.prepareStatement(SET_USERNAME);
+    if (username != null) {
+      pstmt.setString(1,username);
+    }
+ else {
+      pstmt.setNull(1,Types.VARCHAR);
+    }
+    pstmt.setLong(2,registrationID);
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

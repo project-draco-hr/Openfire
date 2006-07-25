@@ -3,7 +3,6 @@
     Roster roster=rosterManager.getRoster(userjid.getNode());
     Map<JID,TransportBuddy> legacymap=new HashMap<JID,TransportBuddy>();
     for (    TransportBuddy buddy : legacyitems) {
-      Log.debug("ROSTERSYNC: Mapping " + buddy.getName());
       legacymap.put(convertIDToJID(buddy.getName()),buddy);
     }
     for (    RosterItem ri : roster.getRosterItems()) {
@@ -15,7 +14,6 @@
       }
       JID jid=new JID(ri.getJid().toBareJID());
       if (legacymap.containsKey(jid)) {
-        Log.debug("ROSTERSYNC: We found, updating " + jid.toString());
         TransportBuddy buddy=legacymap.get(jid);
         try {
           this.addOrUpdateRosterItem(userjid,buddy.getName(),buddy.getNickname(),buddy.getGroup());
@@ -26,7 +24,6 @@
         legacymap.remove(jid);
       }
  else {
-        Log.debug("ROSTERSYNC: We did not find, removing " + jid.toString());
         try {
           this.removeFromRoster(userjid,jid);
         }
@@ -36,7 +33,6 @@
       }
     }
     for (    TransportBuddy buddy : legacymap.values()) {
-      Log.debug("ROSTERSYNC: We have new, adding " + buddy.getName());
       try {
         this.addOrUpdateRosterItem(userjid,buddy.getName(),buddy.getNickname(),buddy.getGroup());
       }

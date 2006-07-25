@@ -1,0 +1,22 @@
+{
+  Collection<Registration> registrations=registrationManager.getRegistrations(jid,this.transportType);
+  Boolean foundReg=false;
+  for (  Registration registration : registrations) {
+    if (!registration.getUsername().equals(username)) {
+      registrationManager.deleteRegistration(registration);
+    }
+ else {
+      registration.setPassword(password);
+      foundReg=true;
+    }
+  }
+  if (!foundReg) {
+    registrationManager.createRegistration(jid,this.transportType,username,password);
+  }
+  try {
+    addOrUpdateRosterItem(jid,this.getJID(),this.getDescription(),"Transports");
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("User not registered with server.");
+  }
+}

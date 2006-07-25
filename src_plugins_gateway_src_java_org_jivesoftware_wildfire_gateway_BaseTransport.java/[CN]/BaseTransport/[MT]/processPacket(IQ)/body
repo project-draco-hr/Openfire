@@ -1,6 +1,5 @@
 {
   List<Packet> reply=new ArrayList<Packet>();
-  Log.debug("Got IQ packet: " + packet.toString());
   if (packet.getType() == IQ.Type.error) {
     return reply;
   }
@@ -10,31 +9,26 @@
     xmlns=child.getNamespaceURI();
   }
   if (xmlns == null) {
-    Log.debug("No XMLNS");
+    Log.debug("No XMLNS:" + packet.toString());
     return reply;
   }
   if (xmlns.equals(DISCO_INFO)) {
-    Log.debug("Matched Disco Info");
     reply.addAll(handleDiscoInfo(packet));
   }
  else   if (xmlns.equals(DISCO_ITEMS)) {
-    Log.debug("Matched Disco Items");
     reply.addAll(handleDiscoItems(packet));
   }
  else   if (xmlns.equals(IQ_GATEWAY)) {
-    Log.debug("Matched IQ Gateway");
     reply.addAll(handleIQGateway(packet));
   }
  else   if (xmlns.equals(IQ_REGISTER)) {
-    Log.debug("Matched IQ Register");
     reply.addAll(handleIQRegister(packet));
   }
  else   if (xmlns.equals(IQ_VERSION)) {
-    Log.debug("Matched IQ Version");
     reply.addAll(handleIQVersion(packet));
   }
  else {
-    Log.debug("Matched nothing");
+    Log.debug("Unabled iq request:" + xmlns);
   }
   return reply;
 }
