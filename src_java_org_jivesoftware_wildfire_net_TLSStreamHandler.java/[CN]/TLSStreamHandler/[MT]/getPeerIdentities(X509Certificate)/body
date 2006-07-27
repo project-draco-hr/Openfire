@@ -2,7 +2,10 @@
   List<String> names=getSubjectAlternativeNames(x509Certificate);
   if (names.isEmpty()) {
     String name=x509Certificate.getSubjectDN().getName();
-    name=name.replace("CN=","");
+    Matcher matcher=cnPattern.matcher(name);
+    if (matcher.find()) {
+      name=matcher.group(2);
+    }
     names=new ArrayList<String>();
     names.add(name);
   }
