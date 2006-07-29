@@ -5,12 +5,17 @@
         Thread.sleep(15000);
         loadSavedInfo();
         while (isServiceEnabled()) {
-          waitForNextChecking();
+          waitForNextCheck();
           if (isServiceEnabled()) {
             try {
               checkForServerUpdate(true);
               checkForPluginsUpdates(true);
-              JiveGlobals.setProperty("update.lastCheck",String.valueOf(System.currentTimeMillis()));
+              long now=System.currentTimeMillis();
+              JiveGlobals.setProperty("update.lastCheck",String.valueOf(now));
+              if (now != JiveGlobals.getLongProperty("update.lastCheck",0)) {
+                Log.error("Error: update service check did not save correctly. " + "Stopping update service.");
+                return;
+              }
             }
  catch (            Exception e) {
               Log.error("Error checking for updates",e);
@@ -25,16 +30,17 @@
         thread=null;
       }
     }
-    private void waitForNextChecking() throws InterruptedException {
-      long lastCheck=Long.parseLong(JiveGlobals.getProperty("update.lastCheck","0"));
+    private void waitForNextCheck() throws InterruptedException {
+      long lastCheck=JiveGlobals.getLongProperty("update.lastCheck",0);
       if (lastCheck == 0) {
         Thread.sleep(45000);
       }
  else {
         long elapsed=System.currentTimeMillis() - lastCheck;
-        int frequency=getCheckFrequency() * 60 * 60* 1000;
-        if (elapsed < frequency) {
+        long frequency=getCheckFrequency() * JiveConstants.HOUR;
+        while (elapsed < frequency) {
           Thread.sleep(frequency - elapsed);
+          elapsed=System.currentTimeMillis() - lastCheck;
         }
       }
     }
