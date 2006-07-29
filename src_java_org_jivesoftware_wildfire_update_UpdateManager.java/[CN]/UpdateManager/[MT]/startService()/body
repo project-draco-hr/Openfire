@@ -10,15 +10,15 @@
             try {
               checkForServerUpdate(true);
               checkForPluginsUpdates(true);
-              long now=System.currentTimeMillis();
-              JiveGlobals.setProperty("update.lastCheck",String.valueOf(now));
-              if (now != JiveGlobals.getLongProperty("update.lastCheck",0)) {
-                Log.error("Error: update service check did not save correctly. " + "Stopping update service.");
-                return;
-              }
             }
  catch (            Exception e) {
               Log.error("Error checking for updates",e);
+            }
+            long now=System.currentTimeMillis();
+            JiveGlobals.setProperty("update.lastCheck",String.valueOf(now));
+            if (now != JiveGlobals.getLongProperty("update.lastCheck",0)) {
+              Log.error("Error: update service check did not save correctly. " + "Stopping update service.");
+              return;
             }
           }
         }
