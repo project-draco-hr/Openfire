@@ -1,9 +1,11 @@
 {
   if (session == null || serverName == null) {
-    return;
+    return false;
   }
+  boolean auth_removed=false;
   if (anonymousSessions.remove(session.getAddress().getResource()) != null) {
     SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
+    auth_removed=true;
   }
  else {
     String username=session.getAddress().getNode();
@@ -11,18 +13,18 @@
       SessionMap sessionMap=sessions.get(username);
       if (sessionMap != null) {
 synchronized (username.intern()) {
-          sessionMap.removeSession(session);
+          auth_removed=sessionMap.removeSession(session);
         }
         if (sessionMap.isEmpty()) {
           sessions.remove(username);
         }
       }
-      if (sessionMap != null) {
+      if (auth_removed) {
         SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
       }
     }
   }
-  preAuthenticatedSessions.remove(session.getAddress().getResource());
+  boolean preauth_removed=preAuthenticatedSessions.remove(session.getAddress().getResource()) != null;
   Presence presence=session.getPresence();
   if (presence.isAvailable()) {
     Presence offline=new Presence();
@@ -31,4 +33,5 @@ synchronized (username.intern()) {
     offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }
+  return auth_removed || preauth_removed;
 }

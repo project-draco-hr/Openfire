@@ -1,7 +1,8 @@
 {
   String resource=session.getAddress().getResource();
-  resources.remove(resource);
+  boolean removed=resources.remove(resource) != null;
 synchronized (priorityList) {
     priorityList.remove(resource);
   }
+  return removed;
 }

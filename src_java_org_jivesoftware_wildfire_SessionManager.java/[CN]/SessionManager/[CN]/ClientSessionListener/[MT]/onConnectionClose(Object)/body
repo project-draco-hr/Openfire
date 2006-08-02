@@ -10,8 +10,9 @@
       }
     }
   finally {
-      removeSession(session);
-      usersSessionsCounter.decrementAndGet();
+      if (removeSession(session)) {
+        usersSessionsCounter.decrementAndGet();
+      }
     }
   }
  catch (  Exception e) {
