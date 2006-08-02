@@ -56,22 +56,7 @@
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
  finally {
-      try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
-      try {
-        if (con != null) {
-          con.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e);
-      }
+      DbConnectionManager.closeConnection(pstmt,con);
     }
     return new User(username,name,email,now,now);
   }

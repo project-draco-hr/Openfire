@@ -20,14 +20,6 @@
     abortTransaction=true;
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
   }
 }
