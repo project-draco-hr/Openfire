@@ -4,8 +4,10 @@
   }
   StringBuilder sb=new StringBuilder(195);
   sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
-  if (session.getConnection().isSecure() && session instanceof IncomingServerSession) {
-    sb.append("<mechanism>EXTERNAL</mechanism>");
+  if (session instanceof IncomingServerSession) {
+    if (session.getConnection().isSecure()) {
+      sb.append("<mechanism>EXTERNAL</mechanism>");
+    }
   }
  else {
     for (    String mech : getSupportedMechanisms()) {
