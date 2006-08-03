@@ -5,49 +5,9 @@
     clientReady();
   }
  else   if (cmd instanceof InterestListCmd) {
-    InterestListCmd ilc=(InterestListCmd)cmd;
-    InterestInfo[] infos=ilc.getInterests();
-    if (infos != null) {
-      Map children=new HashMap();
-      for (int i=0; i < infos.length; i++) {
-        if (infos[i].getType() == InterestInfo.TYPE_CHILD) {
-          int parentCode=infos[i].getParentId();
-          List interests=(List)children.get(parentCode);
-          if (interests == null) {
-            interests=new LinkedList();
-            children.put(parentCode,interests);
-          }
-          interests.add(infos[i]);
-        }
-      }
-      for (int i=0; i < infos.length; i++) {
-        if (infos[i].getType() == InterestInfo.TYPE_PARENT) {
-          Integer id=new Integer(infos[i].getParentId());
-          List interests=(List)children.get(id);
-          if (interests != null) {
-            for (Iterator it=interests.iterator(); it.hasNext(); ) {
-              InterestInfo info=(InterestInfo)it.next();
-            }
-          }
-        }
-      }
-      List toplevels=(List)children.get(new Integer(0));
-      if (toplevels != null) {
-        for (Iterator it=toplevels.iterator(); it.hasNext(); ) {
-        }
-      }
-    }
   }
  else   if (cmd instanceof SearchResultsCmd) {
-    SearchResultsCmd src=(SearchResultsCmd)cmd;
-    DirInfo[] results=src.getResults();
-    for (int i=0; i < results.length; i++) {
-    }
   }
  else   if (cmd instanceof IconDataCmd) {
-    IconDataCmd idc=(IconDataCmd)cmd;
-    String sn=idc.getScreenname();
-    byte[] data=idc.getIconData().toByteArray();
-    Image icon=Toolkit.getDefaultToolkit().createImage(data);
   }
 }

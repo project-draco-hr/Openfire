@@ -12,7 +12,8 @@
  catch (  UserNotFoundException e) {
     Log.error("Unable to sync yahoo contact list for " + getJID());
   }
-  for (  YahooUser user : (Collection<YahooUser>)yahooSession.getUsers().values()) {
+  for (  Object userObj : yahooSession.getUsers().values()) {
+    YahooUser user=(YahooUser)userObj;
     Presence p=new Presence();
     p.setTo(getJID());
     p.setFrom(getTransport().convertIDToJID(user.getId()));
