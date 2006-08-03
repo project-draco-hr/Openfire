@@ -4,15 +4,15 @@
   try {
     answer=searchForGroups(searchFilter,standardAttributes);
   }
- catch (  NamingException e) {
+ catch (  Exception e) {
     Log.error("Error searching for groups in LDAP",e);
     return Collections.emptyList();
   }
   Vector<SearchResult> v=new Vector<SearchResult>();
-  for (int i=1; answer.hasMoreElements() && i <= (start + num); i++) {
+  for (int i=1; answer.hasMoreElements() && i <= (startIndex + numResults); i++) {
     try {
       SearchResult sr=answer.next();
-      if (i >= start) {
+      if (i >= startIndex) {
         v.add(sr);
       }
     }

@@ -2,10 +2,12 @@
   if (manager.isDebugEnabled()) {
     Log.debug("Trying to find all groups in the system.");
   }
-  DirContext ctx=null;
+  LdapContext ctx=null;
   NamingEnumeration<SearchResult> answer;
   try {
     ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getGroupNameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
     if (manager.isDebugEnabled()) {
       Log.debug("Starting LDAP search...");
       Log.debug("Using groupSearchFilter: " + searchFilter);

@@ -1,0 +1,47 @@
+{
+  if (query == null || "".equals(query)) {
+    return Collections.emptyList();
+  }
+  if (!query.endsWith("*")) {
+    query=query + "*";
+  }
+  List<String> groupNames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getGroupNameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
+    StringBuilder filter=new StringBuilder();
+    filter.append("(").append(manager.getGroupNameField()).append("=").append(query).append(")");
+    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
+    while (answer.hasMoreElements()) {
+      String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
+      groupNames.add(JID.escapeNode(groupName));
+    }
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+      Collections.sort(groupNames);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return new GroupCollection(groupNames.toArray(new String[groupNames.size()]));
+}
