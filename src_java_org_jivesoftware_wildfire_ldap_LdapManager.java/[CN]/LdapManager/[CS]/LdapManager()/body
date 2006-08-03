@@ -4,67 +4,28 @@
   while (st.hasMoreTokens()) {
     hosts.add(st.nextToken());
   }
-  String portStr=JiveGlobals.getXMLProperty("ldap.port");
-  if (portStr != null) {
-    try {
-      this.port=Integer.parseInt(portStr);
-    }
- catch (    NumberFormatException nfe) {
-    }
-  }
-  if (JiveGlobals.getXMLProperty("ldap.usernameField") != null) {
-    this.usernameField=JiveGlobals.getXMLProperty("ldap.usernameField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.baseDN") != null) {
-    this.baseDN=JiveGlobals.getXMLProperty("ldap.baseDN");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.alternateBaseDN") != null) {
-    this.alternateBaseDN=JiveGlobals.getXMLProperty("ldap.alternateBaseDN");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.nameField") != null) {
-    this.nameField=JiveGlobals.getXMLProperty("ldap.nameField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.emailField") != null) {
-    this.emailField=JiveGlobals.getXMLProperty("ldap.emailField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled") != null) {
-    this.connectionPoolEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled"));
-  }
-  if (JiveGlobals.getXMLProperty("ldap.searchFilter") != null) {
-    this.searchFilter=JiveGlobals.getXMLProperty("ldap.searchFilter");
-  }
- else {
-    StringBuilder filter=new StringBuilder();
-    filter.append("(").append(usernameField).append("={0})");
-    this.searchFilter=filter.toString();
-  }
+  this.port=JiveGlobals.getXMLProperty("ldap.port",389);
+  this.usernameField=JiveGlobals.getXMLProperty("ldap.usernameField","uid");
+  this.baseDN=JiveGlobals.getXMLProperty("ldap.baseDN","");
+  this.alternateBaseDN=JiveGlobals.getXMLProperty("ldap.alternateBaseDN",null);
+  this.nameField=JiveGlobals.getXMLProperty("ldap.nameField","cn");
+  this.emailField=JiveGlobals.getXMLProperty("ldap.emailField","mail");
+  this.connectionPoolEnabled=JiveGlobals.getXMLProperty("ldap.connectionPoolEnabled",false);
+  this.searchFilter=JiveGlobals.getXMLProperty("ldap.searchFilter");
   this.subTreeSearch=JiveGlobals.getXMLProperty("ldap.subTreeSearch",true);
-  if (JiveGlobals.getXMLProperty("ldap.groupNameField") != null) {
-    this.groupNameField=JiveGlobals.getXMLProperty("ldap.groupNameField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.groupMemberField") != null) {
-    this.groupMemberField=JiveGlobals.getXMLProperty("ldap.groupMemberField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.groupDescriptionField") != null) {
-    this.groupDescriptionField=JiveGlobals.getXMLProperty("ldap.groupDescriptionField");
-  }
-  if (JiveGlobals.getXMLProperty("ldap.posixMode") != null) {
-    this.posixMode=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.posixMode"));
-  }
-  if (JiveGlobals.getXMLProperty("ldap.groupSearchFilter") != null) {
-    this.groupSearchFilter=JiveGlobals.getXMLProperty("ldap.groupSearchFilter");
-  }
- else {
-    this.groupSearchFilter="(" + groupMemberField + "={0})";
-  }
+  this.groupNameField=JiveGlobals.getXMLProperty("ldap.groupNameField","cn");
+  this.groupMemberField=JiveGlobals.getXMLProperty("ldap.groupMemberField","member");
+  this.groupDescriptionField=JiveGlobals.getXMLProperty("ldap.groupDescriptionField","description");
+  this.posixMode=JiveGlobals.getXMLProperty("ldap.posixMode",false);
+  this.groupSearchFilter=JiveGlobals.getXMLProperty("ldap.groupSearchFilter");
   this.adminDN=JiveGlobals.getXMLProperty("ldap.adminDN");
   if (adminDN != null && adminDN.trim().equals("")) {
     adminDN=null;
   }
   this.adminPassword=JiveGlobals.getXMLProperty("ldap.adminPassword");
-  this.ldapDebugEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.debugEnabled"));
-  this.sslEnabled=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.sslEnabled"));
-  this.followReferrals=Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.autoFollowReferrals"));
+  this.ldapDebugEnabled=JiveGlobals.getXMLProperty("ldap.debugEnabled",false);
+  this.sslEnabled=JiveGlobals.getXMLProperty("ldap.sslEnabled",false);
+  this.followReferrals=JiveGlobals.getXMLProperty("ldap.autoFollowReferrals",false);
   encloseUserDN=JiveGlobals.getXMLProperty("ldap.encloseUserDN",true);
   userDNPattern=Pattern.compile("(=)([^\\\"][^=]*[^\\\"])(?:,|$)");
   this.initialContextFactory=JiveGlobals.getXMLProperty("ldap.initialContextFactory");

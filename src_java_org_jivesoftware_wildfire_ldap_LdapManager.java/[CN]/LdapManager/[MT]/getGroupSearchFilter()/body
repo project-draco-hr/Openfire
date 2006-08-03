@@ -1,3 +1,11 @@
 {
-  return groupSearchFilter;
+  StringBuilder groupFilter=new StringBuilder();
+  if (groupSearchFilter == null) {
+    groupFilter.append("(").append(groupNameField).append("={0})");
+  }
+ else {
+    groupFilter.append("(&(").append(groupNameField).append("={0})");
+    groupFilter.append(groupSearchFilter).append(")");
+  }
+  return groupFilter.toString();
 }

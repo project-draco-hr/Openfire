@@ -1,3 +1,11 @@
 {
-  return searchFilter;
+  StringBuilder filter=new StringBuilder();
+  if (searchFilter == null) {
+    filter.append("(").append(usernameField).append("={0})");
+  }
+ else {
+    filter.append("(&(").append(usernameField).append("={0})");
+    filter.append(searchFilter).append(")");
+  }
+  return filter.toString();
 }
