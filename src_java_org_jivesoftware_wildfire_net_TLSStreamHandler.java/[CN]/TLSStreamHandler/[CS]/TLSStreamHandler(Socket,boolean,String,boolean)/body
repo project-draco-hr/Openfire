@@ -27,6 +27,11 @@
     tlsEngine.beginHandshake();
   }
  else   if (needClientAuth) {
-    tlsEngine.setNeedClientAuth(true);
+    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true) && JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true) && !JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
+      tlsEngine.setNeedClientAuth(true);
+    }
+ else {
+      tlsEngine.setWantClientAuth(true);
+    }
   }
 }
