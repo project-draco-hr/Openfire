@@ -11,12 +11,8 @@
     request(new SetParamInfoCmd(new ParamInfo(0,info.getFlags() | ParamInfo.FLAG_TYPING_NOTIFICATION,8000,info.getMaxSenderWarning(),info.getMaxReceiverWarning(),0)));
   }
  else   if (cmd instanceof YourInfoCmd) {
-    YourInfoCmd yic=(YourInfoCmd)cmd;
-    FullUserInfo info=yic.getUserInfo();
   }
  else   if (cmd instanceof UserInfoCmd) {
-    UserInfoCmd uic=(UserInfoCmd)cmd;
-    String sn=uic.getUserInfo().getScreenname();
   }
  else   if (cmd instanceof ServiceRedirect) {
     ServiceRedirect sr=(ServiceRedirect)cmd;
@@ -25,8 +21,8 @@
  else   if (cmd instanceof SsiDataCmd) {
     SsiDataCmd sdc=(SsiDataCmd)cmd;
     SsiItem[] items=sdc.getItems();
-    for (int i=0; i < items.length; i++) {
-      SsiItemObj obj=itemFactory.getItemObj(items[i]);
+    for (    SsiItem item : items) {
+      SsiItemObj obj=itemFactory.getItemObj(item);
       if (obj instanceof BuddyItem) {
         oscarSession.gotBuddy((BuddyItem)obj);
       }
