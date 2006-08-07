@@ -9,7 +9,9 @@
     if ("jabber:iq:search".equals(namespace)) {
       try {
         IQ replyPacket=handleIQ(packet);
-        componentManager.sendPacket(this,replyPacket);
+        if (replyPacket != null) {
+          componentManager.sendPacket(this,replyPacket);
+        }
       }
  catch (      ComponentException e) {
         componentManager.getLog().error(e);

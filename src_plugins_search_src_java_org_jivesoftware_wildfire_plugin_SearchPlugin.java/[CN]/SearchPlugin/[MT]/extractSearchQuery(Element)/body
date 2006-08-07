@@ -19,7 +19,10 @@
     while (fields.hasNext()) {
       Element searchField=(Element)fields.next();
       String field=searchField.attributeValue("var");
-      String value=searchField.element("value").getTextTrim();
+      String value="";
+      if (searchField.element("value") != null) {
+        value=searchField.element("value").getTextTrim();
+      }
       if (field.equals("search")) {
         search=value;
       }
