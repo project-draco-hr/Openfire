@@ -81,9 +81,14 @@
       return false;
     }
     for (int i=currentVersion + 1; i <= DATABASE_VERSION; i++) {
-      String resourceName="upgrade/" + i + "/"+ schemaKey+ "_"+ DbConnectionManager.getDatabaseType()+ ".sql";
-      InputStream resource=resourceLoader.loadResource(resourceName);
-      if (resource == null) {
+      InputStream resource;
+      String path=JiveGlobals.getHomeDirectory() + File.separator + "resources"+ File.separator+ "database"+ File.separator+ "upgrade"+ File.separator+ i;
+      String filename=schemaKey + "_" + DbConnectionManager.getDatabaseType()+ ".sql";
+      File file=new File(path,filename);
+      try {
+        resource=new FileInputStream(file);
+      }
+ catch (      FileNotFoundException e) {
         continue;
       }
       try {
