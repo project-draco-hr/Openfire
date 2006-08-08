@@ -1,5 +1,8 @@
 {
-  for (  JID deletedUser : getAffectedUsers(group)) {
-    groupUserDeleted(group,deletedUser);
+  Collection<JID> users=new HashSet<JID>(group.getMembers());
+  users.addAll(group.getAdmins());
+  Collection<JID> affectedUsers=getAffectedUsers(group);
+  for (  JID deletedUser : users) {
+    groupUserDeleted(group,affectedUsers,deletedUser);
   }
 }

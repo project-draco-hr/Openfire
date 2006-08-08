@@ -18,6 +18,9 @@
       if (roster != null) {
         roster.addSharedUser(group,addedUser);
       }
+      if (addedUserRoster == null && server.isLocal(addedUser)) {
+        addedUserRoster=(Roster)CacheManager.getCache("Roster").get(addedUser.getNode());
+      }
       if (addedUserRoster != null) {
         Collection<Group> groups=GroupManager.getInstance().getGroups(userToUpdate);
         addedUserRoster.addSharedUser(userToUpdate,groups,group);

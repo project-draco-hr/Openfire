@@ -17,6 +17,9 @@
     if (roster != null) {
       roster.deleteSharedUser(group,deletedUser);
     }
+    if (deletedUserRoster == null && server.isLocal(deletedUser)) {
+      deletedUserRoster=(Roster)CacheManager.getCache("Roster").get(deletedUser.getNode());
+    }
     if (deletedUserRoster != null) {
       deletedUserRoster.deleteSharedUser(userToUpdate,group);
     }
