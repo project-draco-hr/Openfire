@@ -1,0 +1,15 @@
+{
+  if (property.equals("plugin.gateway." + this.type.toString() + "Enabled")) {
+    enabled=Boolean.parseBoolean((String)params.get("value"));
+    if (enabled) {
+      if (!running) {
+        startInstance();
+      }
+    }
+ else {
+      if (running) {
+        stopInstance();
+      }
+    }
+  }
+}
