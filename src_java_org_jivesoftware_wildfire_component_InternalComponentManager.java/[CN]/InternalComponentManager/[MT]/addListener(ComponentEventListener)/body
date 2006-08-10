@@ -1,0 +1,13 @@
+{
+  listeners.add(listener);
+  for (  Map.Entry<String,Component> entry : components.entrySet()) {
+    String subdomain=entry.getKey();
+    Component component=entry.getValue();
+    JID componentJID=new JID(subdomain + "." + serverDomain);
+    listener.componentRegistered(component,componentJID);
+    IQ disco=componentInfo.get(subdomain);
+    if (disco != null) {
+      listener.componentInfoReceived(component,disco);
+    }
+  }
+}

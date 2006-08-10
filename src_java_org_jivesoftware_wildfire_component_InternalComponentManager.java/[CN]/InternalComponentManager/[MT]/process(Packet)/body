@@ -25,6 +25,11 @@
  catch (        Exception e) {
           Log.error("Error processing disco packet of component: " + component + " - "+ packet.toXML(),e);
         }
+        String subdomain=packet.getFrom().getDomain().replace("." + serverDomain,"");
+        componentInfo.put(subdomain,iq);
+        for (        ComponentEventListener listener : listeners) {
+          listener.componentInfoReceived(component,iq);
+        }
       }
     }
   }

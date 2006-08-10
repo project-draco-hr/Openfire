@@ -1,5 +1,6 @@
 {
   Component component=components.remove(subdomain);
+  componentInfo.remove(subdomain);
   JID componentJID=new JID(subdomain + "." + serverDomain);
   if (XMPPServer.getInstance().getRoutingTable() != null) {
     XMPPServer.getInstance().getRoutingTable().removeRoute(componentJID);
@@ -9,5 +10,8 @@
   }
   if (component != null) {
     component.shutdown();
+  }
+  for (  ComponentEventListener listener : listeners) {
+    listener.componentUnregistered(component,componentJID);
   }
 }

@@ -14,6 +14,9 @@
     XMPPServer.getInstance().getRoutingTable().removeRoute(componentJID);
     throw e;
   }
+  for (  ComponentEventListener listener : listeners) {
+    listener.componentRegistered(component,componentJID);
+  }
   checkPresences();
   checkDiscoSupport(component,componentJID);
 }
