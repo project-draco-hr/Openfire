@@ -10,10 +10,14 @@
       if (iq.getType().equals(IQ.Type.set)) {
         JID from=iq.getFrom();
         JID to=iq.getTo();
-        String packetID=iq.getID();
-        FileTransfer transfer=createFileTransfer(packetID,from,to,childElement);
-        if (transfer == null || !acceptIncomingFileTransferRequest(transfer)) {
-          throw new PacketRejectedException();
+        FileTransfer transfer=createFileTransfer(from,to,childElement);
+        try {
+          if (transfer == null || !acceptIncomingFileTransferRequest(transfer)) {
+            throw new PacketRejectedException();
+          }
+        }
+ catch (        FileTransferRejectedException e) {
+          throw new PacketRejectedException(e);
         }
       }
     }
