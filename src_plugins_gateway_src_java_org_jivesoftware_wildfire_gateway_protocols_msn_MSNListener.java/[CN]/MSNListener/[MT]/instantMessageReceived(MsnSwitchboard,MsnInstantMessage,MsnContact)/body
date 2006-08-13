@@ -1,0 +1,9 @@
+{
+  Log.debug("MSN: Received im to " + switchboard + " from "+ friend+ ": "+ message.toString());
+  Message m=new Message();
+  m.setType(Message.Type.chat);
+  m.setTo(msnSession.getJIDWithHighestPriority());
+  m.setFrom(msnSession.getTransport().convertIDToJID(friend.getEmail().toString()));
+  m.setBody(message.toString());
+  msnSession.getTransport().sendPacket(m);
+}

@@ -1,5 +1,5 @@
 {
   super(registration,jid,transport);
-  msnManager=MessengerServerManager.getInstance();
-  msnManager.addMessengerClientListener(new MSNListener(this));
+  msnMessenger=MsnMessengerFactory.createMsnMessenger(registration.getUsername(),registration.getPassword());
+  msnMessenger.setSupportedProtocol(new MsnProtocol[]{MsnProtocol.MSNP11});
 }

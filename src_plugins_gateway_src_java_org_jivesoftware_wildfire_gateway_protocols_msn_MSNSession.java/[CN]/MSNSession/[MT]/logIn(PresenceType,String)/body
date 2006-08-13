@@ -1,17 +1,15 @@
 {
   if (!this.isLoggedIn()) {
-    try {
-      msnManager.signIn(registration.getUsername(),registration.getPassword(),((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
-      Presence p=new Presence();
-      p.setTo(getJID());
-      p.setFrom(getTransport().getJID());
-      getTransport().sendPacket(p);
-      msnManager.setPrivacyMode(true);
-      msnManager.setReverseListBehaviour(true);
-      getRegistration().setLastLogin(new Date());
-    }
- catch (    MSNException e) {
-      Log.error("MSN exception thrown while logging in:",e);
-    }
+    msnMessenger.getOwner().setInitStatus(((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
+    msnMessenger.setLogIncoming(true);
+    msnMessenger.setLogOutgoing(true);
+    msnMessenger.addListener(new MSNListener(this));
+    msnMessenger.login();
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().getJID());
+    getTransport().sendPacket(p);
+    getRegistration().setLastLogin(new Date());
+    loginStatus=true;
   }
 }
