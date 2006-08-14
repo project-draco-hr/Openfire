@@ -1,0 +1,56 @@
+{
+  try {
+    Roster roster=rosterManager.getRoster(userjid.getNode());
+    try {
+      RosterItem gwitem=roster.getRosterItem(contactjid);
+      Boolean changed=false;
+      if (gwitem.getSubStatus() != RosterItem.SUB_BOTH) {
+        gwitem.setSubStatus(RosterItem.SUB_BOTH);
+        changed=true;
+      }
+      if (gwitem.getAskStatus() != RosterItem.ASK_NONE) {
+        gwitem.setAskStatus(RosterItem.ASK_NONE);
+        changed=true;
+      }
+      if (nickname != null && !gwitem.getNickname().equals(nickname)) {
+        gwitem.setNickname(nickname);
+        changed=true;
+      }
+      List<String> curgroups=gwitem.getGroups();
+      if (curgroups != groups) {
+        try {
+          gwitem.setGroups(groups);
+          changed=true;
+        }
+ catch (        Exception ee) {
+        }
+      }
+      if (changed) {
+        roster.updateRosterItem(gwitem);
+      }
+    }
+ catch (    UserNotFoundException e) {
+      try {
+        RosterItem gwitem=roster.createRosterItem(contactjid,true);
+        gwitem.setSubStatus(RosterItem.SUB_BOTH);
+        gwitem.setAskStatus(RosterItem.ASK_NONE);
+        gwitem.setNickname(nickname);
+        try {
+          gwitem.setGroups(groups);
+        }
+ catch (        Exception ee) {
+        }
+        roster.updateRosterItem(gwitem);
+      }
+ catch (      UserAlreadyExistsException ee) {
+        Log.error("getRosterItem claims user exists, but couldn't find via getRosterItem?");
+      }
+catch (      Exception ee) {
+        Log.error("createRosterItem caused exception: " + ee.getMessage());
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("Could not find roster for " + userjid.toString());
+  }
+}

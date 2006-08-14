@@ -1,17 +1,19 @@
 {
   List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
   Element remove=packet.getChildElement().element("remove");
   if (remove != null) {
     IQ result=IQ.createResultIQ(packet);
     Presence unavailable=new Presence(Presence.Type.unavailable);
-    unavailable.setTo(packet.getFrom());
-    unavailable.setFrom(packet.getTo());
+    unavailable.setTo(from);
+    unavailable.setFrom(to);
     reply.add(unavailable);
     try {
-      this.deleteRegistration(packet.getFrom());
+      this.deleteRegistration(from);
     }
  catch (    UserNotFoundException e) {
-      Log.error("Error cleaning up contact list of: " + packet.getFrom());
+      Log.error("Error cleaning up contact list of: " + from);
       result.setError(Condition.bad_request);
     }
     reply.add(result);
@@ -55,17 +57,17 @@
         result.setChildElement(response);
         reply.add(result);
         try {
-          this.addNewRegistration(packet.getFrom(),username,password);
+          this.addNewRegistration(from,username,password);
         }
  catch (        UserNotFoundException e) {
-          Log.error("Someone attempted to register with the gateway who is not registered with the server: " + packet.getFrom());
+          Log.error("Someone attempted to register with the gateway who is not registered with the server: " + from);
           IQ eresult=IQ.createResultIQ(packet);
           eresult.setError(Condition.bad_request);
           reply.add(eresult);
         }
         Presence p=new Presence(Presence.Type.probe);
-        p.setTo(packet.getFrom());
-        p.setFrom(packet.getTo());
+        p.setTo(from);
+        p.setFrom(to);
         reply.add(p);
       }
     }
@@ -83,8 +85,17 @@
       passwordField.setVariable("password");
       passwordField.setType(FormField.Type.text_private);
       response.addElement("instructions").addText("Please enter your " + this.getName() + " username and password.");
-      response.addElement("username");
-      response.addElement("password");
+      Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
+      if (registrations.iterator().hasNext()) {
+        Registration registration=registrations.iterator().next();
+        response.addElement("registered");
+        response.addElement("username").addText(registration.getUsername());
+        response.addElement("password").addText(registration.getPassword());
+      }
+ else {
+        response.addElement("username");
+        response.addElement("password");
+      }
       result.setChildElement(response);
       reply.add(result);
     }

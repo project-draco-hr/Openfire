@@ -14,7 +14,7 @@
       }
       Registration registration=registrations.iterator().next();
       if (packet.getType() == null) {
-        TransportSession session=null;
+        TransportSession session;
         try {
           session=sessionManager.getSession(from);
           session.updateStatus(getPresenceType(packet),packet.getStatus());
@@ -25,7 +25,7 @@
         }
       }
  else       if (packet.getType() == Presence.Type.unavailable) {
-        TransportSession session=null;
+        TransportSession session;
         try {
           session=sessionManager.getSession(from);
           if (session.isLoggedIn()) {
@@ -38,7 +38,7 @@
         }
       }
  else       if (packet.getType() == Presence.Type.probe) {
-        TransportSession session=null;
+        TransportSession session;
         try {
           session=sessionManager.getSession(from);
           if (session.isLoggedIn()) {
