@@ -1,7 +1,8 @@
 {
   Log.debug("Logging in to MSN gateway.");
   TransportSession session=new MSNSession(registration,jid,this);
-  session.start();
+  Thread sessionThread=new Thread(session);
+  sessionThread.start();
   ((MSNSession)session).logIn(presenceType,verboseStatus);
   return session;
 }
