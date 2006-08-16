@@ -22,11 +22,11 @@
     Object logImpl=Factory.getFactory().getInstance("");
     if (logImpl instanceof LogImpl) {
       LogImpl log=(LogImpl)logImpl;
-      if (!Log.isDebugEnabled()) {
-        log.setVerbose(-1);
+      if (Log.isDebugEnabled() && JiveGlobals.getBooleanProperty("jetty.debug.enabled",true)) {
+        log.setVerbose(1);
       }
  else {
-        log.setVerbose(1);
+        log.setVerbose(-1);
       }
       log.add(logSink);
     }
