@@ -1,2 +1,9 @@
 {
+  for (  MsnContact friend : msnContacts.values()) {
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().convertIDToJID(friend.getEmail().toString()));
+    ((MSNTransport)getTransport()).setUpPresencePacket(p,friend.getStatus());
+    getTransport().sendPacket(p);
+  }
 }

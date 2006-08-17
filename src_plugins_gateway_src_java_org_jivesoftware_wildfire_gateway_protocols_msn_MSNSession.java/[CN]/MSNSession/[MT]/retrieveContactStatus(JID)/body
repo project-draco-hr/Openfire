@@ -1,2 +1,11 @@
 {
+  MsnContact msnContact=msnContacts.get(getTransport().convertJIDToID(jid));
+  if (msnContact == null) {
+    return;
+  }
+  Presence p=new Presence();
+  p.setTo(getJID());
+  p.setFrom(getTransport().convertIDToJID(msnContact.getEmail().toString()));
+  ((MSNTransport)getTransport()).setUpPresencePacket(p,msnContact.getStatus());
+  getTransport().sendPacket(p);
 }
