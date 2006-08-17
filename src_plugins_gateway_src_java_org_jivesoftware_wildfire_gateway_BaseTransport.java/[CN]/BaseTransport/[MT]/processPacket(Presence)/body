@@ -8,7 +8,7 @@
   try {
     if (to.getNode() == null) {
       Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
-      if (!registrations.iterator().hasNext()) {
+      if (registrations.isEmpty()) {
         Log.debug("Unable to find registration.");
         return reply;
       }
@@ -20,7 +20,7 @@
           session.updateStatus(getPresenceType(packet),packet.getStatus());
         }
  catch (        NotFoundException e) {
-          session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus());
+          session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus(),packet.getPriority());
           sessionManager.storeSession(from,session);
         }
       }
