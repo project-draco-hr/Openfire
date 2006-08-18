@@ -12,9 +12,13 @@
   org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
   roster.setType(IQ.Type.set);
   org.xmpp.packet.Roster.Item item=roster.addItem(user,nickname,null,org.xmpp.packet.Roster.Subscription.none,groups);
-  RosterItem rosterItem=rosterItemProvider.createItem(username,new RosterItem(item));
+  RosterItem rosterItem=new RosterItem(item);
+  if (persistent) {
+    rosterItemProvider.createItem(username,rosterItem);
+  }
   if (push) {
     broadcast(roster);
   }
+  RosterEventDispatcher.contactAdded(this,rosterItem);
   return rosterItem;
 }
