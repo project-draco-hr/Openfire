@@ -1,0 +1,25 @@
+{
+  try {
+    Roster roster=rosterManager.getRoster(jid.getNode());
+    for (    RosterItem ri : roster.getRosterItems()) {
+      if (ri.getJid().getDomain().equals(this.jid.getDomain())) {
+        if (ri.isShared()) {
+          continue;
+        }
+        if (leaveDomain && ri.getJid().getNode() == null) {
+          continue;
+        }
+        try {
+          Log.debug("Cleaning up roster entry " + ri.getJid().toString());
+          roster.deleteRosterItem(ri.getJid(),false);
+        }
+ catch (        Exception e) {
+          Log.error("Error removing roster item: " + ri.toString());
+        }
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("Unable to find roster.");
+  }
+}

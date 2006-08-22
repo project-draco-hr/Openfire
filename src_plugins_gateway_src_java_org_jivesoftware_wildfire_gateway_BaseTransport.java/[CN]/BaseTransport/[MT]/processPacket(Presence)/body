@@ -22,6 +22,12 @@
  catch (        NotFoundException e) {
           session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus(),packet.getPriority());
           sessionManager.storeSession(from,session);
+          try {
+            cleanUpRoster(from,true);
+          }
+ catch (          UserNotFoundException ee) {
+            throw new UserNotFoundException("Unable to find roster.");
+          }
         }
       }
  else       if (packet.getType() == Presence.Type.unavailable) {

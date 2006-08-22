@@ -10,6 +10,9 @@
   }
   if (xmlns == null) {
     Log.debug("No XMLNS:" + packet.toString());
+    IQ error=IQ.createResultIQ(packet);
+    error.setError(Condition.bad_request);
+    reply.add(error);
     return reply;
   }
   if (xmlns.equals(DISCO_INFO)) {

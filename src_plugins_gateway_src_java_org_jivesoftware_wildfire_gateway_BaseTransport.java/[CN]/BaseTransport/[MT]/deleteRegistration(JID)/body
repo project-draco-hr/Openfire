@@ -4,17 +4,7 @@
     registrationManager.deleteRegistration(reg);
   }
   try {
-    Roster roster=rosterManager.getRoster(jid.getNode());
-    for (    RosterItem ri : roster.getRosterItems()) {
-      if (ri.getJid().getDomain().equals(this.jid.getDomain())) {
-        try {
-          roster.deleteRosterItem(ri.getJid(),false);
-        }
- catch (        Exception e) {
-          Log.error("Error removing roster item: " + ri.toString());
-        }
-      }
-    }
+    cleanUpRoster(jid,false);
   }
  catch (  UserNotFoundException e) {
     throw new UserNotFoundException("Unable to find roster.");
