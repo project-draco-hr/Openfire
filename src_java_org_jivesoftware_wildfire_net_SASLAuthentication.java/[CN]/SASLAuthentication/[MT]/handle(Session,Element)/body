@@ -7,16 +7,16 @@ switch (type) {
 case AUTH:
       mechanism=doc.attributeValue("mechanism");
     session.setSessionData("SaslMechanism",mechanism);
-  if (mechanism.equalsIgnoreCase("PLAIN") && getSupportedMechanisms().contains("PLAIN")) {
+  if (mechanism.equalsIgnoreCase("PLAIN") && mechanisms.contains("PLAIN")) {
     status=doPlainAuthentication(session,doc);
   }
- else   if (mechanism.equalsIgnoreCase("ANONYMOUS") && getSupportedMechanisms().contains("ANONYMOUS")) {
+ else   if (mechanism.equalsIgnoreCase("ANONYMOUS") && mechanisms.contains("ANONYMOUS")) {
     status=doAnonymousAuthentication(session);
   }
  else   if (mechanism.equalsIgnoreCase("EXTERNAL")) {
     status=doExternalAuthentication(session,doc);
   }
- else   if (getSupportedMechanisms().contains(mechanism)) {
+ else   if (mechanisms.contains(mechanism)) {
     try {
       Map<String,String> props=new TreeMap<String,String>();
       props.put(Sasl.QOP,"auth");
@@ -50,13 +50,13 @@ case AUTH:
 break;
 case RESPONSE:
 mechanism=(String)session.getSessionData("SaslMechanism");
-if (mechanism.equalsIgnoreCase("PLAIN") && getSupportedMechanisms().contains("PLAIN")) {
+if (mechanism.equalsIgnoreCase("PLAIN") && mechanisms.contains("PLAIN")) {
 status=doPlainAuthentication(session,doc);
 }
  else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
 status=doExternalAuthentication(session,doc);
 }
- else if (getSupportedMechanisms().contains(mechanism)) {
+ else if (mechanisms.contains(mechanism)) {
 SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
 if (ss != null) {
 boolean ssComplete=ss.isComplete();
