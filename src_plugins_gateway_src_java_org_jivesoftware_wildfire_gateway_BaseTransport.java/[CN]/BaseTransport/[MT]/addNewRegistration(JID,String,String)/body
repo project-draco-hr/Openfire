@@ -14,15 +14,15 @@
     registrationManager.createRegistration(jid,this.transportType,username,password);
   }
   try {
-    addOrUpdateRosterItem(jid,this.getJID(),this.getDescription(),"Transports");
-  }
- catch (  UserNotFoundException e) {
-    throw new UserNotFoundException("User not registered with server.");
-  }
-  try {
     cleanUpRoster(jid,true);
   }
  catch (  UserNotFoundException ee) {
     throw new UserNotFoundException("Unable to find roster.");
+  }
+  try {
+    addOrUpdateRosterItem(jid,this.getJID(),this.getDescription(),"Transports");
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("User not registered with server.");
   }
 }
