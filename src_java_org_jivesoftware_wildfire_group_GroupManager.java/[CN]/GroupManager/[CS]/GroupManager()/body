@@ -1,8 +1,6 @@
 {
-  groupCache=CacheManager.initializeCache("Group","group",512 * 1024);
-  String cacheName="User Group Cache";
-  CacheManager.initializeCache(cacheName,"userGroup",512 * 1024,1000 * 60 * 60* 3);
-  userGroupCache=CacheManager.getCache(cacheName);
+  groupCache=CacheManager.initializeCache("Group","group",512 * 1024,JiveConstants.MINUTE * 30);
+  userGroupCache=CacheManager.initializeCache("User Group Cache","userGroup",512 * 1024,JiveConstants.MINUTE * 3);
   String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.wildfire.group.DefaultGroupProvider");
   try {
     Class c=ClassUtils.forName(className);
