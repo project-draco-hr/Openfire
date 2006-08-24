@@ -144,8 +144,14 @@
               }
               newUser=user;
             }
- else {
+ else             if (password != null && password.trim().length() > 0) {
               newUser=userManager.createUser(username,password,null,email);
+            }
+ else {
+              reply=IQ.createResultIQ(packet);
+              reply.setChildElement(packet.getChildElement().createCopy());
+              reply.setError(PacketError.Condition.not_acceptable);
+              return reply;
             }
           }
         }
