@@ -12,7 +12,17 @@
     while (rs.next()) {
       String msgXML=rs.getString(1);
       Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
-      OfflineMessage message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+      OfflineMessage message;
+      try {
+        message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+      }
+ catch (      DocumentException e) {
+        Matcher matcher=pattern.matcher(msgXML);
+        if (matcher.find()) {
+          msgXML=matcher.replaceAll("");
+        }
+        message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+      }
       Element delay=message.addChildElement("x","jabber:x:delay");
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getName());
       delay.addAttribute("stamp",dateFormat.format(creationDate));
