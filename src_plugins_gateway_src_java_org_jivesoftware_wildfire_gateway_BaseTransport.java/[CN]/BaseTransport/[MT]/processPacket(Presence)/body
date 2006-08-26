@@ -18,9 +18,13 @@
         try {
           session=sessionManager.getSession(from);
           if (session.hasResource(from.getResource())) {
-            session.updateStatus(getPresenceType(packet),packet.getStatus());
+            Log.debug("An existing resource has changed status: " + from);
+            if (session.isHighestPriority(from.getResource())) {
+              session.updateStatus(getPresenceType(packet),packet.getStatus());
+            }
           }
  else {
+            Log.debug("A new resource has come online: " + from);
             session.addResource(from.getResource(),packet.getPriority());
             session.resendContactStatuses(from);
             if (session.isHighestPriority(from.getResource())) {
@@ -35,6 +39,7 @@
  catch (          UserNotFoundException ee) {
             throw new UserNotFoundException("Unable to find roster.");
           }
+          Log.debug("A new session has come online: " + from);
           session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus(),packet.getPriority());
           sessionManager.storeSession(from,session);
         }
@@ -46,6 +51,7 @@
           if (session.getResourceCount() > 1) {
             String resource=from.getResource();
             if (session.isHighestPriority(resource)) {
+              Log.debug("A high priority resource (of multiple) has gone offline: " + from);
               session.removeResource(resource);
               Presence p=new Presence(Presence.Type.probe);
               p.setTo(session.getJIDWithHighestPriority());
@@ -53,10 +59,12 @@
               sendPacket(p);
             }
  else {
+              Log.debug("A low priority resource (of multiple) has gone offline: " + from);
               session.removeResource(resource);
             }
           }
  else {
+            Log.debug("A final resource has gone offline: " + from);
             if (session.isLoggedIn()) {
               this.registrationLoggedOut(session);
             }
