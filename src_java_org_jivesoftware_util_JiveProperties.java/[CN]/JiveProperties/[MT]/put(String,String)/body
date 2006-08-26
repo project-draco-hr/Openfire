@@ -5,20 +5,20 @@
   if (!(key instanceof String) || !(value instanceof String)) {
     throw new IllegalArgumentException("Key and value must be of type String.");
   }
-  if (((String)key).endsWith(".")) {
-    key=((String)key).substring(0,((String)key).length() - 1);
+  if (key.endsWith(".")) {
+    key=key.substring(0,key.length() - 1);
   }
-  key=((String)key).trim();
+  key=key.trim();
   if (properties.containsKey(key)) {
     if (!properties.get(key).equals(value)) {
-      updateProperty((String)key,(String)value);
+      updateProperty(key,value);
     }
   }
  else {
-    insertProperty((String)key,(String)value);
+    insertProperty(key,value);
   }
-  Map params=new HashMap();
+  Map<String,String> params=new HashMap<String,String>();
   params.put("value",value);
-  PropertyEventDispatcher.dispatchEvent((String)key,PropertyEventDispatcher.EventType.property_set,params);
+  PropertyEventDispatcher.dispatchEvent(key,PropertyEventDispatcher.EventType.property_set,params);
   return properties.put((String)key,(String)value);
 }
