@@ -1,5 +1,4 @@
 {
-  Integer newBuddyId=highestBuddyId + 1;
   Integer groupId=-1;
   for (  GroupItem g : groups.values()) {
     if ("Transport Buddies".equals(g.getGroupName())) {
@@ -8,9 +7,18 @@
   }
   if (groupId == -1) {
     Integer newGroupId=highestGroupId + 1;
-    request(new CreateItemsCmd(new SsiItem[]{new GroupItem("Transport Buddies",newGroupId).toSsiItem()}));
+    GroupItem newGroup=new GroupItem("Transport Buddies",newGroupId);
+    request(new CreateItemsCmd(new SsiItem[]{newGroup.toSsiItem()}));
     highestGroupId=newGroupId;
     groupId=newGroupId;
+    groups.put(groupId,newGroup);
   }
-  request(new CreateItemsCmd(new SsiItem[]{new BuddyItem(getTransport().convertJIDToID(jid),newBuddyId,groupId).toSsiItem()}));
+  Integer newBuddyId=1;
+  if (highestBuddyIdPerGroup.containsKey(groupId)) {
+    newBuddyId=highestBuddyIdPerGroup.get(groupId) + 1;
+  }
+  highestBuddyIdPerGroup.put(groupId,newBuddyId);
+  BuddyItem newBuddy=new BuddyItem(getTransport().convertJIDToID(jid),newBuddyId,groupId);
+  request(new CreateItemsCmd(new SsiItem[]{newBuddy.toSsiItem()}));
+  buddies.put(groupId + "." + newBuddyId,newBuddy);
 }

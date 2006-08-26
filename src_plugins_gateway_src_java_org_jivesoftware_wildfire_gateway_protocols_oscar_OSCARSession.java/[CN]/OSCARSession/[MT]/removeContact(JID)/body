@@ -2,7 +2,7 @@
   for (  BuddyItem i : buddies.values()) {
     if (i.getScreenname().equals(getTransport().convertJIDToID(jid))) {
       request(new DeleteItemsCmd(new SsiItem[]{i.toSsiItem()}));
-      buddies.remove(i.getId());
+      buddies.remove(i.getGroupId() + "." + i.getId());
     }
   }
 }

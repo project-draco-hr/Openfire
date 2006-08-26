@@ -1,6 +1,9 @@
 {
-  buddies.put(buddy.getId(),buddy);
-  if (buddy.getId() > highestBuddyId) {
-    highestBuddyId=buddy.getId();
+  buddies.put(buddy.getGroupId() + "." + buddy.getId(),buddy);
+  if (!highestBuddyIdPerGroup.containsKey(buddy.getGroupId())) {
+    highestBuddyIdPerGroup.put(buddy.getGroupId(),-1);
+  }
+  if (buddy.getId() > highestBuddyIdPerGroup.get(buddy.getGroupId())) {
+    highestBuddyIdPerGroup.put(buddy.getGroupId(),buddy.getId());
   }
 }
