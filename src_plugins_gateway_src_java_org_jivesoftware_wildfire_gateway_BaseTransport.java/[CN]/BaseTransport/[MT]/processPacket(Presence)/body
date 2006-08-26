@@ -17,7 +17,16 @@
         TransportSession session;
         try {
           session=sessionManager.getSession(from);
-          session.updateStatus(getPresenceType(packet),packet.getStatus());
+          if (session.hasResource(from.getResource())) {
+            session.updateStatus(getPresenceType(packet),packet.getStatus());
+          }
+ else {
+            session.addResource(from.getResource(),packet.getPriority());
+            session.resendContactStatuses(from);
+            if (session.isHighestPriority(from.getResource())) {
+              session.updateStatus(getPresenceType(packet),packet.getStatus());
+            }
+          }
         }
  catch (        NotFoundException e) {
           try {
@@ -34,10 +43,25 @@
         TransportSession session;
         try {
           session=sessionManager.getSession(from);
-          if (session.isLoggedIn()) {
-            this.registrationLoggedOut(session);
+          if (session.getResourceCount() > 1) {
+            String resource=from.getResource();
+            if (session.isHighestPriority(resource)) {
+              session.removeResource(resource);
+              Presence p=new Presence(Presence.Type.probe);
+              p.setTo(session.getJIDWithHighestPriority());
+              p.setFrom(this.getJID());
+              sendPacket(p);
+            }
+ else {
+              session.removeResource(resource);
+            }
           }
-          sessionManager.removeSession(from);
+ else {
+            if (session.isLoggedIn()) {
+              this.registrationLoggedOut(session);
+            }
+            sessionManager.removeSession(from);
+          }
         }
  catch (        NotFoundException e) {
           Log.debug("Ignoring unavailable presence for inactive seession.");
