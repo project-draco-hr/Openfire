@@ -2,11 +2,11 @@
   try {
     RosterItem item=getRosterItem(deletedUser);
     int groupSize=item.getSharedGroups().size() + item.getInvisibleSharedGroups().size();
-    if (item.isOnlyShared() && groupSize == 1 && !(deletedGroup.isUser(deletedUser) && RosterManager.isPulicSharedGroup(deletedGroup))) {
+    if (item.isOnlyShared() && groupSize == 1 && !(deletedGroup.isUser(deletedUser) && RosterManager.isPublicSharedGroup(deletedGroup))) {
       deleteRosterItem(deletedUser,false);
     }
  else {
-      if (!(deletedGroup.isUser(deletedUser) && RosterManager.isPulicSharedGroup(deletedGroup))) {
+      if (!(deletedGroup.isUser(deletedUser) && RosterManager.isPublicSharedGroup(deletedGroup))) {
         item.removeSharedGroup(deletedGroup);
       }
       Collection<Group> groups=GroupManager.getInstance().getGroups(deletedUser);
