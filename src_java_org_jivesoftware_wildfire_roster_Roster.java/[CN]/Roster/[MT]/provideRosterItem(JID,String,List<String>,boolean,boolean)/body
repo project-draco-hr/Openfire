@@ -13,6 +13,7 @@
   roster.setType(IQ.Type.set);
   org.xmpp.packet.Roster.Item item=roster.addItem(user,nickname,null,org.xmpp.packet.Roster.Subscription.none,groups);
   RosterItem rosterItem=new RosterItem(item);
+  persistent=RosterEventDispatcher.addingContact(this,rosterItem,persistent);
   if (persistent) {
     rosterItemProvider.createItem(username,rosterItem);
   }
