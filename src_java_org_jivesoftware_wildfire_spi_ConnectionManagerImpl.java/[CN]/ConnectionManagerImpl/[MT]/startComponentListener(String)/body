@@ -1,10 +1,9 @@
 {
   if (isComponentListenerEnabled()) {
     int port=getComponentListenerPort();
-    ServerPort serverPort=new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.component);
     try {
-      componentSocketThread=new SocketAcceptThread(this,serverPort);
-      ports.add(serverPort);
+      componentSocketThread=new SocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.component));
+      ports.add(componentSocketThread.getServerPort());
       componentSocketThread.setDaemon(true);
       componentSocketThread.setPriority(Thread.MAX_PRIORITY);
       componentSocketThread.start();

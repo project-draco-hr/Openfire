@@ -1,10 +1,9 @@
 {
   if (isServerListenerEnabled()) {
     int port=getServerListenerPort();
-    ServerPort serverPort=new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.server);
     try {
-      serverSocketThread=new SocketAcceptThread(this,serverPort);
-      ports.add(serverPort);
+      serverSocketThread=new SocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.server));
+      ports.add(serverSocketThread.getServerPort());
       serverSocketThread.setDaemon(true);
       serverSocketThread.setPriority(Thread.MAX_PRIORITY);
       serverSocketThread.start();

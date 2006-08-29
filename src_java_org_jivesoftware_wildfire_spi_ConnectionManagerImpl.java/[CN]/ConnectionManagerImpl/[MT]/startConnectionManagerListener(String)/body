@@ -1,10 +1,9 @@
 {
   if (isConnectionManagerListenerEnabled()) {
     int port=getConnectionManagerListenerPort();
-    ServerPort serverPort=new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.connectionManager);
     try {
-      multiplexerSocketThread=new SocketAcceptThread(this,serverPort);
-      ports.add(serverPort);
+      multiplexerSocketThread=new SocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.connectionManager));
+      ports.add(multiplexerSocketThread.getServerPort());
       multiplexerSocketThread.setDaemon(true);
       multiplexerSocketThread.setPriority(Thread.MAX_PRIORITY);
       multiplexerSocketThread.start();

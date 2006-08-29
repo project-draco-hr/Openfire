@@ -1,13 +1,14 @@
 {
   super("Socket Listener at port " + serverPort.getPort());
-  this.serverPort=serverPort;
   String interfaceName=JiveGlobals.getXMLProperty("network.interface");
   InetAddress bindInterface=null;
   if (interfaceName != null) {
     if (interfaceName.trim().length() > 0) {
       bindInterface=InetAddress.getByName(interfaceName);
+      serverPort=new ServerPort(serverPort.getPort(),serverPort.getDomainNames().get(0),interfaceName,serverPort.isSecure(),serverPort.getSecurityType(),serverPort.getType());
     }
   }
+  this.serverPort=serverPort;
   boolean useBlockingMode=JiveGlobals.getBooleanProperty("xmpp.socket.blocking",true);
   if (useBlockingMode) {
     acceptingMode=new BlockingAcceptingMode(connManager,serverPort,bindInterface);

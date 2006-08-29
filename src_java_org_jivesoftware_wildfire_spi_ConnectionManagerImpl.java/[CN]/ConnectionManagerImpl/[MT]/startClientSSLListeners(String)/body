@@ -5,10 +5,9 @@
     if ("".equals(algorithm) || algorithm == null) {
       algorithm="TLS";
     }
-    ServerPort serverPort=new ServerPort(port,serverName,localIPAddress,true,algorithm,ServerPort.Type.client);
     try {
-      sslSocketThread=new SSLSocketAcceptThread(this,serverPort);
-      ports.add(serverPort);
+      sslSocketThread=new SSLSocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,true,algorithm,ServerPort.Type.client));
+      ports.add(sslSocketThread.getServerPort());
       sslSocketThread.setDaemon(true);
       sslSocketThread.setPriority(Thread.MAX_PRIORITY);
       sslSocketThread.start();
