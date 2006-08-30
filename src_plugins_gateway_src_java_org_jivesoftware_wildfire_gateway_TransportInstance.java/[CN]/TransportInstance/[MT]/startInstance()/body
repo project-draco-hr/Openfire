@@ -3,7 +3,6 @@
     return;
   }
   transport=null;
-  Log.debug("Loading class " + nameOfClass);
   try {
     transport=(BaseTransport)Class.forName(nameOfClass).newInstance();
     transport.setup(this.type,this.description);
@@ -19,6 +18,7 @@ catch (  IllegalAccessException e) {
   }
   try {
     componentManager.addComponent(this.type.toString(),transport);
+    PropertyEventDispatcher.addListener(this);
     running=true;
   }
  catch (  Exception e) {
