@@ -1,0 +1,43 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Create new group");
+  form.addInstruction("Fill out this form to create a new group.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Group Name");
+  field.setVariable("group");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_multi);
+  field.setLabel("Description");
+  field.setVariable("desc");
+  field=form.addField();
+  field.setType(FormField.Type.jid_multi);
+  field.setLabel("Initial members");
+  field.setVariable("members");
+  field=form.addField();
+  field.setType(FormField.Type.list_single);
+  field.setLabel("Shared group visibility");
+  field.setVariable("showInRoster");
+  field.addValue("nobody");
+  field.addOption("Disable sharing group in rosters","nobody");
+  field.addOption("Show group in all users' rosters","everybody");
+  field.addOption("Show group in group members' rosters","onlyGroup");
+  field.addOption("Show group to members' rosters of these groups","spefgroups");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.list_multi);
+  field.setVariable("groupList");
+  for (  Group group : GroupManager.getInstance().getGroups()) {
+    field.addOption(group.getName(),group.getName());
+  }
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Group Display Name");
+  field.setVariable("displayName");
+  command.add(form.getElement());
+}

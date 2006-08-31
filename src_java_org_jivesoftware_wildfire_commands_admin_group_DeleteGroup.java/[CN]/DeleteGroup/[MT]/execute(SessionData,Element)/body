@@ -1,0 +1,20 @@
+{
+  Element note=command.addElement("note");
+  if (GroupManager.getInstance().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("Groups are read only");
+    return;
+  }
+  Group group;
+  try {
+    group=GroupManager.getInstance().getGroup(data.getData().get("group").get(0));
+  }
+ catch (  GroupNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("Group name does not exist");
+    return;
+  }
+  GroupManager.getInstance().deleteGroup(group);
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

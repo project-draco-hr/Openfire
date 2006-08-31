@@ -1,0 +1,46 @@
+{
+  String start=data.getData().get("start").get(0);
+  String max_items=data.getData().get("max_items").get(0);
+  int nStart=0;
+  if (start != null) {
+    try {
+      nStart=Integer.parseInt(start);
+    }
+ catch (    NumberFormatException e) {
+    }
+  }
+  int maxItems=100000;
+  if (max_items != null && "none".equals(max_items)) {
+    try {
+      maxItems=Integer.parseInt(max_items);
+    }
+ catch (    NumberFormatException e) {
+    }
+  }
+  DataForm form=new DataForm(DataForm.Type.result);
+  form.addReportedField("name","Name",FormField.Type.text_single);
+  form.addReportedField("desc","Description",FormField.Type.text_multi);
+  form.addReportedField("count","User Count",FormField.Type.text_single);
+  form.addReportedField("shared","Shared group?",FormField.Type.boolean_type);
+  form.addReportedField("display","Display Name",FormField.Type.text_single);
+  form.addReportedField("visibility","Visibility",FormField.Type.text_single);
+  form.addReportedField("groups","Show group to members' rosters of these groups",FormField.Type.text_multi);
+  for (  Group group : GroupManager.getInstance().getGroups(nStart,maxItems)) {
+    boolean isSharedGroup=RosterManager.isSharedGroup(group);
+    Map<String,String> properties=group.getProperties();
+    Map<String,Object> fields=new HashMap<String,Object>();
+    fields.put("name",group.getName());
+    fields.put("desc",group.getDescription());
+    fields.put("count",group.getMembers().size() + group.getAdmins().size());
+    fields.put("shared",isSharedGroup);
+    fields.put("display",(isSharedGroup ? properties.get("sharedRoster.displayName") : ""));
+    String showInRoster=(isSharedGroup ? properties.get("sharedRoster.showInRoster") : "");
+    if ("onlyGroup".equals(showInRoster) && properties.get("sharedRoster.groupList").trim().length() > 0) {
+      showInRoster="spefgroups";
+    }
+    fields.put("visibility",showInRoster);
+    fields.put("groups",(isSharedGroup ? properties.get("sharedRoster.groupList") : ""));
+    form.addItemFields(fields);
+  }
+  command.add(form.getElement());
+}

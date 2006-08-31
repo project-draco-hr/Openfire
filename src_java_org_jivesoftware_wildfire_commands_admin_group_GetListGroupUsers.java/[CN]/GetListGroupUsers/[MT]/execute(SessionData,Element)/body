@@ -1,0 +1,28 @@
+{
+  Group group;
+  try {
+    group=GroupManager.getInstance().getGroup(data.getData().get("group").get(0));
+  }
+ catch (  GroupNotFoundException e) {
+    Element note=command.addElement("note");
+    note.addAttribute("type","error");
+    note.setText("Group name does not exist");
+    return;
+  }
+  DataForm form=new DataForm(DataForm.Type.result);
+  form.addReportedField("jid","User",FormField.Type.jid_single);
+  form.addReportedField("admin","Description",FormField.Type.boolean_type);
+  for (  JID memberJID : group.getMembers()) {
+    Map<String,Object> fields=new HashMap<String,Object>();
+    fields.put("jid",memberJID.toString());
+    fields.put("admin",false);
+    form.addItemFields(fields);
+  }
+  for (  JID memberJID : group.getAdmins()) {
+    Map<String,Object> fields=new HashMap<String,Object>();
+    fields.put("jid",memberJID.toString());
+    fields.put("admin",true);
+    form.addItemFields(fields);
+  }
+  command.add(form.getElement());
+}

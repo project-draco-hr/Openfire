@@ -1,0 +1,91 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  if (data.getStage() == 0) {
+    form.setTitle("Update group configuration");
+    form.addInstruction("Fill out this form to specify the group to update.");
+    FormField field=form.addField();
+    field.setType(FormField.Type.hidden);
+    field.setVariable("FORM_TYPE");
+    field.addValue("http://jabber.org/protocol/admin");
+    field=form.addField();
+    field.setType(FormField.Type.text_single);
+    field.setLabel("Group Name");
+    field.setVariable("group");
+    field.setRequired(true);
+  }
+ else {
+    if (GroupManager.getInstance().isReadOnly()) {
+      Element note=command.addElement("note");
+      note.addAttribute("type","error");
+      note.setText("Groups are read only");
+      return;
+    }
+    Group group;
+    try {
+      group=GroupManager.getInstance().getGroup(data.getData().get("group").get(0));
+    }
+ catch (    GroupNotFoundException e) {
+      Element note=command.addElement("note");
+      note.addAttribute("type","error");
+      note.setText("Group not found");
+      return;
+    }
+    form.setTitle("Update group configuration");
+    form.addInstruction("Fill out this form with the new group configuration.");
+    FormField field=form.addField();
+    field.setType(FormField.Type.hidden);
+    field.setVariable("FORM_TYPE");
+    field.addValue("http://jabber.org/protocol/admin");
+    field=form.addField();
+    field.setType(FormField.Type.text_multi);
+    field.setLabel("Description");
+    field.setVariable("desc");
+    if (group.getDescription() != null) {
+      field.addValue(group.getDescription());
+    }
+    field=form.addField();
+    field.setType(FormField.Type.list_single);
+    field.setLabel("Shared group visibility");
+    field.setVariable("showInRoster");
+    field.addValue("nobody");
+    field.addOption("Disable sharing group in rosters","nobody");
+    field.addOption("Show group in all users' rosters","everybody");
+    field.addOption("Show group in group members' rosters","onlyGroup");
+    field.addOption("Show group to members' rosters of these groups","spefgroups");
+    field.setRequired(true);
+    String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
+    if (showInRoster != null) {
+      if ("onlyGroup".equals(showInRoster) && group.getProperties().get("sharedRoster.groupList").trim().length() > 0) {
+        showInRoster="spefgroups";
+      }
+      field.addValue(showInRoster);
+    }
+    field=form.addField();
+    field.setType(FormField.Type.list_multi);
+    field.setVariable("groupList");
+    for (    Group otherGroup : GroupManager.getInstance().getGroups()) {
+      field.addOption(otherGroup.getName(),otherGroup.getName());
+    }
+    String groupList=group.getProperties().get("sharedRoster.groupList");
+    if (groupList != null) {
+      Collection<String> groups=new ArrayList<String>();
+      StringTokenizer tokenizer=new StringTokenizer(groupList,",\t\n\r\f");
+      while (tokenizer.hasMoreTokens()) {
+        String tok=tokenizer.nextToken().trim();
+        groups.add(tok.trim());
+      }
+      for (      String othergroup : groups) {
+        field.addValue(othergroup);
+      }
+    }
+    field=form.addField();
+    field.setType(FormField.Type.text_single);
+    field.setLabel("Group Display Name");
+    field.setVariable("displayName");
+    String displayName=group.getProperties().get("sharedRoster.displayName");
+    if (displayName != null) {
+      field.addValue(displayName);
+    }
+  }
+  command.add(form.getElement());
+}

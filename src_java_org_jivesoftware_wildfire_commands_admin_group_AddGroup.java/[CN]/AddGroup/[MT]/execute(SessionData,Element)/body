@@ -1,0 +1,66 @@
+{
+  Element note=command.addElement("note");
+  if (GroupManager.getInstance().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("Groups are read only");
+    return;
+  }
+  Group group;
+  try {
+    group=GroupManager.getInstance().createGroup(data.getData().get("group").get(0));
+  }
+ catch (  GroupAlreadyExistsException e) {
+    note.addAttribute("type","error");
+    note.setText("Group already exists");
+    return;
+  }
+  List<String> desc=data.getData().get("desc");
+  if (desc != null && !desc.isEmpty()) {
+    group.setDescription(desc.get(0));
+  }
+  List<String> members=data.getData().get("members");
+  boolean withErrors=false;
+  if (members != null) {
+    Collection<JID> users=group.getMembers();
+    for (    String user : members) {
+      try {
+        users.add(new JID(user));
+      }
+ catch (      Exception e) {
+        Log.warn("User not added to group",e);
+        withErrors=true;
+      }
+    }
+  }
+  String showInRoster=data.getData().get("showInRoster").get(0);
+  if ("nobody".equals(showInRoster)) {
+    group.getProperties().put("sharedRoster.showInRoster","nobody");
+    group.getProperties().put("sharedRoster.displayName"," ");
+    group.getProperties().put("sharedRoster.groupList"," ");
+  }
+ else {
+    if ("spefgroups".equals(showInRoster)) {
+      showInRoster="onlyGroup";
+    }
+    List<String> displayName=data.getData().get("displayName");
+    List<String> groupList=data.getData().get("groupList");
+    if (displayName != null) {
+      group.getProperties().put("sharedRoster.showInRoster",showInRoster);
+      group.getProperties().put("sharedRoster.displayName",displayName.get(0));
+      if (groupList != null) {
+        StringBuilder buf=new StringBuilder();
+        String sep="";
+        for (        String groupName : groupList) {
+          buf.append(sep).append(groupName);
+          sep=",";
+        }
+        group.getProperties().put("sharedRoster.groupList",buf.toString());
+      }
+    }
+ else {
+      withErrors=true;
+    }
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished" + (withErrors ? " with errors" : " successfully"));
+}
