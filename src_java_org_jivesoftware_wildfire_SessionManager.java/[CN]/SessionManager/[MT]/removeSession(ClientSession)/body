@@ -33,5 +33,9 @@ synchronized (username.intern()) {
     offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }
-  return auth_removed || preauth_removed;
+  if (auth_removed || preauth_removed) {
+    usersSessionsCounter.decrementAndGet();
+    return true;
+  }
+  return false;
 }
