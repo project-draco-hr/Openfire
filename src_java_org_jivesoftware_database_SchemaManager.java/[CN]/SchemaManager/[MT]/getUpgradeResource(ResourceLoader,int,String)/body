@@ -1,0 +1,18 @@
+{
+  InputStream resource=null;
+  if ("wildfire".equals(schemaKey)) {
+    String path=JiveGlobals.getHomeDirectory() + File.separator + "resources"+ File.separator+ "database"+ File.separator+ "upgrade"+ File.separator+ upgradeVersion;
+    String filename=schemaKey + "_" + DbConnectionManager.getDatabaseType()+ ".sql";
+    File file=new File(path,filename);
+    try {
+      resource=new FileInputStream(file);
+    }
+ catch (    FileNotFoundException e) {
+    }
+  }
+ else {
+    String resourceName="database/upgrade/" + upgradeVersion + "/"+ schemaKey+ "_"+ DbConnectionManager.getDatabaseType()+ ".sql";
+    resource=resourceLoader.loadResource(resourceName);
+  }
+  return resource;
+}
