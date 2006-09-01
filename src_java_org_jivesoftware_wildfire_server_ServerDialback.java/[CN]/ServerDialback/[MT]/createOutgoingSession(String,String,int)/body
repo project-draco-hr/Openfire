@@ -17,7 +17,7 @@
     stream.append(" xmlns:db=\"jabber:server:dialback\">");
     connection.deliverRawText(stream.toString());
     int soTimeout=socket.getSoTimeout();
-    socket.setSoTimeout(5000);
+    socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
     XMPPPacketReader reader=new XMPPPacketReader();
     reader.setXPPFactory(FACTORY);
     reader.getXPPParser().setInput(new InputStreamReader(ServerTrafficCounter.wrapInputStream(socket.getInputStream()),CHARSET));
