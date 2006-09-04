@@ -1,0 +1,13 @@
+{
+  for (  GroupItem g : groups.values()) {
+    if (groupName.equals(g.getGroupName())) {
+      return g.getId();
+    }
+  }
+  Integer newGroupId=highestGroupId + 1;
+  GroupItem newGroup=new GroupItem(groupName,newGroupId);
+  request(new CreateItemsCmd(new SsiItem[]{newGroup.toSsiItem()}));
+  highestGroupId=newGroupId;
+  groups.put(newGroupId,newGroup);
+  return newGroupId;
+}

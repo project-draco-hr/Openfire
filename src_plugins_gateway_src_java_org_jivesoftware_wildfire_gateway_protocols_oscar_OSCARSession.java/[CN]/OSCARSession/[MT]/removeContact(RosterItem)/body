@@ -1,6 +1,7 @@
 {
+  String legacyId=getTransport().convertJIDToID(item.getJid());
   for (  BuddyItem i : buddies.values()) {
-    if (i.getScreenname().equals(getTransport().convertJIDToID(item.getJid()))) {
+    if (i.getScreenname().equals(legacyId)) {
       request(new DeleteItemsCmd(new SsiItem[]{i.toSsiItem()}));
       buddies.remove(i.getGroupId() + "." + i.getId());
     }

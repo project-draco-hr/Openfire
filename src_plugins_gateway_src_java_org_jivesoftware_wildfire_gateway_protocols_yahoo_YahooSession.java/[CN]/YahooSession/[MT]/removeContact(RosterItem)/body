@@ -1,8 +1,13 @@
 {
-  try {
-    yahooSession.removeFriend(item.getJid().getNode(),"Yahoo Transport");
-  }
- catch (  IOException e) {
-    Log.error("Failed to remove yahoo user.");
+  String contact=getTransport().convertJIDToID(item.getJid());
+  for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
+    if (yahooGroup.getIndexOfFriend(contact) != -1) {
+      try {
+        yahooSession.removeFriend(contact,yahooGroup.getName());
+      }
+ catch (      IOException e) {
+        Log.error("Failed to remove yahoo user.");
+      }
+    }
   }
 }

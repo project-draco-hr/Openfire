@@ -1,3 +1,7 @@
 {
-  msnMessenger.removeFriend(Email.parseStr(getTransport().convertJIDToID(item.getJid())),false);
+  Email contact=Email.parseStr(getTransport().convertJIDToID(item.getJid()));
+  MsnContact msnContact=msnContacts.get(contact.toString());
+  for (  MsnGroup msnGroup : msnContact.getBelongGroups()) {
+    msnMessenger.removeFriend(contact,msnGroup.getGroupId());
+  }
 }

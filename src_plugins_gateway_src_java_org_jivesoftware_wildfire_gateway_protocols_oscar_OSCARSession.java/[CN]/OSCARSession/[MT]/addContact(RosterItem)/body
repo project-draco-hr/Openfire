@@ -1,24 +1,8 @@
 {
-  Integer groupId=-1;
-  for (  GroupItem g : groups.values()) {
-    if ("Transport Buddies".equals(g.getGroupName())) {
-      groupId=g.getId();
-    }
+  String legacyId=getTransport().convertJIDToID(item.getJid());
+  String nickname=item.getNickname();
+  if (nickname == null || nickname.equals("")) {
+    nickname=legacyId;
   }
-  if (groupId == -1) {
-    Integer newGroupId=highestGroupId + 1;
-    GroupItem newGroup=new GroupItem("Transport Buddies",newGroupId);
-    request(new CreateItemsCmd(new SsiItem[]{newGroup.toSsiItem()}));
-    highestGroupId=newGroupId;
-    groupId=newGroupId;
-    groups.put(groupId,newGroup);
-  }
-  Integer newBuddyId=1;
-  if (highestBuddyIdPerGroup.containsKey(groupId)) {
-    newBuddyId=highestBuddyIdPerGroup.get(groupId) + 1;
-  }
-  highestBuddyIdPerGroup.put(groupId,newBuddyId);
-  BuddyItem newBuddy=new BuddyItem(getTransport().convertJIDToID(item.getJid()),newBuddyId,groupId);
-  request(new CreateItemsCmd(new SsiItem[]{newBuddy.toSsiItem()}));
-  buddies.put(groupId + "." + newBuddyId,newBuddy);
+  syncContactGroupsAndNickname(legacyId,nickname,item.getGroups());
 }

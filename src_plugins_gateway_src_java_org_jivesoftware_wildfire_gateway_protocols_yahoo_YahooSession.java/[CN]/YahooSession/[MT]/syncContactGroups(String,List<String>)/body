@@ -1,0 +1,41 @@
+{
+  if (groups.isEmpty()) {
+    groups.add("Transport Buddies");
+  }
+  HashMap<String,YahooGroup> yahooGroups=new HashMap<String,YahooGroup>();
+  for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
+    yahooGroups.put(yahooGroup.getName(),yahooGroup);
+  }
+  for (  String group : groups) {
+    if (!yahooGroups.containsKey(group)) {
+      try {
+        yahooSession.addFriend(contact,group);
+      }
+ catch (      IOException e) {
+        Log.error("Error while syncing Yahoo groups.");
+      }
+    }
+  }
+  for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
+    if (groups.contains(yahooGroup.getName())) {
+      if (yahooGroup.getIndexOfFriend(contact) == -1) {
+        try {
+          yahooSession.addFriend(contact,yahooGroup.getName());
+        }
+ catch (        IOException e) {
+          Log.error("Error while syncing Yahoo groups.");
+        }
+      }
+    }
+ else {
+      if (yahooGroup.getIndexOfFriend(contact) != -1) {
+        try {
+          yahooSession.removeFriend(contact,yahooGroup.getName());
+        }
+ catch (        IOException e) {
+          Log.error("Error while syncing Yahoo groups.");
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  if (grouplist.isEmpty()) {
+    grouplist.add("Transport Buddies");
+  }
+  for (  String group : grouplist) {
+    Integer groupId=getGroupIdOrCreateNew(group);
+    Integer newBuddyId=1;
+    if (highestBuddyIdPerGroup.containsKey(groupId)) {
+      newBuddyId=highestBuddyIdPerGroup.get(groupId) + 1;
+    }
+    highestBuddyIdPerGroup.put(groupId,newBuddyId);
+    BuddyItem newBuddy=new BuddyItem(contact,newBuddyId,groupId);
+    newBuddy.setAlias(nickname);
+    request(new CreateItemsCmd(new SsiItem[]{newBuddy.toSsiItem()}));
+    buddies.put(groupId + "." + newBuddyId,newBuddy);
+  }
+  for (  BuddyItem buddy : buddies.values()) {
+    if (buddy.getScreenname().equals(contact)) {
+      if (!grouplist.contains(groups.get(buddy.getGroupId()).getGroupName())) {
+        request(new DeleteItemsCmd(new SsiItem[]{buddy.toSsiItem()}));
+        buddies.remove(buddy.getGroupId() + "." + buddy.getId());
+      }
+ else {
+        if (!buddy.getAlias().equals(nickname)) {
+          buddy.setAlias(nickname);
+          request(new ModifyItemsCmd(new SsiItem[]{buddy.toSsiItem()}));
+        }
+      }
+    }
+  }
+}
