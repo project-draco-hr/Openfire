@@ -1,2 +1,11 @@
 {
+  if (!item.getJid().getDomain().equals(this.getJID().getDomain())) {
+    return;
+  }
+  try {
+    TransportSession session=sessionManager.getSession(roster.getUsername());
+    session.updateContact(item);
+  }
+ catch (  NotFoundException e) {
+  }
 }
