@@ -1,0 +1,20 @@
+{
+  boolean useUTC=false;
+  if (dateText.endsWith("Z")) {
+    useUTC=true;
+  }
+  Date date=new Date();
+  try {
+    if (useUTC) {
+      ldapDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+ else {
+      ldapDateFormat.setTimeZone(TimeZone.getDefault());
+    }
+    date=ldapDateFormat.parse(dateText);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return date;
+}
