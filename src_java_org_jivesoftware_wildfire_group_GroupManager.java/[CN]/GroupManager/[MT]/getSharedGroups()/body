@@ -1,4 +1,13 @@
 {
-  Collection<String> groupNames=Group.getSharedGroupsNames();
+  Collection<String> groupNames=(Collection<String>)groupMetaCache.get(SHARED_GROUPS_KEY);
+  if (groupNames == null) {
+synchronized (SHARED_GROUPS_KEY.intern()) {
+      groupNames=(Collection<String>)groupMetaCache.get(SHARED_GROUPS_KEY);
+      if (groupNames == null) {
+        groupNames=Group.getSharedGroupsNames();
+        groupMetaCache.put(SHARED_GROUPS_KEY,groupNames);
+      }
+    }
+  }
   return new GroupCollection(groupNames);
 }

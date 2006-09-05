@@ -1,7 +1,4 @@
 {
-  if (groupCount != -1 && System.currentTimeMillis() < expiresStamp) {
-    return groupCount;
-  }
   if (manager.isDebugEnabled()) {
     Log.debug("Trying to get the number of groups in the system.");
   }
@@ -23,8 +20,6 @@
       answer.next();
       count++;
     }
-    this.groupCount=count;
-    this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
   }
  catch (  Exception e) {
     Log.error(e);

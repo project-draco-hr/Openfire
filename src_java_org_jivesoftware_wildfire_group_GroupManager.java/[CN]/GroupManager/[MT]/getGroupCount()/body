@@ -1,3 +1,13 @@
 {
-  return provider.getGroupCount();
+  Integer count=(Integer)groupMetaCache.get(GROUP_COUNT_KEY);
+  if (count == null) {
+synchronized (GROUP_COUNT_KEY.intern()) {
+      count=(Integer)groupMetaCache.get(GROUP_COUNT_KEY);
+      if (count == null) {
+        count=provider.getGroupCount();
+        groupMetaCache.put(GROUP_COUNT_KEY,count);
+      }
+    }
+  }
+  return count;
 }

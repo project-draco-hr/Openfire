@@ -14,7 +14,6 @@
  else {
       searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
-    String userSearchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
     XMPPServer server=XMPPServer.getInstance();
     String serverName=server.getServerInfo().getName();
     Pattern pattern=Pattern.compile("(?i)(^" + manager.getUsernameField() + "=)([^,]+)(.+)");
@@ -30,66 +29,64 @@
  catch (        Exception e) {
           description="";
         }
-        TreeSet<JID> members=new TreeSet<JID>();
-        Attribute member=a.get(manager.getGroupMemberField());
-        NamingEnumeration ne=member.getAll();
-        while (ne.hasMore()) {
-          String username=(String)ne.next();
-          if (!manager.isPosixMode()) {
+        Set<JID> members=new TreeSet<JID>();
+        Attribute memberField=a.get(manager.getGroupMemberField());
+        if (memberField != null) {
+          NamingEnumeration ne=memberField.getAll();
+          while (ne.hasMore()) {
+            String username=(String)ne.next();
+            if (!manager.isPosixMode()) {
+              try {
+                Matcher matcher=pattern.matcher(username);
+                if (matcher.matches() && matcher.groupCount() == 3) {
+                  username=matcher.group(2);
+                }
+ else {
+                  LdapName ldapName=new LdapName(username);
+                  String userDNPart=ldapName.get(ldapName.size() - 1);
+                  NamingEnumeration usrAnswer=ctx.search("",userDNPart,searchControls);
+                  if (usrAnswer.hasMoreElements()) {
+                    username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+                  }
+                }
+              }
+ catch (              Exception e) {
+                Log.error(e);
+              }
+            }
             try {
-              Matcher matcher=pattern.matcher(username);
-              if (matcher.matches() && matcher.groupCount() == 3) {
-                username=matcher.group(2);
+              JID userJID;
+              int position=username.indexOf("@" + serverName);
+              if (position == -1) {
+                String escapedUsername=JID.escapeNode(username);
+                if (!escapedUsername.equals(username)) {
+                  userManager.getUser(escapedUsername);
+                }
+                userJID=server.createJID(escapedUsername,null);
               }
  else {
-                LdapName ldapname=new LdapName(username);
-                String ldapcn=ldapname.get(ldapname.size() - 1);
-                String combinedFilter="(&(" + ldapcn + ")"+ userSearchFilter+ ")";
-                NamingEnumeration usrAnswer=ctx.search("",combinedFilter,searchControls);
-                if (usrAnswer.hasMoreElements()) {
-                  username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
-                }
- else {
-                  throw new UserNotFoundException();
-                }
+                String node=username.substring(0,position);
+                String escapedUsername=JID.escapeNode(node);
+                userJID=new JID(escapedUsername + "@" + serverName);
               }
+              members.add(userJID);
             }
- catch (            Exception e) {
+ catch (            UserNotFoundException e) {
               if (manager.isDebugEnabled()) {
-                Log.debug("Error populating user with DN: " + username,e);
+                Log.debug("User not found: " + username);
               }
-            }
-          }
-          try {
-            JID userJID;
-            int position=username.indexOf("@" + serverName);
-            if (position == -1) {
-              String escapedUsername=JID.escapeNode(username);
-              if (!escapedUsername.equals(username)) {
-                userManager.getUser(escapedUsername);
-              }
-              userJID=server.createJID(escapedUsername,null);
-            }
- else {
-              String node=username.substring(0,position);
-              String escapedUsername=JID.escapeNode(node);
-              userJID=new JID(escapedUsername + "@" + serverName);
-            }
-            members.add(userJID);
-          }
- catch (          UserNotFoundException e) {
-            if (manager.isDebugEnabled()) {
-              Log.debug("User not found: " + username);
             }
           }
         }
         if (manager.isDebugEnabled()) {
           Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
         }
-        Group g=new Group(name,description,members,new ArrayList<JID>());
-        groups.put(name,g);
+        Collection<JID> admins=Collections.emptyList();
+        Group group=new Group(name,description,members,admins);
+        groups.put(name,group);
       }
  catch (      Exception e) {
+        e.printStackTrace();
         if (manager.isDebugEnabled()) {
           Log.debug("Error while populating group, " + name + ".",e);
         }

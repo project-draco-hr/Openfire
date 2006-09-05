@@ -1,4 +1,14 @@
 {
-  Collection<String> groupNames=provider.getGroupNames(startIndex,numResults);
+  String key=GROUP_NAMES_KEY + startIndex + ","+ numResults;
+  Collection<String> groupNames=(Collection<String>)groupMetaCache.get(key);
+  if (groupNames == null) {
+synchronized (key.intern()) {
+      groupNames=(Collection<String>)groupMetaCache.get(key);
+      if (groupNames == null) {
+        groupNames=provider.getGroupNames(startIndex,numResults);
+        groupMetaCache.put(key,groupNames);
+      }
+    }
+  }
   return new GroupCollection(groupNames);
 }
