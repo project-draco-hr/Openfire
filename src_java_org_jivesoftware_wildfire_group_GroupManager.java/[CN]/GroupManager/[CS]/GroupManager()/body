@@ -1,6 +1,6 @@
 {
   groupCache=CacheManager.initializeCache("Group","group",1024 * 1024,JiveConstants.MINUTE * 15);
-  groupMetaCache=CacheManager.initializeCache("Group Metadata Cache","groupMeta",512 * 1024,JiveConstants.MINUTE * 10);
+  groupMetaCache=CacheManager.initializeCache("Group Metadata Cache","groupMeta",512 * 1024,JiveConstants.MINUTE * 15);
   String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.wildfire.group.DefaultGroupProvider");
   try {
     Class c=ClassUtils.forName(className);
@@ -35,7 +35,18 @@
 );
   Runnable task=new Runnable(){
     public void run(){
-      getSharedGroups();
+      Collection<Group> groups=getSharedGroups();
+      for (      Group group : groups) {
+        for (        JID jid : group.getMembers()) {
+          try {
+            if (XMPPServer.getInstance().isLocal(jid)) {
+              UserManager.getInstance().getUser(jid.getNode());
+            }
+          }
+ catch (          UserNotFoundException unfe) {
+          }
+        }
+      }
     }
   }
 ;
