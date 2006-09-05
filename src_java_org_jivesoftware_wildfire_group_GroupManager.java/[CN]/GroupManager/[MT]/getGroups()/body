@@ -1,11 +1,4 @@
 {
-synchronized (globalGroupKey) {
-    Collection<Group> groups=userGroupCache.get(globalGroupKey);
-    if (groups == null) {
-      groups=provider.getGroups();
-      groups=cacheAndEnsureIdentity(groups);
-      userGroupCache.put(globalGroupKey,groups);
-    }
-    return groups;
-  }
+  Collection<String> groupNames=provider.getGroupNames();
+  return new GroupCollection(groupNames);
 }

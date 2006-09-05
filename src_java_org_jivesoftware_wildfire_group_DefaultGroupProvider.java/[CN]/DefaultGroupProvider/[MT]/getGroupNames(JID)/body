@@ -4,13 +4,11 @@
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,ALL_GROUPS);
+    pstmt=con.prepareStatement(USER_GROUPS);
+    pstmt.setString(1,server.isLocal(user) ? user.getNode() : user.toString());
     ResultSet rs=pstmt.executeQuery();
-    DbConnectionManager.scrollResultSet(rs,startIndex);
-    int count=0;
-    while (rs.next() && count < numResults) {
+    while (rs.next()) {
       groupNames.add(rs.getString(1));
-      count++;
     }
     rs.close();
   }
@@ -35,5 +33,5 @@
       Log.error(e);
     }
   }
-  return new GroupCollection(groupNames.toArray(new String[groupNames.size()]));
+  return groupNames;
 }

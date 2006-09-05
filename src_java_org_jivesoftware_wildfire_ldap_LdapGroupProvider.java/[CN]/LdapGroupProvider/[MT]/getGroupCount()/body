@@ -2,26 +2,42 @@
   if (groupCount != -1 && System.currentTimeMillis() < expiresStamp) {
     return groupCount;
   }
-  int count=0;
   if (manager.isDebugEnabled()) {
     Log.debug("Trying to get the number of groups in the system.");
   }
-  String searchFilter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
-  String returningAttributes[]={manager.getGroupNameField()};
+  int count=0;
+  LdapContext ctx=null;
   try {
-    NamingEnumeration<SearchResult> answer=searchForGroups(searchFilter,returningAttributes);
-    for (; answer.hasMoreElements(); count++) {
-      try {
-        answer.next();
-      }
- catch (      Exception e) {
-      }
+    ctx=manager.getContext();
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
+    String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
+    while (answer.hasMoreElements()) {
+      answer.next();
+      count++;
     }
     this.groupCount=count;
     this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
   }
- catch (  Exception ex) {
-    Log.error("Error searching for groups in LDAP",ex);
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
   }
   return count;
 }

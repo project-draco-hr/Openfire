@@ -1,12 +1,4 @@
 {
-  String userID=user.toString();
-synchronized (userID.intern()) {
-    Collection<Group> groups=userGroupCache.get(userID);
-    if (groups == null) {
-      groups=provider.getGroups(user);
-      groups=cacheAndEnsureIdentity(groups);
-      userGroupCache.put(userID,groups);
-    }
-    return groups;
-  }
+  Collection<String> groupNames=provider.getGroupNames(user);
+  return new GroupCollection(groupNames);
 }

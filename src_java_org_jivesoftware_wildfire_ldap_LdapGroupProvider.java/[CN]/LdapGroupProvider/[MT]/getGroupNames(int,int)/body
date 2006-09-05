@@ -1,10 +1,4 @@
 {
-  if (query == null || "".equals(query)) {
-    return Collections.emptyList();
-  }
-  if (!query.endsWith("*")) {
-    query=query + "*";
-  }
   List<String> groupNames=new ArrayList<String>();
   LdapContext ctx=null;
   try {
@@ -19,9 +13,8 @@
       searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
-    StringBuilder filter=new StringBuilder();
-    filter.append("(").append(manager.getGroupNameField()).append("=").append(query).append(")");
-    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
+    String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
     for (int i=0; i < startIndex; i++) {
       if (answer.hasMoreElements()) {
         answer.next();

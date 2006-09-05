@@ -1,21 +1,40 @@
 {
-  String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
-  String searchFilter="(&" + filter + "("+ manager.getGroupNameField()+ "="+ group+ "))";
-  Collection<Group> groups;
+  LdapContext ctx=null;
   try {
-    groups=populateGroups(searchForGroups(searchFilter,standardAttributes));
+    ctx=manager.getContext();
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(standardAttributes);
+    String filter=MessageFormat.format(manager.getGroupSearchFilter(),groupName);
+    NamingEnumeration<SearchResult> answer=ctx.search("",filter,searchControls);
+    Collection<Group> groups=populateGroups(answer);
+    if (groups.size() > 1) {
+      throw new GroupNotFoundException("Too many groups with name " + groupName + " were found.");
+    }
+ else     if (groups.isEmpty()) {
+      throw new GroupNotFoundException("Group with name " + groupName + " not found.");
+    }
+ else {
+      return groups.iterator().next();
+    }
   }
  catch (  Exception e) {
-    Log.error("Error populating groups from LDAP",e);
-    throw new GroupNotFoundException("Error populating groups from LDAP",e);
+    Log.error(e);
+    throw new GroupNotFoundException(e);
   }
-  if (groups.size() > 1) {
-    throw new GroupNotFoundException("Too many groups with name " + group + " were found.");
-  }
- else   if (groups.isEmpty()) {
-    throw new GroupNotFoundException("Group with name " + group + " not found.");
-  }
- else {
-    return groups.iterator().next();
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
   }
 }

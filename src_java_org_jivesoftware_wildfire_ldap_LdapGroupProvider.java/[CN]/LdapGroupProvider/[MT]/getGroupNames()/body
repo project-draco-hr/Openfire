@@ -1,10 +1,4 @@
 {
-  if (query == null || "".equals(query)) {
-    return Collections.emptyList();
-  }
-  if (!query.endsWith("*")) {
-    query=query + "*";
-  }
   List<String> groupNames=new ArrayList<String>();
   LdapContext ctx=null;
   try {
@@ -19,25 +13,11 @@
       searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
-    StringBuilder filter=new StringBuilder();
-    filter.append("(").append(manager.getGroupNameField()).append("=").append(query).append(")");
-    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
-    for (int i=0; i < startIndex; i++) {
-      if (answer.hasMoreElements()) {
-        answer.next();
-      }
- else {
-        return Collections.emptyList();
-      }
-    }
-    for (int i=0; i < numResults; i++) {
-      if (answer.hasMoreElements()) {
-        String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
-        groupNames.add(JID.escapeNode(groupName));
-      }
- else {
-        break;
-      }
+    String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
+    while (answer.hasMoreElements()) {
+      String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
+      groupNames.add(JID.escapeNode(groupName));
     }
     if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       Collections.sort(groupNames);

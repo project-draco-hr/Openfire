@@ -45,7 +45,9 @@ synchronized (this) {
           count++;
           System.gc();
         }
-        unzipPlugin(pluginName,jarFile,dir);
+        if (count != 5) {
+          unzipPlugin(pluginName,jarFile,dir);
+        }
       }
     }
     File[] dirs=pluginDirectory.listFiles(new FileFilter(){
