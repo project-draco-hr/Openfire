@@ -18,6 +18,12 @@
       groupMetaCache.clear();
     }
     public void groupModified(    Group group,    Map params){
+      String type=(String)params.get("type");
+      if (type != null && (type.equals("propertyModified") || type.equals("propertyDeleted") || type.equals("propertyAdded"))) {
+        if (params.get("propertyKey") != null && params.get("propertyKey").equals("sharedRoster.showInRoster")) {
+          groupMetaCache.clear();
+        }
+      }
     }
     public void memberAdded(    Group group,    Map params){
       groupMetaCache.clear();
