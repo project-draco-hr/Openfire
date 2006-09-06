@@ -1,3 +1,8 @@
 {
-  Log.debug(event.toString());
+  Message m=new Message();
+  m.setType(Message.Type.chat);
+  m.setTo(yahooSession.getJIDWithHighestPriority());
+  m.setFrom(yahooSession.getTransport().convertIDToJID(event.getFrom()));
+  m.setBody(messageDecoder.decodeToText(event.getMessage()));
+  yahooSession.getTransport().sendPacket(m);
 }

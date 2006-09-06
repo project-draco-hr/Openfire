@@ -75,16 +75,17 @@
       Element response=DocumentHelper.createElement(QName.get("query",IQ_REGISTER));
       IQ result=IQ.createResultIQ(packet);
       DataForm form=new DataForm(DataForm.Type.form);
-      form.addInstruction("Please enter your " + this.getName() + " username and password.");
+      form.addInstruction(getTerminologyRegistration());
       FormField usernameField=form.addField();
-      usernameField.setLabel("Username");
+      usernameField.setLabel(getTerminologyUsername());
       usernameField.setVariable("username");
       usernameField.setType(FormField.Type.text_single);
       FormField passwordField=form.addField();
-      passwordField.setLabel("Password");
+      passwordField.setLabel(getTerminologyPassword());
       passwordField.setVariable("password");
       passwordField.setType(FormField.Type.text_private);
-      response.addElement("instructions").addText("Please enter your " + this.getName() + " username and password.");
+      response.add(form.getElement());
+      response.addElement("instructions").addText(getTerminologyRegistration());
       Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
       if (registrations.iterator().hasNext()) {
         Registration registration=registrations.iterator().next();
