@@ -14,23 +14,32 @@
     String sn=icbm.getSenderInfo().getScreenname();
     InstantMessage message=icbm.getMessage();
     String msg=OscarTools.stripHtml(message.getMessage());
-    Message jmessage=new Message();
-    jmessage.setTo(oscarSession.getJIDWithHighestPriority());
-    jmessage.setBody(msg);
-    jmessage.setType(Message.Type.chat);
-    jmessage.setFrom(this.oscarSession.getTransport().convertIDToJID(sn));
-    oscarSession.getTransport().sendPacket(jmessage);
-    String str=dateFormat.format(new Date()) + " IM from " + sn+ ": "+ msg;
-    Log.debug(str);
+    Message m=new Message();
+    m.setTo(oscarSession.getJIDWithHighestPriority());
+    m.setBody(msg);
+    m.setType(Message.Type.chat);
+    m.setFrom(this.oscarSession.getTransport().convertIDToJID(sn));
+    oscarSession.getTransport().sendPacket(m);
   }
  else   if (cmd instanceof WarningNotification) {
     WarningNotification wn=(WarningNotification)cmd;
     MiniUserInfo warner=wn.getWarner();
     if (warner == null) {
-      Log.debug("*** You were warned anonymously to " + wn.getNewLevel() + "%");
+      Message m=new Message();
+      m.setTo(oscarSession.getJIDWithHighestPriority());
+      m.setBody("You have received an anonymous AIM warning.  Your warning level is now " + wn.getNewLevel() + "%.");
+      m.setType(Message.Type.headline);
+      m.setFrom(this.oscarSession.getTransport().getJID());
+      oscarSession.getTransport().sendPacket(m);
     }
  else {
       Log.debug("*** " + warner.getScreenname() + " warned you up to "+ wn.getNewLevel()+ "%");
+      Message m=new Message();
+      m.setTo(oscarSession.getJIDWithHighestPriority());
+      m.setBody("You have received an AIM warning from " + warner.getScreenname() + ".  Your warning level is now "+ wn.getNewLevel()+ "%.");
+      m.setType(Message.Type.headline);
+      m.setFrom(this.oscarSession.getTransport().getJID());
+      oscarSession.getTransport().sendPacket(m);
     }
   }
  else   if (cmd instanceof BuddyStatusCmd) {
