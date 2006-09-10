@@ -1,0 +1,8 @@
+{
+  Message m=new Message();
+  m.setType(Message.Type.chat);
+  m.setFrom(getSession().getTransport().convertIDToJID(ircUser.getNick()));
+  m.setTo(getSession().getJIDWithHighestPriority());
+  m.setBody(msg);
+  getSession().getTransport().sendPacket(m);
+}

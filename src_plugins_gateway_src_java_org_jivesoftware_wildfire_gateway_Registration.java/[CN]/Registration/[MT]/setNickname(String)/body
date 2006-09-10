@@ -1,14 +1,16 @@
 {
-  if (username == null) {
-    throw new NullPointerException("Arguments cannot be null.");
-  }
-  this.username=username;
+  this.nickname=nickname;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(SET_USERNAME);
-    pstmt.setString(1,username);
+    pstmt=con.prepareStatement(SET_NICKNAME);
+    if (nickname != null) {
+      pstmt.setString(1,nickname);
+    }
+ else {
+      pstmt.setNull(1,Types.VARCHAR);
+    }
     pstmt.setLong(2,registrationID);
     pstmt.executeUpdate();
   }
