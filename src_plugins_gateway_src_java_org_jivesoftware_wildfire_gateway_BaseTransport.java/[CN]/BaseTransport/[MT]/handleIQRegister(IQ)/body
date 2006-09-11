@@ -33,7 +33,7 @@
  else         if (var.equals("password")) {
           password=field.getValues().get(0);
         }
- else         if (var.equals("nickname")) {
+ else         if (var.equals("nick")) {
           nickname=field.getValues().get(0);
         }
       }
@@ -43,7 +43,7 @@
     if (packet.getType() == IQ.Type.set) {
       Element userEl=packet.getChildElement().element("username");
       Element passEl=packet.getChildElement().element("password");
-      Element nickEl=packet.getChildElement().element("nickname");
+      Element nickEl=packet.getChildElement().element("nick");
       if (userEl != null) {
         username=userEl.getTextTrim();
       }
@@ -53,6 +53,9 @@
       if (nickEl != null) {
         nickname=nickEl.getTextTrim();
       }
+      username=(username == null || username.equals("")) ? null : username;
+      password=(password == null || password.equals("")) ? null : password;
+      nickname=(nickname == null || nickname.equals("")) ? null : nickname;
       if (username == null || (isPasswordRequired() && password == null) || (isNicknameRequired() && nickname == null)) {
         IQ result=IQ.createResultIQ(packet);
         result.setError(Condition.bad_request);
@@ -108,14 +111,14 @@
         response.addElement("username").addText(registration.getUsername());
         response.addElement("password").addText(registration.getPassword());
         if (nicknameTerm != null) {
-          response.addElement("nickname").addText(registration.getNickname());
+          response.addElement("nick").addText(registration.getNickname());
         }
       }
  else {
         response.addElement("username");
         response.addElement("password");
         if (nicknameTerm != null) {
-          response.addElement("nickname");
+          response.addElement("nick");
         }
       }
       result.setChildElement(response);

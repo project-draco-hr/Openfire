@@ -1,6 +1,12 @@
 {
   super(registration,jid,transport,priority);
-  conn=new IRCConnection("irc.freenode.net",new int[]{6667,7000},registration.getPassword(),registration.getNickname(),registration.getUsername(),"Wildfire User");
+  String server="irc.freenode.net";
+  int[] ports=new int[]{7000,6667};
+  String username=registration.getUsername();
+  String password=registration.getPassword();
+  password=(password == null || password.equals("")) ? null : password;
+  String nickname=registration.getNickname();
+  conn=new IRCConnection(server,ports,password,nickname,username,"Wildfire User");
   conn.setPong(true);
   conn.setDaemon(false);
   conn.setColors(false);

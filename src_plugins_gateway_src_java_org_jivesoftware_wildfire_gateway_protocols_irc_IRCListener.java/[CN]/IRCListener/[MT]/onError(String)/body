@@ -1,2 +1,8 @@
 {
+  Message m=new Message();
+  m.setType(Message.Type.error);
+  m.setFrom(getSession().getTransport().getJID());
+  m.setTo(getSession().getJID());
+  m.setBody("IRC error received: " + string);
+  getSession().getTransport().sendPacket(m);
 }
