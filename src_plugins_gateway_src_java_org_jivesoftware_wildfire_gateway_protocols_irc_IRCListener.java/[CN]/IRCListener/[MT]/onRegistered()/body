@@ -1,7 +1,10 @@
 {
+  Log.debug("IRC registered");
   getSession().getRegistration().setLastLogin(new Date());
   Presence p=new Presence();
   p.setFrom(getSession().getTransport().getJID());
   p.setTo(getSession().getJID());
   getSession().getTransport().sendPacket(p);
+  statusCheck=new StatusCheck();
+  timer.schedule(statusCheck,timerInterval,timerInterval);
 }

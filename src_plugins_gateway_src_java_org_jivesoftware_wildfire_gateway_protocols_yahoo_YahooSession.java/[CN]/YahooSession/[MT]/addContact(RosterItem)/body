@@ -1,4 +1,11 @@
 {
   String contact=getTransport().convertJIDToID(item.getJid());
   syncContactGroups(contact,item.getGroups());
+  if (pseudoRoster.hasItem(contact)) {
+    PseudoRosterItem rosterItem=pseudoRoster.getItem(contact);
+    rosterItem.setNickname(item.getNickname());
+  }
+ else {
+    pseudoRoster.createItem(contact,item.getNickname(),null);
+  }
 }

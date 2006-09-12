@@ -1,2 +1,14 @@
 {
+  String contact=getTransport().convertJIDToID(item.getJid());
+  if (pseudoRoster.hasItem(contact)) {
+    PseudoRosterItem rosterItem=pseudoRoster.getItem(contact);
+    rosterItem.setNickname(item.getNickname());
+    rosterItem.setGroups(item.getGroups().toString());
+    conn.doIson(contact);
+  }
+ else {
+    pseudoRoster.createItem(contact,item.getNickname(),item.getGroups().toString());
+    buddyStatuses.put(contact,PresenceType.unavailable);
+    conn.doIson(contact);
+  }
 }

@@ -1,3 +1,23 @@
 {
   Log.debug("IRC notice: " + string + ", "+ ircUser+ ", "+ string1);
+  if (silenced) {
+    return;
+  }
+  String username=ircUser.getNick();
+  if (username == null) {
+    username=ircUser.getUsername();
+  }
+  JID from;
+  if (username == null) {
+    from=getSession().getTransport().getJID();
+  }
+ else {
+    from=getSession().getTransport().convertIDToJID(username);
+  }
+  Message m=new Message();
+  m.setType(Message.Type.chat);
+  m.setFrom(from);
+  m.setTo(getSession().getJIDWithHighestPriority());
+  m.setBody(string1);
+  getSession().getTransport().sendPacket(m);
 }

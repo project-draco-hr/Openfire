@@ -1,2 +1,11 @@
 {
+  for (  String contact : buddyStatuses.keySet()) {
+    Presence p=new Presence();
+    if (buddyStatuses.get(contact).equals(PresenceType.unavailable)) {
+      p.setType(Presence.Type.unavailable);
+    }
+    p.setTo(jid);
+    p.setFrom(getTransport().convertIDToJID(contact));
+    getTransport().sendPacket(p);
+  }
 }

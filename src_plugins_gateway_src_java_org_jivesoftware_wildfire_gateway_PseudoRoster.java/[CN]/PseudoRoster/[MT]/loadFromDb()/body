@@ -8,7 +8,10 @@
     pstmt.setLong(1,registrationID);
     rs=pstmt.executeQuery();
     while (rs.next()) {
-      pseudoRosterItems.add(rs.getString(1));
+      String username=rs.getString(1);
+      String nickname=rs.getString(2);
+      String groups=rs.getString(3);
+      pseudoRosterItems.put(username,new PseudoRosterItem(registrationID,username,nickname,groups));
     }
   }
  catch (  SQLException sqle) {

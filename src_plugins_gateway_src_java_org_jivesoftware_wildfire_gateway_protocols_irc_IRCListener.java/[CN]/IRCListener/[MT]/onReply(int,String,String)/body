@@ -1,3 +1,27 @@
 {
   Log.debug("IRC reply: " + i + ", "+ string+ ", "+ string1);
+  if (silenced) {
+    return;
+  }
+  if (i == IRCUtil.RPL_ISON) {
+    String[] onlineContacts=string.split(" ");
+    ArrayList<String> onlineContactList=new ArrayList<String>();
+    for (    String contact : onlineContacts) {
+      onlineContactList.add(contact);
+      getSession().setBuddyStatus(contact,PresenceType.available);
+    }
+    for (    String contact : getSession().getBuddyStatuses().keySet()) {
+      if (!onlineContactList.contains(contact)) {
+        getSession().setBuddyStatus(contact,PresenceType.unavailable);
+      }
+    }
+  }
+ else {
+    Message m=new Message();
+    m.setType(Message.Type.chat);
+    m.setFrom(getSession().getTransport().getJID());
+    m.setTo(getSession().getJIDWithHighestPriority());
+    m.setBody(string1);
+    getSession().getTransport().sendPacket(m);
+  }
 }

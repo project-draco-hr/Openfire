@@ -2,6 +2,9 @@
   if (!item.getJid().getDomain().equals(this.getJID().getDomain())) {
     return;
   }
+  if (item.getJid().getNode() == null) {
+    return;
+  }
   try {
     TransportSession session=sessionManager.getSession(roster.getUsername());
     session.updateContact(item);

@@ -1,5 +1,9 @@
 {
   super(registration,jid,transport,priority);
+  pseudoRoster=pseudoRosterManager.getPseudoRoster(registration);
+  for (  String contact : pseudoRoster.getContacts()) {
+    buddyStatuses.put(contact,PresenceType.unavailable);
+  }
   String server="irc.freenode.net";
   int[] ports=new int[]{7000,6667};
   String username=registration.getUsername();
@@ -10,5 +14,6 @@
   conn.setPong(true);
   conn.setDaemon(false);
   conn.setColors(false);
-  conn.addIRCEventListener(new IRCListener(this));
+  ircListener=new IRCListener(this);
+  conn.addIRCEventListener(ircListener);
 }

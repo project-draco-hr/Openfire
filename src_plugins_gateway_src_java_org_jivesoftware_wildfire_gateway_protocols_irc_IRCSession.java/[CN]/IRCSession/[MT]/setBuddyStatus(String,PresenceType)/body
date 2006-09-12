@@ -1,0 +1,12 @@
+{
+  if (!buddyStatuses.get(username).equals(presenceType)) {
+    Presence p=new Presence();
+    if (presenceType.equals(PresenceType.unavailable)) {
+      p.setType(Presence.Type.unavailable);
+    }
+    p.setTo(getJID());
+    p.setFrom(getTransport().convertIDToJID(username));
+    getTransport().sendPacket(p);
+  }
+  buddyStatuses.put(username,presenceType);
+}

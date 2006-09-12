@@ -1,4 +1,11 @@
 {
+  Log.debug("IRC privmsg: " + chan + ", "+ ircUser+ ", "+ msg);
+  if (silenced) {
+    return;
+  }
+  if (msg.equals("VERSION")) {
+    return;
+  }
   Message m=new Message();
   m.setType(Message.Type.chat);
   m.setFrom(getSession().getTransport().convertIDToJID(ircUser.getNick()));

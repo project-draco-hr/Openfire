@@ -3,6 +3,13 @@
   JID from=packet.getFrom();
   JID to=packet.getTo();
   if (to.getNode() == null) {
+    try {
+      TransportSession session=sessionManager.getSession(from);
+      session.sendServerMessage(packet.getBody());
+    }
+ catch (    NotFoundException e) {
+      Log.debug("Unable to find session.");
+    }
   }
  else {
     try {
