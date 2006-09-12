@@ -3,10 +3,8 @@ synchronized (initLock) {
     try {
       String driver="org.hsqldb.jdbcDriver";
       File databaseDir=new File(JiveGlobals.getHomeDirectory(),File.separator + "embedded-db");
-      boolean initData=false;
       if (!databaseDir.exists()) {
         databaseDir.mkdirs();
-        initData=true;
       }
       String serverURL="jdbc:hsqldb:" + databaseDir.getCanonicalPath() + File.separator+ "wildfire";
       String username="sa";
@@ -15,8 +13,6 @@ synchronized (initLock) {
       int maxConnections=25;
       double connectionTimeout=0.5;
       connectionPool=new ConnectionPool(driver,serverURL,username,password,minConnections,maxConnections,connectionTimeout,false);
-      if (initData) {
-      }
     }
  catch (    IOException ioe) {
       Log.error("Error starting connection pool.",ioe);
