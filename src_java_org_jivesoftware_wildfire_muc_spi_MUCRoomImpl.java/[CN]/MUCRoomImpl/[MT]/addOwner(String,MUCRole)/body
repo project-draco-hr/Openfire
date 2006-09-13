@@ -3,6 +3,9 @@
   if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
     throw new ForbiddenException();
   }
+  if (owners.contains(bareJID)) {
+    return Collections.emptyList();
+  }
   owners.add(bareJID);
   if (removeAdmin(bareJID)) {
     oldAffiliation=MUCRole.Affiliation.admin;

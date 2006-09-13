@@ -6,6 +6,9 @@
   if (owners.contains(bareJID) && owners.size() == 1) {
     throw new ConflictException();
   }
+  if (outcasts.contains(bareJID)) {
+    return Collections.emptyList();
+  }
   JID actorJID=null;
   if (senderRole.getChatUser() != null) {
     actorJID=senderRole.getChatUser().getAddress();

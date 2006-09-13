@@ -6,6 +6,9 @@
   if (owners.contains(bareJID) && owners.size() == 1) {
     throw new ConflictException();
   }
+  if (admins.contains(bareJID)) {
+    return Collections.emptyList();
+  }
   admins.add(bareJID);
   if (removeOwner(bareJID)) {
     oldAffiliation=MUCRole.Affiliation.owner;
