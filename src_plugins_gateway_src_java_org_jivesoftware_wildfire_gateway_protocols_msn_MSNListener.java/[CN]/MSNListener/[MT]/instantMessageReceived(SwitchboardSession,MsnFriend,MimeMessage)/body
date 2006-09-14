@@ -2,7 +2,7 @@
   Message m=new Message();
   m.setType(Message.Type.chat);
   m.setTo(msnSession.getJIDWithHighestPriority());
-  m.setFrom(msnSession.getTransport().getJID());
-  m.setBody(message.getContent());
+  m.setFrom(msnSession.getTransport().convertIDToJID(friend.getLoginName()));
+  m.setBody(message.getMessage());
   msnSession.getTransport().sendPacket(m);
 }
