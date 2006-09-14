@@ -2,6 +2,7 @@
   if (username == null || password == null || "".equals(password.trim())) {
     throw new UnauthorizedException();
   }
+  username=JID.unescapeNode(username);
   if (authCache != null && authCache.containsKey(username)) {
     String hash=(String)authCache.get(username);
     if (StringUtils.hash(password).equals(hash)) {
