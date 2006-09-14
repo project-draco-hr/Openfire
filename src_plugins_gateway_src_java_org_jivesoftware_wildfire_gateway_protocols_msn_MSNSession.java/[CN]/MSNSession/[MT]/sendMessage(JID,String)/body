@@ -1,16 +1,2 @@
 {
-  String contact=getTransport().convertJIDToID(jid);
-  SwitchboardSession session=msnMessenger.findSwitchboardSession(contact);
-  if (session == null) {
-    session=new SwitchboardSession(msnMessenger,ServerInfo.getDefaultServerInfo(),contact);
-  }
-  try {
-    MimeMessage mimeMessage=new MimeMessage();
-    mimeMessage.setKind(MimeMessage.KIND_MESSAGE);
-    mimeMessage.setMessage(message);
-    session.sendMessage(mimeMessage);
-  }
- catch (  IOException e) {
-    Log.error("Failed to send MSN message.");
-  }
 }

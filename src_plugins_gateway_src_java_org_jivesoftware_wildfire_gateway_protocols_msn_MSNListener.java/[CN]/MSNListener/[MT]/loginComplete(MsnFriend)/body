@@ -1,4 +1,8 @@
 {
   msnSession.getRegistration().setLastLogin(new Date());
   msnSession.setLoginStatus(true);
+  Presence p=new Presence();
+  p.setTo(msnSession.getJID());
+  p.setFrom(msnSession.getTransport().getJID());
+  msnSession.getTransport().sendPacket(p);
 }
