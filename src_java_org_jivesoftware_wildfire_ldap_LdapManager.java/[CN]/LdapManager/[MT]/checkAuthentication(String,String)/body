@@ -38,9 +38,12 @@
  catch (  NamingException ne) {
     if (alternateBaseDN != null) {
       try {
-        ctx.close();
+        if (ctx != null) {
+          ctx.close();
+        }
       }
- catch (      Exception ignored) {
+ catch (      Exception e) {
+        Log.error(e);
       }
       try {
         Hashtable<String,Object> env=new Hashtable<String,Object>();
@@ -86,9 +89,12 @@
   }
  finally {
     try {
-      ctx.close();
+      if (ctx != null) {
+        ctx.close();
+      }
     }
- catch (    Exception ignored) {
+ catch (    Exception e) {
+      Log.error(e);
     }
   }
   return true;
