@@ -13,6 +13,7 @@
     String filter=MessageFormat.format(manager.getGroupSearchFilter(),groupName);
     NamingEnumeration<SearchResult> answer=ctx.search("",filter,searchControls);
     Collection<Group> groups=populateGroups(answer);
+    answer.close();
     if (groups.size() > 1) {
       throw new GroupNotFoundException("Too many groups with name " + groupName + " were found.");
     }

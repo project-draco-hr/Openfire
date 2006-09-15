@@ -34,6 +34,7 @@
       }
       throw new UserNotFoundException("LDAP username lookup for " + username + " matched multiple entries.");
     }
+    answer.close();
     if (userDN.startsWith("ldap://")) {
       userDN=userDN.replace("," + baseDN,"");
       userDN=userDN.substring(userDN.lastIndexOf("/") + 1);
