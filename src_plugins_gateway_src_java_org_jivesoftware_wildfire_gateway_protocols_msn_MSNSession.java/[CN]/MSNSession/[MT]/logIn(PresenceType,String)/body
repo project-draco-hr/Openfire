@@ -1,7 +1,9 @@
 {
   if (!this.isLoggedIn()) {
-    msnMessenger.setInitialStatus(((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
-    msnMessenger.addMsnListener(new MSNListener(this));
+    msnMessenger.getOwner().setInitStatus(((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
+    msnMessenger.setLogIncoming(false);
+    msnMessenger.setLogOutgoing(false);
+    msnMessenger.addListener(new MSNListener(this));
     msnMessenger.login();
   }
 }

@@ -1,11 +1,14 @@
 {
   List<TransportBuddy> legacyusers=new ArrayList<TransportBuddy>();
-  for (  MsnFriend friend : msnContacts.values()) {
+  for (  MsnContact friend : msnContacts.values()) {
     ArrayList<String> friendGroups=new ArrayList<String>();
+    for (    MsnGroup group : friend.getBelongGroups()) {
+      friendGroups.add(group.getGroupName());
+    }
     if (friendGroups.size() < 1) {
       friendGroups.add("MSN Contacts");
     }
-    legacyusers.add(new TransportBuddy(friend.getLoginName(),friend.getFriendlyName(),friendGroups.get(0)));
+    legacyusers.add(new TransportBuddy(friend.getEmail().toString(),friend.getDisplayName(),friendGroups.get(0)));
   }
   try {
     getTransport().syncLegacyRoster(getJID(),legacyusers);
@@ -13,10 +16,10 @@
  catch (  UserNotFoundException e) {
     Log.error("Unable to sync MSN contact list for " + getJID());
   }
-  for (  MsnFriend friend : msnContacts.values()) {
+  for (  MsnContact friend : msnContacts.values()) {
     Presence p=new Presence();
     p.setTo(getJID());
-    p.setFrom(getTransport().convertIDToJID(friend.getLoginName()));
+    p.setFrom(getTransport().convertIDToJID(friend.getEmail().toString()));
     ((MSNTransport)getTransport()).setUpPresencePacket(p,friend.getStatus());
     getTransport().sendPacket(p);
   }
