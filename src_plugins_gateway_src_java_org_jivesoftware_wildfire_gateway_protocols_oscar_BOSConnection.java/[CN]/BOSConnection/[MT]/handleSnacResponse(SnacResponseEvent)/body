@@ -2,7 +2,7 @@
   super.handleSnacResponse(e);
   SnacCommand cmd=e.getSnacCommand();
   if (cmd instanceof LocRightsCmd) {
-    request(new SetInfoCmd(new InfoData("oscargateway",null,new CapabilityBlock[]{CapabilityBlock.BLOCK_ICQCOMPATIBLE},null)));
+    request(new SetInfoCmd(new InfoData("oscargateway",null,Arrays.asList(new CapabilityBlock[]{CapabilityBlock.BLOCK_ICQCOMPATIBLE}),null)));
     request(new MyInfoRequest());
   }
  else   if (cmd instanceof ParamInfoCmd) {
@@ -20,7 +20,7 @@
   }
  else   if (cmd instanceof SsiDataCmd) {
     SsiDataCmd sdc=(SsiDataCmd)cmd;
-    SsiItem[] items=sdc.getItems();
+    List<SsiItem> items=sdc.getItems();
     for (    SsiItem item : items) {
       SsiItemObj obj=itemFactory.getItemObj(item);
       if (obj instanceof BuddyItem) {
