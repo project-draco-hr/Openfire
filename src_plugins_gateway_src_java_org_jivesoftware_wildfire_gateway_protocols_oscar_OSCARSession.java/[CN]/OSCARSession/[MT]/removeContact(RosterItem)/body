@@ -1,9 +1,10 @@
 {
+  Log.debug("Remove contact: " + item.getJid());
   String legacyId=getTransport().convertJIDToID(item.getJid());
   for (  BuddyItem i : buddies.values()) {
-    if (i.getScreenname().equals(legacyId)) {
+    if (i.getScreenname().equalsIgnoreCase(legacyId)) {
       request(new DeleteItemsCmd(i.toSsiItem()));
-      buddies.remove(i.getGroupId() + "." + i.getId());
+      buddies.remove("" + i.getGroupId() + "."+ i.getId());
     }
   }
 }
