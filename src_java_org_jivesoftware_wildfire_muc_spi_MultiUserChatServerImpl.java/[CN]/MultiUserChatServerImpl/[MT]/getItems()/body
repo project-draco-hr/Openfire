@@ -8,7 +8,11 @@
       return getServiceDomain();
     }
     public String getName(){
-      return "Public Chatrooms";
+      String serviceName=JiveGlobals.getProperty("muc.service-name");
+      if (serviceName != null && serviceName.trim().length() > 0) {
+        return serviceName;
+      }
+      return LocaleUtils.getLocalizedString("muc.service-name");
     }
     public String getAction(){
       return null;
