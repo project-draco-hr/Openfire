@@ -9,9 +9,12 @@
     rs=pstmt.executeQuery();
     while (rs.next()) {
       String username=rs.getString(1);
-      String nickname=rs.getString(2);
-      String groups=rs.getString(3);
-      pseudoRosterItems.put(username,new PseudoRosterItem(registrationID,username,nickname,groups));
+      try {
+        pseudoRosterItems.put(username,new PseudoRosterItem(registrationID,username));
+      }
+ catch (      NotFoundException e) {
+        Log.error("Could not find pseudo roster item after already having found it.");
+      }
     }
   }
  catch (  SQLException sqle) {
