@@ -1,15 +1,14 @@
 {
-  ByteBuffer buffer=ByteBuffer.allocate(512);
-  connection.read(buffer);
-  buffer.flip();
-  int b=buffer.get();
+  OutputStream out=new DataOutputStream(connection.getOutputStream());
+  InputStream in=new DataInputStream(connection.getInputStream());
+  int b=in.read();
   if (b != 5) {
     throw new IOException("Only SOCKS5 supported");
   }
-  b=buffer.get();
+  b=in.read();
   int[] auth=new int[b];
   for (int i=0; i < b; i++) {
-    auth[i]=buffer.get();
+    auth[i]=in.read();
   }
   int authMethod=-1;
   for (  int anAuth : auth) {
@@ -24,10 +23,8 @@
   byte[] cmd=new byte[2];
   cmd[0]=(byte)0x05;
   cmd[1]=(byte)0x00;
-  buffer.clear();
-  buffer.put(cmd).flip();
-  connection.write(buffer);
-  String responseDigest=processIncomingSocks5Message(connection,buffer);
+  out.write(cmd);
+  String responseDigest=processIncomingSocks5Message(in);
   try {
 synchronized (connectionLock) {
       ProxyTransfer transfer=connectionMap.get(responseDigest);
@@ -37,19 +34,15 @@ synchronized (connectionLock) {
         connectionMap.put(responseDigest,transfer);
       }
  else {
-        transfer.setInputChannel(connection);
+        transfer.setInputStream(connection.getInputStream());
       }
     }
     cmd=createOutgoingSocks5Message(0,responseDigest);
-    buffer.clear();
-    buffer.put(cmd).flip();
-    connection.write(buffer);
+    out.write(cmd);
   }
  catch (  UnauthorizedException eu) {
     cmd=createOutgoingSocks5Message(2,responseDigest);
-    buffer.clear();
-    buffer.put(cmd).flip();
-    connection.write(buffer);
+    out.write(cmd);
     throw new IOException("Illegal proxy transfer");
   }
 }

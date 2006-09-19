@@ -2,19 +2,17 @@
   if (!isActivatable()) {
     throw new IOException("Transfer missing party");
   }
-  ReadableByteChannel in=getInputChannel();
-  WritableByteChannel out=new ProxyOutputChannel(getOutputChannel());
-  ByteBuffer buffer=ByteBuffer.allocate(BUFFER_SIZE);
+  InputStream in=getInputStream();
+  OutputStream out=new ProxyOutputStream(getOutputStream());
+  final byte[] b=new byte[BUFFER_SIZE];
   int count=0;
   amountWritten=0;
   do {
-    out.write(buffer);
+    out.write(b,0,count);
     amountWritten+=count;
-    buffer.clear();
-    count=in.read(buffer);
-    buffer.flip();
+    count=in.read(b);
   }
  while (count >= 0);
-  in.close();
-  out.close();
+  getInputStream().close();
+  getOutputStream().close();
 }
