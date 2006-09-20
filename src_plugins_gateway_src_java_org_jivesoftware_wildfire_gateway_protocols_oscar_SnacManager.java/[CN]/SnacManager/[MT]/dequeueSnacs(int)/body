@@ -1,8 +1,7 @@
 {
-  SnacRequest[] pending=pendingSnacs.getPending(familyCode);
+  List<SnacRequest> pending=pendingSnacs.getPending(familyCode);
   pendingSnacs.setPending(familyCode,false);
-  for (  Object listener1 : listeners) {
-    PendingSnacListener listener=(PendingSnacListener)listener1;
+  for (  PendingSnacListener listener : listeners) {
     listener.dequeueSnacs(pending);
   }
 }

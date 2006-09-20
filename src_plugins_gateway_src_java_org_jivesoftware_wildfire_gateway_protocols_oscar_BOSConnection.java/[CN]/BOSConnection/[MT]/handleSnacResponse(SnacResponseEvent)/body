@@ -2,17 +2,13 @@
   super.handleSnacResponse(e);
   SnacCommand cmd=e.getSnacCommand();
   if (cmd instanceof LocRightsCmd) {
-    request(new SetInfoCmd(new InfoData("oscargateway",null,Arrays.asList(new CapabilityBlock[]{CapabilityBlock.BLOCK_ICQCOMPATIBLE}),null)));
+    request(new SetInfoCmd(new InfoData("oscargateway",null,MY_CAPS,null)));
     request(new MyInfoRequest());
   }
  else   if (cmd instanceof ParamInfoCmd) {
     ParamInfoCmd pic=(ParamInfoCmd)cmd;
     ParamInfo info=pic.getParamInfo();
     request(new SetParamInfoCmd(new ParamInfo(0,info.getFlags() | ParamInfo.FLAG_TYPING_NOTIFICATION,8000,info.getMaxSenderWarning(),info.getMaxReceiverWarning(),0)));
-  }
- else   if (cmd instanceof YourInfoCmd) {
-  }
- else   if (cmd instanceof UserInfoCmd) {
   }
  else   if (cmd instanceof ServiceRedirect) {
     ServiceRedirect sr=(ServiceRedirect)cmd;
