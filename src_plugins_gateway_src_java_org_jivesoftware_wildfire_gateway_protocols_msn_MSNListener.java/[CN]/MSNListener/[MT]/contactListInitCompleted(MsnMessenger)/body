@@ -1,7 +1,9 @@
 {
   for (  MsnContact msnContact : messenger.getContactList().getContacts()) {
     Log.debug("Got contact " + msnContact);
-    msnSession.storeFriend(msnContact);
+    if (msnContact.isInList(MsnList.FL) && msnContact.getEmail() != null) {
+      msnSession.storeFriend(msnContact);
+    }
   }
   for (  MsnGroup msnGroup : messenger.getContactList().getGroups()) {
     msnSession.storeGroup(msnGroup);
