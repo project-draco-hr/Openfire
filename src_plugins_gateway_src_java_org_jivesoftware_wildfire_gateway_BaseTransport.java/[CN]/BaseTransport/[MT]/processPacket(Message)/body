@@ -5,7 +5,9 @@
   if (to.getNode() == null) {
     try {
       TransportSession session=sessionManager.getSession(from);
-      session.sendServerMessage(packet.getBody());
+      if (packet.getBody() != null) {
+        session.sendServerMessage(packet.getBody());
+      }
     }
  catch (    NotFoundException e) {
       Log.debug("Unable to find session.");
@@ -14,7 +16,9 @@
  else {
     try {
       TransportSession session=sessionManager.getSession(from);
-      session.sendMessage(to,packet.getBody());
+      if (packet.getBody() != null) {
+        session.sendMessage(to,packet.getBody());
+      }
     }
  catch (    NotFoundException e) {
       Log.debug("Unable to find session.");
