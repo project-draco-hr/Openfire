@@ -2,14 +2,14 @@
   this.presenceType=presenceType;
   this.verboseStatus=verboseStatus;
   final PresenceType pType=presenceType;
-  if (!isLoggedIn() && !loggingIn && loginAttempts <= 3) {
-    loggingIn=true;
+  if (!isLoggedIn() && getLoginStatus() != TransportLoginStatus.LOGGING_IN && loginAttempts <= 3) {
+    setLoginStatus(TransportLoginStatus.LOGGING_IN);
     new Thread(){
       public void run(){
         try {
           loginAttempts++;
           yahooSession.login(registration.getUsername(),registration.getPassword());
-          loggedIn=true;
+          setLoginStatus(TransportLoginStatus.LOGGED_IN);
           Presence p=new Presence();
           p.setTo(getJID());
           p.setFrom(getTransport().getJID());
@@ -25,7 +25,7 @@
 catch (        IOException e) {
           Log.error("Yahoo login caused IO exception:",e);
         }
-        loggingIn=false;
+        setLoginStatus(TransportLoginStatus.LOGGED_OUT);
       }
     }
 .run();

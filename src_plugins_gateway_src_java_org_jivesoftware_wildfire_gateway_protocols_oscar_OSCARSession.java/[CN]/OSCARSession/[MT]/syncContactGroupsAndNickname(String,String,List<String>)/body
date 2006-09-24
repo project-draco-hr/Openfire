@@ -21,12 +21,9 @@
  else       if (!groups.containsKey(buddy.getGroupId())) {
       }
  else       if (!grouplist.contains(groups.get(buddy.getGroupId()).getGroupName())) {
-        Log.debug("Removing " + buddy + " because not in list of groups");
-        request(new DeleteItemsCmd(buddy.toSsiItem()));
-        buddies.remove("" + buddy.getGroupId() + "."+ buddy.getId());
       }
  else {
-        if (!buddy.getAlias().equals(nickname)) {
+        if (buddy.getAlias() == null || !buddy.getAlias().equals(nickname)) {
           buddy.setAlias(nickname);
           request(new ModifyItemsCmd(buddy.toSsiItem()));
         }

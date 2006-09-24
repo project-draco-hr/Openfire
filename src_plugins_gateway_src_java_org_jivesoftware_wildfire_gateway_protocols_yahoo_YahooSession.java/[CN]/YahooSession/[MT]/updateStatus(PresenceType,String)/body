@@ -1,6 +1,10 @@
 {
   try {
-    yahooSession.setStatus(((YahooTransport)getTransport()).convertJabStatusToYahoo(presenceType));
+    if (isLoggedIn()) {
+      yahooSession.setStatus(((YahooTransport)getTransport()).convertJabStatusToYahoo(presenceType));
+    }
+ else {
+    }
   }
  catch (  Exception e) {
     Log.error("Unable to set Yahoo Status:",e);

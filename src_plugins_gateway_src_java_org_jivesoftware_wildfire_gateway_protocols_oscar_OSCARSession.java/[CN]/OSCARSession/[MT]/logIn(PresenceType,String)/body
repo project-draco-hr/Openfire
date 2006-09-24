@@ -1,12 +1,8 @@
 {
+  setLoginStatus(TransportLoginStatus.LOGGING_IN);
   if (!isLoggedIn()) {
     LoginConnection loginConn=new LoginConnection(new ConnDescriptor("login.oscar.aol.com",5190),this);
     loginConn.connect();
-    loggedIn=true;
-    Presence p=new Presence();
-    p.setTo(getJID());
-    p.setFrom(getTransport().getJID());
-    getTransport().sendPacket(p);
     this.presenceType=presenceType;
     this.verboseStatus=verboseStatus;
   }

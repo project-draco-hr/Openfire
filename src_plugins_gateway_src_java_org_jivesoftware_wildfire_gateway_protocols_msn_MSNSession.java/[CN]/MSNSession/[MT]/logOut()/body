@@ -1,4 +1,5 @@
 {
+  setLoginStatus(TransportLoginStatus.LOGGING_OUT);
   if (this.isLoggedIn()) {
     msnMessenger.logout();
   }
@@ -6,5 +7,5 @@
   p.setTo(getJID());
   p.setFrom(getTransport().getJID());
   getTransport().sendPacket(p);
-  loginStatus=false;
+  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
 }
