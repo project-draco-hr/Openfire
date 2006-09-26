@@ -21,11 +21,24 @@
  catch (        LoginRefusedException e) {
           yahooSession.reset();
           Log.warn("Yahoo login failed for " + getJID());
+          Message m=new Message();
+          m.setType(Message.Type.error);
+          m.setTo(getJID());
+          m.setFrom(getTransport().getJID());
+          m.setBody("Failed to log into Yahoo! messenger account.  (login refused)");
+          getTransport().sendPacket(m);
+          setLoginStatus(TransportLoginStatus.LOGGED_OUT);
         }
 catch (        IOException e) {
           Log.error("Yahoo login caused IO exception:",e);
+          Message m=new Message();
+          m.setType(Message.Type.error);
+          m.setTo(getJID());
+          m.setFrom(getTransport().getJID());
+          m.setBody("Failed to log into Yahoo! messenger account.  (unknown error)");
+          getTransport().sendPacket(m);
+          setLoginStatus(TransportLoginStatus.LOGGED_OUT);
         }
-        setLoginStatus(TransportLoginStatus.LOGGED_OUT);
       }
     }
 .run();
