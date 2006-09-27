@@ -1,0 +1,13 @@
+{
+  UpdateManager updateManager=XMPPServer.getInstance().getUpdateManager();
+  try {
+    updateManager.checkForServerUpdate(true);
+    updateManager.checkForPluginsUpdates(true);
+    JiveGlobals.setProperty("update.lastCheck",String.valueOf(System.currentTimeMillis()));
+    return true;
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return false;
+}
