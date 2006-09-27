@@ -56,7 +56,7 @@
       username=(username == null || username.equals("")) ? null : username;
       password=(password == null || password.equals("")) ? null : password;
       nickname=(nickname == null || nickname.equals("")) ? null : nickname;
-      if (username == null || (isPasswordRequired() && password == null) || (isNicknameRequired() && nickname == null)) {
+      if (username == null || (isPasswordRequired() && password == null) || (isNicknameRequired() && nickname == null) || !isUsernameValid(username)) {
         IQ result=IQ.createResultIQ(packet);
         result.setError(Condition.bad_request);
         reply.add(result);
