@@ -2,6 +2,9 @@
   if (!XMPPServer.getInstance().getServerInfo().getName().equals(jid.getDomain())) {
     throw new IllegalAccessException("Domain of jid registering does not match domain of server.");
   }
+  if (!isUsernameValid(username)) {
+    throw new IllegalArgumentException("Username specified is not valid for this transport type.");
+  }
   Collection<Registration> registrations=registrationManager.getRegistrations(jid,this.transportType);
   Boolean foundReg=false;
   for (  Registration registration : registrations) {
