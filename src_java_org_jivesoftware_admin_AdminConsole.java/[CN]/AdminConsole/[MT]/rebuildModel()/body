@@ -58,4 +58,20 @@
       }
     }
   }
+  Element enterprise=(Element)generatedModel.selectSingleNode("//tab[@id='tab-enterprise']");
+  if (enterprise == null && JiveGlobals.getXMLProperty("enterpriseInfoEnabled",true)) {
+    enterprise=generatedModel.addElement("tab");
+    enterprise.addAttribute("id","tab-enterprise");
+    enterprise.addAttribute("name","Enterprise");
+    enterprise.addAttribute("url","enterprise-info.jsp");
+    enterprise.addAttribute("description","Click for Enterprise information.");
+    Element sidebar=enterprise.addElement("sidebar");
+    sidebar.addAttribute("id","sidebar-enterprise-info");
+    sidebar.addAttribute("name","Wildfire Enterprise");
+    Element item=sidebar.addElement("item");
+    item.addAttribute("id","enterprise-info");
+    item.addAttribute("name","Try Enterprise");
+    item.addAttribute("url","enterprise-info.jsp");
+    item.addAttribute("description","Wildfire Enterprise overview inforation");
+  }
 }
