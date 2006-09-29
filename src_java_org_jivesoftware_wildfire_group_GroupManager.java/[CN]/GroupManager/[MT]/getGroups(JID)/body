@@ -1,4 +1,13 @@
 {
+  if (provider.getClass() == LdapGroupProvider.class) {
+    Collection<Group> userGroups=new ArrayList<Group>();
+    for (    Group group : getGroups()) {
+      if (group.isUser(user)) {
+        userGroups.add(group);
+      }
+    }
+    return userGroups;
+  }
   String key=user.toBareJID();
   Collection<String> groupNames=(Collection<String>)groupMetaCache.get(key);
   if (groupNames == null) {
