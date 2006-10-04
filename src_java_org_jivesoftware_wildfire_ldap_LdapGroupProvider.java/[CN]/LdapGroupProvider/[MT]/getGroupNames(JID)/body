@@ -1,9 +1,65 @@
 {
-  Collection<String> userGroups=new ArrayList<String>();
-  for (  Group group : GroupManager.getInstance().getGroups()) {
-    if (group.isUser(user)) {
-      userGroups.add(group.getName());
+  XMPPServer server=XMPPServer.getInstance();
+  String username;
+  if (!manager.isPosixMode()) {
+    if (!server.isLocal(user)) {
+      return Collections.emptyList();
+    }
+    username=JID.unescapeNode(user.getNode());
+    try {
+      username=manager.findUserDN(username) + "," + manager.getBaseDN();
+    }
+ catch (    Exception e) {
+      Log.error("Could not find user in LDAP " + username);
+      return Collections.emptyList();
     }
   }
-  return userGroups;
+ else {
+    username=server.isLocal(user) ? JID.unescapeNode(user.getNode()) : user.toString();
+  }
+  if (username == null || "".equals(username)) {
+    return Collections.emptyList();
+  }
+  List<String> groupNames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
+    StringBuilder filter=new StringBuilder();
+    filter.append("(&");
+    filter.append(MessageFormat.format(manager.getGroupSearchFilter(),"*"));
+    filter.append("(").append(manager.getGroupMemberField()).append("=").append(username);
+    filter.append("))");
+    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
+    while (answer.hasMoreElements()) {
+      String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
+      groupNames.add(JID.escapeNode(groupName));
+    }
+    answer.close();
+    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+      Collections.sort(groupNames);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error getting groups for user: " + user,e);
+    return Collections.emptyList();
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return groupNames;
 }
