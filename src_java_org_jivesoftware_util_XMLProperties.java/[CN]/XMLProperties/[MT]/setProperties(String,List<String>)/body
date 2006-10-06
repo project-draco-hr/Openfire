@@ -19,6 +19,14 @@
   for (  String value : values) {
     Element childElement=element.addElement(childName);
     if (value.startsWith("<![CDATA[")) {
+      Iterator it=childElement.nodeIterator();
+      while (it.hasNext()) {
+        Node node=(Node)it.next();
+        if (node instanceof CDATA) {
+          childElement.remove(node);
+          break;
+        }
+      }
       childElement.addCDATA(value.substring(9,value.length() - 3));
     }
  else {

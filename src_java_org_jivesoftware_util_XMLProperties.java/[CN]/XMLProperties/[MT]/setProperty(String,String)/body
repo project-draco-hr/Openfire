@@ -15,6 +15,14 @@
     element=element.element(propName[i]);
   }
   if (value.startsWith("<![CDATA[")) {
+    Iterator it=element.nodeIterator();
+    while (it.hasNext()) {
+      Node node=(Node)it.next();
+      if (node instanceof CDATA) {
+        element.remove(node);
+        break;
+      }
+    }
     element.addCDATA(value.substring(9,value.length() - 3));
   }
  else {
