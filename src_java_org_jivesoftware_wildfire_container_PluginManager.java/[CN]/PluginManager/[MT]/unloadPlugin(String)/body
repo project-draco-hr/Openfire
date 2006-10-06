@@ -21,7 +21,12 @@
   if (customWebXML.exists()) {
     PluginServlet.unregisterServlets(customWebXML);
   }
-  plugin.destroyPlugin();
+  try {
+    plugin.destroyPlugin();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
   PluginClassLoader classLoader=classloaders.get(plugin);
   if (classLoader != null) {
     classLoader.destroy();

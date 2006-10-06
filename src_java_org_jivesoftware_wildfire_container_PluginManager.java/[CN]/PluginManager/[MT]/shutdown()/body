@@ -3,7 +3,12 @@
     executor.shutdown();
   }
   for (  Plugin plugin : plugins.values()) {
-    plugin.destroyPlugin();
+    try {
+      plugin.destroyPlugin();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
   }
   plugins.clear();
   pluginDirs.clear();
