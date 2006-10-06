@@ -3,13 +3,11 @@
     Node node=element.node(i);
     if (node instanceof Element) {
       Element emement=(Element)node;
-      Attribute attr=emement.attribute("attrs");
-      if (attr != null) {
-        String[] attrs=attr.getStringValue().split(",");
-        for (        String string : attrs) {
-          Log.debug("VCardTemplate: found attribute " + string);
-          set.add(string);
-        }
+      String[] attrs=emement.getTextTrim().split(",");
+      for (      String string : attrs) {
+        string=string.replaceAll("(\\{)([\\d\\D]+)(})","$2");
+        Log.debug("VCardTemplate: found attribute " + string);
+        set.add(string);
       }
       treeWalk(emement,set);
     }

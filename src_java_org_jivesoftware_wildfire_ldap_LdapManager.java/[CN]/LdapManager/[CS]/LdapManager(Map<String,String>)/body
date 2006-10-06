@@ -1,9 +1,11 @@
 {
   this.properties=properties;
   String host=properties.get("ldap.host");
-  StringTokenizer st=new StringTokenizer(host," ,\t\n\r\f");
-  while (st.hasMoreTokens()) {
-    hosts.add(st.nextToken());
+  if (host != null) {
+    StringTokenizer st=new StringTokenizer(host," ,\t\n\r\f");
+    while (st.hasMoreTokens()) {
+      hosts.add(st.nextToken());
+    }
   }
   String portStr=properties.get("ldap.port");
   port=389;

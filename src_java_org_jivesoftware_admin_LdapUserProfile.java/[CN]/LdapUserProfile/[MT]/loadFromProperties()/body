@@ -4,6 +4,9 @@
     return false;
   }
   try {
+    if (xmlProperty.startsWith("<![CDATA[")) {
+      xmlProperty=xmlProperty.substring(9,xmlProperty.length() - 3);
+    }
     Document document=DocumentHelper.parseText(xmlProperty);
     Element vCard=document.getRootElement();
     Element element=vCard.element("N");
@@ -25,6 +28,86 @@
     element=vCard.element("BDAY");
     if (element != null) {
       birthday=element.getTextTrim();
+    }
+    Iterator addresses=vCard.elementIterator("ADR");
+    while (addresses.hasNext()) {
+      element=(Element)addresses.next();
+      if (element.element("HOME") != null) {
+        if (element.element("STREET") != null) {
+          homeStreet=element.elementTextTrim("STREET");
+        }
+        if (element.element("LOCALITY") != null) {
+          homeCity=element.elementTextTrim("LOCALITY");
+        }
+        if (element.element("REGION") != null) {
+          homeState=element.elementTextTrim("REGION");
+        }
+        if (element.element("PCODE") != null) {
+          homeZip=element.elementTextTrim("PCODE");
+        }
+        if (element.element("CTRY") != null) {
+          homeCountry=element.elementTextTrim("CTRY");
+        }
+      }
+ else       if (element.element("WORK") != null) {
+        if (element.element("STREET") != null) {
+          businessStreet=element.elementTextTrim("STREET");
+        }
+        if (element.element("LOCALITY") != null) {
+          businessCity=element.elementTextTrim("LOCALITY");
+        }
+        if (element.element("REGION") != null) {
+          businessState=element.elementTextTrim("REGION");
+        }
+        if (element.element("PCODE") != null) {
+          businessZip=element.elementTextTrim("PCODE");
+        }
+        if (element.element("CTRY") != null) {
+          businessCountry=element.elementTextTrim("CTRY");
+        }
+      }
+    }
+    Iterator telephones=vCard.elementIterator("TEL");
+    while (telephones.hasNext()) {
+      element=(Element)telephones.next();
+      if (element.element("HOME") != null) {
+        if (element.element("VOICE") != null) {
+          homePhone=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("CELL") != null) {
+          homeMobile=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("FAX") != null) {
+          homeFax=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("PAGER") != null) {
+          homePager=element.elementTextTrim("NUMBER");
+        }
+      }
+ else       if (element.element("WORK") != null) {
+        if (element.element("VOICE") != null) {
+          businessPhone=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("CELL") != null) {
+          businessMobile=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("FAX") != null) {
+          businessFax=element.elementTextTrim("NUMBER");
+        }
+ else         if (element.element("PAGER") != null) {
+          businessPager=element.elementTextTrim("NUMBER");
+        }
+      }
+    }
+    element=vCard.element("TITLE");
+    if (element != null) {
+      businessJobTitle=element.getTextTrim();
+    }
+    element=vCard.element("ORG");
+    if (element != null) {
+      if (element.element("ORGUNIT") != null) {
+        businessDepartment=element.elementTextTrim("ORGUNIT");
+      }
     }
   }
  catch (  DocumentException e) {

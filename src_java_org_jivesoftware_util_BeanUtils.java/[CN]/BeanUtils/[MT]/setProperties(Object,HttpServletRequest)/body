@@ -1,0 +1,21 @@
+{
+  for (Enumeration propNames=request.getParameterNames(); propNames.hasMoreElements(); ) {
+    String propName=(String)propNames.nextElement();
+    try {
+      PropertyDescriptor descriptor=new PropertyDescriptor(propName,bean.getClass());
+      Class propertyType=descriptor.getPropertyType();
+      Object value=decode(propertyType,request.getParameter(propName));
+      descriptor.getWriteMethod().invoke(bean,value);
+    }
+ catch (    IntrospectionException ie) {
+    }
+catch (    InvocationTargetException ite) {
+    }
+catch (    IllegalAccessException e) {
+      Log.error(e);
+    }
+catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

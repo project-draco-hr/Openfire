@@ -1,12 +1,11 @@
 {
   try {
-    for (Iterator iter=properties.keySet().iterator(); iter.hasNext(); ) {
-      String propName=(String)iter.next();
+    for (    String propName : properties.keySet()) {
       try {
         PropertyDescriptor descriptor=new PropertyDescriptor(propName,bean.getClass());
         Class propertyType=descriptor.getPropertyType();
-        Object value=decode(propertyType,(String)properties.get(propName));
-        descriptor.getWriteMethod().invoke(bean,new Object[]{value});
+        Object value=decode(propertyType,properties.get(propName));
+        descriptor.getWriteMethod().invoke(bean,value);
       }
  catch (      IntrospectionException ie) {
       }

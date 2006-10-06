@@ -46,7 +46,7 @@
     subelement.addElement("REGION").setText(businessState.trim());
   }
   if (businessZip != null && businessZip.trim().length() > 0) {
-    subelement.addElement("PCODE").setText(homeZip.trim());
+    subelement.addElement("PCODE").setText(businessZip.trim());
   }
   if (businessCountry != null && businessCountry.trim().length() > 0) {
     subelement.addElement("CTRY").setText(businessCountry.trim());
@@ -60,7 +60,6 @@
   if (homeMobile != null && homeMobile.trim().length() > 0) {
     subelement=vCard.addElement("TEL");
     subelement.addElement("HOME");
-    subelement.addElement("VOICE");
     subelement.addElement("CELL");
     subelement.addElement("NUMBER").setText(homeMobile.trim());
   }
@@ -85,7 +84,6 @@
   if (businessMobile != null && businessMobile.trim().length() > 0) {
     subelement=vCard.addElement("TEL");
     subelement.addElement("WORK");
-    subelement.addElement("VOICE");
     subelement.addElement("CELL");
     subelement.addElement("NUMBER").setText(businessMobile.trim());
   }
@@ -104,6 +102,9 @@
   if (businessJobTitle != null && businessJobTitle.trim().length() > 0) {
     vCard.addElement("TITLE").setText(businessJobTitle.trim());
   }
+  if (businessDepartment != null && businessDepartment.trim().length() > 0) {
+    vCard.addElement("ORG").addElement("ORGUNIT").setText(businessDepartment.trim());
+  }
   String vcardXML;
   StringWriter writer=new StringWriter();
   OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
@@ -119,4 +120,7 @@
   StringBuilder sb=new StringBuilder(vcardXML.length());
   sb.append("<![CDATA[").append(vcardXML).append("]]>");
   JiveGlobals.setXMLProperty("ldap.vcard-mapping",sb.toString());
+  JiveGlobals.setXMLProperty("provider.vcard.className",LdapVCardProvider.class.getName());
+  LdapManager.getInstance().setNameField(name.replaceAll("(\\{)([\\d\\D]+)(})","$2"));
+  LdapManager.getInstance().setEmailField(email.replaceAll("(\\{)([\\d\\D]+)(})","$2"));
 }
