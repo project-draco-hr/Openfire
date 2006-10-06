@@ -1,0 +1,35 @@
+{
+  String xmlProperty=JiveGlobals.getXMLProperty("ldap.vcard-mapping");
+  if (xmlProperty == null || xmlProperty.trim().length() == 0) {
+    return false;
+  }
+  try {
+    Document document=DocumentHelper.parseText(xmlProperty);
+    Element vCard=document.getRootElement();
+    Element element=vCard.element("N");
+    if (element != null) {
+      name=element.elementTextTrim("GIVEN");
+    }
+    element=vCard.element("EMAIL");
+    if (element != null) {
+      email=element.elementTextTrim("USERID");
+    }
+    element=vCard.element("FN");
+    if (element != null) {
+      fullName=vCard.getTextTrim();
+    }
+    element=vCard.element("NICKNAME");
+    if (element != null) {
+      nickname=vCard.getTextTrim();
+    }
+    element=vCard.element("BDAY");
+    if (element != null) {
+      birthday=vCard.getTextTrim();
+    }
+  }
+ catch (  DocumentException e) {
+    Log.error("Error loading vcard mappings from property",e);
+    return false;
+  }
+  return true;
+}
