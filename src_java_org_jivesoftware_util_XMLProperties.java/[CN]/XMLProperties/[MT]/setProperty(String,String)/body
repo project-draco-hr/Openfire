@@ -14,7 +14,12 @@
     }
     element=element.element(propName[i]);
   }
-  element.setText(value);
+  if (value.startsWith("<![CDATA[")) {
+    element.addCDATA(value.substring(9,value.length() - 3));
+  }
+ else {
+    element.setText(value);
+  }
   saveProperties();
   Map<String,String> params=new HashMap<String,String>();
   params.put("value",value);
