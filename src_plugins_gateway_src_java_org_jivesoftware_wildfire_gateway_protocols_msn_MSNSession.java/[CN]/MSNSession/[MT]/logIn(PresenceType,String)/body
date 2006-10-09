@@ -1,10 +1,16 @@
 {
   if (!this.isLoggedIn()) {
-    setLoginStatus(TransportLoginStatus.LOGGING_IN);
-    msnMessenger.getOwner().setInitStatus(((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
-    msnMessenger.setLogIncoming(false);
-    msnMessenger.setLogOutgoing(false);
-    msnMessenger.addListener(new MSNListener(this));
-    msnMessenger.login();
+    try {
+      Log.debug("Logging in to MSN session for " + msnMessenger.getOwner().getEmail());
+      setLoginStatus(TransportLoginStatus.LOGGING_IN);
+      msnMessenger.getOwner().setInitStatus(((MSNTransport)getTransport()).convertJabStatusToMSN(presenceType));
+      msnMessenger.setLogIncoming(false);
+      msnMessenger.setLogOutgoing(false);
+      msnMessenger.addListener(new MSNListener(this));
+      msnMessenger.login();
+    }
+ catch (    Exception e) {
+      Log.error("MSN user is not able to log in: " + msnMessenger.getOwner().getEmail(),e);
+    }
   }
 }
