@@ -1,4 +1,5 @@
 {
+  Collection<Group> groups;
   LdapContext ctx=null;
   try {
     ctx=manager.getContext();
@@ -12,15 +13,9 @@
     searchControls.setReturningAttributes(standardAttributes);
     String filter=MessageFormat.format(manager.getGroupSearchFilter(),groupName);
     NamingEnumeration<SearchResult> answer=ctx.search("",filter,searchControls);
-    Collection<Group> groups=populateGroups(answer);
+    groups=populateGroups(answer);
     answer.close();
-    if (groups.size() > 1) {
-      throw new GroupNotFoundException("Too many groups with name " + groupName + " were found.");
-    }
- else     if (groups.isEmpty()) {
-      throw new GroupNotFoundException("Group with name " + groupName + " not found.");
-    }
- else {
+    if (groups.size() == 1) {
       return groups.iterator().next();
     }
   }
@@ -38,4 +33,8 @@
  catch (    Exception ignored) {
     }
   }
+  if (groups.size() > 1) {
+    throw new GroupNotFoundException("Too many groups with name " + groupName + " were found.");
+  }
+  throw new GroupNotFoundException("Group with name " + groupName + " not found.");
 }
