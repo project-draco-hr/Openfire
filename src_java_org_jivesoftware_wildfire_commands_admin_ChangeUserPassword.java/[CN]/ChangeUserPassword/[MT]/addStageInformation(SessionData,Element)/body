@@ -1,0 +1,20 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Changing a User Password");
+  form.addInstruction("Fill out this form to change a user\u2019s password.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.jid_single);
+  field.setLabel("The Jabber ID for this account");
+  field.setVariable("accountjid");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("The password for this account");
+  field.setVariable("password");
+  field.setRequired(true);
+  command.add(form.getElement());
+}

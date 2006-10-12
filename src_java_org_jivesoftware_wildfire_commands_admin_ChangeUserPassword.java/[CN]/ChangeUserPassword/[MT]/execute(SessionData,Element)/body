@@ -1,0 +1,27 @@
+{
+  Element note=command.addElement("note");
+  if (UserManager.getUserProvider().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("Users are read only. Changing password is not allowed.");
+    return;
+  }
+  JID account=new JID(data.getData().get("accountjid").get(0));
+  String newPassword=data.getData().get("password").get(0);
+  if (!XMPPServer.getInstance().isLocal(account)) {
+    note.addAttribute("type","error");
+    note.setText("Cannot change password of remote user.");
+    return;
+  }
+  User user;
+  try {
+    user=UserManager.getInstance().getUser(account.getNode());
+  }
+ catch (  UserNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("User does not exists.");
+    return;
+  }
+  user.setPassword(newPassword);
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}
