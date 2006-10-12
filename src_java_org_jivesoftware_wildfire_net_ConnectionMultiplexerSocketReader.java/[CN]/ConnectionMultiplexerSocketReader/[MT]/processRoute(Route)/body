@@ -8,10 +8,16 @@
     session.process(reply);
     return;
   }
-  threadPool.execute(new Runnable(){
+  Runnable runnable=new Runnable(){
     public void run(){
       packetHandler.route(packet);
     }
   }
-);
+;
+  if (!overflowBuffer.isEmpty()) {
+    overflowBuffer.add(runnable);
+  }
+ else {
+    threadPool.execute(runnable);
+  }
 }
