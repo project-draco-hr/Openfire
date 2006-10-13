@@ -10,8 +10,9 @@
   }
   List<String> usernames=new ArrayList<String>();
   LdapContext ctx=null;
+  LdapContext ctx2=null;
   try {
-    ctx=manager.getContext();
+    ctx=manager.getContext(baseDN);
     Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
     ctx.setRequestControls(searchControl);
     SearchControls searchControls=new SearchControls();
@@ -38,6 +39,15 @@
       String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
       usernames.add(JID.escapeNode(username));
     }
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      ctx2.setRequestControls(searchControl);
+      answer=ctx2.search("",filter.toString(),searchControls);
+      while (answer.hasMoreElements()) {
+        String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+        usernames.add(JID.escapeNode(username));
+      }
+    }
     answer.close();
     if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       Collections.sort(usernames);
@@ -51,6 +61,14 @@
       if (ctx != null) {
         ctx.setRequestControls(null);
         ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+    try {
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
       }
     }
  catch (    Exception ignored) {

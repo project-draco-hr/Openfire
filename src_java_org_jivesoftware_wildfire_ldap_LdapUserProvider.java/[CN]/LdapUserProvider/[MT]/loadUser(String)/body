@@ -4,7 +4,7 @@
   try {
     String userDN=manager.findUserDN(username);
     String[] attributes=new String[]{manager.getUsernameField(),manager.getNameField(),manager.getEmailField(),"createTimestamp","modifyTimestamp"};
-    ctx=manager.getContext();
+    ctx=manager.getContext(manager.getUsersBaseDN(username));
     Attributes attrs=ctx.getAttributes(userDN,attributes);
     String name=null;
     Attribute nameField=attrs.get(manager.getNameField());

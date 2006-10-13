@@ -1,3 +1,13 @@
 {
-  return getContext(baseDN);
+  try {
+    return getContext(baseDN);
+  }
+ catch (  NamingException e) {
+    if (alternateBaseDN != null) {
+      return getContext(alternateBaseDN);
+    }
+ else {
+      throw (e);
+    }
+  }
 }

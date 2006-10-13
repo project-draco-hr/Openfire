@@ -38,6 +38,7 @@
     if (userDN.startsWith("ldap://")) {
       userDN=userDN.replace("," + baseDN,"");
       userDN=userDN.substring(userDN.lastIndexOf("/") + 1);
+      userDN=java.net.URLDecoder.decode(userDN,"UTF-8");
     }
     if (encloseUserDN) {
       Matcher matcher=userDNPattern.matcher(userDN);

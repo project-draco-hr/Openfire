@@ -4,8 +4,9 @@
   }
   int count=0;
   DirContext ctx=null;
+  DirContext ctx2=null;
   try {
-    ctx=manager.getContext();
+    ctx=manager.getContext(baseDN);
     SearchControls searchControls=new SearchControls();
     if (manager.isSubTreeSearch()) {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -20,6 +21,14 @@
       count++;
       answer.nextElement();
     }
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      answer=ctx2.search("",filter,searchControls);
+      while (answer.hasMoreElements()) {
+        count++;
+        answer.nextElement();
+      }
+    }
     answer.close();
   }
  catch (  Exception e) {
@@ -29,6 +38,13 @@
     try {
       if (ctx != null) {
         ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+    try {
+      if (ctx2 != null) {
+        ctx2.close();
       }
     }
  catch (    Exception ignored) {

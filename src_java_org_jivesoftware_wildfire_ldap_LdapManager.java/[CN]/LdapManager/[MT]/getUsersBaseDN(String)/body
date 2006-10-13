@@ -1,0 +1,18 @@
+{
+  try {
+    findUserDN(username,baseDN);
+    return baseDN;
+  }
+ catch (  Exception e) {
+    try {
+      if (alternateBaseDN != null) {
+        findUserDN(username,alternateBaseDN);
+        return alternateBaseDN;
+      }
+    }
+ catch (    Exception ex) {
+      Log.debug(ex);
+    }
+  }
+  return null;
+}

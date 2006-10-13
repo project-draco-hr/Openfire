@@ -7,8 +7,9 @@
   }
   List<String> usernames=new ArrayList<String>();
   LdapContext ctx=null;
+  LdapContext ctx2=null;
   try {
-    ctx=manager.getContext();
+    ctx=manager.getContext(baseDN);
     Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
     ctx.setRequestControls(searchControl);
     SearchControls searchControls=new SearchControls();
@@ -31,9 +32,18 @@
       filter.append(")");
     }
     NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
+    NamingEnumeration answer2=null;
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      ctx2.setRequestControls(searchControl);
+      answer2=ctx2.search("",filter.toString(),searchControls);
+    }
     for (int i=0; i < startIndex; i++) {
       if (answer.hasMoreElements()) {
         answer.next();
+      }
+ else       if (alternateBaseDN != null && answer2.hasMoreElements()) {
+        answer2.next();
       }
  else {
         return Collections.emptyList();
@@ -42,6 +52,10 @@
     for (int i=0; i < numResults; i++) {
       if (answer.hasMoreElements()) {
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+        usernames.add(JID.escapeNode(username));
+      }
+ else       if (alternateBaseDN != null && answer2.hasMoreElements()) {
+        String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
         usernames.add(JID.escapeNode(username));
       }
  else {
@@ -61,6 +75,14 @@
       if (ctx != null) {
         ctx.setRequestControls(null);
         ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+    try {
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
       }
     }
  catch (    Exception ignored) {

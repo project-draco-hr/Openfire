@@ -1,8 +1,9 @@
 {
   List<String> usernames=new ArrayList<String>();
   LdapContext ctx=null;
+  LdapContext ctx2=null;
   try {
-    ctx=manager.getContext();
+    ctx=manager.getContext(baseDN);
     Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
     ctx.setRequestControls(searchControl);
     SearchControls searchControls=new SearchControls();
@@ -18,12 +19,24 @@
     }
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
     NamingEnumeration answer=ctx.search("",filter,searchControls);
+    NamingEnumeration answer2=null;
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      ctx2.setRequestControls(searchControl);
+      answer2=ctx2.search("",filter,searchControls);
+    }
     if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
       while (answer.hasMoreElements()) {
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
         usernames.add(JID.escapeNode(username));
       }
-      Collections.sort(usernames);
+      if (alternateBaseDN != null) {
+        while (answer2.hasMoreElements()) {
+          String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
+          usernames.add(JID.escapeNode(username));
+        }
+      }
+      Collections.sort(new ArrayList<String>(usernames));
       int endIndex=Math.min(startIndex + numResults,usernames.size() - 1);
       usernames=usernames.subList(startIndex,endIndex);
     }
@@ -32,6 +45,9 @@
         if (answer.hasMoreElements()) {
           answer.next();
         }
+ else         if (alternateBaseDN != null && answer2.hasMoreElements()) {
+          answer2.next();
+        }
  else {
           return Collections.emptyList();
         }
@@ -39,6 +55,10 @@
       for (int i=0; i < numResults; i++) {
         if (answer.hasMoreElements()) {
           String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+          usernames.add(JID.escapeNode(username));
+        }
+ else         if (alternateBaseDN != null && answer2.hasMoreElements()) {
+          String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
           usernames.add(JID.escapeNode(username));
         }
  else {
@@ -56,6 +76,14 @@
       if (ctx != null) {
         ctx.setRequestControls(null);
         ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+    try {
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
       }
     }
  catch (    Exception ignored) {
