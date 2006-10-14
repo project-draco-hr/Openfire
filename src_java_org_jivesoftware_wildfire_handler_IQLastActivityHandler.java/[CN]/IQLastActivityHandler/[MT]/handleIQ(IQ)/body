@@ -13,6 +13,9 @@
       if (sessionManager.getSessions(username).isEmpty()) {
         User user=UserManager.getInstance().getUser(username);
         long lastActivityTime=presenceManager.getLastActivity(user);
+        if (lastActivityTime > -1) {
+          lastActivityTime=lastActivityTime / 1000;
+        }
         lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
         String lastStatus=presenceManager.getLastPresenceStatus(user);
         if (lastStatus != null && lastStatus.length() > 0) {
