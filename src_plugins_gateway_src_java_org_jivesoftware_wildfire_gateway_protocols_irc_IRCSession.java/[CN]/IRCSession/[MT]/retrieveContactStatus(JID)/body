@@ -1,8 +1,13 @@
 {
   String contact=getTransport().convertJIDToID(jid);
   Presence p=new Presence();
-  if (buddyStatuses.get(contact).equals(PresenceType.unavailable)) {
-    p.setType(Presence.Type.unavailable);
+  if (buddyStatuses.containsKey(contact)) {
+    if (buddyStatuses.get(contact).equals(PresenceType.unavailable)) {
+      p.setType(Presence.Type.unavailable);
+    }
+  }
+ else {
+    p.setError(PacketError.Condition.forbidden);
   }
   p.setTo(jid);
   p.setFrom(getTransport().convertIDToJID(contact));

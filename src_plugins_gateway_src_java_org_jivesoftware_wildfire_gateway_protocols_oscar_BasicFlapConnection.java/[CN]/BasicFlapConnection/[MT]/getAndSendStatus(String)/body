@@ -32,9 +32,10 @@
     oscarSession.getTransport().sendPacket(p);
   }
  else {
-    Presence p=new Presence(Presence.Type.unavailable);
+    Presence p=new Presence();
     p.setTo(oscarSession.getJID());
     p.setFrom(oscarSession.getTransport().convertIDToJID(sn));
+    p.setError(PacketError.Condition.forbidden);
     oscarSession.getTransport().sendPacket(p);
   }
 }
