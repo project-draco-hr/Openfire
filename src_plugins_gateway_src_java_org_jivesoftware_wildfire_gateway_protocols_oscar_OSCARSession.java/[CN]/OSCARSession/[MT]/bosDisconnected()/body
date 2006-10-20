@@ -1,0 +1,10 @@
+{
+  Message m=new Message();
+  m.setType(Message.Type.error);
+  m.setError(PacketError.Condition.internal_server_error);
+  m.setTo(getJID());
+  m.setFrom(getTransport().getJID());
+  m.setBody("You have been disconnected automatically by the server.");
+  getTransport().sendPacket(m);
+  logOut();
+}
