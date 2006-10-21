@@ -58,9 +58,10 @@
       }
     }
   }
-  Element enterprise=(Element)generatedModel.selectSingleNode("//tab[@id='tab-enterprise']");
-  if (enterprise == null && JiveGlobals.getBooleanProperty("enterpriseInfoEnabled",true)) {
-    enterprise=generatedModel.addElement("tab");
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  boolean pluginExists=pluginManager != null && pluginManager.isPluginDownloaded("enterprise.jar");
+  if (!pluginExists && JiveGlobals.getBooleanProperty("enterpriseInfoEnabled",true)) {
+    Element enterprise=generatedModel.addElement("tab");
     enterprise.addAttribute("id","tab-enterprise");
     enterprise.addAttribute("name","Enterprise");
     enterprise.addAttribute("url","enterprise-info.jsp");
