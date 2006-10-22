@@ -13,67 +13,7 @@
         Log.debug("Unable to find registration.");
         return reply;
       }
-      Registration registration=registrations.iterator().next();
-      if (packet.getType() == null) {
-        TransportSession session;
-        try {
-          session=sessionManager.getSession(from);
-          if (session.hasResource(from.getResource())) {
-            Log.debug("An existing resource has changed status: " + from);
-            if (session.getPriority(from.getResource()) != packet.getPriority()) {
-              session.updatePriority(from.getResource(),packet.getPriority());
-            }
-            if (session.isHighestPriority(from.getResource())) {
-              session.updateStatus(getPresenceType(packet),packet.getStatus());
-            }
-          }
- else {
-            Log.debug("A new resource has come online: " + from);
-            session.addResource(from.getResource(),packet.getPriority());
-            session.resendContactStatuses(from);
-            if (session.isHighestPriority(from.getResource())) {
-              session.updateStatus(getPresenceType(packet),packet.getStatus());
-            }
-          }
-        }
- catch (        NotFoundException e) {
-          Log.debug("A new session has come online: " + from);
-          session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus(),packet.getPriority());
-          sessionManager.storeSession(from,session);
-        }
-      }
- else       if (packet.getType() == Presence.Type.unavailable) {
-        TransportSession session;
-        try {
-          session=sessionManager.getSession(from);
-          if (session.getResourceCount() > 1) {
-            String resource=from.getResource();
-            if (session.isHighestPriority(resource)) {
-              Log.debug("A high priority resource (of multiple) has gone offline: " + from);
-              session.removeResource(resource);
-              Presence p=new Presence(Presence.Type.probe);
-              p.setTo(session.getJIDWithHighestPriority());
-              p.setFrom(this.getJID());
-              sendPacket(p);
-            }
- else {
-              Log.debug("A low priority resource (of multiple) has gone offline: " + from);
-              session.removeResource(resource);
-            }
-          }
- else {
-            Log.debug("A final resource has gone offline: " + from);
-            if (session.isLoggedIn()) {
-              this.registrationLoggedOut(session);
-            }
-            sessionManager.removeSession(from);
-          }
-        }
- catch (        NotFoundException e) {
-          Log.debug("Ignoring unavailable presence for inactive seession.");
-        }
-      }
- else       if (packet.getType() == Presence.Type.probe) {
+      if (packet.getType() == Presence.Type.probe) {
         TransportSession session;
         try {
           session=sessionManager.getSession(from);
@@ -97,10 +37,6 @@
         TransportSession session=sessionManager.getSession(from);
         if (packet.getType() == Presence.Type.probe) {
           session.retrieveContactStatus(to);
-        }
- else         if (packet.getType() == Presence.Type.subscribe) {
-        }
- else         if (packet.getType() == Presence.Type.unsubscribe) {
         }
  else {
         }

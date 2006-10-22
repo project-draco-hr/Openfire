@@ -1,7 +1,6 @@
 {
   TransportSession session=new OSCARSession(registration,jid,this,priority);
-  Thread sessionThread=new Thread(session);
-  sessionThread.start();
+  this.getSessionManager().startThread(session);
   ((OSCARSession)session).logIn(presenceType,verboseStatus);
   return session;
 }

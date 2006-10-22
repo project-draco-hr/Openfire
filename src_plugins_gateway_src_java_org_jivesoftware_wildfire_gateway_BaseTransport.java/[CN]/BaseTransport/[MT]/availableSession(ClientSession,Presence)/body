@@ -1,3 +1,35 @@
 {
-  Log.debug("availableSession " + session + ":"+ presence);
+  Log.debug("availableSession " + clSession + ":"+ packet);
+  JID from=packet.getFrom();
+  Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
+  if (registrations.isEmpty()) {
+    return;
+  }
+  Registration registration=registrations.iterator().next();
+  TransportSession session;
+  try {
+    session=sessionManager.getSession(from);
+    if (session.hasResource(from.getResource())) {
+      Log.debug("An existing resource has changed status: " + from);
+      if (session.getPriority(from.getResource()) != packet.getPriority()) {
+        session.updatePriority(from.getResource(),packet.getPriority());
+      }
+      if (session.isHighestPriority(from.getResource())) {
+        session.updateStatus(getPresenceType(packet),packet.getStatus());
+      }
+    }
+ else {
+      Log.debug("A new resource has come online: " + from);
+      session.addResource(from.getResource(),packet.getPriority());
+      session.resendContactStatuses(from);
+      if (session.isHighestPriority(from.getResource())) {
+        session.updateStatus(getPresenceType(packet),packet.getStatus());
+      }
+    }
+  }
+ catch (  NotFoundException e) {
+    Log.debug("A new session has come online: " + from);
+    session=this.registrationLoggedIn(registration,from,getPresenceType(packet),packet.getStatus(),packet.getPriority());
+    sessionManager.storeSession(from,session);
+  }
 }
