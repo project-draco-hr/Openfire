@@ -26,6 +26,12 @@
   }
  catch (  NotFoundException e) {
     Log.debug("Unable to find session.");
+    Message m=new Message();
+    m.setError(Condition.service_unavailable);
+    m.setTo(from);
+    m.setFrom(getJID());
+    m.setBody("You are not currently logged into the transport.");
+    reply.add(m);
   }
   return reply;
 }

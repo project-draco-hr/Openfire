@@ -69,10 +69,13 @@
         reply.add(result);
         try {
           this.addNewRegistration(from,username,password,nickname);
-          Presence p=new Presence(Presence.Type.probe);
-          p.setTo(from);
-          p.setFrom(to);
-          reply.add(p);
+          SessionManager sessionManager=SessionManager.getInstance();
+          String user=from.getNode();
+          if (sessionManager.getSessionCount(user) > 0) {
+            for (            ClientSession session : sessionManager.getSessions(user)) {
+              availableSession(session,session.getPresence());
+            }
+          }
         }
  catch (        UserNotFoundException e) {
           Log.error("Someone attempted to register with the gateway who is not registered with the server: " + from);

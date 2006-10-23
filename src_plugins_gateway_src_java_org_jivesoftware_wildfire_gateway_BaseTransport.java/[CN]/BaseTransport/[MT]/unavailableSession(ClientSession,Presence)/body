@@ -13,10 +13,17 @@
       if (session.isHighestPriority(resource)) {
         Log.debug("A high priority resource (of multiple) has gone offline: " + from);
         session.removeResource(resource);
-        Presence p=new Presence(Presence.Type.probe);
-        p.setTo(session.getJIDWithHighestPriority());
-        p.setFrom(this.getJID());
-        sendPacket(p);
+        SessionManager sessionManager=SessionManager.getInstance();
+        String user=from.getNode();
+        String nextResource=session.getJIDWithHighestPriority().getResource();
+        if (sessionManager.getSessionCount(user) > 0) {
+          for (          ClientSession cSession : sessionManager.getSessions(user)) {
+            Presence p=cSession.getPresence();
+            if (p.getFrom().getResource().equals(nextResource)) {
+              presenceChanged(cSession,cSession.getPresence());
+            }
+          }
+        }
       }
  else {
         Log.debug("A low priority resource (of multiple) has gone offline: " + from);
