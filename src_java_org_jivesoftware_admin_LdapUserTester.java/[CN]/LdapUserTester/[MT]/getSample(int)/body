@@ -1,0 +1,43 @@
+{
+  List<String> usernames=new ArrayList<String>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl;
+    try {
+      searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
+    }
+ catch (    IOException e) {
+      Log.error(e);
+      return Collections.emptyList();
+    }
+    ctx.setRequestControls(searchControl);
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
+    searchControls.setCountLimit(maxSample);
+    String filter=MessageFormat.format(manager.getSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
+    while (answer.hasMoreElements()) {
+      String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+      usernames.add(JID.escapeNode(username));
+    }
+    answer.close();
+  }
+  finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return usernames;
+}
