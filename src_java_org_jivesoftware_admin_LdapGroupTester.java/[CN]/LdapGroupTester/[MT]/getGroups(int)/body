@@ -1,0 +1,62 @@
+{
+  Collection<Group> groups=new ArrayList<Group>();
+  LdapContext ctx=null;
+  try {
+    ctx=manager.getContext();
+    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getGroupNameField()},Control.NONCRITICAL)};
+    ctx.setRequestControls(searchControl);
+    SearchControls searchControls=new SearchControls();
+    if (manager.isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    String[] standardAttributes=new String[3];
+    standardAttributes[0]=manager.getGroupNameField();
+    standardAttributes[1]=manager.getGroupDescriptionField();
+    standardAttributes[2]=manager.getGroupMemberField();
+    searchControls.setReturningAttributes(standardAttributes);
+    searchControls.setCountLimit(maxGroups);
+    String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
+    NamingEnumeration answer=ctx.search("",filter,searchControls);
+    while (answer.hasMoreElements()) {
+      Attributes attributes=((SearchResult)answer.next()).getAttributes();
+      String groupName=(String)attributes.get(manager.getGroupNameField()).get();
+      String description="";
+      int elements=0;
+      try {
+        description=((String)attributes.get(manager.getGroupDescriptionField()).get());
+      }
+ catch (      NullPointerException e) {
+      }
+catch (      Exception e) {
+        Log.error("Error retrieving group description",e);
+      }
+      Attribute memberField=attributes.get(manager.getGroupMemberField());
+      if (memberField != null) {
+        NamingEnumeration ne=memberField.getAll();
+        while (ne.hasMore()) {
+          ne.next();
+          elements=elements + 1;
+        }
+      }
+      groups.add(new Group(groupName,description,elements));
+    }
+    answer.close();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return groups;
+}
