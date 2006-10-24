@@ -1,6 +1,7 @@
 {
   try {
     Roster roster=rosterManager.getRoster(userjid.getNode());
+    boolean hasTransport=false;
     Map<JID,TransportBuddy> legacymap=new HashMap<JID,TransportBuddy>();
     for (    TransportBuddy buddy : legacyitems) {
       legacymap.put(convertIDToJID(buddy.getName()),buddy);
@@ -10,6 +11,12 @@
         continue;
       }
       if (ri.getJid().getNode() == null) {
+        if (ri.getID() == 0) {
+          hasTransport=true;
+        }
+ else {
+          this.removeFromRoster(userjid,ri.getJid());
+        }
         continue;
       }
       JID jid=new JID(ri.getJid().toBareJID());
@@ -31,6 +38,9 @@
           Log.error("Failed removing roster item",e);
         }
       }
+    }
+    if (!hasTransport) {
+      this.addOrUpdateRosterItem(userjid,this.getJID(),this.getDescription(),"Transports");
     }
     for (    TransportBuddy buddy : legacymap.values()) {
       try {
