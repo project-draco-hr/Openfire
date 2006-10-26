@@ -1,6 +1,8 @@
 {
   serverUpdate=null;
-  Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
+  SAXReader xmlReader=new SAXReader();
+  xmlReader.setEncoding("UTF-8");
+  Element xmlResponse=xmlReader.read(new StringReader(response)).getRootElement();
   Element wildfire=xmlResponse.element("wildfire");
   if (wildfire != null) {
     String latestVersion=wildfire.attributeValue("latest");

@@ -1,6 +1,8 @@
 {
   availablePlugins=new HashMap<String,AvailablePlugin>();
-  Element xmlResponse=new SAXReader().read(new StringReader(response)).getRootElement();
+  SAXReader xmlReader=new SAXReader();
+  xmlReader.setEncoding("UTF-8");
+  Element xmlResponse=xmlReader.read(new StringReader(response)).getRootElement();
   Iterator plugins=xmlResponse.elementIterator("plugin");
   while (plugins.hasNext()) {
     Element plugin=(Element)plugins.next();
