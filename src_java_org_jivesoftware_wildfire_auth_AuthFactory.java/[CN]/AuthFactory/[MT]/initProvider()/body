@@ -1,0 +1,13 @@
+{
+  String className=JiveGlobals.getXMLProperty("provider.auth.className","org.jivesoftware.wildfire.auth.DefaultAuthProvider");
+  if (authProvider == null || !className.equals(authProvider.getClass().getName())) {
+    try {
+      Class c=ClassUtils.forName(className);
+      authProvider=(AuthProvider)c.newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Error loading auth provider: " + className,e);
+      authProvider=new DefaultAuthProvider();
+    }
+  }
+}
