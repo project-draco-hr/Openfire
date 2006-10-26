@@ -1,4 +1,7 @@
 {
+  if (packet != null && packet.getFrom() == null) {
+    throw new IllegalArgumentException("Packet with no FROM address was received from component.");
+  }
   PacketRouter router=XMPPServer.getInstance().getPacketRouter();
   if (router != null) {
     router.route(packet);
