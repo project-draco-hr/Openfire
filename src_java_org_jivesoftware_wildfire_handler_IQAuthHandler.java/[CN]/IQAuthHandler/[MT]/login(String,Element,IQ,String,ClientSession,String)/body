@@ -9,11 +9,22 @@
     }
   }
  else {
-    response=IQ.createResultIQ(packet);
+    IQ response=IQ.createResultIQ(packet);
     response.setChildElement(packet.getChildElement().createCopy());
     response.setError(PacketError.Condition.not_acceptable);
+    return response;
   }
   username=username.toLowerCase();
+  AuthToken token=null;
+  if (password != null && AuthFactory.isPlainSupported()) {
+    token=AuthFactory.authenticate(username,password);
+  }
+ else   if (digest != null && AuthFactory.isDigestSupported()) {
+    token=AuthFactory.authenticate(username,session.getStreamID().toString(),digest);
+  }
+  if (token == null) {
+    throw new UnauthorizedException();
+  }
   if (sessionManager.isActiveRoute(username,resource)) {
     ClientSession oldSession;
     try {
@@ -30,31 +41,17 @@
         }
       }
  else {
-        response=IQ.createResultIQ(packet);
+        IQ response=IQ.createResultIQ(packet);
         response.setChildElement(packet.getChildElement().createCopy());
         response.setError(PacketError.Condition.forbidden);
+        return response;
       }
     }
  catch (    Exception e) {
       Log.error("Error during login",e);
     }
   }
-  if (response == null) {
-    AuthToken token=null;
-    if (password != null && AuthFactory.isPlainSupported()) {
-      token=AuthFactory.authenticate(username,password);
-    }
- else     if (digest != null && AuthFactory.isDigestSupported()) {
-      token=AuthFactory.authenticate(username,session.getStreamID().toString(),digest);
-    }
-    if (token == null) {
-      throw new UnauthorizedException();
-    }
- else {
-      session.setAuthToken(token,userManager,resource);
-      packet.setFrom(session.getAddress());
-      response=IQ.createResultIQ(packet);
-    }
-  }
-  return response;
+  session.setAuthToken(token,userManager,resource);
+  packet.setFrom(session.getAddress());
+  return IQ.createResultIQ(packet);
 }

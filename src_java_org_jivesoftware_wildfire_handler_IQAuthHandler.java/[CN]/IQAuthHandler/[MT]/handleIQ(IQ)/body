@@ -7,7 +7,7 @@
     reply.setError(PacketError.Condition.internal_server_error);
     return reply;
   }
-  IQ response=null;
+  IQ response;
   try {
     Element iq=packet.getElement();
     Element query=iq.element("query");
@@ -38,7 +38,7 @@
           response=passwordReset(password,packet,username,session);
         }
  else {
-          response=login(username,query,packet,response,password,session,digest);
+          response=login(username,query,packet,password,session,digest);
         }
       }
     }
