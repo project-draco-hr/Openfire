@@ -2,7 +2,7 @@
   thread=new Thread("Update Manager"){
     public void run(){
       try {
-        Thread.sleep(15000);
+        Thread.sleep(5000);
         loadSavedInfo();
         while (isServiceEnabled()) {
           waitForNextCheck();
@@ -33,7 +33,7 @@
     private void waitForNextCheck() throws InterruptedException {
       long lastCheck=JiveGlobals.getLongProperty("update.lastCheck",0);
       if (lastCheck == 0) {
-        Thread.sleep(45000);
+        Thread.sleep(30000);
       }
  else {
         long elapsed=System.currentTimeMillis() - lastCheck;
