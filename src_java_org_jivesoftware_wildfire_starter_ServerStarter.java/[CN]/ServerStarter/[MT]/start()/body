@@ -13,7 +13,11 @@
  else {
       libDir=new File(DEFAULT_LIB_DIR);
     }
-    unpackArchives(libDir);
+    unpackArchives(libDir,true);
+    File adminLibDir=new File("../plugins/admin/webapp/WEB-INF/lib");
+    if (adminLibDir.exists()) {
+      unpackArchives(adminLibDir,false);
+    }
     ClassLoader loader=new JiveClassLoader(parent,libDir);
     Thread.currentThread().setContextClassLoader(loader);
     Class containerClass=loader.loadClass("org.jivesoftware.wildfire.XMPPServer");
