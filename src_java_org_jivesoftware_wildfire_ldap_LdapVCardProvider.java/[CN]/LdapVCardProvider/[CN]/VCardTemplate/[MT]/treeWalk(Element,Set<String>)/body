@@ -3,9 +3,9 @@
     Node node=element.node(i);
     if (node instanceof Element) {
       Element emement=(Element)node;
-      String[] attrs=emement.getTextTrim().split(",");
-      for (      String string : attrs) {
-        string=string.replaceAll("(\\{)([\\d\\D]+)(})","$2");
+      StringTokenizer st=new StringTokenizer(emement.getTextTrim(),", //{}");
+      while (st.hasMoreTokens()) {
+        String string=st.nextToken().replaceAll("(\\{)([\\d\\D&&[^}]]+)(})","$2");
         Log.debug("VCardTemplate: found attribute " + string);
         set.add(string);
       }

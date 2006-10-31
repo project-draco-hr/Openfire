@@ -3,15 +3,18 @@
     Node node=element.node(i);
     if (node instanceof Element) {
       Element emement=(Element)node;
-      String[] attrs=emement.getTextTrim().split(",");
-      Object[] values=new String[attrs.length];
-      String format=emement.getStringValue();
-      for (int j=0; j < attrs.length; j++) {
-        String attrib=attrs[j].replaceAll("(\\{)([\\d\\D]+)(})","$2");
-        values[j]=map.get(attrib);
-        format=format.replaceFirst("(\\{)([\\d\\D]+)(})","$1" + j + "$3");
+      String elementText=emement.getTextTrim();
+      if (elementText != null && !"".equals(elementText)) {
+        String format=emement.getStringValue();
+        StringTokenizer st=new StringTokenizer(elementText,", //{}");
+        while (st.hasMoreTokens()) {
+          String field=st.nextToken();
+          String attrib=field.replaceAll("(\\{)(" + field + ")(})","$2");
+          String value=map.get(attrib);
+          format=format.replaceFirst("(\\{)(" + field + ")(})",value);
+        }
+        emement.setText(format);
       }
-      emement.setText(MessageFormat.format(format,values));
       treeWalk(emement,map);
     }
   }

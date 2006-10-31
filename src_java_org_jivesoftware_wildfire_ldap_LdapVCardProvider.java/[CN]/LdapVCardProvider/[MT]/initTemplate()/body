@@ -1,0 +1,15 @@
+{
+  String property=JiveGlobals.getXMLProperty("ldap.vcard-mapping");
+  Log.debug("Found vcard mapping: '" + property);
+  try {
+    if (property.startsWith("<![CDATA[")) {
+      property=property.substring(9,property.length() - 3);
+    }
+    Document document=DocumentHelper.parseText(property);
+    template=new VCardTemplate(document);
+  }
+ catch (  Exception e) {
+    Log.error("Error loading vcard mapping: " + e.getMessage());
+  }
+  Log.debug("attributes size==" + template.getAttributes().length);
+}

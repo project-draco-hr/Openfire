@@ -121,6 +121,6 @@
   sb.append("<![CDATA[").append(vcardXML).append("]]>");
   JiveGlobals.setXMLProperty("ldap.vcard-mapping",sb.toString());
   JiveGlobals.setXMLProperty("provider.vcard.className",LdapVCardProvider.class.getName());
-  LdapManager.getInstance().setNameField(name.replaceAll("(\\{)([\\d\\D]+)(})","$2"));
-  LdapManager.getInstance().setEmailField(email.replaceAll("(\\{)([\\d\\D]+)(})","$2"));
+  LdapManager.getInstance().setNameField(name.replaceAll("(\\{)([\\d\\D&&[^}]]+)(})","$2"));
+  LdapManager.getInstance().setEmailField(email.replaceAll("(\\{)([\\d\\D&&[^}]]+)(})","$2"));
 }
