@@ -1,6 +1,8 @@
 {
   try {
     initialize();
+    File pluginDir=new File(wildfireHome,"plugins");
+    pluginManager=new PluginManager(pluginDir);
     if (!setupMode) {
       verifyDataSource();
       loadModules();
@@ -9,8 +11,6 @@
       InternalComponentManager.getInstance().start();
     }
     ServerTrafficCounter.initStatistics();
-    File pluginDir=new File(wildfireHome,"plugins");
-    pluginManager=new PluginManager(pluginDir);
     pluginManager.start();
     List<String> params=new ArrayList<String>();
     params.add(version.getVersionString());
