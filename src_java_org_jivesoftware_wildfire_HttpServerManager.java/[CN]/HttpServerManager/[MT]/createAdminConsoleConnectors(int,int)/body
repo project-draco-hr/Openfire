@@ -1,0 +1,27 @@
+{
+  List<Connector> connectorList=new ArrayList<Connector>();
+  if (port > 0) {
+    SelectChannelConnector connector=new SelectChannelConnector();
+    connector.setPort(port);
+    connectorList.add(connector);
+  }
+  try {
+    if (securePort > 0) {
+      SslSocketConnector sslConnector=new JiveSslConnector();
+      sslConnector.setPort(securePort);
+      sslConnector.setTrustPassword(SSLConfig.getTrustPassword());
+      sslConnector.setTruststoreType(SSLConfig.getStoreType());
+      sslConnector.setTruststore(SSLConfig.getTruststoreLocation());
+      sslConnector.setNeedClientAuth(false);
+      sslConnector.setWantClientAuth(false);
+      sslConnector.setKeyPassword(SSLConfig.getKeyPassword());
+      sslConnector.setKeystoreType(SSLConfig.getStoreType());
+      sslConnector.setKeystore(SSLConfig.getKeystoreLocation());
+      connectorList.add(sslConnector);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  return connectorList;
+}

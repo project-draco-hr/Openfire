@@ -1,0 +1,27 @@
+{
+  if (isContinuation(request,response)) {
+    return;
+  }
+  Document document;
+  try {
+    document=createDocument(request);
+  }
+ catch (  Exception e) {
+    Log.warn("Error parsing user request. [" + request.getRemoteAddr() + "]");
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Unable to parse request content: " + e.getMessage());
+    return;
+  }
+  Element node=document.getRootElement();
+  if (node == null || !"body".equals(node.getName())) {
+    Log.warn("Body missing from request content. [" + request.getRemoteAddr() + "]");
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Body missing from request content.");
+    return;
+  }
+  String sid=node.attributeValue("sid");
+  if (sid == null) {
+    createNewSession(request,response,node);
+  }
+ else {
+    handleSessionRequest(sid,request,response,node);
+  }
+}

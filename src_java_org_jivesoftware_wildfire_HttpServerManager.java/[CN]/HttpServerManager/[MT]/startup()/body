@@ -1,0 +1,25 @@
+{
+  if (httpBindContext != null && isHttpBindServiceEnabled()) {
+    createHttpBindServer();
+  }
+  if (adminConsoleContext != null) {
+    createAdminConsoleServer();
+  }
+  addContexts();
+  if (httpBindServer != null) {
+    try {
+      httpBindServer.start();
+    }
+ catch (    Exception e) {
+      Log.error("Could not start http bind server",e);
+    }
+  }
+  if (adminServer != null && adminServer != httpBindServer) {
+    try {
+      adminServer.start();
+    }
+ catch (    Exception e) {
+      Log.error("Could not start admin conosle server",e);
+    }
+  }
+}

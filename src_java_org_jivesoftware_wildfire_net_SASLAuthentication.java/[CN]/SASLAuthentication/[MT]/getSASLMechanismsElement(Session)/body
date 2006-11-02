@@ -1,0 +1,29 @@
+{
+  if (!(session instanceof ClientSession) && !(session instanceof IncomingServerSession)) {
+    return null;
+  }
+  Element mechs=DocumentHelper.createElement(new QName("mechanisms",new Namespace("","urn:ietf:params:xml:ns:xmpp-sasl")));
+  if (session instanceof IncomingServerSession) {
+    if (session.getConnection().isSecure()) {
+      Element mechanism=mechs.addElement("mechanism");
+      mechanism.setText("EXTERNAL");
+    }
+  }
+ else {
+    for (    String mech : mechanisms) {
+      if (mech.equals("CRAM-MD5") || mech.equals("DIGEST-MD5")) {
+        if (!AuthFactory.getAuthProvider().supportsPasswordRetrieval()) {
+          continue;
+        }
+      }
+ else       if (mech.equals("ANONYMOUS")) {
+        if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
+          continue;
+        }
+      }
+      Element mechanism=mechs.addElement("mechanism");
+      mechanism.setText(mech);
+    }
+  }
+  return mechs;
+}

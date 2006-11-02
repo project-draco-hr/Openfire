@@ -1,0 +1,10 @@
+{
+  byte[] content;
+  try {
+    content=connection.getDeliverable().getBytes("utf-8");
+  }
+ catch (  HttpBindTimeoutException e) {
+    content=createEmptyBody().getBytes("utf-8");
+  }
+  respond(response,content);
+}

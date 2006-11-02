@@ -1,8 +1,7 @@
 {
   this.pluginDir=pluginDir;
   try {
-    System.setProperty("org.apache.commons.logging.LogFactory","org.mortbay.log.Factory");
-    File logDir=null;
+    File logDir;
     String logDirectory=JiveGlobals.getXMLProperty("log.directory");
     if (logDirectory != null) {
       if (!logDirectory.endsWith(File.separator)) {
@@ -16,32 +15,7 @@
     if (!logDir.exists()) {
       logDir.mkdirs();
     }
-    File logFile=new File(logDir,"admin-console.log");
-    OutputStreamLogSink logSink=new OutputStreamLogSink(logFile.toString());
-    logSink.start();
-    Object logImpl=Factory.getFactory().getInstance("");
-    if (logImpl instanceof LogImpl) {
-      LogImpl log=(LogImpl)logImpl;
-      if (Log.isDebugEnabled() && JiveGlobals.getBooleanProperty("jetty.debug.enabled",true)) {
-        log.setVerbose(1);
-      }
- else {
-        log.setVerbose(-1);
-      }
-      log.add(logSink);
-    }
-    jetty=new Server();
-    loadListeners();
-    if (Boolean.getBoolean("developmentMode")) {
-      System.out.println(LocaleUtils.getLocalizedString("admin.console.devmode"));
-      context=jetty.addWebApplication("/",pluginDir.getParentFile().getParentFile().getParentFile().getParent() + File.separator + "src"+ File.separator+ "web");
-    }
- else {
-      context=jetty.addWebApplication("/",pluginDir.getAbsoluteFile() + File.separator + "webapp");
-    }
-    context.setWelcomeFiles(new String[]{"index.jsp"});
-    jetty.start();
-    printListenerMessages();
+    serverManager.setAdminConsoleContext(createWebAppContext());
   }
  catch (  Exception e) {
     System.err.println("Error starting admin console: " + e.getMessage());

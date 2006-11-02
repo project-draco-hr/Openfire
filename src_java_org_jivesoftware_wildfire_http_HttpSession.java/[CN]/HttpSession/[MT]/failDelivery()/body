@@ -1,0 +1,9 @@
+{
+  for (  Deliverable deliverable : pendingElements) {
+    Packet packet=deliverable.packet;
+    if (packet != null && packet instanceof Message) {
+      XMPPServer.getInstance().getOfflineMessageStrategy().storeOffline((Message)packet);
+    }
+  }
+  pendingElements.clear();
+}

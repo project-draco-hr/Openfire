@@ -1,0 +1,9 @@
+{
+  if (body == null && continuation != null) {
+    body=waitForDeliverable();
+  }
+ else   if (body == null && continuation == null) {
+    throw new IllegalStateException("Continuation not set, cannot wait for deliverable.");
+  }
+  return body;
+}

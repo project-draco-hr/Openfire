@@ -1,0 +1,20 @@
+{
+  if (shouldEnable && httpBindServer == null) {
+    changeHttpBindPorts(JiveGlobals.getIntProperty(HTTP_BIND_PORT,ADMIN_CONSOLE_PORT_DEFAULT),JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT));
+  }
+ else   if (!shouldEnable && httpBindServer != null) {
+    if (httpBindServer != adminServer) {
+      try {
+        httpBindServer.stop();
+      }
+ catch (      Exception e) {
+        Log.error("Error stopping http bind service",e);
+      }
+      httpBindServer=null;
+    }
+ else {
+      removeHttpBindServlet(adminConsoleContext);
+      httpBindServer=null;
+    }
+  }
+}

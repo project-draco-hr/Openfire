@@ -1,0 +1,12 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  HttpSession session=new HttpSession(serverName,address,id);
+  Connection conn=session.getConnection();
+  conn.init(session);
+  conn.registerCloseListener(clientSessionListener,session);
+  preAuthenticatedSessions.put(session.getAddress().getResource(),session);
+  usersSessionsCounter.incrementAndGet();
+  return session;
+}

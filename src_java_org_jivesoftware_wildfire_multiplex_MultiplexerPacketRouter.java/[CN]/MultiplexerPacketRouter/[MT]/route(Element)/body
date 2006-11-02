@@ -1,0 +1,18 @@
+{
+  String tag=wrappedElement.getName();
+  if ("auth".equals(tag) || "response".equals(tag)) {
+    SASLAuthentication.handle(session,wrappedElement);
+  }
+ else   if ("iq".equals(tag)) {
+    route(getIQ(wrappedElement));
+  }
+ else   if ("message".equals(tag)) {
+    route(new Message(wrappedElement));
+  }
+ else   if ("presence".equals(tag)) {
+    route(new Presence(wrappedElement));
+  }
+ else {
+    throw new UnknownStanzaException();
+  }
+}

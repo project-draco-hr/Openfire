@@ -1,0 +1,17 @@
+{
+  Element response=DocumentHelper.createElement("body");
+  response.addNamespace("","http://jabber.org/protocol/httpbind");
+  response.addNamespace("stream","http://etherx.jabber.org/streams");
+  response.addAttribute("authid",session.getStreamID().getID());
+  response.addAttribute("sid",session.getStreamID().getID());
+  response.addAttribute("secure",Boolean.TRUE.toString());
+  response.addAttribute("requests",String.valueOf(maxRequests));
+  response.addAttribute("inactivity",String.valueOf(session.getInactivityTimeout()));
+  response.addAttribute("polling",String.valueOf(pollingInterval));
+  response.addAttribute("wait",String.valueOf(session.getWait()));
+  Element features=response.addElement("stream:features");
+  for (  Element feature : session.getAvailableStreamFeaturesElements()) {
+    features.add(feature);
+  }
+  return response.asXML();
+}

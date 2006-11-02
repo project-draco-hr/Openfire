@@ -10,7 +10,8 @@
           if (isStandAlone()) {
             if (!JiveGlobals.getXMLProperty("adminConsole.port").equals("9090") || !JiveGlobals.getXMLProperty("adminConsole.securePort").equals("9091")) {
               Thread.sleep(1000);
-              ((AdminConsolePlugin)pluginManager.getPlugin("admin")).restartListeners();
+              httpServerManager.shutdown();
+              httpServerManager.startup();
             }
           }
           verifyDataSource();

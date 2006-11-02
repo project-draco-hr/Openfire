@@ -1,0 +1,33 @@
+{
+  int port=JiveGlobals.getXMLProperty(ADMIN_CONSOLE_PORT,ADMIN_CONSOLE_PORT_DEFAULT);
+  int securePort=JiveGlobals.getXMLProperty(ADMIN_CONOSLE_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT);
+  boolean loadConnectors=true;
+  if (httpBindServer != null) {
+    if (port == this.port && securePort == this.securePort) {
+      adminServer=httpBindServer;
+      loadConnectors=false;
+    }
+ else     if (checkPorts(new int[]{this.port,this.securePort},new int[]{port,securePort})) {
+      Log.warn("Http bind ports must be either the same or distinct from admin console" + " ports.");
+      httpBindServer=null;
+      httpBindServer=new Server();
+      adminServer=httpBindServer;
+    }
+ else {
+      adminServer=new Server();
+    }
+  }
+ else {
+    adminServer=new Server();
+  }
+  if (loadConnectors) {
+    Collection<Connector> connectors=createAdminConsoleConnectors(port,securePort);
+    if (connectors.size() == 0) {
+      adminServer=null;
+      return;
+    }
+    for (    Connector connector : connectors) {
+      adminServer.addConnector(connector);
+    }
+  }
+}

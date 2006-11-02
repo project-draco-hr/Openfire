@@ -1,0 +1,19 @@
+{
+  long rid=getLongAttribue(rootNode.attributeValue("rid"),-1);
+  if (rid <= 0) {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Body missing RID (Request ID)");
+    return;
+  }
+  try {
+    HttpConnection connection=new HttpConnection(rid,request.isSecure());
+    InetAddress address=InetAddress.getByName(request.getRemoteAddr());
+    connection.setSession(sessionManager.createSession(address,rootNode,connection));
+    respond(response,connection);
+  }
+ catch (  UnauthorizedException e) {
+    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Server Not initialized");
+  }
+catch (  HttpBindException e) {
+    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
+}

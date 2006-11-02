@@ -1,0 +1,26 @@
+{
+  String language=rootNode.attributeValue("xml:lang");
+  if (language == null || "".equals(language)) {
+    language="en";
+  }
+  int wait=getIntAttribute(rootNode.attributeValue("wait"),60);
+  int hold=getIntAttribute(rootNode.attributeValue("hold"),1);
+  HttpSession session=createSession(address);
+  session.setWait(wait);
+  session.setHold(hold);
+  session.setSecure(connection.isSecure());
+  session.setMaxPollingInterval(pollingInterval);
+  session.setInactivityTimeout(inactivityTimeout);
+  session.setLanaguage(language);
+  try {
+    connection.deliverBody(createSessionCreationResponse(session));
+  }
+ catch (  HttpConnectionClosedException e) {
+  }
+catch (  DocumentException e) {
+    Log.error("Error creating document",e);
+    throw new HttpBindException("Internal server error",true,500);
+  }
+  timer.reset(session);
+  return session;
+}

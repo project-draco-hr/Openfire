@@ -1,0 +1,21 @@
+{
+  ServletHandler handler=adminConsoleContext.getServletHandler();
+  ServletMapping[] servletMappings=handler.getServletMappings();
+  List<ServletMapping> toAdd=new ArrayList<ServletMapping>();
+  for (  ServletMapping mapping : servletMappings) {
+    if (mapping.getServletName().equals(httpBindContext.getName())) {
+      continue;
+    }
+    toAdd.add(mapping);
+  }
+  ServletHolder[] servletHolder=handler.getServlets();
+  List<ServletHolder> toAddServlets=new ArrayList<ServletHolder>();
+  for (  ServletHolder holder : servletHolder) {
+    if (holder.equals(httpBindContext)) {
+      continue;
+    }
+    toAddServlets.add(holder);
+  }
+  handler.setServletMappings(toAdd.toArray(new ServletMapping[toAdd.size()]));
+  handler.setServlets(toAddServlets.toArray(new ServletHolder[toAddServlets.size()]));
+}

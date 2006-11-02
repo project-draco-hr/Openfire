@@ -1,0 +1,11 @@
+{
+  httpBindServer=new Server();
+  Collection<Connector> connectors=createAdminConsoleConnectors(port,securePort);
+  if (connectors.size() == 0) {
+    httpBindServer=null;
+    return;
+  }
+  for (  Connector connector : connectors) {
+    httpBindServer.addConnector(connector);
+  }
+}

@@ -1,0 +1,28 @@
+{
+  if (connection == null) {
+    throw new IllegalArgumentException("Connection cannot be null.");
+  }
+  if (isPoll) {
+    checkPollingInterval();
+  }
+  if (isSecure && !connection.isSecure()) {
+    throw new HttpBindException("Session was started from secure connection, all " + "connections on this session must be secured.",false,403);
+  }
+  connection.setSession(this);
+  if (pendingElements.size() > 0) {
+    String deliverable=createDeliverable(pendingElements);
+    pendingElements.clear();
+    fireConnectionOpened(connection);
+    connection.deliverBody(deliverable);
+    fireConnectionClosed(connection);
+  }
+ else {
+    while (hold > 0 && connectionQueue.size() >= hold) {
+      HttpConnection toClose=connectionQueue.remove();
+      toClose.close();
+      fireConnectionClosed(toClose);
+    }
+    connectionQueue.offer(connection);
+    fireConnectionOpened(connection);
+  }
+}

@@ -1,0 +1,22 @@
+{
+  if (httpBindServer == adminServer && httpBindServer != null) {
+    adminConsoleContext.addServlet(httpBindContext,httpBindPath);
+    if (adminConsoleContext.getServer() == null) {
+      adminServer.addHandler(adminConsoleContext);
+    }
+    return;
+  }
+  if (adminServer != null) {
+    if (adminServer.getHandler() != null) {
+      removeHttpBindServlet(adminConsoleContext);
+    }
+ else {
+      adminServer.addHandler(adminConsoleContext);
+    }
+  }
+  if (httpBindServer != null) {
+    ServletHandler servletHandler=new ServletHandler();
+    servletHandler.addServletWithMapping(httpBindContext,httpBindPath);
+    httpBindServer.addHandler(servletHandler);
+  }
+}

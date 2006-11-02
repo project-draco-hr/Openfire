@@ -1,0 +1,15 @@
+{
+  if (isClosed) {
+    throw new HttpConnectionClosedException("The http connection is no longer " + "available to deliver content");
+  }
+ else {
+    isClosed=true;
+  }
+  if (continuation != null) {
+    continuation.setObject(body);
+    continuation.resume();
+  }
+ else {
+    this.body=body;
+  }
+}

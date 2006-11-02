@@ -1,0 +1,27 @@
+{
+  if (property.equalsIgnoreCase(HTTP_BIND_ENABLED)) {
+    doEnableHttpBind(Boolean.valueOf(params.get("value").toString()));
+  }
+ else   if (property.equalsIgnoreCase(HTTP_BIND_PORT)) {
+    int value;
+    try {
+      value=Integer.valueOf(params.get("value").toString());
+    }
+ catch (    NumberFormatException ne) {
+      JiveGlobals.deleteProperty(HTTP_BIND_PORT);
+      return;
+    }
+    setUnsecureHttpBindPort(value);
+  }
+ else   if (property.equalsIgnoreCase(HTTP_BIND_SECURE_PORT)) {
+    int value;
+    try {
+      value=Integer.valueOf(params.get("value").toString());
+    }
+ catch (    NumberFormatException ne) {
+      JiveGlobals.deleteProperty(HTTP_BIND_SECURE_PORT);
+      return;
+    }
+    setSecureHttpBindPort(value);
+  }
+}

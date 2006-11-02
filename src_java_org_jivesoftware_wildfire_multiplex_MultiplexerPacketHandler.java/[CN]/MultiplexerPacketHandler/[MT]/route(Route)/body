@@ -9,28 +9,16 @@
     sendErrorPacket(route,PacketError.Condition.item_not_found,null);
     return;
   }
-  Element wrappedElement=route.getChildElement();
-  String tag=wrappedElement.getName();
+  MultiplexerPacketRouter router=new MultiplexerPacketRouter(session);
   try {
-    if ("auth".equals(tag) || "response".equals(tag)) {
-      SASLAuthentication.handle(session,wrappedElement);
-    }
- else     if ("iq".equals(tag)) {
-      processIQ(session,getIQ(wrappedElement));
-    }
- else     if ("message".equals(tag)) {
-      processMessage(session,new Message(wrappedElement));
-    }
- else     if ("presence".equals(tag)) {
-      processPresence(session,new Presence(wrappedElement));
-    }
- else {
-      Element extraError=DocumentHelper.createElement(QName.get("unknown-stanza","http://jabber.org/protocol/connectionmanager#errors"));
-      sendErrorPacket(route,PacketError.Condition.bad_request,extraError);
-    }
+    router.route(route.getChildElement());
   }
- catch (  UnsupportedEncodingException e) {
-    Log.error("Error processing wrapped packet: " + wrappedElement.asXML(),e);
+ catch (  UnknownStanzaException use) {
+    Element extraError=DocumentHelper.createElement(QName.get("unknown-stanza","http://jabber.org/protocol/connectionmanager#errors"));
+    sendErrorPacket(route,PacketError.Condition.bad_request,extraError);
+  }
+catch (  UnsupportedEncodingException e) {
+    Log.error("Error processing wrapped packet: " + route.getChildElement().asXML(),e);
     sendErrorPacket(route,PacketError.Condition.internal_server_error,null);
   }
 }
