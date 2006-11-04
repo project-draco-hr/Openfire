@@ -9,7 +9,7 @@
   int adminSecurePort=JiveGlobals.getXMLProperty(ADMIN_CONOSLE_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT);
   if (checkPorts(new int[]{unsecurePort,securePort},new int[]{adminPort,adminSecurePort})) {
     if (unsecurePort != adminPort || securePort != adminSecurePort) {
-      Log.warn("Http bind ports must be either the same or distinct from admin console" + " ports, http binding will run on the admin console ports.");
+      Log.warn("HTTP bind ports must be either the same or distinct from admin console" + " ports, http binding will run on the admin console ports.");
     }
     if (httpBindServer == adminServer) {
       return;
@@ -19,7 +19,7 @@
         httpBindServer.stop();
       }
  catch (      Exception e) {
-        Log.error("Error stopping http bind service",e);
+        Log.error("Error stopping HTTP bind service",e);
       }
       httpBindServer=null;
     }
@@ -32,7 +32,7 @@
       httpBindServer.stop();
     }
  catch (    Exception e) {
-      Log.error("Error stopping http bind service",e);
+      Log.error("Error stopping HTTP bind service",e);
     }
   }
   createHttpBindServer(unsecurePort,securePort);
@@ -41,6 +41,6 @@
     httpBindServer.start();
   }
  catch (  Exception e) {
-    Log.error("Error starting http bind service",e);
+    Log.error("Error starting HTTP bind service",e);
   }
 }
