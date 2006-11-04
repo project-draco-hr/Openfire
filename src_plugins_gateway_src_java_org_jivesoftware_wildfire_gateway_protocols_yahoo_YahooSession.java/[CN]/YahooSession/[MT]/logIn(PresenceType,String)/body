@@ -11,10 +11,12 @@
           yahooSession.setStatus(StatusConstants.STATUS_AVAILABLE);
           yahooSession.login(registration.getUsername(),registration.getPassword());
           setLoginStatus(TransportLoginStatus.LOGGED_IN);
-          Presence p=new Presence();
-          p.setTo(getJID());
-          p.setFrom(getTransport().getJID());
-          getTransport().sendPacket(p);
+          if (getTransport().getLegacyMode()) {
+            Presence p=new Presence();
+            p.setTo(getJID());
+            p.setFrom(getTransport().getJID());
+            getTransport().sendPacket(p);
+          }
           yahooSession.setStatus(((YahooTransport)getTransport()).convertJabStatusToYahoo(pType));
           getRegistration().setLastLogin(new Date());
           syncUsers();
