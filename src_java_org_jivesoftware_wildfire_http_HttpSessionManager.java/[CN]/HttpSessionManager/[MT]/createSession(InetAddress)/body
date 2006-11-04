@@ -4,17 +4,12 @@
   sessionMap.put(streamID.getID(),session);
   session.addSessionCloseListener(new SessionListener(){
     public void connectionOpened(    HttpSession session,    HttpConnection connection){
-      timer.stop(session);
     }
     public void connectionClosed(    HttpSession session,    HttpConnection connection){
-      if (session.getConnectionCount() <= 0) {
-        timer.reset(session);
-      }
     }
     public void sessionClosed(    HttpSession session){
       sessionMap.remove(session.getStreamID().getID());
       sessionManager.removeSession(session);
-      timer.stop(session);
     }
   }
 );
