@@ -4,8 +4,8 @@
   for (  String contact : pseudoRoster.getContacts()) {
     buddyStatuses.put(contact,PresenceType.unavailable);
   }
-  String server="irc.freenode.net";
-  int[] ports=new int[]{7000,6667};
+  String server=JiveGlobals.getProperty("plugin.gateway.irc.connecthost","irc.freenode.net");
+  int[] ports=new int[]{JiveGlobals.getIntProperty("plugin.gateway.irc.connectport",7000)};
   String username=registration.getUsername();
   String password=registration.getPassword();
   password=(password == null || password.equals("")) ? null : password;

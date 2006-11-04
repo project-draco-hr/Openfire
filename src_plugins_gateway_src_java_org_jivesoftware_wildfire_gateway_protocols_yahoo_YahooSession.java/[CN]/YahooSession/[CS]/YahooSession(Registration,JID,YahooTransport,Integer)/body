@@ -1,6 +1,6 @@
 {
   super(registration,jid,transport,priority);
   pseudoRoster=pseudoRosterManager.getPseudoRoster(registration);
-  yahooSession=new Session();
+  yahooSession=new Session(new DirectConnectionHandler(JiveGlobals.getProperty("plugin.gateway.yahoo.connecthost","scs.msg.yahoo.com"),JiveGlobals.getIntProperty("plugin.gateway.yahoo.connectport",5050)));
   yahooSession.addSessionListener(new YahooSessionListener(this));
 }

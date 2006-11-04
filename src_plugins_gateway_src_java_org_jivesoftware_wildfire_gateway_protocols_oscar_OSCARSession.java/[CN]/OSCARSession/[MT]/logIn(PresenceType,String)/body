@@ -1,7 +1,7 @@
 {
   if (!isLoggedIn()) {
     setLoginStatus(TransportLoginStatus.LOGGING_IN);
-    loginConn=new LoginConnection(new ConnDescriptor("login.oscar.aol.com",5190),this);
+    loginConn=new LoginConnection(new ConnDescriptor(JiveGlobals.getProperty(propertyPrefix + ".connecthost","login.oscar.aol.com"),JiveGlobals.getIntProperty(propertyPrefix + ".connectport",5190)),this);
     loginConn.connect();
     this.presenceType=presenceType;
     this.verboseStatus=verboseStatus;

@@ -7,7 +7,7 @@
       msnMessenger.setLogIncoming(false);
       msnMessenger.setLogOutgoing(false);
       msnMessenger.addListener(new MSNListener(this));
-      msnMessenger.login();
+      ((BasicMessenger)msnMessenger).login(JiveGlobals.getProperty("plugin.gateway.msn.connecthost","messenger.hotmail.com"),JiveGlobals.getIntProperty("plugin.gateway.msn.connectport",1863));
     }
  catch (    Exception e) {
       Log.error("MSN user is not able to log in: " + msnMessenger.getOwner().getEmail(),e);
