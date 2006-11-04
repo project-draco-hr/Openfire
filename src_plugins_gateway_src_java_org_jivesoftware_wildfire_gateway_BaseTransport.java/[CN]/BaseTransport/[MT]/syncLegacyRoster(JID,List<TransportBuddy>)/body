@@ -39,8 +39,11 @@
         }
       }
     }
-    if (!hasTransport) {
+    if (!hasTransport && legacyMode) {
       this.addOrUpdateRosterItem(userjid,this.getJID(),this.getDescription(),"Transports");
+    }
+    if (hasTransport && !legacyMode) {
+      this.removeFromRoster(userjid,this.getJID());
     }
     for (    TransportBuddy buddy : legacymap.values()) {
       try {
