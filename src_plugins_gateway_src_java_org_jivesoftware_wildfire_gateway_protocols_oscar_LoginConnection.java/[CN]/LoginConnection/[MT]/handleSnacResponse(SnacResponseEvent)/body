@@ -1,12 +1,20 @@
 {
   SnacCommand cmd=e.getSnacCommand();
   if (cmd instanceof KeyResponse) {
+    Log.debug("Handling AIM-style auth.");
     KeyResponse kr=(KeyResponse)cmd;
     ByteBlock authkey=kr.getKey();
     ClientVersionInfo version=new ClientVersionInfo("AOL Instant Messenger, version 5.5.3415/WIN32",-1,5,5,0,3415,239);
-    request(new AuthRequest(oscarSession.getRegistration().getUsername(),oscarSession.getRegistration().getPassword(),version,authkey));
+    String pass=oscarSession.getRegistration().getPassword();
+    if (oscarSession.getTransport().getType().equals(TransportType.icq)) {
+      if (pass.length() > 8) {
+        pass=pass.substring(0,8);
+      }
+    }
+    request(new AuthRequest(oscarSession.getRegistration().getUsername(),pass,version,Locale.US,authkey));
   }
  else   if (cmd instanceof AuthResponse) {
+    Log.debug("Got auth response!");
     AuthResponse ar=(AuthResponse)cmd;
     int error=ar.getErrorCode();
     if (error != -1) {
@@ -70,6 +78,7 @@ getMainSession().getTransport().sendPacket(p);
 getMainSession().setLoginStatus(TransportLoginStatus.LOGGED_OUT);
 }
  else {
+Log.debug("Got something else?");
 getMainSession().setLoginStatus(TransportLoginStatus.LOGGED_IN);
 oscarSession.startBosConn(ar.getServer(),ar.getPort(),ar.getCookie());
 Log.info("OSCAR connection to " + ar.getServer() + ":"+ ar.getPort());
