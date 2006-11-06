@@ -1,4 +1,10 @@
 {
+  if (session == null) {
+    session=sessionManager.getSession(packet.getFrom());
+    if (session == null) {
+      router.route(packet);
+    }
+  }
   packet.setFrom(session.getAddress());
   try {
     InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
