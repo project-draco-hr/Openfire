@@ -1,8 +1,7 @@
 {
   List<Element> elements=rootNode.elements();
   boolean isPoll=elements.size() <= 0;
-  HttpConnection connection=new HttpConnection(rid,isSecure);
-  session.addConnection(connection,isPoll);
+  HttpConnection connection=session.createConnection(rid,isPoll,isSecure);
   SessionPacketRouter router=new SessionPacketRouter(session);
   for (  Element packet : elements) {
     try {

@@ -13,7 +13,7 @@
     String deliverable=createDeliverable(pendingElements);
     pendingElements.clear();
     fireConnectionOpened(connection);
-    connection.deliverBody(deliverable);
+    deliver(connection,deliverable);
     fireConnectionClosed(connection);
   }
  else {
@@ -25,4 +25,5 @@
     connectionQueue.offer(connection);
     fireConnectionOpened(connection);
   }
+  lastRequestID=connection.getRequestId();
 }

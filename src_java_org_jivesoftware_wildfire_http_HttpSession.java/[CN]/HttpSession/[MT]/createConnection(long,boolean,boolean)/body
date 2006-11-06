@@ -1,0 +1,13 @@
+{
+  HttpConnection connection=new HttpConnection(rid,isSecure);
+  if (rid <= lastRequestID) {
+    Deliverable deliverable=retrieveDeliverable(rid);
+    connection.deliverBody(deliverable.getDeliverable());
+    return connection;
+  }
+ else   if (rid > lastRequestID + hold + 1) {
+    throw new HttpBindException("Unexpected RID Error",true,404);
+  }
+  addConnection(connection,isPoll);
+  return connection;
+}
