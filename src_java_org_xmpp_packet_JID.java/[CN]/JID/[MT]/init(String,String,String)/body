@@ -1,0 +1,52 @@
+{
+  if (node != null && node.equals("")) {
+    node=null;
+  }
+  if (resource != null && resource.equals("")) {
+    resource=null;
+  }
+  try {
+    if (!stringprepCache.containsKey(node)) {
+      this.node=Stringprep.nodeprep(node);
+      if (node != null && node.length() * 2 > 1023) {
+        throw new IllegalArgumentException("Node cannot be larger than 1023 bytes. " + "Size is " + (node.length() * 2) + " bytes.");
+      }
+      stringprepCache.put(this.node,null);
+    }
+ else {
+      this.node=node;
+    }
+    if (!stringprepCache.containsKey(domain)) {
+      this.domain=Stringprep.nameprep(IDNA.toASCII(domain),false);
+      if (domain.length() * 2 > 1023) {
+        throw new IllegalArgumentException("Domain cannot be larger than 1023 bytes. " + "Size is " + (domain.length() * 2) + " bytes.");
+      }
+      stringprepCache.put(this.domain,null);
+    }
+ else {
+      this.domain=domain;
+    }
+    if (!stringprepCache.containsKey(resource)) {
+      this.resource=Stringprep.resourceprep(resource);
+      if (resource != null && resource.length() * 2 > 1023) {
+        throw new IllegalArgumentException("Resource cannot be larger than 1023 bytes. " + "Size is " + (resource.length() * 2) + " bytes.");
+      }
+      stringprepCache.put(this.resource,null);
+    }
+ else {
+      this.resource=resource;
+    }
+    updateCache();
+  }
+ catch (  Exception e) {
+    StringBuilder buf=new StringBuilder();
+    if (node != null) {
+      buf.append(node).append("@");
+    }
+    buf.append(domain);
+    if (resource != null) {
+      buf.append("/").append(resource);
+    }
+    throw new IllegalArgumentException("Illegal JID: " + buf.toString(),e);
+  }
+}

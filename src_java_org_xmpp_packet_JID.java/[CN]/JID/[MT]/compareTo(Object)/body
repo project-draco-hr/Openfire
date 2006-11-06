@@ -1,0 +1,14 @@
+{
+  if (!(o instanceof JID)) {
+    throw new ClassCastException("Ojbect not instanceof JID: " + o);
+  }
+  JID jid=(JID)o;
+  int compare=domain.compareTo(jid.domain);
+  if (compare == 0 && node != null && jid.node != null) {
+    compare=node.compareTo(jid.node);
+  }
+  if (compare == 0 && resource != null && jid.resource != null) {
+    compare=resource.compareTo(jid.resource);
+  }
+  return compare;
+}
