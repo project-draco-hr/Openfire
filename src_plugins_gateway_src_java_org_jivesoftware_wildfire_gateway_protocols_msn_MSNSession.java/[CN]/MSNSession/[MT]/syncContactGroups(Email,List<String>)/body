@@ -1,7 +1,4 @@
 {
-  if (groups.isEmpty()) {
-    groups.add("Transport Buddies");
-  }
   MsnContact msnContact=msnContacts.get(contact.toString());
   for (  String group : groups) {
     if (!msnGroups.containsKey(group)) {
@@ -13,13 +10,15 @@
   }
   for (  String group : groups) {
     MsnGroup msnGroup=msnGroups.get(group);
-    if (!msnContact.belongGroup(msnGroup)) {
+    if (msnContact == null || !msnContact.belongGroup(msnGroup)) {
       msnMessenger.copyFriend(contact,group);
     }
   }
-  for (  MsnGroup msnGroup : msnContact.getBelongGroups()) {
-    if (!groups.contains(msnGroup.getGroupName())) {
-      msnMessenger.removeFriend(contact,msnGroup.getGroupId());
+  if (msnContact != null) {
+    for (    MsnGroup msnGroup : msnContact.getBelongGroups()) {
+      if (!groups.contains(msnGroup.getGroupName())) {
+        msnMessenger.removeFriend(contact,msnGroup.getGroupId());
+      }
     }
   }
 }

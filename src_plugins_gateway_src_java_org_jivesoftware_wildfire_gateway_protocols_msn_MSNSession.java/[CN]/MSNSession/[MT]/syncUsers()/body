@@ -6,10 +6,12 @@
       Log.debug("MSN: Found belong group for " + friend + " as "+ group);
       friendGroups.add(group.getGroupName());
     }
-    if (friendGroups.size() < 1) {
-      friendGroups.add("MSN Contacts");
+    if (friendGroups.size() > 0) {
+      legacyusers.add(new TransportBuddy(friend.getEmail().toString(),friend.getFriendlyName(),friendGroups.get(0)));
     }
-    legacyusers.add(new TransportBuddy(friend.getEmail().toString(),friend.getFriendlyName(),friendGroups.get(0)));
+ else {
+      legacyusers.add(new TransportBuddy(friend.getEmail().toString(),friend.getFriendlyName(),null));
+    }
   }
   try {
     getTransport().syncLegacyRoster(getJID(),legacyusers);

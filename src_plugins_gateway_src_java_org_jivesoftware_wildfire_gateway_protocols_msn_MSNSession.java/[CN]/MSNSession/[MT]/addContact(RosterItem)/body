@@ -5,5 +5,13 @@
     nickname=item.getNickname();
   }
   msnMessenger.addFriend(contact,nickname);
+  try {
+    lockRoster();
+    getTransport().addOrUpdateRosterItem(getJID(),item.getJid(),nickname,item.getGroups());
+    unlockRoster();
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("MSN: Unable to find roster when adding contact.");
+  }
   syncContactGroups(contact,item.getGroups());
 }
