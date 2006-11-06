@@ -2,13 +2,15 @@
   if (!item.getJid().getDomain().equals(this.getJID().getDomain())) {
     return;
   }
-  Log.debug(getType().toString() + ": contactAdded " + roster.getUsername()+ ":"+ item.getJid());
   if (item.getJid().getNode() == null) {
     return;
   }
   try {
     TransportSession session=sessionManager.getSession(roster.getUsername());
-    session.addContact(item);
+    if (!session.isRosterLocked()) {
+      Log.debug(getType().toString() + ": contactAdded " + roster.getUsername()+ ":"+ item.getJid());
+      session.addContact(item);
+    }
   }
  catch (  NotFoundException e) {
   }

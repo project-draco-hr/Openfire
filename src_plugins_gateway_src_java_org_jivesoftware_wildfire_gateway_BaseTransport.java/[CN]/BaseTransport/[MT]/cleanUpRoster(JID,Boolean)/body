@@ -1,6 +1,12 @@
 {
   try {
     Roster roster=rosterManager.getRoster(jid.getNode());
+    try {
+      TransportSession session=sessionManager.getSession(jid.getNode());
+      session.lockRoster();
+    }
+ catch (    NotFoundException e) {
+    }
     for (    RosterItem ri : roster.getRosterItems()) {
       if (ri.getJid().getDomain().equals(this.jid.getDomain())) {
         if (ri.isShared()) {
@@ -20,6 +26,12 @@
           Log.error("Error removing roster item: " + ri.toString(),e);
         }
       }
+    }
+    try {
+      TransportSession session=sessionManager.getSession(jid.getNode());
+      session.unlockRoster();
+    }
+ catch (    NotFoundException e) {
     }
   }
  catch (  UserNotFoundException e) {

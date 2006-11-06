@@ -1,2 +1,15 @@
 {
+  Email contact=Email.parseStr(getTransport().convertJIDToID(item.getJid()));
+  String nickname=getTransport().convertJIDToID(item.getJid());
+  if (item.getNickname() != null && !item.getNickname().equals("")) {
+    nickname=item.getNickname();
+  }
+  MsnContact msnContact=msnContacts.get(contact.toString());
+  if (msnContact == null) {
+    return;
+  }
+  if (!msnContact.getFriendlyName().equals(nickname)) {
+    msnMessenger.renameFriend(contact,nickname);
+  }
+  syncContactGroups(contact,item.getGroups());
 }

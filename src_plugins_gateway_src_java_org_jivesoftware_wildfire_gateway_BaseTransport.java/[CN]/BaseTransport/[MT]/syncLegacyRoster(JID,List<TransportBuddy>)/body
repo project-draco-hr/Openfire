@@ -2,6 +2,12 @@
   try {
     Roster roster=rosterManager.getRoster(userjid.getNode());
     boolean hasTransport=false;
+    try {
+      TransportSession session=sessionManager.getSession(userjid.getNode());
+      session.lockRoster();
+    }
+ catch (    NotFoundException e) {
+    }
     Map<JID,TransportBuddy> legacymap=new HashMap<JID,TransportBuddy>();
     for (    TransportBuddy buddy : legacyitems) {
       legacymap.put(convertIDToJID(buddy.getName()),buddy);
@@ -52,6 +58,12 @@
  catch (      UserNotFoundException e) {
         Log.error("Failed adding new roster item",e);
       }
+    }
+    try {
+      TransportSession session=sessionManager.getSession(userjid.getNode());
+      session.unlockRoster();
+    }
+ catch (    NotFoundException e) {
     }
   }
  catch (  UserNotFoundException e) {
