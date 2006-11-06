@@ -4,11 +4,14 @@
     Class extensionClass=PacketExtension.getExtensionClass(name,namespace);
     if (extensionClass != null) {
       try {
-        Constructor constructor=extensionClass.getDeclaredConstructor(new Class[]{Element.class});
-        return (PacketExtension)constructor.newInstance(new Object[]{extensions.get(0)});
+        Constructor constructor=extensionClass.getDeclaredConstructor(Element.class);
+        return (PacketExtension)constructor.newInstance(extensions.get(0));
       }
  catch (      Exception e) {
       }
+    }
+ else {
+      return new PacketExtension((Element)extensions.get(0));
     }
   }
   return null;
