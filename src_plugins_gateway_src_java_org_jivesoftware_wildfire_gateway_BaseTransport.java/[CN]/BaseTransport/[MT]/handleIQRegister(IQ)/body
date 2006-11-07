@@ -5,10 +5,12 @@
   Element remove=packet.getChildElement().element("remove");
   if (remove != null) {
     IQ result=IQ.createResultIQ(packet);
-    Presence unavailable=new Presence(Presence.Type.unavailable);
-    unavailable.setTo(from);
-    unavailable.setFrom(to);
-    reply.add(unavailable);
+    if (legacyMode) {
+      Presence unavailable=new Presence(Presence.Type.unavailable);
+      unavailable.setTo(from);
+      unavailable.setFrom(to);
+      reply.add(unavailable);
+    }
     try {
       this.deleteRegistration(from);
     }
