@@ -9,7 +9,17 @@
       return null;
     }
     String fileName=fileTransferElement.attributeValue("name");
-    long size=Long.parseLong(fileTransferElement.attributeValue("size"));
+    String sizeString=fileTransferElement.attributeValue("size");
+    if (fileName == null || sizeString == null) {
+      return null;
+    }
+    long size;
+    try {
+      size=Long.parseLong(sizeString);
+    }
+ catch (    Exception ex) {
+      return null;
+    }
     transfer=new FileTransfer(from.toString(),to.toString(),streamID,fileName,size,mimeType);
   }
   return transfer;
