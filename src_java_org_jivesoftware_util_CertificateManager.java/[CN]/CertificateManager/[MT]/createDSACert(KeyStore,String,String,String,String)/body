@@ -1,0 +1,6 @@
+{
+  KeyPair keyPair=generateKeyPair("DSA",1024);
+  X509Certificate cert=createX509V3Certificate(keyPair,60,issuerDN,subjectDN,domain,"SHA1withDSA");
+  ksKeys.setKeyEntry(alias,keyPair.getPrivate(),SSLConfig.getKeyPassword().toCharArray(),new X509Certificate[]{cert});
+  return cert;
+}

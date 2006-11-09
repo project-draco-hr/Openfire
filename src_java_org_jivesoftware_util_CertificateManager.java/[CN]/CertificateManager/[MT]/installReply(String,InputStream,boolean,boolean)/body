@@ -1,0 +1,30 @@
+{
+  KeyStore keyStore=SSLConfig.getKeyStore();
+  X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
+  if (certificate == null) {
+    Log.warn("Certificate not found for alias: " + alias);
+    return false;
+  }
+  PrivateKey privKey=(PrivateKey)keyStore.getKey(alias,SSLConfig.getKeyPassword().toCharArray());
+  List<X509Certificate> certs=new ArrayList<X509Certificate>();
+  for (  Certificate cert : CertificateFactory.getInstance("X509").generateCertificates(inputStream)) {
+    certs.add((X509Certificate)cert);
+  }
+  if (certs.isEmpty()) {
+    throw new Exception("Reply has no certificates");
+  }
+  Collection<X509Certificate> newCerts;
+  if (certs.size() == 1) {
+    newCerts=establishCertChain(certificate,certs.get(0),trustCACerts);
+  }
+ else {
+    newCerts=validateReply(alias,certificate,certs,trustCACerts,validateRoot);
+  }
+  if (newCerts != null) {
+    keyStore.setKeyEntry(alias,privKey,SSLConfig.getKeyPassword().toCharArray(),newCerts.toArray(new X509Certificate[newCerts.size()]));
+    return true;
+  }
+ else {
+    return false;
+  }
+}

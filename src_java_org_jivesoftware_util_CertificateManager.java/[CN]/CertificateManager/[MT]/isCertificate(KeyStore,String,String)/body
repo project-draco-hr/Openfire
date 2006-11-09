@@ -1,0 +1,11 @@
+{
+  for (Enumeration<String> aliases=ksKeys.aliases(); aliases.hasMoreElements(); ) {
+    X509Certificate certificate=(X509Certificate)ksKeys.getCertificate(aliases.nextElement());
+    for (    String identity : TLSStreamHandler.getPeerIdentities(certificate)) {
+      if (identity.endsWith(domain) && certificate.getPublicKey().getAlgorithm().contains(algorithm)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

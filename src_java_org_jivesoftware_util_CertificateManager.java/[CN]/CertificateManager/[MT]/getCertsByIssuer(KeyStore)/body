@@ -1,0 +1,23 @@
+{
+  Map<Principal,List<X509Certificate>> answer=new HashMap<Principal,List<X509Certificate>>();
+  Enumeration<String> aliases=ks.aliases();
+  while (aliases.hasMoreElements()) {
+    String alias=aliases.nextElement();
+    X509Certificate cert=(X509Certificate)ks.getCertificate(alias);
+    if (cert != null) {
+      Principal subjectDN=cert.getSubjectDN();
+      List<X509Certificate> vec=answer.get(subjectDN);
+      if (vec == null) {
+        vec=new ArrayList<X509Certificate>();
+        vec.add(cert);
+      }
+ else {
+        if (!vec.contains(cert)) {
+          vec.add(cert);
+        }
+      }
+      answer.put(subjectDN,vec);
+    }
+  }
+  return answer;
+}
