@@ -11,10 +11,15 @@
   connection.setSession(this);
   if (pendingElements.size() > 0) {
     String deliverable=createDeliverable(pendingElements);
-    pendingElements.clear();
-    fireConnectionOpened(connection);
-    deliver(connection,deliverable);
-    fireConnectionClosed(connection);
+    try {
+      fireConnectionOpened(connection);
+      deliver(connection,deliverable);
+      fireConnectionClosed(connection);
+      pendingElements.clear();
+    }
+ catch (    HttpConnectionClosedException he) {
+      throw he;
+    }
   }
  else {
     while (hold > 0 && connectionQueue.size() >= hold) {

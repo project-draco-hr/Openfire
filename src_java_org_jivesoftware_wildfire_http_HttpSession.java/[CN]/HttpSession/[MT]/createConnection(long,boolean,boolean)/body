@@ -2,6 +2,9 @@
   HttpConnection connection=new HttpConnection(rid,isSecure);
   if (rid <= lastRequestID) {
     Deliverable deliverable=retrieveDeliverable(rid);
+    if (deliverable == null) {
+      throw new HttpBindException("Unexpected RID Error",true,404);
+    }
     connection.deliverBody(deliverable.getDeliverable());
     return connection;
   }
