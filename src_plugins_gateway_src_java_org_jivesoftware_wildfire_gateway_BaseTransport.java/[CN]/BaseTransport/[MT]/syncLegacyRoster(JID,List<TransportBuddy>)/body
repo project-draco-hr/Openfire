@@ -1,7 +1,6 @@
 {
   try {
     Roster roster=rosterManager.getRoster(userjid.getNode());
-    boolean hasTransport=false;
     try {
       TransportSession session=sessionManager.getSession(userjid.getNode());
       session.lockRoster();
@@ -17,12 +16,6 @@
         continue;
       }
       if (ri.getJid().getNode() == null) {
-        if (ri.getID() == 0) {
-          hasTransport=true;
-        }
- else {
-          this.removeFromRoster(userjid,ri.getJid());
-        }
         continue;
       }
       JID jid=new JID(ri.getJid().toBareJID());
@@ -44,12 +37,6 @@
           Log.error("Failed removing roster item",e);
         }
       }
-    }
-    if (!hasTransport && legacyMode) {
-      this.addOrUpdateRosterItem(userjid,this.getJID(),this.getDescription(),"Transports");
-    }
-    if (hasTransport && !legacyMode) {
-      this.removeFromRoster(userjid,this.getJID());
     }
     for (    TransportBuddy buddy : legacymap.values()) {
       try {

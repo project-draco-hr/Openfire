@@ -1,5 +1,6 @@
 {
   List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
   if (packet.getTo().getNode() == null) {
     IQ result=IQ.createResultIQ(packet);
     Element response=DocumentHelper.createElement(QName.get("query",DISCO_INFO));
@@ -7,6 +8,10 @@
     response.addElement("feature").addAttribute("var",IQ_GATEWAY);
     response.addElement("feature").addAttribute("var",IQ_REGISTER);
     response.addElement("feature").addAttribute("var",IQ_VERSION);
+    Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
+    if (!registrations.isEmpty()) {
+      response.addElement("feature").addAttribute("var",IQ_REGISTERED);
+    }
     result.setChildElement(response);
     reply.add(result);
   }

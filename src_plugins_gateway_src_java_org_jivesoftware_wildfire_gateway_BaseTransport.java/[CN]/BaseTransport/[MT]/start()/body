@@ -1,13 +1,11 @@
 {
   RosterEventDispatcher.addListener(this);
-  PresenceEventDispatcher.addListener(this);
-  SessionManager sessionManager=SessionManager.getInstance();
   for (  Registration registration : registrationManager.getRegistrations()) {
-    String user=registration.getJID().getNode();
-    if (sessionManager.getSessionCount(user) > 0) {
-      for (      ClientSession session : sessionManager.getSessions(user)) {
-        availableSession(session,session.getPresence());
-      }
+    if (SessionManager.getInstance().getSessionCount(registration.getJID().getNode()) > 0) {
+      Presence p=new Presence(Presence.Type.probe);
+      p.setFrom(this.getJID());
+      p.setTo(registration.getJID());
+      sendPacket(p);
     }
   }
 }

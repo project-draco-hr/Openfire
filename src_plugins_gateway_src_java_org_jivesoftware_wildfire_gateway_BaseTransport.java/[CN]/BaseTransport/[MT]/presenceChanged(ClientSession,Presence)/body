@@ -1,20 +1,2 @@
 {
-  Log.debug(getType().toString() + ": presenceChanged " + clSession+ ":"+ packet);
-  JID from=packet.getFrom();
-  Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
-  if (registrations.isEmpty()) {
-    return;
-  }
-  TransportSession session;
-  try {
-    session=sessionManager.getSession(from);
-    if (session.hasResource(from.getResource())) {
-      Log.debug("An existing resource has changed status: " + from);
-      if (session.isHighestPriority(from.getResource())) {
-        session.updateStatus(getPresenceType(packet),packet.getStatus());
-      }
-    }
-  }
- catch (  NotFoundException e) {
-  }
 }

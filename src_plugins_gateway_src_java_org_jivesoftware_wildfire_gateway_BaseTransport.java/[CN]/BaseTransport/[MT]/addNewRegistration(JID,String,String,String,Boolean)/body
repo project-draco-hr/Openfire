@@ -20,16 +20,21 @@
     registrationManager.createRegistration(jid,this.transportType,username,password,nickname);
   }
   try {
-    cleanUpRoster(jid,false);
+    cleanUpRoster(jid,!noRosterItem);
   }
  catch (  UserNotFoundException ee) {
     throw new UserNotFoundException("Unable to find roster.");
   }
-  SessionManager sessionManager=SessionManager.getInstance();
-  String user=jid.getNode();
-  if (sessionManager.getSessionCount(user) > 0) {
-    for (    ClientSession cSession : sessionManager.getSessions(user)) {
-      presenceChanged(cSession,cSession.getPresence());
+  if (!noRosterItem) {
+    try {
+      addOrUpdateRosterItem(jid,this.getJID(),this.getDescription(),"Transports");
+    }
+ catch (    UserNotFoundException e) {
+      throw new UserNotFoundException("User not registered with server.");
     }
   }
+  Presence p=new Presence(Presence.Type.probe);
+  p.setTo(jid);
+  p.setFrom(getJID());
+  sendPacket(p);
 }

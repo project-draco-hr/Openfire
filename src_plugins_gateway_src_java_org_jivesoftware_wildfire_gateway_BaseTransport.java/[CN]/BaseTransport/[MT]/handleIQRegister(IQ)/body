@@ -5,12 +5,10 @@
   Element remove=packet.getChildElement().element("remove");
   if (remove != null) {
     IQ result=IQ.createResultIQ(packet);
-    if (legacyMode) {
-      Presence unavailable=new Presence(Presence.Type.unavailable);
-      unavailable.setTo(from);
-      unavailable.setFrom(to);
-      reply.add(unavailable);
-    }
+    Presence unavailable=new Presence(Presence.Type.unavailable);
+    unavailable.setTo(from);
+    unavailable.setFrom(to);
+    reply.add(unavailable);
     try {
       this.deleteRegistration(from);
     }
@@ -64,20 +62,21 @@
         reply.add(result);
       }
  else {
-        Log.info("Registered " + packet.getFrom() + " as "+ username);
+        boolean rosterlessMode=false;
+        Element x=packet.getChildElement().element("x");
+        if (x.getNamespaceURI().equals(IQ_GATEWAY_REGISTER)) {
+          rosterlessMode=true;
+          Log.info("Registered " + packet.getFrom() + " as "+ username+ " in rosterless mode.");
+        }
+ else {
+          Log.info("Registered " + packet.getFrom() + " as "+ username);
+        }
         IQ result=IQ.createResultIQ(packet);
         Element response=DocumentHelper.createElement(QName.get("query",IQ_REGISTER));
         result.setChildElement(response);
         reply.add(result);
         try {
-          this.addNewRegistration(from,username,password,nickname);
-          SessionManager sessionManager=SessionManager.getInstance();
-          String user=from.getNode();
-          if (sessionManager.getSessionCount(user) > 0) {
-            for (            ClientSession session : sessionManager.getSessions(user)) {
-              availableSession(session,session.getPresence());
-            }
-          }
+          this.addNewRegistration(from,username,password,nickname,rosterlessMode);
         }
  catch (        UserNotFoundException e) {
           Log.error("Someone attempted to register with the gateway who is not registered with the server: " + from);
@@ -167,6 +166,7 @@ catch (        IllegalArgumentException e) {
           response.addElement("nick");
         }
       }
+      response.addElement("x").addNamespace("",IQ_GATEWAY_REGISTER);
       result.setChildElement(response);
       reply.add(result);
     }
