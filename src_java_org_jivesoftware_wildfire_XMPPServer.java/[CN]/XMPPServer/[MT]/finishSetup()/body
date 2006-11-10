@@ -4,6 +4,23 @@
   }
   if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
     name=JiveGlobals.getProperty("xmpp.domain").toLowerCase();
+    try {
+      KeyStore ksKeys=SSLConfig.getKeyStore();
+      boolean dsaFound=CertificateManager.isDSACertificate(ksKeys,name);
+      boolean rsaFound=CertificateManager.isRSACertificate(ksKeys,name);
+      if (!dsaFound) {
+        CertificateManager.createDSACert(ksKeys,name + "_dsa","cn=" + name,"cn=" + name,"*." + name);
+      }
+      if (!rsaFound) {
+        CertificateManager.createRSACert(ksKeys,name + "_rsa","cn=" + name,"cn=" + name,"*." + name);
+      }
+      if (!dsaFound || !rsaFound) {
+        SSLConfig.saveStores();
+      }
+    }
+ catch (    Exception e) {
+      Log.error("Error generating self-signed certificates",e);
+    }
     Thread finishSetup=new Thread(){
       public void run(){
         try {
