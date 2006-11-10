@@ -1,17 +1,19 @@
 {
   Email contact=Email.parseStr(getTransport().convertJIDToID(item.getJid()));
+  if (contact == null) {
+    Log.error("MSN: Unable to update illegal contact " + item.getJid());
+    return;
+  }
   String nickname=getTransport().convertJIDToID(item.getJid());
   if (item.getNickname() != null && !item.getNickname().equals("")) {
     nickname=item.getNickname();
   }
+  lockRoster(item.getJid().toString());
   msnMessenger.addFriend(contact,nickname);
   try {
-    lockRoster();
     getTransport().addOrUpdateRosterItem(getJID(),item.getJid(),nickname,item.getGroups());
-    unlockRoster();
   }
  catch (  UserNotFoundException e) {
     Log.error("MSN: Unable to find roster when adding contact.");
   }
-  syncContactGroups(contact,item.getGroups());
 }

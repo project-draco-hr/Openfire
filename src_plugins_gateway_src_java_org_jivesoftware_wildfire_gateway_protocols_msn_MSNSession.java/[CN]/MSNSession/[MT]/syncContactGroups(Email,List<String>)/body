@@ -7,15 +7,14 @@
     if (!msnGroups.containsKey(group)) {
       Log.debug("MSN: Group " + group + " is a new group, creating.");
       msnMessenger.addGroup(group);
+      storePendingGroup(group,contact);
+      return;
     }
-  }
-  for (  MsnGroup msnGroup : msnMessenger.getContactList().getGroups()) {
-    storeGroup(msnGroup);
   }
   for (  String group : groups) {
     Log.debug("MSN: Found " + contact + " should belong to group "+ group);
     MsnGroup msnGroup=msnGroups.get(group);
-    if (!msnContact.belongGroup(msnGroup)) {
+    if (msnGroup != null && !msnContact.belongGroup(msnGroup)) {
       Log.debug("MSN: " + contact + " does not belong to "+ group+ ", copying.");
       msnMessenger.copyFriend(contact,msnGroup.getGroupId());
     }

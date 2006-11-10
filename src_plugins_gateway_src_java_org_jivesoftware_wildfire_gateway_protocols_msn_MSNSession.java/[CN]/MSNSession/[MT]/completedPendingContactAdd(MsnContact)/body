@@ -1,0 +1,16 @@
+{
+  try {
+    Roster roster=getTransport().getRosterManager().getRoster(getJID().getNode());
+    Email contact=msnContact.getEmail();
+    JID contactJID=getTransport().convertIDToJID(contact.toString());
+    RosterItem item=roster.getRosterItem(contactJID);
+    syncContactGroups(contact,item.getGroups());
+    unlockRoster(contactJID.toString());
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("MSN: Unable to find roster when adding pendingcontact for " + getJID());
+    Email contact=msnContact.getEmail();
+    JID contactJID=getTransport().convertIDToJID(contact.toString());
+    unlockRoster(contactJID.toString());
+  }
+}

@@ -7,7 +7,7 @@
   }
   try {
     TransportSession session=sessionManager.getSession(roster.getUsername());
-    if (!session.isRosterLocked()) {
+    if (!session.isRosterLocked(item.getJid().toString())) {
       Log.debug(getType().toString() + ": contactUpdated " + roster.getUsername()+ ":"+ item.getJid());
       session.updateContact(item);
     }

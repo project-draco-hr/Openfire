@@ -7,7 +7,7 @@
   }
   try {
     TransportSession session=sessionManager.getSession(roster.getUsername());
-    if (!session.isRosterLocked()) {
+    if (!session.isRosterLocked(item.getJid().toString())) {
       Log.debug(getType().toString() + ": contactAdded " + roster.getUsername()+ ":"+ item.getJid());
       session.addContact(item);
     }

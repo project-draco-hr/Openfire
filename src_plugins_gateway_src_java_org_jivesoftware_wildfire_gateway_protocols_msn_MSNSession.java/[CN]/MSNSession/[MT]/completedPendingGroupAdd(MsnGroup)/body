@@ -1,0 +1,18 @@
+{
+  if (!msnPendingGroups.containsKey(msnGroup.getGroupName())) {
+    return;
+  }
+  try {
+    Roster roster=getTransport().getRosterManager().getRoster(getJID().getNode());
+    for (    Email contact : msnPendingGroups.get(msnGroup.getGroupName())) {
+      JID contactJID=getTransport().convertIDToJID(contact.toString());
+      RosterItem item=roster.getRosterItem(contactJID);
+      lockRoster(contactJID.toString());
+      syncContactGroups(contact,item.getGroups());
+      unlockRoster(contactJID.toString());
+    }
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("MSN: Unable to find roster when adding pending group contacts for " + getJID());
+  }
+}

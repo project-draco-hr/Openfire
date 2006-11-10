@@ -1,4 +1,11 @@
 {
   Email contact=Email.parseStr(getTransport().convertJIDToID(item.getJid()));
+  if (contact == null) {
+    Log.error("MSN: Unable to update illegal contact " + item.getJid());
+    return;
+  }
+  lockRoster(item.getJid().toString());
   msnMessenger.removeFriend(contact,false);
+  unlockRoster(item.getJid().toString());
+  msnContacts.remove(contact.toString());
 }

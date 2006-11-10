@@ -1,5 +1,9 @@
 {
   Email contact=Email.parseStr(getTransport().convertJIDToID(item.getJid()));
+  if (contact == null) {
+    Log.error("MSN: Unable to update illegal contact " + item.getJid());
+    return;
+  }
   String nickname=getTransport().convertJIDToID(item.getJid());
   if (item.getNickname() != null && !item.getNickname().equals("")) {
     nickname=item.getNickname();
@@ -8,8 +12,10 @@
   if (msnContact == null) {
     return;
   }
+  lockRoster(item.getJid().toString());
   if (!msnContact.getFriendlyName().equals(nickname)) {
     msnMessenger.renameFriend(contact,nickname);
   }
   syncContactGroups(contact,item.getGroups());
+  unlockRoster(item.getJid().toString());
 }
