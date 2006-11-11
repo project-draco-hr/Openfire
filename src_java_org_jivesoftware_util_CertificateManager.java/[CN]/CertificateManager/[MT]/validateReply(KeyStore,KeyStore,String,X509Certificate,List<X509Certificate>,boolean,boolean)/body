@@ -41,17 +41,16 @@
   if (!verifyRoot) {
     return replyCerts;
   }
-  KeyStore caStore=SSLConfig.getTrustStore();
   X509Certificate topCert=replyCerts.get(replyCerts.size() - 1);
-  boolean foundInKeyStore=SSLConfig.getKeyStore().getCertificateAlias(topCert) != null;
-  boolean foundInCAStore=trustCACerts && (caStore.getCertificateAlias(topCert) != null);
+  boolean foundInKeyStore=keyStore.getCertificateAlias(topCert) != null;
+  boolean foundInCAStore=trustCACerts && (trustStore.getCertificateAlias(topCert) != null);
   if (!foundInKeyStore && !foundInCAStore) {
     boolean verified=false;
     X509Certificate rootCert=null;
     if (trustCACerts) {
-      for (Enumeration<String> aliases=caStore.aliases(); aliases.hasMoreElements(); ) {
+      for (Enumeration<String> aliases=trustStore.aliases(); aliases.hasMoreElements(); ) {
         String name=aliases.nextElement();
-        rootCert=(X509Certificate)caStore.getCertificate(name);
+        rootCert=(X509Certificate)trustStore.getCertificate(name);
         if (rootCert != null) {
           try {
             topCert.verify(rootCert.getPublicKey());

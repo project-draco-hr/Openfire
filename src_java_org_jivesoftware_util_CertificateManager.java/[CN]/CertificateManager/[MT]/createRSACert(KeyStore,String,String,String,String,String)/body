@@ -1,0 +1,14 @@
+{
+  KeyPair keyPair=generateKeyPair("RSA",1024);
+  X509Certificate cert=createX509V3Certificate(keyPair,60,issuerDN,subjectDN,domain,"MD5withRSA");
+  ksKeys.setKeyEntry(alias,keyPair.getPrivate(),keyPassword.toCharArray(),new X509Certificate[]{cert});
+  for (  CertificateEventListener listener : listeners) {
+    try {
+      listener.certificateCreated(ksKeys,alias,cert);
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return cert;
+}
