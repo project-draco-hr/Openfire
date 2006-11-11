@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("getClientInfo",String.class);
+    return (String)method.invoke(connection,name);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}

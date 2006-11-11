@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("createClob",new Class[]{});
+    return (Clob)method.invoke(connection);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}

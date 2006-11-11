@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("createBlob",new Class[]{});
+    return (Blob)method.invoke(connection);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}

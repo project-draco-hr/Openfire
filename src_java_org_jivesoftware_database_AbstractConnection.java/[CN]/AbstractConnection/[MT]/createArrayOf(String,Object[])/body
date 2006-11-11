@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("createArrayOf",String.class,Object[].class);
+    return (Array)method.invoke(connection,typeName,elements);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}

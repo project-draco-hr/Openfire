@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("createSQLXML",new Class[]{});
+    return (SQLXML)method.invoke(connection);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}

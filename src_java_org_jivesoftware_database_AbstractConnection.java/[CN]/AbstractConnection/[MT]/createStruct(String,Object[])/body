@@ -1,0 +1,13 @@
+{
+  try {
+    Method method=connection.getClass().getMethod("createStruct",String.class,Object[].class);
+    return (Struct)method.invoke(connection,typeName,attributes);
+  }
+ catch (  Exception e) {
+    if (e instanceof SQLException) {
+      throw (SQLException)e;
+    }
+    Log.error(e);
+    return null;
+  }
+}
