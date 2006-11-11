@@ -1,0 +1,15 @@
+{
+  if (!isSocketStarted) {
+    return;
+  }
+  try {
+    localIPAddress=InetAddress.getLocalHost().getHostAddress();
+  }
+ catch (  UnknownHostException e) {
+    if (localIPAddress == null) {
+      localIPAddress="Unknown";
+    }
+  }
+  stopClientSSLListeners();
+  startClientSSLListeners(localIPAddress);
+}

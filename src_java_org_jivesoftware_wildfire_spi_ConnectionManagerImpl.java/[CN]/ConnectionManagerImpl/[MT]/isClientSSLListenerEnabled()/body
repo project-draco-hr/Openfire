@@ -1,3 +1,11 @@
 {
-  return JiveGlobals.getBooleanProperty("xmpp.socket.ssl.active",true);
+  try {
+    return JiveGlobals.getBooleanProperty("xmpp.socket.ssl.active",true) && SSLConfig.getKeyStore().size() > 0;
+  }
+ catch (  KeyStoreException e) {
+    return false;
+  }
+catch (  IOException e) {
+    return false;
+  }
 }
