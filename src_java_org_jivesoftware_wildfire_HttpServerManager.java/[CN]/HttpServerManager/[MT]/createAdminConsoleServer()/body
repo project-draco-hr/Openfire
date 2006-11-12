@@ -1,13 +1,13 @@
 {
-  int port=JiveGlobals.getXMLProperty(ADMIN_CONSOLE_PORT,ADMIN_CONSOLE_PORT_DEFAULT);
-  int securePort=JiveGlobals.getXMLProperty(ADMIN_CONOSLE_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT);
+  adminPort=JiveGlobals.getXMLProperty(ADMIN_CONSOLE_PORT,ADMIN_CONSOLE_PORT_DEFAULT);
+  adminSecurePort=JiveGlobals.getXMLProperty(ADMIN_CONOSLE_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT);
   boolean loadConnectors=true;
   if (httpBindServer != null) {
-    if (port == this.port && securePort == this.securePort) {
+    if (adminPort == bindPort && adminSecurePort == bindSecurePort) {
       adminServer=httpBindServer;
       loadConnectors=false;
     }
- else     if (checkPorts(new int[]{this.port,this.securePort},new int[]{port,securePort})) {
+ else     if (checkPorts(new int[]{adminPort,adminSecurePort},new int[]{bindPort,bindSecurePort})) {
       Log.warn("HTTP bind ports must be either the same or distinct from admin console" + " ports.");
       httpBindServer=null;
       httpBindServer=new Server();
@@ -21,7 +21,7 @@
     adminServer=new Server();
   }
   if (loadConnectors) {
-    Collection<Connector> connectors=createAdminConsoleConnectors(port,securePort);
+    Collection<Connector> connectors=createAdminConsoleConnectors(adminPort,adminSecurePort);
     if (connectors.size() == 0) {
       adminServer=null;
       String warning=LocaleUtils.getLocalizedString("admin.console.warning");
