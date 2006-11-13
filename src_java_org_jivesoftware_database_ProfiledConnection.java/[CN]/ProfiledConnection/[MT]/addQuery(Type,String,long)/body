@@ -1,0 +1,50 @@
+{
+  if (sql == null || sql.equals("")) {
+    return;
+  }
+  sql=reformatQuery(sql);
+  sql=removeQueryValues(sql);
+  ProfiledConnectionEntry entry;
+switch (type) {
+case select:
+    selectCount++;
+  totalSelectTime+=time;
+entry=selectQueries.get(sql);
+if (entry == null) {
+entry=new ProfiledConnectionEntry(sql);
+selectQueries.put(sql,entry);
+}
+break;
+case update:
+updateCount++;
+totalUpdateTime+=time;
+entry=updateQueries.get(sql);
+if (entry == null) {
+entry=new ProfiledConnectionEntry(sql);
+updateQueries.put(sql,entry);
+}
+break;
+case insert:
+insertCount++;
+totalInsertTime+=time;
+entry=insertQueries.get(sql);
+if (entry == null) {
+entry=new ProfiledConnectionEntry(sql);
+insertQueries.put(sql,entry);
+}
+break;
+case delete:
+deleteCount++;
+totalDeleteTime+=time;
+entry=deleteQueries.get(sql);
+if (entry == null) {
+entry=new ProfiledConnectionEntry(sql);
+deleteQueries.put(sql,entry);
+}
+break;
+default :
+throw new IllegalArgumentException("Invalid type");
+}
+entry.count++;
+entry.totalTime+=time;
+}

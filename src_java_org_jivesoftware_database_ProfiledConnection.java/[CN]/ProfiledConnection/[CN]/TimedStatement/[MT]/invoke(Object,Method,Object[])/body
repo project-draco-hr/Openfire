@@ -1,0 +1,22 @@
+{
+  if (method.equals(execute) || method.equals(executeQuery) || method.equals(executeUpdate)) {
+    long t1=System.currentTimeMillis();
+    Object result=method.invoke(stmt,args);
+    long t2=System.currentTimeMillis();
+    String sql=((String)args[0]).toLowerCase().trim();
+    if (sql.startsWith("insert")) {
+      addQuery(Type.insert,sql,t2 - t1);
+    }
+ else     if (sql.startsWith("update")) {
+      addQuery(Type.update,sql,t2 - t1);
+    }
+ else     if (sql.startsWith("delete")) {
+      addQuery(Type.delete,sql,t2 - t1);
+    }
+ else {
+      addQuery(Type.select,sql,t2 - t1);
+    }
+    return result;
+  }
+  return method.invoke(stmt,args);
+}

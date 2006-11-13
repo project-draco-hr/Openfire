@@ -1,0 +1,25 @@
+{
+  Map<String,ProfiledConnectionEntry> queries;
+switch (type) {
+case select:
+    queries=selectQueries;
+  break;
+case update:
+queries=updateQueries;
+break;
+case insert:
+queries=insertQueries;
+break;
+case delete:
+queries=deleteQueries;
+break;
+default :
+throw new IllegalArgumentException("Invalid type");
+}
+if (queries.isEmpty()) {
+return null;
+}
+ProfiledConnectionEntry[] result=queries.values().toArray(new ProfiledConnectionEntry[queries.size()]);
+quickSort(result,sortByTime,0,result.length - 1);
+return result;
+}
