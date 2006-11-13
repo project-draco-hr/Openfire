@@ -9,7 +9,19 @@
   openingStream.append(" id=\"").append(streamID).append("\"");
   openingStream.append(" version=\"1.0\">");
   connection.deliverRawText(openingStream.toString());
-  connection.setTlsPolicy(ServerDialback.isEnabled() ? Connection.TLSPolicy.optional : Connection.TLSPolicy.required);
+  Connection.TLSPolicy tlsPolicy=ServerDialback.isEnabled() ? Connection.TLSPolicy.optional : Connection.TLSPolicy.required;
+  boolean hasCertificates=false;
+  try {
+    hasCertificates=SSLConfig.getKeyStore().size() > 0;
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  if (Connection.TLSPolicy.required == tlsPolicy && !hasCertificates) {
+    Log.error("Server session rejected. TLS is required but no certificates " + "were created.");
+    return null;
+  }
+  connection.setTlsPolicy(hasCertificates ? tlsPolicy : Connection.TLSPolicy.disabled);
   String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
   Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
   connection.setCompressionPolicy(compressionPolicy);

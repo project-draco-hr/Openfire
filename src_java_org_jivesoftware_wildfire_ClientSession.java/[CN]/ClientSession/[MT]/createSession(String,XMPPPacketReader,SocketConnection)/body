@@ -53,7 +53,18 @@
   connection.setLanaguage(language);
   connection.setXMPPVersion(majorVersion,minorVersion);
   if (!connection.isSecure()) {
-    connection.setTlsPolicy(tlsPolicy);
+    boolean hasCertificates=false;
+    try {
+      hasCertificates=SSLConfig.getKeyStore().size() > 0;
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    if (Connection.TLSPolicy.required == tlsPolicy && !hasCertificates) {
+      Log.error("Client session rejected. TLS is required but no certificates " + "were created.");
+      return null;
+    }
+    connection.setTlsPolicy(hasCertificates ? tlsPolicy : Connection.TLSPolicy.disabled);
   }
  else {
     connection.setTlsPolicy(Connection.TLSPolicy.disabled);
