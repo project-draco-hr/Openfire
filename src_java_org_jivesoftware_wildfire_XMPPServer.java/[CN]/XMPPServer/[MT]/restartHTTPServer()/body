@@ -1,0 +1,19 @@
+{
+  Thread restartThread=new Thread(){
+    public void run(){
+      if (isStandAlone()) {
+        try {
+          Thread.sleep(1000);
+          httpServerManager.shutdown();
+          httpServerManager.startup();
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+;
+  restartThread.setContextClassLoader(loader);
+  restartThread.start();
+}

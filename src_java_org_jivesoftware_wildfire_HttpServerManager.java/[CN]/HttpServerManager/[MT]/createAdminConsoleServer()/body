@@ -21,16 +21,20 @@
     adminServer=new Server();
   }
   if (loadConnectors) {
-    Collection<Connector> connectors=createAdminConsoleConnectors(adminPort,adminSecurePort);
-    if (connectors.size() == 0) {
+    Connector httpConnector=createConnector(adminPort);
+    Connector httpsConnector=createSSLConnector(adminSecurePort);
+    if (httpConnector == null && httpsConnector == null) {
       adminServer=null;
       String warning=LocaleUtils.getLocalizedString("admin.console.warning");
       Log.info(warning);
       System.out.println(warning);
       return;
     }
-    for (    Connector connector : connectors) {
-      adminServer.addConnector(connector);
+    if (httpConnector != null) {
+      adminServer.addConnector(httpConnector);
+    }
+    if (httpsConnector != null) {
+      adminServer.addConnector(httpsConnector);
     }
   }
   logAdminConsolePorts();

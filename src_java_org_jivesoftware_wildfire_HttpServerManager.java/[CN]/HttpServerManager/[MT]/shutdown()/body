@@ -1,20 +1,29 @@
 {
-  if (httpBindServer != null) {
-    try {
+  if (certificateListener != null) {
+    CertificateManager.removeListener(certificateListener);
+  }
+  try {
+    if (httpBindServer != null && httpBindServer.isRunning()) {
       httpBindServer.stop();
     }
- catch (    Exception e) {
-      Log.error("Error stopping HTTP bind server",e);
+    if (httpBindContext != null && httpBindContext.isRunning()) {
+      httpBindContext.stop();
     }
-    httpBindServer=null;
   }
-  if (adminServer != null && adminServer != httpBindServer) {
-    try {
+ catch (  Exception e) {
+    Log.error("Error stopping HTTP bind server",e);
+  }
+  httpBindServer=null;
+  try {
+    if (adminServer != null && adminServer.isRunning()) {
       adminServer.stop();
     }
- catch (    Exception e) {
-      Log.error("Error stopping admin console server",e);
+    if (adminConsoleContext != null && adminConsoleContext.isRunning()) {
+      adminConsoleContext.stop();
     }
-    adminServer=null;
   }
+ catch (  Exception e) {
+    Log.error("Error stopping admin console server",e);
+  }
+  adminServer=null;
 }

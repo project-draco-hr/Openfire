@@ -1,11 +1,15 @@
 {
   httpBindServer=new Server();
-  Collection<Connector> connectors=createAdminConsoleConnectors(port,securePort);
-  if (connectors.size() == 0) {
+  Connector httpConnector=createConnector(port);
+  Connector httpsConnector=createSSLConnector(securePort);
+  if (httpConnector == null && httpsConnector == null) {
     httpBindServer=null;
     return;
   }
-  for (  Connector connector : connectors) {
-    httpBindServer.addConnector(connector);
+  if (httpConnector != null) {
+    httpBindServer.addConnector(httpConnector);
+  }
+  if (httpsConnector != null) {
+    httpBindServer.addConnector(httpsConnector);
   }
 }

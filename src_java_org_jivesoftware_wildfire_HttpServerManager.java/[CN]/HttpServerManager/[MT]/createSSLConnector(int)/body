@@ -1,12 +1,6 @@
 {
-  List<Connector> connectorList=new ArrayList<Connector>();
-  if (port > 0) {
-    SelectChannelConnector connector=new SelectChannelConnector();
-    connector.setPort(port);
-    connectorList.add(connector);
-  }
   try {
-    if (securePort > 0) {
+    if (securePort > 0 && CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getName())) {
       SslSocketConnector sslConnector=new JiveSslConnector();
       sslConnector.setPort(securePort);
       sslConnector.setTrustPassword(SSLConfig.getTrustPassword());
@@ -17,11 +11,11 @@
       sslConnector.setKeyPassword(SSLConfig.getKeyPassword());
       sslConnector.setKeystoreType(SSLConfig.getStoreType());
       sslConnector.setKeystore(SSLConfig.getKeystoreLocation());
-      connectorList.add(sslConnector);
+      return sslConnector;
     }
   }
  catch (  Exception e) {
     Log.error(e);
   }
-  return connectorList;
+  return null;
 }
