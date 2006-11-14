@@ -1,0 +1,29 @@
+{
+  if (method.equals(close)) {
+    if (connection != null) {
+      connection.close();
+    }
+    return null;
+  }
+ else   if (method.equals(prepareStatement)) {
+    return TimedPreparedStatement.newInstance(connection.prepareStatement((String)args[0]),(String)args[0]);
+  }
+ else   if (method.equals(prepareStatementWithParams)) {
+    return TimedPreparedStatement.newInstance(connection.prepareStatement((String)args[0],(Integer)args[1],(Integer)args[2]),(String)args[0]);
+  }
+ else   if (method.equals(createStatement)) {
+    return TimedStatement.newInstance(connection.createStatement());
+  }
+ else   if (method.equals(createStatementWithParams)) {
+    return TimedStatement.newInstance(connection.createStatement((Integer)args[0],(Integer)args[1]));
+  }
+ else   if (method.equals(prepareCall)) {
+    return TimedCallableStatement.newInstance(connection.prepareCall((String)args[0]),(String)args[0]);
+  }
+ else   if (method.equals(prepareCallWithParams)) {
+    return TimedCallableStatement.newInstance(connection.prepareCall((String)args[0],(Integer)args[1],(Integer)args[2]),(String)args[0]);
+  }
+ else {
+    return method.invoke(connection,args);
+  }
+}

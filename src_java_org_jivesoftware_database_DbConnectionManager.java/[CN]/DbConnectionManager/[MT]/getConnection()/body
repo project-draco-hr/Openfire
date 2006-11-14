@@ -24,7 +24,7 @@ synchronized (providerLock) {
     Log.error("WARNING: ConnectionManager.getConnection() " + "failed to obtain a connection.");
   }
   if (profilingEnabled) {
-    return new ProfiledConnection(con);
+    return (Connection)ProfiledConnection.newInstance(con);
   }
  else {
     return con;
