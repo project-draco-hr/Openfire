@@ -4,6 +4,11 @@
     return null;
   }
  else {
-    return method.invoke(connection,args);
+    try {
+      return method.invoke(connection,args);
+    }
+ catch (    InvocationTargetException ite) {
+      throw ite.getCause();
+    }
   }
 }

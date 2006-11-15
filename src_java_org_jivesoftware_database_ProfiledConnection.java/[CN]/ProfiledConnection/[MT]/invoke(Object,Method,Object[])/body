@@ -24,6 +24,11 @@
     return TimedCallableStatement.newInstance(connection.prepareCall((String)args[0],(Integer)args[1],(Integer)args[2]),(String)args[0]);
   }
  else {
-    return method.invoke(connection,args);
+    try {
+      return method.invoke(connection,args);
+    }
+ catch (    InvocationTargetException ite) {
+      throw ite.getCause();
+    }
   }
 }

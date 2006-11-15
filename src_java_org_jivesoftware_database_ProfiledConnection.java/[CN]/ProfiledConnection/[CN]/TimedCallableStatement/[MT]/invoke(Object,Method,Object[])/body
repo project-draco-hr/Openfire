@@ -38,5 +38,10 @@ addQuery(Type.select,sql,t2 - t1);
 }
 return result;
 }
+try {
 return method.invoke(cstmt,args);
+}
+ catch (InvocationTargetException ite) {
+throw ite.getCause();
+}
 }

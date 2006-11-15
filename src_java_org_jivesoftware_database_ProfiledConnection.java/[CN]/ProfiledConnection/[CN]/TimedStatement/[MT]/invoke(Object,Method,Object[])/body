@@ -18,5 +18,10 @@
     }
     return result;
   }
-  return method.invoke(stmt,args);
+  try {
+    return method.invoke(stmt,args);
+  }
+ catch (  InvocationTargetException ite) {
+    throw ite.getCause();
+  }
 }
