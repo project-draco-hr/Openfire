@@ -5,11 +5,11 @@
     note.setText("Users are read only. Changing password is not allowed.");
     return;
   }
-  String account=data.getData().get("username").get(0);
+  JID account=new JID(data.getData().get("accountjid").get(0));
   String password=data.getData().get("password").get(0);
   User user;
   try {
-    user=UserManager.getInstance().getUser(account);
+    user=UserManager.getInstance().getUser(account.getNode());
   }
  catch (  UserNotFoundException e) {
     note.addAttribute("type","error");
