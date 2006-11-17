@@ -1,0 +1,20 @@
+{
+  if (!subscribers.isEmpty()) {
+    boolean queue=false;
+    Class packetClass=packet.getClass();
+    for (    Subscription subscription : subscribers.values()) {
+      if (subscription.isPresenceEnabled() && packetClass == Presence.class) {
+        queue=true;
+      }
+ else       if (subscription.isMessageEnabled() && packetClass == Message.class) {
+        queue=true;
+      }
+ else       if (subscription.isIQEnabled() && packetClass == IQ.class) {
+        queue=true;
+      }
+    }
+    if (queue) {
+      packetQueue.add(new InterceptedPacket(packet,incoming,processed));
+    }
+  }
+}
