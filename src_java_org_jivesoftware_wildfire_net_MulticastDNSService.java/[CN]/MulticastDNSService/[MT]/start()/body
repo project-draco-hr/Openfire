@@ -1,32 +1,38 @@
 {
-  if (jmdns != null) {
-    Runnable startService=new Runnable(){
-      public void run(){
-        XMPPServerInfo info=XMPPServer.getInstance().getServerInfo();
-        Iterator ports=info.getServerPorts();
-        int portNum=-1;
-        while (ports.hasNext()) {
-          ServerPort port=(ServerPort)ports.next();
-          if (port.isClientPort() && !port.isSecure()) {
-            portNum=port.getPort();
-          }
+  TimerTask startService=new TimerTask(){
+    public void run(){
+      XMPPServerInfo info=XMPPServer.getInstance().getServerInfo();
+      Iterator ports=info.getServerPorts();
+      int clientPortNum=-1;
+      int componentPortNum=-1;
+      while (ports.hasNext()) {
+        ServerPort port=(ServerPort)ports.next();
+        if (port.isClientPort()) {
+          clientPortNum=port.getPort();
         }
-        try {
-          if (jmdns == null) {
-            jmdns=new JmDNS();
-          }
-          if (portNum != -1) {
-            String serverName=AdminConsole.getAppName();
-            serviceInfo=new ServiceInfo("_xmpp-client._tcp.local.",serverName,portNum,0,0,"XMPP Server");
-            jmdns.registerService(serviceInfo);
-          }
-        }
- catch (        IOException ioe) {
-          Log.error(ioe);
+ else         if (port.isComponentPort()) {
+          componentPortNum=port.getPort();
         }
       }
+      try {
+        if (jmdns == null) {
+          jmdns=new JmDNS();
+        }
+        String serverName=XMPPServer.getInstance().getServerInfo().getName();
+        if (clientPortNum != -1) {
+          ServiceInfo clientService=new ServiceInfo("_xmpp-client._tcp.local.",serverName + "._xmpp-client._tcp.local.",clientPortNum,"XMPP Server");
+          jmdns.registerService(clientService);
+        }
+        if (componentPortNum != -1) {
+          ServiceInfo componentService=new ServiceInfo("_xmpp-component._tcp.local.",serverName + "._xmpp-component._tcp.local.",componentPortNum,"XMPP Component Server");
+          jmdns.registerService(componentService);
+        }
+      }
+ catch (      IOException ioe) {
+        Log.error(ioe);
+      }
     }
-;
-    new Thread(startService).start();
   }
+;
+  TaskEngine.getInstance().schedule(startService,5000);
 }
