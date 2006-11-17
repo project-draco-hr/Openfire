@@ -1,0 +1,35 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Adding a user");
+  form.addInstruction("Fill out this form to change a user\u2019s password.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.jid_single);
+  field.setLabel("The Jabber ID for the account to be added");
+  field.setVariable("accountjid");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("The password for this account");
+  field.setVariable("password");
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("Retype password");
+  field.setVariable("password-verify");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Email address");
+  field.setVariable("email");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Given name");
+  field.setVariable("given_name");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Family name");
+  field.setVariable("surname");
+  command.add(form.getElement());
+}

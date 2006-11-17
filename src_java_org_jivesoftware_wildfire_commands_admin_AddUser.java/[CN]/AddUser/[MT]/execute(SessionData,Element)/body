@@ -1,0 +1,45 @@
+{
+  Element note=command.addElement("note");
+  if (UserManager.getUserProvider().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("User provider is read only. New users cannot be created.");
+    return;
+  }
+  Map<String,List<String>> data=sessionData.getData();
+  JID account;
+  try {
+    account=new JID(get(data,"accountjid",0));
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("JID required parameter.");
+    return;
+  }
+  if (!XMPPServer.getInstance().isLocal(account)) {
+    note.addAttribute("type","error");
+    note.setText("Cannot create remote user.");
+    return;
+  }
+  String password=get(data,"password",0);
+  String passwordRetry=get(data,"password-verify",0);
+  if (password == null || "".equals(password) || !password.equals(passwordRetry)) {
+    note.addAttribute("type","error");
+    note.setText("Passwords do not match.");
+    return;
+  }
+  String email=get(data,"email",0);
+  String givenName=get(data,"given_name",0);
+  String surName=get(data,"surname",0);
+  String name=(givenName == null ? "" : givenName) + (surName == null ? "" : surName);
+  name=(name.equals("") ? null : name);
+  try {
+    UserManager.getInstance().createUser(account.getNode(),password,name,email);
+  }
+ catch (  UserAlreadyExistsException e) {
+    note.addAttribute("type","error");
+    note.setText("User already exists.");
+    return;
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}
