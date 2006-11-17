@@ -28,6 +28,7 @@
           childElement.addAttribute("processed",subscription.isProcessed() ? "true" : "false");
           childElement.addAttribute("date",dateFormat.format(interceptedPacket.getCreationDate()));
           childElement.add(interceptedPacket.getElement().createCopy());
+          subscription.getComponent().processPacket(message);
         }
  catch (        Exception e) {
           Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
