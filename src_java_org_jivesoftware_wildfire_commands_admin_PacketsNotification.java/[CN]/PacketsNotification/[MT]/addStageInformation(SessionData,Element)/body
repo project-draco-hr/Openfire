@@ -1,0 +1,32 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Receiving notification of packets activity");
+  form.addInstruction("Fill out this form to configure packets to receive.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.list_multi);
+  field.setLabel("Type of packet");
+  field.setVariable("packet_type");
+  field.addOption("Presence","presence");
+  field.addOption("IQ","iq");
+  field.addOption("Message","message");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.list_single);
+  field.setLabel("Direction");
+  field.setVariable("direction");
+  field.addOption("Incoming","incoming");
+  field.addOption("Outgoing","outgoing");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.list_single);
+  field.setLabel("Processing time");
+  field.setVariable("processed");
+  field.addOption("Before processing","false");
+  field.addOption("After processing","true");
+  field.setRequired(true);
+  command.add(form.getElement());
+}

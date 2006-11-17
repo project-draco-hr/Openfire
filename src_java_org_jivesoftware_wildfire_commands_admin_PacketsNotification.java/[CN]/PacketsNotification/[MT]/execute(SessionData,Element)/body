@@ -1,0 +1,24 @@
+{
+  boolean presenceEnabled=false;
+  boolean messageEnabled=false;
+  boolean iqEnabled=false;
+  for (  String packet_type : data.getData().get("packet_type")) {
+    if ("presence".equals(packet_type)) {
+      presenceEnabled=true;
+    }
+ else     if ("iq".equals(packet_type)) {
+      iqEnabled=true;
+    }
+ else     if ("message".equals(packet_type)) {
+      messageEnabled=true;
+    }
+  }
+  boolean incoming="incoming".equals(data.getData().get("direction").get(0));
+  boolean processed="true".equals(data.getData().get("processed").get(0));
+  JID componentJID=data.getOwner();
+  Component component=InternalComponentManager.getInstance().getComponent(componentJID);
+  PacketNotificator.getInstance().addSubscriber(componentJID,component,iqEnabled,messageEnabled,presenceEnabled,incoming,processed);
+  Element note=command.addElement("note");
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}
