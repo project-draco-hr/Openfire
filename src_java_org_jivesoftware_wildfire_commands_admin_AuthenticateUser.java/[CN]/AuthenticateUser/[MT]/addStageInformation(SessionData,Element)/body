@@ -1,0 +1,20 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Authenticating a user");
+  form.addInstruction("Fill out this form to authenticate a user.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("The username for this account");
+  field.setVariable("username");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("The password for this account");
+  field.setVariable("password");
+  field.setRequired(true);
+  command.add(form.getElement());
+}

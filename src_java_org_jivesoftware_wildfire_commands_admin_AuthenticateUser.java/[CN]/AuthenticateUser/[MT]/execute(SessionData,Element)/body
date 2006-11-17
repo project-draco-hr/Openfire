@@ -1,0 +1,29 @@
+{
+  Element note=command.addElement("note");
+  if (UserManager.getUserProvider().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("Users are read only. Changing password is not allowed.");
+    return;
+  }
+  String account=data.getData().get("username").get(0);
+  String password=data.getData().get("password").get(0);
+  User user;
+  try {
+    user=UserManager.getInstance().getUser(account);
+  }
+ catch (  UserNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("User does not exists.");
+    return;
+  }
+  try {
+    AuthFactory.getAuthProvider().authenticate(user.getUsername(),password);
+  }
+ catch (  UnauthorizedException e) {
+    note.addAttribute("type","error");
+    note.setText("Authentication failed.");
+    return;
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully.");
+}
