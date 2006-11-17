@@ -1,0 +1,12 @@
+{
+  DataForm form=new DataForm(DataForm.Type.result);
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  List<String> accounts=data.getData().get("accountjids");
+  if (accounts != null && accounts.size() > 0) {
+    populateResponseFields(form,accounts);
+  }
+  command.add(form.getElement());
+}
