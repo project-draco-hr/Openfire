@@ -19,6 +19,7 @@
     }
  while (service.getNode(newNodeID) != null);
   }
+  boolean collectionType=false;
   Element configureElement=childElement.element("configure");
   if (configureElement != null) {
     completedForm=getSentConfigurationForm(configureElement);
@@ -43,6 +44,13 @@
           }
         }
       }
+      field=completedForm.getField("pubsub#node_type");
+      if (field != null) {
+        List<String> values=field.getValues();
+        if (!values.isEmpty()) {
+          collectionType="collection".equals(values.get(0));
+        }
+      }
     }
   }
   if (parentNode == null && service.isCollectionNodesSupported()) {
@@ -56,7 +64,6 @@
     sendErrorPacket(iq,PacketError.Condition.conflict,null);
     return;
   }
-  boolean collectionType="collection".equals(createElement.attributeValue("type"));
   if (collectionType && !service.isCollectionNodesSupported()) {
     Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
     pubsubError.addAttribute("feature","collections");
