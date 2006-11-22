@@ -6,8 +6,10 @@
     if (httpBindServer != null && httpBindServer.isRunning()) {
       httpBindServer.stop();
     }
-    if (httpBindContext != null && httpBindContext.isRunning()) {
-      httpBindContext.stop();
+    if (httpBindContexts != null) {
+      for (      ServletHolder httpBindContext : httpBindContexts.keySet()) {
+        httpBindContext.stop();
+      }
     }
   }
  catch (  Exception e) {

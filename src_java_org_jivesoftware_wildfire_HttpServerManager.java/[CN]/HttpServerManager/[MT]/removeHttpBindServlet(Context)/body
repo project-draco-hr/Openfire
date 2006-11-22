@@ -2,20 +2,18 @@
   ServletHandler handler=adminConsoleContext.getServletHandler();
   ServletMapping[] servletMappings=handler.getServletMappings();
   List<ServletMapping> toAdd=new ArrayList<ServletMapping>();
+  List<String> servletNames=new ArrayList<String>();
+  for (  ServletHolder holder : httpBindContexts.keySet()) {
+    servletNames.add(holder.getName());
+  }
   for (  ServletMapping mapping : servletMappings) {
-    if (mapping.getServletName().equals(httpBindContext.getName())) {
+    if (servletNames.contains(mapping.getServletName())) {
       continue;
     }
     toAdd.add(mapping);
   }
-  ServletHolder[] servletHolder=handler.getServlets();
-  List<ServletHolder> toAddServlets=new ArrayList<ServletHolder>();
-  for (  ServletHolder holder : servletHolder) {
-    if (holder.equals(httpBindContext)) {
-      continue;
-    }
-    toAddServlets.add(holder);
-  }
+  List<ServletHolder> toAddServlets=Arrays.asList(handler.getServlets());
+  toAddServlets.removeAll(httpBindContexts.keySet());
   handler.setServletMappings(toAdd.toArray(new ServletMapping[toAdd.size()]));
   handler.setServlets(toAddServlets.toArray(new ServletHolder[toAddServlets.size()]));
 }
