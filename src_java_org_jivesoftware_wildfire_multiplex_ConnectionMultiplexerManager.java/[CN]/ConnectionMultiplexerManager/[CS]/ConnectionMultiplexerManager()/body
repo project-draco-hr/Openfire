@@ -1,24 +1,17 @@
 {
   sessionManager=XMPPServer.getInstance().getSessionManager();
-  Thread hearbeatThread=new Thread(){
+  TimerTask heartbeatTask=new TimerTask(){
     public void run(){
-      while (true) {
-        try {
-          Thread.sleep(30000);
-          for (          ConnectionMultiplexerSession session : sessionManager.getConnectionMultiplexerSessions()) {
-            session.getConnection().deliverRawText(" ");
-          }
+      try {
+        for (        ConnectionMultiplexerSession session : sessionManager.getConnectionMultiplexerSessions()) {
+          session.getConnection().deliverRawText(" ");
         }
- catch (        InterruptedException e) {
-        }
-catch (        Exception e) {
-          Log.error(e);
-        }
+      }
+ catch (      Exception e) {
+        Log.error(e);
       }
     }
   }
 ;
-  hearbeatThread.setDaemon(true);
-  hearbeatThread.setPriority(Thread.NORM_PRIORITY);
-  hearbeatThread.start();
+  TaskEngine.getInstance().schedule(heartbeatTask,30 * JiveConstants.SECOND,30 * JiveConstants.SECOND);
 }
