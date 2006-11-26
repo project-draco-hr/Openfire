@@ -1,0 +1,17 @@
+{
+  try {
+    DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder=dbf.newDocumentBuilder();
+    document=builder.newDocument();
+    Element root=document.createElement("dwr");
+    document.appendChild(root);
+    Element allowElement=document.createElement("allow");
+    Element timElement=buildCreator("TransportInstanceManager","org.jivesoftware.wildfire.gateway.TransportInstanceManager");
+    allowElement.appendChild(timElement);
+    root.appendChild(allowElement);
+  }
+ catch (  ParserConfigurationException e) {
+    Log.error("Error configuring DWR for gateway plugin: ",e);
+  }
+  configuration.addConfig(document);
+}
