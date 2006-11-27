@@ -1,10 +1,9 @@
 {
-  Log.debug("MSN: Contact add completed: " + contact);
+  Log.debug("MSN: Contact remove completed: " + contact);
   Presence p=new Presence();
-  p.setType(Presence.Type.subscribed);
+  p.setType(Presence.Type.unsubscribed);
   p.setTo(msnSession.getJID());
   p.setFrom(msnSession.getTransport().convertIDToJID(contact.getEmail().toString()));
   msnSession.getTransport().sendPacket(p);
-  msnSession.storeFriend(contact);
-  msnSession.completedPendingContactAdd(contact);
+  msnSession.unstoreFriend(contact);
 }
