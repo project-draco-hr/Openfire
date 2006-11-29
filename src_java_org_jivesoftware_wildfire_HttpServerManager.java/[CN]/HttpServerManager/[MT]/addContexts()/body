@@ -1,7 +1,9 @@
 {
   if (httpBindServer == adminServer && httpBindServer != null) {
-    for (    Map.Entry<ServletHolder,String> httpBindContext : httpBindContexts.entrySet()) {
-      adminConsoleContext.addServlet(httpBindContext.getKey(),httpBindContext.getValue());
+    for (    Map.Entry<HttpServlet,String> httpBindContext : httpBindServlets.entrySet()) {
+      ServletHolder holder=new ServletHolder(httpBindContext.getKey());
+      httpBindContexts.add(holder);
+      adminConsoleContext.addServlet(holder,httpBindContext.getValue());
     }
     if (adminServer.getHandler() == null) {
       adminServer.addHandler(adminConsoleContext);
@@ -18,8 +20,10 @@
   }
   if (httpBindServer != null) {
     ServletHandler servletHandler=new ServletHandler();
-    for (    Map.Entry<ServletHolder,String> httpBindContext : httpBindContexts.entrySet()) {
-      servletHandler.addServletWithMapping(httpBindContext.getKey(),httpBindContext.getValue());
+    for (    Map.Entry<HttpServlet,String> httpBindContext : httpBindServlets.entrySet()) {
+      ServletHolder holder=new ServletHolder(httpBindContext.getKey());
+      httpBindContexts.add(holder);
+      servletHandler.addServletWithMapping(holder,httpBindContext.getValue());
     }
     httpBindServer.addHandler(servletHandler);
   }

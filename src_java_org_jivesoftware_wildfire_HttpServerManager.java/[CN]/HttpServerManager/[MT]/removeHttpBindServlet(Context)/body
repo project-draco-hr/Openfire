@@ -3,7 +3,7 @@
   ServletMapping[] servletMappings=handler.getServletMappings();
   List<ServletMapping> toAdd=new ArrayList<ServletMapping>();
   List<String> servletNames=new ArrayList<String>();
-  for (  ServletHolder holder : httpBindContexts.keySet()) {
+  for (  ServletHolder holder : httpBindContexts) {
     servletNames.add(holder.getName());
   }
   for (  ServletMapping mapping : servletMappings) {
@@ -16,7 +16,8 @@
   for (  ServletHolder holder : handler.getServlets()) {
     toAddServlets.add(holder);
   }
-  toAddServlets.removeAll(httpBindContexts.keySet());
+  toAddServlets.removeAll(httpBindContexts);
+  httpBindContexts.clear();
   handler.setServletMappings(toAdd.toArray(new ServletMapping[toAdd.size()]));
   handler.setServlets(toAddServlets.toArray(new ServletHolder[toAddServlets.size()]));
 }

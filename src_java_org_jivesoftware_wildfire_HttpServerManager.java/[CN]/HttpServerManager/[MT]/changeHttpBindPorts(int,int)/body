@@ -28,19 +28,9 @@
     return;
   }
   if (httpBindServer != adminServer) {
-    try {
-      httpBindServer.stop();
-    }
- catch (    Exception e) {
-      Log.error("Error stopping HTTP bind service",e);
-    }
+    httpBindServer.stop();
   }
-  startHttpBindServer(unsecurePort,securePort);
+  configureHttpBindServer(unsecurePort,securePort);
   addContexts();
-  try {
-    httpBindServer.start();
-  }
- catch (  Exception e) {
-    Log.error("Error starting HTTP bind service",e);
-  }
+  httpBindServer.start();
 }

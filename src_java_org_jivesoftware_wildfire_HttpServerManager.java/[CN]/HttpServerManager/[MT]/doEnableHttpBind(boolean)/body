@@ -1,6 +1,11 @@
 {
   if (shouldEnable && httpBindServer == null) {
-    changeHttpBindPorts(JiveGlobals.getIntProperty(HTTP_BIND_PORT,ADMIN_CONSOLE_PORT_DEFAULT),JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT));
+    try {
+      changeHttpBindPorts(JiveGlobals.getIntProperty(HTTP_BIND_PORT,ADMIN_CONSOLE_PORT_DEFAULT),JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT));
+    }
+ catch (    Exception e) {
+      Log.error("Error configuring HTTP binding ports",e);
+    }
   }
  else   if (!shouldEnable && httpBindServer != null) {
     if (httpBindServer != adminServer) {
