@@ -75,4 +75,17 @@
     p.setFrom(oscarSession.getTransport().convertIDToJID(boc.getScreenname()));
     oscarSession.getTransport().sendPacket(p);
   }
+ else   if (cmd instanceof TypingCmd) {
+    TypingCmd tc=(TypingCmd)cmd;
+    String sn=tc.getScreenname();
+    Message mTypingEvent=new Message();
+    mTypingEvent.setTo(oscarSession.getJIDWithHighestPriority());
+    mTypingEvent.setFrom(oscarSession.getTransport().convertIDToJID(sn));
+    Element eEvent=mTypingEvent.addChildElement("x","jabber:x:event");
+    eEvent.addElement("id");
+    if (tc.getTypingState() == TypingCmd.STATE_TYPING) {
+      eEvent.addElement("composing");
+    }
+    oscarSession.getTransport().sendPacket(mTypingEvent);
+  }
 }
