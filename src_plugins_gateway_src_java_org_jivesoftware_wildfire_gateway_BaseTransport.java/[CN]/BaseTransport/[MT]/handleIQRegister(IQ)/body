@@ -41,6 +41,17 @@
  catch (    Exception e) {
     }
     if (packet.getType() == IQ.Type.set) {
+      Boolean registered=false;
+      Collection<Registration> registrations=registrationManager.getRegistrations(from,this.transportType);
+      if (registrations.iterator().hasNext()) {
+        registered=true;
+      }
+      if (!registered && !permissionManager.hasAccess(this.transportType,from)) {
+        IQ result=IQ.createResultIQ(packet);
+        result.setError(Condition.bad_request);
+        reply.add(result);
+        return reply;
+      }
       Element userEl=packet.getChildElement().element("username");
       Element passEl=packet.getChildElement().element("password");
       Element nickEl=packet.getChildElement().element("nick");
@@ -112,6 +123,11 @@ catch (        IllegalArgumentException e) {
         curPassword=registration.getPassword();
         curNickname=registration.getNickname();
         registered=true;
+      }
+      if (!registered && !permissionManager.hasAccess(this.transportType,from)) {
+        result.setError(Condition.bad_request);
+        reply.add(result);
+        return reply;
       }
       DataForm form=new DataForm(DataForm.Type.form);
       form.addInstruction(getTerminologyRegistration());
