@@ -17,11 +17,6 @@
     }
   }
  else {
-    Message m=new Message();
-    m.setType(Message.Type.chat);
-    m.setFrom(getSession().getTransport().getJID());
-    m.setTo(getSession().getJIDWithHighestPriority());
-    m.setBody(string1);
-    getSession().getTransport().sendPacket(m);
+    getSession().getTransport().sendMessage(getSession().getJIDWithHighestPriority(),getSession().getTransport().getJID(),string1);
   }
 }

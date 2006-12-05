@@ -1,9 +1,4 @@
 {
   Log.error("Error from yahoo: " + event.getMessage() + ", Code:"+ event.getCode());
-  Message m=new Message();
-  m.setType(Message.Type.error);
-  m.setTo(yahooSession.getJIDWithHighestPriority());
-  m.setFrom(yahooSession.getTransport().getJID());
-  m.setBody("Error from yahoo: " + event.getMessage());
-  yahooSession.getTransport().sendPacket(m);
+  yahooSession.getTransport().sendMessage(yahooSession.getJIDWithHighestPriority(),yahooSession.getTransport().getJID(),"Error from yahoo: " + event.getMessage(),Message.Type.error);
 }

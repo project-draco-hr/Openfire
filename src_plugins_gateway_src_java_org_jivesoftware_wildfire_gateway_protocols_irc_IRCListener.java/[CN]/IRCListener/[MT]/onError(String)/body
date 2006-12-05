@@ -3,10 +3,5 @@
   if (silenced) {
     return;
   }
-  Message m=new Message();
-  m.setType(Message.Type.error);
-  m.setFrom(getSession().getTransport().getJID());
-  m.setTo(getSession().getJID());
-  m.setBody("IRC error received: " + string);
-  getSession().getTransport().sendPacket(m);
+  getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),"IRC error received: " + string,Message.Type.error);
 }

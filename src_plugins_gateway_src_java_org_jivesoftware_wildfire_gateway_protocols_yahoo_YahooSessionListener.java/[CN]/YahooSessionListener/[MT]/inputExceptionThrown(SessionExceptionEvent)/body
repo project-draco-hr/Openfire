@@ -1,9 +1,4 @@
 {
   Log.error("Input error from yahoo: " + event.getMessage(),event.getException());
-  Message m=new Message();
-  m.setType(Message.Type.error);
-  m.setTo(yahooSession.getJIDWithHighestPriority());
-  m.setFrom(yahooSession.getTransport().getJID());
-  m.setBody("Input error from yahoo: " + event.getMessage());
-  yahooSession.getTransport().sendPacket(m);
+  yahooSession.getTransport().sendMessage(yahooSession.getJIDWithHighestPriority(),yahooSession.getTransport().getJID(),"Input error from yahoo: " + event.getMessage(),Message.Type.error);
 }

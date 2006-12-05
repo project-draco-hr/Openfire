@@ -22,6 +22,34 @@
       if (packet.getBody() != null) {
         session.sendMessage(to,packet.getBody());
       }
+ else {
+        Element eEvent=packet.getChildElement("x",XEVENT);
+        if (eEvent != null) {
+          if (eEvent.element("composing") != null) {
+            session.sendChatState(to,ChatStateType.composing);
+          }
+ else {
+            session.sendChatState(to,ChatStateType.paused);
+          }
+        }
+ else {
+          if (packet.getChildElement("composing",CHATSTATES) != null) {
+            session.sendChatState(to,ChatStateType.composing);
+          }
+ else           if (packet.getChildElement("active",CHATSTATES) != null) {
+            session.sendChatState(to,ChatStateType.active);
+          }
+ else           if (packet.getChildElement("inactive",CHATSTATES) != null) {
+            session.sendChatState(to,ChatStateType.inactive);
+          }
+ else           if (packet.getChildElement("paused",CHATSTATES) != null) {
+            session.sendChatState(to,ChatStateType.paused);
+          }
+ else           if (packet.getChildElement("gone",CHATSTATES) != null) {
+            session.sendChatState(to,ChatStateType.gone);
+          }
+        }
+      }
     }
   }
  catch (  NotFoundException e) {

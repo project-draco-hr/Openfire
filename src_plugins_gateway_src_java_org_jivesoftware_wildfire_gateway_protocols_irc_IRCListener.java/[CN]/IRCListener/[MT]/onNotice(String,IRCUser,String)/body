@@ -14,10 +14,5 @@
  else {
     from=getSession().getTransport().convertIDToJID(username);
   }
-  Message m=new Message();
-  m.setType(Message.Type.chat);
-  m.setFrom(from);
-  m.setTo(getSession().getJIDWithHighestPriority());
-  m.setBody(string1);
-  getSession().getTransport().sendPacket(m);
+  getSession().getTransport().sendMessage(getSession().getJIDWithHighestPriority(),from,string1);
 }
