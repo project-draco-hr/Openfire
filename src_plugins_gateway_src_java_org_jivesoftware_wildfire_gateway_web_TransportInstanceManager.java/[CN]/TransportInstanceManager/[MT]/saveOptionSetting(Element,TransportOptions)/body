@@ -1,0 +1,34 @@
+{
+  Attribute type=node.attribute("type");
+  if (type.getText().equals("text")) {
+    Attribute desc=node.attribute("desc");
+    Attribute var=node.attribute("var");
+    Attribute sysprop=node.attribute("sysprop");
+    if (desc == null || var == null || sysprop == null) {
+      Log.error("Missing variable from options config.");
+      return;
+    }
+    if (var.getText().equals("host")) {
+      JiveGlobals.setProperty(sysprop.getText(),options.host);
+    }
+ else     if (var.getText().equals("port")) {
+      JiveGlobals.setProperty(sysprop.getText(),options.port);
+    }
+ else     if (var.getText().equals("encoding")) {
+      JiveGlobals.setProperty(sysprop.getText(),options.encoding);
+    }
+  }
+ else   if (type.getText().equals("toggle")) {
+    Attribute desc=node.attribute("desc");
+    Attribute var=node.attribute("var");
+    Attribute sysprop=node.attribute("sysprop");
+    if (desc == null || var == null || sysprop == null) {
+      Log.error("Missing variable from options config.");
+      return;
+    }
+    for (    Object itemObj : node.elements("item")) {
+      Element item=(Element)itemObj;
+      saveOptionSetting(item,options);
+    }
+  }
+}
