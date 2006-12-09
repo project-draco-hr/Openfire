@@ -1,6 +1,8 @@
 {
   super.initialize(server);
   this.server=server;
+  offlinePresenceCache=CacheManager.initializeCache("Offline Presence Cache","offlinePresence",512 * 1024);
+  lastActivityCache=CacheManager.initializeCache("Last Activity Cache","lastActivity",128 * 1024);
   deliverer=server.getPacketDeliverer();
   sessionManager=server.getSessionManager();
   userManager=server.getUserManager();
