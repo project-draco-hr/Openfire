@@ -4,6 +4,9 @@
     if (username == null || !userManager.isRegisteredUser(username)) {
       return;
     }
+    if (sessionManager.getActiveSessionCount(username) > 0) {
+      return;
+    }
     String offlinePresence=null;
     if (!presence.getElement().elements().isEmpty()) {
       offlinePresence=presence.toXML();
