@@ -3,9 +3,12 @@
     return 0;
   }
   int sessionCount=0;
-  for (  Session session : sessions.get(username).getSessions()) {
-    if (session.getStatus() != Session.STATUS_CLOSED) {
-      sessionCount++;
+  SessionMap sessionMap=sessions.get(username);
+  if (sessionMap != null) {
+    for (    ClientSession session : sessionMap.getSessions()) {
+      if (session.getPresence().isAvailable()) {
+        sessionCount++;
+      }
     }
   }
   return sessionCount;
