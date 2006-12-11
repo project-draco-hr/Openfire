@@ -1,14 +1,22 @@
 {
-  String answer=null;
-  String presenceXML=user.getProperties().get(LAST_PRESENCE_PROP);
+  String username=user.getUsername();
+  String presenceStatus=null;
+  String presenceXML=offlinePresenceCache.get(username);
+  if (presenceXML == null) {
+    loadOfflinePresence(username);
+  }
+  presenceXML=offlinePresenceCache.get(username);
   if (presenceXML != null) {
+    if (presenceXML.equals(NULL_STRING)) {
+      return null;
+    }
     try {
       Document element=DocumentHelper.parseText(presenceXML);
-      answer=element.getRootElement().elementTextTrim("status");
+      presenceStatus=element.getRootElement().elementTextTrim("status");
     }
  catch (    DocumentException e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
   }
-  return answer;
+  return presenceStatus;
 }

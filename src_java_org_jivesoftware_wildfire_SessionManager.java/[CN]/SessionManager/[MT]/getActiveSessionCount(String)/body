@@ -1,0 +1,12 @@
+{
+  if (username == null || !userManager.isRegisteredUser(username)) {
+    return 0;
+  }
+  int sessionCount=0;
+  for (  Session session : sessions.get(username).getSessions()) {
+    if (session.getStatus() != Session.STATUS_CLOSED) {
+      sessionCount++;
+    }
+  }
+  return sessionCount;
+}

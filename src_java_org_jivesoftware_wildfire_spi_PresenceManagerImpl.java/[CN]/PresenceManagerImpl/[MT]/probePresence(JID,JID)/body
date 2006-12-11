@@ -12,7 +12,11 @@
       }
       Collection<ClientSession> sessions=sessionManager.getSessions(probee.getNode());
       if (sessions.isEmpty()) {
-        String presenceXML=userManager.getUserProperty(probee.getNode(),LAST_PRESENCE_PROP);
+        String presenceXML=offlinePresenceCache.get(probee.getNode());
+        if (presenceXML == null) {
+          loadOfflinePresence(probee.getNode());
+        }
+        presenceXML=offlinePresenceCache.get(probee.getNode());
         if (presenceXML != null) {
           try {
             Document element=DocumentHelper.parseText(presenceXML);

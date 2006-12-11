@@ -4,11 +4,22 @@
     if (username == null || !userManager.isRegisteredUser(username)) {
       return;
     }
-    try {
-      User probeeUser=userManager.getUser(username);
-      probeeUser.getProperties().remove(LAST_PRESENCE_PROP);
+    if (sessionManager.getSessionCount(username) > 1) {
+      return;
     }
- catch (    UserNotFoundException e) {
+    Connection con=null;
+    PreparedStatement pstmt=null;
+    try {
+      con=DbConnectionManager.getConnection();
+      pstmt=con.prepareStatement(DELETE_OFFLINE_PRESENCE);
+      pstmt.setString(1,username);
+      pstmt.execute();
+    }
+ catch (    SQLException sqle) {
+      Log.error(sqle);
+    }
+ finally {
+      DbConnectionManager.closeConnection(pstmt,con);
     }
   }
 }
