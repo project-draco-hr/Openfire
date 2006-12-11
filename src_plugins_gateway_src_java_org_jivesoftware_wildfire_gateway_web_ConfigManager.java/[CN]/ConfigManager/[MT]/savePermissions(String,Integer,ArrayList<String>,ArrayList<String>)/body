@@ -1,0 +1,28 @@
+{
+  JiveGlobals.setProperty("plugin.gateway." + transportName + ".registration",overallSetting.toString());
+  PermissionManager permissionManager=new PermissionManager(TransportType.valueOf(transportName));
+  ArrayList<User> userList=new ArrayList<User>();
+  UserManager userManager=UserManager.getInstance();
+  for (  String username : users) {
+    try {
+      User user=userManager.getUser(username);
+      userList.add(user);
+    }
+ catch (    UserNotFoundException e) {
+      Log.error("User " + username + " not found while adding access rules.");
+    }
+  }
+  permissionManager.storeUserList(userList);
+  ArrayList<Group> groupList=new ArrayList<Group>();
+  GroupManager groupManager=GroupManager.getInstance();
+  for (  String grpname : groups) {
+    try {
+      Group group=groupManager.getGroup(grpname);
+      groupList.add(group);
+    }
+ catch (    GroupNotFoundException e) {
+      Log.error("Group " + grpname + " not found while adding access rules.");
+    }
+  }
+  permissionManager.storeGroupList(groupList);
+}

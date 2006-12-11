@@ -46,7 +46,7 @@
       if (registrations.iterator().hasNext()) {
         registered=true;
       }
-      if (!registered && !permissionManager.hasAccess(this.transportType,from)) {
+      if (!registered && !permissionManager.hasAccess(from)) {
         IQ result=IQ.createResultIQ(packet);
         result.setError(Condition.bad_request);
         reply.add(result);
@@ -124,7 +124,7 @@ catch (        IllegalArgumentException e) {
         curNickname=registration.getNickname();
         registered=true;
       }
-      if (!registered && !permissionManager.hasAccess(this.transportType,from)) {
+      if (!registered && !permissionManager.hasAccess(from)) {
         result.setError(Condition.bad_request);
         reply.add(result);
         return reply;

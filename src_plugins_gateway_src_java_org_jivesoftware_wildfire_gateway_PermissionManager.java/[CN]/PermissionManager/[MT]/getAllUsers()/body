@@ -1,15 +1,16 @@
 {
+  ArrayList<String> userList=new ArrayList<String>();
   Connection con=null;
   PreparedStatement pstmt=null;
   ResultSet rs=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(IS_USER_LISTED);
-    pstmt.setString(1,type.toString());
-    pstmt.setString(2,jid.getNode());
+    pstmt=con.prepareStatement(GET_ALL_USERS);
+    pstmt.setString(1,transportType.toString());
     rs=pstmt.executeQuery();
-    rs.next();
-    return (rs.getInt(1) > 1);
+    while (rs.next()) {
+      userList.add(rs.getString(1));
+    }
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
@@ -17,5 +18,5 @@
  finally {
     DbConnectionManager.closeConnection(rs,pstmt,con);
   }
-  return false;
+  return userList;
 }
