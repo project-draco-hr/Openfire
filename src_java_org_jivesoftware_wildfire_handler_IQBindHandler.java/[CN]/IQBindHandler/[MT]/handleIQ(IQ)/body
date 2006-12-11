@@ -24,47 +24,39 @@
       return null;
     }
   }
-  try {
-    AuthToken authToken=session.getAuthToken();
-    if (authToken.isAnonymous()) {
-      session.setAnonymousAuth();
-    }
+  AuthToken authToken=session.getAuthToken();
+  if (authToken.isAnonymous()) {
+    session.setAnonymousAuth();
+  }
  else {
-      String username=authToken.getUsername().toLowerCase();
-      if (sessionManager.isActiveRoute(username,resource)) {
-        ClientSession oldSession;
-        try {
-          String domain=localServer.getServerInfo().getName();
-          oldSession=sessionManager.getSession(username,domain,resource);
-          oldSession.incrementConflictCount();
-          int conflictLimit=sessionManager.getConflictKickLimit();
-          if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
-            Connection conn=oldSession.getConnection();
-            if (conn != null) {
-              StreamError error=new StreamError(StreamError.Condition.conflict);
-              conn.deliverRawText(error.toXML());
-              conn.close();
-            }
-          }
- else {
-            reply.setChildElement(packet.getChildElement().createCopy());
-            reply.setError(PacketError.Condition.conflict);
-            session.process(reply);
-            return null;
+    String username=authToken.getUsername().toLowerCase();
+    if (sessionManager.isActiveRoute(username,resource)) {
+      ClientSession oldSession;
+      try {
+        String domain=localServer.getServerInfo().getName();
+        oldSession=sessionManager.getSession(username,domain,resource);
+        oldSession.incrementConflictCount();
+        int conflictLimit=sessionManager.getConflictKickLimit();
+        if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
+          Connection conn=oldSession.getConnection();
+          if (conn != null) {
+            StreamError error=new StreamError(StreamError.Condition.conflict);
+            conn.deliverRawText(error.toXML());
+            conn.close();
           }
         }
- catch (        Exception e) {
-          Log.error("Error during login",e);
+ else {
+          reply.setChildElement(packet.getChildElement().createCopy());
+          reply.setError(PacketError.Condition.conflict);
+          session.process(reply);
+          return null;
         }
       }
-      session.setAuthToken(authToken,userManager,resource);
+ catch (      Exception e) {
+        Log.error("Error during login",e);
+      }
     }
-  }
- catch (  UserNotFoundException e) {
-    reply.setChildElement(packet.getChildElement().createCopy());
-    reply.setError(PacketError.Condition.not_authorized);
-    session.process(reply);
-    return null;
+    session.setAuthToken(authToken,resource);
   }
   child.addElement("jid").setText(session.getAddress().toString());
   session.process(reply);
