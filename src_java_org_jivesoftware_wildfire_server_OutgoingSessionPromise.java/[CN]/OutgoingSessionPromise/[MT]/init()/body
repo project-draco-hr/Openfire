@@ -12,18 +12,21 @@
         try {
           if (threadPool.getActiveCount() < threadPool.getMaximumPoolSize()) {
             final Packet packet=packets.take();
-            threadPool.execute(new Runnable(){
-              public void run(){
-                try {
-                  createSessionAndSendPacket(packet);
-                }
- catch (                Exception e) {
-                  returnErrorToSender(packet);
-                  Log.debug("Error sending packet to remote server: " + packet,e);
-                }
+            boolean newProcessor=false;
+            PacketsProcessor packetsProcessor;
+            String domain=packet.getTo().getDomain();
+synchronized (domain.intern()) {
+              packetsProcessor=packetsProcessors.get(domain);
+              if (packetsProcessor == null) {
+                packetsProcessor=new PacketsProcessor(OutgoingSessionPromise.this,domain,routingTable);
+                packetsProcessors.put(domain,packetsProcessor);
+                newProcessor=true;
               }
+              packetsProcessor.addPacket(packet);
             }
-);
+            if (newProcessor) {
+              threadPool.execute(packetsProcessor);
+            }
           }
  else {
             Thread.sleep(200);

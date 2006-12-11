@@ -1,0 +1,15 @@
+{
+  while (!isDone()) {
+    Packet packet=packets.poll();
+    if (packet != null) {
+      try {
+        sendPacket(packet);
+      }
+ catch (      Exception e) {
+        returnErrorToSender(packet);
+        Log.debug("Error sending packet to remote server: " + packet,e);
+      }
+    }
+  }
+  promise.processorDone(this);
+}
