@@ -12,6 +12,17 @@
       offlinePresence=presence.toXML();
     }
     java.util.Date offlinePresenceDate=new java.util.Date();
+    boolean addedToCache;
+    if (offlinePresence == null) {
+      addedToCache=!NULL_STRING.equals(offlinePresenceCache.put(username,NULL_STRING));
+    }
+ else {
+      addedToCache=!offlinePresence.equals(offlinePresenceCache.put(username,offlinePresence));
+    }
+    if (!addedToCache) {
+      return;
+    }
+    lastActivityCache.put(username,offlinePresenceDate.getTime());
     Connection con=null;
     PreparedStatement pstmt=null;
     try {
