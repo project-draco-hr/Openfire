@@ -1,5 +1,5 @@
 {
-  remove(key);
+  V answer=remove(key);
   int objectSize=calculateSize(value);
   if (maxCacheSize > 0 && objectSize > maxCacheSize * .90) {
     Log.warn("Cache: " + name + " -- object with key "+ key+ " is too large to fit in cache. Size is "+ objectSize);
@@ -14,5 +14,5 @@
   ageNode.timestamp=System.currentTimeMillis();
   cacheObject.ageListNode=ageNode;
   cullCache();
-  return value;
+  return answer;
 }
