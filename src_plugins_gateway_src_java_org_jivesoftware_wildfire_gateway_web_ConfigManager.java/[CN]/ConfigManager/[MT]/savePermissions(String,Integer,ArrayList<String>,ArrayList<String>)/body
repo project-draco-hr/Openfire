@@ -4,6 +4,9 @@
   ArrayList<User> userList=new ArrayList<User>();
   UserManager userManager=UserManager.getInstance();
   for (  String username : users) {
+    if (username.matches("\\s+")) {
+      continue;
+    }
     try {
       User user=userManager.getUser(username);
       userList.add(user);
@@ -16,6 +19,9 @@
   ArrayList<Group> groupList=new ArrayList<Group>();
   GroupManager groupManager=GroupManager.getInstance();
   for (  String grpname : groups) {
+    if (grpname.matches("\\s+")) {
+      continue;
+    }
     try {
       Group group=groupManager.getGroup(grpname);
       groupList.add(group);
