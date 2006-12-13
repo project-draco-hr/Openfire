@@ -12,7 +12,7 @@
       sysadmins.add(jid.trim().toLowerCase());
     }
   }
-  nodeCreationRestricted=Boolean.parseBoolean(JiveGlobals.getProperty("xmpp.pubsub.create.anyone","false"));
+  nodeCreationRestricted=JiveGlobals.getBooleanProperty("xmpp.pubsub.create.anyone",false);
   property=JiveGlobals.getProperty("xmpp.pubsub.create.jid");
   if (property != null) {
     jids=property.split(",");
@@ -20,6 +20,7 @@
       allowedToCreate.add(jid.trim().toLowerCase());
     }
   }
+  multipleSubscriptionsEnabled=JiveGlobals.getBooleanProperty("xmpp.pubsub.multiple-subscriptions",true);
   routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
   engine=new PubSubEngine(this,server.getPacketRouter());
