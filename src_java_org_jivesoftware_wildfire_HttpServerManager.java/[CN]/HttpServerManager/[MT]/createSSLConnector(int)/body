@@ -2,6 +2,14 @@
   try {
     if (securePort > 0 && CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getName())) {
       SslSocketConnector sslConnector=new JiveSslConnector();
+      String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+      String bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=interfaceName;
+        }
+      }
+      sslConnector.setHost(bindInterface);
       sslConnector.setPort(securePort);
       sslConnector.setTrustPassword(SSLConfig.getTrustPassword());
       sslConnector.setTruststoreType(SSLConfig.getStoreType());
