@@ -1,0 +1,24 @@
+{
+  DataForm form=new DataForm(DataForm.Type.result);
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  HttpServerManager manager=HttpServerManager.getInstance();
+  boolean isEnabled=manager.isHttpBindEnabled();
+  field=form.addField();
+  field.setLabel("Http Bind Enabled");
+  field.setVariable("httpbindenabled");
+  field.addValue(isEnabled);
+  if (isEnabled) {
+    field=form.addField();
+    field.setLabel("Http Bind Address");
+    field.setVariable("httpbindaddress");
+    field.addValue(manager.getHttpBindUnsecureAddress());
+    field=form.addField();
+    field.setLabel("Http Bind Secure Address");
+    field.setVariable("httpbindsecureaddress");
+    field.addValue(manager.getHttpBindSecureAddress());
+  }
+  command.add(form.getElement());
+}
