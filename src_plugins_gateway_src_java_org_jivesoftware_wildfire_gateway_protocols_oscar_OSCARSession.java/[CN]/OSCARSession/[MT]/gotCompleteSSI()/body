@@ -7,11 +7,11 @@
       nickname=buddy.getScreenname();
     }
     int groupid=buddy.getGroupId();
-    String groupname="Transport Buddies";
-    if (groups.containsKey(groupid)) {
-      groupname=groups.get(groupid).getGroupName();
-      if (groupname.length() < 1) {
-        groupname="Transport Buddies";
+    String groupname=null;
+    if (groupid != 0 && groups.containsKey(groupid)) {
+      String newgroupname=groups.get(groupid).getGroupName();
+      if (newgroupname.length() > 0) {
+        groupname=newgroupname;
       }
     }
     legacyusers.add(new TransportBuddy(buddy.getScreenname(),nickname,groupname));

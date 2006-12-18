@@ -1,10 +1,13 @@
 {
+  if (groupName.matches("/^\\s*$/")) {
+    return 0;
+  }
   for (  GroupItem g : groups.values()) {
     if (groupName.equalsIgnoreCase(g.getGroupName())) {
       return g.getId();
     }
   }
-  Integer newGroupId=highestGroupId + 1;
+  Integer newGroupId=highestBuddyIdPerGroup.get(0) + 1;
   GroupItem newGroup=new GroupItem(groupName,newGroupId);
   request(new CreateItemsCmd(newGroup.toSsiItem()));
   gotGroup(newGroup);

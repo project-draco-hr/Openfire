@@ -1,6 +1,6 @@
 {
   if (grouplist.isEmpty()) {
-    grouplist.add("Transport Buddies");
+    grouplist.add("   ");
   }
   Log.debug("contact = " + contact + ", grouplist = "+ grouplist);
   for (  String group : grouplist) {
@@ -16,11 +16,20 @@
   }
   for (  BuddyItem buddy : buddies.values()) {
     if (buddy.getScreenname().equalsIgnoreCase(contact)) {
-      if (buddy.getGroupId() == 0) {
+      if (buddy.getGroupId() == 0 && !grouplist.contains("   ")) {
+        Log.debug("Removing " + buddy + " from main group");
+        request(new DeleteItemsCmd(buddy.toSsiItem()));
+        buddies.remove("" + buddy.getGroupId() + "."+ buddy.getId());
       }
  else       if (!groups.containsKey(buddy.getGroupId())) {
+        Log.debug("Removing " + buddy + " because of unknown group");
+        request(new DeleteItemsCmd(buddy.toSsiItem()));
+        buddies.remove("" + buddy.getGroupId() + "."+ buddy.getId());
       }
  else       if (!grouplist.contains(groups.get(buddy.getGroupId()).getGroupName())) {
+        Log.debug("Removing " + buddy + " because not in list of groups");
+        request(new DeleteItemsCmd(buddy.toSsiItem()));
+        buddies.remove("" + buddy.getGroupId() + "."+ buddy.getId());
       }
  else {
         if (buddy.getAlias() == null || !buddy.getAlias().equals(nickname)) {
