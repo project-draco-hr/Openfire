@@ -9,7 +9,7 @@
     m.setType(Message.Type.error);
     m.setFrom(this.getMainSession().getTransport().getJID());
     m.setTo(this.getMainSession().getJIDWithHighestPriority());
-    m.setBody("Connection failed: " + e.getReason());
+    m.setBody(LocaleUtils.getLocalizedString("gateway.oscar.connectionfailed","gateway") + " " + e.getReason());
     this.getMainSession().getTransport().sendPacket(m);
     this.getMainSession().logOut();
   }

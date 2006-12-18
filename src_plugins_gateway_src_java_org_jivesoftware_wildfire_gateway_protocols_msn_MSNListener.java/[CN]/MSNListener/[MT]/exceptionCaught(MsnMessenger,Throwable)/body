@@ -1,14 +1,14 @@
 {
   Log.debug("MSN: Exception occurred for " + messenger.getOwner().getEmail() + " : "+ throwable);
   if (throwable.getClass().getName().equals("net.sf.jml.exception.IncorrectPasswordException")) {
-    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),"The password you registered with is incorrect.  Please re-register with the correct password.",Message.Type.error);
+    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.passwordincorrect","gateway"),Message.Type.error);
     msnSession.logOut();
   }
  else   if (throwable.getClass().getName().equals("net.sf.jml.exception.MsnProtocolException")) {
     Log.debug("MSN: Protocol exception: " + throwable.toString());
   }
  else   if (throwable.getClass().getName().equals("net.sf.jml.exception.MsgNotSendException")) {
-    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),"Unable to send MSN message.  Reason: " + throwable.toString(),Message.Type.error);
+    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.sendmsgfailed","gateway") + " " + throwable.toString(),Message.Type.error);
   }
  else   if (throwable.getClass().getName().equals("net.sf.jml.exception.UnknownMessageException")) {
     Log.debug("MSN: Unknown message: " + throwable.toString());

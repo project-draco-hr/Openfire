@@ -3,7 +3,7 @@
   if (packet.getType() == IQ.Type.get) {
     IQ result=IQ.createResultIQ(packet);
     Element query=DocumentHelper.createElement(QName.get("query",IQ_GATEWAY));
-    query.addElement("desc").addText("Please enter the person's " + this.getName() + " username.");
+    query.addElement("desc").addText(LocaleUtils.getLocalizedString("gateway.base.enterusername","gateway",Arrays.asList(transportType.toString().toUpperCase())));
     query.addElement("prompt");
     result.setChildElement(query);
     reply.add(result);
