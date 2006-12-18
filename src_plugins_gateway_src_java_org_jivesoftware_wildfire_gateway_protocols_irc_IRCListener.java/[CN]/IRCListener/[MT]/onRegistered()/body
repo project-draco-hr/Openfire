@@ -5,7 +5,14 @@
   p.setFrom(getSession().getTransport().getJID());
   p.setTo(getSession().getJID());
   getSession().getTransport().sendPacket(p);
+  getSession().setLoginStatus(TransportLoginStatus.LOGGED_IN);
+  String buddyList="";
+  for (  String buddy : getSession().getBuddyStatuses().keySet()) {
+    buddyList=buddyList + " " + buddy;
+  }
+  if (!buddyList.equals("")) {
+    getSession().getConnection().doIson(buddyList);
+  }
   statusCheck=new StatusCheck();
   timer.schedule(statusCheck,timerInterval,timerInterval);
-  getSession().setLoginStatus(TransportLoginStatus.LOGGED_IN);
 }
