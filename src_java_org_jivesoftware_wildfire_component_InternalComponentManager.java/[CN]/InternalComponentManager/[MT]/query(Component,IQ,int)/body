@@ -1,0 +1,21 @@
+{
+  final LinkedBlockingQueue<IQ> answer=new LinkedBlockingQueue<IQ>(8);
+  XMPPServer.getInstance().getIQRouter().addIQResultListener(packet.getID(),new IQResultListener(){
+    public void receivedAnswer(    IQ packet){
+      answer.offer(packet);
+    }
+  }
+);
+  sendPacket(component,packet);
+  IQ reply=null;
+  try {
+    reply=answer.poll(timeout,TimeUnit.MILLISECONDS);
+  }
+ catch (  InterruptedException e) {
+  }
+  if (reply == null) {
+    reply=IQ.createResultIQ(packet);
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}
