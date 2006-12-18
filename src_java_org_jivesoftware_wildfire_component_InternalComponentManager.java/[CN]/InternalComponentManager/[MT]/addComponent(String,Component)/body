@@ -9,15 +9,18 @@
   try {
     component.initialize(componentJID,this);
     component.start();
+    for (    ComponentEventListener listener : listeners) {
+      listener.componentRegistered(component,componentJID);
+    }
+    checkPresences();
+    checkDiscoSupport(component,componentJID);
   }
- catch (  ComponentException e) {
+ catch (  Exception e) {
     components.remove(subdomain);
     XMPPServer.getInstance().getRoutingTable().removeRoute(componentJID);
-    throw e;
+    if (e instanceof ComponentException) {
+      throw (ComponentException)e;
+    }
+    throw new ComponentException(e);
   }
-  for (  ComponentEventListener listener : listeners) {
-    listener.componentRegistered(component,componentJID);
-  }
-  checkPresences();
-  checkDiscoSupport(component,componentJID);
 }
