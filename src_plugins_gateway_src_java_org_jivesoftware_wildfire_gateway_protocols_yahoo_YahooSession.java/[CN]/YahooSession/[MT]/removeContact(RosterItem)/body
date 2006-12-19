@@ -1,5 +1,6 @@
 {
   String contact=getTransport().convertJIDToID(item.getJid());
+  lockRoster(item.getJid().toString());
   for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
     if (yahooGroup.getIndexOfFriend(contact) != -1) {
       try {
@@ -11,4 +12,5 @@
       }
     }
   }
+  unlockRoster(item.getJid().toString());
 }
