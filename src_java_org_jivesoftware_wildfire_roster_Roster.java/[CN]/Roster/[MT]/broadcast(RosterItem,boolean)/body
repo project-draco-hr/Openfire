@@ -4,7 +4,10 @@
   }
   List<String> groups=new ArrayList<String>(item.getGroups());
   for (  Group sharedGroup : item.getSharedGroups()) {
-    groups.add(sharedGroup.getProperties().get("sharedRoster.displayName"));
+    String displayName=sharedGroup.getProperties().get("sharedRoster.displayName");
+    if (displayName != null) {
+      groups.add(displayName);
+    }
   }
   org.xmpp.packet.Roster roster=new org.xmpp.packet.Roster();
   roster.setType(IQ.Type.set);
