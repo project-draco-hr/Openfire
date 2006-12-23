@@ -56,6 +56,9 @@ status=doPlainAuthentication(session,doc);
  else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
 status=doExternalAuthentication(session,doc);
 }
+ else if (mechanism.equalsIgnoreCase("JIVE-SHAREDSECRET")) {
+status=doSharedSecretAuthentication(session,doc);
+}
  else if (mechanisms.contains(mechanism)) {
 SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
 if (ss != null) {

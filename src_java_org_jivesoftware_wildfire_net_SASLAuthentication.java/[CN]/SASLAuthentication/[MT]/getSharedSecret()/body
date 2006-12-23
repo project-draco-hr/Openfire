@@ -1,0 +1,11 @@
+{
+  if (!isSharedSecretAllowed()) {
+    return null;
+  }
+  String sharedSecret=JiveGlobals.getProperty("xmpp.auth.sharedSecret");
+  if (sharedSecret == null) {
+    sharedSecret=StringUtils.randomString(8);
+    JiveGlobals.setProperty("xmpp.auth.sharedSecret",sharedSecret);
+  }
+  return sharedSecret;
+}
