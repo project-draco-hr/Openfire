@@ -1,0 +1,65 @@
+{
+  boolean compress=false;
+  if (!disableCompression) {
+    if (request.getHeader("accept-encoding") != null && request.getHeader("accept-encoding").indexOf("gzip") != -1) {
+      compress=true;
+    }
+ else     if (request.getHeader("---------------") != null) {
+      compress=true;
+    }
+  }
+  response.setHeader("Content-type","text/javascript");
+  response.setHeader("Vary","Accept-Encoding");
+  if (!debug) {
+    DateFormat formatter=new SimpleDateFormat("d MMM yyyy HH:mm:ss 'GMT'",Locale.US);
+    formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    response.setHeader("Expires",formatter.format(new Date(System.currentTimeMillis() + expiresOffset)));
+    response.setHeader("Cache-Control","max-age=" + expiresOffset);
+  }
+ else {
+    response.setHeader("Expires","1");
+    compress=false;
+  }
+  OutputStream out=null;
+  InputStream in=null;
+  try {
+    byte[] jsContent;
+    String cacheKey=String.valueOf(compress);
+    jsContent=cache.get(cacheKey);
+    if (debug || jsContent == null) {
+      jsContent=getJavaScriptContent(compress);
+      cache.put(cacheKey,jsContent);
+    }
+    response.setContentLength(jsContent.length);
+    if (compress) {
+      response.setHeader("Content-Encoding","gzip");
+    }
+    in=new ByteArrayInputStream(jsContent);
+    out=response.getOutputStream();
+    byte[] buf=new byte[128 * 1024];
+    int len;
+    while ((len=in.read(buf)) != -1) {
+      out.write(buf,0,len);
+    }
+    out.flush();
+  }
+ catch (  IOException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (in != null) {
+        in.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+    try {
+      if (out != null) {
+        out.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+}

@@ -3,20 +3,6 @@
     CertificateManager.removeListener(certificateListener);
   }
   try {
-    if (httpBindServer != null && httpBindServer.isRunning()) {
-      httpBindServer.stop();
-    }
-    if (httpBindServlets != null) {
-      for (      ServletHolder httpBindContext : httpBindContexts) {
-        httpBindContext.stop();
-      }
-    }
-  }
- catch (  Exception e) {
-    Log.error("Error stopping HTTP bind server",e);
-  }
-  httpBindServer=null;
-  try {
     if (adminServer != null && adminServer.isRunning()) {
       adminServer.stop();
     }

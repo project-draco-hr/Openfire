@@ -2,24 +2,11 @@
   restartNeeded=false;
   certificateListener=new CertificateListener();
   CertificateManager.addListener(certificateListener);
-  if (httpBindServlets != null && isHttpBindServiceEnabled()) {
-    bindPort=JiveGlobals.getIntProperty(HTTP_BIND_PORT,ADMIN_CONSOLE_PORT_DEFAULT);
-    bindSecurePort=JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,ADMIN_CONSOLE_SECURE_PORT_DEFAULT);
-    configureHttpBindServer(bindPort,bindSecurePort);
-  }
   if (adminConsoleContext != null) {
     createAdminConsoleServer();
   }
   addContexts();
-  if (httpBindServer != null) {
-    try {
-      httpBindServer.start();
-    }
- catch (    Exception e) {
-      Log.error("Could not start HTTP bind server",e);
-    }
-  }
-  if (adminServer != null && adminServer != httpBindServer) {
+  if (adminServer != null) {
     try {
       adminServer.start();
     }

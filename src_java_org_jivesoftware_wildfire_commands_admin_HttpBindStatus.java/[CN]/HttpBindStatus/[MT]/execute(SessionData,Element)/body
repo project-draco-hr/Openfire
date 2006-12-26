@@ -4,7 +4,7 @@
   field.setType(FormField.Type.hidden);
   field.setVariable("FORM_TYPE");
   field.addValue("http://jabber.org/protocol/admin");
-  HttpServerManager manager=HttpServerManager.getInstance();
+  HttpBindManager manager=HttpBindManager.getInstance();
   boolean isEnabled=manager.isHttpBindEnabled();
   field=form.addField();
   field.setLabel("Http Bind Enabled");
@@ -19,6 +19,13 @@
     field.setLabel("Http Bind Secure Address");
     field.setVariable("httpbindsecureaddress");
     field.addValue(manager.getHttpBindSecureAddress());
+    String jsUrl=manager.getJavaScriptUrl();
+    if (jsUrl != null) {
+      field=form.addField();
+      field.setLabel("Http Bind JavaScript Address");
+      field.setVariable("javascriptaddress");
+      field.addValue(jsUrl);
+    }
   }
   command.add(form.getElement());
 }

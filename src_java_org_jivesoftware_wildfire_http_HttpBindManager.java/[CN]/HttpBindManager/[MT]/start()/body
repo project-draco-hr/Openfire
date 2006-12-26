@@ -1,0 +1,16 @@
+{
+  certificateListener=new CertificateListener();
+  CertificateManager.addListener(certificateListener);
+  if (!isHttpBindServiceEnabled()) {
+    return;
+  }
+  bindPort=getHttpBindUnsecurePort();
+  bindSecurePort=getHttpBindSecurePort();
+  configureHttpBindServer(bindPort,bindSecurePort);
+  try {
+    httpBindServer.start();
+  }
+ catch (  Exception e) {
+    Log.error("Error starting HTTP bind service",e);
+  }
+}

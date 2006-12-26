@@ -1,0 +1,22 @@
+{
+  try {
+    if (securePort > 0 && CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getName())) {
+      SslSocketConnector sslConnector=new JiveSslConnector();
+      sslConnector.setHost(getBindInterface());
+      sslConnector.setPort(securePort);
+      sslConnector.setTrustPassword(SSLConfig.getTrustPassword());
+      sslConnector.setTruststoreType(SSLConfig.getStoreType());
+      sslConnector.setTruststore(SSLConfig.getTruststoreLocation());
+      sslConnector.setNeedClientAuth(false);
+      sslConnector.setWantClientAuth(false);
+      sslConnector.setKeyPassword(SSLConfig.getKeyPassword());
+      sslConnector.setKeystoreType(SSLConfig.getStoreType());
+      sslConnector.setKeystore(SSLConfig.getKeystoreLocation());
+      return sslConnector;
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error creating SSL connector for Http bind",e);
+  }
+  return null;
+}
