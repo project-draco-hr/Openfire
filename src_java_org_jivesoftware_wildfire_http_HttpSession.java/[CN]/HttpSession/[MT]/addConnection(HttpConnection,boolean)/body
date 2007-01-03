@@ -9,7 +9,7 @@
     throw new HttpBindException("Session was started from secure connection, all " + "connections on this session must be secured.",false,403);
   }
   connection.setSession(this);
-  if (pendingElements.size() > 0) {
+  if (hold <= 0 || pendingElements.size() > 0) {
     String deliverable=createDeliverable(pendingElements);
     try {
       fireConnectionOpened(connection);
@@ -22,7 +22,7 @@
     }
   }
  else {
-    while (hold > 0 && connectionQueue.size() >= hold) {
+    while (connectionQueue.size() >= hold) {
       HttpConnection toClose=connectionQueue.remove();
       toClose.close();
       fireConnectionClosed(toClose);
