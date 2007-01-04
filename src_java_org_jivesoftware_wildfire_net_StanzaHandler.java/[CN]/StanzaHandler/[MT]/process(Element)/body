@@ -1,0 +1,90 @@
+{
+  if (doc == null) {
+    return;
+  }
+  if (connection.getTlsPolicy() == Connection.TLSPolicy.required && !connection.isSecure()) {
+    closeNeverSecuredConnection();
+    return;
+  }
+  String tag=doc.getName();
+  if ("message".equals(tag)) {
+    Message packet;
+    try {
+      packet=new Message(doc,true);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.debug("Rejecting packet. JID malformed",e);
+      Message reply=new Message();
+      reply.setID(doc.attributeValue("id"));
+      reply.setTo(session.getAddress());
+      reply.getElement().addAttribute("from",doc.attributeValue("to"));
+      reply.setError(PacketError.Condition.jid_malformed);
+      session.process(reply);
+      return;
+    }
+    processMessage(packet);
+  }
+ else   if ("presence".equals(tag)) {
+    Presence packet;
+    try {
+      packet=new Presence(doc,true);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.debug("Rejecting packet. JID malformed",e);
+      Presence reply=new Presence();
+      reply.setID(doc.attributeValue("id"));
+      reply.setTo(session.getAddress());
+      reply.getElement().addAttribute("from",doc.attributeValue("to"));
+      reply.setError(PacketError.Condition.jid_malformed);
+      session.process(reply);
+      return;
+    }
+    try {
+      packet.getType();
+    }
+ catch (    IllegalArgumentException e) {
+      Log.warn("Invalid presence type",e);
+      packet.setType(null);
+    }
+    try {
+      packet.getShow();
+    }
+ catch (    IllegalArgumentException e) {
+      Log.warn("Invalid presence show",e);
+      packet.setShow(null);
+    }
+    if (session.getStatus() == Session.STATUS_CLOSED && packet.isAvailable()) {
+      Log.warn("Ignoring available presence packet of closed session: " + packet);
+      return;
+    }
+    processPresence(packet);
+  }
+ else   if ("iq".equals(tag)) {
+    IQ packet;
+    try {
+      packet=getIQ(doc);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.debug("Rejecting packet. JID malformed",e);
+      IQ reply=new IQ();
+      if (!doc.elements().isEmpty()) {
+        reply.setChildElement(((Element)doc.elements().get(0)).createCopy());
+      }
+      reply.setID(doc.attributeValue("id"));
+      reply.setTo(session.getAddress());
+      if (doc.attributeValue("to") != null) {
+        reply.getElement().addAttribute("from",doc.attributeValue("to"));
+      }
+      reply.setError(PacketError.Condition.jid_malformed);
+      session.process(reply);
+      return;
+    }
+    processIQ(packet);
+  }
+ else {
+    if (!processUnknowPacket(doc)) {
+      Log.warn(LocaleUtils.getLocalizedString("admin.error.packet.tag") + doc.asXML());
+      session.getConnection().close();
+    }
+  }
+}

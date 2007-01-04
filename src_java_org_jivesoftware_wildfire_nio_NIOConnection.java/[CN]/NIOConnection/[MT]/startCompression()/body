@@ -1,0 +1,8 @@
+{
+  IoFilterChain chain=ioSession.getFilterChain();
+  String baseFilter="org.apache.mina.common.ExecutorThreadModel";
+  if (chain.contains("tls")) {
+    baseFilter="tls";
+  }
+  chain.addAfter(baseFilter,"compression",new CompressionFilter(CompressionFilter.COMPRESSION_MAX));
+}

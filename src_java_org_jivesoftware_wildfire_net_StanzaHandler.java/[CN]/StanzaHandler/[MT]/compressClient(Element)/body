@@ -1,0 +1,27 @@
+{
+  String error=null;
+  if (connection.getCompressionPolicy() == Connection.CompressionPolicy.disabled) {
+    error="<failure xmlns='http://jabber.org/protocol/compress'><setup-failed/></failure>";
+    Log.warn("Client requested compression while compression is disabled. Closing " + "connection : " + connection);
+  }
+ else   if (connection.isCompressed()) {
+    error="<failure xmlns='http://jabber.org/protocol/compress'><setup-failed/></failure>";
+    Log.warn("Client requested compression and connection is already compressed. Closing " + "connection : " + connection);
+  }
+ else {
+    String method=doc.elementText("method");
+    if (!"zlib".equals(method)) {
+      error="<failure xmlns='http://jabber.org/protocol/compress'><unsupported-method/></failure>";
+      Log.warn("Requested compression method is not supported: " + method + ". Closing connection : "+ connection);
+    }
+  }
+  if (error != null) {
+    connection.deliverRawText(error);
+    return false;
+  }
+ else {
+    connection.deliverRawText("<compressed xmlns='http://jabber.org/protocol/compress'/>");
+    connection.startCompression();
+    return true;
+  }
+}

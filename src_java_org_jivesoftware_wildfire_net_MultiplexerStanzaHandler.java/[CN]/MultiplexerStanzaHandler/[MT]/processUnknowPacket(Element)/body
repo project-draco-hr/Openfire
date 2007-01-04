@@ -1,0 +1,18 @@
+{
+  String tag=doc.getName();
+  if ("route".equals(tag)) {
+    processRoute(new Route(doc));
+    return true;
+  }
+ else   if ("handshake".equals(tag)) {
+    if (!((ConnectionMultiplexerSession)session).authenticate(doc.getStringValue())) {
+      session.getConnection().close();
+    }
+    return true;
+  }
+ else   if ("error".equals(tag) && "stream".equals(doc.getNamespacePrefix())) {
+    session.getConnection().close();
+    return true;
+  }
+  return false;
+}

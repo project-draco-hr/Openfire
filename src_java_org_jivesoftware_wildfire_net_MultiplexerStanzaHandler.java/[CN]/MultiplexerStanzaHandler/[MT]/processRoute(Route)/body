@@ -1,0 +1,12 @@
+{
+  if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+    Route reply=new Route(packet.getStreamID());
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return;
+  }
+  packetHandler.route(packet);
+}

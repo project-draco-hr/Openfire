@@ -1,0 +1,127 @@
+{
+  int readByte=byteBuffer.remaining();
+  invalidateBuffer();
+  CharBuffer charBuffer=encoder.decode(byteBuffer.buf());
+  char[] buf=charBuffer.array();
+  buffer.append(buf);
+  char ch;
+  for (int i=0; i < readByte; i++) {
+    ch=buf[i];
+    if (status == XMLLightweightParser.TAIL) {
+      if (ch == head.charAt(tailCount)) {
+        tailCount++;
+        if (tailCount == head.length()) {
+          int end=buffer.length() - readByte + (i + 1);
+          String msg=buffer.substring(startLastMsg,end);
+          foundMsg(msg);
+          startLastMsg=end;
+        }
+      }
+ else {
+        tailCount=0;
+        status=XMLLightweightParser.INSIDE;
+      }
+    }
+ else     if (status == XMLLightweightParser.PRETAIL) {
+      if (ch == XMLLightweightParser.CDATA_START[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == XMLLightweightParser.CDATA_START.length) {
+          status=XMLLightweightParser.INSIDE_CDATA;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+        status=XMLLightweightParser.INSIDE;
+      }
+      if (ch == '/') {
+        status=XMLLightweightParser.TAIL;
+      }
+    }
+ else     if (status == XMLLightweightParser.VERIFY_CLOSE_TAG) {
+      if (ch == '>') {
+        int end=buffer.length() - readByte + (i + 1);
+        String msg=buffer.substring(startLastMsg,end);
+        foundMsg(msg);
+        startLastMsg=end;
+      }
+ else {
+        status=XMLLightweightParser.INSIDE;
+      }
+    }
+ else     if (status == XMLLightweightParser.INSIDE_PARAM_VALUE) {
+      if (ch == '"') {
+        status=XMLLightweightParser.INSIDE;
+        continue;
+      }
+    }
+ else     if (status == XMLLightweightParser.INSIDE_CDATA) {
+      if (ch == XMLLightweightParser.CDATA_END[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == XMLLightweightParser.CDATA_END.length) {
+          status=XMLLightweightParser.INSIDE;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+      }
+    }
+ else     if (status == XMLLightweightParser.INSIDE) {
+      if (ch == XMLLightweightParser.CDATA_START[cdataOffset]) {
+        cdataOffset++;
+        if (cdataOffset == XMLLightweightParser.CDATA_START.length) {
+          status=XMLLightweightParser.INSIDE_CDATA;
+          cdataOffset=0;
+          continue;
+        }
+      }
+ else {
+        cdataOffset=0;
+      }
+      if (ch == '"') {
+        status=XMLLightweightParser.INSIDE_PARAM_VALUE;
+      }
+ else       if (ch == '>') {
+        if (insideRootTag && ("stream:stream>".equals(head.toString()) || ("?xml>".equals(head.toString())))) {
+          int end=buffer.length() - readByte + (i + 1);
+          String msg=buffer.substring(startLastMsg,end);
+          foundMsg(msg);
+          startLastMsg=end;
+        }
+        insideRootTag=false;
+      }
+ else       if (ch == '<') {
+        status=XMLLightweightParser.PRETAIL;
+        insideChildrenTag=true;
+      }
+ else       if (ch == '/' && insideRootTag && !insideChildrenTag) {
+        status=XMLLightweightParser.VERIFY_CLOSE_TAG;
+      }
+    }
+ else     if (status == XMLLightweightParser.HEAD) {
+      if (ch == ' ' || ch == '>') {
+        head.append(">");
+        status=XMLLightweightParser.INSIDE;
+        insideRootTag=true;
+        insideChildrenTag=false;
+        continue;
+      }
+      head.append(ch);
+    }
+ else     if (status == XMLLightweightParser.INIT) {
+      if (ch != ' ' && ch != '\r' && ch != '\n' && ch != '<') {
+        invalidateBuffer();
+        return;
+      }
+      if (ch == '<') {
+        status=XMLLightweightParser.HEAD;
+      }
+    }
+  }
+  if (head.length() > 0 && "/stream:stream>".equals(head.toString())) {
+    foundMsg("</stream:stream>");
+  }
+}

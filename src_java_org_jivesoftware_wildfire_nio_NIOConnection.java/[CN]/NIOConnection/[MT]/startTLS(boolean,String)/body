@@ -1,0 +1,29 @@
+{
+  KeyStore ksKeys=SSLConfig.getKeyStore();
+  String keypass=SSLConfig.getKeyPassword();
+  KeyStore ksTrust=SSLConfig.getTrustStore();
+  String trustpass=SSLConfig.getTrustPassword();
+  KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
+  TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
+  boolean needClientAuth=false;
+  if (clientMode || needClientAuth) {
+    tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+  }
+  SSLContext tlsContext=SSLContext.getInstance("TLS");
+  tlsContext.init(km,tm,null);
+  SSLFilter filter=new SSLFilter(tlsContext);
+  filter.setUseClientMode(clientMode);
+  if (needClientAuth) {
+    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true) && JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true) && !JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
+      filter.setNeedClientAuth(true);
+    }
+ else {
+      filter.setWantClientAuth(true);
+    }
+  }
+  ioSession.getFilterChain().addAfter("org.apache.mina.common.ExecutorThreadModel","tls",filter);
+  ioSession.setAttribute(SSLFilter.DISABLE_ENCRYPTION_ONCE,Boolean.TRUE);
+  if (!clientMode) {
+    deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
+  }
+}

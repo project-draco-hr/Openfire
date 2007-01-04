@@ -1,0 +1,10 @@
+{
+  if (getNamespace().equals(namespace)) {
+    session=ConnectionMultiplexerSession.createSession(serverName,xpp,connection);
+    if (session != null) {
+      packetHandler=new MultiplexerPacketHandler(session.getAddress().getDomain());
+    }
+    return true;
+  }
+  return false;
+}

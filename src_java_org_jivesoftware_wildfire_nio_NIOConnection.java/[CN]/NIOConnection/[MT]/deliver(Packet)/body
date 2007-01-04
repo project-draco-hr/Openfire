@@ -1,0 +1,28 @@
+{
+  if (isClosed()) {
+    backupDeliverer.deliver(packet);
+  }
+ else {
+    ByteBuffer buffer=ByteBuffer.allocate(4096);
+    buffer.setAutoExpand(true);
+    boolean errorDelivering=false;
+    try {
+      XMLWriter xmlSerializer=new XMLWriter(new ByteBufferWriter(buffer,encoder),new OutputFormat());
+      xmlSerializer.write(packet.getElement());
+      xmlSerializer.flush();
+      if (flashClient) {
+        buffer.put((byte)'\0');
+      }
+      buffer.flip();
+      ioSession.write(buffer);
+    }
+ catch (    Exception e) {
+      Log.debug("Error delivering packet" + "\n" + this.toString(),e);
+      errorDelivering=true;
+    }
+    if (errorDelivering) {
+      close();
+      backupDeliverer.deliver(packet);
+    }
+  }
+}

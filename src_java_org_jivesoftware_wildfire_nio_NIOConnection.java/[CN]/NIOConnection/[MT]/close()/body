@@ -1,0 +1,17 @@
+{
+  boolean wasClosed=false;
+synchronized (this) {
+    if (!isClosed()) {
+      try {
+        deliverRawText("</stream:stream>");
+      }
+ catch (      Exception e) {
+      }
+      closeConnection();
+      wasClosed=true;
+    }
+  }
+  if (wasClosed) {
+    notifyCloseListeners();
+  }
+}

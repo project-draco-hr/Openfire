@@ -1,0 +1,11 @@
+{
+  StanzaHandler handler=(StanzaHandler)session.getAttribute(HANDLER);
+  try {
+    handler.process((String)message);
+  }
+ catch (  Exception e) {
+    Log.error("Closing connection due to error while processing message: " + message,e);
+    Connection connection=(Connection)session.getAttribute(CONNECTION);
+    connection.close();
+  }
+}

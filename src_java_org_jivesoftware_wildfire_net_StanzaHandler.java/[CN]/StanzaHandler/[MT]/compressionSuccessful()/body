@@ -1,0 +1,14 @@
+{
+  StringBuilder sb=new StringBuilder(340);
+  sb.append(geStreamHeader());
+  sb.append("<stream:features>");
+  if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+    sb.append(SASLAuthentication.getSASLMechanisms(session));
+  }
+  String specificFeatures=session.getAvailableStreamFeatures();
+  if (specificFeatures != null) {
+    sb.append(specificFeatures);
+  }
+  sb.append("</stream:features>");
+  connection.deliverRawText(sb.toString());
+}

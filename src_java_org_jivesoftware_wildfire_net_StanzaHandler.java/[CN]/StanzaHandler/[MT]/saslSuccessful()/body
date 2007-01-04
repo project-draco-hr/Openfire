@@ -1,0 +1,11 @@
+{
+  StringBuilder sb=new StringBuilder(420);
+  sb.append(geStreamHeader());
+  sb.append("<stream:features>");
+  String specificFeatures=session.getAvailableStreamFeatures();
+  if (specificFeatures != null) {
+    sb.append(specificFeatures);
+  }
+  sb.append("</stream:features>");
+  connection.deliverRawText(sb.toString());
+}

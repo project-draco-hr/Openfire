@@ -1,0 +1,11 @@
+{
+  XMLLightweightParser parser=new XMLLightweightParser(CHARSET);
+  session.setAttribute(XML_PARSER,parser);
+  NIOConnection connection=createNIOConnection(session);
+  session.setAttribute(CONNECTION,connection);
+  session.setAttribute(HANDLER,createStanzaHandler(connection));
+  int idleTime=getMaxIdleTime();
+  if (idleTime > 0) {
+    session.setIdleTime(IdleStatus.BOTH_IDLE,idleTime);
+  }
+}

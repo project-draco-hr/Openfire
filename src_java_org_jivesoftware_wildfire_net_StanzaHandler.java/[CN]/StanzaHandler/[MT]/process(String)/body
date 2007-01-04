@@ -1,0 +1,59 @@
+{
+  boolean initialStream=stanza.startsWith(STREAM_START);
+  if (!sessionCreated || initialStream) {
+    if (!initialStream) {
+      return;
+    }
+    if (!sessionCreated) {
+      sessionCreated=true;
+      MXParser parser=(MXParser)factory.newPullParser();
+      parser.setInput(new StringReader(stanza));
+      createSession(parser);
+    }
+ else     if (startedSASL && session.getStatus() == Session.STATUS_AUTHENTICATED) {
+      startedSASL=false;
+      saslSuccessful();
+    }
+ else     if (waitingCompressionACK) {
+      waitingCompressionACK=false;
+      compressionSuccessful();
+    }
+    return;
+  }
+  Element doc;
+  try {
+    doc=reader.read(new StringReader(stanza)).getRootElement();
+  }
+ catch (  DocumentException e) {
+    if (stanza.equals("</stream:stream>")) {
+      connection.close();
+      return;
+    }
+    throw e;
+  }
+  if (doc == null) {
+    return;
+  }
+  String tag=doc.getName();
+  if ("starttls".equals(tag)) {
+    if (negotiateTLS()) {
+      tlsNegotiated();
+    }
+ else {
+      connection.close();
+      session=null;
+    }
+  }
+ else   if ("auth".equals(tag)) {
+    startedSASL=true;
+    process(doc);
+  }
+ else   if ("compress".equals(tag)) {
+    if (compressClient(doc)) {
+      waitingCompressionACK=true;
+    }
+  }
+ else {
+    process(doc);
+  }
+}

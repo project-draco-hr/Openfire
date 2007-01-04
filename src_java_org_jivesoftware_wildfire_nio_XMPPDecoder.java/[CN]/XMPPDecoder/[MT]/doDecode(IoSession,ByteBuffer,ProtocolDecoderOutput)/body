@@ -1,0 +1,13 @@
+{
+  if (in.remaining() < 4) {
+    return false;
+  }
+  XMLLightweightParser parser=(XMLLightweightParser)session.getAttribute(ConnectionHandler.XML_PARSER);
+  parser.read(in);
+  if (parser.areThereMsgs()) {
+    for (    String stanza : parser.getMsgs()) {
+      out.write(stanza);
+    }
+  }
+  return true;
+}

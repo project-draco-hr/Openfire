@@ -1,0 +1,22 @@
+{
+  if (!isClosed()) {
+    ByteBuffer buffer=ByteBuffer.allocate(text.length());
+    buffer.setAutoExpand(true);
+    boolean errorDelivering=false;
+    try {
+      buffer.put(text.getBytes(CHARSET));
+      if (flashClient) {
+        buffer.put((byte)'\0');
+      }
+      buffer.flip();
+      ioSession.write(buffer);
+    }
+ catch (    Exception e) {
+      Log.debug("Error delivering raw text" + "\n" + this.toString(),e);
+      errorDelivering=true;
+    }
+    if (errorDelivering) {
+      close();
+    }
+  }
+}
