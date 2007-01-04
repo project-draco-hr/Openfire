@@ -9,11 +9,5 @@
     }
   }
   this.serverPort=serverPort;
-  boolean useBlockingMode=JiveGlobals.getBooleanProperty("xmpp.socket.blocking",true);
-  if (useBlockingMode) {
-    acceptingMode=new BlockingAcceptingMode(connManager,serverPort,bindInterface);
-  }
- else {
-    acceptingMode=new NonBlockingAcceptingMode(connManager,serverPort,bindInterface);
-  }
+  acceptingMode=new BlockingAcceptingMode(connManager,serverPort,bindInterface);
 }

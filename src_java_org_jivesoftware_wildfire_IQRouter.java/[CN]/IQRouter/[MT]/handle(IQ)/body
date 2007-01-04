@@ -70,7 +70,7 @@
       if (XMPPServer.getInstance().isLocal(recipientJID)) {
         ClientSession session=sessionManager.getBestRoute(recipientJID);
         if (session != null) {
-          if (!session.shouldBlockPacket(packet)) {
+          if (session.canProcess(packet)) {
             session.process(packet);
             handlerFound=true;
           }

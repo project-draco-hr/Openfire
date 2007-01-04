@@ -2,39 +2,50 @@
   if (packet == null) {
     throw new NullPointerException();
   }
-  Session session=sessionManager.getSession(packet.getFrom());
-  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
-    JID recipientJID=packet.getTo();
-    if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
-      if (packet.getElement().element("addresses") != null) {
-        multicastRouter.route(packet);
-      }
+  ClientSession session=sessionManager.getSession(packet.getFrom());
+  try {
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+    if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
+      JID recipientJID=packet.getTo();
+      if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
+        if (packet.getElement().element("addresses") != null) {
+          multicastRouter.route(packet);
+        }
  else {
-        sendMessageToAdmins(packet);
+          sendMessageToAdmins(packet);
+        }
+        return;
       }
-      return;
-    }
-    try {
-      routingTable.getBestRoute(recipientJID).process(packet);
-    }
- catch (    Exception e) {
       try {
-        messageStrategy.storeOffline(packet);
+        routingTable.getBestRoute(recipientJID).process(packet);
       }
- catch (      Exception e1) {
-        Log.error(e1);
+ catch (      Exception e) {
+        try {
+          messageStrategy.storeOffline(packet);
+        }
+ catch (        Exception e1) {
+          Log.error(e1);
+        }
       }
     }
-  }
  else {
-    packet.setTo(session.getAddress());
-    packet.setFrom((JID)null);
-    packet.setError(PacketError.Condition.not_authorized);
-    try {
+      packet.setTo(session.getAddress());
+      packet.setFrom((JID)null);
+      packet.setError(PacketError.Condition.not_authorized);
       session.process(packet);
     }
- catch (    UnauthorizedException ue) {
-      Log.error(ue);
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+  }
+ catch (  PacketRejectedException e) {
+    if (session != null && e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+      Message reply=new Message();
+      reply.setID(packet.getID());
+      reply.setTo(session.getAddress());
+      reply.setFrom(packet.getTo());
+      reply.setType(packet.getType());
+      reply.setThread(packet.getThread());
+      reply.setBody(e.getRejectionMessage());
+      session.process(reply);
     }
   }
 }
