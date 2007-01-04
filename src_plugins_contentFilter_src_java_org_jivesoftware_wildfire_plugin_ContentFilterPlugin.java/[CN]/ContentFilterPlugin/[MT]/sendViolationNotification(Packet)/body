@@ -1,6 +1,6 @@
 {
   String subject="Content filter notification! (" + originalPacket.getFrom().getNode() + ")";
-  String body=null;
+  String body;
   if (originalPacket instanceof Message) {
     Message originalMsg=(Message)originalPacket;
     body="Disallowed content detected in message from:" + originalMsg.getFrom() + " to:"+ originalMsg.getTo()+ ", message was "+ (allowOnMatch ? "allowed" + (contentFilter.isMaskingContent() ? " and masked." : " but not masked.") : "rejected.")+ (violationIncludeOriginalPacketEnabled ? "\nOriginal subject:" + (originalMsg.getSubject() != null ? originalMsg.getSubject() : "") + "\nOriginal content:"+ (originalMsg.getBody() != null ? originalMsg.getBody() : "") : "");
