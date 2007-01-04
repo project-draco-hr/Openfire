@@ -1,0 +1,14 @@
+{
+  try {
+    byte packet[]={0,0,1,1,1,1,1};
+    DatagramSocket ds=new DatagramSocket(14004,InetAddress.getByName("0.0.0.0"));
+    DatagramPacket echo=new DatagramPacket(packet,packet.length,InetAddress.getByName("10.1.1.3"),16736);
+    for (int i=0; i < 10; i++) {
+      System.out.print("\nSent");
+      ds.send(echo);
+    }
+  }
+ catch (  Exception e) {
+    System.out.print(e.toString());
+  }
+}

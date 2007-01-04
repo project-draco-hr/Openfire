@@ -1,0 +1,85 @@
+{
+  IQ reply=IQ.createResultIQ(iq);
+  Element childElement=iq.getChildElement();
+  String namespace=childElement.getNamespaceURI();
+  Element childElementCopy=iq.getChildElement().createCopy();
+  reply.setChildElement(childElementCopy);
+  Log.debug("RECEIVED:" + iq.toXML());
+  if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+    try {
+      reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
+      router.route(reply);
+      return;
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
+    try {
+      reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
+      router.route(reply);
+      return;
+    }
+ catch (    UnauthorizedException e) {
+    }
+  }
+ else   if (NAMESPACE.equals(namespace) && enabled) {
+    Element c=childElementCopy.element("candidate");
+    if (c != null) {
+      childElementCopy.remove(c);
+      Element candidate=childElementCopy.addElement("candidate ");
+      ProxyCandidate proxyCandidate=mediaProxy.addSmartAgent(childElementCopy.attribute("sid").getValue() + "-" + iq.getFrom(),iq.getFrom().toString());
+      Log.debug(childElementCopy.attribute("sid").getValue() + "-" + iq.getFrom());
+      proxyCandidate.start();
+      candidate.addAttribute("name","voicechannel");
+      candidate.addAttribute("ip",mediaProxy.getPublicIP());
+      candidate.addAttribute("porta",String.valueOf(proxyCandidate.getLocalPortA()));
+      candidate.addAttribute("portb",String.valueOf(proxyCandidate.getLocalPortB()));
+      candidate.addAttribute("pass",proxyCandidate.getPass());
+    }
+ else {
+      c=childElementCopy.element("relay");
+      if (c != null) {
+        Session session=mediaProxy.getAgent(childElementCopy.attribute("sid").getValue() + "-" + iq.getFrom());
+        Log.debug(childElementCopy.attribute("sid").getValue() + "-" + iq.getFrom());
+        if (session != null) {
+          Attribute pass=c.attribute("pass");
+          if (pass != null && pass.getValue().trim().equals(session.getPass().trim())) {
+            Log.debug("RIGHT PASS");
+            Attribute portA=c.attribute("porta");
+            Attribute portB=c.attribute("portb");
+            Attribute hostA=c.attribute("hosta");
+            Attribute hostB=c.attribute("hostb");
+            try {
+              if (hostA != null) {
+                if (portA != null) {
+                  for (int i=0; i < 2; i++) {
+                    session.sendFromPortA(hostB.getValue(),Integer.parseInt(portB.getValue()));
+                  }
+                }
+              }
+            }
+ catch (            Exception e) {
+              Log.error(e);
+            }
+          }
+ else {
+            Log.debug("WRONG PASS " + session.getPass() + " "+ pass.getValue());
+            reply.setError(PacketError.Condition.forbidden);
+          }
+        }
+        childElementCopy.remove(c);
+      }
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.service_unavailable);
+  }
+  try {
+    Log.debug("RETURNED:" + reply.toXML());
+    router.route(reply);
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}
