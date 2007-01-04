@@ -1,0 +1,15 @@
+{
+  this.element=element;
+  String to=element.attributeValue("to");
+  if (to != null) {
+    String[] parts=JID.getParts(to);
+    toJID=new JID(parts[0],parts[1],parts[2],skipValidation);
+    element.addAttribute("to",toJID.toString());
+  }
+  String from=element.attributeValue("from");
+  if (from != null) {
+    String[] parts=JID.getParts(from);
+    fromJID=new JID(parts[0],parts[1],parts[2],true);
+    element.addAttribute("from",fromJID.toString());
+  }
+}

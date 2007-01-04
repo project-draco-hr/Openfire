@@ -1,7 +1,8 @@
 {
-  fake=null;
+  String[] parts=new String[3];
+  String node=null, domain, resource;
   if (jid == null) {
-    throw new NullPointerException("JID cannot be null");
+    return parts;
   }
   int atIndex=jid.indexOf("@");
   int slashIndex=jid.indexOf("/");
@@ -33,5 +34,8 @@
  else {
     resource=jid.substring(slashIndex + 1);
   }
-  updateCache();
+  parts[0]=node;
+  parts[1]=domain;
+  parts[2]=resource;
+  return parts;
 }

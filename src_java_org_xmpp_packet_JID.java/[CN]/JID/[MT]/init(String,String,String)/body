@@ -8,7 +8,7 @@
   try {
     if (!stringprepCache.containsKey(node)) {
       this.node=Stringprep.nodeprep(node);
-      if (node != null && node.length() * 2 > 1023) {
+      if (this.node != null && this.node.length() * 2 > 1023) {
         throw new IllegalArgumentException("Node cannot be larger than 1023 bytes. " + "Size is " + (node.length() * 2) + " bytes.");
       }
       stringprepCache.put(this.node,null);
@@ -18,23 +18,17 @@
     }
     if (!stringprepCache.containsKey(domain)) {
       this.domain=Stringprep.nameprep(IDNA.toASCII(domain),false);
-      if (domain.length() * 2 > 1023) {
-        throw new IllegalArgumentException("Domain cannot be larger than 1023 bytes. " + "Size is " + (domain.length() * 2) + " bytes.");
+      if (this.domain.length() * 2 > 1023) {
+        throw new IllegalArgumentException("Domain cannot be larger than 1023 bytes. " + "Size is " + (this.domain.length() * 2) + " bytes.");
       }
       stringprepCache.put(this.domain,null);
     }
  else {
       this.domain=domain;
     }
-    if (!stringprepCache.containsKey(resource)) {
-      this.resource=Stringprep.resourceprep(resource);
-      if (resource != null && resource.length() * 2 > 1023) {
-        throw new IllegalArgumentException("Resource cannot be larger than 1023 bytes. " + "Size is " + (resource.length() * 2) + " bytes.");
-      }
-      stringprepCache.put(this.resource,null);
-    }
- else {
-      this.resource=resource;
+    this.resource=resourceprep(resource);
+    if (resource != null && resource.length() * 2 > 1023) {
+      throw new IllegalArgumentException("Resource cannot be larger than 1023 bytes. " + "Size is " + (resource.length() * 2) + " bytes.");
     }
     updateCache();
   }
