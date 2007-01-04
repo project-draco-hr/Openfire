@@ -3,13 +3,34 @@
     throw new NullPointerException();
   }
   ClientSession session=sessionManager.getSession(packet.getFrom());
-  if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
-    handle(packet);
-  }
+  try {
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
+    if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
+      handle(packet);
+    }
  else {
-    packet.setTo(session.getAddress());
-    packet.setFrom((JID)null);
-    packet.setError(PacketError.Condition.not_authorized);
-    session.process(packet);
+      packet.setTo(session.getAddress());
+      packet.setFrom((JID)null);
+      packet.setError(PacketError.Condition.not_authorized);
+      session.process(packet);
+    }
+    InterceptorManager.getInstance().invokeInterceptors(packet,session,true,true);
+  }
+ catch (  PacketRejectedException e) {
+    if (session != null) {
+      Presence reply=new Presence();
+      reply.setID(packet.getID());
+      reply.setTo(session.getAddress());
+      reply.setFrom(packet.getTo());
+      reply.setError(PacketError.Condition.not_allowed);
+      session.process(reply);
+      if (e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+        Message notification=new Message();
+        notification.setTo(session.getAddress());
+        notification.setFrom(packet.getTo());
+        notification.setBody(e.getRejectionMessage());
+        session.process(notification);
+      }
+    }
   }
 }

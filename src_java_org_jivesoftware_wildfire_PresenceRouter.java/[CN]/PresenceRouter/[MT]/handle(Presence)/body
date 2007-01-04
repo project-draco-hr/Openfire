@@ -28,7 +28,15 @@
       subscribeHandler.process(packet);
     }
  else     if (Presence.Type.probe == type) {
-      presenceManager.handleProbe(packet);
+      if (!XMPPServer.getInstance().isLocal(recipientJID)) {
+        ChannelHandler route=routingTable.getRoute(recipientJID);
+        if (route != null) {
+          route.process(packet);
+        }
+      }
+ else {
+        presenceManager.handleProbe(packet);
+      }
     }
  else {
       ChannelHandler route=routingTable.getRoute(recipientJID);

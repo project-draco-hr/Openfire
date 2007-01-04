@@ -3,5 +3,11 @@
   if (sessions == null || sessions.isEmpty()) {
     return null;
   }
-  return sessions.get(0).getConnection().getInetAddress();
+  try {
+    return sessions.get(0).getConnection().getInetAddress();
+  }
+ catch (  UnknownHostException e) {
+    Log.error(e);
+    return null;
+  }
 }
