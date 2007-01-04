@@ -1,0 +1,28 @@
+{
+  XmlPullParser xpp=reader.getXPPParser();
+  if (xpp.getNamespace("db") != null) {
+    if (ServerDialback.isEnabled()) {
+      ServerDialback method=new ServerDialback(connection,serverName);
+      return method.createIncomingSession(reader);
+    }
+    Log.debug("Server dialback is disabled. Rejecting connection: " + connection);
+  }
+  String version=xpp.getAttributeValue("","version");
+  int[] serverVersion=version != null ? decodeVersion(version) : new int[]{0,0};
+  if (serverVersion[0] >= 1) {
+    if (JiveGlobals.getBooleanProperty("xmpp.server.tls.enabled",true)) {
+      try {
+        return createIncomingSession(connection,serverName);
+      }
+ catch (      Exception e) {
+        Log.error("Error establishing connection from remote server",e);
+      }
+    }
+ else {
+      connection.deliverRawText(new StreamError(StreamError.Condition.invalid_namespace).toXML());
+      Log.debug("Server TLS is disabled. Rejecting connection: " + connection);
+    }
+  }
+  connection.close();
+  return null;
+}

@@ -1,0 +1,14 @@
+{
+  if (canProcess(packet)) {
+    try {
+      InterceptorManager.getInstance().invokeInterceptors(packet,this,false,false);
+      deliver(packet);
+      InterceptorManager.getInstance().invokeInterceptors(packet,this,false,true);
+    }
+ catch (    PacketRejectedException e) {
+    }
+catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    }
+  }
+}

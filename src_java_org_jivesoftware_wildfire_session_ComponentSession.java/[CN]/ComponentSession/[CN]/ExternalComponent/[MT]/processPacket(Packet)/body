@@ -1,0 +1,11 @@
+{
+  if (conn != null && !conn.isClosed()) {
+    try {
+      conn.deliver(packet);
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      conn.close();
+    }
+  }
+}

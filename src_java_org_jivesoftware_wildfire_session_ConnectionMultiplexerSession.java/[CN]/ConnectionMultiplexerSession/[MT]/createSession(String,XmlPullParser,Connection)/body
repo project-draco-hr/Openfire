@@ -1,0 +1,81 @@
+{
+  String domain=xpp.getAttributeValue("","to");
+  Log.debug("[ConMng] Starting registration of new connection manager for domain: " + domain);
+  StringBuilder sb=new StringBuilder();
+  sb.append("<?xml version='1.0' encoding='");
+  sb.append(CHARSET);
+  sb.append("'?>");
+  sb.append("<stream:stream ");
+  sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" ");
+  sb.append("xmlns=\"jabber:connectionmanager\" from=\"");
+  sb.append(domain);
+  sb.append("\" version=\"1.0\">");
+  if (domain == null) {
+    Log.debug("[ConMng] Domain not specified in stanza: " + xpp.getText());
+    StreamError error=new StreamError(StreamError.Condition.bad_format);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    return null;
+  }
+  JID address=new JID(domain);
+  String secretKey=ConnectionMultiplexerManager.getDefaultSecret();
+  if (secretKey == null) {
+    Log.debug("[ConMng] A shared secret for connection manager was not found.");
+    StreamError error=new StreamError(StreamError.Condition.internal_server_error);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    return null;
+  }
+  if (SessionManager.getInstance().getConnectionMultiplexerSession(address) != null) {
+    Log.debug("[ConMng] Another connection manager is already using domain: " + domain);
+    StreamError error=new StreamError(StreamError.Condition.conflict);
+    sb.append(error.toXML());
+    connection.deliverRawText(sb.toString());
+    connection.close();
+    return null;
+  }
+  connection.setTlsPolicy(tlsPolicy);
+  connection.setCompressionPolicy(compressionPolicy);
+  ((MultiplexerPacketDeliverer)connection.getPacketDeliverer()).setConnectionManagerDomain(address.getDomain());
+  Session session=SessionManager.getInstance().createMultiplexerSession(connection,address);
+  session.setAddress(address);
+  connection.init(session);
+  try {
+    Log.debug("[ConMng] Send stream header with ID: " + session.getStreamID() + " for connection manager with domain: "+ domain);
+    sb=new StringBuilder();
+    sb.append("<?xml version='1.0' encoding='");
+    sb.append(CHARSET);
+    sb.append("'?>");
+    sb.append("<stream:stream ");
+    sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" ");
+    sb.append("xmlns=\"jabber:connectionmanager\" from=\"");
+    sb.append(domain);
+    sb.append("\" id=\"");
+    sb.append(session.getStreamID().toString());
+    sb.append("\" version=\"1.0\" >");
+    connection.deliverRawText(sb.toString());
+    sb=new StringBuilder(490);
+    sb.append("<stream:features>");
+    if (tlsPolicy != Connection.TLSPolicy.disabled) {
+      sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+      if (tlsPolicy == Connection.TLSPolicy.required) {
+        sb.append("<required/>");
+      }
+      sb.append("</starttls>");
+    }
+    String specificFeatures=session.getAvailableStreamFeatures();
+    if (specificFeatures != null) {
+      sb.append(specificFeatures);
+    }
+    sb.append("</stream:features>");
+    connection.deliverRawText(sb.toString());
+    return session;
+  }
+ catch (  Exception e) {
+    Log.error("An error occured while creating a Connection Manager Session",e);
+    connection.close();
+    return null;
+  }
+}
