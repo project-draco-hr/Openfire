@@ -1,15 +1,21 @@
 {
   compressed=true;
-  if (tlsStreamHandler == null) {
-    ZOutputStream out=new ZOutputStream(ServerTrafficCounter.wrapOutputStream(socket.getOutputStream()),JZlib.Z_BEST_COMPRESSION);
-    out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
-    writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
-    xmlSerializer=new XMLSocketWriter(writer,this);
-  }
+  try {
+    if (tlsStreamHandler == null) {
+      ZOutputStream out=new ZOutputStream(ServerTrafficCounter.wrapOutputStream(socket.getOutputStream()),JZlib.Z_BEST_COMPRESSION);
+      out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
+      xmlSerializer=new XMLSocketWriter(writer,this);
+    }
  else {
-    ZOutputStream out=new ZOutputStream(tlsStreamHandler.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
-    out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
-    writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
-    xmlSerializer=new XMLSocketWriter(writer,this);
+      ZOutputStream out=new ZOutputStream(tlsStreamHandler.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
+      out.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
+      writer=new BufferedWriter(new OutputStreamWriter(out,CHARSET));
+      xmlSerializer=new XMLSocketWriter(writer,this);
+    }
+  }
+ catch (  IOException e) {
+    Log.error("Error while starting compression",e);
+    compressed=false;
   }
 }

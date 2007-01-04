@@ -3,38 +3,32 @@
     backupDeliverer.deliver(packet);
   }
  else {
+    boolean errorDelivering=false;
+    boolean allowedToWrite=false;
     try {
-      InterceptorManager.getInstance().invokeInterceptors(packet,session,false,false);
-      boolean errorDelivering=false;
-      boolean allowedToWrite=false;
-      try {
-        requestWriting();
-        allowedToWrite=true;
-        xmlSerializer.write(packet.getElement());
-        if (flashClient) {
-          writer.write('\0');
-        }
-        xmlSerializer.flush();
+      requestWriting();
+      allowedToWrite=true;
+      xmlSerializer.write(packet.getElement());
+      if (flashClient) {
+        writer.write('\0');
       }
- catch (      Exception e) {
-        Log.debug("Error delivering packet" + "\n" + this.toString(),e);
-        errorDelivering=true;
-      }
+      xmlSerializer.flush();
+    }
+ catch (    Exception e) {
+      Log.debug("Error delivering packet" + "\n" + this.toString(),e);
+      errorDelivering=true;
+    }
  finally {
-        if (allowedToWrite) {
-          releaseWriting();
-        }
-      }
-      if (errorDelivering) {
-        close();
-        backupDeliverer.deliver(packet);
-      }
- else {
-        InterceptorManager.getInstance().invokeInterceptors(packet,session,false,true);
-        session.incrementServerPacketCount();
+      if (allowedToWrite) {
+        releaseWriting();
       }
     }
- catch (    PacketRejectedException e) {
+    if (errorDelivering) {
+      close();
+      backupDeliverer.deliver(packet);
+    }
+ else {
+      session.incrementServerPacketCount();
     }
   }
 }

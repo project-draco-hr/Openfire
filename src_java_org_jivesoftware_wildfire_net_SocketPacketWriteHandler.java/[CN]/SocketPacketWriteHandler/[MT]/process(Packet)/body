@@ -12,9 +12,9 @@
       return;
     }
     if (recipient == null || (recipient.getNode() == null && recipient.getResource() == null)) {
-      Session senderSession=sessionManager.getSession(packet.getFrom());
-      if (senderSession != null && !senderSession.getConnection().isClosed()) {
-        senderSession.getConnection().deliver(packet);
+      ClientSession senderSession=sessionManager.getSession(packet.getFrom());
+      if (senderSession != null) {
+        senderSession.process(packet);
       }
  else {
         dropPacket(packet);
@@ -27,7 +27,7 @@
       }
  else {
         try {
-          session.getConnection().deliver(packet);
+          session.process(packet);
         }
  catch (        Exception e) {
         }
