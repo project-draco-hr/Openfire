@@ -1,14 +1,27 @@
 {
   if (isConnectionManagerListenerEnabled()) {
     int port=getConnectionManagerListenerPort();
+    multiplexerSocketAcceptor=buildSocketAcceptor();
+    ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("connectionManager");
+    int eventThreads=JiveGlobals.getIntProperty("xmpp.multiplex.processing.max.threads",16);
+    ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+    eventExecutor.setCorePoolSize(eventThreads + 1);
+    eventExecutor.setMaximumPoolSize(eventThreads + 1);
+    eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
+    multiplexerSocketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+    multiplexerSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
     try {
-      multiplexerSocketThread=new SocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.connectionManager));
-      ports.add(multiplexerSocketThread.getServerPort());
-      multiplexerSocketThread.setDaemon(true);
-      multiplexerSocketThread.setPriority(Thread.MAX_PRIORITY);
-      multiplexerSocketThread.start();
+      String interfaceName=JiveGlobals.getXMLProperty("xmpp.socket.network.interface");
+      InetAddress bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=InetAddress.getByName(interfaceName);
+        }
+      }
+      multiplexerSocketAcceptor.bind(new InetSocketAddress(bindInterface,port),new MultiplexerConnectionHandler(serverName));
+      ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.connectionManager));
       List<String> params=new ArrayList<String>();
-      params.add(Integer.toString(multiplexerSocketThread.getPort()));
+      params.add(Integer.toString(port));
       Log.info(LocaleUtils.getLocalizedString("startup.multiplexer",params));
     }
  catch (    Exception e) {

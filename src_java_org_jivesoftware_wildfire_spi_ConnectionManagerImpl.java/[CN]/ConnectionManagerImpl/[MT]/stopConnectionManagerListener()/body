@@ -1,7 +1,12 @@
 {
-  if (multiplexerSocketThread != null) {
-    multiplexerSocketThread.shutdown();
-    ports.remove(multiplexerSocketThread.getServerPort());
-    multiplexerSocketThread=null;
+  if (multiplexerSocketAcceptor != null) {
+    multiplexerSocketAcceptor.unbindAll();
+    for (    ServerPort port : ports) {
+      if (port.isConnectionManagerPort()) {
+        ports.remove(port);
+        break;
+      }
+    }
+    multiplexerSocketAcceptor=null;
   }
 }

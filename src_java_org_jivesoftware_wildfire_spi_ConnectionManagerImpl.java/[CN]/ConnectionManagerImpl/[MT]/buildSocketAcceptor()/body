@@ -1,0 +1,24 @@
+{
+  SocketAcceptor socketAcceptor;
+  int ioThreads=JiveGlobals.getIntProperty("xmpp.processor.count",Runtime.getRuntime().availableProcessors());
+  Executor ioExecutor=new ThreadPoolExecutor(ioThreads + 1,ioThreads + 1,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
+  socketAcceptor=new SocketAcceptor(ioThreads,ioExecutor);
+  SocketAcceptorConfig socketAcceptorConfig=(SocketAcceptorConfig)socketAcceptor.getDefaultConfig();
+  socketAcceptorConfig.setReuseAddress(true);
+  socketAcceptorConfig.setBacklog(JiveGlobals.getIntProperty("xmpp.socket.backlog",50));
+  SocketSessionConfig socketSessionConfig=socketAcceptorConfig.getSessionConfig();
+  int receiveBuffer=JiveGlobals.getIntProperty("xmpp.socket.buffer.receive",-1);
+  if (receiveBuffer > 0) {
+    socketSessionConfig.setReceiveBufferSize(receiveBuffer);
+  }
+  int sendBuffer=JiveGlobals.getIntProperty("xmpp.socket.buffer.send",-1);
+  if (sendBuffer > 0) {
+    socketSessionConfig.setSendBufferSize(sendBuffer);
+  }
+  int linger=JiveGlobals.getIntProperty("xmpp.socket.linger",-1);
+  if (linger > 0) {
+    socketSessionConfig.setSoLinger(linger);
+  }
+  socketSessionConfig.setTcpNoDelay(JiveGlobals.getBooleanProperty("xmpp.socket.tcp-nodelay",socketSessionConfig.isTcpNoDelay()));
+  return socketAcceptor;
+}
