@@ -10,7 +10,7 @@
       parser.setInput(new StringReader(stanza));
       createSession(parser);
     }
- else     if (startedSASL && session.getStatus() == Session.STATUS_AUTHENTICATED) {
+ else     if (startedSASL && saslStatus == SASLAuthentication.Status.authenticated) {
       startedSASL=false;
       saslSuccessful();
     }
@@ -46,7 +46,10 @@
   }
  else   if ("auth".equals(tag)) {
     startedSASL=true;
-    process(doc);
+    saslStatus=SASLAuthentication.handle(session,doc);
+  }
+ else   if (startedSASL && "response".equals(tag)) {
+    saslStatus=SASLAuthentication.handle(session,doc);
   }
  else   if ("compress".equals(tag)) {
     if (compressClient(doc)) {

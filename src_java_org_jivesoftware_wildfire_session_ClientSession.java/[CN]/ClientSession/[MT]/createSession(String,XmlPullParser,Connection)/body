@@ -1,5 +1,4 @@
 {
-  XmlPullParser xpp=reader.getXPPParser();
   boolean isFlashClient=xpp.getPrefix().equals("flash");
   connection.setFlashClient(isFlashClient);
   if (!xpp.getName().equals("stream") && !isFlashClient) {
@@ -9,18 +8,29 @@
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
   if (!allowedIPs.isEmpty()) {
-    if (!allowedIPs.containsKey(connection.getInetAddress().getHostAddress())) {
-      byte[] address=connection.getInetAddress().getAddress();
-      String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
-      String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
-      String range3=(address[0] & 0xff) + ".*.*.*";
-      if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
-        Log.debug("Closed connection to client attempting to connect from: " + connection.getInetAddress().getHostAddress());
-        StreamError error=new StreamError(StreamError.Condition.not_authorized);
-        connection.deliverRawText(error.toXML());
-        connection.close();
-        return null;
+    boolean forbidAccess=false;
+    String hostAddress="Unknown";
+    try {
+      hostAddress=connection.getInetAddress().getHostAddress();
+      if (!allowedIPs.containsKey(hostAddress)) {
+        byte[] address=connection.getInetAddress().getAddress();
+        String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
+        String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
+        String range3=(address[0] & 0xff) + ".*.*.*";
+        if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
+          forbidAccess=true;
+        }
       }
+    }
+ catch (    UnknownHostException e) {
+      forbidAccess=true;
+    }
+    if (forbidAccess) {
+      Log.debug("Closed connection to client attempting to connect from: " + hostAddress);
+      StreamError error=new StreamError(StreamError.Condition.not_authorized);
+      connection.deliverRawText(error.toXML());
+      connection.close();
+      return null;
     }
   }
   String language="en";
@@ -70,9 +80,7 @@
     connection.setTlsPolicy(Connection.TLSPolicy.disabled);
   }
   connection.setCompressionPolicy(compressionPolicy);
-  connection.setIdleTimeout(idleTimeout);
   Session session=SessionManager.getInstance().createClientSession(connection);
-  Writer writer=connection.getWriter();
   StringBuilder sb=new StringBuilder(200);
   sb.append("<?xml version='1.0' encoding='");
   sb.append(CHARSET);
@@ -94,12 +102,8 @@
     sb.append(majorVersion).append(".").append(minorVersion);
   }
   sb.append("\">");
-  writer.write(sb.toString());
+  connection.deliverRawText(sb.toString());
   if (majorVersion == 0) {
-    if (isFlashClient) {
-      writer.write('\0');
-    }
-    writer.flush();
     return session;
   }
   sb=new StringBuilder(490);
@@ -117,10 +121,6 @@
     sb.append(specificFeatures);
   }
   sb.append("</stream:features>");
-  writer.write(sb.toString());
-  if (isFlashClient) {
-    writer.write('\0');
-  }
-  writer.flush();
+  connection.deliverRawText(sb.toString());
   return session;
 }
