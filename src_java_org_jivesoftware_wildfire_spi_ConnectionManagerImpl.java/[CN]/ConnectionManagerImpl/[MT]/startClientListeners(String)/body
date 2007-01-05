@@ -1,14 +1,27 @@
 {
   if (isClientListenerEnabled()) {
     int port=getClientListenerPort();
+    socketAcceptor=buildSocketAcceptor();
+    ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("client");
+    int eventThreads=JiveGlobals.getIntProperty("xmpp.client.processing.threads",16);
+    ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+    eventExecutor.setCorePoolSize(eventThreads + 1);
+    eventExecutor.setMaximumPoolSize(eventThreads + 1);
+    eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
+    socketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+    socketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
     try {
-      socketThread=new SocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.client));
-      ports.add(socketThread.getServerPort());
-      socketThread.setDaemon(true);
-      socketThread.setPriority(Thread.MAX_PRIORITY);
-      socketThread.start();
+      String interfaceName=JiveGlobals.getXMLProperty("xmpp.socket.network.interface");
+      InetAddress bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=InetAddress.getByName(interfaceName);
+        }
+      }
+      socketAcceptor.bind(new InetSocketAddress(bindInterface,port),new ClientConnectionHandler(serverName));
+      ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.client));
       List<String> params=new ArrayList<String>();
-      params.add(Integer.toString(socketThread.getPort()));
+      params.add(Integer.toString(port));
       Log.info(LocaleUtils.getLocalizedString("startup.plain",params));
     }
  catch (    Exception e) {

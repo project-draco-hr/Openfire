@@ -1,7 +1,12 @@
 {
-  if (sslSocketThread != null) {
-    sslSocketThread.shutdown();
-    ports.remove(sslSocketThread.getServerPort());
-    sslSocketThread=null;
+  if (sslSocketAcceptor != null) {
+    sslSocketAcceptor.unbindAll();
+    for (    ServerPort port : ports) {
+      if (port.isClientPort() && port.isSecure()) {
+        ports.remove(port);
+        break;
+      }
+    }
+    sslSocketAcceptor=null;
   }
 }

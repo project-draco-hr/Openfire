@@ -1,7 +1,12 @@
 {
-  if (socketThread != null) {
-    socketThread.shutdown();
-    ports.remove(socketThread.getServerPort());
-    socketThread=null;
+  if (socketAcceptor != null) {
+    socketAcceptor.unbindAll();
+    for (    ServerPort port : ports) {
+      if (port.isClientPort() && !port.isSecure()) {
+        ports.remove(port);
+        break;
+      }
+    }
+    socketAcceptor=null;
   }
 }

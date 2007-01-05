@@ -6,13 +6,33 @@
       algorithm="TLS";
     }
     try {
-      sslSocketThread=new SSLSocketAcceptThread(this,new ServerPort(port,serverName,localIPAddress,true,algorithm,ServerPort.Type.client));
-      ports.add(sslSocketThread.getServerPort());
-      sslSocketThread.setDaemon(true);
-      sslSocketThread.setPriority(Thread.MAX_PRIORITY);
-      sslSocketThread.start();
+      sslSocketAcceptor=buildSocketAcceptor();
+      ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("client_ssl");
+      int eventThreads=JiveGlobals.getIntProperty("xmpp.client_ssl.processing.threads",16);
+      ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+      eventExecutor.setCorePoolSize(eventThreads + 1);
+      eventExecutor.setMaximumPoolSize(eventThreads + 1);
+      eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
+      sslSocketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+      sslSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
+      SSLContext sslContext=SSLContext.getInstance(algorithm);
+      KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());
+      TrustManagerFactory trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      trustFactory.init(SSLConfig.getTrustStore());
+      sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
+      sslSocketAcceptor.getFilterChain().addFirst("tls",new SSLFilter(sslContext));
+      String interfaceName=JiveGlobals.getXMLProperty("xmpp.socket.network.interface");
+      InetAddress bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=InetAddress.getByName(interfaceName);
+        }
+      }
+      sslSocketAcceptor.bind(new InetSocketAddress(bindInterface,port),new ClientConnectionHandler(serverName));
+      ports.add(new ServerPort(port,serverName,localIPAddress,true,null,ServerPort.Type.client));
       List<String> params=new ArrayList<String>();
-      params.add(Integer.toString(sslSocketThread.getPort()));
+      params.add(Integer.toString(port));
       Log.info(LocaleUtils.getLocalizedString("startup.ssl",params));
     }
  catch (    Exception e) {

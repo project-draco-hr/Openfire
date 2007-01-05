@@ -3,7 +3,7 @@
     int port=getConnectionManagerListenerPort();
     multiplexerSocketAcceptor=buildSocketAcceptor();
     ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("connectionManager");
-    int eventThreads=JiveGlobals.getIntProperty("xmpp.multiplex.processing.max.threads",16);
+    int eventThreads=JiveGlobals.getIntProperty("xmpp.multiplex.processing.threads",16);
     ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
     eventExecutor.setCorePoolSize(eventThreads + 1);
     eventExecutor.setMaximumPoolSize(eventThreads + 1);
