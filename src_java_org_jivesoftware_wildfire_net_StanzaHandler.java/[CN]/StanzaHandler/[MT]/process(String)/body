@@ -20,6 +20,10 @@
     }
     return;
   }
+  if (stanza.equals("</stream:stream>")) {
+    session.getConnection().close();
+    return;
+  }
   Element doc;
   try {
     doc=reader.read(new StringReader(stanza)).getRootElement();
