@@ -87,6 +87,9 @@
  else       if (ch == '>') {
         if (insideRootTag && ("stream:stream>".equals(head.toString()) || ("?xml>".equals(head.toString())))) {
           int end=buffer.length() - readByte + (i + 1);
+          while (startLastMsg < end && '<' != buffer.charAt(startLastMsg)) {
+            startLastMsg++;
+          }
           String msg=buffer.substring(startLastMsg,end);
           foundMsg(msg);
           startLastMsg=end;
