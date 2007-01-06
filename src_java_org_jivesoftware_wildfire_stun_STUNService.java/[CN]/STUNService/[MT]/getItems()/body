@@ -1,0 +1,28 @@
+{
+  List<DiscoServerItem> items=new ArrayList<DiscoServerItem>();
+  if (!isEnabled()) {
+    return items.iterator();
+  }
+  items.add(new DiscoServerItem(){
+    public String getJID(){
+      return getServiceDomain();
+    }
+    public String getName(){
+      return "STUN Service";
+    }
+    public String getAction(){
+      return null;
+    }
+    public String getNode(){
+      return null;
+    }
+    public DiscoInfoProvider getDiscoInfoProvider(){
+      return STUNService.this;
+    }
+    public DiscoItemsProvider getDiscoItemsProvider(){
+      return STUNService.this;
+    }
+  }
+);
+  return items.iterator();
+}

@@ -1,0 +1,24 @@
+{
+  try {
+    InetAddress primary=InetAddress.getByName(primaryAddress);
+    InetAddress secondary=InetAddress.getByName(secondaryAddress);
+    if (primary != null && secondary != null) {
+      stunServer=new StunServer(primaryPort,primary,secondaryPort,secondary);
+      serviceName=JiveGlobals.getProperty("stun.serviceName",name);
+      serviceName=serviceName == null ? name : serviceName.equals("") ? name : serviceName;
+      stunServer.start();
+    }
+ else     setEnabled(false);
+  }
+ catch (  SocketException e) {
+    setEnabled(false);
+  }
+catch (  UnknownHostException e) {
+    setEnabled(false);
+  }
+  if (stunServer != null) {
+    routingTable.addRoute(getAddress(),this);
+    XMPPServer server=XMPPServer.getInstance();
+    server.getIQDiscoItemsHandler().addServerItemsProvider(this);
+  }
+}
