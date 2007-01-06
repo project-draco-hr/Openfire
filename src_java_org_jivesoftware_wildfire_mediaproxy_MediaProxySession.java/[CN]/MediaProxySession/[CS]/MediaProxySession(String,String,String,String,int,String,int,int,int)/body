@@ -1,0 +1,24 @@
+{
+  this.id=id;
+  this.creator=creator;
+  this.minPort=minPort;
+  this.maxPort=maxPort;
+  this.pass=String.valueOf(Math.abs(new Random().nextLong()));
+  try {
+    this.hostA=InetAddress.getByName(hostA);
+    this.hostB=InetAddress.getByName(hostB);
+    this.portA=portA;
+    this.portB=portB;
+    this.localAddress=InetAddress.getByName(localAddress);
+    this.localPortA=getFreePort();
+    this.socketA=new DatagramSocket(localPortA,this.localAddress);
+    this.socketAControl=new DatagramSocket(localPortA + 1,this.localAddress);
+    this.localPortB=getFreePort();
+    this.socketB=new DatagramSocket(localPortB,this.localAddress);
+    this.socketBControl=new DatagramSocket(localPortB + 1,this.localAddress);
+    Log.debug("Session Created at: A " + localPortA + " : B "+ localPortB);
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

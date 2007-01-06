@@ -1,0 +1,31 @@
+{
+  try {
+    if (idleTimer != null) {
+      idleTimer.cancel();
+      idleTimer.purge();
+      idleTimer=null;
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  channelAtoB.removeListener();
+  channelAtoBControl.removeListener();
+  channelBtoA.removeListener();
+  channelBtoAControl.removeListener();
+  try {
+    threadAtoB.stop();
+    threadAtoBControl.stop();
+    threadBtoA.stop();
+    threadBtoAControl.stop();
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  socketA.close();
+  socketAControl.close();
+  socketB.close();
+  socketBControl.close();
+  dispatchAgentStopped();
+  System.out.println("Session Stopped");
+}
