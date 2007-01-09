@@ -1,0 +1,19 @@
+{
+  List<InetAddress> list=new ArrayList<InetAddress>();
+  try {
+    Enumeration<NetworkInterface> ifaces=NetworkInterface.getNetworkInterfaces();
+    while (ifaces.hasMoreElements()) {
+      NetworkInterface iface=ifaces.nextElement();
+      Enumeration<InetAddress> iaddresses=iface.getInetAddresses();
+      while (iaddresses.hasMoreElements()) {
+        InetAddress iaddress=iaddresses.nextElement();
+        if (!iaddress.isLoopbackAddress() && !iaddress.isLinkLocalAddress()) {
+          list.add(iaddress);
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+  }
+  return list;
+}
