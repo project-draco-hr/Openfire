@@ -3,12 +3,14 @@
   if (rid <= lastRequestID) {
     Deliverable deliverable=retrieveDeliverable(rid);
     if (deliverable == null) {
+      Log.warn("Deliverable unavailable for " + rid);
       throw new HttpBindException("Unexpected RID Error",true,404);
     }
     connection.deliverBody(deliverable.getDeliverable());
     return connection;
   }
- else   if (rid > lastRequestID + hold + 1) {
+ else   if (rid > (lastRequestID + hold)) {
+    Log.warn("Request " + rid + " > "+ (lastRequestID + hold)+ ", ending session.");
     throw new HttpBindException("Unexpected RID Error",true,404);
   }
   addConnection(connection,isPoll);
