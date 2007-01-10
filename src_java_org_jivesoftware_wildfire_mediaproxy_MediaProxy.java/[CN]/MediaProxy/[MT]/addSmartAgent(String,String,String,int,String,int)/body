@@ -1,9 +1,10 @@
 {
-  final SmartSession agent=new SmartSession(id,creator,localhost,hostA,portA,hostB,portB,minPort,maxPort);
-  if (agent != null) {
-    sessions.add(agent);
-    agent.addKeepAlive(idleTime);
-    agent.addAgentListener(this);
+  final SmartSession session=new SmartSession(id,creator,localhost,hostA,portA,hostB,portB,minPort,maxPort);
+  if (session != null) {
+    sessions.add(session);
+    session.addKeepAlive(idleTime);
+    session.addLifeTime(lifetime);
+    session.addAgentListener(this);
   }
-  return agent;
+  return session;
 }
