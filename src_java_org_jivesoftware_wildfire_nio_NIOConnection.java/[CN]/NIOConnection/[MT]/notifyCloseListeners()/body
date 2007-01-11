@@ -1,10 +1,10 @@
 {
-  for (  Map.Entry<ConnectionCloseListener,Object> entry : listeners.entrySet()) {
+  if (closeListener != null) {
     try {
-      entry.getKey().onConnectionClose(entry.getValue());
+      closeListener.onConnectionClose(session);
     }
  catch (    Exception e) {
-      Log.error("Error notifying listener: " + entry.getKey(),e);
+      Log.error("Error notifying listener: " + closeListener,e);
     }
   }
 }

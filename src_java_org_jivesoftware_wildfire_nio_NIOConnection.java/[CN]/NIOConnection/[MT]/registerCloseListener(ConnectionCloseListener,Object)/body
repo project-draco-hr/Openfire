@@ -1,8 +1,11 @@
 {
+  if (closeListener != null) {
+    throw new IllegalStateException("Close listener already configured");
+  }
   if (isClosed()) {
-    listener.onConnectionClose(handbackMessage);
+    listener.onConnectionClose(session);
   }
  else {
-    listeners.put(listener,handbackMessage);
+    closeListener=listener;
   }
 }
