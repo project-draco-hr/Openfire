@@ -8,7 +8,7 @@ synchronized (wrapper) {
       wrapper.checkedout=true;
       wrapper.lockTime=System.currentTimeMillis();
     }
-    return wrapper.getConnection();
+    return wrapper;
   }
  else {
 synchronized (waitLock) {
@@ -22,7 +22,7 @@ synchronized (wrapper) {
               wrapper.checkedout=true;
               wrapper.lockTime=System.currentTimeMillis();
             }
-            return wrapper.getConnection();
+            return wrapper;
           }
  else {
             waitLock.wait();
