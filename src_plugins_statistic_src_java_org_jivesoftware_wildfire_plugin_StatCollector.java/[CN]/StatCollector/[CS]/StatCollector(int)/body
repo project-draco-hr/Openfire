@@ -1,0 +1,11 @@
+{
+  this.frequency=frequency;
+  ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  if (JiveGlobals.getBooleanProperty("statistic.connectionmanager",false)) {
+    socketAcceptor=connectionManager.getMultiplexerSocketAcceptor();
+  }
+ else {
+    socketAcceptor=connectionManager.getSocketAcceptor();
+  }
+  statCollector=new org.apache.mina.management.StatCollector(socketAcceptor,frequency - 1000);
+}
