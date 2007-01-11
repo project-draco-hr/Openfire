@@ -13,6 +13,7 @@ synchronized (wrapper) {
           wrapper.exception=new Exception();
           wrapper.hasLoggedException=false;
         }
+        used.incrementAndGet();
         return wrapper;
       }
     }
@@ -23,6 +24,7 @@ synchronized (conCountLock) {
     }
     ConnectionWrapper con=createCon(conCount);
     conCount++;
+    used.incrementAndGet();
     return con;
   }
 }
