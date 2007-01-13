@@ -1,5 +1,9 @@
 {
-  XMPPPacketReader reader=new XMPPPacketReader();
-  reader.setXPPFactory(factory);
+  XMPPPacketReader reader=localReader.get();
+  if (reader == null) {
+    reader=new XMPPPacketReader();
+    reader.setXPPFactory(factory);
+    localReader.set(reader);
+  }
   return reader.read("utf-8",request.getInputStream());
 }

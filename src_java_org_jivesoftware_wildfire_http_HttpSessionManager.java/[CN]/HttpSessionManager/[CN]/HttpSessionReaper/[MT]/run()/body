@@ -1,6 +1,7 @@
 {
+  long currentTime=System.currentTimeMillis();
   for (  HttpSession session : sessionMap.values()) {
-    long lastActive=(System.currentTimeMillis() - session.getLastActivity()) / 1000;
+    long lastActive=(currentTime - session.getLastActivity()) / 1000;
     if (lastActive > session.getInactivityTimeout()) {
       session.close();
     }

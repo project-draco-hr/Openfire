@@ -1,5 +1,6 @@
 {
   boolean compress=false;
+  boolean javascript=request.getRequestURI().endsWith("scripts/");
   if (!disableCompression) {
     if (request.getHeader("accept-encoding") != null && request.getHeader("accept-encoding").indexOf("gzip") != -1) {
       compress=true;
@@ -8,7 +9,12 @@
       compress=true;
     }
   }
-  response.setHeader("Content-type","text/javascript");
+  if (javascript) {
+    response.setHeader("Content-type","text/javascript");
+  }
+ else {
+    response.setHeader("Content-type","text/css");
+  }
   response.setHeader("Vary","Accept-Encoding");
   if (!debug) {
     DateFormat formatter=new SimpleDateFormat("d MMM yyyy HH:mm:ss 'GMT'",Locale.US);
@@ -23,18 +29,20 @@
   OutputStream out=null;
   InputStream in=null;
   try {
-    byte[] jsContent;
-    String cacheKey=String.valueOf(compress);
-    jsContent=cache.get(cacheKey);
-    if (debug || jsContent == null) {
-      jsContent=getJavaScriptContent(compress);
-      cache.put(cacheKey,jsContent);
+    byte[] content;
+    String cacheKey=String.valueOf(compress + " " + javascript);
+    content=cache.get(cacheKey);
+    if (javascript && (debug || content == null)) {
+      content=getJavaScriptContent(compress);
+      cache.put(cacheKey,content);
     }
-    response.setContentLength(jsContent.length);
+ else     if (!javascript && content == null) {
+    }
+    response.setContentLength(content.length);
     if (compress) {
       response.setHeader("Content-Encoding","gzip");
     }
-    in=new ByteArrayInputStream(jsContent);
+    in=new ByteArrayInputStream(content);
     out=response.getOutputStream();
     byte[] buf=new byte[128 * 1024];
     int len;
