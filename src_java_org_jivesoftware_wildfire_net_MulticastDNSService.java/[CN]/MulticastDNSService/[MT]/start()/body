@@ -2,11 +2,9 @@
   TimerTask startService=new TimerTask(){
     public void run(){
       XMPPServerInfo info=XMPPServer.getInstance().getServerInfo();
-      Iterator ports=info.getServerPorts();
       int clientPortNum=-1;
       int componentPortNum=-1;
-      while (ports.hasNext()) {
-        ServerPort port=(ServerPort)ports.next();
+      for (      ServerPort port : info.getServerPorts()) {
         if (port.isClientPort()) {
           clientPortNum=port.getPort();
         }
