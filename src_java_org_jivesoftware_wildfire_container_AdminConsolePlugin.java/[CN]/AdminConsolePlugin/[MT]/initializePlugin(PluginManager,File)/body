@@ -1,10 +1,6 @@
 {
   this.pluginDir=pluginDir;
-  try {
-    serverManager.setAdminConsoleContext(createWebAppContext());
-  }
- catch (  Exception e) {
-    System.err.println("Error starting admin console: " + e.getMessage());
-    Log.error("Trouble initializing admin console",e);
-  }
+  contexts=new ContextHandlerCollection();
+  createWebAppContext(contexts);
+  startup();
 }

@@ -11,19 +11,6 @@
       componentManager=getComponentManager();
     }
     ServerTrafficCounter.initStatistics();
-    pluginManager.addPluginListener(new PluginListener(){
-      public void pluginCreated(      String pluginName,      Plugin plugin){
-        if ("admin".equals(pluginName)) {
-          httpServerManager.startup();
-        }
-      }
-      public void pluginDestroyed(      String pluginName,      Plugin plugin){
-        if ("admin".equals(pluginName)) {
-          httpServerManager.shutdown();
-        }
-      }
-    }
-);
     pluginManager.start();
     List<String> params=new ArrayList<String>();
     params.add(version.getVersionString());

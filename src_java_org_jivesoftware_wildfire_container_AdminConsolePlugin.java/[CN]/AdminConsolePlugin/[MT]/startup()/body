@@ -1,0 +1,60 @@
+{
+  restartNeeded=false;
+  certificateListener=new CertificateListener();
+  CertificateManager.addListener(certificateListener);
+  adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
+  adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
+  adminServer=new Server();
+  if (adminPort > 0) {
+    Connector httpConnector=new SelectChannelConnector();
+    String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+    String bindInterface=null;
+    if (interfaceName != null) {
+      if (interfaceName.trim().length() > 0) {
+        bindInterface=interfaceName;
+      }
+    }
+    httpConnector.setHost(bindInterface);
+    httpConnector.setPort(adminPort);
+    adminServer.addConnector(httpConnector);
+  }
+  try {
+    if (adminSecurePort > 0 && CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getName())) {
+      JiveSslConnector httpsConnector=new JiveSslConnector();
+      String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+      String bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=interfaceName;
+        }
+      }
+      httpsConnector.setHost(bindInterface);
+      httpsConnector.setPort(adminSecurePort);
+      httpsConnector.setTrustPassword(SSLConfig.getTrustPassword());
+      httpsConnector.setTruststoreType(SSLConfig.getStoreType());
+      httpsConnector.setTruststore(SSLConfig.getTruststoreLocation());
+      httpsConnector.setNeedClientAuth(false);
+      httpsConnector.setWantClientAuth(false);
+      httpsConnector.setKeyPassword(SSLConfig.getKeyPassword());
+      httpsConnector.setKeystoreType(SSLConfig.getStoreType());
+      httpsConnector.setKeystore(SSLConfig.getKeystoreLocation());
+      adminServer.addConnector(httpsConnector);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+  if (adminServer.getConnectors() == null || adminServer.getConnectors().length == 0) {
+    adminServer=null;
+    log(LocaleUtils.getLocalizedString("admin.console.warning"));
+    return;
+  }
+  adminServer.setHandler(contexts);
+  try {
+    adminServer.start();
+  }
+ catch (  Exception e) {
+    Log.error("Could not start admin conosle server",e);
+  }
+  logAdminConsolePorts();
+}
