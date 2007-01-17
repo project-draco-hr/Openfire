@@ -16,9 +16,11 @@
     this.localPortB=getFreePort();
     this.socketB=new DatagramSocket(localPortB,this.localAddress);
     this.socketBControl=new DatagramSocket(localPortB + 1,this.localAddress);
-    Log.debug("Session Created at: A " + localPortA + " : B "+ localPortB);
+    if (Log.isDebugEnabled()) {
+      Log.debug("Session Created at: A " + localPortA + " : B "+ localPortB);
+    }
   }
  catch (  Exception e) {
-    e.printStackTrace();
+    Log.error(e);
   }
 }

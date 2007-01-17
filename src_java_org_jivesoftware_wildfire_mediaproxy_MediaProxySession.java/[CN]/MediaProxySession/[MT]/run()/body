@@ -1,8 +1,5 @@
 {
-  channelAtoB=new Channel(socketA,hostB,portB);
-  channelAtoBControl=new Channel(socketAControl,hostB,portB + 1);
-  channelBtoA=new Channel(socketB,hostA,portA);
-  channelBtoAControl=new Channel(socketBControl,hostA,portA + 1);
+  createChannels();
   threadAtoB=new Thread(channelAtoB);
   threadAtoBControl=new Thread(channelAtoBControl);
   threadBtoA=new Thread(channelBtoA);
@@ -11,8 +8,5 @@
   threadAtoBControl.start();
   threadBtoA.start();
   threadBtoAControl.start();
-  channelAtoB.addListener(this);
-  channelAtoBControl.addListener(this);
-  channelBtoA.addListener(this);
-  channelBtoAControl.addListener(this);
+  addChannelListeners();
 }

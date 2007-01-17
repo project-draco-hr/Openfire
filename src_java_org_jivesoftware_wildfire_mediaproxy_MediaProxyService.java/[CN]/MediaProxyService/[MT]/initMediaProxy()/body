@@ -1,0 +1,27 @@
+{
+  try {
+    long idleTime=Long.valueOf(JiveGlobals.getProperty("mediaproxy.idleTimeout"));
+    mediaProxy.setIdleTime(idleTime);
+  }
+ catch (  NumberFormatException e) {
+  }
+  try {
+    long lifetime=Long.valueOf(JiveGlobals.getProperty("mediaproxy.lifetime"));
+    mediaProxy.setLifetime(lifetime);
+  }
+ catch (  NumberFormatException e) {
+  }
+  try {
+    int minPort=Integer.valueOf(JiveGlobals.getProperty("mediaproxy.portMin"));
+    mediaProxy.setMinPort(minPort);
+  }
+ catch (  NumberFormatException e) {
+  }
+  try {
+    int maxPort=JiveGlobals.getIntProperty("mediaproxy.portMax",mediaProxy.getMaxPort());
+    mediaProxy.setMaxPort(maxPort);
+  }
+ catch (  NumberFormatException e) {
+  }
+  this.enabled=JiveGlobals.getBooleanProperty("mediaproxy.enabled");
+}

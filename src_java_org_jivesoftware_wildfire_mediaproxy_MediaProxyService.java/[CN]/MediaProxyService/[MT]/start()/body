@@ -1,8 +1,9 @@
 {
   if (isEnabled()) {
-    startProxy();
+    routingTable.addRoute(getAddress(),this);
+    XMPPServer.getInstance().getIQDiscoItemsHandler().addServerItemsProvider(this);
   }
  else {
-    XMPPServer.getInstance().getIQDiscoItemsHandler().removeServerItemsProvider(this);
+    XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(getAddress().toString());
   }
 }

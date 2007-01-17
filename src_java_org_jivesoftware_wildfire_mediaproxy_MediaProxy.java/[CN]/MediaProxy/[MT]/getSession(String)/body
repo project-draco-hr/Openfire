@@ -1,8 +1,9 @@
 {
-  for (  MediaProxySession session : sessions) {
-    if (session.getSID().equals(sid)) {
-      System.out.println("SID: " + sid + " agentSID: "+ session.getSID());
-      return session;
+  MediaProxySession proxySession=sessions.get(sid);
+  if (proxySession != null) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("SID: " + sid + " agentSID: "+ proxySession.getSID());
+      return proxySession;
     }
   }
   return null;

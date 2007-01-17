@@ -1,0 +1,35 @@
+{
+  try {
+    while (enabled) {
+      packet=new DatagramPacket(buf,buf.length);
+      dataSocket.receive(packet);
+      if (handle(packet)) {
+        boolean resend=true;
+        for (        DatagramListener dl : listeners) {
+          boolean send=dl.datagramReceived(packet);
+          if (resend && !send) {
+            resend=false;
+          }
+        }
+        if (resend) {
+          relayPacket(packet);
+        }
+      }
+    }
+  }
+ catch (  UnknownHostException uhe) {
+    if (enabled) {
+      Log.error("Unknown Host",uhe);
+    }
+  }
+catch (  SocketException se) {
+    if (enabled) {
+      Log.error("Socket closed",se);
+    }
+  }
+catch (  IOException ioe) {
+    if (enabled) {
+      Log.error("Communication error",ioe);
+    }
+  }
+}
