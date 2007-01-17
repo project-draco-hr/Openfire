@@ -5,22 +5,14 @@
   Element childElementCopy=iq.getChildElement().createCopy();
   reply.setChildElement(childElementCopy);
   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-    try {
-      reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
-      router.route(reply);
-      return;
-    }
- catch (    UnauthorizedException e) {
-    }
+    reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
+    router.route(reply);
+    return;
   }
  else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
-    try {
-      reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
-      router.route(reply);
-      return;
-    }
- catch (    UnauthorizedException e) {
-    }
+    reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
+    router.route(reply);
+    return;
   }
  else   if (NAMESPACE.equals(namespace)) {
     Element stun=childElementCopy.addElement("stun");

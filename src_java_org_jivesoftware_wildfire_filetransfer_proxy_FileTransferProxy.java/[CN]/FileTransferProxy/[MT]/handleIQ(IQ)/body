@@ -8,22 +8,14 @@
     namespace=childElement.getNamespaceURI();
   }
   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-    try {
-      IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(packet);
-      router.route(reply);
-      return true;
-    }
- catch (    UnauthorizedException e) {
-    }
+    IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(packet);
+    router.route(reply);
+    return true;
   }
  else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
-    try {
-      IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(packet);
-      router.route(reply);
-      return true;
-    }
- catch (    UnauthorizedException e) {
-    }
+    IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(packet);
+    router.route(reply);
+    return true;
   }
  else   if (FileTransferManager.NAMESPACE_BYTESTREAMS.equals(namespace)) {
     if (packet.getType() == IQ.Type.get) {
