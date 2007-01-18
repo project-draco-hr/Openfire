@@ -6,8 +6,7 @@
   }
   try {
     HttpConnection connection=new HttpConnection(rid,request.isSecure());
-    String remoteAddr=request.getRemoteAddr();
-    InetAddress address=InetAddress.getByAddress(IPAddressUtil.textToNumericFormatV4(remoteAddr));
+    InetAddress address=InetAddress.getByName(request.getRemoteAddr());
     connection.setSession(sessionManager.createSession(address,rootNode,connection));
     respond(response,connection);
   }
