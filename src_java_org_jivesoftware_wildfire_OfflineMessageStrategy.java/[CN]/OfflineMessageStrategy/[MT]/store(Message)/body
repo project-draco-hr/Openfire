@@ -1,3 +1,8 @@
 {
   messageStore.addMessage(message);
+  if (!listeners.isEmpty()) {
+    for (    OfflineMessageListener listener : listeners) {
+      listener.messageStored(message);
+    }
+  }
 }

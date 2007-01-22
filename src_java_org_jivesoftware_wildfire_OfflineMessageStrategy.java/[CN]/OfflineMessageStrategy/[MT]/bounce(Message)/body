@@ -8,6 +8,11 @@
     errorResponse.setFrom(message.getTo());
     errorResponse.setTo(message.getFrom());
     router.route(errorResponse);
+    if (!listeners.isEmpty()) {
+      for (      OfflineMessageListener listener : listeners) {
+        listener.messageBounced(message);
+      }
+    }
   }
  catch (  Exception e) {
     Log.error(e);
