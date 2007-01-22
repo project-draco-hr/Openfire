@@ -6,8 +6,8 @@
   if (pendingElements.size() > 0) {
     failDelivery();
   }
-  while (connectionQueue.size() > 0) {
-    HttpConnection toClose=connectionQueue.remove();
+  while (connectionQueue.hasConnectionWaiting()) {
+    HttpConnection toClose=connectionQueue.getConnection();
     toClose.close();
     fireConnectionClosed(toClose);
   }

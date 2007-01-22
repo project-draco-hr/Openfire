@@ -1,8 +1,8 @@
 {
   String deliverable=createDeliverable(Arrays.asList(stanza));
   boolean delivered=false;
-  while (!delivered && connectionQueue.size() > 0) {
-    HttpConnection connection=connectionQueue.remove();
+  while (!delivered && connectionQueue.hasConnectionWaiting()) {
+    HttpConnection connection=connectionQueue.getConnection();
     try {
       deliver(connection,deliverable);
       delivered=true;

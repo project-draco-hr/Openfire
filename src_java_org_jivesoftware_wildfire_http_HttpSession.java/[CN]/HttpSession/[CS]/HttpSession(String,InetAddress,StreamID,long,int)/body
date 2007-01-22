@@ -2,5 +2,6 @@
   super(serverName,null,streamID);
   conn=new HttpVirtualConnection(address);
   this.lastActivity=System.currentTimeMillis();
-  this.lastRequestID=rid;
+  this.hold=hold;
+  this.connectionQueue=new ConnectionQueue(hold + 1,rid);
 }

@@ -1,0 +1,14 @@
+{
+  HttpConnection toReturn;
+  if (connections[mark] != null && !connections[mark].isClosed()) {
+    int newMark=(mark + 1) % connections.length;
+    lastRequestId=connections[mark].getRequestId();
+    toReturn=connections[mark];
+    connections[mark]=null;
+    mark=newMark;
+  }
+ else {
+    toReturn=null;
+  }
+  return toReturn;
+}

@@ -1,0 +1,17 @@
+{
+  long diff=connection.getRequestId() - lastRequestId;
+  if (diff <= 0 || diff > connections.length) {
+    throw new HttpBindException("Unexpected rid error",true,404);
+  }
+  Collection<HttpConnection> closableConnections=new ArrayList<HttpConnection>();
+  int newPointer;
+  if (connections[mark] != null && diff == 1 && !connections[mark].isClosed()) {
+    closableConnections.add(connections[mark]);
+  }
+ else   if (connections[mark] != null && !connections[mark].isClosed()) {
+    throw new HttpBindException("Unexpected rid error",true,404);
+  }
+  newPointer=((int)((mark + (diff - 1)) % connections.length));
+  connections[newPointer]=connection;
+  return Collections.unmodifiableCollection(closableConnections);
+}
