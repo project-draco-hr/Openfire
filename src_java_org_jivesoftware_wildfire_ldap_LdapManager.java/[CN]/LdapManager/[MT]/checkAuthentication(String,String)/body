@@ -18,6 +18,9 @@
     if (!sslEnabled) {
       env.put("com.sun.jndi.ldap.connect.timeout","10000");
     }
+    if (readTimeout > 0) {
+      env.put("com.sun.jndi.ldap.read.timeout",String.valueOf(readTimeout));
+    }
     if (ldapDebugEnabled) {
       env.put("com.sun.jndi.ldap.trace.ber",System.err);
     }

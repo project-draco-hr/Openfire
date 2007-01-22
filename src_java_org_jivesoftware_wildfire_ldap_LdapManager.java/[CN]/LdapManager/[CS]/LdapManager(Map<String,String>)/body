@@ -17,6 +17,15 @@
       Log.error(nfe);
     }
   }
+  String timeout=properties.get("ldap.readTimeout");
+  if (timeout != null) {
+    try {
+      this.readTimeout=Integer.parseInt(timeout);
+    }
+ catch (    NumberFormatException nfe) {
+      Log.error(nfe);
+    }
+  }
   usernameField=properties.get("ldap.usernameField");
   if (usernameField == null) {
     usernameField="uid";
