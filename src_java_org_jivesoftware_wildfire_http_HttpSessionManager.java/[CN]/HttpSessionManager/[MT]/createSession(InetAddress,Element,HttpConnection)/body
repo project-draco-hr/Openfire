@@ -5,8 +5,9 @@
   }
   int wait=getIntAttribute(rootNode.attributeValue("wait"),60);
   int hold=getIntAttribute(rootNode.attributeValue("hold"),1);
-  HttpSession session=createSession(connection.getRequestId(),address,hold);
+  HttpSession session=createSession(connection.getRequestId(),address);
   session.setWait(Math.min(wait,getMaxWait()));
+  session.setHold(hold);
   session.setSecure(connection.isSecure());
   session.setMaxPollingInterval(getPollingInterval());
   session.setMaxRequests(getMaxRequests());

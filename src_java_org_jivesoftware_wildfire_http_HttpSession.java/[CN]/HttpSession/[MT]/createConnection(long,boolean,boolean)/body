@@ -1,6 +1,6 @@
 {
   HttpConnection connection=new HttpConnection(rid,isSecure);
-  if (rid <= connectionQueue.getLastRequestId()) {
+  if (rid <= lastRequestID) {
     Deliverable deliverable=retrieveDeliverable(rid);
     if (deliverable == null) {
       Log.warn("Deliverable unavailable for " + rid);
@@ -9,8 +9,8 @@
     connection.deliverBody(deliverable.getDeliverable());
     return connection;
   }
- else   if (rid > (connectionQueue.getLastRequestId() + hold + 1)) {
-    Log.warn("Request " + rid + " > "+ (connectionQueue.getLastRequestId() + hold + 1)+ ", ending session.");
+ else   if (rid > (lastRequestID + hold + 1)) {
+    Log.warn("Request " + rid + " > "+ (lastRequestID + hold + 1)+ ", ending session.");
     throw new HttpBindException("Unexpected RID Error",true,404);
   }
   addConnection(connection,isPoll);

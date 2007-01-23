@@ -20,13 +20,15 @@
  catch (    HttpConnectionClosedException he) {
       throw he;
     }
-    connectionQueue.updateLastRequestId(connection);
   }
  else {
-    for (    HttpConnection toClose : connectionQueue.queueConnection(connection)) {
+    while (connectionQueue.size() >= hold) {
+      HttpConnection toClose=connectionQueue.remove();
       toClose.close();
       fireConnectionClosed(toClose);
     }
+    connectionQueue.offer(connection);
     fireConnectionOpened(connection);
   }
+  lastRequestID=connection.getRequestId();
 }
