@@ -2,5 +2,7 @@
   super.initialize(server);
   routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
+  serviceName=JiveGlobals.getProperty("stun.serviceName",name);
+  serviceName=serviceName == null ? name : serviceName.equals("") ? name : serviceName;
   loadSTUNConfig();
 }
