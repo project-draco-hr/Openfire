@@ -24,6 +24,9 @@
     session.getConnection().close();
     return;
   }
+  if (stanza.startsWith("<?xml")) {
+    return;
+  }
   Element doc;
   try {
     doc=reader.read(new StringReader(stanza)).getRootElement();
