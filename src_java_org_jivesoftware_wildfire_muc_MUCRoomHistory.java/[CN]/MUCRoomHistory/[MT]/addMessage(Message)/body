@@ -7,6 +7,9 @@
       return;
     }
   }
+  if ((packet.getSubject() == null || "".equals(packet.getSubject().trim())) && (packet.getBody() == null || "".equals(packet.getBody().trim()))) {
+    return;
+  }
   Message packetToAdd=packet.createCopy();
   if (isNonAnonymousRoom != room.canAnyoneDiscoverJID()) {
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
