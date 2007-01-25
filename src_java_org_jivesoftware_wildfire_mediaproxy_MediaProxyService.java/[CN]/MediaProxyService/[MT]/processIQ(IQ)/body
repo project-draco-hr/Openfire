@@ -4,9 +4,6 @@
   String namespace=childElement.getNamespaceURI();
   Element childElementCopy=iq.getChildElement().createCopy();
   reply.setChildElement(childElementCopy);
-  if (Log.isDebugEnabled()) {
-    Log.debug("RECEIVED:" + iq.toXML());
-  }
   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
     reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
     router.route(reply);
@@ -40,7 +37,6 @@
         if (session != null) {
           Attribute pass=candidateElement.attribute("pass");
           if (pass != null && pass.getValue().trim().equals(session.getPass().trim())) {
-            Log.debug("RIGHT PASS");
             Attribute portA=candidateElement.attribute("porta");
             Attribute portB=candidateElement.attribute("portb");
             Attribute hostA=candidateElement.attribute("hosta");
