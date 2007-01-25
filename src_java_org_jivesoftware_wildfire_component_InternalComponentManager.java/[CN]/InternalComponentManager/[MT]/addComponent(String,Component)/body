@@ -1,8 +1,9 @@
 {
   Component existingComponent=components.get(subdomain);
   if (existingComponent != null && existingComponent != component) {
-    throw new ComponentException("Domain already taken by another component: " + existingComponent);
+    throw new ComponentException("Domain (" + subdomain + ") already taken by another component: "+ existingComponent);
   }
+  Log.debug("Registering component for domain: " + subdomain);
   components.put(subdomain,component);
   JID componentJID=new JID(subdomain + "." + serverDomain);
   XMPPServer.getInstance().getRoutingTable().addRoute(componentJID,new RoutableComponent(componentJID,component));
@@ -14,6 +15,7 @@
     }
     checkPresences();
     checkDiscoSupport(component,componentJID);
+    Log.debug("Component registered for domain: " + subdomain);
   }
  catch (  Exception e) {
     components.remove(subdomain);
