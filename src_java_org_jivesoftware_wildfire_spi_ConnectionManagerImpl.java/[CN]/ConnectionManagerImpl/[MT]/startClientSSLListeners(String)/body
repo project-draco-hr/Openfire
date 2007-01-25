@@ -22,7 +22,7 @@
       trustFactory.init(SSLConfig.getTrustStore());
       sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
       sslSocketAcceptor.getFilterChain().addFirst("tls",new SSLFilter(sslContext));
-      String interfaceName=JiveGlobals.getXMLProperty("xmpp.socket.network.interface");
+      String interfaceName=JiveGlobals.getXMLProperty("network.interface");
       InetAddress bindInterface=null;
       if (interfaceName != null) {
         if (interfaceName.trim().length() > 0) {
