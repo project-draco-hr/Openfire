@@ -1,5 +1,5 @@
 {
-  boolean initialStream=stanza.startsWith(STREAM_START);
+  boolean initialStream=stanza.startsWith("<stream:stream") || stanza.startsWith("<flash:stream");
   if (!sessionCreated || initialStream) {
     if (!initialStream) {
       return;
@@ -27,17 +27,7 @@
   if (stanza.startsWith("<?xml")) {
     return;
   }
-  Element doc;
-  try {
-    doc=reader.read(new StringReader(stanza)).getRootElement();
-  }
- catch (  DocumentException e) {
-    if (stanza.equals("</stream:stream>")) {
-      connection.close();
-      return;
-    }
-    throw e;
-  }
+  Element doc=reader.read(new StringReader(stanza)).getRootElement();
   if (doc == null) {
     return;
   }
