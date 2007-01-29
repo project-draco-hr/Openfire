@@ -1,8 +1,7 @@
 {
-  List<String> duplicateUsers=new ArrayList<String>();
+  List<String> invalidUsers=new ArrayList<String>();
   UserManager userManager=UserManager.getInstance();
   RosterItemProvider rosterItemProvider=RosterItemProvider.getInstance();
-  Map<String,List<RosterItem>> rosterMap=new HashMap<String,List<RosterItem>>();
   Element users=document.getRootElement();
   Iterator usersIter=users.elementIterator("User");
   while (usersIter.hasNext()) {
@@ -52,30 +51,28 @@
     }
     if ((userName != null) && (password != null)) {
       try {
-        userManager.createUser(userName,password,name,email);
-        rosterMap.put(userName,rosterItems);
-      }
- catch (      UserAlreadyExistsException e) {
-        Log.info("User already exists: " + userName);
-        duplicateUsers.add(userName);
-      }
-    }
-  }
-  for (  String userName : rosterMap.keySet()) {
-    for (    RosterItem ri : rosterMap.get(userName)) {
-      try {
-        if (serverName.equals(ri.getJid().getDomain())) {
-          userManager.getUser(removeDoman(ri.getJid()));
+        userName=Stringprep.nodeprep(userName);
+        if (!isUserProviderReadOnly()) {
+          userManager.createUser(userName,password,name,email);
         }
-        rosterItemProvider.createItem(userName,ri);
+        userManager.getUser(userName);
+        for (        RosterItem ri : rosterItems) {
+          rosterItemProvider.createItem(userName,ri);
+        }
       }
- catch (      UserNotFoundException e) {
-        Log.info("User '" + removeDoman(ri.getJid()) + "' not found, will not be added to '"+ userName+ "' roster.");
+ catch (      StringprepException se) {
+        Log.info("Invalid username " + userName);
+        invalidUsers.add(userName);
       }
 catch (      UserAlreadyExistsException e) {
-        Log.info("User '" + removeDoman(ri.getJid()) + "' already belongs to '"+ userName+ "' roster.");
+        Log.info("User already exists " + userName);
+        invalidUsers.add(userName);
+      }
+catch (      UserNotFoundException e) {
+        Log.info("User not found " + userName);
+        invalidUsers.add(userName);
       }
     }
   }
-  return duplicateUsers;
+  return invalidUsers;
 }

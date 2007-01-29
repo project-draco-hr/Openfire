@@ -10,7 +10,11 @@
       userElement.addElement("Password").addText(AuthFactory.getPassword(user.getUsername()));
     }
  catch (    UserNotFoundException e) {
-      Log.info("User not found: " + userName + ", setting password to their username");
+      Log.info("User " + userName + " not found, setting their password to their username");
+      userElement.addElement("Password").addText(userName);
+    }
+catch (    UnsupportedOperationException e) {
+      Log.info("Unable to retrieve " + userName + " password, setting their password to their username");
       userElement.addElement("Password").addText(userName);
     }
     userElement.addElement("Email").addText(user.getEmail() == null ? "" : user.getEmail());
