@@ -1,12 +1,11 @@
 {
   String deliverable=createDeliverable(Arrays.asList(stanza));
   boolean delivered=false;
-  while (!delivered && connectionQueue.size() > 0) {
-    HttpConnection connection=connectionQueue.remove();
+  for (  HttpConnection connection : connectionQueue) {
     try {
       deliver(connection,deliverable);
       delivered=true;
-      fireConnectionClosed(connection);
+      break;
     }
  catch (    HttpConnectionClosedException e) {
     }

@@ -33,7 +33,8 @@ catch (    HttpConnectionClosedException nc) {
     }
  else {
       connection.setContinuation(ContinuationSupport.getContinuation(request,connection));
-      request.setAttribute("request-connection",connection);
+      request.setAttribute("request-session",connection.getSession());
+      request.setAttribute("request",connection.getRequestId());
       respond(response,connection);
     }
   }

@@ -23,11 +23,11 @@
   }
  else {
     while (connectionQueue.size() >= hold) {
-      HttpConnection toClose=connectionQueue.remove();
+      HttpConnection toClose=connectionQueue.remove(0);
       toClose.close();
       fireConnectionClosed(toClose);
     }
-    connectionQueue.offer(connection);
+    connectionQueue.add(connection);
     fireConnectionOpened(connection);
   }
   lastRequestID=connection.getRequestId();

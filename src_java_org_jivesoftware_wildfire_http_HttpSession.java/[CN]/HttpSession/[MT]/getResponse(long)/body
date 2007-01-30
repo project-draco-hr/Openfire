@@ -1,0 +1,17 @@
+{
+  for (  HttpConnection connection : connectionQueue) {
+    if (connection.getRequestId() == requestID) {
+      String response;
+      try {
+        response=connection.getResponse();
+      }
+ catch (      HttpBindTimeoutException e) {
+        response=createEmptyBody();
+      }
+      connectionQueue.remove(connection);
+      fireConnectionClosed(connection);
+      return response;
+    }
+  }
+  throw new InternalError("Could not locate connection: " + requestID);
+}
