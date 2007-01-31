@@ -1,3 +1,8 @@
 {
-  return new JID(JID.escapeNode(username),this.jid.getDomain(),null);
+  if (JiveGlobals.getBooleanProperty("plugin.gateway.tweak.percenthack",false)) {
+    return new JID(username.replace('@','%').replace(" ",""),this.jid.getDomain(),null);
+  }
+ else {
+    return new JID(JID.escapeNode(username.replace(" ","")),this.jid.getDomain(),null);
+  }
 }
