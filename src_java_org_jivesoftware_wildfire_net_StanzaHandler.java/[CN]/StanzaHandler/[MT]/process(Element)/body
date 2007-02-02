@@ -10,7 +10,7 @@
   if ("message".equals(tag)) {
     Message packet;
     try {
-      packet=new Message(doc,true);
+      packet=new Message(doc,!validateJIDs());
     }
  catch (    IllegalArgumentException e) {
       Log.debug("Rejecting packet. JID malformed",e);
@@ -27,7 +27,7 @@
  else   if ("presence".equals(tag)) {
     Presence packet;
     try {
-      packet=new Presence(doc,true);
+      packet=new Presence(doc,!validateJIDs());
     }
  catch (    IllegalArgumentException e) {
       Log.debug("Rejecting packet. JID malformed",e);
