@@ -1,0 +1,13 @@
+{
+  long currentBytes=session.getWrittenBytes();
+  Long prevBytes=(Long)session.getAttribute("_written_bytes");
+  long delta;
+  if (prevBytes == null) {
+    delta=currentBytes;
+  }
+ else {
+    delta=currentBytes - prevBytes;
+  }
+  session.setAttribute("_written_bytes",currentBytes);
+  ServerTrafficCounter.incrementOutgoingCounter(delta);
+}
