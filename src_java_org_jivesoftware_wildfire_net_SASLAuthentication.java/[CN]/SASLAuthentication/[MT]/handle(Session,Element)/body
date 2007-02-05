@@ -23,7 +23,7 @@ case AUTH:
       if (mechanism.equals("GSSAPI")) {
         props.put(Sasl.SERVER_AUTH,"TRUE");
       }
-      SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
+      SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
       byte[] token=new byte[0];
       if (doc.isTextOnly()) {
         token=StringUtils.decodeBase64(doc.getTextTrim());
