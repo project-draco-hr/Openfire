@@ -3,9 +3,12 @@
   boolean delivered=false;
   for (  HttpConnection connection : connectionQueue) {
     try {
-      deliver(connection,deliverable);
-      delivered=true;
-      break;
+      if (connection.getRequestId() == lastRequestID + 1) {
+        deliver(connection,deliverable);
+        delivered=true;
+        lastRequestID=connection.getRequestId();
+        break;
+      }
     }
  catch (    HttpConnectionClosedException e) {
     }

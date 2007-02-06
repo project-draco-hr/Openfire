@@ -1,16 +1,15 @@
 {
   for (  HttpConnection connection : connectionQueue) {
     if (connection.getRequestId() == requestID) {
-      String response;
-      try {
-        response=connection.getResponse();
-      }
- catch (      HttpBindTimeoutException e) {
-        response=createEmptyBody();
+      if (requestID > lastRequestID + 1) {
+        throw new HttpBindException("Invalid RID error.",true,404);
       }
       connectionQueue.remove(connection);
       fireConnectionClosed(connection);
-      return response;
+      if (requestID > lastRequestID) {
+        lastRequestID=connection.getRequestId();
+      }
+      return getResponse(connection);
     }
   }
   throw new InternalError("Could not locate connection: " + requestID);
