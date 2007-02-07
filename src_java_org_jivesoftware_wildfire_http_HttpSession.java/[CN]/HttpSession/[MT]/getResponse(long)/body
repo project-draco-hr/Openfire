@@ -4,12 +4,13 @@
       if (requestID > lastRequestID + 1) {
         throw new HttpBindException("Invalid RID error.",true,404);
       }
-      connectionQueue.remove(connection);
-      fireConnectionClosed(connection);
       if (requestID > lastRequestID) {
         lastRequestID=connection.getRequestId();
       }
-      return getResponse(connection);
+      String response=getResponse(connection);
+      connectionQueue.remove(connection);
+      fireConnectionClosed(connection);
+      return response;
     }
   }
   throw new InternalError("Could not locate connection: " + requestID);

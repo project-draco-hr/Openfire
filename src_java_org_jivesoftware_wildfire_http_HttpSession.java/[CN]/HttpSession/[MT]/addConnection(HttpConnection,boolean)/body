@@ -12,7 +12,6 @@
   if (hold <= 0 || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
     String deliverable=createDeliverable(pendingElements);
     try {
-      fireConnectionOpened(connection);
       deliver(connection,deliverable);
       lastRequestID=connection.getRequestId();
       pendingElements.clear();
@@ -27,8 +26,8 @@
       HttpConnection toClose=connectionQueue.get(i);
       toClose.close();
     }
-    connectionQueue.add(connection);
-    Collections.sort(connectionQueue,connectionComparator);
-    fireConnectionOpened(connection);
   }
+  connectionQueue.add(connection);
+  Collections.sort(connectionQueue,connectionComparator);
+  fireConnectionOpened(connection);
 }
