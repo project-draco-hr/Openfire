@@ -12,6 +12,17 @@
     tokens.nextToken();
   }
   username=tokens.nextToken();
+  if (username != null && username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getName())) {
+      username=username.substring(0,index);
+    }
+ else {
+      authenticationFailed(session);
+      return Status.failed;
+    }
+  }
   password=tokens.nextToken();
   try {
     AuthToken token=AuthFactory.authenticate(username,password);
