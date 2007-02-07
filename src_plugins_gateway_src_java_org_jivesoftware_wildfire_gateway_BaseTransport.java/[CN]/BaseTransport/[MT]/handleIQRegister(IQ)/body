@@ -5,6 +5,11 @@
   Element remove=packet.getChildElement().element("remove");
   if (remove != null) {
     IQ result=IQ.createResultIQ(packet);
+    if (packet.getChildElement().elements().size() != 1) {
+      result.setError(Condition.bad_request);
+      reply.add(result);
+      return reply;
+    }
     Presence unavailable=new Presence(Presence.Type.unavailable);
     unavailable.setTo(from);
     unavailable.setFrom(to);
@@ -14,7 +19,7 @@
     }
  catch (    UserNotFoundException e) {
       Log.error("Error cleaning up contact list of: " + from);
-      result.setError(Condition.bad_request);
+      result.setError(Condition.registration_required);
     }
     reply.add(result);
   }

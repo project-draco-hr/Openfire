@@ -1,5 +1,8 @@
 {
   Collection<Registration> registrations=registrationManager.getRegistrations(jid,this.transportType);
+  if (registrations.isEmpty()) {
+    throw new UserNotFoundException("User was not registered.");
+  }
   for (  Registration reg : registrations) {
     registrationManager.deleteRegistration(reg);
   }
