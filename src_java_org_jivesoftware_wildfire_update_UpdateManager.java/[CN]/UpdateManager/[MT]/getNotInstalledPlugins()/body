@@ -1,5 +1,5 @@
 {
-  ArrayList<AvailablePlugin> plugins=new ArrayList<AvailablePlugin>(availablePlugins.values());
+  List<AvailablePlugin> plugins=new ArrayList<AvailablePlugin>(availablePlugins.values());
   XMPPServer server=XMPPServer.getInstance();
   for (  Plugin plugin : server.getPluginManager().getPlugins()) {
     String pluginName=server.getPluginManager().getName(plugin);
@@ -9,6 +9,13 @@
         it.remove();
         break;
       }
+    }
+  }
+  String serverVersion=XMPPServer.getInstance().getServerInfo().getVersion().getVersionString();
+  for (Iterator<AvailablePlugin> it=plugins.iterator(); it.hasNext(); ) {
+    AvailablePlugin plugin=it.next();
+    if (serverVersion.compareTo(plugin.getMinServerVersion()) < 0) {
+      it.remove();
     }
   }
   return plugins;
