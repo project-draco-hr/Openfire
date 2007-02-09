@@ -10,9 +10,8 @@
   }
   connection.setSession(this);
   if (hold <= 0 || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
-    String deliverable=createDeliverable(pendingElements);
     try {
-      deliver(connection,deliverable);
+      deliver(connection,pendingElements);
       lastRequestID=connection.getRequestId();
       pendingElements.clear();
     }

@@ -1,10 +1,12 @@
 {
   if (continuation.suspend(session.getWait() * 1000)) {
     String deliverable=(String)continuation.getObject();
+    this.isDelivered=true;
     if (deliverable == null) {
       throw new HttpBindTimeoutException();
     }
     return deliverable;
   }
+  this.isDelivered=true;
   throw new HttpBindTimeoutException("Request " + requestId + " exceded response time from "+ "server of "+ session.getWait()+ " seconds.");
 }

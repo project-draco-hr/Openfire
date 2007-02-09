@@ -1,9 +1,22 @@
 {
   for (  Deliverable deliverable : pendingElements) {
-    Packet packet=deliverable.packet;
-    if (packet != null && packet instanceof Message) {
-      XMPPServer.getInstance().getOfflineMessageStrategy().storeOffline((Message)packet);
+    Collection<Packet> packet=deliverable.packets;
+    if (packet != null) {
+      failDelivery(packet);
     }
+  }
+  for (  HttpConnection toClose : connectionQueue) {
+    if (!toClose.isDelivered()) {
+      Delivered delivered=retrieveDeliverable(toClose.getRequestId());
+      if (delivered != null) {
+        failDelivery(delivered.getPackets());
+      }
+ else {
+        Log.warn("Packets could not be found for session " + getStreamID() + " cannot"+ "be delivered to client");
+      }
+    }
+    toClose.close();
+    fireConnectionClosed(toClose);
   }
   pendingElements.clear();
 }

@@ -6,10 +6,6 @@
   if (pendingElements.size() > 0) {
     failDelivery();
   }
-  for (  HttpConnection toClose : connectionQueue) {
-    toClose.close();
-    fireConnectionClosed(toClose);
-  }
   for (  SessionListener listener : listeners) {
     listener.sessionClosed(this);
   }
