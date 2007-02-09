@@ -7,14 +7,27 @@
     }
     try {
       sslSocketAcceptor=buildSocketAcceptor();
-      ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("client_ssl");
       int eventThreads=JiveGlobals.getIntProperty("xmpp.client_ssl.processing.threads",16);
-      ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+      ExecutorFilter executorFilter=new ExecutorFilter();
+      ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
+      final ThreadFactory originalThreadFactory=eventExecutor.getThreadFactory();
+      ThreadFactory newThreadFactory=new ThreadFactory(){
+        private final AtomicInteger threadId=new AtomicInteger(0);
+        public Thread newThread(        Runnable runnable){
+          Thread t=originalThreadFactory.newThread(runnable);
+          t.setName("Old SSL executor thread - " + threadId.incrementAndGet());
+          t.setDaemon(true);
+          return t;
+        }
+      }
+;
+      eventExecutor.setThreadFactory(newThreadFactory);
       eventExecutor.setCorePoolSize(eventThreads + 1);
       eventExecutor.setMaximumPoolSize(eventThreads + 1);
       eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
-      sslSocketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+      sslSocketAcceptor.getDefaultConfig().setThreadModel(ThreadModel.MANUAL);
       sslSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
+      sslSocketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
       SSLContext sslContext=SSLContext.getInstance(algorithm);
       KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
       keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());
