@@ -3,6 +3,11 @@
     return lastActivity;
   }
  else {
-    return System.currentTimeMillis();
+    for (    HttpConnection connection : connectionQueue) {
+      if (!connection.isClosed()) {
+        return System.currentTimeMillis();
+      }
+    }
+    return lastActivity;
   }
 }
