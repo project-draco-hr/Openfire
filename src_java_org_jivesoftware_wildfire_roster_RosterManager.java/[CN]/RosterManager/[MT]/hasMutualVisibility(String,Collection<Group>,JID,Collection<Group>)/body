@@ -19,6 +19,15 @@
           if (groupNames.contains(otherGroup.getName()) && otherGroupNames.contains(group.getName())) {
             return true;
           }
+          Collection<Group> groupList=parseGroups(groupNames);
+          Collection<Group> otherGroupList=parseGroups(otherGroupNames);
+          for (          Group groupName : groupList) {
+            for (            Group otherGroupName : otherGroupList) {
+              if (groupName.equals(otherGroupName) && groupName.isUser(user) && otherGroupName.isUser(otherUser)) {
+                return true;
+              }
+            }
+          }
         }
       }
  else       if ("everybody".equals(showInRoster) && "onlyGroup".equals(otherShowInRoster)) {
