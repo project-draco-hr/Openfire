@@ -1,0 +1,48 @@
+{
+  while (!stop) {
+    try {
+      Thread.sleep(pollingInterval);
+    }
+ catch (    InterruptedException e) {
+    }
+    long tmpMsgWritten=0l;
+    long tmpMsgRead=0l;
+    long tmpBytesWritten=0l;
+    long tmpBytesRead=0l;
+    long tmpScheduledWrites=0l;
+    long tmpQueuevedEvents=0l;
+    for (    IoSession session : polledSessions) {
+      IoSessionStat sessStat=(IoSessionStat)session.getAttribute(KEY);
+      long currentTimestamp=System.currentTimeMillis();
+      float pollDelta=(currentTimestamp - sessStat.lastPollingTime) / 1000f;
+      sessStat.lastPollingTime=currentTimestamp;
+      long readBytes=session.getReadBytes();
+      long writtenBytes=session.getWrittenBytes();
+      long readMessages=session.getReadMessages();
+      long writtenMessages=session.getWrittenMessages();
+      sessStat.byteReadThroughput=(readBytes - sessStat.lastByteRead) / pollDelta;
+      sessStat.byteWrittenThroughput=(writtenBytes - sessStat.lastByteWrite) / pollDelta;
+      sessStat.messageReadThroughput=(readMessages - sessStat.lastMessageRead) / pollDelta;
+      sessStat.messageWrittenThroughput=(writtenMessages - sessStat.lastMessageWrite) / pollDelta;
+      tmpMsgWritten+=(writtenMessages - sessStat.lastMessageWrite);
+      tmpMsgRead+=(readMessages - sessStat.lastMessageRead);
+      tmpBytesWritten+=(writtenBytes - sessStat.lastByteWrite);
+      tmpBytesRead+=(readBytes - sessStat.lastByteRead);
+      tmpScheduledWrites+=session.getScheduledWriteRequests();
+      ExecutorFilter executorFilter=(ExecutorFilter)session.getFilterChain().get(ExecutorThreadModel.class.getName());
+      if (executorFilter != null) {
+        tmpQueuevedEvents+=executorFilter.getEventQueueSize(session);
+      }
+      sessStat.lastByteRead=readBytes;
+      sessStat.lastByteWrite=writtenBytes;
+      sessStat.lastMessageRead=readMessages;
+      sessStat.lastMessageWrite=writtenMessages;
+    }
+    totalMsgWritten.addAndGet(tmpMsgWritten);
+    totalMsgRead.addAndGet(tmpMsgRead);
+    totalBytesWritten.addAndGet(tmpBytesWritten);
+    totalBytesRead.addAndGet(tmpBytesRead);
+    totalScheduledWrites.set(tmpScheduledWrites);
+    totalQueuedEvents.set(tmpQueuevedEvents);
+  }
+}
