@@ -15,7 +15,9 @@
           encoded=((DERTaggedObject)encoded).getObject();
           encoded=((DERTaggedObject)encoded).getObject();
           String identity=((DERUTF8String)encoded).getString();
-          identities.add(identity);
+          if (!"".equals(identity)) {
+            identities.add(identity);
+          }
         }
  catch (        UnsupportedEncodingException e) {
         }
@@ -25,7 +27,7 @@ catch (        Exception e) {
           Log.error("Error decoding subjectAltName",e);
         }
       }
-      if (Log.isDebugEnabled()) {
+ else       if (Log.isDebugEnabled()) {
         Log.debug("SubjectAltName of invalid type found: " + certificate);
       }
     }
