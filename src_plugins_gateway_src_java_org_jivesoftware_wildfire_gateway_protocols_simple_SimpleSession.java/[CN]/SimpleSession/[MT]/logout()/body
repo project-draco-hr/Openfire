@@ -1,0 +1,16 @@
+{
+  this.setLoginStatus(TransportLoginStatus.LOGGING_OUT);
+  Log.debug("SimpleSession(" + getJID().getNode() + ").logout:  Preparing logout packet...");
+  List<Header> customHeaders=new ArrayList<Header>(1);
+  try {
+    customHeaders.add(headerFactory.createExpiresHeader(0));
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + getJID().getNode() + ").logout:  "+ "Unable to set the expiry interval, which is essential for a logout.",e);
+    return;
+  }
+  String myUsername=registration.getUsername();
+  if (myUsername.indexOf("sip:") < 0)   myUsername="sip:" + myUsername;
+  if (myUsername.indexOf("@") < 0)   myUsername=myUsername + "@" + sipHost;
+  prepareRequest(RequestType.REGISTER,myUsername,null,this.sessionId,seqNum++,70,customHeaders,null);
+}

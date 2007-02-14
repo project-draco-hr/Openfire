@@ -1,0 +1,16 @@
+{
+  Log.debug("SimpleSession(" + this.jid.getNode() + "):  Starting message sending process.");
+  ContentTypeHeader contentTypeHeader=null;
+  try {
+    contentTypeHeader=headerFactory.createContentTypeHeader("text","plain");
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + this.jid.getNode() + ").sendMessage:  Unable to initiate ContentType header.",e);
+    return;
+  }
+  Log.debug("SimpleSession(" + this.jid.getNode() + "):  Finished adding ContentType header.");
+  MessageContent content=new MessageContent(contentTypeHeader,message);
+  if (!prepareRequest(RequestType.MESSAGE,((SimpleTransport)transport).convertJIDToID(jid),null,null,1L,70,null,content)) {
+    Log.debug("SimpleSession(" + this.jid.getNode() + ").sendMessage:  Unable to send message!");
+  }
+}

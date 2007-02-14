@@ -1,0 +1,86 @@
+{
+  if (!this.isLoggedIn()) {
+    this.setLoginStatus(TransportLoginStatus.LOGGING_IN);
+    Log.debug("SimpleSession(" + getJID().getNode() + ").login:  Start login as "+ registration.getUsername()+ ".");
+    List<Header> customHeaders=new ArrayList<Header>(13);
+    try {
+      customHeaders.add(headerFactory.createExpiresHeader(365 * 24 * 60* 60));
+    }
+ catch (    Exception e) {
+      Log.debug("SimpleSession(" + getJID().getNode() + ").login:  "+ "Unable to set the expiry interval, which is essential for a login.",e);
+      return;
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.ACK));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.BYE));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.CANCEL));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.INFO));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.INVITE));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.MESSAGE));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.NOTIFY));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.OPTIONS));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.REFER));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createAllowHeader(Request.SUBSCRIBE));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      customHeaders.add(headerFactory.createEventHeader("presence"));
+    }
+ catch (    Exception e) {
+    }
+    String myUsername=registration.getUsername();
+    if (myUsername.indexOf("sip:") < 0)     myUsername="sip:" + myUsername;
+    if (myUsername.indexOf("@") < 0)     myUsername=myUsername + "@" + sipHost;
+    String callId=null;
+    try {
+      callId=udpSipProvider.getNewCallId().getCallId();
+      this.sessionId=callId;
+    }
+ catch (    Exception e) {
+      Log.debug("SimpleSession(" + getJID().getNode() + ").login:  Unable to create a SIP session ID!!",e);
+      this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+      return;
+    }
+    Log.debug("SimpleSession(" + getJID().getNode() + ").login:  Created Session ID = '"+ this.sessionId+ "'!!");
+    if (!prepareRequest(RequestType.REGISTER,myUsername,null,this.sessionId,seqNum++,70,customHeaders,null)) {
+      this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+    }
+  }
+}

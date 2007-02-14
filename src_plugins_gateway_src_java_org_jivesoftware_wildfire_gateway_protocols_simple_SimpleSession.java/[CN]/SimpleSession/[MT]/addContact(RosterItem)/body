@@ -1,0 +1,81 @@
+{
+  String nickname=getTransport().convertJIDToID(item.getJid());
+  if (item.getNickname() != null && !item.getNickname().equals("")) {
+    nickname=item.getNickname();
+  }
+  lockRoster(item.getJid().toString());
+  JID destJid=item.getJid();
+  String destId=((SimpleTransport)transport).convertJIDToID(destJid);
+  Log.debug("SimpleSession(" + this.jid.getNode() + ").addContact:  Starting addContact function for "+ destId);
+  List<Header> customHeaders=new ArrayList<Header>(13);
+  try {
+    customHeaders.add(headerFactory.createExpiresHeader(365 * 24 * 60* 60));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.ACK));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.BYE));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.CANCEL));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.INFO));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.INVITE));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.MESSAGE));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.NOTIFY));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.OPTIONS));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.REFER));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createAllowHeader(Request.SUBSCRIBE));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createEventHeader("presence"));
+  }
+ catch (  Exception e) {
+  }
+  prepareRequest(RequestType.SUBSCRIBE,destId,null,null,1L,70,customHeaders,null);
+  destJid=getTransport().convertIDToJID(destId);
+  try {
+    Log.debug("SimpleSession(" + getJID().getNode() + ").addContact:  Adding contact '"+ destJid.toString()+ "' to roster...");
+    getTransport().addOrUpdateRosterItem(getJID(),destJid,nickname,item.getGroups());
+    Log.debug("SimpleSession(" + getJID().getNode() + ").addContact:  Contact '"+ destJid.toString()+ "' added!");
+  }
+ catch (  Exception ex) {
+    Log.debug("SimpleSession(" + getJID().getNode() + ").addContact:  Unable to add contact.",ex);
+  }
+}

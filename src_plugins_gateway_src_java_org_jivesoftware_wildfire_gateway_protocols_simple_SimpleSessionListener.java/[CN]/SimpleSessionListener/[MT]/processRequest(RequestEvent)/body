@@ -1,0 +1,108 @@
+{
+  int responseCode=200;
+  Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Received a request event:  \n"+ requestEvent.getRequest().toString());
+  String fromAddr="";
+  Request request=requestEvent.getRequest();
+  ListIterator headerNames=request.getHeaderNames();
+  while (headerNames.hasNext()) {
+    String headerName=(String)headerNames.next();
+    if (headerName.equals(FromHeader.NAME)) {
+      FromHeader fromHeader=(FromHeader)request.getHeader(FromHeader.NAME);
+      Address fromAddress=fromHeader.getAddress();
+      String displayName=fromAddress.getDisplayName();
+      URI fromUri=fromAddress.getURI();
+      if (fromUri != null) {
+        fromAddr=fromUri.toString();
+        break;
+      }
+    }
+  }
+  Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Request method = '"+ request.getMethod()+ "'");
+  if (request.getMethod().equals(Request.MESSAGE)) {
+    Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Starting MESSAGE request handling process.");
+    JID senderJid=mySimpleSession.getTransport().convertIDToJID(fromAddr);
+    String msgContent=new String((byte[])request.getContent());
+    Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Forwarding MESSAGE request as XMPP message, setting from = "+ senderJid+ " and content = '"+ msgContent+ "'");
+    mySimpleSession.getTransport().sendMessage(mySimpleSession.getJID(),senderJid,msgContent);
+    mySimpleSession.sendResponse(responseCode,request);
+  }
+ else   if (request.getMethod().equals(Request.NOTIFY)) {
+    SubscriptionStateHeader subscriptionStateHeader=(SubscriptionStateHeader)request.getHeader(SubscriptionStateHeader.NAME);
+    Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  NOTIFY request handling process started.");
+    if (subscriptionStateHeader.getState().equalsIgnoreCase(SubscriptionStateHeader.ACTIVE)) {
+      Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  NOTIFY Active!");
+      int expires=subscriptionStateHeader.getExpires();
+      Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  NOTIFY Expiry = "+ expires);
+      try {
+        Presence presence=new Presence();
+        presence.setFrom(mySimpleSession.getTransport().convertIDToJID(fromAddr));
+        presence.setTo(mySimpleSession.getJID());
+        if (expires > 0) {
+          String content="";
+          if (request.getContent() != null)           content=new String((byte[])request.getContent());
+          if (content.length() > 0) {
+            SimplePresence simplePresence=SimplePresence.parseSimplePresence(content);
+            if (simplePresence.getTupleStatus().isOpen()) {
+              presence.setStatus("Online");
+              Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  "+ "SIP user '"+ fromAddr+ "' is '"+ simplePresence.getRpid().toString()+ "'!");
+switch (simplePresence.getRpid()) {
+case AWAY:
+                presence.setShow(Presence.Show.away);
+              presence.setStatus("Away");
+            break;
+case BUSY:
+          presence.setShow(Presence.Show.dnd);
+        presence.setStatus("Do Not Disturb");
+      break;
+case HOLIDAY:
+    presence.setShow(Presence.Show.xa);
+  presence.setStatus("(SIP) On Holiday");
+break;
+case IN_TRANSIT:
+presence.setShow(Presence.Show.xa);
+presence.setStatus("(SIP) In Transit");
+break;
+case ON_THE_PHONE:
+presence.setShow(Presence.Show.away);
+presence.setStatus("On Phone");
+break;
+case PERMANENT_ABSENCE:
+presence.setStatus("Offline");
+break;
+case SLEEPING:
+presence.setShow(Presence.Show.away);
+presence.setStatus("(SIP) Idle");
+break;
+default :
+break;
+}
+}
+}
+ else {
+presence.setStatus("Offline");
+}
+}
+ else {
+presence.setType(Presence.Type.unsubscribed);
+}
+Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Sending XMPP presence packet.");
+mySimpleSession.getTransport().sendPacket(presence);
+}
+ catch (Exception ex) {
+Log.debug("SimpleSessionListener(" + myUsername + ").processRequest:  Exception occured when processing NOTIFY packet...",ex);
+}
+}
+mySimpleSession.sendResponse(responseCode,request);
+}
+ else if (request.getMethod().equals(Request.SUBSCRIBE)) {
+Log.debug("SimpleSessionListener for " + myUsername + ":  SUBSCRIBE request handling process.");
+mySimpleSession.sendResponse(202,request);
+Log.debug("SimpleSessionListener for " + myUsername + ":  SUBSCRIBE should be followed by a NOTIFY");
+try {
+mySimpleSession.sendNotify(request);
+}
+ catch (Exception e) {
+Log.debug("SimpleSessionListener for " + myUsername + ":  Unable to prepare NOTIFY packet.",e);
+}
+}
+}

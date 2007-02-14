@@ -1,0 +1,157 @@
+{
+  String myJiveId=this.jid.getNode();
+  String mySipUsername=registration.getUsername();
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing request packet of type '"+ requestType+ "'");
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"From\" header...");
+  FromHeader fromHeader=null;
+  try {
+    SipURI fromUri=addressFactory.createSipURI(mySipUsername,sipHost);
+    Address fromNameAddress=addressFactory.createAddress(fromUri);
+    fromNameAddress.setDisplayName(mySipUsername);
+    fromHeader=headerFactory.createFromHeader(fromNameAddress,"SipGateway");
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing FromHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"To\" header...");
+  ToHeader toHeader=null;
+  String destUsername="";
+  String destAddress="";
+  if (destination.indexOf(":") > 0 && destination.indexOf("@") > destination.indexOf(":")) {
+    destUsername=destination.substring(destination.indexOf(":") + 1,destination.indexOf("@"));
+    destAddress=destination.substring(destination.indexOf("@") + 1);
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  destUsername = '"+ destUsername+ "';  destAddress = '"+ destAddress+ "'");
+  }
+ else {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing ToHeader.",new IllegalArgumentException("The destination specified is not a valid SIP address"));
+    return false;
+  }
+  try {
+    SipURI toAddress=addressFactory.createSipURI(destUsername,destAddress);
+    Address toNameAddress=addressFactory.createAddress(toAddress);
+    String displayName=destUsername;
+    try {
+      RosterItem ri=getRoster().getRosterItem(this.getTransport().convertIDToJID(destination));
+      if (ri != null)       displayName=ri.getNickname();
+    }
+ catch (    Exception e) {
+    }
+    toNameAddress.setDisplayName(displayName);
+    toHeader=headerFactory.createToHeader(toNameAddress,toTag);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing ToHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"Via\" header...");
+  ArrayList viaHeaders=new ArrayList();
+  try {
+    ViaHeader viaHeader=headerFactory.createViaHeader(InetAddress.getLocalHost().getHostAddress(),sipPort,ListeningPoint.UDP,null);
+    viaHeaders.add(viaHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing ViaHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"CallId\" header...");
+  CallIdHeader callIdHeader=null;
+  try {
+    if (callId != null)     callIdHeader=headerFactory.createCallIdHeader(callId);
+ else     callIdHeader=udpSipProvider.getNewCallId();
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing CallIdHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"CSeq\" header...");
+  CSeqHeader cSeqHeader=null;
+  try {
+    cSeqHeader=headerFactory.createCSeqHeader(seqNum,requestType.toString());
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing CSeqHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"MaxForwards\" header...");
+  MaxForwardsHeader maxForwardsHeader=null;
+  try {
+    maxForwardsHeader=headerFactory.createMaxForwardsHeader(maxForward);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing MaxForwardsHeader.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing request URI...");
+  SipURI requestURI=null;
+  try {
+    requestURI=addressFactory.createSipURI(destUsername,destAddress);
+    requestURI.setTransportParam(ListeningPoint.UDP);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when preparing Request URI.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Instantiating Request packet...");
+  Request request=null;
+  try {
+    request=messageFactory.createRequest(requestURI,requestType.toString(),callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwardsHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when instantiating Request packet.",e);
+    return false;
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Start adding custom headers...");
+  int headerCount=0;
+  if (headers != null) {
+    headerCount=headers.size();
+    for (ListIterator<Header> headersIterator=headers.listIterator(); headersIterator.hasNext(); ) {
+      Header aHeader=headersIterator.next();
+      try {
+        request.addHeader(aHeader);
+      }
+ catch (      Exception e) {
+        Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when adding a "+ aHeader.getClass().toString()+ " to the request packet.",e);
+        headerCount--;
+      }
+    }
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Finished adding custom headers.  "+ headerCount+ " of "+ headers.size()+ " headers successfully added.");
+  }
+ else {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  The custom headers input is null.  No custom headers to add.");
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Preparing \"Contact\" header...");
+  try {
+    SipURI contactURI;
+    if (requestType.equals(RequestType.NOTIFY))     contactURI=addressFactory.createSipURI(null,InetAddress.getLocalHost().getHostAddress());
+ else     contactURI=addressFactory.createSipURI(mySipUsername,InetAddress.getLocalHost().getHostAddress());
+    contactURI.setPort(sipPort);
+    Address contactAddress=addressFactory.createAddress(contactURI);
+    if (!requestType.equals(RequestType.NOTIFY))     contactAddress.setDisplayName(mySipUsername);
+    ContactHeader contactHeader=headerFactory.createContactHeader(contactAddress);
+    request.addHeader(contactHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when adding ContactHeader.",e);
+    return false;
+  }
+  if (content != null) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Content is specified.  Adding content...");
+    try {
+      request.setContent(content.getContent(),content.getContentTypeHeader());
+    }
+ catch (    Exception e) {
+      Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when adding content to the request packet.",e);
+    }
+  }
+  Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Sending Request packet:  \n"+ request.toString());
+  try {
+    ClientTransaction clientTransaction=udpSipProvider.getNewClientTransaction(request);
+    clientTransaction.sendRequest();
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myJiveId + ").prepareRequest:  Exception occured when sending Request packet.",e);
+    return false;
+  }
+  return true;
+}
