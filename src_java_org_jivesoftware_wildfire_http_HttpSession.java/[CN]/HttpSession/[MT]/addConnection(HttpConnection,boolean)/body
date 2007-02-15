@@ -12,6 +12,7 @@
   if (hold <= 0 || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
     try {
       deliver(connection,pendingElements);
+      lastRequestID=connection.getRequestId();
       pendingElements.clear();
     }
  catch (    HttpConnectionClosedException he) {
