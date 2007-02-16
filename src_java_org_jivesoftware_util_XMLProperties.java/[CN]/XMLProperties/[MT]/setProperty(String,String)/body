@@ -8,11 +8,11 @@
   propertyCache.put(name,value);
   String[] propName=parsePropertyName(name);
   Element element=document.getRootElement();
-  for (int i=0; i < propName.length; i++) {
-    if (element.element(propName[i]) == null) {
-      element.addElement(propName[i]);
+  for (  String aPropName : propName) {
+    if (element.element(aPropName) == null) {
+      element.addElement(aPropName);
     }
-    element=element.element(propName[i]);
+    element=element.element(aPropName);
   }
   if (value.startsWith("<![CDATA[")) {
     Iterator it=element.nodeIterator();
@@ -29,7 +29,7 @@
     element.setText(value);
   }
   saveProperties();
-  Map<String,String> params=new HashMap<String,String>();
+  Map<String,Object> params=new HashMap<String,Object>();
   params.put("value",value);
   PropertyEventDispatcher.dispatchEvent(name,PropertyEventDispatcher.EventType.xml_property_set,params);
 }
