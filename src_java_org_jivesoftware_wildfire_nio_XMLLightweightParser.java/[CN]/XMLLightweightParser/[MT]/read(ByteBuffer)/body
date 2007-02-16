@@ -1,6 +1,9 @@
 {
   int readByte=byteBuffer.remaining();
   invalidateBuffer();
+  if (buffer.length() > 1048576) {
+    throw new Exception("Stopped parsing never ending stanza");
+  }
   CharBuffer charBuffer=encoder.decode(byteBuffer.buf());
   char[] buf=charBuffer.array();
   buffer.append(buf);
@@ -8,7 +11,7 @@
   for (int i=0; i < readByte; i++) {
     ch=buf[i];
     if (status == XMLLightweightParser.TAIL) {
-      if (ch == head.charAt(tailCount)) {
+      if (depth < 1 && ch == head.charAt(tailCount)) {
         tailCount++;
         if (tailCount == head.length()) {
           int end=buffer.length() - readByte + (i + 1);
@@ -37,10 +40,17 @@
       }
       if (ch == '/') {
         status=XMLLightweightParser.TAIL;
+        depth--;
+      }
+ else {
+        depth++;
       }
     }
  else     if (status == XMLLightweightParser.VERIFY_CLOSE_TAG) {
       if (ch == '>') {
+        depth--;
+      }
+      if (depth < 1) {
         int end=buffer.length() - readByte + (i + 1);
         String msg=buffer.substring(startLastMsg,end);
         foundMsg(msg);
@@ -100,7 +110,7 @@
         status=XMLLightweightParser.PRETAIL;
         insideChildrenTag=true;
       }
- else       if (ch == '/' && insideRootTag && !insideChildrenTag) {
+ else       if (ch == '/') {
         status=XMLLightweightParser.VERIFY_CLOSE_TAG;
       }
     }
@@ -112,14 +122,16 @@
         insideChildrenTag=false;
         continue;
       }
- else       if (ch == '/') {
+ else       if (ch == '/' && head.length() > 0) {
         status=XMLLightweightParser.VERIFY_CLOSE_TAG;
+        depth--;
       }
       head.append(ch);
     }
  else     if (status == XMLLightweightParser.INIT) {
       if (ch == '<') {
         status=XMLLightweightParser.HEAD;
+        depth=1;
       }
  else {
         startLastMsg++;
