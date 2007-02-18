@@ -23,4 +23,7 @@
     Log.error("Unable to sync oscar contact list for " + getJID(),e);
   }
   updateStatus(this.presenceType,this.verboseStatus);
+  if (getTransport().getType().equals(TransportType.icq)) {
+    request(new OfflineMsgIcqRequest(getUIN(),(int)nextIcqId()));
+  }
 }

@@ -1,6 +1,11 @@
 {
   if (grouplist.isEmpty()) {
-    grouplist.add("   ");
+    if (transport.getType().equals(TransportType.icq)) {
+      grouplist.add(DEFAULT_ICQ_GROUP);
+    }
+ else {
+      grouplist.add(DEFAULT_AIM_GROUP);
+    }
   }
   Log.debug("contact = " + contact + ", grouplist = "+ grouplist);
   for (  String group : grouplist) {
@@ -16,7 +21,7 @@
   }
   for (  BuddyItem buddy : buddies.values()) {
     if (buddy.getScreenname().equalsIgnoreCase(contact)) {
-      if (buddy.getGroupId() == 0 && !grouplist.contains("   ")) {
+      if (buddy.getGroupId() == 0 && !grouplist.equals(DEFAULT_AIM_GROUP)) {
         Log.debug("Removing " + buddy + " from main group");
         request(new DeleteItemsCmd(buddy.toSsiItem()));
         buddies.remove("" + buddy.getGroupId() + "."+ buddy.getId());

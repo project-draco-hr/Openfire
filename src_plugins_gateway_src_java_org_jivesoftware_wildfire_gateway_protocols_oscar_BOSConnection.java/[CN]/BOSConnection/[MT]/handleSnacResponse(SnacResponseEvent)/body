@@ -40,4 +40,14 @@
       oscarSession.gotCompleteSSI();
     }
   }
+ else   if (cmd instanceof OfflineMsgIcqCmd) {
+    Log.debug("Found offline message:" + cmd);
+    OfflineMsgIcqCmd omic=(OfflineMsgIcqCmd)cmd;
+    String sn=String.valueOf(omic.getFromUIN());
+    String msg="Offline message received:\n" + OscarTools.stripHtml(omic.getContents()).trim();
+    oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(sn),msg);
+  }
+ else   if (cmd instanceof OfflineMsgDoneCmd) {
+    request(new OfflineMsgIcqAckCmd(oscarSession.getUIN(),(int)oscarSession.nextIcqId()));
+  }
 }
