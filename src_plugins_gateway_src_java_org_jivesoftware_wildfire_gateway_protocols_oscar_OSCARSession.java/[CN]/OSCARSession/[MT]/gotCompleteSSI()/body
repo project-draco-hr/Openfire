@@ -6,6 +6,18 @@
     if (nickname == null) {
       nickname=buddy.getScreenname();
     }
+    try {
+      Integer buddyUIN=Integer.parseInt(buddy.getScreenname());
+      if (nickname.equalsIgnoreCase(buddy.getScreenname())) {
+        Log.debug("REQUESTING SHORT INFO FOR " + buddy.getScreenname());
+        request(new MetaShortInfoRequest(getUIN(),(int)nextIcqId(),buddyUIN));
+      }
+    }
+ catch (    NumberFormatException e) {
+    }
+    if (nickname == null) {
+      nickname=buddy.getScreenname();
+    }
     int groupid=buddy.getGroupId();
     String groupname=null;
     if (groupid != 0 && groups.containsKey(groupid)) {

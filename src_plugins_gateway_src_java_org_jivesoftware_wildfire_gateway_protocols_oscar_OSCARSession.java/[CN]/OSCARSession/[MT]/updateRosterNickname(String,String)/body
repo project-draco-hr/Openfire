@@ -1,0 +1,20 @@
+{
+  BuddyItem buddy=buddies.get(sn);
+  if (buddy == null) {
+    return;
+  }
+  int groupid=buddy.getGroupId();
+  String groupname=null;
+  if (groupid != 0 && groups.containsKey(groupid)) {
+    String newgroupname=groups.get(groupid).getGroupName();
+    if (newgroupname.length() > 0) {
+      groupname=newgroupname;
+    }
+  }
+  try {
+    getTransport().addOrUpdateRosterItem(getJID(),getTransport().convertIDToJID(sn),nickname,groupname);
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("Contact not found while updating nickname.");
+  }
+}
