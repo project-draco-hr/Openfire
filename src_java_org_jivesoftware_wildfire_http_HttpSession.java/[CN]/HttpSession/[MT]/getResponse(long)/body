@@ -1,9 +1,6 @@
 {
   for (  HttpConnection connection : connectionQueue) {
     if (connection.getRequestId() == requestID) {
-      if (requestID > lastRequestID) {
-        lastRequestID=connection.getRequestId();
-      }
       String response=getResponse(connection);
       connectionQueue.remove(connection);
       fireConnectionClosed(connection);

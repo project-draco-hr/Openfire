@@ -20,10 +20,15 @@
     }
   }
  else {
-    int connectionsToClose=(connectionQueue.size() + 1) - hold;
-    for (int i=0; i < connectionsToClose; i++) {
+    int connectionsToClose=(getOpenConnectionCount() + 1) - hold;
+    int closed=0;
+    for (int i=0; i < connectionQueue.size() && closed < connectionsToClose; i++) {
       HttpConnection toClose=connectionQueue.get(i);
-      toClose.close();
+      if (!toClose.isClosed()) {
+        lastRequestID=toClose.getRequestId();
+        toClose.close();
+        closed++;
+      }
     }
   }
   connectionQueue.add(connection);

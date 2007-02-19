@@ -5,6 +5,9 @@
     if (deliverable == null) {
       throw new HttpBindTimeoutException();
     }
+ else     if (CONNECTION_CLOSED.equals(deliverable)) {
+      return null;
+    }
     return deliverable;
   }
   this.isDelivered=true;

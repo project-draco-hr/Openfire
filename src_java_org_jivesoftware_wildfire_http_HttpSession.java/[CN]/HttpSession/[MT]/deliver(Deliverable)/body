@@ -3,7 +3,8 @@
   boolean delivered=false;
   for (  HttpConnection connection : connectionQueue) {
     try {
-      if (connection.getRequestId() <= lastRequestID + 1) {
+      if (connection.getRequestId() == lastRequestID + 1) {
+        lastRequestID=connection.getRequestId();
         deliver(connection,deliverable);
         delivered=true;
         break;
