@@ -1,9 +1,19 @@
 {
   if (isEnabled()) {
+    try {
+      echo=new Echo(echoPort);
+      Thread t=new Thread(echo);
+      t.start();
+    }
+ catch (    UnknownHostException e) {
+    }
+catch (    SocketException e) {
+    }
     routingTable.addRoute(getAddress(),this);
     XMPPServer.getInstance().getIQDiscoItemsHandler().addServerItemsProvider(this);
   }
  else {
+    if (echo != null)     echo.cancel();
     XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(getAddress().toString());
   }
 }
