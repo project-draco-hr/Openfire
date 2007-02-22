@@ -1,0 +1,28 @@
+{
+  try {
+    System.out.println("Listening for ECHO: " + socket.getLocalAddress().getHostAddress() + ":"+ socket.getLocalPort());
+    while (true) {
+      DatagramPacket packet=new DatagramPacket(new byte[8],8);
+      socket.receive(packet);
+      System.out.println("ECHO Packet Received in: " + socket.getLocalAddress().getHostAddress() + ":"+ socket.getLocalPort()+ " From: "+ packet.getAddress().getHostAddress()+ ":"+ packet.getPort());
+      for (      DatagramListener listener : listeners) {
+        listener.datagramReceived(packet);
+      }
+      packet.setAddress(packet.getAddress());
+      packet.setPort(packet.getPort());
+      if (!Arrays.equals(packet.getData(),password))       for (int i=0; i < 3; i++)       socket.send(packet);
+    }
+  }
+ catch (  UnknownHostException uhe) {
+    if (enabled) {
+    }
+  }
+catch (  SocketException se) {
+    if (enabled) {
+    }
+  }
+catch (  IOException ioe) {
+    if (enabled) {
+    }
+  }
+}
