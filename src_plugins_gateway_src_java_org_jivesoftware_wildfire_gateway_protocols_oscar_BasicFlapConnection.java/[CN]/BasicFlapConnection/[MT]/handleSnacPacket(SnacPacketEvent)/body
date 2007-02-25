@@ -14,7 +14,7 @@
     RecvImIcbm icbm=(RecvImIcbm)cmd;
     String sn=icbm.getSenderInfo().getScreenname();
     InstantMessage message=icbm.getMessage();
-    String msg=OscarTools.stripHtml(message.getMessage());
+    String msg=StringUtils.unescapeFromXML(OscarTools.stripHtml(message.getMessage()));
     oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(sn),msg);
   }
  else   if (cmd instanceof WarningNotification) {
