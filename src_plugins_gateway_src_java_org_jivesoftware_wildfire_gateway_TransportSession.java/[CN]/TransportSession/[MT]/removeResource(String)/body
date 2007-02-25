@@ -1,13 +1,19 @@
 {
-  for (  Integer i : resources.keySet()) {
-    if (resources.get(i).equals(resource)) {
-      resources.remove(i);
-      try {
-        getTransport().notifyRosterOffline(new JID(getJID().getNode(),getJID().getDomain(),resource));
+  resources.remove(resource);
+  try {
+    getTransport().notifyRosterOffline(new JID(getJID().getNode(),getJID().getDomain(),resource));
+  }
+ catch (  UserNotFoundException e) {
+  }
+  if (resource.equals(highestResource)) {
+    Integer highestPriority=-255;
+    String tmpHighestResource=null;
+    for (    String res : resources.keySet()) {
+      if (resources.get(res) > highestPriority) {
+        tmpHighestResource=res;
+        highestPriority=resources.get(res);
       }
- catch (      UserNotFoundException e) {
-      }
-      break;
     }
+    highestResource=tmpHighestResource;
   }
 }
