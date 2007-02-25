@@ -45,6 +45,7 @@
   }
  catch (  Exception ex) {
     Log.debug(ex);
+    return;
   }
   try {
     myListener=new SimpleSessionListener(this);
@@ -53,12 +54,14 @@
   }
  catch (  TooManyListenersException ex) {
     Log.debug(ex);
+    return;
   }
   try {
     sipStack.start();
   }
  catch (  SipException ex) {
     Log.debug(ex);
+    return;
   }
   seqNum=1L;
 }
