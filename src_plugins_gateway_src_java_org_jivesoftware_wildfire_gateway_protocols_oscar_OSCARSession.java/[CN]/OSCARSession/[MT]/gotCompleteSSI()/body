@@ -3,14 +3,14 @@
   List<TransportBuddy> legacyusers=new ArrayList<TransportBuddy>();
   for (  BuddyItem buddy : buddies.values()) {
     String nickname=buddy.getAlias();
-    if (nickname == null) {
+    if (nickname == null || nickname.matches("/^\\s*$/")) {
       nickname=buddy.getScreenname();
     }
     try {
-      Integer buddyUIN=Integer.parseInt(buddy.getScreenname());
       if (nickname.equalsIgnoreCase(buddy.getScreenname())) {
-        Log.debug("REQUESTING SHORT INFO FOR " + buddy.getScreenname());
-        request(new MetaShortInfoRequest(getUIN(),(int)nextIcqId(),buddyUIN));
+        Integer buddyUIN=Integer.parseInt(buddy.getScreenname());
+        Log.debug("REQUESTING SHORT INFO FOR " + buddyUIN);
+        request(new MetaFullInfoRequest(getUIN(),(int)nextIcqId(),buddyUIN));
       }
     }
  catch (    NumberFormatException e) {
