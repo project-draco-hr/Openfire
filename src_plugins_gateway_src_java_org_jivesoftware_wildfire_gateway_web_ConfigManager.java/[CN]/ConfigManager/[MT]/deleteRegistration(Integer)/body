@@ -4,17 +4,17 @@
   try {
     Registration reg=new Registration(registrationID);
     if (!plugin.getTransportInstance(reg.getTransportType().toString()).isEnabled()) {
-      return "Transport is not enabled.  Please enable before attempting deletes.";
+      return LocaleUtils.getLocalizedString("gateway.web.registrations.notenabled","gateway");
     }
     plugin.getTransportInstance(reg.getTransportType().toString()).getTransport().deleteRegistration(reg.getJID());
     return null;
   }
  catch (  NotFoundException e) {
     Log.error("Not found while deleting id " + registrationID,e);
-    return "Unable to find XMPP user account.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.xmppnotfound","gateway");
   }
 catch (  UserNotFoundException e) {
     Log.error("Not found while deleting id " + registrationID,e);
-    return "Unable to find registration.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.regnotfound","gateway");
   }
 }

@@ -9,7 +9,7 @@
     jid=new JID(user,XMPPServer.getInstance().getServerInfo().getName(),null);
   }
   if (!plugin.getTransportInstance(transportType).isEnabled()) {
-    return "Transport is not enabled.  Please enable before attempting adds.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.notenabled","gateway");
   }
   try {
     plugin.getTransportInstance(transportType).getTransport().addNewRegistration(jid,legacyUsername,legacyPassword,legacyNickname,false);
@@ -17,14 +17,14 @@
   }
  catch (  UserNotFoundException e) {
     Log.error("Not found while adding account for " + jid.toString());
-    return "Unable to find XMPP user account.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.xmppnotfound","gateway");
   }
 catch (  IllegalAccessException e) {
     Log.error("Domain of JID specified for registration is not on this server: " + jid.toString());
-    return "XMPP user account domain is not on this server.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.illegaldomain","gateway");
   }
 catch (  IllegalArgumentException e) {
     Log.error("Username specified for registration is not valid.");
-    return "Invalid username specified for legacy service.";
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.invaliduser","gateway");
   }
 }
