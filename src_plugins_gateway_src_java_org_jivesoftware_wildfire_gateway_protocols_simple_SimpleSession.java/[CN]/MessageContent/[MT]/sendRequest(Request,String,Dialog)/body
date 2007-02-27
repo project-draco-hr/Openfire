@@ -1,0 +1,13 @@
+{
+  for (Iterator sipProviders=sipStack.getSipProviders(); sipProviders.hasNext(); ) {
+    SipProvider provider=(SipProvider)sipProviders.next();
+    if (provider.getListeningPoint(transport) != null) {
+      Log.debug("Sending packet:  \n" + request.toString() + "\n========\n");
+      ClientTransaction transaction=provider.getNewClientTransaction(request);
+      if (dialog != null)       dialog.sendRequest(transaction);
+ else       transaction.sendRequest();
+      return;
+    }
+  }
+  Log.debug("SimpleSession(" + this.jid.getNode() + "):  No SipProvider found for that transport!");
+}

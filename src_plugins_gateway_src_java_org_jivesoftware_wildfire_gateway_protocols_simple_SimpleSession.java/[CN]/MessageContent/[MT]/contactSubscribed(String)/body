@@ -3,18 +3,16 @@
     Roster roster=getTransport().getRosterManager().getRoster(getJID().getNode());
     JID contactJID=getTransport().convertIDToJID(targetSipAddress);
     RosterItem item=roster.getRosterItem(contactJID);
-    Log.debug("SimpleSession(" + getJID().getNode() + ").contactSubscribed:  Preparing presence packet...");
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Preparing presence packet...");
     Presence presence=new Presence();
     presence.setFrom(contactJID);
     presence.setTo(getJID());
     presence.setType(Presence.Type.subscribed);
     getTransport().sendPacket(presence);
-    Log.debug("SimpleSession(" + getJID().getNode() + ").contactSubscribed:  Presence packet sent ==> \n"+ presence.toXML());
-    unlockRoster(contactJID.toString());
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Presence packet sent ==> \n"+ presence.toXML());
   }
  catch (  Exception e) {
-    Log.debug("SimpleSession(" + getJID().getNode() + ").contactSubscribed:  Exception occured when adding pending contact "+ targetSipAddress,e);
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Exception occured when adding pending contact "+ targetSipAddress,e);
     JID contactJID=getTransport().convertIDToJID(targetSipAddress);
-    unlockRoster(contactJID.toString());
   }
 }

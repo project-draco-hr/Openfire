@@ -1,16 +1,16 @@
 {
   this.setLoginStatus(TransportLoginStatus.LOGGING_OUT);
+  myRoster.deactivate();
   Log.debug("SimpleSession(" + getJID().getNode() + ").logout:  Preparing logout packet...");
-  List<Header> customHeaders=new ArrayList<Header>(1);
+  Request registerRequest=prepareRegisterRequest();
   try {
-    customHeaders.add(headerFactory.createExpiresHeader(0));
+    registerRequest.addHeader(headerFactory.createExpiresHeader(0));
+    sendRequest(registerRequest,ListeningPoint.UDP);
   }
  catch (  Exception e) {
-    Log.debug("SimpleSession(" + getJID().getNode() + ").logout:  "+ "Unable to set the expiry interval, which is essential for a logout.",e);
+    Log.debug("SimpleSession(" + jid.getNode() + ").login:  Unable to logout.",e);
+    this.setLoginStatus(TransportLoginStatus.LOGGED_IN);
     return;
   }
-  String myUsername=registration.getUsername();
-  if (myUsername.indexOf("sip:") < 0)   myUsername="sip:" + myUsername;
-  if (myUsername.indexOf("@") < 0)   myUsername=myUsername + "@" + sipHost;
-  prepareRequest(RequestType.REGISTER,myUsername,null,this.sessionId,seqNum++,70,customHeaders,null);
+  this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
 }

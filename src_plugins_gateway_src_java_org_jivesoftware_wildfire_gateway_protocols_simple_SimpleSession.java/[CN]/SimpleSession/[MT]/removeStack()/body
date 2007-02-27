@@ -7,12 +7,13 @@
   try {
     sipStack.deleteSipProvider(tcpSipProvider);
     sipStack.deleteSipProvider(udpSipProvider);
+    Log.debug("SimpleSession(" + jid.getNode() + ").shutdown:  SIP Providers deleted.");
     sipStack.deleteListeningPoint(tcp);
     sipStack.deleteListeningPoint(udp);
+    Log.debug("SimpleSession(" + jid.getNode() + ").shutdown:  Listening points deleted.");
   }
  catch (  Exception ex) {
-    Log.debug(ex);
-    Log.debug("SimpleSession for " + jid.getNode() + " is unable to gracefully shut down.");
+    Log.debug("SimpleSession for " + jid.getNode() + " is unable to gracefully shut down.",ex);
   }
   sipStack.stop();
   sipStack=null;

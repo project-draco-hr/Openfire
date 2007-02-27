@@ -1,2 +1,33 @@
 {
+  String nickname=getTransport().convertJIDToID(item.getJid());
+  if (item.getNickname() != null && !item.getNickname().equals("")) {
+    nickname=item.getNickname();
+  }
+  lockRoster(item.getJid().toString());
+  Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Roster of "+ item.getJid().toString()+ " locked!");
+  JID destJid=item.getJid();
+  String destId=((SimpleTransport)transport).convertJIDToID(destJid);
+  Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Starting addContact function for "+ destId);
+  List<Header> customHeaders=new ArrayList<Header>(13);
+  try {
+    customHeaders.add(headerFactory.createExpiresHeader(0));
+  }
+ catch (  Exception e) {
+  }
+  try {
+    customHeaders.add(headerFactory.createEventHeader("presence"));
+  }
+ catch (  Exception e) {
+  }
+  destJid=getTransport().convertIDToJID(destId);
+  try {
+    Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Removing contact '"+ destJid.toString()+ "' from roster...");
+    getTransport().removeFromRoster(getJID(),destJid);
+    Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Contact '"+ destJid.toString()+ "' removed!");
+  }
+ catch (  Exception ex) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Unable to add contact.",ex);
+  }
+  unlockRoster(item.getJid().toString());
+  Log.debug("SimpleSession(" + jid.getNode() + ").removeContact:  Roster of "+ item.getJid().toString()+ " unlocked!");
 }

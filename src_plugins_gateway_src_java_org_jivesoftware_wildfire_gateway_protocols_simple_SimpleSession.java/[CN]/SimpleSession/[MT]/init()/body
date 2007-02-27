@@ -1,8 +1,10 @@
 {
+  myRoster=new SimpleRoster(this);
+  seqNum=1L;
   sipHost=JiveGlobals.getProperty("plugin.gateway.sip.connecthost","");
   sipPort=((SimpleTransport)transport).generateListenerPort();
   sipFactory=SipFactory.getInstance();
-  sipFactory.setPathName("gov.nist");
+  if (sipFactory.getPathName() == null || !sipFactory.getPathName().equals("gov.nist"))   sipFactory.setPathName("gov.nist");
   Properties properties=new Properties();
   properties.setProperty("javax.sip.STACK_NAME",jid.getNode());
   properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","32");
@@ -26,9 +28,11 @@
     }
     if (tcp == null) {
       tcp=sipStack.createListeningPoint(localIP,sipPort,ListeningPoint.TCP);
+      sipPort=tcp.getPort();
     }
     if (udp == null) {
       udp=sipStack.createListeningPoint(localIP,sipPort,ListeningPoint.UDP);
+      sipPort=udp.getPort();
     }
     Iterator sipProviderIterator=sipStack.getSipProviders();
     while (sipProviderIterator.hasNext()) {
@@ -45,7 +49,6 @@
   }
  catch (  Exception ex) {
     Log.debug(ex);
-    return;
   }
   try {
     myListener=new SimpleSessionListener(this);
@@ -54,14 +57,11 @@
   }
  catch (  TooManyListenersException ex) {
     Log.debug(ex);
-    return;
   }
   try {
     sipStack.start();
   }
  catch (  SipException ex) {
     Log.debug(ex);
-    return;
   }
-  seqNum=1L;
 }
