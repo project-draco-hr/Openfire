@@ -1,8 +1,16 @@
 {
-  Element answerElement=bodyElement.createCopy();
-  answerElement.element("name").setText(AdminConsole.getAppName());
-  answerElement.element("version").setText(AdminConsole.getVersionString());
-  IQ result=IQ.createResultIQ(packet);
-  result.setChildElement(answerElement);
-  return result;
+  if (IQ.Type.get == packet.getType()) {
+    Element answerElement=bodyElement.createCopy();
+    answerElement.element("name").setText(AdminConsole.getAppName());
+    answerElement.element("version").setText(AdminConsole.getVersionString());
+    IQ result=IQ.createResultIQ(packet);
+    result.setChildElement(answerElement);
+    return result;
+  }
+ else   if (IQ.Type.set == packet.getType()) {
+    IQ result=IQ.createResultIQ(packet);
+    result.setError(PacketError.Condition.not_acceptable);
+    return result;
+  }
+  return null;
 }
