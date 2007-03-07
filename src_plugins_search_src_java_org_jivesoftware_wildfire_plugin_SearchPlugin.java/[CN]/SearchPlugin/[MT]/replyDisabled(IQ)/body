@@ -2,8 +2,8 @@
   IQ replyPacket=IQ.createResultIQ(packet);
   Element reply=replyPacket.setChildElement("query","jabber:iq:search");
   XDataFormImpl unavailableForm=new XDataFormImpl(DataForm.TYPE_CANCEL);
-  unavailableForm.setTitle("User Search");
-  unavailableForm.addInstruction("This service is unavailable.");
+  unavailableForm.setTitle(LocaleUtils.getLocalizedString("advance.user.search.title","search"));
+  unavailableForm.addInstruction(LocaleUtils.getLocalizedString("search.service_unavailable","search"));
   reply.add(unavailableForm.asXMLElement());
   return replyPacket;
 }

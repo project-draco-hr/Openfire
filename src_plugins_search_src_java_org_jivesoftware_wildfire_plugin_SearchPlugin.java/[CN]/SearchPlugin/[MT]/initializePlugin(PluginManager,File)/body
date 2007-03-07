@@ -4,34 +4,8 @@
   try {
     componentManager.addComponent(serviceName,this);
   }
- catch (  Exception e) {
+ catch (  ComponentException e) {
     componentManager.getLog().error(e);
   }
   PropertyEventDispatcher.addListener(this);
-  if (probeResult == null) {
-    probeResult=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
-    probeResult.addElement("instructions").addText(instructions);
-    XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
-    searchForm.setTitle("User Search");
-    searchForm.addInstruction(instructions);
-    XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
-    field.setType(FormField.TYPE_HIDDEN);
-    field.addValue("jabber:iq:search");
-    searchForm.addField(field);
-    field=new XFormFieldImpl("search");
-    field.setType(FormField.TYPE_TEXT_SINGLE);
-    field.setLabel("Search");
-    field.setRequired(true);
-    searchForm.addField(field);
-    for (    String searchField : searchFields) {
-      probeResult.addElement(searchField);
-      field=new XFormFieldImpl(searchField);
-      field.setType(FormField.TYPE_BOOLEAN);
-      field.addValue("1");
-      field.setLabel(searchField);
-      field.setRequired(false);
-      searchForm.addField(field);
-    }
-    probeResult.add(searchForm.asXMLElement());
-  }
 }

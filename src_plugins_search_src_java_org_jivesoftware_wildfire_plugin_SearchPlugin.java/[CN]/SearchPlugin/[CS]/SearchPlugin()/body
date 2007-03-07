@@ -1,16 +1,8 @@
 {
-  serviceName=JiveGlobals.getProperty("plugin.search.serviceName","search");
-  serviceEnabled=JiveGlobals.getBooleanProperty("plugin.search.serviceEnabled",true);
+  serviceName=JiveGlobals.getProperty(SERVICENAME,"search");
+  serviceEnabled=JiveGlobals.getBooleanProperty(SERVICEENABLED,true);
+  exculudedFields=StringUtils.stringToCollection(JiveGlobals.getProperty(EXCLUDEDFIELDS,""));
   serverName=XMPPServer.getInstance().getServerInfo().getName();
-  UserManager manager=UserManager.getInstance();
-  try {
-    searchFields=manager.getSearchFields();
-    userManager=UserManager.getInstance();
-    searchFields=userManager.getSearchFields();
-  }
- catch (  UnsupportedOperationException uoe) {
-    searchFields=getSearchFields();
-  }
   fieldLookup.put("jid","Username");
   fieldLookup.put("username","Username");
   fieldLookup.put("first","Name");

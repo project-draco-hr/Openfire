@@ -1,5 +1,30 @@
 {
   IQ replyPacket=IQ.createResultIQ(packet);
-  replyPacket.setChildElement(probeResult.createCopy());
+  Element queryResult=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  String instructions=LocaleUtils.getLocalizedString("advance.user.search.details","search");
+  queryResult.addElement("instructions").addText(instructions);
+  XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
+  searchForm.setTitle(LocaleUtils.getLocalizedString("advance.user.search.title","search"));
+  searchForm.addInstruction(instructions);
+  XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
+  field.setType(FormField.TYPE_HIDDEN);
+  field.addValue("jabber:iq:search");
+  searchForm.addField(field);
+  field=new XFormFieldImpl("search");
+  field.setType(FormField.TYPE_TEXT_SINGLE);
+  field.setLabel(LocaleUtils.getLocalizedString("advance.user.search.search","search"));
+  field.setRequired(true);
+  searchForm.addField(field);
+  for (  String searchField : getFilteredSearchFields()) {
+    queryResult.addElement(searchField);
+    field=new XFormFieldImpl(searchField);
+    field.setType(FormField.TYPE_BOOLEAN);
+    field.addValue("1");
+    field.setLabel(searchField);
+    field.setRequired(false);
+    searchForm.addField(field);
+  }
+  queryResult.add(searchForm.asXMLElement());
+  replyPacket.setChildElement(queryResult);
   return replyPacket;
 }

@@ -1,0 +1,12 @@
+{
+  Collection<String> searchFields;
+  try {
+    userManager=UserManager.getInstance();
+    searchFields=userManager.getSearchFields();
+  }
+ catch (  UnsupportedOperationException uoe) {
+    searchFields=getSearchPluginUserManagerSearchFields();
+  }
+  searchFields.removeAll(exculudedFields);
+  return searchFields;
+}
