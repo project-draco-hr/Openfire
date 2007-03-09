@@ -1,3 +1,22 @@
 {
-  return Collections.unmodifiableSet(mechanisms);
+  Set<String> answer=new HashSet<String>(mechanisms);
+  for (Iterator<String> it=answer.iterator(); it.hasNext(); ) {
+    String mech=it.next();
+    if (mech.equals("CRAM-MD5") || mech.equals("DIGEST-MD5")) {
+      if (!AuthFactory.getAuthProvider().supportsPasswordRetrieval()) {
+        it.remove();
+      }
+    }
+ else     if (mech.equals("ANONYMOUS")) {
+      if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
+        it.remove();
+      }
+    }
+ else     if (mech.equals("JIVE-SHAREDSECRET")) {
+      if (!isSharedSecretAllowed()) {
+        it.remove();
+      }
+    }
+  }
+  return answer;
 }

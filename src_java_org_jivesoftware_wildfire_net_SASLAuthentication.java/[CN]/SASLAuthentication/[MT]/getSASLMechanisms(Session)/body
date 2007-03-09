@@ -10,22 +10,7 @@
     }
   }
  else {
-    for (    String mech : mechanisms) {
-      if (mech.equals("CRAM-MD5") || mech.equals("DIGEST-MD5")) {
-        if (!AuthFactory.getAuthProvider().supportsPasswordRetrieval()) {
-          continue;
-        }
-      }
- else       if (mech.equals("ANONYMOUS")) {
-        if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
-          continue;
-        }
-      }
- else       if (mech.equals("JIVE-SHAREDSECRET")) {
-        if (!isSharedSecretAllowed()) {
-          continue;
-        }
-      }
+    for (    String mech : getSupportedMechanisms()) {
       sb.append("<mechanism>");
       sb.append(mech);
       sb.append("</mechanism>");
