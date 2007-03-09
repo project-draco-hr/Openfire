@@ -18,7 +18,7 @@
     Element extraError=DocumentHelper.createElement(QName.get("unknown-stanza","http://jabber.org/protocol/connectionmanager#errors"));
     sendErrorPacket(route,PacketError.Condition.bad_request,extraError);
   }
-catch (  UnsupportedEncodingException e) {
+catch (  Exception e) {
     Log.error("Error processing wrapped packet: " + route.getChildElement().asXML(),e);
     sendErrorPacket(route,PacketError.Condition.internal_server_error,null);
   }
