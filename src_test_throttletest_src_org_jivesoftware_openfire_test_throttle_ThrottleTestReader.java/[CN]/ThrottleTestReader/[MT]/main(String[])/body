@@ -1,0 +1,47 @@
+{
+  if (args.length != 3) {
+    System.out.println("Usage: java ThrottleTestReader [server] [username] [password]");
+    System.exit(0);
+  }
+  String server=args[0];
+  String username=args[1];
+  String password=args[2];
+  try {
+    ConnectionConfiguration config=new ConnectionConfiguration(server);
+    config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+    XMPPConnection con=new XMPPConnection(config);
+    System.out.print("Connecting to " + server + "... ");
+    con.connect();
+    con.login(username,password,"reader");
+    System.out.print("success.");
+    System.out.println("");
+    server=con.getServiceName();
+    String writerAddress=username + "@" + server+ "/writer";
+    String readerAddress=username + "@" + server+ "/reader";
+    System.out.println("Registered as " + readerAddress);
+    System.out.print("Waiting for " + writerAddress + "...");
+    PacketCollector collector=con.createPacketCollector(new AndFilter(new FromMatchesFilter(writerAddress),new PacketTypeFilter(Time.class)));
+    Time timeRequest=(Time)collector.nextResult();
+    Time timeReply=new Time(Calendar.getInstance());
+    timeReply.setPacketID(timeRequest.getPacketID());
+    timeReply.setType(IQ.Type.RESULT);
+    timeReply.setTo(timeRequest.getFrom());
+    con.sendPacket(timeReply);
+    System.out.println(" found writer. Now in reading mode.");
+    con.addPacketListener(new PacketListener(){
+      public void processPacket(      Packet packet){
+        packetCount.getAndIncrement();
+      }
+    }
+,new PacketTypeFilter(Message.class));
+    while (!done) {
+      Thread.sleep(5000);
+      int count=packetCount.getAndSet(0);
+      System.out.println("Packets per second: " + (count / 5));
+    }
+    Thread.sleep(Integer.MAX_VALUE);
+  }
+ catch (  Exception e) {
+    System.out.println("\nError: " + e.getMessage());
+  }
+}

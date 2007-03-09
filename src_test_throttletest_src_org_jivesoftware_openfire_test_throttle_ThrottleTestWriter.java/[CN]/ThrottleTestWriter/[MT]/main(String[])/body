@@ -1,0 +1,56 @@
+{
+  if (args.length != 3) {
+    System.out.println("Usage: java ThrottleTestWriter [server] [username] [password]");
+    System.exit(0);
+  }
+  String server=args[0];
+  String username=args[1];
+  String password=args[2];
+  try {
+    ConnectionConfiguration config=new ConnectionConfiguration(server);
+    config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+    XMPPConnection con=new XMPPConnection(config);
+    System.out.print("Connecting to " + server + "... ");
+    con.connect();
+    con.login(username,password,"writer");
+    System.out.print("success.");
+    System.out.println("");
+    server=con.getServiceName();
+    String writerAddress=username + "@" + server+ "/writer";
+    String readerAddress=username + "@" + server+ "/reader";
+    System.out.println("Registered as " + writerAddress);
+    System.out.print("Looking for " + readerAddress + "...");
+    while (true) {
+      IQ testIQ=new Time();
+      testIQ.setType(IQ.Type.GET);
+      testIQ.setTo(readerAddress);
+      PacketCollector collector=con.createPacketCollector(new PacketIDFilter(testIQ.getPacketID()));
+      con.sendPacket(testIQ);
+      long start=System.currentTimeMillis();
+      Packet result=collector.nextResult(5000);
+      collector.cancel();
+      if (result != null && result.getError() == null) {
+        System.out.println(" found reader. Starting packet flood.");
+        break;
+      }
+      System.out.print(".");
+      long end=System.currentTimeMillis();
+      if (end - start < 5000) {
+        try {
+          Thread.sleep(5000 - (end - start));
+        }
+ catch (        Exception e) {
+        }
+      }
+    }
+    Message testMessage=new Message(readerAddress);
+    testMessage.setBody("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    while (true) {
+      con.sendPacket(testMessage);
+    }
+  }
+ catch (  Exception e) {
+    System.out.println("\nError: " + e.getMessage());
+    e.printStackTrace();
+  }
+}
