@@ -10,6 +10,10 @@
       parser.setInput(new StringReader(stanza));
       createSession(parser);
     }
+ else     if (startedTLS) {
+      startedTLS=false;
+      tlsNegotiated();
+    }
  else     if (startedSASL && saslStatus == SASLAuthentication.Status.authenticated) {
       startedSASL=false;
       saslSuccessful();
@@ -34,7 +38,7 @@
   String tag=doc.getName();
   if ("starttls".equals(tag)) {
     if (negotiateTLS()) {
-      tlsNegotiated();
+      startedTLS=true;
     }
  else {
       connection.close();
