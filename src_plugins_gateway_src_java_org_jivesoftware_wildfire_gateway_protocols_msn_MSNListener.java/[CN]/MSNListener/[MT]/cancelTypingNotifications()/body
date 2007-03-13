@@ -1,0 +1,8 @@
+{
+  for (  String source : typingNotificationMap.keySet()) {
+    if (typingNotificationMap.get(source).getTime() < ((new Date().getTime()) - 10000)) {
+      msnSession.getTransport().sendChatInactiveNotification(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().convertIDToJID(source));
+      typingNotificationMap.remove(source);
+    }
+  }
+}
