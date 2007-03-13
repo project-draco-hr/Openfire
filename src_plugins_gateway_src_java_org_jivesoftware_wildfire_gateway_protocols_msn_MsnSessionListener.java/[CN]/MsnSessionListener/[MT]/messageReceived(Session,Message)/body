@@ -1,3 +1,11 @@
 {
   Log.debug("MSN: Session messageReceived for " + msnSession.getRegistration().getUsername() + " : "+ message);
+  if (message.equals("OUT OTH")) {
+    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.otherloggedin","gateway"),org.xmpp.packet.Message.Type.error);
+    msnSession.logOut();
+  }
+ else   if (message.equals("OUT SDH")) {
+    msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.disconnect","gateway"),org.xmpp.packet.Message.Type.error);
+    msnSession.logOut();
+  }
 }
