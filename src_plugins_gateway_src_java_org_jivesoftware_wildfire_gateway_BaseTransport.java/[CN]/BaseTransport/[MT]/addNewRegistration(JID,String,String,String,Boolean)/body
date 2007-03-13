@@ -15,6 +15,12 @@
       registration.setPassword(password);
       foundReg=true;
     }
+    try {
+      TransportSession relatedSession=sessionManager.getSession(registration.getJID().getNode());
+      this.registrationLoggedOut(relatedSession);
+    }
+ catch (    NotFoundException e) {
+    }
   }
   if (!foundReg) {
     registrationManager.createRegistration(jid,this.transportType,username,password,nickname);

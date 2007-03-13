@@ -17,6 +17,15 @@
     String msg=StringUtils.unescapeFromXML(OscarTools.stripHtml(message.getMessage()));
     oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(sn),msg);
   }
+ else   if (cmd instanceof OldIcbm) {
+    OldIcbm oicbm=(OldIcbm)cmd;
+    if (oicbm.getMessageType() == OldIcbm.MTYPE_PLAIN) {
+      String uin=String.valueOf(oicbm.getSender());
+      InstantMessage message=oicbm.getMessage();
+      String msg=StringUtils.unescapeFromXML(OscarTools.stripHtml(message.getMessage()));
+      oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(uin),msg);
+    }
+  }
  else   if (cmd instanceof WarningNotification) {
     WarningNotification wn=(WarningNotification)cmd;
     MiniUserInfo warner=wn.getWarner();

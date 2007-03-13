@@ -44,7 +44,9 @@
     OfflineMsgIcqCmd omic=(OfflineMsgIcqCmd)cmd;
     String sn=String.valueOf(omic.getFromUIN());
     String msg="Offline message received:\n" + StringUtils.unescapeFromXML(OscarTools.stripHtml(omic.getContents()).trim());
-    oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(sn),msg);
+    EncodedStringInfo encmsg=MinimalEncoder.encodeMinimally(msg);
+    InstantMessage imsg=new InstantMessage(encmsg.getImEncoding().getCharsetCode(),ByteBlock.wrap(encmsg.getData()));
+    oscarSession.getTransport().sendMessage(oscarSession.getJIDWithHighestPriority(),oscarSession.getTransport().convertIDToJID(sn),imsg.getMessage());
   }
  else   if (cmd instanceof OfflineMsgDoneCmd) {
     request(new OfflineMsgIcqAckCmd(oscarSession.getUIN(),(int)oscarSession.nextIcqId()));
