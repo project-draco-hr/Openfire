@@ -13,6 +13,9 @@
     Log.warn("Request " + rid + " > "+ (lastRequestID + hold + 1)+ ", ending session.");
     throw new HttpBindException("Unexpected RID Error",true,404);
   }
-  addConnection(connection,isPoll);
+  if (packetsToBeSent.size() > 0) {
+    packetsToSend.add(packetsToBeSent);
+  }
+  addConnection(connection,packetsToBeSent.size() <= 0);
   return connection;
 }

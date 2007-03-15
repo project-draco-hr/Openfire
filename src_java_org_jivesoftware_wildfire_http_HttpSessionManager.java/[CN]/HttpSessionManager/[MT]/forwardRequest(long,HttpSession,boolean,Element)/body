@@ -1,18 +1,8 @@
 {
   List<Element> elements=rootNode.elements();
-  boolean isPoll=elements.size() <= 0;
-  HttpConnection connection=session.createConnection(rid,isPoll,isSecure);
-  SessionPacketRouter router=new SessionPacketRouter(session);
-  for (  Element packet : elements) {
-    try {
-      router.route(packet);
-    }
- catch (    UnsupportedEncodingException e) {
-      throw new HttpBindException("Bad auth request, unknown encoding",true,400);
-    }
-catch (    UnknownStanzaException e) {
-      throw new HttpBindException("Unknown packet type.",false,400);
-    }
+  HttpConnection connection=session.createConnection(rid,elements,isSecure);
+  if (elements.size() > 0) {
+    new HttpPacketSender(session).init();
   }
   return connection;
 }

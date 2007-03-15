@@ -1,0 +1,11 @@
+{
+  try {
+    if (!packetsToSendSemaphore.tryAcquire(time,timeUnit) || packetsToSend.size() <= 0) {
+      return null;
+    }
+  }
+ catch (  InterruptedException e) {
+    return null;
+  }
+  return packetsToSend.remove();
+}
