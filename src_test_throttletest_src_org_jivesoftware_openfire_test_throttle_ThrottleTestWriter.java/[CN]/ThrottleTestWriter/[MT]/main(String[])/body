@@ -9,7 +9,7 @@
   try {
     ConnectionConfiguration config=new ConnectionConfiguration(server);
     config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-    XMPPConnection con=new XMPPConnection(config);
+    final XMPPConnection con=new XMPPConnection(config);
     System.out.print("Connecting to " + server + "... ");
     con.connect();
     con.login(username,password,"writer");
@@ -17,7 +17,7 @@
     System.out.println("");
     server=con.getServiceName();
     String writerAddress=username + "@" + server+ "/writer";
-    String readerAddress=username + "@" + server+ "/reader";
+    final String readerAddress=username + "@" + server+ "/reader";
     System.out.println("Registered as " + writerAddress);
     System.out.print("Looking for " + readerAddress + "...");
     while (true) {
@@ -43,10 +43,28 @@
         }
       }
     }
+    Runnable statsRunnable=new Runnable(){
+      public void run(){
+        while (!done) {
+          try {
+            Thread.sleep(5000);
+          }
+ catch (          Exception e) {
+          }
+          int count=packetCount.getAndSet(0);
+          System.out.println("Packets per second: " + (count / 5));
+        }
+      }
+    }
+;
+    Thread statsThread=new Thread(statsRunnable);
+    statsThread.setDaemon(true);
+    statsThread.start();
     Message testMessage=new Message(readerAddress);
     testMessage.setBody("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    while (true) {
+    while (!done) {
       con.sendPacket(testMessage);
+      packetCount.getAndIncrement();
     }
   }
  catch (  Exception e) {

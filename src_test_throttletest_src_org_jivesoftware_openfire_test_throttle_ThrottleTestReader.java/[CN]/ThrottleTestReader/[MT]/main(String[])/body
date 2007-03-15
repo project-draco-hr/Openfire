@@ -9,14 +9,14 @@
   try {
     ConnectionConfiguration config=new ConnectionConfiguration(server);
     config.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-    XMPPConnection con=new XMPPConnection(config);
+    final XMPPConnection con=new XMPPConnection(config);
     System.out.print("Connecting to " + server + "... ");
     con.connect();
     con.login(username,password,"reader");
     System.out.print("success.");
     System.out.println("");
     server=con.getServiceName();
-    String writerAddress=username + "@" + server+ "/writer";
+    final String writerAddress=username + "@" + server+ "/writer";
     String readerAddress=username + "@" + server+ "/reader";
     System.out.println("Registered as " + readerAddress);
     System.out.print("Waiting for " + writerAddress + "...");
