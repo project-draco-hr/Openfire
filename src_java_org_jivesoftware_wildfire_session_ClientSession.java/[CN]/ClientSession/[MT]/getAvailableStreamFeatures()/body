@@ -3,6 +3,9 @@
     return null;
   }
   StringBuilder sb=new StringBuilder(200);
+  if (conn.getCompressionPolicy() != Connection.CompressionPolicy.disabled && !conn.isCompressed()) {
+    sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
+  }
   if (getAuthToken() == null) {
     sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
     if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
