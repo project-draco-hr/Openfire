@@ -58,6 +58,26 @@
         }
         childElementCopy.remove(candidateElement);
       }
+ else {
+        candidateElement=childElementCopy.element("publicip");
+        if (candidateElement != null) {
+          childElementCopy.remove(candidateElement);
+          Element publicIp=childElementCopy.addElement("publicip");
+          try {
+            String ip=sessionManager.getSession(iq.getFrom()).getConnection().getInetAddress().getHostAddress();
+            if (ip != null) {
+              publicIp.addAttribute("ip",ip);
+            }
+          }
+ catch (          UnknownHostException e) {
+            e.printStackTrace();
+          }
+        }
+ else {
+          childElementCopy.remove(candidateElement);
+          reply.setError(PacketError.Condition.forbidden);
+        }
+      }
     }
   }
  else {
