@@ -5,7 +5,7 @@
   routingTable=server.getRoutingTable();
   deliverer=server.getPacketDeliverer();
   sessionManager=server.getSessionManager();
-  if (!JiveGlobals.getBooleanProperty("xmpp.socket.directBuffer",false)) {
+  if (JiveGlobals.getBooleanProperty("xmpp.socket.heapBuffer",true)) {
     ByteBuffer.setUseDirectBuffers(false);
     ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
   }
