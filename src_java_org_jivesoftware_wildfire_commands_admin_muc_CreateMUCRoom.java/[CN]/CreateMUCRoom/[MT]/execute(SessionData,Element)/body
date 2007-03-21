@@ -1,0 +1,40 @@
+{
+  Element note=command.addElement("note");
+  MultiUserChatServer server=XMPPServer.getInstance().getMultiUserChatServer();
+  if (!server.isServiceEnabled()) {
+    note.addAttribute("type","error");
+    note.setText("Multi user chat is disabled on server.");
+    return;
+  }
+  Collection<JID> admins=XMPPServer.getInstance().getAdmins();
+  if (admins.size() <= 0) {
+    note.addAttribute("type","error");
+    note.setText("Server needs admin user to be able to create rooms.");
+    return;
+  }
+  Map<String,List<String>> data=sessionData.getData();
+  String roomname=get(data,"roomname",0);
+  if (roomname == null) {
+    note.addAttribute("type","error");
+    note.setText("Room name must be specified.");
+    return;
+  }
+  JID admin=admins.iterator().next();
+  MUCRoom room;
+  try {
+    room=server.getChatRoom(roomname,admin);
+  }
+ catch (  NotAllowedException e) {
+    note.addAttribute("type","error");
+    note.setText("No permission to create rooms.");
+    return;
+  }
+  boolean isPersistent="1".equals(get(data,"persistent",0));
+  room.setPersistent(isPersistent);
+  boolean isPublic="1".equals(get(data,"public",0));
+  room.setPublicRoom(isPublic);
+  String password=get(data,"password",0);
+  if (password != null) {
+    room.setPassword(password);
+  }
+}

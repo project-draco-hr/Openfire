@@ -1,0 +1,31 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Create a multi-user chat room");
+  form.addInstruction("Fill out this form to create a multi-user chat room.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("The name of the room");
+  field.setVariable("roomname");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("The password for this account");
+  field.setVariable("password");
+  field=form.addField();
+  field.setType(FormField.Type.text_private);
+  field.setLabel("Retype password");
+  field.setVariable("password-verify");
+  field=form.addField();
+  field.setType(FormField.Type.boolean_type);
+  field.setLabel("Room is persistent");
+  field.setVariable("persistent");
+  field=form.addField();
+  field.setType(FormField.Type.boolean_type);
+  field.setLabel("Is the room public");
+  field.setVariable("public");
+  command.add(form.getElement());
+}
