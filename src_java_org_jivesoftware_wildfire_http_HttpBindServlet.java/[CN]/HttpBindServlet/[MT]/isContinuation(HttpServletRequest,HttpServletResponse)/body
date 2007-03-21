@@ -5,7 +5,7 @@
   }
 synchronized (session) {
     try {
-      respond(response,session.getResponse((Long)request.getAttribute("request")).getBytes("utf-8"));
+      respond(response,session.getResponse((Long)request.getAttribute("request")),request.getMethod());
     }
  catch (    HttpBindException e) {
       response.sendError(e.getHttpError(),e.getMessage());

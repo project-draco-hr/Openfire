@@ -29,14 +29,14 @@ catch (    HttpConnectionClosedException nc) {
     String type=rootNode.attributeValue("type");
     if ("terminate".equals(type)) {
       session.close();
-      respond(response,createEmptyBody().getBytes("utf-8"));
+      respond(response,createEmptyBody(),request.getMethod());
     }
  else {
       connection.setContinuation(ContinuationSupport.getContinuation(request,connection));
       request.setAttribute("request-session",connection.getSession());
       request.setAttribute("request",connection.getRequestId());
       try {
-        respond(response,session.getResponse(connection.getRequestId()).getBytes("utf-8"));
+        respond(response,session.getResponse(connection.getRequestId()),request.getMethod());
       }
  catch (      HttpBindException e) {
         response.sendError(e.getHttpError(),e.getMessage());

@@ -1,0 +1,12 @@
+{
+  if (isContinuation(request,response)) {
+    return;
+  }
+  String queryString=request.getQueryString();
+  if (queryString == null || "".equals(queryString)) {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Unable to parse request content");
+    return;
+  }
+  queryString=URLDecoder.decode(queryString,"utf-8");
+  parseDocument(request,response,new ByteArrayInputStream(queryString.getBytes()));
+}

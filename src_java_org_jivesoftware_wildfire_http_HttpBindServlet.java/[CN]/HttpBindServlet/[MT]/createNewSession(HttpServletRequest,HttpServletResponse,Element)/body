@@ -8,7 +8,7 @@
     HttpConnection connection=new HttpConnection(rid,request.isSecure());
     InetAddress address=InetAddress.getByName(request.getRemoteAddr());
     connection.setSession(sessionManager.createSession(address,rootNode,connection));
-    respond(response,connection);
+    respond(response,connection,request.getMethod());
   }
  catch (  UnauthorizedException e) {
     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Server Not initialized");
