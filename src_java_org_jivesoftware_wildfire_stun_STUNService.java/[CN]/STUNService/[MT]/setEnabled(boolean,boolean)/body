@@ -1,9 +1,11 @@
 {
+  this.enabled=enabled;
+  this.localEnabled=localEnabled;
   if (isEnabled()) {
     startService();
     if (isLocalEnabled())     startLocalServer();
   }
  else {
-    XMPPServer.getInstance().getIQDiscoItemsHandler().removeServerItemsProvider(this);
+    stop();
   }
 }

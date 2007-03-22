@@ -1,8 +1,7 @@
 {
   primaryAddress=JiveGlobals.getProperty("stun.address.primary");
   secondaryAddress=JiveGlobals.getProperty("stun.address.secondary");
-  externalServerAddress=JiveGlobals.getProperty("stun.external.address");
-  externalServerAddress=JiveGlobals.getProperty("stun.external.port");
+  externalServers=getStunServerAddresses(JiveGlobals.getProperty("stun.external.addresses"));
   if (primaryAddress == null || primaryAddress.equals(""))   primaryAddress=JiveGlobals.getProperty("xmpp.domain",JiveGlobals.getXMLProperty("network.interface","localhost"));
   if (secondaryAddress == null || secondaryAddress.equals(""))   secondaryAddress="127.0.0.1";
   try {
@@ -16,4 +15,5 @@
  catch (  NumberFormatException e) {
   }
   this.enabled=JiveGlobals.getBooleanProperty("stun.enabled",true);
+  this.localEnabled=JiveGlobals.getBooleanProperty("stun.local.enabled",true);
 }

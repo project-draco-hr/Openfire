@@ -6,19 +6,14 @@
       stunServer=new StunServer(primaryPort,primary,secondaryPort,secondary);
       stunServer.start();
     }
- else     setEnabled(false);
+ else     setLocalEnabled(false);
   }
  catch (  SocketException e) {
     Log.error("Disabling STUN server",e);
-    setEnabled(false);
+    setLocalEnabled(false);
   }
 catch (  UnknownHostException e) {
     Log.error("Disabling STUN server",e);
-    setEnabled(false);
-  }
-  if (stunServer != null) {
-    routingTable.addRoute(getAddress(),this);
-    XMPPServer server=XMPPServer.getInstance();
-    server.getIQDiscoItemsHandler().addServerItemsProvider(this);
+    setLocalEnabled(false);
   }
 }

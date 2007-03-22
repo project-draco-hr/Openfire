@@ -15,10 +15,19 @@
     return;
   }
  else   if (NAMESPACE.equals(namespace)) {
-    Element stun=childElementCopy.addElement("stun");
-    Element server=stun.addElement("server");
-    server.addAttribute("host",primaryAddress);
-    server.addAttribute("udp",String.valueOf(primaryPort));
+    if (isEnabled()) {
+      Element stun=childElementCopy.addElement("stun");
+      if (isLocalEnabled()) {
+        Element server=stun.addElement("server");
+        server.addAttribute("host",primaryAddress);
+        server.addAttribute("udp",String.valueOf(primaryPort));
+      }
+      for (      StunServerAddress stunServerAddress : externalServers) {
+        Element server=stun.addElement("server");
+        server.addAttribute("host",stunServerAddress.getServer());
+        server.addAttribute("udp",stunServerAddress.getPort());
+      }
+    }
   }
  else {
     reply.setError(PacketError.Condition.service_unavailable);
