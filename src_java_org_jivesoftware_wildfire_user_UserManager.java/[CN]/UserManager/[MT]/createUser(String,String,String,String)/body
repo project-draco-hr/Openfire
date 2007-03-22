@@ -10,6 +10,7 @@
   }
   User user=provider.createUser(username,password,name,email);
   userCache.put(username,user);
-  UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_created,Collections.emptyMap());
+  Map<String,Object> params=Collections.emptyMap();
+  UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_created,params);
   return user;
 }

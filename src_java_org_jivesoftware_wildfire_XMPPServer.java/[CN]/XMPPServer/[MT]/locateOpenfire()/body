@@ -1,35 +1,35 @@
 {
-  String jiveConfigName="conf" + File.separator + "wildfire.xml";
-  if (wildfireHome == null) {
-    String homeProperty=System.getProperty("wildfireHome");
+  String jiveConfigName="conf" + File.separator + "openfire.xml";
+  if (openfireHome == null) {
+    String homeProperty=System.getProperty("openfireHome");
     try {
       if (homeProperty != null) {
-        wildfireHome=verifyHome(homeProperty,jiveConfigName);
+        openfireHome=verifyHome(homeProperty,jiveConfigName);
       }
     }
  catch (    FileNotFoundException fe) {
     }
   }
-  if (wildfireHome == null) {
+  if (openfireHome == null) {
     try {
-      wildfireHome=verifyHome("..",jiveConfigName).getCanonicalFile();
+      openfireHome=verifyHome("..",jiveConfigName).getCanonicalFile();
     }
  catch (    FileNotFoundException fe) {
     }
 catch (    IOException ie) {
     }
   }
-  if (wildfireHome == null) {
+  if (openfireHome == null) {
     InputStream in=null;
     try {
-      in=getClass().getResourceAsStream("/wildfire_init.xml");
+      in=getClass().getResourceAsStream("/openfire_init.xml");
       if (in != null) {
         SAXReader reader=new SAXReader();
         Document doc=reader.read(in);
         String path=doc.getRootElement().getText();
         try {
           if (path != null) {
-            wildfireHome=verifyHome(path,jiveConfigName);
+            openfireHome=verifyHome(path,jiveConfigName);
           }
         }
  catch (        FileNotFoundException fe) {
@@ -38,7 +38,7 @@ catch (    IOException ie) {
       }
     }
  catch (    Exception e) {
-      System.err.println("Error loading wildfire_init.xml to find home.");
+      System.err.println("Error loading openfire_init.xml to find home.");
       e.printStackTrace();
     }
  finally {
@@ -53,12 +53,12 @@ catch (    IOException ie) {
       }
     }
   }
-  if (wildfireHome == null) {
+  if (openfireHome == null) {
     System.err.println("Could not locate home");
     throw new FileNotFoundException();
   }
  else {
-    JiveGlobals.setHomeDirectory(wildfireHome.toString());
+    JiveGlobals.setHomeDirectory(openfireHome.toString());
     JiveGlobals.setConfigName(jiveConfigName);
   }
 }

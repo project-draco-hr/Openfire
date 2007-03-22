@@ -1,13 +1,3 @@
 {
-  if (server.isLocal(entity)) {
-    User localUser=UserManager.getInstance().getUser(entity.getNode());
-    return "".equals(localUser.getName()) ? entity.getNode() : localUser.getName();
-  }
- else {
-    UserNameProvider provider=providersByDomain.get(entity.getDomain());
-    if (provider != null) {
-      return provider.getUserName(entity);
-    }
-    return entity.toString();
-  }
+  return getUserName(entity,entity.toString());
 }

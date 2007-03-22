@@ -1,13 +1,13 @@
 {
-  if (wildfired == null) {
+  if (openfired == null) {
     try {
-      File windowsExe=new File(binDir,"wildfired.exe");
-      File unixExe=new File(binDir,"wildfired");
+      File windowsExe=new File(binDir,"openfired.exe");
+      File unixExe=new File(binDir,"openfired");
       if (windowsExe.exists()) {
-        wildfired=Runtime.getRuntime().exec(new String[]{windowsExe.toString()});
+        openfired=Runtime.getRuntime().exec(new String[]{windowsExe.toString()});
       }
  else       if (unixExe.exists()) {
-        wildfired=Runtime.getRuntime().exec(new String[]{unixExe.toString()});
+        openfired=Runtime.getRuntime().exec(new String[]{unixExe.toString()});
       }
  else {
         throw new FileNotFoundException();
@@ -16,7 +16,7 @@
  catch (    Exception e) {
       try {
         File libDir=new File(binDir.getParentFile(),"lib").getAbsoluteFile();
-        wildfired=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
+        openfired=Runtime.getRuntime().exec(new String[]{"java","-jar",new File(libDir,"startup.jar").toString()});
       }
  catch (      Exception ex) {
         ex.printStackTrace();
@@ -26,9 +26,9 @@
     final SimpleAttributeSet styles=new SimpleAttributeSet();
     SwingWorker inputWorker=new SwingWorker(){
       public Object construct(){
-        if (wildfired != null) {
+        if (openfired != null) {
           try {
-            InputStream in=wildfired.getInputStream();
+            InputStream in=openfired.getInputStream();
             int c;
             while ((c=in.read()) != -1) {
               try {
@@ -51,9 +51,9 @@
     inputWorker.start();
     SwingWorker errorWorker=new SwingWorker(){
       public Object construct(){
-        if (wildfired != null) {
+        if (openfired != null) {
           try {
-            InputStream in=wildfired.getErrorStream();
+            InputStream in=openfired.getErrorStream();
             int c;
             while ((c=in.read()) != -1) {
               try {

@@ -10,5 +10,6 @@ synchronized (username.intern()) {
     resources.addSession(session);
   }
   preAuthenticatedSessions.remove(session.getStreamID().toString());
+  userSessionsCounter.incrementAndGet();
   SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_created);
 }

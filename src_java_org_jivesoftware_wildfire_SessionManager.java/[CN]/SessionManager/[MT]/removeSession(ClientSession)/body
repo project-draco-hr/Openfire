@@ -14,6 +14,7 @@
       if (sessionMap != null) {
 synchronized (username.intern()) {
           auth_removed=sessionMap.removeSession(session);
+          userSessionsCounter.decrementAndGet();
         }
         if (sessionMap.isEmpty()) {
           sessions.remove(username);
@@ -34,7 +35,7 @@ synchronized (username.intern()) {
     router.route(offline);
   }
   if (auth_removed || preauth_removed) {
-    usersSessionsCounter.decrementAndGet();
+    connectionsCounter.decrementAndGet();
     return true;
   }
   return false;

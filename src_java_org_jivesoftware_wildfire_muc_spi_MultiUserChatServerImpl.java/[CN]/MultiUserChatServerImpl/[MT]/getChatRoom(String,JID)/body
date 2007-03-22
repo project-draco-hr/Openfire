@@ -14,6 +14,9 @@ synchronized (roomName.intern()) {
           }
         }
         room.addFirstOwner(userjid.toBareJID());
+        for (        MUCEventListener listener : listeners) {
+          listener.roomCreated(room.getRole().getRoleAddress());
+        }
       }
       rooms.put(roomName,room);
     }

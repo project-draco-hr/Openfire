@@ -1,4 +1,6 @@
 {
+  String oldNickname=this.nick;
   this.nick=nickname;
   setRoleAddress(new JID(room.getName(),server.getServiceDomain(),nick));
+  ((MultiUserChatServerImpl)server).fireNicknameChanged(room.getRole().getRoleAddress(),user.getAddress(),oldNickname,nickname);
 }

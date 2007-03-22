@@ -1,5 +1,5 @@
 {
-  MUCRole leaveRole=null;
+  MUCRole leaveRole;
   Collection<MUCRole> removedRoles=new ArrayList<MUCRole>();
   lock.writeLock().lock();
   try {
@@ -42,4 +42,5 @@
     }
   }
   MUCPersistenceManager.deleteFromDB(this);
+  server.fireRoomDestroyed(getRole().getRoleAddress());
 }
