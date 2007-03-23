@@ -18,9 +18,13 @@
     if (isEnabled()) {
       Element stun=childElementCopy.addElement("stun");
       if (isLocalEnabled()) {
-        Element server=stun.addElement("server");
-        server.addAttribute("host",primaryAddress);
-        server.addAttribute("udp",String.valueOf(primaryPort));
+        StunServerAddress local=null;
+        local=new StunServerAddress(primaryAddress,String.valueOf(primaryPort));
+        if (!externalServers.contains(local)) {
+          Element server=stun.addElement("server");
+          server.addAttribute("host",local.getServer());
+          server.addAttribute("udp",local.getPort());
+        }
       }
       for (      StunServerAddress stunServerAddress : externalServers) {
         Element server=stun.addElement("server");

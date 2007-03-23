@@ -1,7 +1,9 @@
 {
   primaryAddress=JiveGlobals.getProperty("stun.address.primary");
   secondaryAddress=JiveGlobals.getProperty("stun.address.secondary");
-  externalServers=getStunServerAddresses(JiveGlobals.getProperty("stun.external.addresses"));
+  String addresses=JiveGlobals.getProperty("stun.external.addresses");
+  if (addresses == null)   addresses=defaultExternalAddresses;
+  externalServers=getStunServerAddresses(addresses);
   if (primaryAddress == null || primaryAddress.equals(""))   primaryAddress=JiveGlobals.getProperty("xmpp.domain",JiveGlobals.getXMLProperty("network.interface","localhost"));
   if (secondaryAddress == null || secondaryAddress.equals(""))   secondaryAddress="127.0.0.1";
   try {

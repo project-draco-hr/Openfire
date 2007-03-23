@@ -1,0 +1,20 @@
+{
+  if (this == obj)   return true;
+  if (obj instanceof StunServerAddress) {
+    StunServerAddress other=(StunServerAddress)obj;
+    if (this.getPort().equals(other.getPort())) {
+      if (this.getServer().equals(other.getServer())) {
+        return true;
+      }
+      try {
+        InetAddress addr0=InetAddress.getByName(this.getServer());
+        InetAddress addr1=InetAddress.getByName(other.getServer());
+        return addr0.getHostAddress().equals(addr1.getHostAddress());
+      }
+ catch (      UnknownHostException e) {
+        return false;
+      }
+    }
+  }
+  return false;
+}
