@@ -31,6 +31,16 @@
         server.addAttribute("host",stunServerAddress.getServer());
         server.addAttribute("udp",stunServerAddress.getPort());
       }
+      try {
+        String ip=sessionManager.getSession(iq.getFrom()).getConnection().getInetAddress().getHostAddress();
+        if (ip != null) {
+          Element publicIp=childElementCopy.addElement("publicip");
+          publicIp.addAttribute("ip",ip);
+        }
+      }
+ catch (      UnknownHostException e) {
+        e.printStackTrace();
+      }
     }
   }
  else {
