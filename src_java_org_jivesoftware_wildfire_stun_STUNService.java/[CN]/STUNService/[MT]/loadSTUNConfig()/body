@@ -4,18 +4,14 @@
   String addresses=JiveGlobals.getProperty("stun.external.addresses");
   if (addresses == null)   addresses=defaultExternalAddresses;
   externalServers=getStunServerAddresses(addresses);
-  if (primaryAddress == null || primaryAddress.equals(""))   primaryAddress=JiveGlobals.getProperty("xmpp.domain",JiveGlobals.getXMLProperty("network.interface","localhost"));
-  if (secondaryAddress == null || secondaryAddress.equals(""))   secondaryAddress="127.0.0.1";
-  try {
-    primaryPort=Integer.valueOf(JiveGlobals.getProperty("stun.port.primary"));
-  }
- catch (  NumberFormatException e) {
-  }
-  try {
-    secondaryPort=Integer.valueOf(JiveGlobals.getProperty("stun.port.secondary"));
-  }
- catch (  NumberFormatException e) {
-  }
+  primaryPort=JiveGlobals.getIntProperty("stun.port.primary",3478);
+  secondaryPort=JiveGlobals.getIntProperty("stun.port.secondary",3479);
   this.enabled=JiveGlobals.getBooleanProperty("stun.enabled",true);
-  this.localEnabled=JiveGlobals.getBooleanProperty("stun.local.enabled",true);
+  this.localEnabled=JiveGlobals.getBooleanProperty("stun.local.enabled",false);
+  if (localEnabled) {
+    if (primaryAddress == null || secondaryAddress == null) {
+      Log.warn("STUN server cannot be enabled. Primary and secondary addresses must be defined.");
+      enabled=false;
+    }
+  }
 }
