@@ -3,6 +3,15 @@
   if (registrations.isEmpty()) {
     throw new UserNotFoundException("User was not registered.");
   }
+  try {
+    TransportSession session=sessionManager.getSession(jid);
+    if (session.isLoggedIn()) {
+      this.registrationLoggedOut(session);
+    }
+    sessionManager.removeSession(jid);
+  }
+ catch (  NotFoundException e) {
+  }
   for (  Registration reg : registrations) {
     registrationManager.deleteRegistration(reg);
   }
