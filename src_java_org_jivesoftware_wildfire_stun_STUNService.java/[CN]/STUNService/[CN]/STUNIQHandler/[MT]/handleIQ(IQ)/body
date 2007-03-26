@@ -4,21 +4,11 @@
   String namespace=childElement.getNamespaceURI();
   Element childElementCopy=iq.getChildElement().createCopy();
   reply.setChildElement(childElementCopy);
-  if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-    reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
-    router.route(reply);
-    return;
-  }
- else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
-    reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
-    router.route(reply);
-    return;
-  }
- else   if (NAMESPACE.equals(namespace)) {
+  if (NAMESPACE.equals(namespace)) {
     if (isEnabled()) {
       Element stun=childElementCopy.addElement("stun");
       if (isLocalEnabled()) {
-        StunServerAddress local=null;
+        StunServerAddress local;
         local=new StunServerAddress(primaryAddress,String.valueOf(primaryPort));
         if (!externalServers.contains(local)) {
           Element server=stun.addElement("server");
@@ -48,9 +38,9 @@
   }
   try {
     Log.debug("RETURNED:" + reply.toXML());
-    router.route(reply);
   }
  catch (  Exception e) {
     Log.error(e);
   }
+  return reply;
 }

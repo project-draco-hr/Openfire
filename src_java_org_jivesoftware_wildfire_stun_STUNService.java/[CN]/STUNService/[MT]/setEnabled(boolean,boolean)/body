@@ -1,13 +1,13 @@
 {
-  this.enabled=enabled;
-  this.localEnabled=localEnabled;
-  if (isEnabled()) {
-    startService();
+  if (enabled && !this.enabled) {
+    startSTUNService();
     if (isLocalEnabled()) {
       startLocalServer();
     }
   }
  else {
-    stop();
+    stopSTUNService();
   }
+  this.enabled=enabled;
+  this.localEnabled=localEnabled;
 }
