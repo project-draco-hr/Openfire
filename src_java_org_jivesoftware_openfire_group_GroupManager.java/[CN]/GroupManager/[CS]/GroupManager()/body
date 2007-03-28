@@ -1,0 +1,60 @@
+{
+  groupCache=CacheManager.initializeCache("Group","group",1024 * 1024,JiveConstants.MINUTE * 15);
+  groupMetaCache=CacheManager.initializeCache("Group Metadata Cache","groupMeta",512 * 1024,JiveConstants.MINUTE * 15);
+  String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.openfire.group.DefaultGroupProvider");
+  try {
+    Class c=ClassUtils.forName(className);
+    provider=(GroupProvider)c.newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Error loading group provider: " + className,e);
+    provider=new DefaultGroupProvider();
+  }
+  GroupEventDispatcher.addListener(new GroupEventListener(){
+    public void groupCreated(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+    public void groupDeleting(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+    public void groupModified(    Group group,    Map params){
+      String type=(String)params.get("type");
+      if (type != null && (type.equals("propertyModified") || type.equals("propertyDeleted") || type.equals("propertyAdded"))) {
+        if (params.get("propertyKey") != null && params.get("propertyKey").equals("sharedRoster.showInRoster")) {
+          groupMetaCache.clear();
+        }
+      }
+    }
+    public void memberAdded(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+    public void memberRemoved(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+    public void adminAdded(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+    public void adminRemoved(    Group group,    Map params){
+      groupMetaCache.clear();
+    }
+  }
+);
+  Runnable task=new Runnable(){
+    public void run(){
+      Collection<Group> groups=getSharedGroups();
+      for (      Group group : groups) {
+        for (        JID jid : group.getMembers()) {
+          try {
+            if (XMPPServer.getInstance().isLocal(jid)) {
+              UserManager.getInstance().getUser(jid.getNode());
+            }
+          }
+ catch (          UserNotFoundException unfe) {
+          }
+        }
+      }
+    }
+  }
+;
+  TaskEngine.getInstance().submit(task);
+}

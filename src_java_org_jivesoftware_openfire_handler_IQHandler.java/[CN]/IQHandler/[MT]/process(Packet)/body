@@ -1,0 +1,34 @@
+{
+  IQ iq=(IQ)packet;
+  try {
+    IQ reply=handleIQ(iq);
+    if (reply != null) {
+      deliverer.deliver(reply);
+    }
+  }
+ catch (  org.jivesoftware.openfire.auth.UnauthorizedException e) {
+    if (iq != null) {
+      try {
+        IQ response=IQ.createResultIQ(iq);
+        response.setChildElement(iq.getChildElement().createCopy());
+        response.setError(PacketError.Condition.not_authorized);
+        sessionManager.getSession(iq.getFrom()).process(response);
+      }
+ catch (      Exception de) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),de);
+        sessionManager.getSession(iq.getFrom()).getConnection().close();
+      }
+    }
+  }
+catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+    try {
+      IQ response=IQ.createResultIQ(iq);
+      response.setChildElement(iq.getChildElement().createCopy());
+      response.setError(PacketError.Condition.internal_server_error);
+      sessionManager.getSession(iq.getFrom()).process(response);
+    }
+ catch (    Exception e1) {
+    }
+  }
+}
