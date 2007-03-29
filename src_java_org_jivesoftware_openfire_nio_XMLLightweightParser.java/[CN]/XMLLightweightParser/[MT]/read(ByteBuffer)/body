@@ -52,6 +52,7 @@
  else     if (status == XMLLightweightParser.VERIFY_CLOSE_TAG) {
       if (ch == '>') {
         depth--;
+        status=XMLLightweightParser.OUTSIDE;
         if (depth < 1) {
           int end=buffer.length() - readByte + (i + 1);
           String msg=buffer.substring(startLastMsg,end);
@@ -76,7 +77,7 @@
       if (ch == XMLLightweightParser.CDATA_END[cdataOffset]) {
         cdataOffset++;
         if (cdataOffset == XMLLightweightParser.CDATA_END.length) {
-          status=XMLLightweightParser.INSIDE;
+          status=XMLLightweightParser.OUTSIDE;
           cdataOffset=0;
         }
       }
@@ -95,11 +96,13 @@
       }
  else {
         cdataOffset=0;
+        status=XMLLightweightParser.INSIDE;
       }
       if (ch == '"') {
         status=XMLLightweightParser.INSIDE_PARAM_VALUE;
       }
  else       if (ch == '>') {
+        status=XMLLightweightParser.OUTSIDE;
         if (insideRootTag && ("stream:stream>".equals(head.toString()) || ("?xml>".equals(head.toString())) || ("flash:stream>".equals(head.toString())))) {
           int end=buffer.length() - readByte + (i + 1);
           while (startLastMsg < end && '<' != buffer.charAt(startLastMsg)) {
@@ -111,10 +114,6 @@
         }
         insideRootTag=false;
       }
- else       if (ch == '<') {
-        status=XMLLightweightParser.PRETAIL;
-        insideChildrenTag=true;
-      }
  else       if (ch == '/') {
         status=XMLLightweightParser.VERIFY_CLOSE_TAG;
       }
@@ -122,7 +121,8 @@
  else     if (status == XMLLightweightParser.HEAD) {
       if (ch == ' ' || ch == '>') {
         head.append(">");
-        status=XMLLightweightParser.INSIDE;
+        if (ch == '>')         status=XMLLightweightParser.OUTSIDE;
+ else         status=XMLLightweightParser.INSIDE;
         insideRootTag=true;
         insideChildrenTag=false;
         continue;
@@ -140,6 +140,13 @@
       }
  else {
         startLastMsg++;
+      }
+    }
+ else     if (status == XMLLightweightParser.OUTSIDE) {
+      if (ch == '<') {
+        status=XMLLightweightParser.PRETAIL;
+        cdataOffset=1;
+        insideChildrenTag=true;
       }
     }
   }
