@@ -1,0 +1,29 @@
+{
+  Map environment=new HashMap();
+  System.out.println("'sup yo");
+  ServletContext context=servlet.getServletContext();
+  environment.put(AxisEngine.ENV_SERVLET_CONTEXT,context);
+  try {
+    DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder=dbf.newDocumentBuilder();
+    document=builder.newDocument();
+    Element root=document.createElement("service");
+    root.setAttribute("name","ConnectionTester");
+    root.setAttribute("provider","java:RPC");
+    Element parameter=document.createElement("parameter");
+    parameter.setAttribute("name","allowedMethods");
+    parameter.setAttribute("value","*");
+    root.appendChild(parameter);
+    parameter=document.createElement("parameter");
+    parameter.setAttribute("name","className");
+    parameter.setAttribute("value","org.jivesoftware.openfire.gateway.web.ConnectionTester");
+    root.appendChild(parameter);
+    document.appendChild(root);
+    EngineConfiguration config=new XMLStringProvider(document.toString());
+    environment.put(EngineConfiguration.PROPERTY_NAME,config);
+  }
+ catch (  ParserConfigurationException e) {
+    Log.error("Error configuring Axis for gateway plugin: ",e);
+  }
+  return environment;
+}
