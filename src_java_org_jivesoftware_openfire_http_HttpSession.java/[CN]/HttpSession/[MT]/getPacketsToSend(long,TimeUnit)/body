@@ -1,4 +1,7 @@
 {
+  if (isClosed) {
+    throw new HttpConnectionClosedException("the connection has been closed");
+  }
   try {
     if (!packetsToSendSemaphore.tryAcquire(time,timeUnit) || packetsToSend.size() <= 0) {
       return null;

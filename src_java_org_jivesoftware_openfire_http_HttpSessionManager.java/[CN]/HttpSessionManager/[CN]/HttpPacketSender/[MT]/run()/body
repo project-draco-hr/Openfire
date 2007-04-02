@@ -3,7 +3,10 @@
   try {
     elements=session.getPacketsToSend(20,TimeUnit.MILLISECONDS);
   }
- catch (  Throwable t) {
+ catch (  HttpConnectionClosedException he) {
+    return;
+  }
+catch (  Throwable t) {
   }
   if (elements == null) {
     this.init();
