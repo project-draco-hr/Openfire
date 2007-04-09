@@ -1,6 +1,9 @@
 {
   if (this.isLoggedIn()) {
     setLoginStatus(TransportLoginStatus.LOGGING_OUT);
+    conn.removeConnectionListener(listener);
+    conn.getRoster().removeRosterListener(listener);
+    conn.getChatManager().removeChatListener(listener);
     conn.disconnect();
   }
   Presence p=new Presence(Presence.Type.unavailable);

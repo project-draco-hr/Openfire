@@ -1,0 +1,7 @@
+{
+  Element presElem=DocumentHelper.createElement(presence.toXML());
+  Presence p=new Presence(presElem);
+  p.setTo(xmppSession.getJID());
+  p.setFrom(xmppSession.getTransport().convertIDToJID(presence.getFrom()));
+  xmppSession.getTransport().sendPacket(p);
+}

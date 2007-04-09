@@ -1,10 +1,14 @@
 {
   if (!this.isLoggedIn()) {
     try {
+      listener=new XMPPListener(this);
       setLoginStatus(TransportLoginStatus.LOGGING_IN);
       conn=new XMPPConnection(config);
       conn.connect();
+      conn.addConnectionListener(listener);
       conn.login(this.getRegistration().getUsername(),this.getRegistration().getPassword(),"IMGateway");
+      conn.getRoster().addRosterListener(listener);
+      conn.getChatManager().addChatListener(listener);
     }
  catch (    XMPPException e) {
       Log.error(getTransport().getType() + " user is not able to log in: " + this.getRegistration().getUsername(),e);
