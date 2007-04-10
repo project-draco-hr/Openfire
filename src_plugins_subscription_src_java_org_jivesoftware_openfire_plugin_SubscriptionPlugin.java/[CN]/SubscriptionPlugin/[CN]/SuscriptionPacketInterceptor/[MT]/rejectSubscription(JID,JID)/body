@@ -1,0 +1,21 @@
+{
+  if (getSubscriptionLevel().equals(LOCAL)) {
+    String toDomain=toJID.getDomain();
+    String fromDomain=fromJID.getDomain();
+    if (toDomain.equals(serverName) && fromDomain.equals(serverName)) {
+      return;
+    }
+  }
+  Presence presence=new Presence();
+  presence.setType(Presence.Type.unsubscribed);
+  if (JiveGlobals.getBooleanProperty("plugin.subscription.sparkCheck",false)) {
+    String resource=fromJID.getResource();
+    if (resource != null && resource.equalsIgnoreCase("Spark")) {
+      presence.setType(Presence.Type.unsubscribed);
+    }
+  }
+  presence.setTo(fromJID);
+  presence.setFrom(toJID);
+  router.route(presence);
+  throw new PacketRejectedException();
+}

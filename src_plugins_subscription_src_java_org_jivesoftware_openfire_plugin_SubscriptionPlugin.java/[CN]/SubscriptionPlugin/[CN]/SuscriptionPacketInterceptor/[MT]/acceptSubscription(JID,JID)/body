@@ -1,0 +1,15 @@
+{
+  if (getSubscriptionLevel().equals(LOCAL)) {
+    String toDomain=toJID.getDomain();
+    String fromDomain=fromJID.getDomain();
+    if (!toDomain.equals(serverName) || !fromDomain.equals(serverName)) {
+      return;
+    }
+  }
+  Presence presence=new Presence();
+  presence.setType(Presence.Type.subscribed);
+  presence.setTo(fromJID);
+  presence.setFrom(toJID);
+  router.route(presence);
+  throw new PacketRejectedException();
+}
