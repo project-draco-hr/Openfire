@@ -18,7 +18,13 @@
  else {
         sessionMap.sessionUnavailable(session);
         Session defaultSession=sessionMap.getDefaultSession(true);
-        routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
+        JID jid=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),"");
+        if (defaultSession != null) {
+          routingTable.addRoute(jid,defaultSession);
+        }
+ else {
+          routingTable.removeRoute(jid);
+        }
       }
     }
  catch (    UserNotFoundException e) {

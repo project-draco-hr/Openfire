@@ -12,8 +12,10 @@
       }
       sessionMap.sessionAvailable(session);
       defaultSession=sessionMap.getDefaultSession(true);
-      JID node=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),null);
-      routingTable.addRoute(node,defaultSession);
+      if (defaultSession != null) {
+        JID node=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),null);
+        routingTable.addRoute(node,defaultSession);
+      }
       routingTable.addRoute(session.getAddress(),session);
       broadcastPresenceOfOtherResource(session);
     }

@@ -12,5 +12,22 @@ synchronized (username.intern()) {
     resources.changePriority(sender,priority);
     defaultSession=resources.getDefaultSession(true);
   }
-  routingTable.addRoute(new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),""),defaultSession);
+  JID defaultAddress=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),"");
+  if (defaultSession != null) {
+    boolean hadDefault=routingTable.getRoute(defaultAddress) != null;
+    routingTable.addRoute(defaultAddress,defaultSession);
+    if (!hadDefault) {
+      ClientSession session=resources.getSession(sender.getResource());
+      if (session != null && session.canFloodOfflineMessages()) {
+        OfflineMessageStore messageStore=XMPPServer.getInstance().getOfflineMessageStore();
+        Collection<OfflineMessage> messages=messageStore.getMessages(username,true);
+        for (        Message message : messages) {
+          session.process(message);
+        }
+      }
+    }
+  }
+ else {
+    routingTable.removeRoute(defaultAddress);
+  }
 }
