@@ -1,6 +1,10 @@
 {
   IQ reply=null;
-  MUCRoom room=mucServer.getChatRoom(packet.getTo().getNode());
+  MUCRoom room=null;
+  String name=packet.getTo().getNode();
+  if (name != null) {
+    room=mucServer.getChatRoom(name);
+  }
   if (room == null) {
     reply=IQ.createResultIQ(packet);
     reply.setChildElement(packet.getChildElement().createCopy());
