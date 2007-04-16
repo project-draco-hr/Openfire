@@ -1,6 +1,8 @@
 {
   XMPPServer server=XMPPServer.getInstance();
   server.getIQDiscoInfoHandler().removeServerFeature(NAMESPACE);
-  server.getIQRouter().removeHandler(stunIQHandler);
-  stunIQHandler=null;
+  if (stunIQHandler != null) {
+    server.getIQRouter().removeHandler(stunIQHandler);
+    stunIQHandler=null;
+  }
 }
