@@ -5,13 +5,13 @@
   }
  catch (  Exception e) {
     Log.warn("Error parsing user request. [" + request.getRemoteAddr() + "]");
-    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Unable to parse request content: " + e.getMessage());
+    sendLegacyError(response,BoshBindingError.badRequest);
     return;
   }
   Element node=document.getRootElement();
   if (node == null || !"body".equals(node.getName())) {
     Log.warn("Body missing from request content. [" + request.getRemoteAddr() + "]");
-    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Body missing from request content.");
+    sendLegacyError(response,BoshBindingError.badRequest);
     return;
   }
   String sid=node.attributeValue("sid");

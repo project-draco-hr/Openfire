@@ -9,6 +9,9 @@
   response.addAttribute("inactivity",String.valueOf(session.getInactivityTimeout()));
   response.addAttribute("polling",String.valueOf(session.getMaxPollingInterval()));
   response.addAttribute("wait",String.valueOf(session.getWait()));
+  if (session.getVersion() >= 1.6) {
+    response.addAttribute("ver",String.valueOf(session.getVersion()));
+  }
   Element features=response.addElement("stream:features");
   for (  Element feature : session.getAvailableStreamFeaturesElements()) {
     features.add(feature);

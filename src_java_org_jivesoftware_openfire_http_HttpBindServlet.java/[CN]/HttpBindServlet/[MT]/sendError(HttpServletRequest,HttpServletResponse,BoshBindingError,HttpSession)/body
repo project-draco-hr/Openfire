@@ -1,0 +1,15 @@
+{
+  try {
+    if (session.getVersion() >= 1.6) {
+      respond(response,createErrorBody(bindingError.getErrorType().getType(),bindingError.getCondition()),request.getMethod());
+    }
+ else {
+      sendLegacyError(response,bindingError);
+    }
+  }
+  finally {
+    if (bindingError.getErrorType() == BoshBindingError.Type.terminal) {
+      session.close();
+    }
+  }
+}

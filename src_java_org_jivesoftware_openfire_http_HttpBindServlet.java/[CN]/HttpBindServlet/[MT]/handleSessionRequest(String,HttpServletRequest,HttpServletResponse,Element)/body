@@ -16,10 +16,7 @@ synchronized (session) {
       connection=sessionManager.forwardRequest(rid,session,request.isSecure(),rootNode);
     }
  catch (    HttpBindException e) {
-      response.sendError(e.getHttpError(),e.getMessage());
-      if (e.shouldCloseSession()) {
-        session.close();
-      }
+      sendError(request,response,e.getBindingError(),session);
       return;
     }
 catch (    HttpConnectionClosedException nc) {
@@ -39,10 +36,7 @@ catch (    HttpConnectionClosedException nc) {
         respond(response,session.getResponse(connection.getRequestId()),request.getMethod());
       }
  catch (      HttpBindException e) {
-        response.sendError(e.getHttpError(),e.getMessage());
-        if (e.shouldCloseSession()) {
-          session.close();
-        }
+        sendError(request,response,e.getBindingError(),session);
       }
     }
   }

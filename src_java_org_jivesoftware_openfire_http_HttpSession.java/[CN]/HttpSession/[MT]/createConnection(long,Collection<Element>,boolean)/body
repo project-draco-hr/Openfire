@@ -4,14 +4,14 @@
     Delivered deliverable=retrieveDeliverable(rid);
     if (deliverable == null) {
       Log.warn("Deliverable unavailable for " + rid);
-      throw new HttpBindException("Unexpected RID Error",true,404);
+      throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
     }
     connection.deliverBody(createDeliverable(deliverable.deliverables));
     return connection;
   }
  else   if (rid > (lastRequestID + hold + 1)) {
     Log.warn("Request " + rid + " > "+ (lastRequestID + hold + 1)+ ", ending session.");
-    throw new HttpBindException("Unexpected RID Error",true,404);
+    throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
   }
   if (packetsToBeSent.size() > 0) {
     packetsToSend.add(packetsToBeSent);

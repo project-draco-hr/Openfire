@@ -1,10 +1,15 @@
 {
+  boolean isScriptSyntaxEnabled=JiveGlobals.getBooleanProperty("xmpp.httpbind.scriptSyntax.enabled",false);
+  if (!isScriptSyntaxEnabled) {
+    sendLegacyError(response,BoshBindingError.itemNotFound);
+    return;
+  }
   if (isContinuation(request,response)) {
     return;
   }
   String queryString=request.getQueryString();
   if (queryString == null || "".equals(queryString)) {
-    response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Unable to parse request content");
+    sendLegacyError(response,BoshBindingError.badRequest);
     return;
   }
   queryString=URLDecoder.decode(queryString,"utf-8");

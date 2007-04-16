@@ -8,10 +8,7 @@ synchronized (session) {
       respond(response,session.getResponse((Long)request.getAttribute("request")),request.getMethod());
     }
  catch (    HttpBindException e) {
-      response.sendError(e.getHttpError(),e.getMessage());
-      if (e.shouldCloseSession()) {
-        session.close();
-      }
+      sendError(request,response,e.getBindingError(),session);
     }
   }
   return true;

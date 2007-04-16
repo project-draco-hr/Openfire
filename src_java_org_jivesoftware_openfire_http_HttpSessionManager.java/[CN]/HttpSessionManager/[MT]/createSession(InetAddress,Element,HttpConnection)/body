@@ -5,6 +5,7 @@
   }
   int wait=getIntAttribute(rootNode.attributeValue("wait"),60);
   int hold=getIntAttribute(rootNode.attributeValue("hold"),1);
+  double version=getDoubleAttribute(rootNode.attributeValue("ver"),1.5);
   HttpSession session=createSession(connection.getRequestId(),address);
   session.setWait(Math.min(wait,getMaxWait()));
   session.setHold(hold);
@@ -13,6 +14,7 @@
   session.setMaxRequests(getMaxRequests());
   session.setInactivityTimeout(getInactivityTimeout());
   session.setLanaguage(language);
+  session.setVersion(version);
   try {
     connection.deliverBody(createSessionCreationResponse(session));
   }
@@ -20,7 +22,7 @@
   }
 catch (  DocumentException e) {
     Log.error("Error creating document",e);
-    throw new HttpBindException("Internal server error",true,500);
+    throw new HttpBindException("Internal server error",BoshBindingError.internalServerError);
   }
   return session;
 }
