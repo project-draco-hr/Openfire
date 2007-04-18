@@ -12,8 +12,10 @@
   while (nPos < buf.length) {
     buf[nPos++]=bPadVal;
   }
-  m_bfish.setCBCIV(lNewCBCIV);
-  m_bfish.encrypt(buf);
+synchronized (m_bfish) {
+    m_bfish.setCBCIV(lNewCBCIV);
+    m_bfish.encrypt(buf);
+  }
   byte[] newCBCIV=new byte[BlowfishCBC.BLOCKSIZE];
   longToByteArray(lNewCBCIV,newCBCIV,0);
   return bytesToBinHex(newCBCIV,0,BlowfishCBC.BLOCKSIZE) + bytesToBinHex(buf,0,buf.length);

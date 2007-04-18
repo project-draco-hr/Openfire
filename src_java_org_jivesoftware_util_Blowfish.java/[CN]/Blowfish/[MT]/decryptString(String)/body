@@ -4,7 +4,6 @@
   byte[] cbciv=new byte[BlowfishCBC.BLOCKSIZE];
   int nNumOfBytes=binHexToBytes(sCipherText,cbciv,0,0,BlowfishCBC.BLOCKSIZE);
   if (nNumOfBytes < BlowfishCBC.BLOCKSIZE)   return null;
-  m_bfish.setCBCIV(cbciv);
   nLen-=BlowfishCBC.BLOCKSIZE;
   if (nLen == 0) {
     return "";
@@ -14,7 +13,10 @@
   if (nNumOfBytes < nLen) {
     return null;
   }
-  m_bfish.decrypt(buf);
+synchronized (m_bfish) {
+    m_bfish.setCBCIV(cbciv);
+    m_bfish.decrypt(buf);
+  }
   int nPadByte=(int)buf[buf.length - 1] & 0x0ff;
   if ((nPadByte > 8) || (nPadByte < 0)) {
     nPadByte=0;
