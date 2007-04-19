@@ -1,4 +1,5 @@
 {
+  YahooUser yUser=new YahooUser(contact);
   if (groups.size() == 0) {
     groups.add("Transport Buddies");
   }
@@ -19,7 +20,7 @@
   }
   for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
     if (groups.contains(yahooGroup.getName())) {
-      if (yahooGroup.getIndexOfFriend(contact) == -1) {
+      if (yahooGroup.contains(yUser)) {
         try {
           Log.debug("Yahoo: Adding contact " + contact + " to existing group "+ yahooGroup.getName());
           yahooSession.addFriend(contact,yahooGroup.getName());
@@ -30,7 +31,7 @@
       }
     }
  else {
-      if (yahooGroup.getIndexOfFriend(contact) != -1) {
+      if (yahooGroup.contains(yUser)) {
         try {
           Log.debug("Yahoo: Removing contact " + contact + " from group "+ yahooGroup.getName());
           yahooSession.removeFriend(contact,yahooGroup.getName());

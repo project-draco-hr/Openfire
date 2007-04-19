@@ -1,8 +1,7 @@
 {
   HashMap<String,ArrayList<String>> userToGroups=new HashMap<String,ArrayList<String>>();
   for (  YahooGroup group : yahooSession.getGroups()) {
-    for (Enumeration e=group.getMembers().elements(); e.hasMoreElements(); ) {
-      YahooUser user=(YahooUser)e.nextElement();
+    for (    YahooUser user : group.getMembers()) {
       ArrayList<String> groups;
       if (userToGroups.containsKey(user.getId())) {
         groups=userToGroups.get(user.getId());

@@ -1,8 +1,9 @@
 {
   String contact=getTransport().convertJIDToID(item.getJid());
+  YahooUser yUser=new YahooUser(contact);
   lockRoster(item.getJid().toString());
   for (  YahooGroup yahooGroup : yahooSession.getGroups()) {
-    if (yahooGroup.getIndexOfFriend(contact) != -1) {
+    if (yahooGroup.contains(yUser)) {
       try {
         yahooSession.removeFriend(contact,yahooGroup.getName());
         pseudoRoster.removeItem(contact);

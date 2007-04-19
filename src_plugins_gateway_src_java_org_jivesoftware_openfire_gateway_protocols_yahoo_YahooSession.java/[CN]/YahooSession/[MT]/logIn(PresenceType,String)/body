@@ -8,7 +8,7 @@
       public void run(){
         try {
           loginAttempts++;
-          yahooSession.setStatus(StatusConstants.STATUS_AVAILABLE);
+          yahooSession.setStatus(Status.AVAILABLE);
           yahooSession.login(registration.getUsername(),registration.getPassword());
           setLoginStatus(TransportLoginStatus.LOGGED_IN);
           Presence p=new Presence();
@@ -22,34 +22,33 @@
  catch (        LoginRefusedException e) {
           yahooSession.reset();
           String reason=LocaleUtils.getLocalizedString("gateway.yahoo.loginrefused","gateway");
-switch ((int)e.getStatus()) {
-case (int)StatusConstants.STATUS_BADUSERNAME:
+          AuthenticationState state=e.getStatus();
+          if (state.equals(AuthenticationState.BADUSERNAME)) {
             reason=LocaleUtils.getLocalizedString("gateway.yahoo.unknownuser","gateway");
-          break;
-case (int)StatusConstants.STATUS_BAD:
-        reason=LocaleUtils.getLocalizedString("gateway.yahoo.badpassword","gateway");
-      break;
-case (int)StatusConstants.STATUS_LOCKED:
-    AccountLockedException e2=(AccountLockedException)e;
-  if (e2.getWebPage() != null) {
-    reason=LocaleUtils.getLocalizedString("gateway.yahoo.accountlockedwithurl","gateway",Arrays.asList(e2.getWebPage().toString()));
-  }
+          }
+ else           if (state.equals(AuthenticationState.BAD)) {
+            reason=LocaleUtils.getLocalizedString("gateway.yahoo.badpassword","gateway");
+          }
+ else           if (state.equals(AuthenticationState.LOCKED)) {
+            AccountLockedException e2=(AccountLockedException)e;
+            if (e2.getWebPage() != null) {
+              reason=LocaleUtils.getLocalizedString("gateway.yahoo.accountlockedwithurl","gateway",Arrays.asList(e2.getWebPage().toString()));
+            }
  else {
-    reason=LocaleUtils.getLocalizedString("gateway.yahoo.accountlocked","gateway");
-  }
-break;
-}
-Log.warn("Yahoo login failed for " + getJID() + ": "+ reason);
-getTransport().sendMessage(getJID(),getTransport().getJID(),reason,Message.Type.error);
-setLoginStatus(TransportLoginStatus.LOGGED_OUT);
-}
-catch (IOException e) {
-Log.error("Yahoo login caused IO exception:",e);
-getTransport().sendMessage(getJID(),getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.yahoo.unknownerror","gateway"),Message.Type.error);
-setLoginStatus(TransportLoginStatus.LOGGED_OUT);
-}
-}
-}
+              reason=LocaleUtils.getLocalizedString("gateway.yahoo.accountlocked","gateway");
+            }
+          }
+          Log.warn("Yahoo login failed for " + getJID() + ": "+ reason);
+          getTransport().sendMessage(getJID(),getTransport().getJID(),reason,Message.Type.error);
+          setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+        }
+catch (        IOException e) {
+          Log.error("Yahoo login caused IO exception:",e);
+          getTransport().sendMessage(getJID(),getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.yahoo.unknownerror","gateway"),Message.Type.error);
+          setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+        }
+      }
+    }
 .start();
-}
+  }
 }
