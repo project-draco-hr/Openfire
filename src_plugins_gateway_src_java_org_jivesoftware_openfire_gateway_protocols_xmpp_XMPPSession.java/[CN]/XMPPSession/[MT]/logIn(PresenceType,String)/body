@@ -10,6 +10,12 @@
           conn.login(acctjid.getNode(),getRegistration().getPassword(),"IMGateway");
           conn.getRoster().addRosterListener(listener);
           conn.getChatManager().addChatListener(listener);
+          setLoginStatus(TransportLoginStatus.LOGGED_IN);
+          Presence p=new Presence();
+          p.setTo(getJIDWithHighestPriority());
+          p.setFrom(getTransport().getJID());
+          getTransport().sendPacket(p);
+          getRegistration().setLastLogin(new Date());
         }
  catch (        XMPPException e) {
           Log.error(getTransport().getType() + " user is not able to log in: " + getRegistration().getUsername(),e);

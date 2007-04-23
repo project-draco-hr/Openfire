@@ -1,8 +1,8 @@
 {
-  Chat chat=conn.getChatManager().createChat(getTransport().convertJIDToID(jid),listener);
-  try {
-    chat.sendMessage(message);
-  }
- catch (  XMPPException e) {
-  }
+  org.jivesoftware.smack.packet.Message m=new org.jivesoftware.smack.packet.Message();
+  m.setFrom(getRegistration().getUsername());
+  m.setTo(getTransport().convertJIDToID(jid));
+  m.setBody(message);
+  Log.debug("XMPP Sending Message: " + m.toXML());
+  conn.sendPacket(m);
 }
