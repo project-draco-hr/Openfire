@@ -12,7 +12,7 @@ synchronized (username.intern()) {
     resources.changePriority(sender,priority);
     defaultSession=resources.getDefaultSession(true);
   }
-  JID defaultAddress=new JID(defaultSession.getAddress().getNode(),defaultSession.getAddress().getDomain(),"");
+  JID defaultAddress=new JID(sender.getNode(),sender.getDomain(),"");
   if (defaultSession != null) {
     boolean hadDefault=routingTable.getRoute(defaultAddress) != null;
     routingTable.addRoute(defaultAddress,defaultSession);
