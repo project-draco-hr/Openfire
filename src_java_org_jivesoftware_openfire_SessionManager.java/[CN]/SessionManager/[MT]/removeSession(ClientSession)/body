@@ -14,7 +14,9 @@
       if (sessionMap != null) {
 synchronized (username.intern()) {
           auth_removed=sessionMap.removeSession(session);
-          userSessionsCounter.decrementAndGet();
+          if (auth_removed) {
+            userSessionsCounter.decrementAndGet();
+          }
         }
         if (sessionMap.isEmpty()) {
           sessions.remove(username);

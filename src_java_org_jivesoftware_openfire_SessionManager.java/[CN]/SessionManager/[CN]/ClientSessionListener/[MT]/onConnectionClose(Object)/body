@@ -2,11 +2,11 @@
   try {
     ClientSession session=(ClientSession)handback;
     try {
-      if (session.getPresence().isAvailable() || !session.wasAvailable()) {
+      if ((session.getPresence().isAvailable() || !session.wasAvailable()) && getSession(session.getAddress()) != null) {
         Presence presence=new Presence();
         presence.setType(Presence.Type.unavailable);
         presence.setFrom(session.getAddress());
-        presenceHandler.process(presence,session);
+        router.route(presence);
       }
     }
   finally {
