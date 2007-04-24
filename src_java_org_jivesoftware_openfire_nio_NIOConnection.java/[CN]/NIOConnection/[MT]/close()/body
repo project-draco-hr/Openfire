@@ -1,17 +1,21 @@
 {
-  boolean wasClosed=false;
+  boolean closedSuccessfully=false;
 synchronized (this) {
     if (!isClosed()) {
+      if (session != null) {
+        session.setStatus(Session.STATUS_CLOSED);
+      }
       try {
         deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>",false);
       }
  catch (      Exception e) {
       }
-      closeConnection();
-      wasClosed=true;
+      ioSession.close();
+      closed=true;
+      closedSuccessfully=true;
     }
   }
-  if (wasClosed) {
+  if (closedSuccessfully) {
     notifyCloseListeners();
   }
 }
