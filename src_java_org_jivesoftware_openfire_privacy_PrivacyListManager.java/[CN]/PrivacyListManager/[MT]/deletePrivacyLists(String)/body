@@ -1,6 +1,9 @@
 {
   for (  String listName : provider.getPrivacyLists(username).keySet()) {
     listsCache.remove(getCacheKey(username,listName));
+    for (    PrivacyListEventListener listener : listeners) {
+      listener.privacyListDeleting(listName);
+    }
   }
   provider.deletePrivacyLists(username);
 }

@@ -1,0 +1,12 @@
+{
+  userJID=new JID(ExternalizableUtil.getInstance().readSafeUTF(in));
+  isDefault=ExternalizableUtil.getInstance().readBoolean(in);
+  String xml=ExternalizableUtil.getInstance().readSafeUTF(in);
+  try {
+    Element element=localParser.get().read(new StringReader(xml)).getRootElement();
+    updateList(element,false);
+  }
+ catch (  Exception e) {
+    Log.error("Error while parsing Privacy Property",e);
+  }
+}
