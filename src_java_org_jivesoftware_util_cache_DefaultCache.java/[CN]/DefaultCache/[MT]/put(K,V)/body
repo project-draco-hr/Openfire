@@ -1,0 +1,18 @@
+{
+  V answer=remove(key);
+  int objectSize=calculateSize(value);
+  if (maxCacheSize > 0 && objectSize > maxCacheSize * .90) {
+    Log.warn("Cache: " + name + " -- object with key "+ key+ " is too large to fit in cache. Size is "+ objectSize);
+    return value;
+  }
+  cacheSize+=objectSize;
+  DefaultCache.CacheObject<V> cacheObject=new DefaultCache.CacheObject<V>(value,objectSize);
+  map.put(key,cacheObject);
+  LinkedListNode lastAccessedNode=lastAccessedList.addFirst(key);
+  cacheObject.lastAccessedListNode=lastAccessedNode;
+  LinkedListNode ageNode=ageList.addFirst(key);
+  ageNode.timestamp=System.currentTimeMillis();
+  cacheObject.ageListNode=ageNode;
+  cullCache();
+  return answer;
+}

@@ -1,0 +1,8 @@
+{
+synchronized (CacheFactory.class) {
+    if (!clusteringEnabled) {
+      return Collections.emptyList();
+    }
+  }
+  return cacheFactoryStrategy.doSynchronousClusterTask(buildClusterTask(task),includeLocalMember);
+}

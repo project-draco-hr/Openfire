@@ -1,0 +1,11 @@
+{
+  if (!clusteringEnabled) {
+    return;
+  }
+synchronized (CacheFactory.class) {
+    if (!clusteringEnabled) {
+      return;
+    }
+  }
+  cacheFactoryStrategy.doClusterTask(buildClusterTask(task));
+}

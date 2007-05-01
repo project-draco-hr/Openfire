@@ -1,0 +1,10 @@
+{
+  Cache<K,V> cache=caches.get(name);
+  if (cache == null) {
+    size=JiveGlobals.getIntProperty("cache." + propertiesName + ".size",size);
+    expirationTime=(long)JiveGlobals.getIntProperty("cache." + propertiesName + ".expirationTime",(int)expirationTime);
+    cache=new DefaultCache<K,V>(name,size,expirationTime);
+    caches.put(name,cache);
+  }
+  return cache;
+}

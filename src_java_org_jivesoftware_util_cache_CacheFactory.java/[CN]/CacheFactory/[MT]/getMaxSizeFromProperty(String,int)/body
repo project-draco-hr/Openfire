@@ -1,0 +1,16 @@
+{
+  String propName="cache." + cacheName.replaceAll(" ","") + ".size";
+  String sizeProp=JiveGlobals.getProperty(propName);
+  if (sizeProp != null) {
+    try {
+      return Integer.parseInt(sizeProp);
+    }
+ catch (    NumberFormatException nfe) {
+      Log.warn("Unable to parse " + propName + " using default value of "+ defaultSize);
+      return defaultSize;
+    }
+  }
+ else {
+    return defaultSize;
+  }
+}

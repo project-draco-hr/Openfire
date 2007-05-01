@@ -1,0 +1,18 @@
+{
+  clusteringEnabled=false;
+  try {
+    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass).newInstance();
+    boolean clusterStarted=cacheFactoryStrategy.startCluster();
+    if (clusterStarted) {
+      for (      String cacheName : caches.keySet()) {
+        CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
+        wrapper.setWrappedCache(cacheFactoryStrategy.createCache(cacheName));
+      }
+      clusteringEnabled=true;
+      fireClusteringStarted();
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Unable to start clustering - continuing in local mode",e);
+  }
+}

@@ -1,0 +1,13 @@
+{
+  DefaultCache.CacheObject<V> cacheObject=map.get(key);
+  if (cacheObject == null) {
+    return null;
+  }
+  map.remove(key);
+  cacheObject.lastAccessedListNode.remove();
+  cacheObject.ageListNode.remove();
+  cacheObject.ageListNode=null;
+  cacheObject.lastAccessedListNode=null;
+  cacheSize-=cacheObject.size;
+  return cacheObject.object;
+}
