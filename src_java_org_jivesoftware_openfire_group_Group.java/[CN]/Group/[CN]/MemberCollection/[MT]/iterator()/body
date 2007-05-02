@@ -1,11 +1,11 @@
 {
-  return new Iterator(){
+  return new Iterator<JID>(){
     Iterator<JID> iter=users.iterator();
-    Object current=null;
+    JID current=null;
     public boolean hasNext(){
       return iter.hasNext();
     }
-    public Object next(){
+    public JID next(){
       current=iter.next();
       return current;
     }
@@ -16,7 +16,7 @@
       if (provider.isReadOnly()) {
         return;
       }
-      JID user=(JID)current;
+      JID user=current;
       iter.remove();
       provider.deleteMember(name,user);
       if (adminCollection) {
