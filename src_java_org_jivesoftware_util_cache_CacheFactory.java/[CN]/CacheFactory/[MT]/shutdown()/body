@@ -1,4 +1,10 @@
 {
-  Log.debug("Shutting down clustered cache service.");
-  stopClustering();
+  if (!clusteringEnabled) {
+    return;
+  }
+  String enabled=JiveGlobals.getXMLProperty(CLUSTER_PROPERTY_NAME);
+  if (Boolean.valueOf(enabled)) {
+    Log.debug("Shutting down clustered cache service.");
+    stopClustering();
+  }
 }
