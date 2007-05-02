@@ -1,9 +1,10 @@
 {
-  if (activeList != null) {
-    return !activeList.shouldBlockPacket(packet);
+  PrivacyList list=getActiveList();
+  if (list != null) {
+    return !list.shouldBlockPacket(packet);
   }
- else   if (defaultList != null) {
-    return !defaultList.shouldBlockPacket(packet);
+ else {
+    list=getDefaultList();
+    return list == null || !list.shouldBlockPacket(packet);
   }
-  return true;
 }

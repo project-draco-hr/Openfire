@@ -1,3 +1,11 @@
 {
-  return activeList;
+  if (activeList != null) {
+    try {
+      return PrivacyListManager.getInstance().getPrivacyList(getUsername(),activeList);
+    }
+ catch (    UserNotFoundException e) {
+      Log.error(e);
+    }
+  }
+  return null;
 }
