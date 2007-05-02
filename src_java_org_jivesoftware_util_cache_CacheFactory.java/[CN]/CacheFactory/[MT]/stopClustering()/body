@@ -1,0 +1,16 @@
+{
+  try {
+    CacheFactoryStrategy clusteredFactory=cacheFactoryStrategy;
+    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
+    for (    String cacheName : caches.keySet()) {
+      CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
+      wrapper.setWrappedCache(cacheFactoryStrategy.createCache(cacheName));
+    }
+    clusteringEnabled=false;
+    clusteredFactory.stopCluster();
+    fireClusteringStopped();
+  }
+ catch (  Exception e) {
+    Log.error("Unable to stop clustering - continuing in clustered mode",e);
+  }
+}

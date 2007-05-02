@@ -9,6 +9,14 @@
   Thread t=new Thread("Cache Stats"){
     private volatile boolean destroyed=false;
     public void run(){
+      XMPPServer.getInstance().addServerListener(new XMPPServerListener(){
+        public void serverStarted(){
+        }
+        public void serverStopping(){
+          destroyed=true;
+        }
+      }
+);
       while (!destroyed) {
         try {
           cacheFactoryStrategy.updateCacheStats(caches);

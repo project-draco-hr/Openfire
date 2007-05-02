@@ -4,17 +4,10 @@
   }
   JiveGlobals.setXMLProperty(CLUSTER_PROPERTY_NAME,String.valueOf(enabled));
   if (!enabled) {
-    clusteringEnabled=false;
-    CacheFactoryStrategy clusteredFactory=cacheFactoryStrategy;
-    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
-    for (    String cacheName : caches.keySet()) {
-      CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
-      wrapper.setWrappedCache(cacheFactoryStrategy.createCache(cacheName));
-    }
-    clusteredFactory.stopCluster();
-    fireClusteringStopped();
+    stopClustering();
   }
  else {
+    JiveProperties.getInstance().init();
     startClustering();
   }
 }

@@ -1,6 +1,6 @@
 {
-  groupCache=CacheManager.initializeCache("Group","group",1024 * 1024,JiveConstants.MINUTE * 15);
-  groupMetaCache=CacheManager.initializeCache("Group Metadata Cache","groupMeta",512 * 1024,JiveConstants.MINUTE * 15);
+  groupCache=CacheFactory.createCache("Group");
+  groupMetaCache=CacheFactory.createCache("Group Metadata Cache");
   String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.openfire.group.DefaultGroupProvider");
   try {
     Class c=ClassUtils.forName(className);
