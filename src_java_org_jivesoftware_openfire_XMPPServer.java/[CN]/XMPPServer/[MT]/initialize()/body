@@ -9,5 +9,12 @@
     Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
   }
   loader=Thread.currentThread().getContextClassLoader();
+  try {
+    CacheFactory.initialize();
+  }
+ catch (  InitializationException e) {
+    e.printStackTrace();
+    Log.error(e);
+  }
   initialized=true;
 }
