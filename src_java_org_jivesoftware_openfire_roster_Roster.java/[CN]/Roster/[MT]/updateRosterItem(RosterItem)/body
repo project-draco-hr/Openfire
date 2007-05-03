@@ -1,6 +1,7 @@
 {
   if (implicitFrom.remove(item.getJid().toBareJID()) != null) {
     rosterItems.put(item.getJid().toBareJID(),item);
+    RosterEventDispatcher.contactUpdated(this,item);
   }
   if (rosterItems.putIfAbsent(item.getJid().toBareJID(),item) == null) {
     rosterItems.remove(item.getJid().toBareJID());

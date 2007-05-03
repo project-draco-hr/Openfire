@@ -33,7 +33,9 @@
     return item;
   }
  else {
-    if (implicitFrom.remove(user.toBareJID()) != null) {
+    RosterItem item=getImplicitRosterItem(user);
+    if (item != null) {
+      implicitFrom.remove(user.toBareJID());
       if (!server.isLocal(user)) {
         Presence presence=new Presence();
         presence.setFrom(server.createJID(username,null));
@@ -41,6 +43,7 @@
         presence.setType(Presence.Type.unsubscribed);
         server.getPacketRouter().route(presence);
       }
+      RosterEventDispatcher.contactDeleted(this,item);
     }
   }
   return null;
