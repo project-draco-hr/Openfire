@@ -1,7 +1,8 @@
 {
   super.initialize(server);
   sessionManager=server.getSessionManager();
-  mediaProxy=new MediaProxy(server.getServerInfo().getName());
+  String ipAddress=JiveGlobals.getProperty("mediaproxy.externalip",server.getServerInfo().getName());
+  mediaProxy=new MediaProxy(ipAddress);
   String defaultName="rtpbridge";
   serviceName=JiveGlobals.getProperty("mediaproxy.serviceName",defaultName);
   serviceName=serviceName.equals("") ? defaultName : serviceName;
