@@ -1,7 +1,7 @@
 {
   clusteringEnabled=false;
   try {
-    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass).newInstance();
+    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
     boolean clusterStarted=cacheFactoryStrategy.startCluster();
     if (clusterStarted) {
       for (      String cacheName : caches.keySet()) {

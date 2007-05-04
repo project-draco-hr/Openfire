@@ -1,0 +1,12 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  Plugin enterprisePlugin=pluginManager.getPlugin(pluginName);
+  PluginClassLoader pluginLoader=pluginManager.getPluginClassloader(enterprisePlugin);
+  if (pluginLoader != null) {
+    return pluginLoader.getClassLoader();
+  }
+ else {
+    Log.warn("Unable to find PluginClassloader for plugin: " + pluginName + " in CacheFactory.");
+    return Thread.currentThread().getContextClassLoader();
+  }
+}
