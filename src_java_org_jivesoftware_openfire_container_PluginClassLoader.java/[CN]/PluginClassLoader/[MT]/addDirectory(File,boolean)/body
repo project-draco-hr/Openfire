@@ -2,19 +2,19 @@
   try {
     File classesDir=new File(directory,"classes");
     if (classesDir.exists()) {
-      list.add(classesDir.toURL());
+      addURL(classesDir.toURL());
     }
     File databaseDir=new File(directory,"database");
     if (databaseDir.exists()) {
-      list.add(databaseDir.toURL());
+      addURL(databaseDir.toURL());
     }
     File i18nDir=new File(directory,"i18n");
     if (i18nDir.exists()) {
-      list.add(i18nDir.toURL());
+      addURL(i18nDir.toURL());
     }
     File webDir=new File(directory,"web");
     if (webDir.exists()) {
-      list.add(webDir.toURL());
+      addURL(webDir.toURL());
     }
     File libDir=new File(directory,"lib");
     File[] jars=libDir.listFiles(new FilenameFilter(){
@@ -28,11 +28,11 @@
         if (jars[i] != null && jars[i].isFile()) {
           if (developmentMode) {
             if (!jars[i].getName().equals("plugin-" + directory.getName() + ".jar")) {
-              list.add(jars[i].toURL());
+              addURL(jars[i].toURL());
             }
           }
  else {
-            list.add(jars[i].toURL());
+            addURL(jars[i].toURL());
           }
         }
       }

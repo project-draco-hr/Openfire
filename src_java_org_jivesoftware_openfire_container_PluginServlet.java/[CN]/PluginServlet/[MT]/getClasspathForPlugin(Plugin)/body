@@ -3,9 +3,7 @@
   File pluginDirectory=pluginManager.getPluginDirectory(plugin);
   PluginDevEnvironment pluginEnv=pluginManager.getDevEnvironment(plugin);
   PluginClassLoader pluginClassloader=pluginManager.getPluginClassloader(plugin);
-  Collection col=pluginClassloader.getURLS();
-  for (  Object aCol : col) {
-    URL url=(URL)aCol;
+  for (  URL url : pluginClassloader.getURLs()) {
     File file=new File(url.getFile());
     classpath.append(file.getAbsolutePath()).append(";");
   }

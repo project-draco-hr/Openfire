@@ -94,11 +94,10 @@
           }
           if (classes.exists()) {
             dev.setClassesDir(classes);
-            pluginLoader.addURL(classes.getAbsoluteFile().toURL());
+            pluginLoader.addURLFile(classes.getAbsoluteFile().toURL());
           }
         }
       }
-      pluginLoader.initialize();
       String className=pluginXML.selectSingleNode("/plugin/class").getText();
       plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
       if (parentPluginNode != null) {
