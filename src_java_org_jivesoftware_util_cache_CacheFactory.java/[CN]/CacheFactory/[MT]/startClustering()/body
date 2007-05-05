@@ -11,6 +11,9 @@
       clusteringEnabled=true;
       fireClusteringStarted();
     }
+ else {
+      cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
+    }
   }
  catch (  Exception e) {
     Log.error("Unable to start clustering - continuing in local mode",e);
