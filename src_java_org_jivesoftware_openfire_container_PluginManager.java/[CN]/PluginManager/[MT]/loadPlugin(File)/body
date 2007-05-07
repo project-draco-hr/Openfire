@@ -137,7 +137,10 @@
       if (dev != null) {
         pluginDevelopment.put(plugin,dev);
       }
+      ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader(pluginLoader);
       plugin.initializePlugin(this,pluginDir);
+      Thread.currentThread().setContextClassLoader(oldLoader);
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
         Element appName=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/appname");
