@@ -68,12 +68,7 @@ m.setTo(getMainSession().getJID());
 m.setFrom(getMainSession().getTransport().getJID());
 m.setBody(errormsg);
 getMainSession().getTransport().sendPacket(m);
-Presence p=new Presence();
-p.setTo(getMainSession().getJID());
-p.setFrom(getMainSession().getTransport().getJID());
-p.setType(Presence.Type.unavailable);
-getMainSession().getTransport().sendPacket(p);
-getMainSession().setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+getMainSession().sessionDisconnectedNoReconnect();
 }
  else {
 Log.debug("Got something else?");

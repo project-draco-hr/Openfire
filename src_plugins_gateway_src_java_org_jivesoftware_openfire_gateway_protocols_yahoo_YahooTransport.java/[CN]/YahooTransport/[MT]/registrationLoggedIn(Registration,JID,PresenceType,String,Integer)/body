@@ -1,7 +1,6 @@
 {
-  Log.debug("Logging in to Yahoo gateway.");
   TransportSession session=new YahooSession(registration,jid,this,priority);
-  this.getSessionManager().startThread(session);
-  ((YahooSession)session).logIn(presenceType,verboseStatus);
+  session.setLoginStatus(TransportLoginStatus.LOGGING_IN);
+  session.logIn(presenceType,verboseStatus);
   return session;
 }

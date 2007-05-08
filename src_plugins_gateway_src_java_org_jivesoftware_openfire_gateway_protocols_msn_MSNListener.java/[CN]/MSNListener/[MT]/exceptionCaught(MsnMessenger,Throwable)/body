@@ -2,7 +2,8 @@
   Log.debug("MSN: Exception occurred for " + messenger.getOwner().getEmail() + " : "+ throwable);
   if (throwable.getClass().getName().equals("net.sf.jml.exception.IncorrectPasswordException")) {
     msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.passwordincorrect","gateway"),Message.Type.error);
-    msnSession.logOut();
+    msnSession.setLoginStatus(TransportLoginStatus.DISCONNECTED);
+    msnSession.sessionDisconnectedNoReconnect();
   }
  else   if (throwable.getClass().getName().equals("net.sf.jml.exception.MsnProtocolException")) {
     Log.debug("MSN: Protocol exception: " + throwable.toString());
@@ -19,7 +20,8 @@
  else   if (throwable.getClass().getName().equals("java.io.IOException")) {
     Log.debug("MSN: IO error: " + throwable.toString());
     msnSession.getTransport().sendMessage(msnSession.getJIDWithHighestPriority(),msnSession.getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.disconnect","gateway"),Message.Type.error);
-    msnSession.logOut();
+    msnSession.setLoginStatus(TransportLoginStatus.DISCONNECTED);
+    msnSession.sessionDisconnected();
   }
  else {
     Log.debug("MSN: Unknown error: " + throwable.toString());

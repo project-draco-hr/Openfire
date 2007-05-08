@@ -1,14 +1,6 @@
 {
-  if (this.isLoggedIn()) {
-    setLoginStatus(TransportLoginStatus.LOGGING_OUT);
-    conn.removeConnectionListener(listener);
-    conn.getRoster().removeRosterListener(listener);
-    conn.getChatManager().removeChatListener(listener);
-    conn.disconnect();
+  if (isLoggedIn()) {
+    cleanUp();
+    sessionDisconnectedNoReconnect();
   }
-  Presence p=new Presence(Presence.Type.unavailable);
-  p.setTo(getJID());
-  p.setFrom(getTransport().getJID());
-  getTransport().sendPacket(p);
-  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
 }

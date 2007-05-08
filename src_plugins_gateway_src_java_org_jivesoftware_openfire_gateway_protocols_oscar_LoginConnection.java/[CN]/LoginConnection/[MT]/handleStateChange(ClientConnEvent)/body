@@ -10,8 +10,8 @@
     m.setFrom(this.getMainSession().getTransport().getJID());
     m.setTo(this.getMainSession().getJIDWithHighestPriority());
     m.setBody(LocaleUtils.getLocalizedString("gateway.oscar.connectionfailed","gateway") + " " + e.getReason());
-    this.getMainSession().getTransport().sendPacket(m);
-    this.getMainSession().logOut();
+    getMainSession().getTransport().sendPacket(m);
+    getMainSession().sessionDisconnected();
   }
  else   if (e.getNewState() == ClientFlapConn.STATE_NOT_CONNECTED) {
   }

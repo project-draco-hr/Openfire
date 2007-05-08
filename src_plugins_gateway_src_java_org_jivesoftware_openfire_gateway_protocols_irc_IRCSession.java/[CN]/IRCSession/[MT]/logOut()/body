@@ -1,6 +1,7 @@
 {
-  setLoginStatus(TransportLoginStatus.LOGGING_OUT);
-  ircListener.setSilenced(true);
-  conn.doQuit();
-  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+  if (isLoggedIn()) {
+    ircListener.setSilenced(true);
+    conn.doQuit();
+    sessionDisconnectedNoReconnect();
+  }
 }

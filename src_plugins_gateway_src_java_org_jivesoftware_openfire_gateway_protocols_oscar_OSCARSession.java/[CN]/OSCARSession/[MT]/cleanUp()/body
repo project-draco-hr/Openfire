@@ -1,0 +1,27 @@
+{
+  if (loginConn != null) {
+    loginConn.disconnect();
+    loginConn=null;
+  }
+  if (bosConn != null) {
+    bosConn.disconnect();
+    bosConn=null;
+  }
+  for (  ServiceConnection conn : getServiceConnections()) {
+    try {
+      conn.disconnect();
+    }
+ catch (    Exception e) {
+    }
+    try {
+      services.remove(conn);
+    }
+ catch (    Exception e) {
+    }
+    try {
+      snacMgr.unregister(conn);
+    }
+ catch (    Exception e) {
+    }
+  }
+}

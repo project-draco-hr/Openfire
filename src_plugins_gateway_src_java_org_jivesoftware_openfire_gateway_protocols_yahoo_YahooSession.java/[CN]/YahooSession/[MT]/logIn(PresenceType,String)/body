@@ -2,12 +2,10 @@
   this.presenceType=presenceType;
   this.verboseStatus=verboseStatus;
   final PresenceType pType=presenceType;
-  if (!isLoggedIn() && getLoginStatus() != TransportLoginStatus.LOGGING_IN && loginAttempts <= 3) {
-    setLoginStatus(TransportLoginStatus.LOGGING_IN);
+  if (!isLoggedIn()) {
     new Thread(){
       public void run(){
         try {
-          loginAttempts++;
           yahooSession.setStatus(Status.AVAILABLE);
           yahooSession.login(registration.getUsername(),registration.getPassword());
           setLoginStatus(TransportLoginStatus.LOGGED_IN);

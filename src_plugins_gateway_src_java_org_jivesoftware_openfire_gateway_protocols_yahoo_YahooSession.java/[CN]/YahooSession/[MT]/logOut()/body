@@ -1,15 +1,6 @@
 {
-  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
-  loginAttempts=0;
-  try {
-    yahooSession.logout();
+  if (isLoggedIn()) {
+    cleanUp();
+    sessionDisconnectedNoReconnect();
   }
- catch (  IOException e) {
-    Log.debug("Failed to log out from Yahoo.");
-  }
-  yahooSession.reset();
-  Presence p=new Presence(Presence.Type.unavailable);
-  p.setTo(getJID());
-  p.setFrom(getTransport().getJID());
-  getTransport().sendPacket(p);
 }

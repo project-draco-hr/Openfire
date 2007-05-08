@@ -1,11 +1,8 @@
 {
-  if (this.isLoggedIn()) {
-    setLoginStatus(TransportLoginStatus.LOGGING_OUT);
-    msnMessenger.logout();
+  Log.debug("Logging out of MSN");
+  if (isLoggedIn()) {
+    Log.debug("No really.");
+    cleanUp();
+    sessionDisconnectedNoReconnect();
   }
-  Presence p=new Presence(Presence.Type.unavailable);
-  p.setTo(getJID());
-  p.setFrom(getTransport().getJID());
-  getTransport().sendPacket(p);
-  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
 }

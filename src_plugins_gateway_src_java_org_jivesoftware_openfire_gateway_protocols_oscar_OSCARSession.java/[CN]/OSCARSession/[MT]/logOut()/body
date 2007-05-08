@@ -1,35 +1,6 @@
 {
   if (isLoggedIn()) {
-    setLoginStatus(TransportLoginStatus.LOGGING_OUT);
-    if (loginConn != null) {
-      loginConn.disconnect();
-      loginConn=null;
-    }
-    if (bosConn != null) {
-      bosConn.disconnect();
-      bosConn=null;
-    }
-    for (    ServiceConnection conn : getServiceConnections()) {
-      try {
-        conn.disconnect();
-      }
- catch (      Exception e) {
-      }
-      try {
-        services.remove(conn);
-      }
- catch (      Exception e) {
-      }
-      try {
-        snacMgr.unregister(conn);
-      }
- catch (      Exception e) {
-      }
-    }
-    Presence p=new Presence(Presence.Type.unavailable);
-    p.setTo(getJID());
-    p.setFrom(getTransport().getJID());
-    getTransport().sendPacket(p);
-    setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+    cleanUp();
+    sessionDisconnectedNoReconnect();
   }
 }
