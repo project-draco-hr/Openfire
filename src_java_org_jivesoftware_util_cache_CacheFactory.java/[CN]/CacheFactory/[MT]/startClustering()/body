@@ -1,8 +1,9 @@
 {
   clusteringEnabled=false;
+  boolean clusterStarted=false;
   try {
     cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
-    boolean clusterStarted=cacheFactoryStrategy.startCluster();
+    clusterStarted=cacheFactoryStrategy.startCluster();
     if (clusterStarted) {
       for (      String cacheName : caches.keySet()) {
         CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
@@ -11,11 +12,16 @@
       clusteringEnabled=true;
       fireClusteringStarted();
     }
- else {
-      cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
-    }
   }
  catch (  Exception e) {
     Log.error("Unable to start clustering - continuing in local mode",e);
+  }
+  if (!clusterStarted) {
+    try {
+      cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Fatal error - Failed to join the cluster and failed to use local cache",e);
+    }
   }
 }
