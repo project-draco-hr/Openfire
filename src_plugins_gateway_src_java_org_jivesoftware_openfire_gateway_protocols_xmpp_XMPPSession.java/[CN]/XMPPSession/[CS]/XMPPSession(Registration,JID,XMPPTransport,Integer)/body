@@ -1,9 +1,0 @@
-{
-  super(registration,jid,transport,priority);
-  acctjid=new JID(registration.getUsername());
-  Log.debug("Creating " + getTransport().getType() + " session for "+ registration.getUsername());
-  config=new ConnectionConfiguration(JiveGlobals.getProperty("plugin.gateway." + getTransport().getType() + ".connecthost",(getTransport().getType().equals(TransportType.gtalk) ? "talk.google.com" : "jabber.org")),JiveGlobals.getIntProperty("plugin.gateway." + getTransport().getType() + ".connectport",5222),acctjid.getDomain());
-  config.setCompressionEnabled(false);
-  config.setReconnectionAllowed(false);
-  listener=new XMPPListener(this);
-}
