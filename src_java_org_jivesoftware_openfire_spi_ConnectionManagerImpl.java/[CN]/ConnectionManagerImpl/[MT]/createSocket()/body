@@ -1,5 +1,16 @@
 {
-  if (!isStarted || isSocketStarted || sessionManager == null || deliverer == null || router == null || serverName == null) {
+  if (isSocketStarted || sessionManager == null || deliverer == null || router == null || serverName == null) {
+    return;
+  }
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  if (!pluginManager.isExecuted()) {
+    pluginManager.addPluginManagerListener(new PluginManagerListener(){
+      public void pluginsMonitored(){
+        XMPPServer.getInstance().getPluginManager().removePluginManagerListener(this);
+        createSocket();
+      }
+    }
+);
     return;
   }
   isSocketStarted=true;

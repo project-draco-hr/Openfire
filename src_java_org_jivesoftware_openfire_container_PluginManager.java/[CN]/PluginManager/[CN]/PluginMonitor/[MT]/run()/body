@@ -31,6 +31,7 @@ synchronized (this) {
     for (    File jarFile : jars) {
       String pluginName=jarFile.getName().substring(0,jarFile.getName().length() - 4).toLowerCase();
       File dir=new File(pluginDirectory,pluginName);
+      pluginFiles.put(pluginName,jarFile);
       if (!dir.exists()) {
         unzipPlugin(pluginName,jarFile,dir);
       }
@@ -102,6 +103,10 @@ synchronized (this) {
         loadPlugin(dirFile);
       }
     }
+    if (!XMPPServer.getInstance().isSetupMode()) {
+      executed=true;
+    }
+    firePluginsMonitored();
   }
  catch (  Throwable e) {
     Log.error(e);
