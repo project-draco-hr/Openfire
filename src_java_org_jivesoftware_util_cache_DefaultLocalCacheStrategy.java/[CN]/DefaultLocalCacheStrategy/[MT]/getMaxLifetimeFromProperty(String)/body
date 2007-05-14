@@ -6,11 +6,9 @@
       return Long.parseLong(lifetimeProp);
     }
  catch (    NumberFormatException nfe) {
-      Log.warn("Unable to parse " + propName + " using default value of "+ defaultLifetime);
-      return defaultLifetime;
+      Log.warn("Unable to parse " + propName + " using default value.");
     }
   }
- else {
-    return defaultLifetime;
-  }
+  Long defaultLifetime=cacheProps.get(propName);
+  return defaultLifetime == null ? DEFAULT_MAX_CACHE_LIFETIME : defaultLifetime;
 }

@@ -6,11 +6,9 @@
       return Integer.parseInt(sizeProp);
     }
  catch (    NumberFormatException nfe) {
-      Log.warn("Unable to parse " + propName + " using default value of "+ defaultSize);
-      return defaultSize;
+      Log.warn("Unable to parse " + propName + " using default value.");
     }
   }
- else {
-    return defaultSize;
-  }
+  Long defaultSize=cacheProps.get(propName);
+  return defaultSize == null ? DEFAULT_MAX_CACHE_SIZE : defaultSize;
 }
