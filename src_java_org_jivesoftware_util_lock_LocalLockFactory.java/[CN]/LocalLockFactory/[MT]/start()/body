@@ -1,0 +1,13 @@
+{
+  maintenanceTask=new TimerTask(){
+    public void run(){
+      for (      Map.Entry<Object,WeakReference<Lock>> entry : locks.entrySet()) {
+        if (entry.getValue().get() == null) {
+          locks.remove(entry.getKey());
+        }
+      }
+    }
+  }
+;
+  TaskEngine.getInstance().scheduleAtFixedRate(maintenanceTask,30000,60000);
+}
