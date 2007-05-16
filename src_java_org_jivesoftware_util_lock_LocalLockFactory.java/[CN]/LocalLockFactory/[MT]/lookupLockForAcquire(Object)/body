@@ -1,0 +1,15 @@
+{
+  ReentrantLock lock=locks.get(key);
+  if (lock == null) {
+    lock=new ReentrantLock();
+    locks.put(key,lock);
+  }
+  Integer count=counts.get(key);
+  if (count == null) {
+    counts.put(key,1);
+  }
+ else {
+    counts.put(key,++count);
+  }
+  return lock;
+}

@@ -1,18 +1,7 @@
 {
-  WeakReference<Lock> lockRef;
-  Lock lock;
   Object lockKey=key;
   if (key instanceof String) {
     lockKey=((String)key).intern();
   }
-synchronized (lockKey) {
-    lockRef=locks.get(key);
-    lock=lockRef != null ? lockRef.get() : null;
-    if (lockRef == null || lock == null) {
-      lock=new ReentrantLock(true);
-      lockRef=new WeakReference<Lock>(lock);
-      locks.put(key,lockRef);
-    }
-  }
-  return lock;
+  return new LocalLock(lockKey);
 }
