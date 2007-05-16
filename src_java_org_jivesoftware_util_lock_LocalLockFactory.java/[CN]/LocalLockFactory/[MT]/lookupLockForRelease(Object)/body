@@ -1,17 +1,15 @@
 {
-  ReentrantLock lock=locks.get(key);
-  if (lock == null) {
-    throw new IllegalStateException("No lock found for object " + key);
-  }
-  Integer count=counts.get(key);
-  if (count == null) {
-    throw new IllegalStateException("No count found for object " + key);
-  }
-  if (count == 1) {
-    counts.remove(key);
-  }
+synchronized (key) {
+    LockAndCount lac=locks.get(key);
+    if (lac == null) {
+      throw new IllegalStateException("No lock found for object " + key);
+    }
+    if (lac.count <= 1) {
+      locks.remove(key);
+    }
  else {
-    counts.put(key,--count);
+      lac.count--;
+    }
+    return lac.lock;
   }
-  return lock;
 }

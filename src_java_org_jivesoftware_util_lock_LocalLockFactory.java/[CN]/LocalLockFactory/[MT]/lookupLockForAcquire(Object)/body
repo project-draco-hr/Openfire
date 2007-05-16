@@ -1,15 +1,14 @@
 {
-  ReentrantLock lock=locks.get(key);
-  if (lock == null) {
-    lock=new ReentrantLock();
-    locks.put(key,lock);
-  }
-  Integer count=counts.get(key);
-  if (count == null) {
-    counts.put(key,1);
-  }
+synchronized (key) {
+    LockAndCount lac=locks.get(key);
+    if (lac == null) {
+      lac=new LockAndCount(new ReentrantLock());
+      lac.count=1;
+      locks.put(key,lac);
+    }
  else {
-    counts.put(key,++count);
+      lac.count++;
+    }
+    return lac.lock;
   }
-  return lock;
 }
