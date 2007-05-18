@@ -2,10 +2,12 @@
 synchronized (this) {
     if (worker != null && worker.isAlive())     throw new RuntimeException("Stat collecting already started");
     polledSessions=new ConcurrentLinkedQueue<IoSession>();
-    for (Iterator iter=service.getManagedServiceAddresses().iterator(); iter.hasNext(); ) {
-      SocketAddress element=(SocketAddress)iter.next();
-      for (Iterator iter2=service.getManagedSessions(element).iterator(); iter2.hasNext(); ) {
-        addSession((IoSession)iter2.next());
+    Set<SocketAddress> addresses=service.getManagedServiceAddresses();
+    if (addresses != null) {
+      for (      SocketAddress element : addresses) {
+        for (        IoSession ioSession : service.getManagedSessions(element)) {
+          addSession(ioSession);
+        }
       }
     }
     service.addListener(serviceListener);
