@@ -32,6 +32,7 @@
             connection.deliverRawText("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
             Element answer=reader.parseDocument().getRootElement();
             if ("compressed".equals(answer.getName())) {
+              connection.addCompression();
               connection.startCompression();
               Log.debug("OS - Stream compression was successful with " + hostname);
               connection.deliverRawText(openingStream.toString());
