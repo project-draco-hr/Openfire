@@ -2,23 +2,10 @@
   try {
     JID recipient=packet.getTo();
     if (server.matchesComponent(recipient) || server.isRemote(recipient)) {
-      ChannelHandler route=routingTable.getRoute(recipient);
-      if (route != null) {
-        route.process(packet);
-      }
- else {
-        handleUnprocessedPacket(packet);
-      }
-      return;
+      routingTable.routePacket(recipient,packet);
     }
     if (recipient == null || (recipient.getNode() == null && recipient.getResource() == null)) {
-      ClientSession senderSession=sessionManager.getSession(packet.getFrom());
-      if (senderSession != null) {
-        senderSession.process(packet);
-      }
- else {
-        dropPacket(packet);
-      }
+      routingTable.routePacket(packet.getFrom(),packet);
     }
  else {
       Session session=sessionManager.getBestRoute(recipient);

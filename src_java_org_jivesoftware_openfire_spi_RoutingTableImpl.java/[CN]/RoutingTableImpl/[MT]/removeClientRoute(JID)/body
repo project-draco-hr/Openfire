@@ -1,0 +1,35 @@
+{
+  boolean anonymous=false;
+  String address=route.toString();
+  ClientRoute clientRoute=usersCache.remove(address);
+  if (clientRoute == null) {
+    clientRoute=anonymousUsersCache.remove(address);
+    anonymous=true;
+  }
+  if (clientRoute != null && route.getResource() != null) {
+    Lock lock=LockManager.getLock(route.toBareJID());
+    try {
+      lock.lock();
+      if (anonymous) {
+        usersSessions.remove(route.toBareJID());
+      }
+ else {
+        List<String> jids=usersSessions.get(route.toBareJID());
+        if (jids != null) {
+          jids.remove(route.toString());
+          if (!jids.isEmpty()) {
+            usersSessions.put(route.toBareJID(),jids);
+          }
+ else {
+            usersSessions.remove(route.toBareJID());
+          }
+        }
+      }
+    }
+  finally {
+      lock.unlock();
+    }
+  }
+  localRoutingTable.removeRoute(address);
+  return clientRoute != null;
+}

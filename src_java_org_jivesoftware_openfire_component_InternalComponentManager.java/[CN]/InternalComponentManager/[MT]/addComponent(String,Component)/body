@@ -6,7 +6,7 @@
   Log.debug("Registering component for domain: " + subdomain);
   components.put(subdomain,component);
   JID componentJID=new JID(subdomain + "." + serverDomain);
-  XMPPServer.getInstance().getRoutingTable().addRoute(componentJID,new RoutableComponent(componentJID,component));
+  XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,new RoutableComponent(componentJID,component));
   try {
     component.initialize(componentJID,this);
     component.start();
@@ -19,7 +19,7 @@
   }
  catch (  Exception e) {
     components.remove(subdomain);
-    XMPPServer.getInstance().getRoutingTable().removeRoute(componentJID);
+    XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
     if (e instanceof ComponentException) {
       throw (ComponentException)e;
     }

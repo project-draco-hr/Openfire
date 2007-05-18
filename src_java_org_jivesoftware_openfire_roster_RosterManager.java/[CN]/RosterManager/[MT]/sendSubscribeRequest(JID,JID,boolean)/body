@@ -9,10 +9,7 @@
     presence.setType(Presence.Type.unsubscribe);
   }
   try {
-    ChannelHandler handler=routingTable.getRoute(recipient);
-    if (handler != null) {
-      handler.process(presence);
-    }
+    routingTable.routePacket(recipient,presence);
   }
  catch (  UnauthorizedException e) {
   }

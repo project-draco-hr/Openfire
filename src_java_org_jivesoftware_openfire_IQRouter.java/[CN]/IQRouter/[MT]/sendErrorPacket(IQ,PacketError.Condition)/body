@@ -10,17 +10,9 @@
     handle(reply);
     return;
   }
-  ChannelHandler route=routingTable.getRoute(originalPacket.getFrom());
-  if (route != null) {
-    route.process(reply);
+  try {
+    routingTable.routePacket(reply.getTo(),reply);
   }
- else {
-    Session session=sessionManager.getSession(originalPacket.getFrom());
-    if (session != null) {
-      session.process(reply);
-    }
- else {
-      Log.warn("Error packet could not be delivered " + reply);
-    }
+ catch (  UnauthorizedException e) {
   }
 }

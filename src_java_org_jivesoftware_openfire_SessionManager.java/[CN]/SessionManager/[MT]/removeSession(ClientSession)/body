@@ -2,6 +2,7 @@
   if (session == null || serverName == null) {
     return false;
   }
+  routingTable.removeClientRoute(session.getAddress());
   boolean auth_removed=false;
   if (anonymousSessions.remove(session.getAddress().getResource()) != null) {
     SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
@@ -32,7 +33,7 @@ synchronized (username.intern()) {
   if (presence.isAvailable()) {
     Presence offline=new Presence();
     offline.setFrom(session.getAddress());
-    offline.setTo(new JID(null,serverName,null));
+    offline.setTo(new JID(null,serverName,null,true));
     offline.setType(Presence.Type.unavailable);
     router.route(offline);
   }

@@ -1,10 +1,11 @@
 {
   if (packet instanceof Message) {
-    messageStrategy.storeOffline((Message)packet);
+    messageRouter.routingFailed(packet);
   }
  else   if (packet instanceof Presence) {
+    presenceRouter.routingFailed(packet);
   }
  else {
-    dropPacket(packet);
+    iqRouter.routingFailed(packet);
   }
 }

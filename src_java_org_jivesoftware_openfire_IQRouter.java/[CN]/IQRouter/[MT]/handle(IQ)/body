@@ -21,9 +21,8 @@
   }
   try {
     if (recipientJID != null) {
-      RoutableChannelHandler serviceRoute=routingTable.getRoute(recipientJID);
-      if (serviceRoute != null && !(serviceRoute instanceof ClientSession)) {
-        serviceRoute.process(packet);
+      if (routingTable.hasComponentRoute(recipientJID) || routingTable.hasServerRoute(recipientJID)) {
+        routingTable.routePacket(recipientJID,packet);
         return;
       }
     }
@@ -66,32 +65,7 @@
       }
     }
  else {
-      boolean handlerFound=false;
-      if (XMPPServer.getInstance().isLocal(recipientJID)) {
-        ClientSession session=sessionManager.getSession(recipientJID);
-        if (session != null) {
-          if (session.canProcess(packet)) {
-            session.process(packet);
-            handlerFound=true;
-          }
-        }
- else {
-          Log.info("Packet sent to unreachable address " + packet);
-        }
-      }
- else {
-        ChannelHandler route=routingTable.getRoute(recipientJID);
-        if (route != null) {
-          route.process(packet);
-          handlerFound=true;
-        }
- else {
-          Log.info("Packet sent to unreachable address " + packet);
-        }
-      }
-      if (!handlerFound && IQ.Type.result != packet.getType() && IQ.Type.error != packet.getType()) {
-        sendErrorPacket(packet,PacketError.Condition.service_unavailable);
-      }
+      routingTable.routePacket(recipientJID,packet);
     }
   }
  catch (  Exception e) {

@@ -1,29 +1,29 @@
 {
   if (session.getAddress() != null && routingTable != null && session.getAddress().toBareJID().trim().length() != 0) {
-    routingTable.removeRoute(session.getAddress());
+    routingTable.addClientRoute(session.getAddress(),session);
     try {
       if (session.getUsername() == null) {
         return;
       }
       SessionMap sessionMap=sessions.get(session.getUsername());
       if (sessionMap == null) {
-        JID userJID=new JID(session.getUsername(),serverName,"");
-        if (routingTable.getRoute(userJID) != null) {
-          routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
+        JID userJID=new JID(session.getUsername(),serverName,"",true);
+        if (routingTable.hasClientRoute(userJID)) {
+          routingTable.removeClientRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),"",true));
         }
       }
  else       if (sessionMap.getAvailableSessions().isEmpty()) {
-        routingTable.removeRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),""));
+        routingTable.removeClientRoute(new JID(session.getAddress().getNode(),session.getAddress().getDomain(),"",true));
       }
  else {
         sessionMap.sessionUnavailable(session);
-        Session defaultSession=sessionMap.getDefaultSession(true);
-        JID jid=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),"");
+        ClientSession defaultSession=sessionMap.getDefaultSession(true);
+        JID jid=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),"",true);
         if (defaultSession != null) {
-          routingTable.addRoute(jid,defaultSession);
+          routingTable.addClientRoute(jid,defaultSession);
         }
  else {
-          routingTable.removeRoute(jid);
+          routingTable.removeClientRoute(jid);
         }
       }
     }

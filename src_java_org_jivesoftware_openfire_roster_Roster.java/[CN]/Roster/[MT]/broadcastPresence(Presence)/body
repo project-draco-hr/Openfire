@@ -20,10 +20,10 @@
       if (list != null && list.shouldBlockPacket(packet)) {
         continue;
       }
-      JID searchNode=new JID(item.getJid().getNode(),item.getJid().getDomain(),null);
-      for (      ChannelHandler session : routingTable.getRoutes(searchNode)) {
+      JID searchNode=new JID(item.getJid().getNode(),item.getJid().getDomain(),null,true);
+      for (      JID jid : routingTable.getRoutes(searchNode)) {
         try {
-          session.process(packet);
+          routingTable.routePacket(jid,packet);
         }
  catch (        Exception e) {
           Log.debug(e);
@@ -36,9 +36,9 @@
     if (list != null && list.shouldBlockPacket(packet)) {
       continue;
     }
-    for (    ChannelHandler session : routingTable.getRoutes(new JID(contact))) {
+    for (    JID jid : routingTable.getRoutes(new JID(contact))) {
       try {
-        session.process(packet);
+        routingTable.routePacket(jid,packet);
       }
  catch (      Exception e) {
         Log.debug(e);

@@ -1,0 +1,36 @@
+{
+  String address=destination.getAddress().toString();
+  boolean available=destination.getPresence().isAvailable();
+  localRoutingTable.addRoute(address,destination);
+  if (destination.getAuthToken().isAnonymous()) {
+    anonymousUsersCache.put(address,new ClientRoute(server.getNodeID(),available));
+    if (route.getResource() != null && !available) {
+      Lock lock=LockManager.getLock(route.toBareJID());
+      try {
+        lock.lock();
+        usersSessions.put(route.toBareJID(),Arrays.asList(route.toString()));
+      }
+  finally {
+        lock.unlock();
+      }
+    }
+  }
+ else {
+    usersCache.put(address,new ClientRoute(server.getNodeID(),available));
+    if (route.getResource() != null && !available) {
+      Lock lock=LockManager.getLock(route.toBareJID());
+      try {
+        lock.lock();
+        List<String> jids=usersSessions.get(route.toBareJID());
+        if (jids == null) {
+          jids=new ArrayList<String>();
+        }
+        jids.add(route.toString());
+        usersSessions.put(route.toBareJID(),jids);
+      }
+  finally {
+        lock.unlock();
+      }
+    }
+  }
+}

@@ -40,12 +40,12 @@
  catch (          UserNotFoundException e) {
           }
         }
-        List<ChannelHandler> handlers=routingTable.getRoutes(recipientJID);
-        if (!handlers.isEmpty()) {
-          for (          ChannelHandler handler : handlers) {
+        List<JID> jids=routingTable.getRoutes(recipientJID);
+        if (!jids.isEmpty()) {
+          for (          JID jid : jids) {
             Presence presenteToSend=presence.createCopy();
             presenteToSend.setFrom(senderJID.toBareJID());
-            handler.process(presenteToSend);
+            routingTable.routePacket(jid,presenteToSend);
           }
         }
  else {

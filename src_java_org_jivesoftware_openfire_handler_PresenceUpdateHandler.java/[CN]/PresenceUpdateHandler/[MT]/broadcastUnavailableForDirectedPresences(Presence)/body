@@ -3,18 +3,19 @@
     return;
   }
   if (localServer.isLocal(update.getFrom())) {
-    Map<ChannelHandler,Set<String>> map=directedPresences.remove(update.getFrom().toString());
+    Map<String,Set<String>> map=directedPresences.remove(update.getFrom().toString());
     if (map != null) {
-      for (      ChannelHandler handler : new HashSet<ChannelHandler>(map.keySet())) {
+      for (      String handler : new HashSet<String>(map.keySet())) {
+        JID handlerJID=new JID(handler);
         Set<String> jids=map.get(handler);
         if (jids == null) {
           continue;
         }
         for (        String jid : jids) {
           Presence presence=update.createCopy();
-          presence.setTo(new JID(jid));
+          presence.setTo(jid);
           try {
-            handler.process(presence);
+            routingTable.routePacket(handlerJID,presence);
           }
  catch (          UnauthorizedException ue) {
             Log.error(ue);

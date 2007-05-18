@@ -2,7 +2,7 @@
   if (sender.getNode() == null || !userManager.isRegisteredUser(sender.getNode())) {
     return;
   }
-  Session defaultSession;
+  ClientSession defaultSession;
   String username=sender.getNode();
   SessionMap resources=sessions.get(username);
   if (resources == null) {
@@ -12,10 +12,10 @@ synchronized (username.intern()) {
     resources.changePriority(sender,priority);
     defaultSession=resources.getDefaultSession(true);
   }
-  JID defaultAddress=new JID(sender.getNode(),sender.getDomain(),"");
+  JID defaultAddress=new JID(sender.getNode(),sender.getDomain(),"",true);
   if (defaultSession != null) {
-    boolean hadDefault=routingTable.getRoute(defaultAddress) != null;
-    routingTable.addRoute(defaultAddress,defaultSession);
+    boolean hadDefault=routingTable.hasClientRoute(defaultAddress);
+    routingTable.addClientRoute(defaultAddress,defaultSession);
     if (!hadDefault) {
       ClientSession session=resources.getSession(sender.getResource());
       if (session != null && session.canFloodOfflineMessages()) {
@@ -28,6 +28,6 @@ synchronized (username.intern()) {
     }
   }
  else {
-    routingTable.removeRoute(defaultAddress);
+    routingTable.removeClientRoute(defaultAddress);
   }
 }

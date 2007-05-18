@@ -18,9 +18,9 @@
           Log.warn("Rejected available presence: " + packet + " - "+ session);
           return;
         }
-        for (        ChannelHandler route : routingTable.getRoutes(recipientJID)) {
-          updateHandler.directedPresenceSent(packet,route,recipientJID.toString());
-          route.process(packet);
+        for (        JID jid : routingTable.getRoutes(recipientJID)) {
+          updateHandler.directedPresenceSent(packet,jid,recipientJID.toString());
+          routingTable.routePacket(jid,packet);
         }
       }
     }
@@ -29,20 +29,14 @@
     }
  else     if (Presence.Type.probe == type) {
       if (!XMPPServer.getInstance().isLocal(recipientJID)) {
-        ChannelHandler route=routingTable.getRoute(recipientJID);
-        if (route != null) {
-          route.process(packet);
-        }
+        routingTable.routePacket(recipientJID,packet);
       }
  else {
         presenceManager.handleProbe(packet);
       }
     }
  else {
-      ChannelHandler route=routingTable.getRoute(recipientJID);
-      if (route != null) {
-        route.process(packet);
-      }
+      routingTable.routePacket(recipientJID,packet);
     }
   }
  catch (  Exception e) {
