@@ -7,7 +7,7 @@
     pluginManager.addPluginManagerListener(new PluginManagerListener(){
       public void pluginsMonitored(){
         XMPPServer.getInstance().getPluginManager().removePluginManagerListener(this);
-        createSocket();
+        startListeners();
       }
     }
 );
@@ -22,9 +22,9 @@
       localIPAddress="Unknown";
     }
   }
-  startServerListener(localIPAddress);
+  startServerListener();
   startConnectionManagerListener(localIPAddress);
-  startComponentListener(localIPAddress);
+  startComponentListener();
   startClientListeners(localIPAddress);
   startClientSSLListeners(localIPAddress);
   startHTTPBindListeners();

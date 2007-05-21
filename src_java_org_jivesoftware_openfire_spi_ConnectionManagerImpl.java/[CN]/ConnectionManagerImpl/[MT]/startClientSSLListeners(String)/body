@@ -1,40 +1,7 @@
 {
   if (isClientSSLListenerEnabled()) {
     int port=getClientSSLListenerPort();
-    String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm");
-    if ("".equals(algorithm) || algorithm == null) {
-      algorithm="TLS";
-    }
     try {
-      sslSocketAcceptor=buildSocketAcceptor();
-      int eventThreads=JiveGlobals.getIntProperty("xmpp.client_ssl.processing.threads",16);
-      ExecutorFilter executorFilter=new ExecutorFilter();
-      ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
-      final ThreadFactory originalThreadFactory=eventExecutor.getThreadFactory();
-      ThreadFactory newThreadFactory=new ThreadFactory(){
-        private final AtomicInteger threadId=new AtomicInteger(0);
-        public Thread newThread(        Runnable runnable){
-          Thread t=originalThreadFactory.newThread(runnable);
-          t.setName("Old SSL executor thread - " + threadId.incrementAndGet());
-          t.setDaemon(true);
-          return t;
-        }
-      }
-;
-      eventExecutor.setThreadFactory(newThreadFactory);
-      eventExecutor.setCorePoolSize(eventThreads + 1);
-      eventExecutor.setMaximumPoolSize(eventThreads + 1);
-      eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
-      sslSocketAcceptor.getDefaultConfig().setThreadModel(ThreadModel.MANUAL);
-      sslSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
-      sslSocketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
-      SSLContext sslContext=SSLContext.getInstance(algorithm);
-      KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());
-      TrustManagerFactory trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      trustFactory.init(SSLConfig.getTrustStore());
-      sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
-      sslSocketAcceptor.getFilterChain().addFirst("tls",new SSLFilter(sslContext));
       String interfaceName=JiveGlobals.getXMLProperty("network.interface");
       InetAddress bindInterface=null;
       if (interfaceName != null) {

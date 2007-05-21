@@ -1,0 +1,15 @@
+{
+  if (isComponentListenerEnabled()) {
+    int port=getComponentListenerPort();
+    try {
+      componentSocketThread.start();
+      List<String> params=new ArrayList<String>();
+      params.add(Integer.toString(componentSocketThread.getPort()));
+      Log.info(LocaleUtils.getLocalizedString("startup.component",params));
+    }
+ catch (    Exception e) {
+      System.err.println("Error starting component listener on port " + port + ": "+ e.getMessage());
+      Log.error(LocaleUtils.getLocalizedString("admin.error.socket-setup"),e);
+    }
+  }
+}

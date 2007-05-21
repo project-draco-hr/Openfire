@@ -1,0 +1,13 @@
+{
+  if (isClientListenerEnabled()) {
+    socketAcceptor=buildSocketAcceptor();
+    ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("client");
+    int eventThreads=JiveGlobals.getIntProperty("xmpp.client.processing.threads",16);
+    ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+    eventExecutor.setCorePoolSize(eventThreads + 1);
+    eventExecutor.setMaximumPoolSize(eventThreads + 1);
+    eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
+    socketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+    socketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
+  }
+}
