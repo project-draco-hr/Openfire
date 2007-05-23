@@ -12,6 +12,7 @@
   if (httpsConnector != null) {
     httpBindServer.addConnector(httpsConnector);
   }
-  createWebAppContext();
+  createBoshHandler(contexts,"/http-bind");
+  loadStaticDirectory(contexts);
   httpBindServer.setHandlers(new Handler[]{contexts,new DefaultHandler()});
 }

@@ -1,0 +1,12 @@
+{
+  File spankDirectory=new File(JiveGlobals.getHomeDirectory() + File.separator + "resources"+ File.separator+ "spank");
+  if (spankDirectory.exists()) {
+    if (spankDirectory.canRead()) {
+      WebAppContext context=new WebAppContext(contexts,spankDirectory.getPath(),"/");
+      context.setWelcomeFiles(new String[]{"index.html"});
+    }
+ else {
+      Log.warn("Openfire cannot read the directory: " + spankDirectory);
+    }
+  }
+}
