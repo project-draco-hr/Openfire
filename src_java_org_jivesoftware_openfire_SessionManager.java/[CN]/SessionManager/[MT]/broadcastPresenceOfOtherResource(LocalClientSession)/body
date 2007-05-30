@@ -1,0 +1,14 @@
+{
+  Presence presence;
+  JID searchJID=new JID(session.getAddress().getNode(),session.getAddress().getDomain(),null);
+  List<JID> addresses=routingTable.getRoutes(searchJID);
+  for (  JID address : addresses) {
+    if (address.equals(session.getAddress())) {
+      continue;
+    }
+    ClientSession userSession=routingTable.getClientRoute(address);
+    presence=userSession.getPresence().createCopy();
+    presence.setTo(session.getAddress());
+    session.process(presence);
+  }
+}

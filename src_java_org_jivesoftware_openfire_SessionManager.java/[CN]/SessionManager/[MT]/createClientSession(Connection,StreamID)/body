@@ -2,10 +2,10 @@
   if (serverName == null) {
     throw new IllegalStateException("Server not initialized");
   }
-  ClientSession session=new ClientSession(serverName,conn,id);
+  LocalClientSession session=new LocalClientSession(serverName,conn,id);
   conn.init(session);
   conn.registerCloseListener(clientSessionListener,session);
-  preAuthenticatedSessions.put(session.getAddress().getResource(),session);
-  connectionsCounter.incrementAndGet();
+  localSessionManager.getPreAuthenticatedSessions().put(session.getAddress().getResource(),session);
+  incrementCounter("conncounter");
   return session;
 }

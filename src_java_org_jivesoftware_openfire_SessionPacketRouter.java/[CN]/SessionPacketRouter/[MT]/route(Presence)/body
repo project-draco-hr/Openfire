@@ -1,10 +1,5 @@
 {
-  if (session == null) {
-    session=sessionManager.getSession(packet.getFrom());
-    if (session == null) {
-      router.route(packet);
-    }
-  }
+  router.route(packet);
   packet.setFrom(session.getAddress());
   router.route(packet);
   session.incrementClientPacketCount();

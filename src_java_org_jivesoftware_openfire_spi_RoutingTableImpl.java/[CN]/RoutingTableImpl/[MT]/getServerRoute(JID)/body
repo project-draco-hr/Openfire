@@ -1,0 +1,13 @@
+{
+  OutgoingServerSession session=(OutgoingServerSession)localRoutingTable.getRoute(jid.getDomain());
+  if (session == null) {
+    RemoteSessionLocator locator=server.getRemoteSessionLocator();
+    if (locator != null) {
+      byte[] nodeID=serversCache.get(jid.getDomain());
+      if (nodeID != null) {
+        session=locator.getOutgoingServerSession(nodeID,jid);
+      }
+    }
+  }
+  return session;
+}

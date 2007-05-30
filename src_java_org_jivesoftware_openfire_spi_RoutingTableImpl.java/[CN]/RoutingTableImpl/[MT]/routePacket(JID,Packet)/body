@@ -5,32 +5,47 @@
     throw new PacketException("To address cannot be null.");
   }
   if (serverName.equals(jid.getDomain())) {
-    boolean onlyAvailable=true;
-    if (packet instanceof IQ) {
-      onlyAvailable=packet.getFrom() != null;
-    }
- else     if (packet instanceof Message) {
-      onlyAvailable=true;
-    }
- else     if (packet instanceof Presence) {
-      onlyAvailable=true;
-    }
-    ClientRoute clientRoute=usersCache.get(jid.toString());
-    if (clientRoute == null) {
-      clientRoute=anonymousUsersCache.get(jid.toString());
-    }
-    if (clientRoute != null) {
-      if (onlyAvailable && !clientRoute.isAvailable()) {
-        routed=false;
+    if (jid.getResource() == null) {
+      if (packet instanceof Message) {
+        routed=routeToBareJID(jid,(Message)packet);
       }
  else {
-        if (clientRoute.getNodeID() == server.getNodeID()) {
-          localRoutingTable.getRoute(jid.toString()).process(packet);
-          routed=true;
+        throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet);
+      }
+    }
+ else {
+      boolean onlyAvailable=true;
+      if (packet instanceof IQ) {
+        onlyAvailable=packet.getFrom() != null;
+      }
+ else       if (packet instanceof Message) {
+        onlyAvailable=true;
+      }
+ else       if (packet instanceof Presence) {
+        onlyAvailable=true;
+      }
+      ClientRoute clientRoute=usersCache.get(jid.toString());
+      if (clientRoute == null) {
+        clientRoute=anonymousUsersCache.get(jid.toString());
+      }
+      if (clientRoute != null) {
+        if (onlyAvailable && !clientRoute.isAvailable()) {
+          routed=false;
         }
  else {
-          if (remotePacketRouter != null) {
-            routed=remotePacketRouter.routePacket(clientRoute.getNodeID(),jid,packet);
+          if (clientRoute.getNodeID() == server.getNodeID()) {
+            try {
+              localRoutingTable.getRoute(jid.toString()).process(packet);
+              routed=true;
+            }
+ catch (            UnauthorizedException e) {
+              Log.error(e);
+            }
+          }
+ else {
+            if (remotePacketRouter != null) {
+              routed=remotePacketRouter.routePacket(clientRoute.getNodeID(),jid,packet);
+            }
           }
         }
       }
@@ -40,8 +55,13 @@
     byte[] nodeID=componentsCache.get(jid.getDomain());
     if (nodeID != null) {
       if (nodeID == server.getNodeID()) {
-        localRoutingTable.getRoute(jid.getDomain()).process(packet);
-        routed=true;
+        try {
+          localRoutingTable.getRoute(jid.getDomain()).process(packet);
+          routed=true;
+        }
+ catch (        UnauthorizedException e) {
+          Log.error(e);
+        }
       }
  else {
         if (remotePacketRouter != null) {
@@ -54,8 +74,13 @@
     byte[] nodeID=serversCache.get(jid.getDomain());
     if (nodeID != null) {
       if (nodeID == server.getNodeID()) {
-        localRoutingTable.getRoute(jid.getDomain()).process(packet);
-        routed=true;
+        try {
+          localRoutingTable.getRoute(jid.getDomain()).process(packet);
+          routed=true;
+        }
+ catch (        UnauthorizedException e) {
+          Log.error(e);
+        }
       }
  else {
         if (remotePacketRouter != null) {
@@ -73,13 +98,13 @@
       Log.debug("Failed to route packet to JID: " + jid + " packet: "+ packet);
     }
     if (packet instanceof IQ) {
-      iqRouter.routingFailed(packet);
+      iqRouter.routingFailed(jid,packet);
     }
  else     if (packet instanceof Message) {
-      messageRouter.routingFailed(packet);
+      messageRouter.routingFailed(jid,packet);
     }
  else     if (packet instanceof Presence) {
-      presenceRouter.routingFailed(packet);
+      presenceRouter.routingFailed(jid,packet);
     }
   }
 }

@@ -1,24 +1,8 @@
 {
   boolean hasRoute=false;
-  if (resource != null && resource.equals(username) && anonymousSessions.containsKey(resource)) {
-    hasRoute=true;
-  }
- else {
-    Session session=null;
-    SessionMap sessionMap=sessions.get(username);
-    if (sessionMap != null) {
-      if (resource == null) {
-        hasRoute=!sessionMap.isEmpty();
-      }
- else {
-        if (sessionMap.hasSession(resource)) {
-          session=sessionMap.getSession(resource);
-        }
-      }
-    }
-    if (session != null && !session.getConnection().isClosed()) {
-      hasRoute=session.getConnection().validate();
-    }
+  Session session=routingTable.getClientRoute(new JID(username,serverName,resource));
+  if (session != null && !session.isClosed()) {
+    hasRoute=session.validate();
   }
   return hasRoute;
 }

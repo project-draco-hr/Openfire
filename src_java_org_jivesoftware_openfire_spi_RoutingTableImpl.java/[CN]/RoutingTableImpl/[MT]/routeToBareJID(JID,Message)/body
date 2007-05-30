@@ -1,0 +1,72 @@
+{
+  List<ClientSession> sessions=new ArrayList<ClientSession>();
+  for (  JID address : getRoutes(recipientJID)) {
+    ClientSession session=getClientRoute(address);
+    if (session != null) {
+      sessions.add(session);
+    }
+  }
+  sessions=getHighestPrioritySessions(sessions);
+  if (sessions.isEmpty()) {
+    return false;
+  }
+ else   if (sessions.size() == 1) {
+    sessions.get(0).process(packet);
+  }
+ else {
+    if (!JiveGlobals.getBooleanProperty("route.all-resources",false)) {
+      Collections.sort(sessions,new Comparator<ClientSession>(){
+        public int compare(        ClientSession o1,        ClientSession o2){
+          int thisVal=getShowValue(o1);
+          int anotherVal=getShowValue(o2);
+          return (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
+        }
+        /** 
+ * Priorities are: chat, available, away, xa, dnd.
+ */
+        private int getShowValue(        ClientSession session){
+          Presence.Show show=session.getPresence().getShow();
+          if (show == Presence.Show.chat) {
+            return 1;
+          }
+ else           if (show == null) {
+            return 2;
+          }
+ else           if (show == Presence.Show.away) {
+            return 3;
+          }
+ else           if (show == Presence.Show.xa) {
+            return 4;
+          }
+ else {
+            return 5;
+          }
+        }
+      }
+);
+      List<ClientSession> targets=new ArrayList<ClientSession>();
+      Presence.Show showFilter=sessions.get(0).getPresence().getShow();
+      for (      ClientSession session : sessions) {
+        if (session.getPresence().getShow() == showFilter) {
+          targets.add(session);
+        }
+ else {
+          break;
+        }
+      }
+      Collections.sort(targets,new Comparator<ClientSession>(){
+        public int compare(        ClientSession o1,        ClientSession o2){
+          return o1.getLastActiveDate().compareTo(o2.getLastActiveDate());
+        }
+      }
+);
+      targets.get(0).process(packet);
+    }
+ else {
+      for (      ClientSession session : sessions) {
+        session.process(packet);
+      }
+    }
+  }
+  return true;
+}

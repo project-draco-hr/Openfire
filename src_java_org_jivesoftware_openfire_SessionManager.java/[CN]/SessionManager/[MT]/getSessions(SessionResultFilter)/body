@@ -1,46 +1,10 @@
 {
   List<ClientSession> results=new ArrayList<ClientSession>();
   if (filter != null) {
-    if (filter.getUsername() == null) {
-      copyAnonSessions(results);
-      copyAllUserSessions(results);
-    }
- else {
-      try {
-        copyUserSessions(userManager.getUser(filter.getUsername()).getUsername(),results);
-      }
- catch (      UserNotFoundException e) {
-      }
-    }
-    Date createMin=filter.getCreationDateRangeMin();
-    Date createMax=filter.getCreationDateRangeMax();
-    Date activityMin=filter.getLastActivityDateRangeMin();
-    Date activityMax=filter.getLastActivityDateRangeMax();
+    results.addAll(getSessions());
     List<ClientSession> filteredResults=new ArrayList<ClientSession>();
     for (    ClientSession session : results) {
-      if (createMin != null || createMax != null) {
-        if (!isBetweenDates(session.getCreationDate(),createMin,createMax)) {
-          session=null;
-        }
-      }
-      if ((activityMin != null || activityMax != null) && session != null) {
-        if (!isBetweenDates(session.getLastActiveDate(),activityMin,activityMax)) {
-          session=null;
-        }
-      }
-      if (session != null) {
-        if (!isBetweenPacketCount(session.getNumClientPackets(),filter.getClientPacketRangeMin(),filter.getClientPacketRangeMax())) {
-          session=null;
-        }
-      }
-      if (session != null) {
-        if (!isBetweenPacketCount(session.getNumServerPackets(),filter.getServerPacketRangeMin(),filter.getServerPacketRangeMax())) {
-          session=null;
-        }
-      }
-      if (session != null) {
-        filteredResults.add(session);
-      }
+      filteredResults.add(session);
     }
     Collections.sort(filteredResults,filter.getSortComparator());
     int maxResults=filter.getNumResults();

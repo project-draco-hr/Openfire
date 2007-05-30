@@ -1,5 +1,6 @@
 {
   super.initialize(server);
+  this.server=server;
   router=server.getPacketRouter();
   userManager=server.getUserManager();
   routingTable=server.getRoutingTable();
@@ -25,6 +26,9 @@
       JiveGlobals.setProperty("xmpp.session.conflict-limit",Integer.toString(conflictLimit));
     }
   }
-  serverCleanupTask=new ServerCleanupTask();
-  timer.schedule(serverCleanupTask,getServerSessionTimeout(),getServerSessionTimeout());
+  countersCache=CacheFactory.createCache("Session Manager Counters");
+  componentSessionsCache=CacheFactory.createCache("Components Sessions");
+  multiplexerSessionsCache=CacheFactory.createCache("Connection Managers Sessions");
+  incomingServerSessionsCache=CacheFactory.createCache("Incoming Server Sessions");
+  hostnameSessionsCache=CacheFactory.createCache("Sessions by Hostname");
 }

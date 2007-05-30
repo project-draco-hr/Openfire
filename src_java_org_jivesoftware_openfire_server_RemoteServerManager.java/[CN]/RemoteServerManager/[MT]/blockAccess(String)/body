@@ -4,10 +4,10 @@
   config.setPermission(Permission.blocked);
   addConfiguration(config);
   for (  Session session : SessionManager.getInstance().getIncomingServerSessions(domain)) {
-    session.getConnection().close();
+    session.close();
   }
   Session session=SessionManager.getInstance().getOutgoingServerSession(domain);
   if (session != null) {
-    session.getConnection().close();
+    session.close();
   }
 }

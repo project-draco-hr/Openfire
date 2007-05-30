@@ -5,13 +5,13 @@
     return true;
   }
  else   if ("handshake".equals(tag)) {
-    if (!((ConnectionMultiplexerSession)session).authenticate(doc.getStringValue())) {
-      session.getConnection().close();
+    if (!((LocalConnectionMultiplexerSession)session).authenticate(doc.getStringValue())) {
+      session.close();
     }
     return true;
   }
  else   if ("error".equals(tag) && "stream".equals(doc.getNamespacePrefix())) {
-    session.getConnection().close();
+    session.close();
     return true;
   }
   return false;

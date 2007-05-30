@@ -1,9 +1,9 @@
 {
-  Map<String,ClientSession> sessions=sessionsByManager.remove(connectionManagerName);
+  Map<String,LocalClientSession> sessions=sessionsByManager.remove(connectionManagerName);
   if (sessions != null) {
     for (    String streamID : sessions.keySet()) {
       streamIDs.remove(streamID);
-      sessions.get(streamID).getConnection().close();
+      sessions.get(streamID).close();
     }
   }
 }

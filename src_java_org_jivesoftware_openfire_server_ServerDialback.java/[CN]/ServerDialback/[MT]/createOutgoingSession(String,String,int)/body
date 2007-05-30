@@ -31,7 +31,7 @@
       OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
       if (authenticateDomain(socketReader,domain,hostname,id)) {
         StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-        OutgoingServerSession session=new OutgoingServerSession(domain,connection,socketReader,streamID);
+        LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,socketReader,streamID);
         connection.init(session);
         session.setAddress(new JID(null,hostname,null));
         return session;

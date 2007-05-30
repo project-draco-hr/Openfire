@@ -1,30 +1,9 @@
 {
   Log.debug("Stopping server");
   OutgoingSessionPromise.getInstance().shutdown();
-  timer.cancel();
   if (JiveGlobals.getBooleanProperty("shutdownMessage.enabled")) {
     sendServerMessage(null,LocaleUtils.getLocalizedString("admin.shutdown.now"));
   }
-  try {
-    Set<Session> sessions=new HashSet<Session>();
-    sessions.addAll(getSessions());
-    sessions.addAll(getComponentSessions());
-    sessions.addAll(outgoingServerSessions.values());
-    for (    List<IncomingServerSession> incomingSessions : incomingServerSessions.values()) {
-      sessions.addAll(incomingSessions);
-    }
-    for (    List<ConnectionMultiplexerSession> multiplexers : connnectionManagerSessions.values()) {
-      sessions.addAll(multiplexers);
-    }
-    for (    Session session : sessions) {
-      try {
-        session.getConnection().systemShutdown();
-      }
- catch (      Throwable t) {
-      }
-    }
-  }
- catch (  Exception e) {
-  }
+  localSessionManager.stop();
   serverName=null;
 }

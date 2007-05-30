@@ -1,0 +1,17 @@
+{
+  localSessionManager.addIncomingServerSessions(session.getStreamID().getID(),session);
+  incomingServerSessionsCache.put(session.getStreamID().getID(),server.getNodeID());
+  Lock lock=LockManager.getLock(hostname);
+  try {
+    lock.lock();
+    List<String> streamIDs=hostnameSessionsCache.get(hostname);
+    if (streamIDs == null) {
+      streamIDs=new ArrayList<String>();
+    }
+    streamIDs.add(session.getStreamID().getID());
+    hostnameSessionsCache.put(hostname,streamIDs);
+  }
+  finally {
+    lock.unlock();
+  }
+}

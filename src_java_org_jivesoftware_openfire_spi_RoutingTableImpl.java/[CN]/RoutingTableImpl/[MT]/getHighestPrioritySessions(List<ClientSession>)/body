@@ -1,0 +1,19 @@
+{
+  int highest=Integer.MIN_VALUE;
+  for (  ClientSession session : sessions) {
+    int priority=session.getPresence().getPriority();
+    if (priority >= 0 && priority > highest) {
+      highest=priority;
+    }
+  }
+  if (highest == Integer.MIN_VALUE) {
+    return Collections.emptyList();
+  }
+  List<ClientSession> answer=new ArrayList<ClientSession>(sessions.size());
+  for (  ClientSession session : sessions) {
+    if (session.getPresence().getPriority() == highest) {
+      answer.add(session);
+    }
+  }
+  return answer;
+}

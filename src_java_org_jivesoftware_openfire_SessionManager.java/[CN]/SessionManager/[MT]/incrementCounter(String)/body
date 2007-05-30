@@ -1,0 +1,16 @@
+{
+  Lock lock=LockManager.getLock(counterName);
+  try {
+    lock.lock();
+    Integer counter=countersCache.get(counterName);
+    if (counter == null) {
+      countersCache.put(counterName,1);
+    }
+ else {
+      countersCache.put(counterName,++counter);
+    }
+  }
+  finally {
+    lock.unlock();
+  }
+}

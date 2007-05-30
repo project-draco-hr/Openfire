@@ -1,0 +1,20 @@
+{
+  StringBuilder reply=new StringBuilder(80);
+  reply.append("<success xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"");
+  if (successData != null) {
+    String successData_b64=StringUtils.encodeBase64(successData).trim();
+    reply.append(">").append(successData_b64).append("</success>");
+  }
+ else {
+    reply.append("/>");
+  }
+  session.deliverRawText(reply.toString());
+  if (session instanceof ClientSession) {
+    ((LocalClientSession)session).setAuthToken(new AuthToken(username));
+  }
+ else   if (session instanceof IncomingServerSession) {
+    String hostname=username;
+    session.setAddress(new JID(null,hostname,null));
+    ((LocalIncomingServerSession)session).addValidatedDomain(hostname);
+  }
+}

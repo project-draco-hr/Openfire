@@ -1,9 +1,31 @@
 {
-  List<IncomingServerSession> sessions=incomingServerSessions.get(hostname);
-  if (sessions == null) {
+  List<String> streamIDs;
+  Lock lock=LockManager.getLock(hostname);
+  try {
+    lock.lock();
+    streamIDs=hostnameSessionsCache.get(hostname);
+  }
+  finally {
+    lock.unlock();
+  }
+  if (streamIDs == null) {
     return Collections.emptyList();
   }
  else {
-    return Collections.unmodifiableList(sessions);
+    List<IncomingServerSession> sessions=new ArrayList<IncomingServerSession>();
+    for (    String streamID : streamIDs) {
+      IncomingServerSession session=localSessionManager.getIncomingServerSessions(streamID);
+      RemoteSessionLocator locator=server.getRemoteSessionLocator();
+      if (session == null && locator != null) {
+        byte[] nodeID=incomingServerSessionsCache.get(streamID);
+        if (nodeID != null) {
+          session=locator.getIncomingServerSession(nodeID,streamID);
+        }
+      }
+      if (session != null) {
+        sessions.add(session);
+      }
+    }
+    return sessions;
   }
 }

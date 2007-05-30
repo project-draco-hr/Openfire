@@ -1,6 +1,15 @@
 {
-  if (from == null) {
+  if (from == null || serverName == null || !serverName.equals(from.getDomain())) {
     return null;
   }
-  return getSession(from.getNode(),from.getDomain(),from.getResource());
+  if (from.getResource() != null) {
+    ClientSession session=localSessionManager.getPreAuthenticatedSessions().get(from.getResource());
+    if (session != null) {
+      return session;
+    }
+  }
+  if (from.getResource() == null || from.getNode() == null) {
+    return null;
+  }
+  return routingTable.getClientRoute(from);
 }

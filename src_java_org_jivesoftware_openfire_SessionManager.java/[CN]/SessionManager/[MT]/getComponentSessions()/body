@@ -1,3 +1,13 @@
 {
-  return Collections.unmodifiableCollection(componentsSessions);
+  List<ComponentSession> sessions=new ArrayList<ComponentSession>();
+  sessions.addAll(localSessionManager.getComponentsSessions());
+  RemoteSessionLocator locator=server.getRemoteSessionLocator();
+  if (locator != null) {
+    for (    Map.Entry<String,byte[]> entry : componentSessionsCache.entrySet()) {
+      if (!Arrays.equals(server.getNodeID(),entry.getValue())) {
+        sessions.add(locator.getComponentSession(entry.getValue(),new JID(entry.getKey())));
+      }
+    }
+  }
+  return sessions;
 }

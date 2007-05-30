@@ -1,13 +1,11 @@
 {
-  Collection<ClientSession> availableSession;
-  SessionMap sessionMap=sessions.get(originatingResource.getNode());
-  if (sessionMap != null) {
-    availableSession=new ArrayList<ClientSession>(sessionMap.getAvailableSessions());
-    for (    ClientSession userSession : availableSession) {
-      if (userSession.getAddress() != originatingResource) {
-        presence.setTo(userSession.getAddress());
-        userSession.process(presence);
-      }
+  JID searchJID=new JID(originatingResource.getNode(),originatingResource.getDomain(),null);
+  List<JID> addresses=routingTable.getRoutes(searchJID);
+  for (  JID address : addresses) {
+    if (address.equals(originatingResource)) {
+      continue;
     }
+    presence.setTo(address);
+    routingTable.routePacket(address,presence);
   }
 }

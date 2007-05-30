@@ -1,7 +1,14 @@
 {
-  for (  ComponentSession session : componentsSessions) {
+  for (  ComponentSession session : localSessionManager.getComponentsSessions()) {
     if (domain.equals(session.getAddress().getDomain())) {
       return session;
+    }
+  }
+  RemoteSessionLocator locator=server.getRemoteSessionLocator();
+  if (locator != null) {
+    byte[] nodeID=componentSessionsCache.get(domain);
+    if (nodeID != null) {
+      return locator.getComponentSession(nodeID,new JID(domain));
     }
   }
   return null;

@@ -1,7 +1,21 @@
 {
-  List<ConnectionMultiplexerSession> sessions=connnectionManagerSessions.get(domain);
-  if (sessions == null || sessions.isEmpty()) {
-    return Collections.emptyList();
+  List<ConnectionMultiplexerSession> sessions=new ArrayList<ConnectionMultiplexerSession>();
+  for (  String address : localSessionManager.getConnnectionManagerSessions().keySet()) {
+    JID jid=new JID(address);
+    if (domain.equals(jid.getDomain())) {
+      sessions.add(localSessionManager.getConnnectionManagerSessions().get(address));
+    }
   }
-  return new ArrayList<ConnectionMultiplexerSession>(sessions);
+  RemoteSessionLocator locator=server.getRemoteSessionLocator();
+  if (locator != null) {
+    for (    Map.Entry<String,byte[]> entry : multiplexerSessionsCache.entrySet()) {
+      if (!Arrays.equals(server.getNodeID(),entry.getValue())) {
+        JID jid=new JID(entry.getKey());
+        if (domain.equals(jid.getDomain())) {
+          sessions.add(locator.getConnectionMultiplexerSession(entry.getValue(),new JID(entry.getKey())));
+        }
+      }
+    }
+  }
+  return sessions;
 }

@@ -3,20 +3,14 @@
     throw new IllegalStateException("Server not initialized");
   }
   StreamID id=nextStreamID();
-  ConnectionMultiplexerSession session=new ConnectionMultiplexerSession(serverName,conn,id);
+  LocalConnectionMultiplexerSession session=new LocalConnectionMultiplexerSession(serverName,conn,id);
   conn.init(session);
   conn.registerCloseListener(multiplexerSessionListener,session);
-  List<ConnectionMultiplexerSession> sessions=connnectionManagerSessions.get(address.getDomain());
-  if (sessions == null) {
-synchronized (address.getDomain().intern()) {
-      sessions=connnectionManagerSessions.get(address.getDomain());
-      if (sessions == null) {
-        sessions=new CopyOnWriteArrayList<ConnectionMultiplexerSession>();
-        connnectionManagerSessions.put(address.getDomain(),sessions);
-        ConnectionMultiplexerManager.getInstance().multiplexerAvailable(address.getDomain());
-      }
-    }
+  boolean firstConnection=getConnectionMultiplexerSessions(address.getDomain()).isEmpty();
+  localSessionManager.getConnnectionManagerSessions().put(address.toString(),session);
+  multiplexerSessionsCache.put(address.toString(),server.getNodeID());
+  if (firstConnection) {
+    ConnectionMultiplexerManager.getInstance().multiplexerAvailable(address.getDomain());
   }
-  sessions.add(session);
   return session;
 }

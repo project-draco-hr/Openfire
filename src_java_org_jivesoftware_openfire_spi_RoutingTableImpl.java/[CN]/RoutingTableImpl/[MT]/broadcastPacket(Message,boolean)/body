@@ -1,10 +1,6 @@
 {
-  for (  RoutableChannelHandler session : localRoutingTable.getClientRoutes()) {
-    try {
-      session.process(packet);
-    }
- catch (    UnauthorizedException e) {
-    }
+  for (  ClientSession session : localRoutingTable.getClientRoutes()) {
+    session.process(packet);
   }
   if (!onlyLocal && remotePacketRouter != null) {
     remotePacketRouter.broadcastPacket(packet);

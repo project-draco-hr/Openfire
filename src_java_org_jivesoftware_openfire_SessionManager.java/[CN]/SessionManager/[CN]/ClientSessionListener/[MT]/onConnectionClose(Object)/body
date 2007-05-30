@@ -1,8 +1,8 @@
 {
   try {
-    ClientSession session=(ClientSession)handback;
+    LocalClientSession session=(LocalClientSession)handback;
     try {
-      if ((session.getPresence().isAvailable() || !session.wasAvailable()) && getSession(session.getAddress()) != null) {
+      if ((session.getPresence().isAvailable() || !session.wasAvailable()) && routingTable.hasClientRoute(session.getAddress())) {
         Presence presence=new Presence();
         presence.setType(Presence.Type.unavailable);
         presence.setFrom(session.getAddress());

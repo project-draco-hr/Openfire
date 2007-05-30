@@ -1,12 +1,9 @@
 {
   ConnectionMultiplexerSession session=(ConnectionMultiplexerSession)handback;
   String domain=session.getAddress().getDomain();
-  List<ConnectionMultiplexerSession> sessions=connnectionManagerSessions.get(domain);
-  if (sessions != null) {
-    sessions.remove(session);
-    if (sessions.isEmpty()) {
-      connnectionManagerSessions.remove(domain);
-      ConnectionMultiplexerManager.getInstance().multiplexerUnavailable(domain);
-    }
+  localSessionManager.getConnnectionManagerSessions().remove(session.getAddress().toString());
+  multiplexerSessionsCache.remove(session.getAddress().toString());
+  if (getConnectionMultiplexerSessions(domain).isEmpty()) {
+    ConnectionMultiplexerManager.getInstance().multiplexerUnavailable(domain);
   }
 }

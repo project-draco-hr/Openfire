@@ -8,7 +8,7 @@
   try {
     if (packet instanceof IQ) {
       IQ reply=new IQ();
-      reply.setID(((IQ)packet).getID());
+      reply.setID(packet.getID());
       reply.setTo(from);
       reply.setFrom(to);
       reply.setChildElement(((IQ)packet).getChildElement().createCopy());
@@ -34,9 +34,7 @@
       routingTable.routePacket(reply.getTo(),reply);
     }
   }
- catch (  UnauthorizedException e) {
-  }
-catch (  Exception e) {
+ catch (  Exception e) {
     Log.warn("Error returning error to sender. Original packet: " + packet,e);
   }
 }

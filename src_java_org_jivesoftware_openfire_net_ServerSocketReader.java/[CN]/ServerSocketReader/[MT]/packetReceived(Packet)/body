@@ -7,7 +7,7 @@
     open=false;
     throw new PacketRejectedException("Packet with no TO or FROM attributes");
   }
- else   if (!((IncomingServerSession)session).isValidDomain(packet.getFrom().getDomain())) {
+ else   if (!((LocalIncomingServerSession)session).isValidDomain(packet.getFrom().getDomain())) {
     Log.debug("Closing IncomingServerSession due to packet with invalid domain: " + packet.toXML());
     StreamError error=new StreamError(StreamError.Condition.invalid_from);
     connection.deliverRawText(error.toXML());

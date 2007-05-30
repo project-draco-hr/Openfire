@@ -8,17 +8,7 @@
       routingTable.routePacket(packet.getFrom(),packet);
     }
  else {
-      Session session=sessionManager.getBestRoute(recipient);
-      if (session == null) {
-        handleUnprocessedPacket(packet);
-      }
- else {
-        try {
-          session.process(packet);
-        }
- catch (        Exception e) {
-        }
-      }
+      routingTable.routePacket(recipient,packet);
     }
   }
  catch (  Exception e) {

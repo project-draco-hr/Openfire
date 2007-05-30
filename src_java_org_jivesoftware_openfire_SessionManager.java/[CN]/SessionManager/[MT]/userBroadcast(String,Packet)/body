@@ -1,6 +1,5 @@
 {
-  SessionMap sessionMap=sessions.get(username);
-  if (sessionMap != null) {
-    sessionMap.broadcast(packet);
+  for (  JID address : routingTable.getRoutes(new JID(username,serverName,null))) {
+    routingTable.routePacket(address,packet);
   }
 }

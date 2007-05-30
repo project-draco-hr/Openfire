@@ -4,7 +4,7 @@
     Element extraError=DocumentHelper.createElement(QName.get("id-required","http://jabber.org/protocol/connectionmanager#errors"));
     sendErrorPacket(route,PacketError.Condition.bad_request,extraError);
   }
-  ClientSession session=multiplexerManager.getClientSession(connectionManagerDomain,streamID);
+  LocalClientSession session=multiplexerManager.getClientSession(connectionManagerDomain,streamID);
   if (session == null) {
     sendErrorPacket(route,PacketError.Condition.item_not_found,null);
     return;

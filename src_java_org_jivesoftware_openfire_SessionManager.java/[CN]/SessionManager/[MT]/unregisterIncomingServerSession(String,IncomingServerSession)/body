@@ -1,11 +1,21 @@
 {
-synchronized (incomingServerSessions) {
-    List<IncomingServerSession> sessions=incomingServerSessions.get(hostname);
-    if (sessions != null) {
-      sessions.remove(session);
-      if (sessions.isEmpty()) {
-        incomingServerSessions.remove(hostname);
+  localSessionManager.removeIncomingServerSessions(session.getStreamID().getID());
+  incomingServerSessionsCache.remove(session.getStreamID().getID());
+  Lock lock=LockManager.getLock(hostname);
+  try {
+    lock.lock();
+    List<String> streamIDs=hostnameSessionsCache.get(hostname);
+    if (streamIDs != null) {
+      streamIDs.remove(session.getStreamID().getID());
+      if (streamIDs.isEmpty()) {
+        hostnameSessionsCache.remove(hostname);
+      }
+ else {
+        hostnameSessionsCache.put(hostname,streamIDs);
       }
     }
+  }
+  finally {
+    lock.unlock();
   }
 }

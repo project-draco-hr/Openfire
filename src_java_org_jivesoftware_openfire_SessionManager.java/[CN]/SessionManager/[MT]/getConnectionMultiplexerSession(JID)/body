@@ -1,17 +1,10 @@
 {
-  List<ConnectionMultiplexerSession> sessions=connnectionManagerSessions.get(address.getDomain());
-  if (sessions == null || sessions.isEmpty()) {
-    return null;
-  }
-  if (address.getResource() != null) {
-    for (    ConnectionMultiplexerSession session : sessions) {
-      if (session.getAddress().equals(address)) {
-        return session;
-      }
+  LocalConnectionMultiplexerSession session=localSessionManager.getConnnectionManagerSessions().get(address.toString());
+  if (session == null && server.getRemoteSessionLocator() != null) {
+    byte[] nodeID=multiplexerSessionsCache.get(address.toString());
+    if (nodeID != null) {
+      return server.getRemoteSessionLocator().getConnectionMultiplexerSession(nodeID,address);
     }
-    return null;
   }
- else {
-    return sessions.get(0);
-  }
+  return null;
 }

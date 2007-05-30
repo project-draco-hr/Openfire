@@ -1,0 +1,26 @@
+{
+  if (session.getAuthToken().isAnonymous()) {
+    return;
+  }
+  int newPriority=session.getPresence().getPriority();
+  if (newPriority >= 0 && oldPriority < 0) {
+    return;
+  }
+  JID searchJID=new JID(session.getAddress().toBareJID());
+  for (  JID address : routingTable.getRoutes(searchJID)) {
+    if (address.equals(session.getAddress())) {
+      continue;
+    }
+    ClientSession otherSession=routingTable.getClientRoute(address);
+    if (otherSession.getPresence().getPriority() >= 0) {
+      return;
+    }
+  }
+  if (session.canFloodOfflineMessages()) {
+    OfflineMessageStore messageStore=server.getOfflineMessageStore();
+    Collection<OfflineMessage> messages=messageStore.getMessages(session.getAuthToken().getUsername(),true);
+    for (    Message message : messages) {
+      session.process(message);
+    }
+  }
+}

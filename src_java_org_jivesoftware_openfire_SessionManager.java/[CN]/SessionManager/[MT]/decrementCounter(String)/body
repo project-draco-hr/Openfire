@@ -1,0 +1,16 @@
+{
+  Lock lock=LockManager.getLock(counterName);
+  try {
+    lock.lock();
+    Integer counter=countersCache.get(counterName);
+    if (counter == null) {
+      Log.error("Failed to decrement counter. Counter not found: " + counterName);
+    }
+ else {
+      countersCache.put(counterName,--counter);
+    }
+  }
+  finally {
+    lock.unlock();
+  }
+}

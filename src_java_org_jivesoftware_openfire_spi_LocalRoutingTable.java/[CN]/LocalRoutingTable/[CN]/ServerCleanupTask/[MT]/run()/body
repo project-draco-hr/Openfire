@@ -1,0 +1,20 @@
+{
+  int idleTime=SessionManager.getInstance().getServerSessionIdleTime();
+  if (idleTime == -1) {
+    return;
+  }
+  final long deadline=System.currentTimeMillis() - idleTime;
+  for (  RoutableChannelHandler route : routes.values()) {
+    if (route instanceof OutgoingServerSession) {
+      Session session=(Session)route;
+      try {
+        if (session.getLastActiveDate().getTime() < deadline) {
+          session.close();
+        }
+      }
+ catch (      Throwable e) {
+        Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      }
+    }
+  }
+}

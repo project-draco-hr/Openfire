@@ -1,7 +1,10 @@
 {
   List<ClientSession> sessionList=new ArrayList<ClientSession>();
   if (username != null) {
-    copyUserSessions(username,sessionList);
+    List<JID> addresses=routingTable.getRoutes(new JID(username,serverName,null,true));
+    for (    JID address : addresses) {
+      sessionList.add(routingTable.getClientRoute(address));
+    }
   }
   return sessionList;
 }
