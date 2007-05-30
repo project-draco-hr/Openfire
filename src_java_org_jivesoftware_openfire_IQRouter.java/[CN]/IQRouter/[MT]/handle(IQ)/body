@@ -72,10 +72,7 @@
     Log.error(LocaleUtils.getLocalizedString("admin.error.routing"),e);
     Session session=sessionManager.getSession(packet.getFrom());
     if (session != null) {
-      Connection conn=session.getConnection();
-      if (conn != null) {
-        conn.close();
-      }
+      session.close();
     }
   }
 }

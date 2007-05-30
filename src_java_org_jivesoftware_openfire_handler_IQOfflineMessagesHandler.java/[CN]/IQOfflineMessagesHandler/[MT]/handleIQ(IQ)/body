@@ -1,14 +1,14 @@
 {
   IQ reply=IQ.createResultIQ(packet);
   Element offlineRequest=packet.getChildElement();
+  JID from=packet.getFrom();
   if (offlineRequest.element("purge") != null) {
-    messageStore.deleteMessages(packet.getFrom().getNode());
+    messageStore.deleteMessages(from.getNode());
   }
  else   if (offlineRequest.element("fetch") != null) {
-    stopOfflineFlooding(packet.getFrom());
-    ClientSession session=sessionManager.getSession(packet.getFrom());
-    for (    OfflineMessage offlineMessage : messageStore.getMessages(packet.getFrom().getNode(),false)) {
-      sendOfflineMessage(offlineMessage,session);
+    stopOfflineFlooding(from);
+    for (    OfflineMessage offlineMessage : messageStore.getMessages(from.getNode(),false)) {
+      sendOfflineMessage(from,offlineMessage);
     }
   }
  else {
@@ -24,14 +24,13 @@ synchronized (dateFormat) {
         }
       }
       if ("view".equals(item.attributeValue("action"))) {
-        OfflineMessage offlineMsg=messageStore.getMessage(packet.getFrom().getNode(),creationDate);
+        OfflineMessage offlineMsg=messageStore.getMessage(from.getNode(),creationDate);
         if (offlineMsg != null) {
-          ClientSession session=sessionManager.getSession(packet.getFrom());
-          sendOfflineMessage(offlineMsg,session);
+          sendOfflineMessage(from,offlineMsg);
         }
       }
  else       if ("remove".equals(item.attributeValue("action"))) {
-        messageStore.deleteMessage(packet.getFrom().getNode(),creationDate);
+        messageStore.deleteMessage(from.getNode(),creationDate);
       }
     }
   }

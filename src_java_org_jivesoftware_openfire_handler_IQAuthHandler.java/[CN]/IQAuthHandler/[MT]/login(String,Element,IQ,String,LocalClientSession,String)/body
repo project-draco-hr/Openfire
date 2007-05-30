@@ -25,20 +25,15 @@
   if (token == null) {
     throw new UnauthorizedException();
   }
-  if (sessionManager.isActiveRoute(username,resource)) {
-    ClientSession oldSession;
+  ClientSession oldSession=routingTable.getClientRoute(new JID(username,serverName,resource));
+  if (oldSession != null) {
     try {
-      String domain=localServer.getServerInfo().getName();
-      oldSession=sessionManager.getSession(username,domain,resource);
       oldSession.incrementConflictCount();
       int conflictLimit=sessionManager.getConflictKickLimit();
       if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
-        Connection conn=oldSession.getConnection();
-        if (conn != null) {
-          StreamError error=new StreamError(StreamError.Condition.conflict);
-          conn.deliverRawText(error.toXML());
-          conn.close();
-        }
+        StreamError error=new StreamError(StreamError.Condition.conflict);
+        oldSession.deliverRawText(error.toXML());
+        oldSession.close();
       }
  else {
         IQ response=IQ.createResultIQ(packet);

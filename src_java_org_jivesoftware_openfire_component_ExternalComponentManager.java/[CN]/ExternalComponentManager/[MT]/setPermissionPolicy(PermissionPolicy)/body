@@ -3,7 +3,7 @@
   for (  ComponentSession session : SessionManager.getInstance().getComponentSessions()) {
     for (    String domain : session.getExternalComponent().getSubdomains()) {
       if (!canAccess(domain)) {
-        session.getConnection().close();
+        session.close();
         break;
       }
     }

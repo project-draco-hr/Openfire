@@ -1,5 +1,5 @@
 {
-  ClientSession session=sessionManager.getSession(packet.getFrom());
+  LocalClientSession session=(LocalClientSession)sessionManager.getSession(packet.getFrom());
   if (session == null) {
     Log.error("Error during resource binding. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
     IQ reply=IQ.createResultIQ(packet);
@@ -30,20 +30,15 @@
   }
  else {
     String username=authToken.getUsername().toLowerCase();
-    if (sessionManager.isActiveRoute(username,resource)) {
-      ClientSession oldSession;
+    ClientSession oldSession=routingTable.getClientRoute(new JID(username,serverName,resource));
+    if (oldSession != null) {
       try {
-        String domain=localServer.getServerInfo().getName();
-        oldSession=sessionManager.getSession(username,domain,resource);
         oldSession.incrementConflictCount();
         int conflictLimit=sessionManager.getConflictKickLimit();
         if (conflictLimit != SessionManager.NEVER_KICK && oldSession.getConflictCount() > conflictLimit) {
-          Connection conn=oldSession.getConnection();
-          if (conn != null) {
-            StreamError error=new StreamError(StreamError.Condition.conflict);
-            conn.deliverRawText(error.toXML());
-            conn.close();
-          }
+          StreamError error=new StreamError(StreamError.Condition.conflict);
+          oldSession.deliverRawText(error.toXML());
+          oldSession.close();
         }
  else {
           reply.setChildElement(packet.getChildElement().createCopy());
