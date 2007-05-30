@@ -4,13 +4,13 @@
   if (locator != null) {
     for (    Map.Entry<String,ClientRoute> entry : usersCache.entrySet()) {
       ClientRoute route=entry.getValue();
-      if (route.getNodeID() != server.getNodeID()) {
+      if (!Arrays.equals(route.getNodeID(),server.getNodeID())) {
         sessions.add(locator.getClientSession(route.getNodeID(),new JID(entry.getKey())));
       }
     }
     for (    Map.Entry<String,ClientRoute> entry : anonymousUsersCache.entrySet()) {
       ClientRoute route=entry.getValue();
-      if (route.getNodeID() != server.getNodeID()) {
+      if (!Arrays.equals(route.getNodeID(),server.getNodeID())) {
         sessions.add(locator.getClientSession(route.getNodeID(),new JID(entry.getKey())));
       }
     }
