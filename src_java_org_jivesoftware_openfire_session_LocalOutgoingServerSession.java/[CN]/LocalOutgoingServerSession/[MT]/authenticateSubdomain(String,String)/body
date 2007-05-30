@@ -1,0 +1,12 @@
+{
+  if (!usingServerDialback) {
+    addAuthenticatedDomain(domain);
+    return true;
+  }
+  ServerDialback method=new ServerDialback(getConnection(),domain);
+  if (method.authenticateDomain(socketReader,domain,hostname,getStreamID().getID())) {
+    addAuthenticatedDomain(domain);
+    return true;
+  }
+  return false;
+}

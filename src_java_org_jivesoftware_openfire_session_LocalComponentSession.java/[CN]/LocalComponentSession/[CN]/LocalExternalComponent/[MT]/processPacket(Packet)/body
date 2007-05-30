@@ -1,0 +1,11 @@
+{
+  if (connection != null && !connection.isClosed()) {
+    try {
+      connection.deliver(packet);
+    }
+ catch (    Exception e) {
+      Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+      connection.close();
+    }
+  }
+}

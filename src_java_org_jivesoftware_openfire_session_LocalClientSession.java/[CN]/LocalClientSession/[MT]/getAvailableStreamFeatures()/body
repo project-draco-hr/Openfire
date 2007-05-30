@@ -1,0 +1,20 @@
+{
+  if (conn.getTlsPolicy() == Connection.TLSPolicy.required && !conn.isSecure()) {
+    return null;
+  }
+  StringBuilder sb=new StringBuilder(200);
+  if (conn.getCompressionPolicy() != Connection.CompressionPolicy.disabled && !conn.isCompressed()) {
+    sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
+  }
+  if (getAuthToken() == null) {
+    sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
+    if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
+      sb.append("<register xmlns=\"http://jabber.org/features/iq-register\"/>");
+    }
+  }
+ else {
+    sb.append("<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"/>");
+    sb.append("<session xmlns=\"urn:ietf:params:xml:ns:xmpp-session\"/>");
+  }
+  return sb.toString();
+}

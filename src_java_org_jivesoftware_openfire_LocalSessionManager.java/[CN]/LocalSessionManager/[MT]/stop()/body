@@ -1,0 +1,22 @@
+{
+  try {
+    Set<LocalSession> sessions=new HashSet<LocalSession>();
+    sessions.addAll(preAuthenticatedSessions.values());
+    sessions.addAll(componentsSessions);
+    for (    LocalIncomingServerSession incomingSession : incomingServerSessions.values()) {
+      sessions.add(incomingSession);
+    }
+    for (    LocalConnectionMultiplexerSession multiplexer : connnectionManagerSessions.values()) {
+      sessions.add(multiplexer);
+    }
+    for (    LocalSession session : sessions) {
+      try {
+        session.getConnection().systemShutdown();
+      }
+ catch (      Throwable t) {
+      }
+    }
+  }
+ catch (  Exception e) {
+  }
+}
