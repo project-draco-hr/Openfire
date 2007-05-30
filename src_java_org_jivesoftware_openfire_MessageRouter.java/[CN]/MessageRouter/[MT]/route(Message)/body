@@ -17,20 +17,10 @@
         return;
       }
       try {
-        if (recipientJID != null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
-          routeToBareJID(recipientJID,packet);
-        }
- else {
-          routingTable.routePacket(recipientJID,packet);
-        }
+        routingTable.routePacket(recipientJID,packet);
       }
  catch (      Exception e) {
-        try {
-          messageStrategy.storeOffline(packet);
-        }
- catch (        Exception e1) {
-          Log.error(e1);
-        }
+        routingFailed(recipientJID,packet);
       }
     }
  else {
