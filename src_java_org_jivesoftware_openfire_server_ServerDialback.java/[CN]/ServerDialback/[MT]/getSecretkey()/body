@@ -1,0 +1,16 @@
+{
+  String key="secretKey";
+  Lock lock=LockManager.getLock(key);
+  try {
+    lock.lock();
+    String secret=secretKeyCache.get(key);
+    if (secret == null) {
+      secret=StringUtils.randomString(10);
+      secretKeyCache.put(key,secret);
+    }
+    return secret;
+  }
+  finally {
+    lock.unlock();
+  }
+}

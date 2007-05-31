@@ -1,5 +1,13 @@
 {
-  boolean created=LocalOutgoingServerSession.authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain());
+  boolean created;
+  Lock lock=LockManager.getLock(domain + "oss");
+  try {
+    lock.lock();
+    created=LocalOutgoingServerSession.authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain());
+  }
+  finally {
+    lock.unlock();
+  }
   if (created) {
     routingTable.routePacket(packet.getTo(),packet);
   }
