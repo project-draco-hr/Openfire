@@ -1,5 +1,5 @@
 {
-  clusteringEnabled=false;
+  clusteringStarted=false;
   boolean clusterStarted=false;
   try {
     cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
@@ -9,7 +9,7 @@
         CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
         wrapper.setWrappedCache(cacheFactoryStrategy.createCache(cacheName));
       }
-      clusteringEnabled=true;
+      clusteringStarted=true;
       XMPPServer.getInstance().setNodeID(CacheFactory.getClusterMemberID());
       fireClusteringStarted();
     }

@@ -70,6 +70,7 @@
  catch (    Exception e) {
       Log.error(e);
     }
+    Connection.TLSPolicy tlsPolicy=getTLSPolicy();
     if (Connection.TLSPolicy.required == tlsPolicy && !hasCertificates) {
       Log.error("Client session rejected. TLS is required but no certificates " + "were created.");
       return null;
@@ -79,7 +80,7 @@
  else {
     connection.setTlsPolicy(Connection.TLSPolicy.disabled);
   }
-  connection.setCompressionPolicy(compressionPolicy);
+  connection.setCompressionPolicy(getCompressionPolicy());
   LocalClientSession session=SessionManager.getInstance().createClientSession(connection);
   StringBuilder sb=new StringBuilder(200);
   sb.append("<?xml version='1.0' encoding='");

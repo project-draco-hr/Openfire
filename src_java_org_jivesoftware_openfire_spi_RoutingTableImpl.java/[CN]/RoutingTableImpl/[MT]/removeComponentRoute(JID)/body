@@ -1,6 +1,23 @@
 {
   String address=route.getDomain();
-  boolean removed=componentsCache.remove(address) != null;
+  boolean removed=false;
+  Lock lock=LockManager.getLock(address + "rt");
+  try {
+    lock.lock();
+    Set<byte[]> nodes=componentsCache.get(address);
+    if (nodes != null) {
+      removed=nodes.remove(server.getNodeID());
+      if (nodes.isEmpty()) {
+        componentsCache.remove(address);
+      }
+ else {
+        componentsCache.put(address,nodes);
+      }
+    }
+  }
+  finally {
+    lock.unlock();
+  }
   localRoutingTable.removeRoute(address);
   return removed;
 }

@@ -52,20 +52,38 @@
     }
   }
  else   if (jid.getDomain().contains(serverName)) {
-    byte[] nodeID=componentsCache.get(jid.getDomain());
-    if (nodeID != null) {
-      if (Arrays.equals(nodeID,server.getNodeID())) {
-        try {
-          localRoutingTable.getRoute(jid.getDomain()).process(packet);
-          routed=true;
-        }
- catch (        UnauthorizedException e) {
-          Log.error(e);
-        }
+    RoutableChannelHandler route=localRoutingTable.getRoute(jid.getDomain());
+    if (route != null) {
+      try {
+        route.process(packet);
+        routed=true;
       }
+ catch (      UnauthorizedException e) {
+        Log.error(e);
+      }
+    }
  else {
-        if (remotePacketRouter != null) {
-          routed=remotePacketRouter.routePacket(nodeID,jid,packet);
+      Set<byte[]> nodes=componentsCache.get(jid.getDomain());
+      if (nodes != null) {
+        for (        byte[] nodeID : nodes) {
+          if (Arrays.equals(nodeID,server.getNodeID())) {
+            try {
+              localRoutingTable.getRoute(jid.getDomain()).process(packet);
+              routed=true;
+              break;
+            }
+ catch (            UnauthorizedException e) {
+              Log.error(e);
+            }
+          }
+ else {
+            if (remotePacketRouter != null) {
+              routed=remotePacketRouter.routePacket(nodeID,jid,packet);
+              if (routed) {
+                break;
+              }
+            }
+          }
         }
       }
     }

@@ -1,3 +1,12 @@
 {
+  String policyName=JiveGlobals.getProperty("xmpp.client.tls.policy",Connection.TLSPolicy.optional.toString());
+  SocketConnection.TLSPolicy tlsPolicy;
+  try {
+    tlsPolicy=Connection.TLSPolicy.valueOf(policyName);
+  }
+ catch (  IllegalArgumentException e) {
+    Log.error("Error parsing xmpp.client.tls.policy: " + policyName,e);
+    tlsPolicy=Connection.TLSPolicy.optional;
+  }
   return tlsPolicy;
 }
