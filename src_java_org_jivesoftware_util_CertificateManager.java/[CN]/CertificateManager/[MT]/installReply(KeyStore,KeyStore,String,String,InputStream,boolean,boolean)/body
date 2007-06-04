@@ -14,10 +14,10 @@
   }
   List<X509Certificate> newCerts;
   if (certs.size() == 1) {
-    newCerts=establishCertChain(keyStore,trustStore,certificate,certs.get(0),trustCACerts);
+    newCerts=establishCertChain(keyStore,trustStore,null,certs.get(0),trustCACerts);
   }
  else {
-    newCerts=validateReply(keyStore,trustStore,alias,certificate,certs,trustCACerts,validateRoot);
+    newCerts=validateReply(keyStore,trustStore,alias,null,certs,trustCACerts,validateRoot);
   }
   if (newCerts != null) {
     keyStore.setKeyEntry(alias,privKey,keyPassword.toCharArray(),newCerts.toArray(new X509Certificate[newCerts.size()]));

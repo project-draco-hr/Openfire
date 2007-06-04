@@ -1,17 +1,20 @@
 {
   int i;
-  PublicKey userPubKey=userCert.getPublicKey();
-  for (i=0; i < replyCerts.size(); i++) {
-    if (userPubKey.equals(replyCerts.get(i).getPublicKey())) {
-      break;
+  X509Certificate tmpCert;
+  if (userCert != null) {
+    PublicKey userPubKey=userCert.getPublicKey();
+    for (i=0; i < replyCerts.size(); i++) {
+      if (userPubKey.equals(replyCerts.get(i).getPublicKey())) {
+        break;
+      }
     }
+    if (i == replyCerts.size()) {
+      throw new Exception("Certificate reply does not contain public key for <alias>: " + alias);
+    }
+    tmpCert=replyCerts.get(0);
+    replyCerts.set(0,replyCerts.get(i));
+    replyCerts.set(i,tmpCert);
   }
-  if (i == replyCerts.size()) {
-    throw new Exception("Certificate reply does not contain public key for <alias>: " + alias);
-  }
-  X509Certificate tmpCert=replyCerts.get(0);
-  replyCerts.set(0,replyCerts.get(i));
-  replyCerts.set(i,tmpCert);
   Principal issuer=replyCerts.get(0).getIssuerDN();
   for (i=1; i < replyCerts.size() - 1; i++) {
     int j;
