@@ -1,2 +1,31 @@
 {
+  userCache=CacheFactory.createCache("User");
+  remoteUsersCache=CacheFactory.createCache("Remote Users Existence");
+  initProvider();
+  PropertyEventListener propListener=new PropertyEventListener(){
+    public void propertySet(    String property,    Map params){
+    }
+    public void propertyDeleted(    String property,    Map params){
+    }
+    public void xmlPropertySet(    String property,    Map params){
+      if ("provider.user.className".equals(property)) {
+        initProvider();
+      }
+    }
+    public void xmlPropertyDeleted(    String property,    Map params){
+    }
+  }
+;
+  PropertyEventDispatcher.addListener(propListener);
+  UserEventListener userListener=new UserEventListener(){
+    public void userCreated(    User user,    Map<String,Object> params){
+    }
+    public void userDeleting(    User user,    Map<String,Object> params){
+    }
+    public void userModified(    User user,    Map<String,Object> params){
+      userCache.put(user.getUsername(),user);
+    }
+  }
+;
+  UserEventDispatcher.addListener(userListener);
 }
