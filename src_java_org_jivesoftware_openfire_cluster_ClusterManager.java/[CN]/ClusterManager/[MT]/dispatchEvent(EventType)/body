@@ -1,0 +1,28 @@
+{
+  for (  ClusterEventListener listener : listeners) {
+    try {
+switch (eventType) {
+case joined_cluster:
+{
+          listener.joinedCluster();
+          break;
+        }
+case left_cluster:
+{
+        listener.leftCluster();
+        break;
+      }
+case marked_senior_cluster_member:
+{
+      listener.markedAsSeniorClusterMember();
+      break;
+    }
+default :
+  break;
+}
+}
+ catch (Exception e) {
+Log.error(e);
+}
+}
+}

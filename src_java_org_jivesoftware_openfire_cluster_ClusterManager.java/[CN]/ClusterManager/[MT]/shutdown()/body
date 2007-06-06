@@ -1,0 +1,8 @@
+{
+  LockManager.setLockFactory(new LocalLockFactory());
+  XMPPServer.getInstance().setRemoteSessionLocator(null);
+  XMPPServer.getInstance().getRoutingTable().setRemotePacketRouter(null);
+  if (isClusteringStarted()) {
+    CacheFactory.shutdown();
+  }
+}
