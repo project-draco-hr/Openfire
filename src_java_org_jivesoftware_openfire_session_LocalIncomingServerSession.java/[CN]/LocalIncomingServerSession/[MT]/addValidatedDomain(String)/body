@@ -1,5 +1,22 @@
 {
-  if (validatedDomains.add(domain)) {
+  boolean added;
+  String streamID=getStreamID().getID();
+  Lock lock=LockManager.getLock(streamID);
+  try {
+    lock.lock();
+    Set<String> validatedDomains=validatedDomainsCache.get(streamID);
+    if (validatedDomains == null) {
+      validatedDomains=new HashSet<String>();
+    }
+    added=validatedDomains.add(domain);
+    if (added) {
+      validatedDomainsCache.put(streamID,validatedDomains);
+    }
+  }
+  finally {
+    lock.unlock();
+  }
+  if (added) {
     SessionManager.getInstance().registerIncomingServerSession(domain,this);
   }
 }

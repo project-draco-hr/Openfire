@@ -1,0 +1,31 @@
+{
+  if (serverName == null) {
+    return false;
+  }
+  if (session == null) {
+    session=getSession(fullJID);
+  }
+  boolean removed=routingTable.removeClientRoute(fullJID);
+  if (removed) {
+    if (anonymous) {
+      SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
+    }
+ else {
+      SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
+    }
+  }
+  boolean preauth_removed=localSessionManager.getPreAuthenticatedSessions().remove(fullJID.getResource()) != null;
+  if (forceUnavailable || session.getPresence().isAvailable()) {
+    Presence offline=new Presence();
+    offline.setFrom(fullJID);
+    offline.setTo(new JID(null,serverName,null,true));
+    offline.setType(Presence.Type.unavailable);
+    router.route(offline);
+  }
+  if (removed || preauth_removed) {
+    decrementCounter("usercounter");
+    decrementCounter("conncounter");
+    return true;
+  }
+  return false;
+}

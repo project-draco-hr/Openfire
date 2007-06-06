@@ -1,7 +1,7 @@
 {
 synchronized (CacheFactory.class) {
     if (!clusteringStarted) {
-      return null;
+      throw new IllegalStateException("Cluster service is not available");
     }
   }
   return cacheFactoryStrategy.doSynchronousClusterTask(task,nodeID);

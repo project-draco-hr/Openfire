@@ -3,28 +3,5 @@
     return false;
   }
   boolean anonymous=session.getAuthToken().isAnonymous();
-  boolean removed=routingTable.removeClientRoute(session.getAddress());
-  if (removed) {
-    if (anonymous) {
-      SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.anonymous_session_destroyed);
-    }
- else {
-      SessionEventDispatcher.dispatchEvent(session,SessionEventDispatcher.EventType.session_destroyed);
-    }
-  }
-  boolean preauth_removed=localSessionManager.getPreAuthenticatedSessions().remove(session.getAddress().getResource()) != null;
-  Presence presence=session.getPresence();
-  if (presence.isAvailable()) {
-    Presence offline=new Presence();
-    offline.setFrom(session.getAddress());
-    offline.setTo(new JID(null,serverName,null,true));
-    offline.setType(Presence.Type.unavailable);
-    router.route(offline);
-  }
-  if (removed || preauth_removed) {
-    decrementCounter("usercounter");
-    decrementCounter("conncounter");
-    return true;
-  }
-  return false;
+  return removeSession(session,session.getAddress(),anonymous,false);
 }

@@ -1,3 +1,15 @@
 {
-  return Collections.unmodifiableCollection(validatedDomains);
+  String streamID=getStreamID().getID();
+  Lock lock=LockManager.getLock(streamID);
+  try {
+    lock.lock();
+    Set<String> validatedDomains=validatedDomainsCache.get(streamID);
+    if (validatedDomains == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableCollection(validatedDomains);
+  }
+  finally {
+    lock.unlock();
+  }
 }

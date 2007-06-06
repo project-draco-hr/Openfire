@@ -1,11 +1,11 @@
 {
   if (!clusteringStarted) {
-    return false;
+    throw new IllegalStateException("Cluster service is not available");
   }
 synchronized (CacheFactory.class) {
     if (!clusteringStarted) {
-      return false;
+      throw new IllegalStateException("Cluster service is not available");
     }
   }
-  return cacheFactoryStrategy.doClusterTask(task,nodeID);
+  cacheFactoryStrategy.doClusterTask(task,nodeID);
 }

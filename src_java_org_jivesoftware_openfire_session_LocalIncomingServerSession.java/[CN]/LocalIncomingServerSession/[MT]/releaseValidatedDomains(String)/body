@@ -1,0 +1,10 @@
+{
+  Lock lock=LockManager.getLock(streamID);
+  try {
+    lock.lock();
+    validatedDomainsCache.remove(streamID);
+  }
+  finally {
+    lock.unlock();
+  }
+}
