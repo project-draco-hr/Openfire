@@ -1,0 +1,13 @@
+{
+  try {
+    Event event=new Event(EventType.joined_cluster,oldNodeID);
+    events.put(event);
+    if (!asynchronous) {
+      while (!event.isProcessed()) {
+        Thread.sleep(100);
+      }
+    }
+  }
+ catch (  InterruptedException e) {
+  }
+}

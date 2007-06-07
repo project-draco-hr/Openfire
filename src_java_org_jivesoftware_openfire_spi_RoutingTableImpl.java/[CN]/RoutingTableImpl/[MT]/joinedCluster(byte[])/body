@@ -1,0 +1,16 @@
+{
+  for (  LocalOutgoingServerSession session : localRoutingTable.getServerRoutes()) {
+    addServerRoute(session.getAddress(),session);
+  }
+  for (  RoutableChannelHandler route : localRoutingTable.getComponentRoute()) {
+    addComponentRoute(route.getAddress(),route);
+  }
+  for (  LocalClientSession session : localRoutingTable.getClientRoutes()) {
+    addClientRoute(session.getAddress(),session);
+  }
+  PresenceUpdateHandler presenceUpdateHandler=XMPPServer.getInstance().getPresenceUpdateHandler();
+  for (  LocalClientSession session : localRoutingTable.getClientRoutes()) {
+    session.setInitialized(false);
+    presenceUpdateHandler.process(session.getPresence());
+  }
+}

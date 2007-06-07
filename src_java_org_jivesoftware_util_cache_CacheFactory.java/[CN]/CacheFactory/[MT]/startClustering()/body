@@ -1,23 +1,13 @@
 {
   clusteringStarted=false;
-  boolean clusterStarted=false;
   try {
     cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
-    clusterStarted=cacheFactoryStrategy.startCluster();
-    if (clusterStarted) {
-      for (      String cacheName : caches.keySet()) {
-        CacheWrapper wrapper=(CacheWrapper)caches.get(cacheName);
-        wrapper.setWrappedCache(cacheFactoryStrategy.createCache(cacheName));
-      }
-      clusteringStarted=true;
-      XMPPServer.getInstance().setNodeID(CacheFactory.getClusterMemberID());
-      fireClusteringStarted();
-    }
+    clusteringStarted=cacheFactoryStrategy.startCluster();
   }
  catch (  Exception e) {
     Log.error("Unable to start clustering - continuing in local mode",e);
   }
-  if (!clusterStarted) {
+  if (!clusteringStarted) {
     try {
       cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
     }

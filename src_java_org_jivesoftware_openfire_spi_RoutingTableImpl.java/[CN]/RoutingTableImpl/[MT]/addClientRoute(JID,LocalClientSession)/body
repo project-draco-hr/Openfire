@@ -21,9 +21,9 @@
       Lock lock=LockManager.getLock(route.toBareJID());
       try {
         lock.lock();
-        List<String> jids=usersSessions.get(route.toBareJID());
+        Collection<String> jids=usersSessions.get(route.toBareJID());
         if (jids == null) {
-          jids=new ArrayList<String>();
+          jids=new HashSet<String>();
         }
         jids.add(route.toString());
         usersSessions.put(route.toBareJID(),jids);
