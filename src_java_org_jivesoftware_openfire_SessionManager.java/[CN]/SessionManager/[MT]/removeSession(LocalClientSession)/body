@@ -2,6 +2,7 @@
   if (session == null || serverName == null) {
     return false;
   }
-  boolean anonymous=session.getAuthToken().isAnonymous();
+  AuthToken authToken=session.getAuthToken();
+  boolean anonymous=authToken == null || authToken.isAnonymous();
   return removeSession(session,session.getAddress(),anonymous,false);
 }
