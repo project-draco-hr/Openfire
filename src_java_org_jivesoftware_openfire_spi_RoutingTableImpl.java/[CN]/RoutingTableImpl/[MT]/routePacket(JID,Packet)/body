@@ -1,9 +1,5 @@
 {
   boolean routed=false;
-  JID address=packet.getTo();
-  if (address == null) {
-    throw new PacketException("To address cannot be null.");
-  }
   if (serverName.equals(jid.getDomain())) {
     if (jid.getResource() == null) {
       if (packet instanceof Message) {
@@ -14,22 +10,12 @@
       }
     }
  else {
-      boolean onlyAvailable=true;
-      if (packet instanceof IQ) {
-        onlyAvailable=packet.getFrom() != null && !serverName.equals(packet.getFrom().toString());
-      }
- else       if (packet instanceof Message) {
-        onlyAvailable=packet.getFrom() == null || !serverName.equals(packet.getFrom().toString());
-      }
- else       if (packet instanceof Presence) {
-        onlyAvailable=packet.getFrom() == null || !serverName.equals(packet.getFrom().toString());
-      }
       ClientRoute clientRoute=usersCache.get(jid.toString());
       if (clientRoute == null) {
         clientRoute=anonymousUsersCache.get(jid.toString());
       }
       if (clientRoute != null) {
-        if (onlyAvailable && !clientRoute.isAvailable()) {
+        if (!clientRoute.isAvailable() && routeOnlyAvailable(packet)) {
           routed=false;
         }
  else {
