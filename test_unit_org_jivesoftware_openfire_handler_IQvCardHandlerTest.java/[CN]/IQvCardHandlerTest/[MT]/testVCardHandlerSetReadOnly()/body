@@ -1,0 +1,18 @@
+{
+  IQ vCardSet=new IQ(IQ.Type.set);
+  vCardSet.setChildElement("vCard","vcard-temp");
+  final VCardManager vCardManager=context.mock(VCardManager.class);
+  IQvCardHandler vCardHandler=new IQvCardHandler();
+  context.checking(new Expectations(){
+{
+      one(xmppServer).getVCardManager();
+      will(returnValue(vCardManager));
+      one(vCardManager).isReadOnly();
+      will(returnValue(true));
+    }
+  }
+);
+  vCardHandler.initialize(xmppServer);
+  IQ result=vCardHandler.handleIQ(vCardSet);
+  assertEquals(result.getType(),IQ.Type.error);
+}

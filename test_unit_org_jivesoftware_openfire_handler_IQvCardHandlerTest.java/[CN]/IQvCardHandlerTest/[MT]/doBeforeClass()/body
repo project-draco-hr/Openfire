@@ -1,0 +1,17 @@
+{
+  xmppServer=context.mock(XMPPServer.class);
+  userManager=context.mock(UserManager.class);
+  packetDeliverer=context.mock(PacketDeliverer.class);
+  sessionManager=context.mock(SessionManager.class);
+  context.checking(new Expectations(){
+{
+      allowing(xmppServer).getUserManager();
+      will(returnValue(userManager));
+      allowing(xmppServer).getPacketDeliverer();
+      will(returnValue(packetDeliverer));
+      allowing(xmppServer).getSessionManager();
+      will(returnValue(sessionManager));
+    }
+  }
+);
+}
