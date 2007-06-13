@@ -1,0 +1,48 @@
+{
+  for (  Session session : localSessionManager.getComponentsSessions()) {
+    componentSessionsCache.put(session.getAddress().toString(),server.getNodeID());
+  }
+  for (  String address : localSessionManager.getConnnectionManagerSessions().keySet()) {
+    multiplexerSessionsCache.put(address,server.getNodeID());
+  }
+  for (  LocalIncomingServerSession session : localSessionManager.getIncomingServerSessions()) {
+    String streamID=session.getStreamID().getID();
+    incomingServerSessionsCache.put(streamID,server.getNodeID());
+    for (    String hostname : session.getValidatedDomains()) {
+      Lock lock=LockManager.getLock(hostname);
+      try {
+        lock.lock();
+        List<String> streamIDs=hostnameSessionsCache.get(hostname);
+        if (streamIDs == null) {
+          streamIDs=new ArrayList<String>();
+        }
+        streamIDs.add(streamID);
+        hostnameSessionsCache.put(hostname,streamIDs);
+      }
+  finally {
+        lock.unlock();
+      }
+      lock=LockManager.getLock(streamID);
+      try {
+        lock.lock();
+        Set<String> validatedDomains=validatedDomainsCache.get(streamID);
+        if (validatedDomains == null) {
+          validatedDomains=new HashSet<String>();
+        }
+        boolean added=validatedDomains.add(hostname);
+        if (added) {
+          validatedDomainsCache.put(streamID,validatedDomains);
+        }
+      }
+  finally {
+        lock.unlock();
+      }
+    }
+  }
+  for (  ClientSession session : routingTable.getClientsRoutes(true)) {
+    incrementCounter("conncounter");
+    if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+      incrementCounter("usercounter");
+    }
+  }
+}

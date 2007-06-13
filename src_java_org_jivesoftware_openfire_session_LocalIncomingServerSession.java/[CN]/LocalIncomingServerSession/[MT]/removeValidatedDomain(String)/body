@@ -1,22 +1,4 @@
 {
-  String streamID=getStreamID().getID();
-  Lock lock=LockManager.getLock(streamID);
-  try {
-    lock.lock();
-    Set<String> validatedDomains=validatedDomainsCache.get(streamID);
-    if (validatedDomains == null) {
-      validatedDomains=new HashSet<String>();
-    }
-    validatedDomains.remove(domain);
-    if (!validatedDomains.isEmpty()) {
-      validatedDomainsCache.put(streamID,validatedDomains);
-    }
- else {
-      validatedDomainsCache.remove(streamID);
-    }
-  }
-  finally {
-    lock.unlock();
-  }
-  SessionManager.getInstance().unregisterIncomingServerSessions(domain);
+  validatedDomains.remove(domain);
+  SessionManager.getInstance().unregisterIncomingServerSession(domain,this);
 }

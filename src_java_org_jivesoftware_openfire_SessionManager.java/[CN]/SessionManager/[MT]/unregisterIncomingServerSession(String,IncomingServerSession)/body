@@ -1,18 +1,37 @@
 {
-  localSessionManager.removeIncomingServerSessions(session.getStreamID().getID());
-  incomingServerSessionsCache.remove(session.getStreamID().getID());
+  String streamID=session.getStreamID().getID();
+  localSessionManager.removeIncomingServerSessions(streamID);
+  incomingServerSessionsCache.remove(streamID);
   Lock lock=LockManager.getLock(hostname);
   try {
     lock.lock();
     List<String> streamIDs=hostnameSessionsCache.get(hostname);
     if (streamIDs != null) {
-      streamIDs.remove(session.getStreamID().getID());
+      streamIDs.remove(streamID);
       if (streamIDs.isEmpty()) {
         hostnameSessionsCache.remove(hostname);
       }
  else {
         hostnameSessionsCache.put(hostname,streamIDs);
       }
+    }
+  }
+  finally {
+    lock.unlock();
+  }
+  lock=LockManager.getLock(streamID);
+  try {
+    lock.lock();
+    Set<String> validatedDomains=validatedDomainsCache.get(streamID);
+    if (validatedDomains == null) {
+      validatedDomains=new HashSet<String>();
+    }
+    validatedDomains.remove(hostname);
+    if (!validatedDomains.isEmpty()) {
+      validatedDomainsCache.put(streamID,validatedDomains);
+    }
+ else {
+      validatedDomainsCache.remove(streamID);
     }
   }
   finally {

@@ -1,6 +1,10 @@
 {
   try {
-    events.put(new Event(EventType.leaving_cluster,null));
+    Event event=new Event(EventType.leaving_cluster,null);
+    events.put(event);
+    while (!event.isProcessed()) {
+      Thread.sleep(50);
+    }
   }
  catch (  InterruptedException e) {
   }

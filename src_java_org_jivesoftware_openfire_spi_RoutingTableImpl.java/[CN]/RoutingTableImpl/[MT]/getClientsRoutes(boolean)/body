@@ -1,0 +1,21 @@
+{
+  Collection<ClientSession> sessions=new ArrayList<ClientSession>(localRoutingTable.getClientRoutes());
+  if (!onlyLocal) {
+    RemoteSessionLocator locator=server.getRemoteSessionLocator();
+    if (locator != null) {
+      for (      Map.Entry<String,ClientRoute> entry : usersCache.entrySet()) {
+        ClientRoute route=entry.getValue();
+        if (!Arrays.equals(route.getNodeID(),server.getNodeID())) {
+          sessions.add(locator.getClientSession(route.getNodeID(),new JID(entry.getKey())));
+        }
+      }
+      for (      Map.Entry<String,ClientRoute> entry : anonymousUsersCache.entrySet()) {
+        ClientRoute route=entry.getValue();
+        if (!Arrays.equals(route.getNodeID(),server.getNodeID())) {
+          sessions.add(locator.getClientSession(route.getNodeID(),new JID(entry.getKey())));
+        }
+      }
+    }
+  }
+  return sessions;
+}
