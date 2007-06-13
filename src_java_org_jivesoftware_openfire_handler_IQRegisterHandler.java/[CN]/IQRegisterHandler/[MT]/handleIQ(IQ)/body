@@ -70,7 +70,11 @@
             reply=IQ.createResultIQ(packet);
             session.process(reply);
             Thread.sleep(10);
-            session.close();
+            final StreamError error=new StreamError(StreamError.Condition.not_authorized);
+            for (            ClientSession sess : sessionManager.getSessions(user.getUsername())) {
+              sess.deliverRawText(error.toXML());
+              sess.close();
+            }
             reply=null;
           }
  else {
