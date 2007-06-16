@@ -1,10 +1,10 @@
 {
-  Map<String,Set<String>> map=directedPresences.get(session.getAddress().toString());
-  if (map != null) {
+  Collection<DirectedPresence> directedPresences=directedPresencesCache.get(session.getAddress().toString());
+  if (directedPresences != null) {
     String recipient=recipientJID.toBareJID();
-    for (    Set<String> fullJIDs : map.values()) {
-      for (      String fullJID : fullJIDs) {
-        if (fullJID.contains(recipient)) {
+    for (    DirectedPresence directedPresence : directedPresences) {
+      for (      String receiver : directedPresence.getReceivers()) {
+        if (receiver.contains(recipient)) {
           return true;
         }
       }

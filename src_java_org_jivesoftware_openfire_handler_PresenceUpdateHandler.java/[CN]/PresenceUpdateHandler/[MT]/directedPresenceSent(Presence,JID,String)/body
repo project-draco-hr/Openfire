@@ -4,7 +4,6 @@
   }
   if (localServer.isLocal(update.getFrom())) {
     boolean keepTrack=false;
-    Map<String,Set<String>> map;
     String name=update.getFrom().getNode();
     if (name != null && !"".equals(name)) {
       if (!RosterManager.isRosterServiceEnabled()) {
@@ -36,38 +35,55 @@ catch (        PacketException e) {
     }
     if (keepTrack) {
       String sender=update.getFrom().toString();
-      map=directedPresences.get(sender);
+      Collection<DirectedPresence> directedPresences=directedPresencesCache.get(sender);
       if (Presence.Type.unavailable.equals(update.getType())) {
-        if (map != null) {
+        if (directedPresences != null) {
           if (routingTable.hasClientRoute(handlerJID)) {
-            map.remove(handlerJID.toString());
-            if (map.isEmpty()) {
-              directedPresences.remove(sender);
+            for (            DirectedPresence directedPresence : directedPresences) {
+              if (directedPresence.getHandler().equals(handlerJID)) {
+                directedPresences.remove(directedPresence);
+                break;
+              }
             }
           }
  else {
-            Set<String> jids=map.get(handlerJID.toString());
-            if (jids != null) {
-              jids.remove(jid);
-              if (jids.isEmpty()) {
-                map.remove(handlerJID.toString());
-                if (map.isEmpty()) {
-                  directedPresences.remove(sender);
+            for (            DirectedPresence directedPresence : directedPresences) {
+              if (directedPresence.getHandler().equals(handlerJID)) {
+                directedPresence.removeReceiver(jid);
+                if (directedPresence.isEmpty()) {
+                  directedPresences.remove(directedPresence);
                 }
+                break;
               }
             }
+          }
+          if (directedPresences.isEmpty()) {
+            directedPresencesCache.remove(sender);
+            localDirectedPresences.remove(sender);
+          }
+ else {
+            directedPresencesCache.put(sender,directedPresences);
+            localDirectedPresences.put(sender,directedPresences);
           }
         }
       }
  else {
-        if (map == null) {
-          map=new ConcurrentHashMap<String,Set<String>>();
-          directedPresences.put(sender,map);
+        if (directedPresences == null) {
+          directedPresences=new ConcurrentLinkedQueue<DirectedPresence>();
         }
-        if (map.get(handlerJID.toString()) == null) {
-          map.put(handlerJID.toString(),new ConcurrentHashSet<String>());
+        DirectedPresence affectedDirectedPresence=null;
+        for (        DirectedPresence directedPresence : directedPresences) {
+          if (directedPresence.getHandler().equals(handlerJID)) {
+            affectedDirectedPresence=directedPresence;
+            break;
+          }
         }
-        map.get(handlerJID.toString()).add(jid);
+        if (affectedDirectedPresence == null) {
+          affectedDirectedPresence=new DirectedPresence(handlerJID);
+        }
+        affectedDirectedPresence.addReceiver(jid);
+        directedPresencesCache.put(sender,directedPresences);
+        localDirectedPresences.put(sender,directedPresences);
       }
     }
   }

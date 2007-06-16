@@ -1,22 +1,19 @@
 {
-  if (update.getFrom() == null) {
+  JID from=update.getFrom();
+  if (from == null) {
     return;
   }
-  if (localServer.isLocal(update.getFrom())) {
-    Map<String,Set<String>> map=directedPresences.remove(update.getFrom().toString());
-    if (map != null) {
-      for (      String handler : new HashSet<String>(map.keySet())) {
-        JID handlerJID=new JID(handler);
-        Set<String> jids=map.get(handler);
-        if (jids == null) {
-          continue;
-        }
-        for (        String jid : jids) {
+  if (localServer.isLocal(from)) {
+    Collection<DirectedPresence> directedPresences=directedPresencesCache.remove(from.toString());
+    if (directedPresences != null) {
+      for (      DirectedPresence directedPresence : directedPresences) {
+        for (        String receiver : directedPresence.getReceivers()) {
           Presence presence=update.createCopy();
-          presence.setTo(jid);
-          routingTable.routePacket(handlerJID,presence);
+          presence.setTo(receiver);
+          routingTable.routePacket(directedPresence.getHandler(),presence);
         }
       }
+      localDirectedPresences.remove(from.toString());
     }
   }
 }
