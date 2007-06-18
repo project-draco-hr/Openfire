@@ -1,13 +1,13 @@
 {
   for (  Session session : localSessionManager.getComponentsSessions()) {
-    componentSessionsCache.put(session.getAddress().toString(),server.getNodeID());
+    componentSessionsCache.put(session.getAddress().toString(),server.getNodeID().toByteArray());
   }
   for (  String address : localSessionManager.getConnnectionManagerSessions().keySet()) {
-    multiplexerSessionsCache.put(address,server.getNodeID());
+    multiplexerSessionsCache.put(address,server.getNodeID().toByteArray());
   }
   for (  LocalIncomingServerSession session : localSessionManager.getIncomingServerSessions()) {
     String streamID=session.getStreamID().getID();
-    incomingServerSessionsCache.put(streamID,server.getNodeID());
+    incomingServerSessionsCache.put(streamID,server.getNodeID().toByteArray());
     for (    String hostname : session.getValidatedDomains()) {
       Lock lock=LockManager.getLock(hostname);
       try {

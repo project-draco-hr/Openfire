@@ -1,7 +1,7 @@
 {
   String streamID=session.getStreamID().getID();
   localSessionManager.addIncomingServerSessions(streamID,session);
-  incomingServerSessionsCache.put(streamID,server.getNodeID());
+  incomingServerSessionsCache.put(streamID,server.getNodeID().toByteArray());
   Lock lock=LockManager.getLock(hostname);
   try {
     lock.lock();

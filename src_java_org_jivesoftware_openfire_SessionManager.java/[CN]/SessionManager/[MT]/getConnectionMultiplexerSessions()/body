@@ -4,7 +4,7 @@
   RemoteSessionLocator locator=server.getRemoteSessionLocator();
   if (locator != null) {
     for (    Map.Entry<String,byte[]> entry : multiplexerSessionsCache.entrySet()) {
-      if (!Arrays.equals(server.getNodeID(),entry.getValue())) {
+      if (!server.getNodeID().equals(entry.getValue())) {
         sessions.add(locator.getConnectionMultiplexerSession(entry.getValue(),new JID(entry.getKey())));
       }
     }

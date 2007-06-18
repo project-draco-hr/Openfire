@@ -8,7 +8,7 @@
   conn.registerCloseListener(multiplexerSessionListener,session);
   boolean firstConnection=getConnectionMultiplexerSessions(address.getDomain()).isEmpty();
   localSessionManager.getConnnectionManagerSessions().put(address.toString(),session);
-  multiplexerSessionsCache.put(address.toString(),server.getNodeID());
+  multiplexerSessionsCache.put(address.toString(),server.getNodeID().toByteArray());
   if (firstConnection) {
     ConnectionMultiplexerManager.getInstance().multiplexerAvailable(address.getDomain());
   }

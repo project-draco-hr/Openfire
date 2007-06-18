@@ -19,7 +19,7 @@
           routed=false;
         }
  else {
-          if (Arrays.equals(clientRoute.getNodeID(),server.getNodeID())) {
+          if (server.getNodeID().equals(clientRoute.getNodeID())) {
             try {
               localRoutingTable.getRoute(jid.toString()).process(packet);
               routed=true;
@@ -49,10 +49,10 @@
       }
     }
  else {
-      Set<byte[]> nodes=componentsCache.get(jid.getDomain());
+      Set<NodeID> nodes=componentsCache.get(jid.getDomain());
       if (nodes != null) {
-        for (        byte[] nodeID : nodes) {
-          if (Arrays.equals(nodeID,server.getNodeID())) {
+        for (        NodeID nodeID : nodes) {
+          if (server.getNodeID().equals(nodeID)) {
             try {
               localRoutingTable.getRoute(jid.getDomain()).process(packet);
               routed=true;
@@ -64,7 +64,7 @@
           }
  else {
             if (remotePacketRouter != null) {
-              routed=remotePacketRouter.routePacket(nodeID,jid,packet);
+              routed=remotePacketRouter.routePacket(nodeID.toByteArray(),jid,packet);
               if (routed) {
                 break;
               }
@@ -77,7 +77,7 @@
  else {
     byte[] nodeID=serversCache.get(jid.getDomain());
     if (nodeID != null) {
-      if (Arrays.equals(nodeID,server.getNodeID())) {
+      if (server.getNodeID().equals(nodeID)) {
         try {
           localRoutingTable.getRoute(jid.getDomain()).process(packet);
           routed=true;
