@@ -1,6 +1,8 @@
 {
   InternalComponentManager.getInstance().addListener(this);
-  serverName=XMPPServer.getInstance().getServerInfo().getName();
+  XMPPServer server=XMPPServer.getInstance();
+  serverName=server.getServerInfo().getName();
+  routingTable=server.getRoutingTable();
   InterceptorManager.getInstance().addInterceptor(this);
   packetsTask=new ProcessPacketsTask();
   timer.schedule(packetsTask,5000,5000);

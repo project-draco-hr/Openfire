@@ -16,8 +16,7 @@
   boolean incoming="incoming".equals(data.getData().get("direction").get(0));
   boolean processed="true".equals(data.getData().get("processed").get(0));
   JID componentJID=data.getOwner();
-  Component component=InternalComponentManager.getInstance().getComponent(componentJID);
-  PacketCopier.getInstance().addSubscriber(componentJID,component,iqEnabled,messageEnabled,presenceEnabled,incoming,processed);
+  PacketCopier.getInstance().addSubscriber(componentJID,iqEnabled,messageEnabled,presenceEnabled,incoming,processed);
   Element note=command.addElement("note");
   note.addAttribute("type","info");
   note.setText("Operation finished successfully");

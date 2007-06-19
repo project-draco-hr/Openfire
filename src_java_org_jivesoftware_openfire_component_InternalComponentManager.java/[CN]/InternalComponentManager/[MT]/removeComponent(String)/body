@@ -3,11 +3,13 @@
   Component component=components.remove(subdomain);
   componentInfo.remove(subdomain);
   JID componentJID=new JID(subdomain + "." + serverDomain);
-  if (XMPPServer.getInstance().getRoutingTable() != null) {
-    XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
+  RoutingTable routingTable=XMPPServer.getInstance().getRoutingTable();
+  if (routingTable != null) {
+    routingTable.removeComponentRoute(componentJID);
   }
-  if (XMPPServer.getInstance().getIQDiscoItemsHandler() != null) {
-    XMPPServer.getInstance().getIQDiscoItemsHandler().removeComponentItem(componentJID.toBareJID());
+  IQDiscoItemsHandler iqDiscoItemsHandler=XMPPServer.getInstance().getIQDiscoItemsHandler();
+  if (iqDiscoItemsHandler != null) {
+    iqDiscoItemsHandler.removeComponentItem(componentJID.toBareJID());
   }
   if (component != null) {
     component.shutdown();

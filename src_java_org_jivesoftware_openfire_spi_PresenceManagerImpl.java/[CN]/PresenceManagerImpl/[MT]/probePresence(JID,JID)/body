@@ -59,13 +59,12 @@
       }
     }
  else {
-      Component component=getComponent(probee);
-      if (component != null) {
+      if (routingTable.hasComponentRoute(probee)) {
         Presence presence=new Presence();
         presence.setType(Presence.Type.probe);
         presence.setFrom(prober);
         presence.setTo(probee);
-        component.processPacket(presence);
+        routingTable.routePacket(probee,presence);
       }
  else {
         if (server.isRemote(probee)) {

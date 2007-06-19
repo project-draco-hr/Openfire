@@ -1,12 +1,11 @@
 {
   for (  JID prober : presenceMap.keySet()) {
     JID probee=presenceMap.get(prober);
-    Component component=getComponent(probee);
-    if (component != null) {
+    if (routingTable.hasComponentRoute(probee)) {
       Presence presence=new Presence();
       presence.setFrom(prober);
       presence.setTo(probee);
-      component.processPacket(presence);
+      routingTable.routePacket(probee,presence);
       presenceMap.remove(prober);
     }
   }
