@@ -1,0 +1,40 @@
+{
+  String username=principal;
+  DirContext ctx=null;
+  try {
+    Log.debug("Starting LDAP search...");
+    String usernameField=manager.getUsernameField();
+    String baseDN=manager.getBaseDN();
+    boolean subTreeSearch=manager.isSubTreeSearch();
+    ctx=manager.getContext();
+    SearchControls constraints=new SearchControls();
+    if (subTreeSearch) {
+      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    constraints.setReturningAttributes(new String[]{usernameField});
+    NamingEnumeration answer=ctx.search("",princSearchFilter,new String[]{principal},constraints);
+    Log.debug("... search finished");
+    if (answer == null || !answer.hasMoreElements()) {
+      Log.debug("Username based on principal '" + principal + "' not found.");
+      return principal;
+    }
+    Attributes atrs=((SearchResult)answer.next()).getAttributes();
+    Attribute usernameAttribute=atrs.get(usernameField);
+    username=(String)usernameAttribute.get();
+  }
+ catch (  Exception e) {
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return username;
+}

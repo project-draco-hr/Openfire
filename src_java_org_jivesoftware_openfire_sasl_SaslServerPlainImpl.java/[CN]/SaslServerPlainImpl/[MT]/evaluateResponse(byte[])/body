@@ -1,0 +1,58 @@
+{
+  if (completed) {
+    throw new IllegalStateException("PLAIN authentication already completed");
+  }
+  if (aborted) {
+    throw new IllegalStateException("PLAIN authentication previously aborted due to error");
+  }
+  try {
+    if (response.length != 0) {
+      String data=new String(response,"UTF8");
+      StringTokenizer tokens=new StringTokenizer(data,"\0");
+      if (tokens.countTokens() > 2) {
+        username=tokens.nextToken();
+        principal=tokens.nextToken();
+      }
+ else {
+        username=tokens.nextToken();
+        principal=username;
+      }
+      password=tokens.nextToken();
+      NameCallback ncb=new NameCallback("PLAIN authentication ID: ",principal);
+      PasswordCallback pcb=new PasswordCallback("PLAIN password: ",false);
+      cbh.handle(new Callback[]{ncb,pcb});
+      char correctPassword[]=pcb.getPassword();
+      if (correctPassword == null || correctPassword.length == 0) {
+        aborted=true;
+        throw new SaslException("PLAIN: username not found: " + principal);
+      }
+      pcb.clearPassword();
+      String s_correctPassword=new String(correctPassword);
+      if (s_correctPassword.equals(password)) {
+        AuthorizeCallback acb=new AuthorizeCallback(principal,username);
+        cbh.handle(new Callback[]{acb});
+        username=acb.getAuthorizationID();
+        completed=true;
+      }
+ else {
+        throw new SaslException("PLAIN: user not authorized: " + principal);
+      }
+    }
+ else {
+      return null;
+    }
+  }
+ catch (  UnsupportedEncodingException e) {
+    aborted=true;
+    throw new SaslException("UTF8 not available on platform",e);
+  }
+catch (  UnsupportedCallbackException e) {
+    aborted=true;
+    throw new SaslException("PLAIN authentication failed",e);
+  }
+catch (  IOException e) {
+    aborted=true;
+    throw new SaslException("PLAIN authentication failed",e);
+  }
+  return null;
+}

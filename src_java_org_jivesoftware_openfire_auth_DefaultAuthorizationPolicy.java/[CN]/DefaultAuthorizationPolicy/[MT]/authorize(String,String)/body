@@ -1,0 +1,74 @@
+{
+  boolean authorized=false;
+  String userUser=username;
+  String userRealm=null;
+  String authenUser=authenID;
+  String authenRealm=null;
+  if (username.contains("@")) {
+    userUser=username.substring(0,username.lastIndexOf("@"));
+    userRealm=username.substring((username.lastIndexOf("@") + 1));
+  }
+  if (authenID.contains("@")) {
+    authenUser=authenID.substring(0,(authenID.lastIndexOf("@")));
+    authenRealm=authenID.substring((authenID.lastIndexOf("@") + 1));
+  }
+  if (!userUser.equals(authenUser)) {
+    if (JiveGlobals.getBooleanProperty("xmpp.auth.ignorecase",true)) {
+      if (!userUser.toLowerCase().equals(authenUser.toLowerCase())) {
+        Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
+        return false;
+      }
+    }
+ else {
+      Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
+      return false;
+    }
+  }
+  Log.debug("DefaultAuthorizationPolicy: Checking authenID realm");
+  if (authenRealm != null) {
+    if (authenRealm.equals(JiveGlobals.getProperty("xmpp.domain"))) {
+      Log.debug("DefaultAuthorizationPolicy: authenRealm = xmpp.domain");
+      authorized=true;
+    }
+ else     if (authenRealm.equals(JiveGlobals.getXMLProperty("sasl.realm"))) {
+      Log.debug("DefaultAuthorizationPolicy: authenRealm = sasl.realm");
+      authorized=true;
+    }
+ else {
+      for (      String realm : approvedRealms) {
+        if (authenRealm.equals(realm)) {
+          Log.debug("DefaultAuthorizationPolicy: authenRealm = " + realm + " which is approved");
+          authorized=true;
+        }
+ else {
+          Log.debug("DefaultAuthorizationPolicy: authenRealm != " + realm + " which is approved");
+        }
+      }
+    }
+  }
+ else {
+    authorized=true;
+  }
+  if (!authorized) {
+    return false;
+  }
+ else {
+    authorized=false;
+  }
+  if (userRealm != null) {
+    if (userRealm.equals(JiveGlobals.getProperty("xmpp.domain"))) {
+      Log.debug("DefaultAuthorizationPolicy: userRealm = xmpp.domain");
+      authorized=true;
+    }
+ else {
+      if (authenRealm != null && authenRealm.equals(userRealm)) {
+        Log.debug("DefaultAuthorizationPolicy: userRealm = " + authenRealm + " which is approved");
+        authorized=true;
+      }
+    }
+  }
+ else {
+    authorized=true;
+  }
+  return authorized;
+}

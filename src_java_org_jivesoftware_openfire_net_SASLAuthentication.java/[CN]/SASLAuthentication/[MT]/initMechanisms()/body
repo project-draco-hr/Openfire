@@ -12,7 +12,7 @@
     StringTokenizer st=new StringTokenizer(available," ,\t\n\r\f");
     while (st.hasMoreTokens()) {
       String mech=st.nextToken().toUpperCase();
-      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("GSSAPI")|| mech.equals("JIVE-SHAREDSECRET")) {
+      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("GSSAPI")|| mech.equals("EXTERNAL")|| mech.equals("JIVE-SHAREDSECRET")) {
         Log.debug("SASLAuthentication: Added " + mech + " to mech list");
         mechanisms.add(mech);
       }
@@ -29,4 +29,5 @@
       }
     }
   }
+  Security.addProvider(new org.jivesoftware.openfire.sasl.SaslProvider());
 }

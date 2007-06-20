@@ -7,10 +7,7 @@ switch (type) {
 case AUTH:
       mechanism=doc.attributeValue("mechanism");
     session.setSessionData("SaslMechanism",mechanism);
-  if (mechanism.equalsIgnoreCase("PLAIN") && mechanisms.contains("PLAIN")) {
-    status=doPlainAuthentication(session,doc);
-  }
- else   if (mechanism.equalsIgnoreCase("ANONYMOUS") && mechanisms.contains("ANONYMOUS")) {
+  if (mechanism.equalsIgnoreCase("ANONYMOUS") && mechanisms.contains("ANONYMOUS")) {
     status=doAnonymousAuthentication(session);
   }
  else   if (mechanism.equalsIgnoreCase("EXTERNAL")) {
@@ -32,9 +29,15 @@ case AUTH:
         }
       }
       byte[] challenge=ss.evaluateResponse(token);
-      sendChallenge(session,challenge);
+      if (ss.isComplete()) {
+        authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
+        status=Status.authenticated;
+      }
+ else {
+        sendChallenge(session,challenge);
+        status=Status.needResponse;
+      }
       session.setSessionData("SaslServer",ss);
-      status=Status.needResponse;
     }
  catch (    SaslException e) {
       Log.warn("SaslException",e);
@@ -50,10 +53,7 @@ case AUTH:
 break;
 case RESPONSE:
 mechanism=(String)session.getSessionData("SaslMechanism");
-if (mechanism.equalsIgnoreCase("PLAIN") && mechanisms.contains("PLAIN")) {
-status=doPlainAuthentication(session,doc);
-}
- else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
+if (mechanism.equalsIgnoreCase("EXTERNAL")) {
 status=doExternalAuthentication(session,doc);
 }
  else if (mechanism.equalsIgnoreCase("JIVE-SHAREDSECRET")) {

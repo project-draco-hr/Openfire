@@ -1,0 +1,36 @@
+{
+  if (principal.contains("@")) {
+    String realm=principal.substring(principal.lastIndexOf('@') + 1);
+    String username=principal.substring(0,principal.lastIndexOf('@'));
+    if (realm.length() > 0) {
+      if (realm.equals(JiveGlobals.getProperty("xmpp.domain"))) {
+        Log.debug("DefaultAuthorizationMapping: realm = xmpp.domain");
+        return username;
+      }
+ else       if (realm.equals(JiveGlobals.getXMLProperty("sasl.realm"))) {
+        Log.debug("DefaultAuthorizationMapping: ream = sasl.realm");
+        return username;
+      }
+ else {
+        for (        String approvedRealm : approvedRealms) {
+          if (realm.equals(approvedRealm)) {
+            Log.debug("DefaultAuthorizationMapping: realm (" + realm + ") = "+ approvedRealm+ " which is approved");
+            return username;
+          }
+ else {
+            Log.debug("DefaultAuthorizationPolicy: realm (" + realm + ") != "+ approvedRealm+ " which is approved");
+          }
+        }
+      }
+      Log.debug("DefaultAuthorizationMapping: No approved mappings found.");
+      return principal;
+    }
+ else {
+      Log.debug("DefaultAuthorizationMapping: Realm has no length");
+    }
+  }
+ else {
+    Log.debug("DefaultAuthorizationMapping: No realm found");
+  }
+  return principal;
+}
