@@ -1,6 +1,6 @@
 {
-  if (loadVCard(username) != null) {
-    throw new AlreadyExistsException("Username " + username + " already has a vCard");
+  if (username == null || vCardElement == null) {
+    throw new NullPointerException("Parameters cannot be null.");
   }
   Connection con=null;
   PreparedStatement pstmt=null;
@@ -12,24 +12,9 @@
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {
-    Log.error("Error creating vCard for username: " + username,e);
+    throw new InternalServerErrorException("Error creating vCard for username: " + username,e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
 }

@@ -1,0 +1,20 @@
+{
+  if (username == null || vCardElement == null) {
+    throw new NullPointerException("Parameters cannot be null.");
+  }
+  Element oldVcard=loadVCard(username);
+  try {
+    if (oldVcard == null) {
+      createVCard(username,vCardElement);
+    }
+ else {
+      updateVCard(username,vCardElement);
+    }
+  }
+ catch (  AlreadyExistsException e) {
+    throw new InternalServerErrorException("Unable to set vCard for user:" + username,e);
+  }
+catch (  NotFoundException e) {
+    throw new InternalServerErrorException("Unable to set vCard for user:" + username,e);
+  }
+}
