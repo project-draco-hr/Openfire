@@ -23,7 +23,11 @@
       searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
+    String searchFilter=MessageFormat.format(manager.getSearchFilter(),"*");
     StringBuilder filter=new StringBuilder();
+    filter.append("(&(");
+    filter.append(searchFilter);
+    filter.append(")");
     if (fields.size() > 1) {
       filter.append("(|");
     }
@@ -34,6 +38,7 @@
     if (fields.size() > 1) {
       filter.append(")");
     }
+    filter.append(")");
     NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
     while (answer.hasMoreElements()) {
       String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
@@ -45,6 +50,10 @@
       answer=ctx2.search("",filter.toString(),searchControls);
       while (answer.hasMoreElements()) {
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+        String suffix=manager.getUsernameSuffix();
+        if (suffix.length() > 0 && username.endsWith(suffix)) {
+          username=username.substring(0,username.length() - suffix.length());
+        }
         usernames.add(JID.escapeNode(username));
       }
     }
