@@ -14,6 +14,9 @@
     response.setError(PacketError.Condition.not_acceptable);
     return response;
   }
+  if (!JiveGlobals.getBooleanProperty("xmpp.auth.iqauth",true)) {
+    throw new UnauthorizedException();
+  }
   username=username.toLowerCase();
   AuthToken token=null;
   if (password != null && AuthFactory.isPlainSupported()) {

@@ -8,47 +8,54 @@
     return reply;
   }
   IQ response;
-  try {
-    Element iq=packet.getElement();
-    Element query=iq.element("query");
-    Element queryResponse=probeResponse.createCopy();
-    if (IQ.Type.get == packet.getType()) {
-      String username=query.elementTextTrim("username");
-      if (username != null) {
-        queryResponse.element("username").setText(username);
-      }
-      response=IQ.createResultIQ(packet);
-      response.setChildElement(queryResponse);
-      if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
-        response.setTo((JID)null);
-      }
-    }
- else {
-      if (query.elements().isEmpty()) {
-        response=anonymousLogin(session,packet);
-      }
- else {
+  if (JiveGlobals.getBooleanProperty("xmpp.auth.iqauth",true)) {
+    try {
+      Element iq=packet.getElement();
+      Element query=iq.element("query");
+      Element queryResponse=probeResponse.createCopy();
+      if (IQ.Type.get == packet.getType()) {
         String username=query.elementTextTrim("username");
-        String password=query.elementTextTrim("password");
-        String digest=null;
-        if (query.element("digest") != null) {
-          digest=query.elementTextTrim("digest").toLowerCase();
+        if (username != null) {
+          queryResponse.element("username").setText(username);
         }
-        if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-          response=passwordReset(password,packet,username,session);
+        response=IQ.createResultIQ(packet);
+        response.setChildElement(queryResponse);
+        if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+          response.setTo((JID)null);
+        }
+      }
+ else {
+        if (query.elements().isEmpty()) {
+          response=anonymousLogin(session,packet);
         }
  else {
-          response=login(username,query,packet,password,session,digest);
+          String username=query.elementTextTrim("username");
+          String password=query.elementTextTrim("password");
+          String digest=null;
+          if (query.element("digest") != null) {
+            digest=query.elementTextTrim("digest").toLowerCase();
+          }
+          if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
+            response=passwordReset(password,packet,username,session);
+          }
+ else {
+            response=login(username,query,packet,password,session,digest);
+          }
         }
       }
     }
+ catch (    UserNotFoundException e) {
+      response=IQ.createResultIQ(packet);
+      response.setChildElement(packet.getChildElement().createCopy());
+      response.setError(PacketError.Condition.not_authorized);
+    }
+catch (    UnauthorizedException e) {
+      response=IQ.createResultIQ(packet);
+      response.setChildElement(packet.getChildElement().createCopy());
+      response.setError(PacketError.Condition.not_authorized);
+    }
   }
- catch (  UserNotFoundException e) {
-    response=IQ.createResultIQ(packet);
-    response.setChildElement(packet.getChildElement().createCopy());
-    response.setError(PacketError.Condition.not_authorized);
-  }
-catch (  UnauthorizedException e) {
+ else {
     response=IQ.createResultIQ(packet);
     response.setChildElement(packet.getChildElement().createCopy());
     response.setError(PacketError.Condition.not_authorized);
