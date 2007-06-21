@@ -1,0 +1,19 @@
+{
+  ComponentLifecycleImpl componentLifecycle=new ComponentLifecycleImpl(subdomain,component);
+  ComponentLifecycleImpl oldLifecycle=components.putIfAbsent(subdomain,componentLifecycle);
+  if (oldLifecycle != null) {
+    throw new IllegalArgumentException("Domain (" + subdomain + ") already taken by another component: "+ oldLifecycle.component);
+  }
+  try {
+    component.initialize(getComponentJID(subdomain),this);
+  }
+ catch (  ComponentException e) {
+    components.remove(subdomain,componentLifecycle);
+    throw e;
+  }
+catch (  RuntimeException e) {
+    components.remove(subdomain,componentLifecycle);
+    throw e;
+  }
+  return componentLifecycle;
+}

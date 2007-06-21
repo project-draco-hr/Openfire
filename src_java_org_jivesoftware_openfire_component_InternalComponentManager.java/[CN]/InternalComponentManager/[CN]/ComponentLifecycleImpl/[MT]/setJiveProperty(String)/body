@@ -1,0 +1,15 @@
+{
+  if (jiveProperty == null) {
+    this.jiveProperty=null;
+    PropertyEventDispatcher.removeListener(this);
+    startComponent();
+  }
+  this.jiveProperty=jiveProperty;
+  PropertyEventDispatcher.addListener(this);
+  if (JiveGlobals.getBooleanProperty(jiveProperty,true)) {
+    startComponent();
+  }
+ else {
+    stopComponent();
+  }
+}
