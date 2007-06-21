@@ -3,6 +3,7 @@
   Group group=null;
   String toNode=packet.getTo().getNode();
   boolean targetAll="all".equals(toNode);
+  Collection<JID> allowedUsers=getGlobalAllowedUsers();
   if (targetAll) {
     JID address=new JID(packet.getFrom().toBareJID());
     if (allowedUsers.isEmpty() || allowedUsers.contains(address)) {
@@ -14,7 +15,7 @@
       if (toNode != null) {
         group=groupManager.getGroup(toNode);
         boolean isGroupUser=group.isUser(packet.getFrom()) || group.isUser(new JID(packet.getFrom().toBareJID()));
-        if (disableGroupPermissions || (groupMembersAllowed && isGroupUser) || allowedUsers.contains(new JID(packet.getFrom().toBareJID()))) {
+        if (isGroupPermissionsDisabled() || (isGroupMembersAllowed() && isGroupUser) || allowedUsers.contains(new JID(packet.getFrom().toBareJID()))) {
           canProceed=true;
         }
       }

@@ -1,0 +1,11 @@
+{
+  ComponentLifecycle componentLifecycle=componentManager.addComponent(domain,component,jiveProperty);
+  destroyTasks.add(new FutureTask<Boolean>(new Callable<Boolean>(){
+    public Boolean call() throws Exception {
+      componentManager.removeComponent(domain);
+      return true;
+    }
+  }
+));
+  return componentLifecycle;
+}
