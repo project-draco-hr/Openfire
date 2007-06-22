@@ -1,8 +1,22 @@
 {
-  removeComponentItem(jid);
-  Element element=DocumentHelper.createElement("item");
-  element.addAttribute("jid",jid);
-  element.addAttribute("node",node);
-  element.addAttribute("name",name);
-  serverItems.add(element);
+  Lock lock=LockManager.getLock(jid + "item");
+  try {
+    lock.lock();
+    ClusteredServerItem item=serverItems.get(jid);
+    if (item == null) {
+      item=new ClusteredServerItem();
+      Element element=DocumentHelper.createElement("item");
+      element.addAttribute("jid",jid);
+      element.addAttribute("node",node);
+      element.addAttribute("name",name);
+      item.element=element;
+    }
+    if (item.nodes.add(XMPPServer.getInstance().getNodeID())) {
+      serverItems.put(jid,item);
+    }
+    localServerItems.put(jid,item.element);
+  }
+  finally {
+    lock.unlock();
+  }
 }

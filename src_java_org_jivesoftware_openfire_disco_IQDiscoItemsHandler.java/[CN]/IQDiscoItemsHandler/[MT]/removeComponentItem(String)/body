@@ -1,7 +1,19 @@
 {
-  for (Iterator<Element> it=serverItems.iterator(); it.hasNext(); ) {
-    if (jid.equals(it.next().attributeValue("jid"))) {
-      it.remove();
+  Lock lock=LockManager.getLock(jid + "item");
+  try {
+    lock.lock();
+    ClusteredServerItem item=serverItems.get(jid);
+    if (item != null && item.nodes.remove(XMPPServer.getInstance().getNodeID())) {
+      if (item.nodes.isEmpty()) {
+        serverItems.remove(jid);
+      }
+ else {
+        serverItems.put(jid,item);
+      }
     }
   }
+  finally {
+    lock.unlock();
+  }
+  localServerItems.remove(jid);
 }

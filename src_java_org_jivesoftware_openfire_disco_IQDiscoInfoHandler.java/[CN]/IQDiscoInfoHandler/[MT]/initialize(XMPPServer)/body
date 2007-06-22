@@ -1,7 +1,10 @@
 {
   super.initialize(server);
+  serverFeatures=CacheFactory.createCache("Disco Server Features");
+  addServerFeature("http://jabber.org/protocol/disco#info");
   for (  ServerFeaturesProvider provider : server.getServerFeaturesProviders()) {
     addServerFeaturesProvider(provider);
   }
   setProvider(server.getServerInfo().getName(),getServerInfoProvider());
+  ClusterManager.addListener(this);
 }

@@ -1,0 +1,21 @@
+{
+  for (  Map.Entry<String,Element> entry : localServerItems.entrySet()) {
+    String jid=entry.getKey();
+    Element element=entry.getValue();
+    Lock lock=LockManager.getLock(jid + "item");
+    try {
+      lock.lock();
+      ClusteredServerItem item=serverItems.get(jid);
+      if (item == null) {
+        item=new ClusteredServerItem();
+        item.element=element;
+      }
+      if (item.nodes.add(XMPPServer.getInstance().getNodeID())) {
+        serverItems.put(jid,item);
+      }
+    }
+  finally {
+      lock.unlock();
+    }
+  }
+}

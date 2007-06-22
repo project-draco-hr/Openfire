@@ -1,0 +1,24 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    NodeID leftNode=new NodeID(nodeID);
+    for (    Map.Entry<String,ClusteredServerItem> entry : serverItems.entrySet()) {
+      String jid=entry.getKey();
+      Lock lock=LockManager.getLock(jid + "item");
+      try {
+        lock.lock();
+        ClusteredServerItem item=entry.getValue();
+        if (item.nodes.remove(leftNode)) {
+          if (item.nodes.isEmpty()) {
+            serverItems.remove(jid);
+          }
+ else {
+            serverItems.put(jid,item);
+          }
+        }
+      }
+  finally {
+        lock.unlock();
+      }
+    }
+  }
+}

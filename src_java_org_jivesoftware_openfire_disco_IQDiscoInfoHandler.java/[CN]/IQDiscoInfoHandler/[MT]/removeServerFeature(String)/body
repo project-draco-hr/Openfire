@@ -1,3 +1,21 @@
 {
-  serverFeatures.remove(namespace);
+  if (localServerFeatures.remove(namespace)) {
+    Lock lock=LockManager.getLock(namespace);
+    try {
+      lock.lock();
+      Set<NodeID> nodeIDs=serverFeatures.get(namespace);
+      if (nodeIDs != null) {
+        nodeIDs.remove(XMPPServer.getInstance().getNodeID());
+        if (nodeIDs.isEmpty()) {
+          serverFeatures.remove(namespace);
+        }
+ else {
+          serverFeatures.put(namespace,nodeIDs);
+        }
+      }
+    }
+  finally {
+      lock.unlock();
+    }
+  }
 }

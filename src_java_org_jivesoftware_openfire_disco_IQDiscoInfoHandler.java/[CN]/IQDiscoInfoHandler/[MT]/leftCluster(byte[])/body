@@ -1,0 +1,24 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    NodeID leftNode=new NodeID(nodeID);
+    for (    Map.Entry<String,Set<NodeID>> entry : serverFeatures.entrySet()) {
+      String namespace=entry.getKey();
+      Lock lock=LockManager.getLock(namespace);
+      try {
+        lock.lock();
+        Set<NodeID> nodeIDs=entry.getValue();
+        if (nodeIDs.remove(leftNode)) {
+          if (nodeIDs.isEmpty()) {
+            serverFeatures.remove(namespace);
+          }
+ else {
+            serverFeatures.put(namespace,nodeIDs);
+          }
+        }
+      }
+  finally {
+        lock.unlock();
+      }
+    }
+  }
+}

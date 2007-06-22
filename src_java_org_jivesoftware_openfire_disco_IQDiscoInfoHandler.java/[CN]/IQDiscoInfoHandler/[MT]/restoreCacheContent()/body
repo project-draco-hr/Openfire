@@ -1,14 +1,14 @@
 {
-  if (localServerFeatures.add(namespace)) {
-    Lock lock=LockManager.getLock(namespace);
+  for (  String feature : localServerFeatures) {
+    Lock lock=LockManager.getLock(feature);
     try {
       lock.lock();
-      Set<NodeID> nodeIDs=serverFeatures.get(namespace);
+      Set<NodeID> nodeIDs=serverFeatures.get(feature);
       if (nodeIDs == null) {
         nodeIDs=new HashSet<NodeID>();
       }
       nodeIDs.add(XMPPServer.getInstance().getNodeID());
-      serverFeatures.put(namespace,nodeIDs);
+      serverFeatures.put(feature,nodeIDs);
     }
   finally {
       lock.unlock();
