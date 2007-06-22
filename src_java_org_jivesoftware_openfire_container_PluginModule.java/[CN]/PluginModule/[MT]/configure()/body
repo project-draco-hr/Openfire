@@ -1,7 +1,13 @@
 {
   bind(JiveProperties.class).toInstance(JiveProperties.getInstance());
   bind(Logger.class).toInstance(getLogger());
-  XMPPServer server=XMPPServer.getInstance();
+  final XMPPServer server=XMPPServer.getInstance();
+  bind(String.class).annotatedWith(ServerName.class).toProvider(new Provider<String>(){
+    public String get(){
+      return server.getServerInfo().getName();
+    }
+  }
+);
   bind(XMPPServer.class).toInstance(server);
   bind(ConnectionManager.class).toInstance(server.getConnectionManager());
   bind(RoutingTable.class).toInstance(server.getRoutingTable());
