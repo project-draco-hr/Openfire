@@ -1,0 +1,20 @@
+{
+  final BroadcastPlugin broadcastPlugin=injector.getInstance(BroadcastPlugin.class);
+  final ComponentLifecycle componentLifecycle=context.mock(ComponentLifecycle.class);
+  context.checking(new Expectations(){
+{
+      try {
+        allowing(injector.getInstance(JiveProperties.class)).getProperty("plugin.broadcast.serviceName","broadcast");
+        will(returnValue("broadcast"));
+        allowing(injector.getInstance(ComponentManager.class)).addComponent("broadcast",broadcastPlugin,null);
+        will(returnValue(componentLifecycle));
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+        fail(e.getMessage());
+      }
+    }
+  }
+);
+  broadcastPlugin.initialize();
+}
