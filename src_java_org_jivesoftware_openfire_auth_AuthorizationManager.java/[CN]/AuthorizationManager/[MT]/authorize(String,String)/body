@@ -2,8 +2,29 @@
   for (  AuthorizationPolicy ap : authorizationPolicies) {
     Log.debug("AuthorizationManager: Trying " + ap.name() + ".authorize("+ username+ ","+ principal+ ")");
     if (ap.authorize(username,principal)) {
-      return true;
+      try {
+        UserManager.getUserProvider().loadUser(username);
+      }
+ catch (      UserNotFoundException nfe) {
+        Log.debug("AuthorizationManager: User " + username + " not found.");
+        if (JiveGlobals.getBooleanProperty("xmpp.auth.autoadd",false)) {
+          if (UserManager.getUserProvider().isReadOnly()) {
+            return false;
+          }
+          try {
+            UserManager.getUserProvider().createUser(username,StringUtils.randomString(8),null,null);
+            Log.info("AuthorizationManager: User " + username + " created.");
+            return true;
+          }
+ catch (          UserAlreadyExistsException uaee) {
+            Log.error("AuthorizationManager: User " + username + " already exists while attempting to add user.");
+            return false;
+          }
+        }
+        return false;
+      }
     }
+    return true;
   }
   return false;
 }
