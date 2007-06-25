@@ -1,4 +1,10 @@
 {
-  nodeID=ExternalizableUtil.getInstance().readByteArray(in);
+  byte[] bytes=ExternalizableUtil.getInstance().readByteArray(in);
+  if (XMPPServer.getInstance().getNodeID().equals(bytes)) {
+    nodeID=XMPPServer.getInstance().getNodeID();
+  }
+ else {
+    nodeID=new NodeID(bytes);
+  }
   available=ExternalizableUtil.getInstance().readBoolean(in);
 }
