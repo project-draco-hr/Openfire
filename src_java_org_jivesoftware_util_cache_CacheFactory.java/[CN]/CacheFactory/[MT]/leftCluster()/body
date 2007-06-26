@@ -1,9 +1,9 @@
 {
   try {
-    CacheFactoryStrategy localStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
+    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
     for (    Cache cache : getAllCaches()) {
       CacheWrapper cacheWrapper=((CacheWrapper)cache);
-      Cache standaloneCache=localStrategy.createCache(cacheWrapper.getName());
+      Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
       cacheWrapper.setWrappedCache(standaloneCache);
     }
   }
