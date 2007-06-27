@@ -99,32 +99,7 @@
         }
       }
       String className=pluginXML.selectSingleNode("/plugin/class").getText();
-      Class pluginClazz=pluginLoader.loadClass(className);
-      if (AbstractPlugin.class.isAssignableFrom(pluginClazz)) {
-        String moduleClassName;
-        try {
-          moduleClassName=pluginXML.selectSingleNode("/plugin/module/class").getText();
-        }
- catch (        NullPointerException npe) {
-          moduleClassName=null;
-        }
-        Class moduleClazz;
-        try {
-          if (moduleClassName != null) {
-            moduleClazz=pluginLoader.loadClass(moduleClassName);
-          }
- else {
-            moduleClazz=null;
-          }
-        }
- catch (        ClassNotFoundException cnfe) {
-          moduleClazz=null;
-        }
-        plugin=instantiateAbstractPlugin(pluginDir,pluginLoader,pluginClazz,moduleClazz);
-      }
- else {
-        plugin=(Plugin)pluginClazz.newInstance();
-      }
+      plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
       if (parentPluginNode != null) {
         String parentPlugin=parentPluginNode.getTextTrim();
         if (plugins.containsKey(parentPlugin)) {
