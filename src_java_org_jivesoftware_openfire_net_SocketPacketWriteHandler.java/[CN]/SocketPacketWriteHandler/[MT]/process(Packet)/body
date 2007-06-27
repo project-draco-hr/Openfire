@@ -7,8 +7,13 @@
  else     if (recipient == null || (recipient.getNode() == null && recipient.getResource() == null)) {
       routingTable.routePacket(packet.getFrom(),packet);
     }
- else {
+ else     if (recipient.getResource() != null || !(packet instanceof Presence)) {
       routingTable.routePacket(recipient,packet);
+    }
+ else {
+      for (      JID route : routingTable.getRoutes(recipient)) {
+        routingTable.routePacket(route,packet);
+      }
     }
   }
  catch (  Exception e) {
