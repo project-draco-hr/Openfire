@@ -1,12 +1,10 @@
 {
-synchronized (getLock(username)) {
-    Element vCardElement=vcardCache.get(username);
-    if (vCardElement == null) {
-      vCardElement=provider.loadVCard(username);
-      if (vCardElement != null) {
-        vcardCache.put(username,vCardElement);
-      }
+  Element vCardElement=vcardCache.get(username);
+  if (vCardElement == null) {
+    vCardElement=provider.loadVCard(username);
+    if (vCardElement != null) {
+      vcardCache.put(username,vCardElement);
     }
-    return vCardElement;
   }
+  return vCardElement;
 }

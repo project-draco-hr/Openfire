@@ -1,7 +1,4 @@
 {
-  if (username == null) {
-    throw new NullPointerException("Username cannot be null.");
-  }
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -11,9 +8,24 @@
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {
-    throw new InternalServerErrorException("Error deleting vCard of username: " + username,e);
+    Log.error("Error deleting vCard of username: " + username,e);
   }
  finally {
-    DbConnectionManager.closeConnection(pstmt,con);
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
   }
 }

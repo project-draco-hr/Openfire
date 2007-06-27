@@ -2,25 +2,21 @@
   IQ result=IQ.createResultIQ(packet);
   IQ.Type type=packet.getType();
   if (type.equals(IQ.Type.set)) {
-    JID userJid=packet.getFrom();
-    if (vCardManager.isReadOnly() || !server.isLocal(userJid)) {
-      result.setChildElement(packet.getChildElement().createCopy());
-      result.setError(PacketError.Condition.not_allowed);
+    try {
+      User user=userManager.getUser(packet.getFrom().getNode());
+      Element vcard=packet.getChildElement();
+      if (vcard != null) {
+        VCardManager.getInstance().setVCard(user.getUsername(),vcard);
+      }
     }
- else {
-      try {
-        User user=userManager.getUser(userJid.getNode());
-        Element vcard=packet.getChildElement();
-        vCardManager.setVCard(user.getUsername(),vcard);
-      }
- catch (      UserNotFoundException e) {
-        result.setChildElement(packet.getChildElement().createCopy());
-        result.setError(PacketError.Condition.item_not_found);
-      }
-catch (      Exception e) {
-        Log.error("Error setting user vCard: " + packet.getFrom().getNode(),e);
-        result.setError(PacketError.Condition.internal_server_error);
-      }
+ catch (    UserNotFoundException e) {
+      result=IQ.createResultIQ(packet);
+      result.setChildElement(packet.getChildElement().createCopy());
+      result.setError(PacketError.Condition.item_not_found);
+    }
+catch (    Exception e) {
+      Log.error(e);
+      result.setError(PacketError.Condition.internal_server_error);
     }
   }
  else   if (type.equals(IQ.Type.get)) {
@@ -31,7 +27,8 @@ catch (      Exception e) {
     result.setChildElement("vCard","vcard-temp");
     if (recipient != null) {
       if (recipient.getNode() != null && server.isLocal(recipient)) {
-        Element userVCard=vCardManager.getVCard(recipient.getNode());
+        VCardManager vManager=VCardManager.getInstance();
+        Element userVCard=vManager.getVCard(recipient.getNode());
         if (userVCard != null) {
           Element filter=packet.getChildElement().element(QName.get("filter","vcard-temp-filter"));
           if (filter != null) {
