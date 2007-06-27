@@ -1,7 +1,7 @@
 {
   String address=destination.getAddress().toString();
   boolean available=destination.getPresence().isAvailable();
-  localRoutingTable.addRoute(address,destination);
+  boolean added=localRoutingTable.addRoute(address,destination);
   if (destination.getAuthToken().isAnonymous()) {
     anonymousUsersCache.put(address,new ClientRoute(server.getNodeID(),available));
     if (route.getResource() != null && !available) {
@@ -23,7 +23,12 @@
         lock.lock();
         Collection<String> jids=usersSessions.get(route.toBareJID());
         if (jids == null) {
-          jids=new HashSet<String>();
+          if (ClusterManager.isClusteringStarted()) {
+            jids=new HashSet<String>();
+          }
+ else {
+            jids=new ConcurrentHashSet<String>();
+          }
         }
         jids.add(route.toString());
         usersSessions.put(route.toBareJID(),jids);
@@ -33,4 +38,5 @@
       }
     }
   }
+  return added;
 }
