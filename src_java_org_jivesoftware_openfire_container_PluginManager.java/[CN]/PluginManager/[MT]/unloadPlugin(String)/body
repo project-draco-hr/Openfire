@@ -27,12 +27,29 @@
  catch (  Exception e) {
     Log.error(e);
   }
-  plugins.remove(pluginName);
-  pluginDirs.remove(plugin);
-  classloaders.remove(plugin);
-  if (childPluginMap.containsKey(plugin)) {
-    unloadPlugin(childPluginMap.get(plugin));
+  File dir=new File(pluginDirectory,pluginName);
+  try {
+    Thread.sleep(2000);
+    System.gc();
+    int count=0;
+    while (!deleteDir(dir) && count < 5) {
+      Log.warn("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+      Thread.sleep(8000);
+      count++;
+      System.gc();
+    }
   }
-  childPluginMap.remove(plugin);
-  firePluginDestroyedEvent(pluginName,plugin);
+ catch (  InterruptedException e) {
+    Log.error(e);
+  }
+  if (!dir.exists()) {
+    plugins.remove(pluginName);
+    pluginDirs.remove(plugin);
+    classloaders.remove(plugin);
+    if (childPluginMap.containsKey(plugin)) {
+      unloadPlugin(childPluginMap.get(plugin));
+    }
+    childPluginMap.remove(plugin);
+    firePluginDestroyedEvent(pluginName,plugin);
+  }
 }

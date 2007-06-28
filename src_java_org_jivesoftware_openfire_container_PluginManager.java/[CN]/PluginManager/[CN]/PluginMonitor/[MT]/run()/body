@@ -37,16 +37,7 @@ synchronized (this) {
       }
  else       if (jarFile.lastModified() > dir.lastModified()) {
         unloadPlugin(pluginName);
-        Thread.sleep(2000);
-        System.gc();
-        int count=0;
-        while (!deleteDir(dir) && count < 5) {
-          Log.warn("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
-          Thread.sleep(8000);
-          count++;
-          System.gc();
-        }
-        if (count != 5) {
+        if (!dir.exists()) {
           unzipPlugin(pluginName,jarFile,dir);
         }
       }
@@ -89,14 +80,6 @@ synchronized (this) {
     }
     for (    String pluginName : toDelete) {
       unloadPlugin(pluginName);
-      System.gc();
-      int count=0;
-      File dir=new File(pluginDirectory,pluginName);
-      while (!deleteDir(dir) && count < 5) {
-        Log.error("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
-        Thread.sleep(10000);
-        count++;
-      }
     }
     for (    File dirFile : dirs) {
       if (dirFile.exists() && !plugins.containsKey(dirFile.getName())) {
