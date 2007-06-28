@@ -36,7 +36,15 @@ synchronized (this) {
         unzipPlugin(pluginName,jarFile,dir);
       }
  else       if (jarFile.lastModified() > dir.lastModified()) {
-        unloadPlugin(pluginName);
+        if (firstRun) {
+          int count=0;
+          while (!deleteDir(dir) && count < 5) {
+            Thread.sleep(1000);
+          }
+        }
+ else {
+          unloadPlugin(pluginName);
+        }
         if (!dir.exists()) {
           unzipPlugin(pluginName,jarFile,dir);
         }
@@ -97,4 +105,5 @@ synchronized (this) {
 synchronized (this) {
     running=false;
   }
+  firstRun=false;
 }
