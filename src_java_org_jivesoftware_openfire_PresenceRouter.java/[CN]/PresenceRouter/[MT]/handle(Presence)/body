@@ -20,7 +20,7 @@
         }
         for (        JID jid : routingTable.getRoutes(recipientJID)) {
           updateHandler.directedPresenceSent(packet,jid,recipientJID.toString());
-          routingTable.routePacket(jid,packet);
+          routingTable.routePacket(jid,packet,false);
         }
       }
     }
@@ -29,14 +29,14 @@
     }
  else     if (Presence.Type.probe == type) {
       if (!XMPPServer.getInstance().isLocal(recipientJID)) {
-        routingTable.routePacket(recipientJID,packet);
+        routingTable.routePacket(recipientJID,packet,false);
       }
  else {
         presenceManager.handleProbe(packet);
       }
     }
  else {
-      routingTable.routePacket(recipientJID,packet);
+      routingTable.routePacket(recipientJID,packet,false);
     }
   }
  catch (  Exception e) {

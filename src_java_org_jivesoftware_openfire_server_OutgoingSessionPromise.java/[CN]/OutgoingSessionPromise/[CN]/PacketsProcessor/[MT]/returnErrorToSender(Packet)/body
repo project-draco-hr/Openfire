@@ -13,7 +13,7 @@
       reply.setFrom(to);
       reply.setChildElement(((IQ)packet).getChildElement().createCopy());
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.routePacket(reply.getTo(),reply);
+      routingTable.routePacket(reply.getTo(),reply,true);
     }
  else     if (packet instanceof Presence) {
       Presence reply=new Presence();
@@ -21,7 +21,7 @@
       reply.setTo(from);
       reply.setFrom(to);
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.routePacket(reply.getTo(),reply);
+      routingTable.routePacket(reply.getTo(),reply,true);
     }
  else     if (packet instanceof Message) {
       Message reply=new Message();
@@ -31,7 +31,7 @@
       reply.setType(((Message)packet).getType());
       reply.setThread(((Message)packet).getThread());
       reply.setError(PacketError.Condition.remote_server_not_found);
-      routingTable.routePacket(reply.getTo(),reply);
+      routingTable.routePacket(reply.getTo(),reply,true);
     }
   }
  catch (  Exception e) {

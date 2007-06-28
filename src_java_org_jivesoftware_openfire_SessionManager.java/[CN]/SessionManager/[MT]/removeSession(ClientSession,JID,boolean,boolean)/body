@@ -23,8 +23,10 @@
     router.route(offline);
   }
   if (removed || preauth_removed) {
-    decrementCounter("usercounter");
-    decrementCounter("conncounter");
+    if (removed) {
+      userSessionsCounter.decrementAndGet();
+    }
+    connectionsCounter.decrementAndGet();
     return true;
   }
   return false;

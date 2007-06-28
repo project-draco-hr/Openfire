@@ -2,17 +2,17 @@
   try {
     JID recipient=packet.getTo();
     if (server.matchesComponent(recipient) || server.isRemote(recipient)) {
-      routingTable.routePacket(recipient,packet);
+      routingTable.routePacket(recipient,packet,false);
     }
  else     if (recipient == null || (recipient.getNode() == null && recipient.getResource() == null)) {
-      routingTable.routePacket(packet.getFrom(),packet);
+      routingTable.routePacket(packet.getFrom(),packet,false);
     }
  else     if (recipient.getResource() != null || !(packet instanceof Presence)) {
-      routingTable.routePacket(recipient,packet);
+      routingTable.routePacket(recipient,packet,false);
     }
  else {
       for (      JID route : routingTable.getRoutes(recipient)) {
-        routingTable.routePacket(route,packet);
+        routingTable.routePacket(route,packet,false);
       }
     }
   }

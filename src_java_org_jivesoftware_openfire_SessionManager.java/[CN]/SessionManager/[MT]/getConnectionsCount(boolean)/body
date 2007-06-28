@@ -1,0 +1,14 @@
+{
+  if (onlyLocal) {
+    return connectionsCounter.get();
+  }
+  Collection<Object> results=CacheFactory.doSynchronousClusterTask(new GetSessionsCountTask(false),false);
+  int total=connectionsCounter.get();
+  for (  Object result : results) {
+    if (result == null) {
+      continue;
+    }
+    total=total + (Integer)result;
+  }
+  return total;
+}

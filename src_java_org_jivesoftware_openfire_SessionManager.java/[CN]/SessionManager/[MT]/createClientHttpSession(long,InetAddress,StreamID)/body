@@ -8,6 +8,6 @@
   conn.init(session);
   conn.registerCloseListener(clientSessionListener,session);
   localSessionManager.getPreAuthenticatedSessions().put(session.getAddress().getResource(),session);
-  incrementCounter("conncounter");
+  connectionsCounter.incrementAndGet();
   return session;
 }
