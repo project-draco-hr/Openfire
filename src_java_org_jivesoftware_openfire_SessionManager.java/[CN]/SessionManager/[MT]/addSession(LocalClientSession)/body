@@ -1,8 +1,6 @@
 {
   localSessionManager.getPreAuthenticatedSessions().remove(session.getStreamID().toString());
-  if (routingTable.addClientRoute(session.getAddress(),session)) {
-    userSessionsCounter.incrementAndGet();
-  }
+  routingTable.addClientRoute(session.getAddress(),session);
   SessionEventDispatcher.EventType event=session.getAuthToken().isAnonymous() ? SessionEventDispatcher.EventType.anonymous_session_created : SessionEventDispatcher.EventType.session_created;
   SessionEventDispatcher.dispatchEvent(session,event);
 }
