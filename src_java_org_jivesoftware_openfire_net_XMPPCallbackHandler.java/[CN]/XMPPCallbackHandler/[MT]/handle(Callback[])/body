@@ -24,6 +24,19 @@
  catch (      UserNotFoundException e) {
         throw new IOException(e.toString());
       }
+catch (      UnsupportedOperationException uoe) {
+        throw new IOException(uoe.toString());
+      }
+    }
+ else     if (callbacks[i] instanceof VerifyPasswordCallback) {
+      VerifyPasswordCallback vpcb=(VerifyPasswordCallback)callbacks[i];
+      try {
+        AuthToken at=AuthFactory.authenticate(name,new String(vpcb.getPassword()));
+        vpcb.setVerified((at != null));
+      }
+ catch (      UnauthorizedException e) {
+        vpcb.setVerified(false);
+      }
     }
  else     if (callbacks[i] instanceof AuthorizeCallback) {
       Log.debug("XMPPCallbackHandler: AuthorizeCallback");
