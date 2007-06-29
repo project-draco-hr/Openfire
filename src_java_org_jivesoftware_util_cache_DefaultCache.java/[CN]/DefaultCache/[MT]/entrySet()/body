@@ -1,4 +1,6 @@
 {
   deleteExpiredEntries();
-  return Collections.unmodifiableSet(map.entrySet());
+synchronized (this) {
+    return new HashSet(map.entrySet());
+  }
 }
