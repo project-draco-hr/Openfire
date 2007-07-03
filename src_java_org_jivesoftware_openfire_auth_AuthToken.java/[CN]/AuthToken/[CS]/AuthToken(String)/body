@@ -1,3 +1,11 @@
 {
-  this.username=username;
+  if (jid.contains("@")) {
+    int index=jid.indexOf("@");
+    this.username=jid.substring(0,index);
+    this.domain=jid.substring(index + 1);
+  }
+ else {
+    this.username=jid;
+    this.domain=JiveGlobals.getProperty("xmpp.domain");
+  }
 }

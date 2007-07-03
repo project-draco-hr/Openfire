@@ -1,6 +1,16 @@
 {
   boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
   String encryptedPassword=null;
+  if (username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getName())) {
+      username=username.substring(0,index);
+    }
+ else {
+      throw new UserNotFoundException();
+    }
+  }
   if (!usePlainPassword) {
     try {
       encryptedPassword=AuthFactory.encryptPassword(password);
