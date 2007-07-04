@@ -1,9 +1,6 @@
 {
-  boolean added;
 synchronized (hostnames) {
-    added=hostnames.add(hostname);
+    hostnames.add(hostname);
   }
-  if (added) {
-    XMPPServer.getInstance().getRoutingTable().addServerRoute(new JID(hostname),this);
-  }
+  XMPPServer.getInstance().getRoutingTable().addServerRoute(new JID(null,hostname,null,true),this);
 }

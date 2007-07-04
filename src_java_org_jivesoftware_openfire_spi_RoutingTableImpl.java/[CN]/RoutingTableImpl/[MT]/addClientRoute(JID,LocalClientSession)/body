@@ -1,9 +1,8 @@
 {
-  String address=destination.getAddress().toString();
   boolean available=destination.getPresence().isAvailable();
-  boolean added=localRoutingTable.addRoute(address,destination);
+  boolean added=localRoutingTable.addRoute(route.toString(),destination);
   if (destination.getAuthToken().isAnonymous()) {
-    anonymousUsersCache.put(address,new ClientRoute(server.getNodeID(),available));
+    anonymousUsersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available));
     if (route.getResource() != null && !available) {
       Lock lock=LockManager.getLock(route.toBareJID());
       try {
@@ -16,7 +15,7 @@
     }
   }
  else {
-    usersCache.put(address,new ClientRoute(server.getNodeID(),available));
+    usersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available));
     if (route.getResource() != null && !available) {
       Lock lock=LockManager.getLock(route.toBareJID());
       try {

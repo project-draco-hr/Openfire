@@ -15,7 +15,6 @@
           session=sessionManager.getOutgoingServerSession(otherHostname);
           if (session != null) {
             if (session.isUsingServerDialback()) {
-              session.addHostname(hostname);
               break;
             }
  else {
@@ -31,8 +30,8 @@
       if (session == null) {
         session=createOutgoingSession(domain,hostname,port);
         if (session != null) {
-          session.addHostname(hostname);
           session.addAuthenticatedDomain(domain);
+          session.addHostname(hostname);
           sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
           return true;
         }
@@ -56,10 +55,10 @@
             }
             session=createOutgoingSession(domain,newHostname,port);
             if (session != null) {
-              session.addHostname(hostname);
               session.addAuthenticatedDomain(domain);
-              sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
+              session.addHostname(hostname);
               session.addHostname(newHostname);
+              sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
               return true;
             }
  else {
@@ -70,7 +69,7 @@
         }
       }
     }
-    if (session.getAuthenticatedDomains().contains(domain)) {
+    if (session.getAuthenticatedDomains().contains(domain) && session.getHostnames().contains(hostname)) {
       return true;
     }
     return session.authenticateSubdomain(domain,hostname);

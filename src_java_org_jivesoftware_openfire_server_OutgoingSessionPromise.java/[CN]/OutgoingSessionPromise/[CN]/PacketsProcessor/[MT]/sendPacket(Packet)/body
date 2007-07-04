@@ -9,6 +9,9 @@
     lock.unlock();
   }
   if (created) {
+    if (!routingTable.hasServerRoute(packet.getTo())) {
+      throw new Exception("Route created but not found!!!");
+    }
     routingTable.routePacket(packet.getTo(),packet,false);
   }
  else {
