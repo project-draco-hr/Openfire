@@ -1,6 +1,8 @@
 {
   try {
     initialize();
+    startDate=new Date();
+    xmppServerInfo=new XMPPServerInfoImpl(name,version,startDate,getConnectionManager());
     File pluginDir=new File(openfireHome,"plugins");
     pluginManager=new PluginManager(pluginDir);
     if (!setupMode) {
@@ -14,8 +16,6 @@
     String startupBanner=LocaleUtils.getLocalizedString("short.title") + " " + version.getVersionString()+ " ["+ JiveGlobals.formatDateTime(new Date())+ "]";
     Log.info(startupBanner);
     System.out.println(startupBanner);
-    startDate=new Date();
-    stopDate=null;
     for (    XMPPServerListener listener : listeners) {
       listener.serverStarted();
     }
