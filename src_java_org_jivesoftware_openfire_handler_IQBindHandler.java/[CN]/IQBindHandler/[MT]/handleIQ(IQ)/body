@@ -25,6 +25,12 @@
     }
   }
   AuthToken authToken=session.getAuthToken();
+  if (authToken == null) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return reply;
+  }
   if (authToken.isAnonymous()) {
     session.setAnonymousAuth();
   }
