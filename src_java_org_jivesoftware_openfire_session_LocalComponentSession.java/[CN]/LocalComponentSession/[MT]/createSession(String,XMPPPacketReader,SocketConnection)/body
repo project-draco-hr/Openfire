@@ -26,6 +26,8 @@
   if (index > -1) {
     subdomain=domain.substring(0,index - 1);
   }
+  domain=subdomain + "." + serverName;
+  JID componentJID=new JID(domain);
   if (!ExternalComponentManager.canAccess(subdomain)) {
     Log.debug("[ExComp] Component is not allowed to connect with subdomain: " + subdomain);
     StreamError error=new StreamError(StreamError.Condition.host_unknown);
@@ -45,7 +47,7 @@
     connection.close();
     return null;
   }
-  if (InternalComponentManager.getInstance().hasComponent(new JID(subdomain + "." + serverName))) {
+  if (InternalComponentManager.getInstance().hasComponent(componentJID)) {
     Log.debug("[ExComp] Another component is already using domain: " + domain);
     StreamError error=new StreamError(StreamError.Condition.conflict);
     sb.append(error.toXML());
@@ -54,8 +56,8 @@
     connection.close();
     return null;
   }
-  LocalComponentSession session=SessionManager.getInstance().createComponentSession(new JID(null,domain,null),connection);
-  session.component=new LocalExternalComponent(connection);
+  LocalComponentSession session=SessionManager.getInstance().createComponentSession(componentJID,connection);
+  session.component=new LocalExternalComponent(session,connection);
   try {
     Log.debug("[ExComp] Send stream header with ID: " + session.getStreamID() + " for component with domain: "+ domain);
     sb=new StringBuilder();
