@@ -1,3 +1,13 @@
 {
+  if (enabled == isClusteringEnabled()) {
+    return;
+  }
   JiveGlobals.setXMLProperty(CLUSTER_PROPERTY_NAME,Boolean.toString(enabled));
+  if (!enabled) {
+    CacheFactory.stopClustering();
+  }
+ else {
+    JiveProperties.getInstance().init();
+    CacheFactory.startClustering();
+  }
 }

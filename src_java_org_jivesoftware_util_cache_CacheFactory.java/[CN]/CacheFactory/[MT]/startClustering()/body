@@ -15,4 +15,38 @@
       Log.error("Fatal error - Failed to join the cluster and failed to use local cache",e);
     }
   }
+ else {
+    if (statsThread == null) {
+      statsThread=new Thread("Cache Stats"){
+        private volatile boolean destroyed=false;
+        public void run(){
+          XMPPServer.getInstance().addServerListener(new XMPPServerListener(){
+            public void serverStarted(){
+            }
+            public void serverStopping(){
+              destroyed=true;
+            }
+          }
+);
+          while (!destroyed) {
+            try {
+              cacheFactoryStrategy.updateCacheStats(caches);
+            }
+ catch (            Exception e) {
+              Log.error(e);
+            }
+            try {
+              sleep(10000);
+            }
+ catch (            InterruptedException ie) {
+            }
+          }
+          Log.debug("Cache stats thread terminated.");
+        }
+      }
+;
+      statsThread.setDaemon(true);
+      statsThread.start();
+    }
+  }
 }
