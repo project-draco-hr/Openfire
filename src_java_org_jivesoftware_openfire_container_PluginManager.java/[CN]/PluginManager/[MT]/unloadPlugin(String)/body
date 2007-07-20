@@ -1,31 +1,30 @@
 {
   Log.debug("Unloading plugin " + pluginName);
   Plugin plugin=plugins.get(pluginName);
-  if (plugin == null) {
-    return;
-  }
-  pluginDevelopment.remove(plugin);
-  if (parentPluginMap.containsKey(plugin)) {
-    for (    String childPlugin : parentPluginMap.get(plugin)) {
-      Log.debug("Unloading child plugin: " + childPlugin);
-      unloadPlugin(childPlugin);
+  if (plugin != null) {
+    pluginDevelopment.remove(plugin);
+    if (parentPluginMap.containsKey(plugin)) {
+      for (      String childPlugin : parentPluginMap.get(plugin)) {
+        Log.debug("Unloading child plugin: " + childPlugin);
+        unloadPlugin(childPlugin);
+      }
+      parentPluginMap.remove(plugin);
     }
-    parentPluginMap.remove(plugin);
-  }
-  File webXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web.xml");
-  if (webXML.exists()) {
-    AdminConsole.removeModel(pluginName);
-    PluginServlet.unregisterServlets(webXML);
-  }
-  File customWebXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web-custom.xml");
-  if (customWebXML.exists()) {
-    PluginServlet.unregisterServlets(customWebXML);
-  }
-  try {
-    plugin.destroyPlugin();
-  }
- catch (  Exception e) {
-    Log.error(e);
+    File webXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web.xml");
+    if (webXML.exists()) {
+      AdminConsole.removeModel(pluginName);
+      PluginServlet.unregisterServlets(webXML);
+    }
+    File customWebXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web-custom.xml");
+    if (customWebXML.exists()) {
+      PluginServlet.unregisterServlets(customWebXML);
+    }
+    try {
+      plugin.destroyPlugin();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
   }
   File dir=new File(pluginDirectory,pluginName);
   try {
@@ -42,7 +41,7 @@
  catch (  InterruptedException e) {
     Log.error(e);
   }
-  if (!dir.exists()) {
+  if (plugin != null && !dir.exists()) {
     plugins.remove(pluginName);
     pluginDirs.remove(plugin);
     classloaders.remove(plugin);
