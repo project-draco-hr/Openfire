@@ -8,6 +8,9 @@
     }
     OutgoingServerSession session;
     SessionManager sessionManager=SessionManager.getInstance();
+    if (sessionManager == null) {
+      return false;
+    }
     session=sessionManager.getOutgoingServerSession(hostname);
     if (session == null) {
       for (      IncomingServerSession incomingSession : sessionManager.getIncomingServerSessions(hostname)) {
