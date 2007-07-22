@@ -1,0 +1,19 @@
+{
+  this.room=chatroom;
+  this.nick=nickname;
+  this.user=chatuser;
+  this.server=chatserver;
+  this.router=packetRouter;
+  this.role=role;
+  this.affiliation=affiliation;
+  this.session=XMPPServer.getInstance().getSessionManager().getSession(presence.getFrom());
+  extendedInformation=DocumentHelper.createElement(QName.get("x","http://jabber.org/protocol/muc#user"));
+  calculateExtendedInformation();
+  rJID=new JID(room.getName(),server.getServiceDomain(),nick);
+  setPresence(presence);
+  Element element=presence.getElement().element(QName.get("x","http://jivesoftware.org/protocol/muc"));
+  if (element != null) {
+    voiceOnly=element.element("deaf-occupant") != null;
+  }
+  user.addRole(room.getName(),this);
+}

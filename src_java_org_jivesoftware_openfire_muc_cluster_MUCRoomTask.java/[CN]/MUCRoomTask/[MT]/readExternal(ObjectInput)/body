@@ -1,0 +1,8 @@
+{
+  originator=ExternalizableUtil.getInstance().readBoolean(in);
+  String roomName=ExternalizableUtil.getInstance().readSafeUTF(in);
+  room=(LocalMUCRoom)XMPPServer.getInstance().getMultiUserChatServer().getChatRoom(roomName);
+  if (room == null) {
+    throw new IllegalArgumentException("Room not found: " + roomName);
+  }
+}

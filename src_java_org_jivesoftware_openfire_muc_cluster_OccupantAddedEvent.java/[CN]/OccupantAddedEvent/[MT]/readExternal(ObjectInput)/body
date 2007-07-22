@@ -1,0 +1,12 @@
+{
+  super.readExternal(in);
+  Element packetElement=(Element)ExternalizableUtil.getInstance().readSerializable(in);
+  presence=new Presence(packetElement,true);
+  role=ExternalizableUtil.getInstance().readInt(in);
+  affiliation=ExternalizableUtil.getInstance().readInt(in);
+  voiceOnly=ExternalizableUtil.getInstance().readBoolean(in);
+  roleAddress=(JID)ExternalizableUtil.getInstance().readSerializable(in);
+  userAddress=(JID)ExternalizableUtil.getInstance().readSerializable(in);
+  nodeID=NodeID.getInstance(ExternalizableUtil.getInstance().readByteArray(in));
+  sendPresence=ExternalizableUtil.getInstance().readBoolean(in);
+}

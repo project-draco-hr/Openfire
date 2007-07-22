@@ -1,0 +1,10 @@
+{
+  MUCRole occupantRole=occupants.get(changeNickname.getOldNick().toLowerCase());
+  if (occupantRole != null) {
+    occupantRole.setPresence(changeNickname.getPresence());
+    occupantRole.changeNickname(changeNickname.getNewNick());
+    server.fireNicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+    occupants.put(changeNickname.getNewNick().toLowerCase(),occupantRole);
+    occupants.remove(changeNickname.getOldNick().toLowerCase());
+  }
+}

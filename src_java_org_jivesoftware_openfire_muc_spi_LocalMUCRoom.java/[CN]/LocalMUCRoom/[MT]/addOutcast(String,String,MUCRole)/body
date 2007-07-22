@@ -1,0 +1,35 @@
+{
+  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+  if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
+    throw new ForbiddenException();
+  }
+  if (owners.contains(bareJID) && owners.size() == 1) {
+    throw new ConflictException();
+  }
+  if (outcasts.contains(bareJID)) {
+    return Collections.emptyList();
+  }
+  JID actorJID=senderRole.getUserAddress();
+  List<Presence> updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.Affiliation.outcast,MUCRole.Role.none);
+  Element frag;
+  for (  Presence presence : updatedPresences) {
+    frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    frag.addElement("status").addAttribute("code","301");
+    if (reason != null && reason.trim().length() > 0) {
+      frag.element("item").addElement("reason").setText(reason);
+    }
+    kickPresence(presence,actorJID);
+  }
+  outcasts.add(bareJID);
+  if (removeOwner(bareJID)) {
+    oldAffiliation=MUCRole.Affiliation.owner;
+  }
+ else   if (removeAdmin(bareJID)) {
+    oldAffiliation=MUCRole.Affiliation.admin;
+  }
+ else   if (removeMember(bareJID)) {
+    oldAffiliation=MUCRole.Affiliation.member;
+  }
+  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.outcast,oldAffiliation);
+  return updatedPresences;
+}

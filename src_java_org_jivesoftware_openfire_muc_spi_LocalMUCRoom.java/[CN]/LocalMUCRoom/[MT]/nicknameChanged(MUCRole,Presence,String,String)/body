@@ -1,0 +1,8 @@
+{
+  ChangeNickname request=new ChangeNickname(this,oldNick,newNick,newPresence.createCopy());
+  CacheFactory.doClusterTask(request);
+  request=new ChangeNickname(this,oldNick,newNick,newPresence.createCopy());
+  request.setOriginator(true);
+  request.run();
+  broadcastPresence(occupantRole.getPresence().createCopy());
+}

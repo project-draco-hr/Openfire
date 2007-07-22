@@ -1,0 +1,9 @@
+{
+  MUCRole role=occupantsByFullJID.get(jid);
+  if (role != null) {
+    role.setRole(newRole);
+    CacheFactory.doClusterTask(new UpdateOccupant(this,role));
+    return role.getPresence().createCopy();
+  }
+  return null;
+}

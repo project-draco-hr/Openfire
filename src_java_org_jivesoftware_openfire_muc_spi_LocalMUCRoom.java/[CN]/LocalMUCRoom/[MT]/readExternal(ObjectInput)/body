@@ -1,0 +1,40 @@
+{
+  name=ExternalizableUtil.getInstance().readSafeUTF(in);
+  startTime=ExternalizableUtil.getInstance().readLong(in);
+  lockedTime=ExternalizableUtil.getInstance().readLong(in);
+  owners.addAll(ExternalizableUtil.getInstance().readStringList(in));
+  admins.addAll(ExternalizableUtil.getInstance().readStringList(in));
+  members.putAll(ExternalizableUtil.getInstance().readStringMap(in));
+  outcasts.addAll(ExternalizableUtil.getInstance().readStringList(in));
+  naturalLanguageName=ExternalizableUtil.getInstance().readSafeUTF(in);
+  description=ExternalizableUtil.getInstance().readSafeUTF(in);
+  canOccupantsChangeSubject=ExternalizableUtil.getInstance().readBoolean(in);
+  maxUsers=ExternalizableUtil.getInstance().readInt(in);
+  rolesToBroadcastPresence.addAll(ExternalizableUtil.getInstance().readStringList(in));
+  publicRoom=ExternalizableUtil.getInstance().readBoolean(in);
+  persistent=ExternalizableUtil.getInstance().readBoolean(in);
+  moderated=ExternalizableUtil.getInstance().readBoolean(in);
+  membersOnly=ExternalizableUtil.getInstance().readBoolean(in);
+  canOccupantsInvite=ExternalizableUtil.getInstance().readBoolean(in);
+  password=ExternalizableUtil.getInstance().readSafeUTF(in);
+  canAnyoneDiscoverJID=ExternalizableUtil.getInstance().readBoolean(in);
+  logEnabled=ExternalizableUtil.getInstance().readBoolean(in);
+  loginRestrictedToNickname=ExternalizableUtil.getInstance().readBoolean(in);
+  canChangeNickname=ExternalizableUtil.getInstance().readBoolean(in);
+  registrationEnabled=ExternalizableUtil.getInstance().readBoolean(in);
+  subject=ExternalizableUtil.getInstance().readSafeUTF(in);
+  roomID=ExternalizableUtil.getInstance().readLong(in);
+  creationDate=new Date(ExternalizableUtil.getInstance().readLong(in));
+  modificationDate=new Date(ExternalizableUtil.getInstance().readLong(in));
+  if (ExternalizableUtil.getInstance().readBoolean(in)) {
+    emptyDate=new Date(ExternalizableUtil.getInstance().readLong(in));
+  }
+  savedToDB=ExternalizableUtil.getInstance().readBoolean(in);
+  server=(MultiUserChatServerImpl)XMPPServer.getInstance().getMultiUserChatServer();
+  roomHistory=new MUCRoomHistory(this,new HistoryStrategy(server.getHistoryStrategy()));
+  PacketRouter packetRouter=XMPPServer.getInstance().getPacketRouter();
+  this.iqOwnerHandler=new IQOwnerHandler(this,packetRouter);
+  this.iqAdminHandler=new IQAdminHandler(this,packetRouter);
+  server=(MultiUserChatServerImpl)XMPPServer.getInstance().getMultiUserChatServer();
+  router=packetRouter;
+}

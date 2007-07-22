@@ -1,0 +1,11 @@
+{
+  if (presence.getType() == Presence.Type.unavailable) {
+    MUCRole mucRole=room.getOccupantByFullJID(realjid);
+    if (mucRole != null) {
+      room.leaveRoom(mucRole);
+    }
+  }
+ else {
+    throw new UnsupportedOperationException("Cannot process Presence packets of remote users: " + presence);
+  }
+}

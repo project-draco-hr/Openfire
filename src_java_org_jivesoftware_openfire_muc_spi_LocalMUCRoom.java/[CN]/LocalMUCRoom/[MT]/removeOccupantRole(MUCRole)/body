@@ -1,0 +1,14 @@
+{
+  occupants.remove(leaveRole.getNickname().toLowerCase());
+  JID userAddress=leaveRole.getUserAddress();
+  leaveRole.destroy();
+  List list=occupantsByBareJID.get(userAddress.toBareJID());
+  if (list != null) {
+    list.remove(leaveRole);
+    if (list.isEmpty()) {
+      occupantsByBareJID.remove(userAddress.toBareJID());
+    }
+  }
+  occupantsByFullJID.remove(userAddress);
+  server.fireOccupantLeft(getRole().getRoleAddress(),userAddress);
+}

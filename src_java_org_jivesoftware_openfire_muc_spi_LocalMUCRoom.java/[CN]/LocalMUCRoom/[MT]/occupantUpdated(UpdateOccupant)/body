@@ -1,0 +1,11 @@
+{
+  RemoteMUCRole occupantRole=(RemoteMUCRole)occupants.get(update.getNickname().toLowerCase());
+  if (occupantRole != null) {
+    occupantRole.setPresence(update.getPresence());
+    occupantRole.setRole(update.getRole());
+    occupantRole.setAffiliation(update.getAffiliation());
+  }
+ else {
+    Log.debug("Failed to update information of room occupant. Occupant nickname: " + update.getNickname());
+  }
+}

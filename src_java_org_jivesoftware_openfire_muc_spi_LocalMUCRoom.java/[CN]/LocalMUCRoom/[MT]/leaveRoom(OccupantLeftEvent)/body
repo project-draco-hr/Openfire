@@ -1,0 +1,23 @@
+{
+  MUCRole leaveRole=event.getRole();
+  if (leaveRole == null) {
+    return;
+  }
+  lock.writeLock().lock();
+  try {
+    removeOccupantRole(leaveRole);
+    if (occupants.isEmpty() && !isPersistent()) {
+      endTime=System.currentTimeMillis();
+      if (event.isOriginator()) {
+        server.removeChatRoom(name);
+      }
+      server.fireRoomDestroyed(getRole().getRoleAddress());
+    }
+    if (occupants.isEmpty()) {
+      setEmptyDate(new Date());
+    }
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+}

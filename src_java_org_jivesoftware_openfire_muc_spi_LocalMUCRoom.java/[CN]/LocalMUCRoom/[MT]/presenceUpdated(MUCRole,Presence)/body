@@ -1,0 +1,8 @@
+{
+  UpdatePresence request=new UpdatePresence(this,newPresence.createCopy(),occupantRole.getNickname());
+  CacheFactory.doClusterTask(request);
+  request=new UpdatePresence(this,newPresence.createCopy(),occupantRole.getNickname());
+  request.setOriginator(true);
+  request.run();
+  broadcastPresence(occupantRole.getPresence().createCopy());
+}

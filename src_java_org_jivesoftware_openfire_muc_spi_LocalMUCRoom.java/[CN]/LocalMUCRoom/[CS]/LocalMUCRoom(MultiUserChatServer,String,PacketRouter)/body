@@ -1,0 +1,18 @@
+{
+  this.server=(MultiUserChatServerImpl)chatserver;
+  this.name=roomname;
+  this.naturalLanguageName=roomname;
+  this.description=roomname;
+  this.router=packetRouter;
+  this.startTime=System.currentTimeMillis();
+  this.creationDate=new Date(startTime);
+  this.modificationDate=new Date(startTime);
+  this.emptyDate=new Date(startTime);
+  roomHistory=new MUCRoomHistory(this,new HistoryStrategy(server.getHistoryStrategy()));
+  this.iqOwnerHandler=new IQOwnerHandler(this,packetRouter);
+  this.iqAdminHandler=new IQAdminHandler(this,packetRouter);
+  this.lockedTime=startTime;
+  rolesToBroadcastPresence.add("moderator");
+  rolesToBroadcastPresence.add("participant");
+  rolesToBroadcastPresence.add("visitor");
+}

@@ -1,0 +1,10 @@
+{
+  rooms=new ArrayList<RoomInfo>();
+  MultiUserChatServer mucServer=XMPPServer.getInstance().getMultiUserChatServer();
+  for (  MUCRoom room : mucServer.getChatRooms()) {
+    LocalMUCRoom localRoom=(LocalMUCRoom)room;
+    if (!room.getOccupants().isEmpty()) {
+      rooms.add(new RoomInfo(localRoom,localRoom.getOccupants()));
+    }
+  }
+}

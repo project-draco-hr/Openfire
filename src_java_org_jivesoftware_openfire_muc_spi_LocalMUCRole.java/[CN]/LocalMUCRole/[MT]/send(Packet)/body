@@ -1,0 +1,12 @@
+{
+  if (packet == null) {
+    return;
+  }
+  packet.setTo(user.getAddress());
+  if (session != null && session.getStatus() == Session.STATUS_AUTHENTICATED) {
+    session.process(packet);
+  }
+ else {
+    router.route(packet);
+  }
+}
