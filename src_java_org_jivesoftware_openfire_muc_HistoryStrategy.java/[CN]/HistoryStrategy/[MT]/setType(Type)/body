@@ -1,8 +1,14 @@
 {
+  if (type == newType) {
+    return;
+  }
   if (newType != null) {
     type=newType;
   }
   if (contextPrefix != null) {
     JiveGlobals.setProperty(contextPrefix + ".type",type.toString());
+  }
+  if (parent == null) {
+    CacheFactory.doClusterTask(new UpdateHistoryStrategy(this));
   }
 }

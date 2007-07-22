@@ -1,11 +1,14 @@
 {
-  MUCRoom room;
+  LocalMUCRoom room;
+  boolean loaded=false;
+  boolean created=false;
 synchronized (roomName.intern()) {
     room=rooms.get(roomName);
     if (room == null) {
-      room=new MUCRoomImpl(this,roomName,router);
+      room=new LocalMUCRoom(this,roomName,router);
       try {
-        MUCPersistenceManager.loadFromDB((MUCRoomImpl)room);
+        MUCPersistenceManager.loadFromDB((LocalMUCRoom)room);
+        loaded=true;
       }
  catch (      IllegalArgumentException e) {
         if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
@@ -14,11 +17,22 @@ synchronized (roomName.intern()) {
           }
         }
         room.addFirstOwner(userjid.toBareJID());
-        for (        MUCEventListener listener : listeners) {
-          listener.roomCreated(room.getRole().getRoleAddress());
-        }
+        created=true;
       }
       rooms.put(roomName,room);
+    }
+  }
+  if (created) {
+    for (    MUCEventListener listener : listeners) {
+      listener.roomCreated(room.getRole().getRoleAddress());
+    }
+  }
+  if (loaded || created) {
+    CacheFactory.doClusterTask(new RoomAvailableEvent(room));
+    for (    MUCRole role : room.getOccupants()) {
+      if (role instanceof LocalMUCRole) {
+        CacheFactory.doClusterTask(new OccupantAddedEvent(room,role));
+      }
     }
   }
   return room;

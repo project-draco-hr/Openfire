@@ -46,7 +46,7 @@
         for (        MUCRole role : room.getModerators()) {
           metaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
           metaData.addAttribute("role","moderator");
-          metaData.addAttribute("jid",role.getChatUser().getAddress().toString());
+          metaData.addAttribute("jid",role.getUserAddress().toString());
           metaData.addAttribute("nick",role.getNickname());
           metaData.addAttribute("affiliation",role.getAffiliation().toString());
         }
@@ -58,7 +58,7 @@
         for (        MUCRole role : room.getParticipants()) {
           metaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
           metaData.addAttribute("role","participant");
-          metaData.addAttribute("jid",role.getChatUser().getAddress().toString());
+          metaData.addAttribute("jid",role.getUserAddress().toString());
           metaData.addAttribute("nick",role.getNickname());
           metaData.addAttribute("affiliation",role.getAffiliation().toString());
         }
@@ -84,7 +84,7 @@
         }
  else {
           nick=item.attributeValue("nick");
-          jid=room.getOccupant(nick).getChatUser().getAddress();
+          jid=room.getOccupant(nick).getUserAddress();
         }
         room.lock.writeLock().lock();
         try {
@@ -115,7 +115,7 @@
               if (MUCRole.Role.moderator != senderRole.getRole()) {
                 throw new ForbiddenException();
               }
-              presences.add(room.kickOccupant(jid,senderRole.getChatUser().getAddress(),item.elementTextTrim("reason")));
+              presences.add(room.kickOccupant(jid,senderRole.getUserAddress(),item.elementTextTrim("reason")));
             }
           }
  else {

@@ -1,6 +1,12 @@
 {
+  if (maxNumber == max) {
+    return;
+  }
   this.maxNumber=max;
   if (contextPrefix != null) {
     JiveGlobals.setProperty(contextPrefix + ".maxNumber",Integer.toString(maxNumber));
+  }
+  if (parent == null) {
+    CacheFactory.doClusterTask(new UpdateHistoryStrategy(this));
   }
 }

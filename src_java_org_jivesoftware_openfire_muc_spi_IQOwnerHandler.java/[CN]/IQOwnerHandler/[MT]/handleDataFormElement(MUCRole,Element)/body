@@ -15,5 +15,8 @@
     if (room.isLocked() && !room.isManuallyLocked()) {
       room.unlock(senderRole);
     }
+    if (!room.isDestroyed) {
+      CacheFactory.doClusterTask(new RoomUpdatedEvent(room));
+    }
   }
 }

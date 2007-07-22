@@ -1,0 +1,9 @@
+{
+  MUCRoom room=rooms.remove(roomName);
+  if (room != null) {
+    totalChatTime+=room.getChatLength();
+    if (notify) {
+      CacheFactory.doClusterTask(new RoomRemovedEvent(roomName));
+    }
+  }
+}

@@ -1,11 +1,9 @@
 {
-  MUCUser user=users.remove(jabberID);
+  LocalMUCUser user=users.remove(jabberID);
   if (user != null) {
-    Iterator<MUCRole> roles=user.getRoles();
-    while (roles.hasNext()) {
-      MUCRole role=roles.next();
+    for (    LocalMUCRole role : user.getRoles()) {
       try {
-        role.getChatRoom().leaveRoom(role.getNickname());
+        role.getChatRoom().leaveRoom(role);
       }
  catch (      Exception e) {
         Log.error(e);

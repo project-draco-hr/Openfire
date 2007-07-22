@@ -1,3 +1,24 @@
 {
-  enableService(false,false);
+  if (isServiceEnabled()) {
+    if (!ClusterManager.isSeniorClusterMember()) {
+      List<RoomInfo> result=(List<RoomInfo>)CacheFactory.doSynchronousClusterTask(new SeniorMemberRoomsRequest(),ClusterManager.getSeniorClusterMember().toByteArray());
+      if (result != null) {
+        for (        RoomInfo roomInfo : result) {
+          LocalMUCRoom remoteRoom=roomInfo.getRoom();
+          LocalMUCRoom localRoom=rooms.get(remoteRoom.getName());
+          if (localRoom == null) {
+            localRoom=remoteRoom;
+            rooms.put(remoteRoom.getName(),localRoom);
+          }
+ else {
+            localRoom.updateConfiguration(remoteRoom);
+          }
+          for (          OccupantAddedEvent event : roomInfo.getOccupants()) {
+            event.setSendPresence(true);
+            event.run();
+          }
+        }
+      }
+    }
+  }
 }

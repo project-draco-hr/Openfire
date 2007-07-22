@@ -1,15 +1,15 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
-  Map<Long,MUCRoom> rooms=new HashMap<Long,MUCRoom>();
+  Map<Long,LocalMUCRoom> rooms=new HashMap<Long,LocalMUCRoom>();
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_ALL_ROOMS);
     pstmt.setString(1,StringUtils.dateToMillis(emptyDate));
     ResultSet rs=pstmt.executeQuery();
-    MUCRoomImpl room=null;
+    LocalMUCRoom room=null;
     while (rs.next()) {
-      room=new MUCRoomImpl(chatserver,rs.getString(4),packetRouter);
+      room=new LocalMUCRoom(chatserver,rs.getString(4),packetRouter);
       room.setID(rs.getLong(1));
       room.setCreationDate(new Date(Long.parseLong(rs.getString(2).trim())));
       room.setModificationDate(new Date(Long.parseLong(rs.getString(3).trim())));
@@ -57,7 +57,7 @@
     pstmt.setString(1,StringUtils.dateToMillis(new Date(from)));
     rs=pstmt.executeQuery();
     while (rs.next()) {
-      room=(MUCRoomImpl)rooms.get(rs.getLong(1));
+      room=(LocalMUCRoom)rooms.get(rs.getLong(1));
       if (room == null) {
         continue;
       }
@@ -88,7 +88,7 @@
       long roomID=rs.getLong(1);
       String jid=rs.getString(2);
       MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(3));
-      room=(MUCRoomImpl)rooms.get(roomID);
+      room=(LocalMUCRoom)rooms.get(roomID);
       if (room == null) {
         continue;
       }
@@ -116,7 +116,7 @@ pstmt.close();
 pstmt=con.prepareStatement(LOAD_ALL_MEMBERS);
 rs=pstmt.executeQuery();
 while (rs.next()) {
-room=(MUCRoomImpl)rooms.get(rs.getLong(1));
+room=(LocalMUCRoom)rooms.get(rs.getLong(1));
 if (room == null) {
 continue;
 }
