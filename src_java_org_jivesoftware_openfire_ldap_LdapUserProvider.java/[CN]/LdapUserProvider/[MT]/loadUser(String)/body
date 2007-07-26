@@ -1,4 +1,12 @@
 {
+  String userDomain=JiveGlobals.getProperty("xmpp.domain");
+  if (username.contains("@")) {
+    userDomain=username.substring((username.lastIndexOf("@") + 1));
+    username=username.substring(0,username.lastIndexOf("@"));
+  }
+  if (!userDomain.equals(JiveGlobals.getProperty("xmpp.domain"))) {
+    throw new UserNotFoundException("Unknown domain: " + userDomain);
+  }
   username=JID.unescapeNode(username);
   DirContext ctx=null;
   try {
