@@ -1,11 +1,9 @@
 {
-  String userDomain=JiveGlobals.getProperty("xmpp.domain");
   if (username.contains("@")) {
-    userDomain=username.substring((username.lastIndexOf("@") + 1));
+    if (!XMPPServer.getInstance().isLocal(new JID(username))) {
+      throw new UserNotFoundException("Cannot load user of remote server: " + username);
+    }
     username=username.substring(0,username.lastIndexOf("@"));
-  }
-  if (!userDomain.equals(JiveGlobals.getProperty("xmpp.domain"))) {
-    throw new UserNotFoundException("Unknown domain: " + userDomain);
   }
   Connection con=null;
   PreparedStatement pstmt=null;
