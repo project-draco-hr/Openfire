@@ -1,3 +1,10 @@
 {
-  return recipientJID == null || recipientJID.getDomain() == null || "".equals(recipientJID.getDomain()) || recipientJID.getResource() == null || "".equals(recipientJID.getResource());
+  boolean implicitServer=recipientJID == null || recipientJID.getDomain() == null || "".equals(recipientJID.getDomain());
+  if (!implicitServer) {
+    if (recipientJID.getNode() == null || recipientJID.getResource() == null) {
+      return serverName.equals(recipientJID.getDomain());
+    }
+    return false;
+  }
+  return true;
 }
