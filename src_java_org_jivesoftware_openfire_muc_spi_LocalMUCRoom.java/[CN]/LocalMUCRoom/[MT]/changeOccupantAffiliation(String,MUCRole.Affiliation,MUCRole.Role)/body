@@ -5,10 +5,21 @@
     return presences;
   }
   for (  MUCRole role : roles) {
-    role.setAffiliation(newAffiliation);
-    role.setRole(newRole);
-    CacheFactory.doClusterTask(new UpdateOccupant(this,role));
-    presences.add(role.getPresence().createCopy());
+    if (role.isLocal()) {
+      role.setAffiliation(newAffiliation);
+      role.setRole(newRole);
+      CacheFactory.doClusterTask(new UpdateOccupant(this,role));
+      presences.add(role.getPresence().createCopy());
+    }
+ else {
+      Element element=(Element)CacheFactory.doSynchronousClusterTask(new UpdateOccupantRequest(this,role.getNickname(),newAffiliation,newRole),role.getNodeID().toByteArray());
+      if (element != null) {
+        presences.add(new Presence(element,true));
+      }
+ else {
+        throw new NotAllowedException();
+      }
+    }
   }
   return presences;
 }

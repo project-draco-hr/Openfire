@@ -1,9 +1,18 @@
 {
-  RemoteMUCRole occupantRole=(RemoteMUCRole)occupants.get(update.getNickname().toLowerCase());
+  MUCRole occupantRole=occupants.get(update.getNickname().toLowerCase());
   if (occupantRole != null) {
-    occupantRole.setPresence(update.getPresence());
-    occupantRole.setRole(update.getRole());
-    occupantRole.setAffiliation(update.getAffiliation());
+    if (!occupantRole.isLocal()) {
+      occupantRole.setPresence(update.getPresence());
+      try {
+        occupantRole.setRole(update.getRole());
+        occupantRole.setAffiliation(update.getAffiliation());
+      }
+ catch (      NotAllowedException e) {
+      }
+    }
+ else {
+      Log.error("Tried to update local occupant with info of local occupant?. Occupant nickname: " + update.getNickname());
+    }
   }
  else {
     Log.debug("Failed to update information of room occupant. Occupant nickname: " + update.getNickname());

@@ -1,0 +1,13 @@
+{
+  MUCRole occupantRole=occupants.get(updateRequest.getNickname().toLowerCase());
+  if (occupantRole != null) {
+    occupantRole.setAffiliation(updateRequest.getAffiliation());
+    occupantRole.setRole(updateRequest.getRole());
+    CacheFactory.doClusterTask(new UpdateOccupant(this,occupantRole));
+    return occupantRole.getPresence();
+  }
+ else {
+    Log.debug("Failed to update information of local room occupant. Occupant nickname: " + updateRequest.getNickname());
+  }
+  return null;
+}
