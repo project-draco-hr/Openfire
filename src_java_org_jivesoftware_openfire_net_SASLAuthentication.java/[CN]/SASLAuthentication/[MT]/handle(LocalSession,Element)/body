@@ -28,6 +28,9 @@ case AUTH:
           token=new byte[0];
         }
       }
+      if (mechanism.equals("DIGEST-MD5")) {
+        token=new byte[0];
+      }
       byte[] challenge=ss.evaluateResponse(token);
       if (ss.isComplete()) {
         authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
