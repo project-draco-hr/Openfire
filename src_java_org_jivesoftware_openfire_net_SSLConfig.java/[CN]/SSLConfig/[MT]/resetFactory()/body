@@ -1,0 +1,18 @@
+{
+  try {
+    String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm","TLS");
+    sslContext=SSLContext.getInstance(algorithm);
+    KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    keyFactory.init(keyStore,SSLConfig.getKeyPassword().toCharArray());
+    TrustManagerFactory trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    trustFactory.init(trustStore);
+    sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
+    sslFactory=sslContext.getServerSocketFactory();
+  }
+ catch (  Exception e) {
+    Log.error("SSLConfig factory setup problem.\n" + "  storeType: [" + storeType + "]\n"+ "  keyStoreLocation: ["+ keyStoreLocation+ "]\n"+ "  keypass: ["+ keypass+ "]\n"+ "  trustStoreLocation: ["+ trustStoreLocation+ "]\n"+ "  trustpass: ["+ trustpass+ "]",e);
+    keyStore=null;
+    trustStore=null;
+    sslFactory=null;
+  }
+}
