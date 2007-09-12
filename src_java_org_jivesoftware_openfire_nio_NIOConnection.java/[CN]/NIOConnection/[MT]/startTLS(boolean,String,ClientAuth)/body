@@ -5,21 +5,18 @@
   String trustpass=SSLConfig.getTrustPassword();
   KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
   TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
-  boolean needClientAuth=false;
-  if (clientMode || needClientAuth) {
+  if (clientMode || authentication == ClientAuth.needed || authentication == ClientAuth.wanted) {
     tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
   }
   SSLContext tlsContext=SSLContext.getInstance("TLS");
   tlsContext.init(km,tm,null);
   SSLFilter filter=new SSLFilter(tlsContext);
   filter.setUseClientMode(clientMode);
-  if (needClientAuth) {
-    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true) && JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true) && !JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
-      filter.setNeedClientAuth(true);
-    }
- else {
-      filter.setWantClientAuth(true);
-    }
+  if (authentication == ClientAuth.needed) {
+    filter.setNeedClientAuth(true);
+  }
+ else   if (authentication == ClientAuth.wanted) {
+    filter.setWantClientAuth(true);
   }
   ioSession.getFilterChain().addBefore("org.apache.mina.common.ExecutorThreadModel","tls",filter);
   ioSession.setAttribute(SSLFilter.DISABLE_ENCRYPTION_ONCE,Boolean.TRUE);
