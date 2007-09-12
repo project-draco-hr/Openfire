@@ -1,0 +1,18 @@
+{
+synchronized (this) {
+    service.removeListener(serviceListener);
+    worker.stop=true;
+    worker.interrupt();
+    while (worker.isAlive()) {
+      try {
+        worker.join();
+      }
+ catch (      InterruptedException e) {
+      }
+    }
+    for (    IoSession session : polledSessions) {
+      session.removeAttribute(KEY);
+    }
+    polledSessions.clear();
+  }
+}
