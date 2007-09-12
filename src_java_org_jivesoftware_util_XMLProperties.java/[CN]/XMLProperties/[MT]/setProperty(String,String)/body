@@ -1,4 +1,7 @@
 {
+  if (!StringEscapeUtils.escapeXml(name).equals(name)) {
+    throw new IllegalArgumentException("Property name cannot contain XML entities.");
+  }
   if (name == null) {
     return;
   }
@@ -26,7 +29,7 @@
     element.addCDATA(value.substring(9,value.length() - 3));
   }
  else {
-    element.setText(value);
+    element.setText(StringEscapeUtils.escapeXml(value));
   }
   saveProperties();
   Map<String,Object> params=new HashMap<String,Object>();
