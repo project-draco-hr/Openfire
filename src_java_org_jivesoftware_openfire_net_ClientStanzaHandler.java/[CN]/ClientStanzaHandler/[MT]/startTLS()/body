@@ -1,3 +1,10 @@
 {
-  connection.startTLS(false,null,Connection.ClientAuth.disabled);
+  Connection.ClientAuth policy;
+  try {
+    policy=Connection.ClientAuth.valueOf(JiveGlobals.getProperty("xmpp.client.cert.policy","required"));
+  }
+ catch (  IllegalArgumentException e) {
+    policy=Connection.ClientAuth.disabled;
+  }
+  connection.startTLS(false,null,policy);
 }

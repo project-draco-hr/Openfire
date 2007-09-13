@@ -34,7 +34,14 @@
       TrustManagerFactory trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       trustFactory.init(SSLConfig.getTrustStore());
       sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
-      sslSocketAcceptor.getFilterChain().addFirst("tls",new SSLFilter(sslContext));
+      SSLFilter sslFilter=new SSLFilter(sslContext);
+      if (JiveGlobals.getProperty("xmpp.client.cert.policy","disabled").equals("needed")) {
+        sslFilter.setNeedClientAuth(true);
+      }
+ else       if (JiveGlobals.getProperty("xmpp.client.cert.policy","disabled").equals("wanted")) {
+        sslFilter.setWantClientAuth(true);
+      }
+      sslSocketAcceptor.getFilterChain().addFirst("tls",sslFilter);
     }
  catch (    Exception e) {
       System.err.println("Error starting SSL XMPP listener on port " + port + ": "+ e.getMessage());
