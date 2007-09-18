@@ -5,6 +5,16 @@
   for (  ServerFeaturesProvider provider : server.getServerFeaturesProviders()) {
     addServerFeaturesProvider(provider);
   }
+  for (  ServerIdentitiesProvider provider : server.getServerIdentitiesProviders()) {
+    for (Iterator<Element> it=provider.getIdentities(); it.hasNext(); ) {
+      serverIdentities.add(it.next());
+    }
+  }
+  for (  UserIdentitiesProvider provider : server.getUserIdentitiesProviders()) {
+    for (Iterator<Element> it=provider.getIdentities(); it.hasNext(); ) {
+      registeredUserIdentities.add(it.next());
+    }
+  }
   setProvider(server.getServerInfo().getName(),getServerInfoProvider());
   ClusterManager.addListener(this);
 }
