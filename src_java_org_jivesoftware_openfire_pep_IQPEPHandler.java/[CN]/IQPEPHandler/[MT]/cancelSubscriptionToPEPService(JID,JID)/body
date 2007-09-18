@@ -1,0 +1,17 @@
+{
+  PEPService pepService=pepServices.get(serviceOwner.toBareJID());
+  if (pepService == null) {
+    return;
+  }
+  CollectionNode rootNode=pepService.getRootCollectionNode();
+  NodeSubscription nodeSubscription=rootNode.getSubscription(unsubscriber);
+  if (nodeSubscription != null) {
+    rootNode.cancelSubscription(nodeSubscription);
+    if (Log.isDebugEnabled()) {
+      Log.debug("PEP: " + unsubscriber + " subscription to "+ serviceOwner+ "'s PEP service was cancelled.");
+    }
+  }
+ else {
+    return;
+  }
+}

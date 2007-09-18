@@ -1,0 +1,22 @@
+{
+  IQ subscriptionPacket=new IQ(IQ.Type.set);
+  subscriptionPacket.setFrom(subscriber);
+  subscriptionPacket.setTo(owner.toBareJID());
+  Element pubsubElement=subscriptionPacket.setChildElement("pubsub","http://jabber.org/protocol/pubsub");
+  Element subscribeElement=pubsubElement.addElement("subscribe");
+  subscribeElement.addAttribute("jid",subscriber.toBareJID());
+  Element optionsElement=pubsubElement.addElement("options");
+  Element xElement=optionsElement.addElement(QName.get("x","jabber:x:data"));
+  DataForm dataForm=new DataForm(xElement);
+  FormField formField=dataForm.addField();
+  formField.setVariable("FORM_TYPE");
+  formField.setType(FormField.Type.hidden);
+  formField.addValue("http://jabber.org/protocol/pubsub#subscribe_options");
+  formField=dataForm.addField();
+  formField.setVariable("pubsub#subscription_type");
+  formField.addValue("items");
+  formField=dataForm.addField();
+  formField.setVariable("pubsub#subscription_depth");
+  formField.addValue("all");
+  pubSubEngine.process(pepService,subscriptionPacket);
+}

@@ -1,0 +1,27 @@
+{
+  JID jidFrom=presence.getFrom();
+  JID jidTo=presence.getTo();
+  Set<JID> remotePresenceSet=knownRemotePresences.get(jidTo.toBareJID());
+  if (jidFrom.getResource() != null) {
+    if (remotePresenceSet != null) {
+      if (remotePresenceSet.add(jidFrom)) {
+        if (Log.isDebugEnabled()) {
+          Log.debug("PEP: added " + jidFrom + " to "+ jidTo+ "'s knownRemotePresences");
+        }
+      }
+    }
+ else {
+      remotePresenceSet=new HashSet<JID>();
+      if (remotePresenceSet.add(jidFrom)) {
+        if (Log.isDebugEnabled()) {
+          Log.debug("PEP: added " + jidFrom + " to "+ jidTo+ "'s knownRemotePresences");
+        }
+        knownRemotePresences.put(jidTo.toBareJID(),remotePresenceSet);
+      }
+    }
+    PEPService pepService=pepServices.get(jidTo.toBareJID());
+    if (pepService != null) {
+      pepService.sendLastPublishedItems(jidFrom);
+    }
+  }
+}

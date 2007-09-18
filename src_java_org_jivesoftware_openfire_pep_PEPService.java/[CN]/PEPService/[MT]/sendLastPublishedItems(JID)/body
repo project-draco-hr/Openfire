@@ -1,0 +1,35 @@
+{
+  NodeSubscription subscription=rootCollectionNode.getSubscription(recipientJID);
+  if (subscription == null) {
+    subscription=rootCollectionNode.getSubscription(new JID(recipientJID.toBareJID()));
+  }
+  if (subscription == null) {
+    return;
+  }
+  for (  Node leafNode : rootCollectionNode.getNodes()) {
+    PublishedItem leafLastPublishedItem=null;
+    leafLastPublishedItem=leafNode.getLastPublishedItem();
+    if (leafLastPublishedItem == null) {
+      continue;
+    }
+    if (!subscription.canSendPublicationEvent(leafLastPublishedItem.getNode(),leafLastPublishedItem)) {
+      return;
+    }
+    Message notification=new Message();
+    Element event=notification.getElement().addElement("event","http://jabber.org/protocol/pubsub#event");
+    Element items=event.addElement("items");
+    items.addAttribute("node",leafLastPublishedItem.getNode().getNodeID());
+    Element item=items.addElement("item");
+    if (((LeafNode)leafLastPublishedItem.getNode()).isItemRequired()) {
+      item.addAttribute("id",leafLastPublishedItem.getID());
+    }
+    if (leafLastPublishedItem.getNode().isPayloadDelivered() && leafLastPublishedItem.getPayload() != null) {
+      item.add(leafLastPublishedItem.getPayload().createCopy());
+    }
+    if (subscription.isIncludingBody()) {
+      notification.setBody(LocaleUtils.getLocalizedString("pubsub.notification.message.body"));
+    }
+    notification.getElement().addElement("x","jabber:x:delay").addAttribute("stamp",fastDateFormat.format(leafLastPublishedItem.getCreationDate()));
+    this.sendNotification(subscription.getNode(),notification,subscription.getJID());
+  }
+}

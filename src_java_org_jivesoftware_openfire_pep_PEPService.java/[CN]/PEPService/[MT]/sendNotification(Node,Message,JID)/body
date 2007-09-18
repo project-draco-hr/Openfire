@@ -1,0 +1,89 @@
+{
+  message.setTo(recipientJID);
+  message.setFrom(getAddress());
+  message.setID(node.getNodeID() + "__" + recipientJID.toBareJID()+ "__"+ StringUtils.randomString(5));
+  Set<JID> recipientFullJIDs=new HashSet<JID>();
+  if (recipientJID.getResource() == null && XMPPServer.getInstance().isLocal(recipientJID)) {
+    for (    ClientSession clientSession : SessionManager.getInstance().getSessions(recipientJID.getNode())) {
+      recipientFullJIDs.add(clientSession.getAddress());
+    }
+  }
+ else {
+    Map<String,Set<JID>> knownRemotePresences=XMPPServer.getInstance().getIQPEPHandler().getKnownRemotePresenes();
+    Set<JID> remotePresenceSet=knownRemotePresences.get(getAddress().toBareJID());
+    if (remotePresenceSet != null) {
+      for (      JID remotePresence : remotePresenceSet) {
+        if (recipientJID.toBareJID().equals(remotePresence.toBareJID())) {
+          recipientFullJIDs.add(remotePresence);
+        }
+      }
+    }
+  }
+  if (recipientFullJIDs.isEmpty()) {
+    router.route(message);
+    return;
+  }
+  for (  JID recipientFullJID : recipientFullJIDs) {
+    try {
+      JID publisher=null;
+      Element itemsElement=message.getElement().element("event").element("items");
+      String nodeID=itemsElement.attributeValue("node");
+      String itemID=null;
+      Element itemElement=itemsElement.element("item");
+      if (itemElement == null) {
+        Element retractElement=itemsElement.element("retract");
+        if (retractElement != null) {
+          itemID=retractElement.attributeValue("id");
+        }
+      }
+ else {
+        itemID=itemElement.attributeValue("id");
+      }
+      Map<String,Set<String>> filteredNodesMap=XMPPServer.getInstance().getIQPEPHandler().getFilteredNodesMap();
+      Set<String> filteredNodesSet=filteredNodesMap.get(recipientFullJID.toString());
+      if (filteredNodesSet != null && !filteredNodesSet.contains(nodeID + "+notify")) {
+        return;
+      }
+      if (node.isCollectionNode()) {
+        for (        Node leafNode : node.getNodes()) {
+          if (leafNode.getNodeID().equals(nodeID)) {
+            publisher=leafNode.getPublishedItem(itemID).getPublisher();
+            AccessModel accessModel=leafNode.getAccessModel();
+            if (!accessModel.canAccessItems(leafNode,recipientFullJID,publisher)) {
+              return;
+            }
+            break;
+          }
+        }
+      }
+ else {
+        publisher=node.getPublishedItem(itemID).getPublisher();
+      }
+      if (canProbePresence(publisher,recipientFullJID)) {
+        Element addresses=DocumentHelper.createElement(QName.get("addresses","http://jabber.org/protocol/address"));
+        Element address=addresses.addElement("address");
+        address.addAttribute("type","replyto");
+        address.addAttribute("jid",publisher.toString());
+        Message extendedMessage=message.createCopy();
+        extendedMessage.addExtension(new PacketExtension(addresses));
+        extendedMessage.setTo(recipientFullJID);
+        router.route(extendedMessage);
+      }
+    }
+ catch (    IndexOutOfBoundsException e) {
+    }
+catch (    UserNotFoundException e) {
+      router.route(message);
+    }
+catch (    NullPointerException e) {
+      try {
+        if (canProbePresence(getAddress(),recipientFullJID)) {
+          message.setTo(recipientFullJID);
+        }
+      }
+ catch (      UserNotFoundException e1) {
+      }
+      router.route(message);
+    }
+  }
+}

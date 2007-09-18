@@ -1,0 +1,15 @@
+{
+  PEPService pepService=pepServices.get(authorizerJID.toBareJID());
+  if (pepService != null) {
+    createSubscriptionToPEPService(pepService,subscriberJID,authorizerJID);
+    CollectionNode rootNode=pepService.getRootCollectionNode();
+    for (    Node node : pepService.getNodes()) {
+      if (rootNode.isChildNode(node)) {
+        for (        NodeSubscription subscription : node.getSubscriptions(subscriberJID)) {
+          node.cancelSubscription(subscription);
+        }
+      }
+    }
+    pepService.sendLastPublishedItems(subscriberJID);
+  }
+}

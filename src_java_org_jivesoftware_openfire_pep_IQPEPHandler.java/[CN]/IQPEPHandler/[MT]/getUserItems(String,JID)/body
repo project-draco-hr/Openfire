@@ -1,0 +1,22 @@
+{
+  ArrayList<Element> items=new ArrayList<Element>();
+  String recipientJID=XMPPServer.getInstance().createJID(name,null).toBareJID();
+  PEPService pepService=pepServices.get(recipientJID);
+  if (pepService != null) {
+    CollectionNode rootNode=pepService.getRootCollectionNode();
+    Element defaultItem=DocumentHelper.createElement("item");
+    defaultItem.addAttribute("jid",recipientJID);
+    for (    Node node : pepService.getNodes()) {
+      if (node == rootNode) {
+        continue;
+      }
+      AccessModel accessModel=node.getAccessModel();
+      if (accessModel.canAccessItems(node,senderJID,new JID(recipientJID))) {
+        Element item=defaultItem.createCopy();
+        item.addAttribute("node",node.getNodeID());
+        items.add(item);
+      }
+    }
+  }
+  return items.iterator();
+}
