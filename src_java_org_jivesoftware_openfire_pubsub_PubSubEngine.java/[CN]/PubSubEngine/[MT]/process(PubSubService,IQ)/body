@@ -1,0 +1,130 @@
+{
+  if (IQ.Type.error == iq.getType() || IQ.Type.result == iq.getType()) {
+    return true;
+  }
+  Element childElement=iq.getChildElement();
+  String namespace=null;
+  if (childElement != null) {
+    namespace=childElement.getNamespaceURI();
+  }
+  if ("http://jabber.org/protocol/pubsub".equals(namespace)) {
+    Element action=childElement.element("publish");
+    if (action != null) {
+      publishItemsToNode(service,iq,action);
+      return true;
+    }
+    action=childElement.element("subscribe");
+    if (action != null) {
+      subscribeNode(service,iq,childElement,action);
+      return true;
+    }
+    action=childElement.element("options");
+    if (action != null) {
+      if (IQ.Type.get == iq.getType()) {
+        getSubscriptionConfiguration(service,iq,childElement,action);
+      }
+ else {
+        configureSubscription(service,iq,action);
+      }
+      return true;
+    }
+    action=childElement.element("create");
+    if (action != null) {
+      createNode(service,iq,childElement,action);
+      return true;
+    }
+    action=childElement.element("unsubscribe");
+    if (action != null) {
+      unsubscribeNode(service,iq,action);
+      return true;
+    }
+    action=childElement.element("subscriptions");
+    if (action != null) {
+      getSubscriptions(service,iq,childElement);
+      return true;
+    }
+    action=childElement.element("affiliations");
+    if (action != null) {
+      getAffiliations(service,iq,childElement);
+      return true;
+    }
+    action=childElement.element("items");
+    if (action != null) {
+      getPublishedItems(service,iq,action);
+      return true;
+    }
+    action=childElement.element("retract");
+    if (action != null) {
+      deleteItems(service,iq,action);
+      return true;
+    }
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+    return true;
+  }
+ else   if ("http://jabber.org/protocol/pubsub#owner".equals(namespace)) {
+    Element action=childElement.element("configure");
+    if (action != null) {
+      String nodeID=action.attributeValue("node");
+      if (nodeID == null) {
+        if (!service.isServiceAdmin(iq.getFrom()) || !service.isCollectionNodesSupported()) {
+          Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+          sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+          return true;
+        }
+ else {
+          nodeID=service.getRootCollectionNode().getNodeID();
+        }
+      }
+      if (IQ.Type.get == iq.getType()) {
+        getNodeConfiguration(service,iq,childElement,nodeID);
+      }
+ else {
+        configureNode(service,iq,action,nodeID);
+      }
+      return true;
+    }
+    action=childElement.element("default");
+    if (action != null) {
+      getDefaultNodeConfiguration(service,iq,childElement,action);
+      return true;
+    }
+    action=childElement.element("delete");
+    if (action != null) {
+      deleteNode(service,iq,action);
+      return true;
+    }
+    action=childElement.element("subscriptions");
+    if (action != null) {
+      if (IQ.Type.get == iq.getType()) {
+        getNodeSubscriptions(service,iq,action);
+      }
+ else {
+        modifyNodeSubscriptions(service,iq,action);
+      }
+      return true;
+    }
+    action=childElement.element("affiliations");
+    if (action != null) {
+      if (IQ.Type.get == iq.getType()) {
+        getNodeAffiliations(service,iq,action);
+      }
+ else {
+        modifyNodeAffiliations(service,iq,action);
+      }
+      return true;
+    }
+    action=childElement.element("purge");
+    if (action != null) {
+      purgeNode(service,iq,action);
+      return true;
+    }
+    sendErrorPacket(iq,PacketError.Condition.bad_request,null);
+    return true;
+  }
+ else   if ("http://jabber.org/protocol/commands".equals(namespace)) {
+    IQ reply=service.getManager().process(iq);
+    router.route(reply);
+    return true;
+  }
+  return false;
+}

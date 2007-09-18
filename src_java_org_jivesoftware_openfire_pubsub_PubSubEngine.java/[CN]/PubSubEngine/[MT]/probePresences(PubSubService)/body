@@ -1,0 +1,12 @@
+{
+  Set<JID> affiliates=new HashSet<JID>();
+  for (  Node node : service.getNodes()) {
+    affiliates.addAll(node.getPresenceBasedSubscribers());
+  }
+  for (  JID jid : affiliates) {
+    Presence subscription=new Presence(Presence.Type.probe);
+    subscription.setTo(jid);
+    subscription.setFrom(service.getAddress());
+    service.send(subscription);
+  }
+}

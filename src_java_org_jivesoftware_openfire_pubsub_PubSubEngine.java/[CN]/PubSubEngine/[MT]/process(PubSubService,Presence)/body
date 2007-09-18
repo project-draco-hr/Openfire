@@ -1,0 +1,27 @@
+{
+  if (presence.isAvailable()) {
+    JID subscriber=presence.getFrom();
+    Map<String,String> fullPresences=service.getBarePresences().get(subscriber.toBareJID());
+    if (fullPresences == null) {
+synchronized (subscriber.toBareJID().intern()) {
+        fullPresences=service.getBarePresences().get(subscriber.toBareJID());
+        if (fullPresences == null) {
+          fullPresences=new ConcurrentHashMap<String,String>();
+          service.getBarePresences().put(subscriber.toBareJID(),fullPresences);
+        }
+      }
+    }
+    Presence.Show show=presence.getShow();
+    fullPresences.put(subscriber.toString(),show == null ? "online" : show.name());
+  }
+ else   if (presence.getType() == Presence.Type.unavailable) {
+    JID subscriber=presence.getFrom();
+    Map<String,String> fullPresences=service.getBarePresences().get(subscriber.toBareJID());
+    if (fullPresences != null) {
+      fullPresences.remove(subscriber.toString());
+      if (fullPresences.isEmpty()) {
+        service.getBarePresences().remove(subscriber.toBareJID());
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  if (XMPPServer.getInstance().isStarted()) {
+    probePresences(service);
+  }
+ else {
+    XMPPServer.getInstance().addServerListener(new XMPPServerListener(){
+      public void serverStarted(){
+        probePresences(service);
+      }
+      public void serverStopping(){
+      }
+    }
+);
+  }
+}

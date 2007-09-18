@@ -5,6 +5,9 @@
       Element items=event.addElement("items");
       items.addAttribute("node",getNode().getNodeID());
       for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
+        if (getNode().getNodeID().indexOf("@") >= 0) {
+          items.addAttribute("node",publishedItem.getNode().getNodeID());
+        }
         Element item=items.addElement("item");
         if (leafNode.isItemRequired()) {
           item.addAttribute("id",publishedItem.getID());

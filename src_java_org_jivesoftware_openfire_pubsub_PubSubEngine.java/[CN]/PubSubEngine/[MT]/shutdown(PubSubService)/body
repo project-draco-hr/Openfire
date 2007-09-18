@@ -1,0 +1,17 @@
+{
+  service.getTimer().cancel();
+  PublishedItem entry;
+  while (!service.getItemsToDelete().isEmpty()) {
+    entry=service.getItemsToDelete().poll();
+    if (entry != null) {
+      PubSubPersistenceManager.removePublishedItem(service,entry);
+    }
+  }
+  while (!service.getItemsToAdd().isEmpty()) {
+    entry=service.getItemsToAdd().poll();
+    if (entry != null) {
+      PubSubPersistenceManager.createPublishedItem(service,entry);
+    }
+  }
+  service.getManager().stop();
+}
