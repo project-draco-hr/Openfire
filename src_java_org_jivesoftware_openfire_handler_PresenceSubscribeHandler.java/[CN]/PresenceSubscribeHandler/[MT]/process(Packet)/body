@@ -54,10 +54,12 @@
         if (type == Presence.Type.subscribed) {
           JID prober=localServer.isLocal(recipientJID) ? new JID(recipientJID.toBareJID()) : recipientJID;
           presenceManager.probePresence(prober,senderJID);
+          PresenceEventDispatcher.subscribedToPresence(recipientJID,senderJID);
         }
       }
       if (type == Presence.Type.unsubscribed) {
         presenceManager.sendUnavailableFromSessions(recipientJID,senderJID);
+        PresenceEventDispatcher.unsubscribedToPresence(senderJID,recipientJID);
       }
     }
  catch (    SharedGroupException e) {
