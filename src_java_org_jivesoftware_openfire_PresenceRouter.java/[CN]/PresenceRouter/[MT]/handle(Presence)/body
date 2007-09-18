@@ -13,6 +13,15 @@
         updateHandler.process(packet);
       }
  else {
+        JID senderJID=packet.getFrom();
+        if (senderJID != null && !serverName.equals(senderJID.getDomain())) {
+          if (type == null) {
+            RemotePresenceEventDispatcher.remoteUserAvailable(packet);
+          }
+ else           if (type == Presence.Type.unavailable) {
+            RemotePresenceEventDispatcher.remoteUserUnavailable(packet);
+          }
+        }
         Session session=sessionManager.getSession(packet.getFrom());
         if (session != null && session.getStatus() == Session.STATUS_CLOSED) {
           Log.warn("Rejected available presence: " + packet + " - "+ session);
