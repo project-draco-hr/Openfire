@@ -1,0 +1,40 @@
+{
+  String GET_PEP_SERVICE="SELECT DISTINCT serviceID FROM pubsubNode " + "WHERE serviceID='" + jid + "'";
+  PEPService pepService=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_PEP_SERVICE);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String serviceID=rs.getString(1);
+      pepService=new PEPService(XMPPServer.getInstance(),serviceID);
+      pepServices.put(serviceID,pepService);
+      pubSubEngine.start(pepService);
+      if (Log.isDebugEnabled()) {
+        Log.debug("PEP: Restored service for " + serviceID + " from the database.");
+      }
+    }
+    rs.close();
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    try {
+      if (pstmt != null)       pstmt.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null)       con.close();
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+  return pepService;
+}

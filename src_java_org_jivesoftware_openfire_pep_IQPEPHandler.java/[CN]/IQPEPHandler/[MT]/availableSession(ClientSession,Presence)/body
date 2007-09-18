@@ -1,6 +1,16 @@
 {
   JID newlyAvailableJID=presence.getFrom();
-  for (  PEPService pepService : pepServices.values()) {
-    pepService.sendLastPublishedItems(newlyAvailableJID);
+  try {
+    Roster roster=XMPPServer.getInstance().getRosterManager().getRoster(newlyAvailableJID.getNode());
+    for (    RosterItem item : roster.getRosterItems()) {
+      if (item.getSubStatus() == RosterItem.SUB_BOTH) {
+        PEPService pepService=getPEPService(item.getJid().toBareJID());
+        if (pepService != null) {
+          pepService.sendLastPublishedItems(newlyAvailableJID);
+        }
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
   }
 }

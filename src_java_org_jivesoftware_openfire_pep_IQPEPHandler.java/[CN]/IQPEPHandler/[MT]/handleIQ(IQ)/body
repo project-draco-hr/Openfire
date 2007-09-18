@@ -2,7 +2,7 @@
   JID senderJID=packet.getFrom();
   if (packet.getTo() == null && packet.getType() == IQ.Type.set) {
     String jidFrom=senderJID.toBareJID();
-    PEPService pepService=pepServices.get(jidFrom);
+    PEPService pepService=getPEPService(jidFrom);
     if (pepService == null) {
       if (!XMPPServer.getInstance().isLocal(senderJID) || !UserManager.getInstance().isRegisteredUser(senderJID.getNode())) {
         IQ reply=IQ.createResultIQ(packet);
@@ -51,7 +51,7 @@
   }
  else   if (packet.getType() == IQ.Type.get || packet.getType() == IQ.Type.set) {
     String jidTo=packet.getTo().toBareJID();
-    PEPService pepService=pepServices.get(jidTo);
+    PEPService pepService=getPEPService(jidTo);
     if (pepService != null) {
       pubSubEngine.process(pepService,packet);
     }
