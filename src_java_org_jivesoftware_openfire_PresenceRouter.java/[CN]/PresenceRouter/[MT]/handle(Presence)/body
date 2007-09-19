@@ -1,5 +1,6 @@
 {
   JID recipientJID=packet.getTo();
+  JID senderJID=packet.getFrom();
   if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
     if (packet.getElement().element("addresses") != null) {
       multicastRouter.route(packet);
@@ -7,14 +8,17 @@
     }
   }
   try {
+    if (recipientJID != null && !XMPPServer.getInstance().isLocal(recipientJID) && !XMPPServer.getInstance().isLocal(senderJID)) {
+      routingTable.routePacket(recipientJID,packet,false);
+      return;
+    }
     Presence.Type type=packet.getType();
     if (type == null || Presence.Type.unavailable == type) {
       if (recipientJID == null || recipientJID.getDomain() == null || "".equals(recipientJID.getDomain()) || (recipientJID.getNode() == null && recipientJID.getResource() == null) && serverName.equals(recipientJID.getDomain())) {
         updateHandler.process(packet);
       }
  else {
-        JID senderJID=packet.getFrom();
-        if (senderJID != null && !serverName.equals(senderJID.getDomain())) {
+        if (senderJID != null && !serverName.equals(senderJID.getDomain()) && !routingTable.hasComponentRoute(senderJID)) {
           if (type == null) {
             RemotePresenceEventDispatcher.remoteUserAvailable(packet);
           }
