@@ -37,6 +37,9 @@
     filter.append(MessageFormat.format(manager.getGroupSearchFilter(),"*"));
     filter.append("(").append(manager.getGroupMemberField()).append("=").append(username);
     filter.append("))");
+    if (Log.isDebugEnabled()) {
+      Log.debug("Trying to find group names for user: " + user + " using query: "+ filter.toString());
+    }
     NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
     while (answer.hasMoreElements()) {
       String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
