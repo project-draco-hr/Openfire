@@ -1,6 +1,8 @@
 {
   for (  AuthorizationMapping am : authorizationMapping) {
-    Log.debug("AuthorizationManager: Trying " + am.name() + ".map("+ principal+ ")");
+    if (Log.isDebugEnabled()) {
+      Log.debug("AuthorizationManager: Trying " + am.name() + ".map("+ principal+ ")");
+    }
     String username=am.map(principal);
     if (!username.equals(principal)) {
       return username;

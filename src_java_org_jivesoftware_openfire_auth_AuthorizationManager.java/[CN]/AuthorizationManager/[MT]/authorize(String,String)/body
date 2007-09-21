@@ -1,23 +1,31 @@
 {
   for (  AuthorizationPolicy ap : authorizationPolicies) {
-    Log.debug("AuthorizationManager: Trying " + ap.name() + ".authorize("+ username+ ","+ principal+ ")");
+    if (Log.isDebugEnabled()) {
+      Log.debug("AuthorizationManager: Trying " + ap.name() + ".authorize("+ username+ " , "+ principal+ ")");
+    }
     if (ap.authorize(username,principal)) {
       try {
         UserManager.getUserProvider().loadUser(username);
       }
  catch (      UserNotFoundException nfe) {
-        Log.debug("AuthorizationManager: User " + username + " not found "+ nfe.toString());
+        if (Log.isDebugEnabled()) {
+          Log.debug("AuthorizationManager: User " + username + " not found "+ nfe.toString());
+        }
         if (JiveGlobals.getBooleanProperty("xmpp.auth.autoadd",false)) {
           if (UserManager.getUserProvider().isReadOnly()) {
             return false;
           }
           try {
             UserManager.getUserProvider().createUser(username,StringUtils.randomString(8),null,null);
-            Log.info("AuthorizationManager: User " + username + " created.");
+            if (Log.isDebugEnabled()) {
+              Log.info("AuthorizationManager: User " + username + " created.");
+            }
             return true;
           }
  catch (          UserAlreadyExistsException uaee) {
-            Log.error("AuthorizationManager: User " + username + " already exists while attempting to add user.");
+            if (Log.isDebugEnabled()) {
+              Log.error("AuthorizationManager: User " + username + " already exists while attempting to add user.");
+            }
             return false;
           }
         }
