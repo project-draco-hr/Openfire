@@ -1,0 +1,27 @@
+{
+  SyndFeedInfo syndFeedInfo;
+  syndFeedInfo=new SyndFeedInfo();
+  syndFeedInfo.setUrl(new URL(urlStr));
+  syndFeedInfo.setId(feedUrl.toString());
+  Header imHeader=method.getResponseHeader("IM");
+  if (imHeader != null && imHeader.getValue().indexOf("feed") >= 0 && isUsingDeltaEncoding()) {
+    FeedFetcherCache cache=getFeedInfoCache();
+    if (cache != null && statusCode == 226) {
+      SyndFeedInfo cachedInfo=cache.getFeedInfo(feedUrl);
+      if (cachedInfo != null) {
+        SyndFeed cachedFeed=cachedInfo.getSyndFeed();
+        feed=combineFeeds(cachedFeed,feed);
+      }
+    }
+  }
+  Header lastModifiedHeader=method.getResponseHeader("Last-Modified");
+  if (lastModifiedHeader != null) {
+    syndFeedInfo.setLastModified(lastModifiedHeader.getValue());
+  }
+  Header eTagHeader=method.getResponseHeader("ETag");
+  if (eTagHeader != null) {
+    syndFeedInfo.setETag(eTagHeader.getValue());
+  }
+  syndFeedInfo.setSyndFeed(feed);
+  return syndFeedInfo;
+}

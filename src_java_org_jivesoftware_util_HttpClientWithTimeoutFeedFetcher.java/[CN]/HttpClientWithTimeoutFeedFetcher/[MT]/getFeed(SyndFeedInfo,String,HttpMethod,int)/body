@@ -1,0 +1,9 @@
+{
+  if (statusCode == HttpURLConnection.HTTP_NOT_MODIFIED && syndFeedInfo != null) {
+    fireEvent(FetcherEvent.EVENT_TYPE_FEED_UNCHANGED,urlStr);
+    return syndFeedInfo.getSyndFeed();
+  }
+  SyndFeed feed=retrieveFeed(urlStr,method);
+  fireEvent(FetcherEvent.EVENT_TYPE_FEED_RETRIEVED,urlStr,feed);
+  return feed;
+}

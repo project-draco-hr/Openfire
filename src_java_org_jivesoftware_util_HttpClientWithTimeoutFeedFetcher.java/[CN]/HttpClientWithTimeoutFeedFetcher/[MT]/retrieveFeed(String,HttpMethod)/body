@@ -1,0 +1,24 @@
+{
+  InputStream stream=null;
+  if ((method.getResponseHeader("Content-Encoding") != null) && ("gzip".equalsIgnoreCase(method.getResponseHeader("Content-Encoding").getValue()))) {
+    stream=new GZIPInputStream(method.getResponseBodyAsStream());
+  }
+ else {
+    stream=method.getResponseBodyAsStream();
+  }
+  try {
+    XmlReader reader=null;
+    if (method.getResponseHeader("Content-Type") != null) {
+      reader=new XmlReader(stream,method.getResponseHeader("Content-Type").getValue(),true);
+    }
+ else {
+      reader=new XmlReader(stream,true);
+    }
+    return new SyndFeedInput().build(reader);
+  }
+  finally {
+    if (stream != null) {
+      stream.close();
+    }
+  }
+}
