@@ -1,6 +1,13 @@
 {
-  if (enabled == isClusteringEnabled()) {
-    return;
+  if (enabled) {
+    if (isClusteringEnabled() && isClusteringStarted()) {
+      return;
+    }
+  }
+ else {
+    if (!isClusteringEnabled()) {
+      return;
+    }
   }
   JiveGlobals.setXMLProperty(CLUSTER_PROPERTY_NAME,Boolean.toString(enabled));
   if (!enabled) {
