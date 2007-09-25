@@ -1,0 +1,15 @@
+{
+  SessionManager manager=SessionManager.getInstance();
+  values=new HashMap<String,Object>();
+  values.put(NODE,CacheFactory.getClusterMemberID());
+  values.put(CLIENT,manager.getUserSessionsCount(true));
+  values.put(INCOMING,manager.getIncomingServerSessionsCount(true));
+  values.put(OUTGOING,XMPPServer.getInstance().getRoutingTable().getServerSessionsCount());
+  Runtime runtime=Runtime.getRuntime();
+  double freeMemory=(double)runtime.freeMemory() / (1024 * 1024);
+  double maxMemory=(double)runtime.maxMemory() / (1024 * 1024);
+  double totalMemory=(double)runtime.totalMemory() / (1024 * 1024);
+  double usedMemory=totalMemory - freeMemory;
+  values.put(MEMORY_CURRENT,usedMemory);
+  values.put(MEMORY_MAX,maxMemory);
+}
