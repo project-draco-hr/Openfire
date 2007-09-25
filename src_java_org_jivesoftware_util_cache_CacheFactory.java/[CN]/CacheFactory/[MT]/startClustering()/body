@@ -28,7 +28,22 @@
             }
           }
 );
-          while (!destroyed) {
+          ClusterManager.addListener(new ClusterEventListener(){
+            public void joinedCluster(){
+            }
+            public void joinedCluster(            byte[] nodeID){
+            }
+            public void leftCluster(){
+              destroyed=true;
+              ClusterManager.removeListener(this);
+            }
+            public void leftCluster(            byte[] nodeID){
+            }
+            public void markedAsSeniorClusterMember(){
+            }
+          }
+);
+          while (!destroyed && ClusterManager.isClusteringEnabled()) {
             try {
               cacheFactoryStrategy.updateCacheStats(caches);
             }
@@ -41,6 +56,7 @@
  catch (            InterruptedException ie) {
             }
           }
+          statsThread=null;
           Log.debug("Cache stats thread terminated.");
         }
       }
