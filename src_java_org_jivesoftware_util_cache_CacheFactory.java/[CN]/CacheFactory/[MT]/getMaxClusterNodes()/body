@@ -1,12 +1,10 @@
 {
-  if (isClusteringAvailable()) {
-    try {
-      CacheFactoryStrategy cacheFactory=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
-      return cacheFactory.getMaxClusterNodes();
-    }
- catch (    Exception e) {
-      Log.error("Error instantiating clustered cache factory",e);
-    }
+  try {
+    CacheFactoryStrategy cacheFactory=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader("enterprise")).newInstance();
+    return cacheFactory.getMaxClusterNodes();
+  }
+ catch (  Exception e) {
+    Log.error("Error instantiating clustered cache factory",e);
   }
   return 0;
 }
