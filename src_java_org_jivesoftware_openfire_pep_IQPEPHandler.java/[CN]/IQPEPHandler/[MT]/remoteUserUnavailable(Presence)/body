@@ -2,9 +2,7 @@
   JID jidFrom=presence.getFrom();
   JID jidTo=presence.getTo();
   Set<JID> remotePresenceSet=knownRemotePresences.get(jidTo.toBareJID());
-  if (remotePresenceSet != null && remotePresenceSet.remove(jidFrom)) {
-    if (Log.isDebugEnabled()) {
-      Log.debug("PEP: removed " + jidFrom + " from "+ jidTo+ "'s knownRemotePresences");
-    }
+  if (remotePresenceSet != null) {
+    remotePresenceSet.remove(jidFrom);
   }
 }
