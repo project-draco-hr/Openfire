@@ -1,0 +1,18 @@
+{
+  JID jid1=new JID("john@mycomapny.com");
+  JID jid2=new JID("john@mycomapny.com");
+  assertEquals("Failed to compare 2 similar JIDs",0,jid1.compareTo(jid2));
+  assertEquals("Failed to recognize equal JIDs",jid1,jid2);
+  jid1=new JID("john@mycomapny.com");
+  jid2=new JID("mycomapny.com");
+  assertTrue("Failed to recognized bigger JID",jid1.compareTo(jid2) > 0);
+  assertFalse("Failed to recognize different JIDs",jid1.equals(jid2));
+  jid1=new JID("john@mycomapny.com");
+  jid2=new JID("mycomapny.com/resource");
+  assertTrue("Failed to recognized bigger JID",jid1.compareTo(jid2) > 0);
+  assertFalse("Failed to recognize different JIDs",jid1.equals(jid2));
+  jid1=new JID("john@mycomapny.com");
+  jid2=new JID("john@mycomapny.com/resource");
+  assertTrue("Failed to recognized bigger JID",jid1.compareTo(jid2) < 0);
+  assertFalse("Failed to recognize different JIDs",jid1.equals(jid2));
+}
