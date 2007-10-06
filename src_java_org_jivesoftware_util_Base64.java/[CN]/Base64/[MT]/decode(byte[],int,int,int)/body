@@ -1,4 +1,5 @@
 {
+  byte[] DECODABET=getDecodabet(options);
   int len34=len * 3 / 4;
   byte[] outBuff=new byte[len34];
   int outBuffPosn=0;
@@ -14,11 +15,9 @@
       if (sbiDecode >= EQUALS_SIGN_ENC) {
         b4[b4Posn++]=sbiCrop;
         if (b4Posn > 3) {
-          outBuffPosn+=decode4to3(b4,0,outBuff,outBuffPosn);
+          outBuffPosn+=decode4to3(b4,0,outBuff,outBuffPosn,options);
           b4Posn=0;
-          if (sbiCrop == EQUALS_SIGN) {
-            break;
-          }
+          if (sbiCrop == EQUALS_SIGN)           break;
         }
       }
     }

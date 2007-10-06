@@ -12,13 +12,11 @@
           }
         }
  catch (        java.io.IOException e) {
-          if (i == 0) {
-            throw e;
-          }
+          if (i == 0)           throw e;
         }
       }
       if (numBinaryBytes > 0) {
-        encode3to4(b3,0,numBinaryBytes,buffer,0);
+        encode3to4(b3,0,numBinaryBytes,buffer,0,options);
         position=0;
         numSigBytes=4;
       }
@@ -34,14 +32,12 @@
         do {
           b=in.read();
         }
- while (b >= 0 && DECODABET[b & 0x7f] <= WHITE_SPACE_ENC);
-        if (b < 0) {
-          break;
-        }
+ while (b >= 0 && decodabet[b & 0x7f] <= WHITE_SPACE_ENC);
+        if (b < 0)         break;
         b4[i]=(byte)b;
       }
       if (i == 4) {
-        numSigBytes=decode4to3(b4,0,buffer,0);
+        numSigBytes=decode4to3(b4,0,buffer,0,options);
         position=0;
       }
  else       if (i == 0) {
@@ -53,9 +49,7 @@
     }
   }
   if (position >= 0) {
-    if (position >= numSigBytes) {
-      return -1;
-    }
+    if (position >= numSigBytes)     return -1;
     if (encode && breakLines && lineLength >= MAX_LINE_LENGTH) {
       lineLength=0;
       return '\n';
@@ -63,9 +57,7 @@
  else {
       lineLength++;
       int b=buffer[position++];
-      if (position >= bufferLength) {
-        position=-1;
-      }
+      if (position >= bufferLength)       position=-1;
       return b & 0xFF;
     }
   }
