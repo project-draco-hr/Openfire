@@ -1,0 +1,23 @@
+{
+  if (jid == null) {
+    throw new IllegalArgumentException("Argument 'jid' cannot be null.");
+  }
+  if (action != null && !action.equals("update") && !action.equals("remove")) {
+    throw new IllegalArgumentException("Argument 'jid' cannot have any other value than null, \"update\" or \"remove\".");
+  }
+  this.jid=jid;
+  this.name=name;
+  this.node=node;
+  this.action=action;
+  element=DocumentHelper.createElement("item");
+  element.addAttribute("jid",jid.toString());
+  if (action != null) {
+    element.addAttribute("action",action);
+  }
+  if (name != null) {
+    element.addAttribute("name",name);
+  }
+  if (node != null) {
+    element.addAttribute("node",node);
+  }
+}

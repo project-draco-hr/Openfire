@@ -2,31 +2,16 @@
   if (!isServiceEnabled()) {
     return null;
   }
-  ArrayList<DiscoServerItem> items=new ArrayList<DiscoServerItem>();
-  items.add(new DiscoServerItem(){
-    public String getJID(){
-      return getServiceDomain();
-    }
-    public String getName(){
-      String serviceName=JiveGlobals.getProperty("muc.service-name");
-      if (serviceName != null && serviceName.trim().length() > 0) {
-        return serviceName;
-      }
-      return LocaleUtils.getLocalizedString("muc.service-name");
-    }
-    public String getAction(){
-      return null;
-    }
-    public String getNode(){
-      return null;
-    }
-    public DiscoInfoProvider getDiscoInfoProvider(){
-      return MultiUserChatServerImpl.this;
-    }
-    public DiscoItemsProvider getDiscoItemsProvider(){
-      return MultiUserChatServerImpl.this;
-    }
+  final ArrayList<DiscoServerItem> items=new ArrayList<DiscoServerItem>();
+  final String name;
+  String serviceName=JiveGlobals.getProperty("muc.service-name");
+  if (serviceName != null && serviceName.trim().length() > 0) {
+    name=serviceName;
   }
-);
+ else {
+    name=LocaleUtils.getLocalizedString("muc.service-name");
+  }
+  final DiscoServerItem item=new DiscoServerItem(new JID(getServiceDomain()),name,null,null,this,this);
+  items.add(item);
   return items.iterator();
 }

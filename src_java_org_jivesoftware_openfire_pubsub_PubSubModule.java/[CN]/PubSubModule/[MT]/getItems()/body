@@ -1,25 +1,6 @@
 {
   ArrayList<DiscoServerItem> items=new ArrayList<DiscoServerItem>();
-  items.add(new DiscoServerItem(){
-    public String getJID(){
-      return getServiceDomain();
-    }
-    public String getName(){
-      return "Publish-Subscribe service";
-    }
-    public String getAction(){
-      return null;
-    }
-    public String getNode(){
-      return null;
-    }
-    public DiscoInfoProvider getDiscoInfoProvider(){
-      return PubSubModule.this;
-    }
-    public DiscoItemsProvider getDiscoItemsProvider(){
-      return PubSubModule.this;
-    }
-  }
-);
+  final DiscoServerItem item=new DiscoServerItem(new JID(getServiceDomain()),"Publish-Subscribe service",null,null,this,this);
+  items.add(item);
   return items.iterator();
 }

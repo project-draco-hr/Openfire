@@ -3,26 +3,7 @@
   if (!isEnabled()) {
     return items.iterator();
   }
-  items.add(new DiscoServerItem(){
-    public String getJID(){
-      return getServiceDomain();
-    }
-    public String getName(){
-      return "Media Proxy Service";
-    }
-    public String getAction(){
-      return null;
-    }
-    public String getNode(){
-      return null;
-    }
-    public DiscoInfoProvider getDiscoInfoProvider(){
-      return MediaProxyService.this;
-    }
-    public DiscoItemsProvider getDiscoItemsProvider(){
-      return MediaProxyService.this;
-    }
-  }
-);
+  final DiscoServerItem item=new DiscoServerItem(new JID(getServiceDomain()),"Media Proxy Service",null,null,this,this);
+  items.add(item);
   return items.iterator();
 }

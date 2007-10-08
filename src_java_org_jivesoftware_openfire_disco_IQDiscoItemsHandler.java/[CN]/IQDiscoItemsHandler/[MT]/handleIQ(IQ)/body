@@ -5,30 +5,6 @@
     reply.setError(PacketError.Condition.feature_not_implemented);
     return reply;
   }
-  if (packet.getTo() != null && packet.getTo().getNode() != null) {
-    String name=packet.getTo().getNode();
-    reply.setChildElement(packet.getChildElement().createCopy());
-    Element queryElement=reply.getChildElement();
-    List<UserItemsProvider> itemsProviders=XMPPServer.getInstance().getUserItemsProviders();
-    if (itemsProviders.isEmpty()) {
-      reply.setChildElement(packet.getChildElement().createCopy());
-      reply.setError(PacketError.Condition.item_not_found);
-    }
- else {
-      for (      UserItemsProvider itemsProvider : itemsProviders) {
-        Iterator<Element> itemsItr=itemsProvider.getUserItems(name,packet.getFrom());
-        if (itemsItr != null) {
-          Element item;
-          while (itemsItr.hasNext()) {
-            item=itemsItr.next();
-            item.setQName(new QName(item.getName(),queryElement.getNamespace()));
-            queryElement.add(item.createCopy());
-          }
-        }
-      }
-    }
-    return reply;
-  }
   DiscoItemsProvider itemsProvider=getProvider(packet.getTo() == null ? XMPPServer.getInstance().getServerInfo().getName() : packet.getTo().getDomain());
   if (itemsProvider != null) {
     String name=packet.getTo() == null ? null : packet.getTo().getNode();
@@ -37,15 +13,46 @@
     }
     Element iq=packet.getChildElement();
     String node=iq.attributeValue("node");
-    Iterator<Element> itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
+    Iterator<DiscoItem> itemsItr=itemsProvider.getItems(name,node,packet.getFrom());
     if (itemsItr != null) {
       reply.setChildElement(iq.createCopy());
       Element queryElement=reply.getChildElement();
-      Element item;
-      while (itemsItr.hasNext()) {
-        item=itemsItr.next();
-        item.setQName(new QName(item.getName(),queryElement.getNamespace()));
-        queryElement.add(item.createCopy());
+      final Element rsmElement=packet.getChildElement().element(QName.get("set",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT));
+      final boolean applyRSM=rsmElement != null && itemsItr.hasNext();
+      if (applyRSM) {
+        if (!ResultSet.isValidRSMRequest(rsmElement)) {
+          reply.setError(PacketError.Condition.bad_request);
+          return reply;
+        }
+        final List<DiscoItem> rsmResults;
+        final List<DiscoItem> allItems=new ArrayList<DiscoItem>();
+        while (itemsItr.hasNext()) {
+          allItems.add(itemsItr.next());
+        }
+        final ResultSet<DiscoItem> rs=new ResultSetImpl<DiscoItem>(allItems);
+        try {
+          rsmResults=rs.applyRSMDirectives(rsmElement);
+        }
+ catch (        NullPointerException e) {
+          final IQ itemNotFound=IQ.createResultIQ(packet);
+          itemNotFound.setError(PacketError.Condition.item_not_found);
+          return itemNotFound;
+        }
+        for (        DiscoItem item : rsmResults) {
+          final Element resultElement=item.getElement();
+          resultElement.setQName(new QName(resultElement.getName(),queryElement.getNamespace()));
+          queryElement.add(resultElement.createCopy());
+        }
+        queryElement.remove(queryElement.element(QName.get("set",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT)));
+        queryElement.add(rs.generateSetElementFromResults(rsmResults));
+      }
+ else {
+        Element item;
+        while (itemsItr.hasNext()) {
+          item=itemsItr.next().getElement();
+          item.setQName(new QName(item.getName(),queryElement.getNamespace()));
+          queryElement.add(item.createCopy());
+        }
       }
     }
  else {

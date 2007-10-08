@@ -2,26 +2,19 @@
   if (!isServiceEnabled()) {
     return null;
   }
-  List<Element> answer=new ArrayList<Element>();
+  List<DiscoItem> answer=new ArrayList<DiscoItem>();
   if (name == null && node == null) {
-    Element item;
     for (    MUCRoom room : rooms.values()) {
       if (canDiscoverRoom(room)) {
-        item=DocumentHelper.createElement("item");
-        item.addAttribute("jid",room.getRole().getRoleAddress().toString());
-        item.addAttribute("name",room.getNaturalLanguageName());
-        answer.add(item);
+        answer.add(new DiscoItem(room.getRole().getRoleAddress(),room.getNaturalLanguageName(),null,null));
       }
     }
   }
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);
     if (room != null && canDiscoverRoom(room)) {
-      Element item;
       for (      MUCRole role : room.getOccupants()) {
-        item=DocumentHelper.createElement("item");
-        item.addAttribute("jid",role.getRoleAddress().toString());
-        answer.add(item);
+        answer.add(new DiscoItem(role.getRoleAddress(),null,null,null));
       }
     }
   }

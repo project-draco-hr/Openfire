@@ -73,9 +73,10 @@
   logConversationTask=new LogConversationTask();
   timer.schedule(logConversationTask,log_timeout,log_timeout);
   cleanupTask=new CleanupTask();
-  timer.schedule(cleanupTask,cleanup_frequency,cleanup_frequency);
+  timer.schedule(cleanupTask,CLEANUP_FREQUENCY,CLEANUP_FREQUENCY);
   routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
   registerHandler=new IQMUCRegisterHandler(this);
+  searchHandler=new IQMUCSearchHandler(this);
   ClusterManager.addListener(this);
 }

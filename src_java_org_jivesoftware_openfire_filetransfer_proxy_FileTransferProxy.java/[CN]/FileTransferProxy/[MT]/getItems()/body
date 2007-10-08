@@ -3,26 +3,7 @@
   if (!isEnabled()) {
     return items.iterator();
   }
-  items.add(new DiscoServerItem(){
-    public String getJID(){
-      return getServiceDomain();
-    }
-    public String getName(){
-      return "Socks 5 Bytestreams Proxy";
-    }
-    public String getAction(){
-      return null;
-    }
-    public String getNode(){
-      return null;
-    }
-    public DiscoInfoProvider getDiscoInfoProvider(){
-      return FileTransferProxy.this;
-    }
-    public DiscoItemsProvider getDiscoItemsProvider(){
-      return FileTransferProxy.this;
-    }
-  }
-);
+  final DiscoServerItem item=new DiscoServerItem(new JID(getServiceDomain()),"Socks 5 Bytestreams Proxy",null,null,this,this);
+  items.add(item);
   return items.iterator();
 }

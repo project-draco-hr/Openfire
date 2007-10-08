@@ -14,6 +14,10 @@
     IQ reply=registerHandler.handleIQ(iq);
     router.route(reply);
   }
+ else   if ("jabber:iq:search".equals(namespace)) {
+    IQ reply=searchHandler.handleIQ(iq);
+    router.route(reply);
+  }
  else   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
     IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
     router.route(reply);

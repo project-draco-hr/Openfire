@@ -1,14 +1,10 @@
 {
-  List<Element> answer=new ArrayList<Element>();
+  List<DiscoItem> answer=new ArrayList<DiscoItem>();
   String serviceDomain=getServiceDomain();
   if (name == null && node == null) {
-    Element item;
     for (    Node pubNode : rootCollectionNode.getNodes()) {
       if (canDiscoverNode(pubNode)) {
-        item=DocumentHelper.createElement("item");
-        item.addAttribute("jid",serviceDomain);
-        item.addAttribute("node",pubNode.getNodeID());
-        item.addAttribute("name",pubNode.getName());
+        final DiscoItem item=new DiscoItem(new JID(serviceDomain),pubNode.getName(),pubNode.getNodeID(),null);
         answer.add(item);
       }
     }
@@ -17,24 +13,16 @@
     Node pubNode=getNode(node);
     if (pubNode != null && canDiscoverNode(pubNode)) {
       if (pubNode.isCollectionNode()) {
-        Element item;
         for (        Node nestedNode : pubNode.getNodes()) {
           if (canDiscoverNode(nestedNode)) {
-            item=DocumentHelper.createElement("item");
-            item.addAttribute("jid",serviceDomain);
-            item.addAttribute("node",nestedNode.getNodeID());
-            item.addAttribute("name",nestedNode.getName());
+            final DiscoItem item=new DiscoItem(new JID(serviceDomain),nestedNode.getName(),nestedNode.getNodeID(),null);
             answer.add(item);
           }
         }
       }
  else {
-        Element item;
         for (        PublishedItem publishedItem : pubNode.getPublishedItems()) {
-          item=DocumentHelper.createElement("item");
-          item.addAttribute("jid",serviceDomain);
-          item.addAttribute("name",publishedItem.getID());
-          answer.add(item);
+          answer.add(new DiscoItem(new JID(serviceDomain),publishedItem.getID(),null,null));
         }
       }
     }

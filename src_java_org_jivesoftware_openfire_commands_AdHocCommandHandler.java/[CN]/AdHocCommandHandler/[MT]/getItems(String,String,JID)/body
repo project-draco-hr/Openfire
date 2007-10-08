@@ -1,16 +1,12 @@
 {
-  List<Element> answer=new ArrayList<Element>();
+  List<DiscoItem> answer=new ArrayList<DiscoItem>();
   if (!NAMESPACE.equals(node)) {
     answer=Collections.emptyList();
   }
  else {
-    Element item;
     for (    AdHocCommand command : manager.getCommands()) {
       if (command.hasPermission(senderJID)) {
-        item=DocumentHelper.createElement("item");
-        item.addAttribute("jid",serverName);
-        item.addAttribute("node",command.getCode());
-        item.addAttribute("name",command.getLabel());
+        final DiscoItem item=new DiscoItem(new JID(serverName),command.getLabel(),command.getCode(),null);
         answer.add(item);
       }
     }
