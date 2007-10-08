@@ -22,8 +22,8 @@ case AUTH:
       }
       SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
       byte[] token=new byte[0];
-      if (doc.isTextOnly()) {
-        token=StringUtils.decodeBase64(doc.getTextTrim());
+      if (!doc.getText().isEmpty()) {
+        token=StringUtils.decodeBase64(doc.getText().trim());
         if (token == null) {
           token=new byte[0];
         }
