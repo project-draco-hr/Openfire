@@ -1,0 +1,15 @@
+{
+  if (iq == null) {
+    throw new IllegalArgumentException("Argument 'iq' cannot be null.");
+  }
+  if (!iq.getChildElement().getNamespaceURI().equals(IQDiscoInfoHandler.NAMESPACE_DISCO_INFO) || iq.getType() != Type.get) {
+    throw new IllegalArgumentException("This is not a valid disco#info request.");
+  }
+  final IQ replyPacket=IQ.createResultIQ(iq);
+  final Element responseElement=replyPacket.setChildElement("query",IQDiscoInfoHandler.NAMESPACE_DISCO_INFO);
+  responseElement.addElement("identity").addAttribute("category","directory").addAttribute("type","user").addAttribute("name","User Search");
+  responseElement.addElement("feature").addAttribute("var",NAMESPACE_JABBER_IQ_SEARCH);
+  responseElement.addElement("feature").addAttribute("var",IQDiscoInfoHandler.NAMESPACE_DISCO_INFO);
+  responseElement.addElement("feature").addAttribute("var",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT);
+  return replyPacket;
+}

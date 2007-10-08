@@ -1,31 +1,45 @@
 {
-  Set<User> users=new HashSet<User>();
-  Element incomingForm=packet.getChildElement();
-  boolean isDataFormQuery=(incomingForm.element(QName.get("x","jabber:x:data")) != null);
-  Hashtable<String,String> searchList=extractSearchQuery(incomingForm);
-  Enumeration<String> searchIter=searchList.keys();
-  while (searchIter.hasMoreElements()) {
-    String field=searchIter.nextElement();
-    String query=searchList.get(field);
-    Collection<User> foundUsers=new ArrayList<User>();
-    if (userManager != null) {
-      if (query.length() > 0 && !query.equals("jabber:iq:search")) {
-        foundUsers.addAll(userManager.findUsers(new HashSet<String>(Arrays.asList((field))),query));
-      }
+  if (!packet.getType().equals(IQ.Type.set)) {
+    throw new IllegalArgumentException("This method only accepts 'set' typed IQ stanzas as an argument.");
+  }
+  final IQ resultIQ;
+  if (!isValidSearchRequest(packet)) {
+    resultIQ=IQ.createResultIQ(packet);
+    resultIQ.setError(Condition.bad_request);
+    return resultIQ;
+  }
+  final Element incomingForm=packet.getChildElement();
+  final boolean isDataFormQuery=(incomingForm.element(QName.get("x","jabber:x:data")) != null);
+  final Set<User> searchResults=performSearch(incomingForm);
+  final Element rsmElement=incomingForm.element(QName.get("set",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT));
+  final boolean applyRSM=rsmElement != null && !searchResults.isEmpty();
+  if (applyRSM) {
+    final List<User> rsmResults;
+    final ResultSet<User> rs=new ResultSetImpl<User>(searchResults);
+    try {
+      rsmResults=rs.applyRSMDirectives(rsmElement);
+    }
+ catch (    NullPointerException e) {
+      final IQ itemNotFound=IQ.createResultIQ(packet);
+      itemNotFound.setError(Condition.item_not_found);
+      return itemNotFound;
+    }
+    if (isDataFormQuery) {
+      resultIQ=replyDataFormResult(rsmResults,packet);
     }
  else {
-      foundUsers.addAll(findUsers(field,query));
+      resultIQ=replyNonDataFormResult(rsmResults,packet);
     }
-    for (    User user : foundUsers) {
-      if (user != null) {
-        users.add(user);
-      }
-    }
-  }
-  if (isDataFormQuery) {
-    return replyDataFormResult(users,packet);
+    final Element set=rs.generateSetElementFromResults(rsmResults);
+    resultIQ.getChildElement().add(set);
   }
  else {
-    return replyNonDataFormResult(users,packet);
+    if (isDataFormQuery) {
+      resultIQ=replyDataFormResult(searchResults,packet);
+    }
+ else {
+      resultIQ=replyNonDataFormResult(searchResults,packet);
+    }
   }
+  return resultIQ;
 }

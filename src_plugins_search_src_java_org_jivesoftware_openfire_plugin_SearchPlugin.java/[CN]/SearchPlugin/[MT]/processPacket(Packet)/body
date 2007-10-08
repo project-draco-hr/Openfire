@@ -1,43 +1,16 @@
 {
-  if (p instanceof IQ) {
-    IQ packet=(IQ)p;
-    Element childElement=(packet).getChildElement();
-    String namespace=null;
-    if (childElement != null) {
-      namespace=childElement.getNamespaceURI();
-    }
-    if ("jabber:iq:search".equals(namespace)) {
-      try {
-        IQ replyPacket=handleIQ(packet);
-        if (replyPacket != null) {
-          componentManager.sendPacket(this,replyPacket);
-        }
-      }
- catch (      ComponentException e) {
-        componentManager.getLog().error(e);
-      }
-    }
- else     if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-      try {
-        IQ replyPacket=IQ.createResultIQ(packet);
-        Element responseElement=replyPacket.setChildElement("query","http://jabber.org/protocol/disco#info");
-        responseElement.addElement("identity").addAttribute("category","directory").addAttribute("type","user").addAttribute("name","User Search");
-        responseElement.addElement("feature").addAttribute("var","jabber:iq:search");
-        componentManager.sendPacket(this,replyPacket);
-      }
- catch (      ComponentException e) {
-        componentManager.getLog().error(e);
-      }
-    }
- else     if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
-      try {
-        IQ replyPacket=IQ.createResultIQ(packet);
-        replyPacket.setChildElement("query","http://jabber.org/protocol/disco#items");
-        componentManager.sendPacket(this,replyPacket);
-      }
- catch (      ComponentException e) {
-        componentManager.getLog().error(e);
-      }
-    }
+  if (!(p instanceof IQ)) {
+    return;
+  }
+  final IQ packet=(IQ)p;
+  if (packet.getType().equals(IQ.Type.error) || packet.getType().equals(IQ.Type.result)) {
+    return;
+  }
+  final IQ replyPacket=handleIQRequest(packet);
+  try {
+    componentManager.sendPacket(this,replyPacket);
+  }
+ catch (  ComponentException e) {
+    componentManager.getLog().error(e);
   }
 }

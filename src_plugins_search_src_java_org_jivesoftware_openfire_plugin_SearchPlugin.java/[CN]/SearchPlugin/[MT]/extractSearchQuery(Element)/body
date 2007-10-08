@@ -1,37 +1,15 @@
 {
-  Hashtable<String,String> searchList=new Hashtable<String,String>();
-  Element form=incomingForm.element(QName.get("x","jabber:x:data"));
-  if (form == null) {
-    Iterator iter=incomingForm.elementIterator();
-    while (iter.hasNext()) {
-      Element element=(Element)iter.next();
-      String name=element.getName();
-      if (fieldLookup.containsKey(name)) {
-        reverseFieldLookup.put(fieldLookup.get(name),name);
-        searchList.put(fieldLookup.get(name),element.getText());
-      }
-    }
+  if (incomingForm.element(QName.get("x","jabber:x:data")) != null) {
+    return extractExtendedSearchQuery(incomingForm);
   }
- else {
-    List<String> searchFields=new ArrayList<String>();
-    String search="";
-    Iterator fields=form.elementIterator("field");
-    while (fields.hasNext()) {
-      Element searchField=(Element)fields.next();
-      String field=searchField.attributeValue("var");
-      String value="";
-      if (searchField.element("value") != null) {
-        value=searchField.element("value").getTextTrim();
-      }
-      if (field.equals("search")) {
-        search=value;
-      }
- else       if (value.equals("1")) {
-        searchFields.add(field);
-      }
-    }
-    for (    String field : searchFields) {
-      searchList.put(field,search);
+  final Hashtable<String,String> searchList=new Hashtable<String,String>();
+  Iterator<Element> iter=incomingForm.elementIterator();
+  while (iter.hasNext()) {
+    Element element=iter.next();
+    String name=element.getName();
+    if (fieldLookup.containsKey(name)) {
+      reverseFieldLookup.put(fieldLookup.get(name),name);
+      searchList.put(fieldLookup.get(name),element.getText());
     }
   }
   return searchList;

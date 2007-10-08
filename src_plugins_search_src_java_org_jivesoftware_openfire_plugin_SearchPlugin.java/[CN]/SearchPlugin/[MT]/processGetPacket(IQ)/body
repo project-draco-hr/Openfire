@@ -1,14 +1,21 @@
 {
+  if (!packet.getType().equals(IQ.Type.get)) {
+    throw new IllegalArgumentException("This method only accepts 'get' typed IQ stanzas as an argument.");
+  }
   IQ replyPacket=IQ.createResultIQ(packet);
-  Element queryResult=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
+  Element queryResult=DocumentHelper.createElement(QName.get("query",NAMESPACE_JABBER_IQ_SEARCH));
   String instructions=LocaleUtils.getLocalizedString("advance.user.search.details","search");
   queryResult.addElement("instructions").addText(instructions);
+  queryResult.addElement("first");
+  queryResult.addElement("last");
+  queryResult.addElement("nick");
+  queryResult.addElement("email");
   XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
   searchForm.setTitle(LocaleUtils.getLocalizedString("advance.user.search.title","search"));
   searchForm.addInstruction(instructions);
   XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
   field.setType(FormField.TYPE_HIDDEN);
-  field.addValue("jabber:iq:search");
+  field.addValue(NAMESPACE_JABBER_IQ_SEARCH);
   searchForm.addField(field);
   field=new XFormFieldImpl("search");
   field.setType(FormField.TYPE_TEXT_SINGLE);
@@ -16,7 +23,6 @@
   field.setRequired(true);
   searchForm.addField(field);
   for (  String searchField : getFilteredSearchFields()) {
-    queryResult.addElement(searchField);
     field=new XFormFieldImpl(searchField);
     field.setType(FormField.TYPE_BOOLEAN);
     field.addValue("1");
