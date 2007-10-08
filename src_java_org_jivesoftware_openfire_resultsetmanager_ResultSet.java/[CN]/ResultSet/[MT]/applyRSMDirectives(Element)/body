@@ -1,0 +1,40 @@
+{
+  if (rsmElement == null || !isValidRSMRequest(rsmElement)) {
+    throw new IllegalArgumentException("The 'rsmElement' argument must be a valid, non-null RSM element.");
+  }
+  final int max=Integer.parseInt(rsmElement.element("max").getText());
+  if (max == 0) {
+    return Collections.emptyList();
+  }
+  final Element afterElement=rsmElement.element("after");
+  final Element beforeElement=rsmElement.element("before");
+  final Element indexElement=rsmElement.element("index");
+  String pointerUID=null;
+  boolean isForwardOriented=true;
+  if (afterElement != null) {
+    pointerUID=afterElement.getText();
+  }
+ else   if (beforeElement != null) {
+    pointerUID=beforeElement.getText();
+    isForwardOriented=false;
+  }
+ else   if (indexElement != null) {
+    final int index=Integer.parseInt(indexElement.getText());
+    if (index > 0) {
+      pointerUID=getUID(index - 1);
+    }
+  }
+  if (pointerUID != null && pointerUID.equals("")) {
+    pointerUID=null;
+  }
+  if (isForwardOriented) {
+    if (pointerUID == null) {
+      return getFirst(max);
+    }
+    return getAfter(pointerUID,max);
+  }
+  if (pointerUID == null) {
+    return getLast(max);
+  }
+  return getBefore(pointerUID,max);
+}
