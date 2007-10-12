@@ -1,0 +1,11 @@
+{
+  properties.remove(key);
+  Collection<String> propNames=getPropertyNames();
+  for (  String name : propNames) {
+    if (name.startsWith(key)) {
+      properties.remove(name);
+    }
+  }
+  Map<String,Object> params=Collections.emptyMap();
+  PropertyEventDispatcher.dispatchEvent(key,PropertyEventDispatcher.EventType.property_deleted,params);
+}

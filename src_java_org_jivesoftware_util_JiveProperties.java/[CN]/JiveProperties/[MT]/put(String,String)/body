@@ -2,24 +2,25 @@
   if (key == null || value == null) {
     throw new NullPointerException("Key or value cannot be null. Key=" + key + ", value="+ value);
   }
-  if (!(key instanceof String) || !(value instanceof String)) {
-    throw new IllegalArgumentException("Key and value must be of type String.");
-  }
   if (key.endsWith(".")) {
     key=key.substring(0,key.length() - 1);
   }
   key=key.trim();
-  if (properties.containsKey(key)) {
-    if (!properties.get(key).equals(value)) {
-      updateProperty(key,value);
+  String result;
+synchronized (this) {
+    if (properties.containsKey(key)) {
+      if (!properties.get(key).equals(value)) {
+        updateProperty(key,value);
+      }
     }
-  }
  else {
-    insertProperty(key,value);
+      insertProperty(key,value);
+    }
+    result=properties.put(key,value);
   }
-  String result=properties.put(key,value);
   Map<String,Object> params=new HashMap<String,Object>();
   params.put("value",value);
   PropertyEventDispatcher.dispatchEvent(key,PropertyEventDispatcher.EventType.property_set,params);
+  CacheFactory.doClusterTask(PropertyClusterEventTask.createPutTask(key,value));
   return result;
 }
