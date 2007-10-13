@@ -1,12 +1,29 @@
 {
+  PrintWriter out=response.getWriter();
+  if (!plugin.getAllowedIPs().isEmpty()) {
+    String ipAddress=request.getHeader("x-forwarded-for");
+    if (ipAddress == null) {
+      ipAddress=request.getHeader("X_FORWARDED_FOR");
+      if (ipAddress == null) {
+        ipAddress=request.getHeader("X-Forward-For");
+        if (ipAddress == null) {
+          ipAddress=request.getRemoteAddr();
+        }
+      }
+    }
+    if (!plugin.getAllowedIPs().contains(ipAddress)) {
+      Log.warn("User service rejected service to IP address: " + ipAddress);
+      replyError("RequestNotAuthorised",response,out);
+      return;
+    }
+  }
   String username=request.getParameter("username");
   String password=request.getParameter("password");
   String name=request.getParameter("name");
   String email=request.getParameter("email");
-  String jid=request.getParameter("jid");
   String type=request.getParameter("type");
   String secret=request.getParameter("secret");
-  PrintWriter out=response.getWriter();
+  String groupNames=request.getParameter("groups");
   if (!plugin.isEnabled()) {
     Log.warn("User service plugin is disabled: " + request.getQueryString());
     replyError("UserServiceDisabled",response,out);
@@ -19,15 +36,15 @@
   }
   try {
     if ("add".equals(type)) {
-      plugin.createUser(username,password,name,email);
+      plugin.createUser(username,password,name,email,groupNames);
       replyMessage("ok",response,out);
     }
  else     if ("delete".equals(type)) {
-      plugin.deleteUser(jid);
+      plugin.deleteUser(username);
       replyMessage("ok",response,out);
     }
  else     if ("update".equals(type)) {
-      plugin.updateUser(jid,password,name,email);
+      plugin.updateUser(username,password,name,email,groupNames);
       replyMessage("ok",response,out);
     }
  else {

@@ -1,11 +1,5 @@
 {
-  JID targetJID=new JID(jid);
-  if (targetJID.getDomain() == null || XMPPServer.getInstance().isRemote(targetJID)) {
-    throw new UserNotFoundException("Domain does not matches local server domain");
-  }
-  if (!hostname.equals(targetJID.getDomain())) {
-    throw new UserNotFoundException("Presence of components not supported yet!");
-  }
+  JID targetJID=server.createJID(username,null);
   if (targetJID.getNode() == null) {
     throw new UserNotFoundException("Username is null");
   }
