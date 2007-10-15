@@ -1,0 +1,15 @@
+{
+  final Iterator<Map.Entry<String,Long>> it=resultTimeout.entrySet().iterator();
+  while (it.hasNext()) {
+    final Map.Entry<String,Long> pointer=it.next();
+    if (System.currentTimeMillis() < pointer.getValue()) {
+      break;
+    }
+    final String packetId=pointer.getKey();
+    final IQResultListener listener=resultListeners.remove(packetId);
+    if (listener != null) {
+      listener.answerTimeout(packetId);
+    }
+    it.remove();
+  }
+}

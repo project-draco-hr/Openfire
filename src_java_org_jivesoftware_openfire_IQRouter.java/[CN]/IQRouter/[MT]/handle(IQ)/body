@@ -8,6 +8,7 @@
     }
  else     if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
       IQResultListener iqResultListener=resultListeners.remove(packet.getID());
+      resultTimeout.remove(packet.getID());
       if (iqResultListener != null) {
         try {
           iqResultListener.receivedAnswer(packet);
