@@ -8,13 +8,7 @@
   adminServer.setSendServerVersion(false);
   if (adminPort > 0) {
     Connector httpConnector=new SelectChannelConnector();
-    String interfaceName=JiveGlobals.getXMLProperty("network.interface");
-    String bindInterface=null;
-    if (interfaceName != null) {
-      if (interfaceName.trim().length() > 0) {
-        bindInterface=interfaceName;
-      }
-    }
+    String bindInterface=getBindInterface();
     httpConnector.setHost(bindInterface);
     httpConnector.setPort(adminPort);
     adminServer.addConnector(httpConnector);
@@ -25,13 +19,7 @@
         Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
       }
       JiveSslConnector httpsConnector=new JiveSslConnector();
-      String interfaceName=JiveGlobals.getXMLProperty("network.interface");
-      String bindInterface=null;
-      if (interfaceName != null) {
-        if (interfaceName.trim().length() > 0) {
-          bindInterface=interfaceName;
-        }
-      }
+      String bindInterface=getBindInterface();
       httpsConnector.setHost(bindInterface);
       httpsConnector.setPort(adminSecurePort);
       httpsConnector.setTrustPassword(SSLConfig.getTrustPassword());

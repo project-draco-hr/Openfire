@@ -1,0 +1,34 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  AdminConsolePlugin adminConsolePlugin=((AdminConsolePlugin)pluginManager.getPlugin("admin"));
+  bindInterface=adminConsolePlugin.getBindInterface();
+  adminPort=adminConsolePlugin.getAdminUnsecurePort();
+  adminSecurePort=adminConsolePlugin.getAdminSecurePort();
+  adminSecret=AdminConsolePlugin.secret;
+  if (bindInterface == null) {
+    Enumeration<NetworkInterface> nets=null;
+    try {
+      nets=NetworkInterface.getNetworkInterfaces();
+    }
+ catch (    SocketException e) {
+      return;
+    }
+    for (    NetworkInterface netInterface : Collections.list(nets)) {
+      Enumeration<InetAddress> addresses=netInterface.getInetAddresses();
+      for (      InetAddress address : Collections.list(addresses)) {
+        if ("127.0.0.1".equals(address.getHostAddress())) {
+          continue;
+        }
+        Socket socket=new Socket();
+        InetSocketAddress remoteAddress=new InetSocketAddress(address,adminPort > 0 ? adminPort : adminSecurePort);
+        try {
+          socket.connect(remoteAddress);
+          bindInterface=address.getHostAddress();
+          break;
+        }
+ catch (        IOException e) {
+        }
+      }
+    }
+  }
+}
