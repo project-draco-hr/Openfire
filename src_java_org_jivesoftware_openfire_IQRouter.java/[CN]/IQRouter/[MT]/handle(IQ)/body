@@ -21,11 +21,9 @@
     }
   }
   try {
-    if (recipientJID != null) {
-      if (routingTable.hasComponentRoute(recipientJID) || routingTable.hasServerRoute(recipientJID)) {
-        routingTable.routePacket(recipientJID,packet,false);
-        return;
-      }
+    if (recipientJID != null && routingTable.hasComponentRoute(recipientJID) || routingTable.hasServerRoute(recipientJID)) {
+      routingTable.routePacket(recipientJID,packet,false);
+      return;
     }
     if (isLocalServer(recipientJID)) {
       Element childElement=packet.getChildElement();
