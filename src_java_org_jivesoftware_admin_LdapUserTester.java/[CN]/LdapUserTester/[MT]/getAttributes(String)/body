@@ -19,7 +19,15 @@
       for (      String field : mapping.getFields()) {
         Attribute ldapField=attrs.get(field);
         if (ldapField != null) {
-          value=value.replace("{" + field + "}",(String)ldapField.get());
+          String answer;
+          Object ob=ldapField.get();
+          if (ob instanceof String) {
+            answer=(String)ob;
+          }
+ else {
+            answer=Base64.encodeBytes((byte[])ob);
+          }
+          value=value.replace("{" + field + "}",answer);
         }
       }
       userAttributes.put(attribute,value);
