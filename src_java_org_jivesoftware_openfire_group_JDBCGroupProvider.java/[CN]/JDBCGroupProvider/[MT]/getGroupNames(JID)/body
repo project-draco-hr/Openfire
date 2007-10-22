@@ -6,7 +6,7 @@
   try {
     con=DriverManager.getConnection(connectionString);
     pstmt=con.prepareStatement(userGroupsSQL);
-    pstmt.setString(1,user.toString());
+    pstmt.setString(1,server.isLocal(user) ? user.getNode() : user.toString());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       groupNames.add(rs.getString(1));

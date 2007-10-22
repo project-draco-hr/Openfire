@@ -19,7 +19,13 @@
     while (rs.next()) {
       String user=rs.getString(1);
       if (user != null) {
-        JID userJID=new JID(user);
+        JID userJID;
+        if (user.contains("@")) {
+          userJID=new JID(user);
+        }
+ else {
+          userJID=server.createJID(user,null);
+        }
         members.add(userJID);
       }
     }
