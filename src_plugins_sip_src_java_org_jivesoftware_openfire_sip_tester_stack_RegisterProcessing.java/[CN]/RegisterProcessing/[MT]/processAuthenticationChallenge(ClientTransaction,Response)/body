@@ -1,0 +1,14 @@
+{
+  try {
+    ClientTransaction retryTran=sipManCallback.sipSecurityManager.handleChallenge(response,clientTransaction);
+    retryTran.sendRequest();
+  }
+ catch (  SipSecurityException exc) {
+    sipManCallback.fireUnregistered(((FromHeader)clientTransaction.getRequest().getHeader(FromHeader.NAME)).getAddress().toString());
+    sipManCallback.fireCommunicationsError(new CommunicationsException("Authorization failed!",exc));
+  }
+catch (  Exception exc) {
+    sipManCallback.fireUnregistered(((FromHeader)clientTransaction.getRequest().getHeader(FromHeader.NAME)).getAddress().toString());
+    sipManCallback.fireCommunicationsError(new CommunicationsException("Failed to resend a request " + "after a security challenge!",exc));
+  }
+}

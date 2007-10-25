@@ -1,0 +1,12 @@
+{
+  if (maxForwardsHeader != null) {
+    return maxForwardsHeader;
+  }
+  try {
+    maxForwardsHeader=headerFactory.createMaxForwardsHeader(SipManager.MAX_FORWARDS);
+    return maxForwardsHeader;
+  }
+ catch (  InvalidArgumentException ex) {
+    throw new CommunicationsException("A problem occurred while creating MaxForwardsHeader",ex);
+  }
+}

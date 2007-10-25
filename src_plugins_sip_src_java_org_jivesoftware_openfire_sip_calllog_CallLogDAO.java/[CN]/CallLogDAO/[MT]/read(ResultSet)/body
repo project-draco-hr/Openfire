@@ -1,0 +1,25 @@
+{
+  CallLog callLog=null;
+  try {
+    String username=rs.getString("username");
+    String numA=rs.getString("addressFrom");
+    String numB=rs.getString("addressTo");
+    long dateTime=rs.getLong("datetime");
+    int duration=rs.getInt("duration");
+    String callType=rs.getString("calltype");
+    if ("loss".equals(callType)) {
+      callType="missed";
+    }
+    CallLog.Type type=CallLog.Type.valueOf(callType);
+    callLog=new CallLog(username);
+    callLog.setNumA(numA);
+    callLog.setNumB(numB);
+    callLog.setDateTime(dateTime);
+    callLog.setDuration(duration);
+    callLog.setType(type);
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+  return callLog;
+}

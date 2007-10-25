@@ -1,0 +1,68 @@
+{
+  try {
+    String branchID=challengedTransaction.getBranchId();
+    Request challengedRequest=challengedTransaction.getRequest();
+    Request reoriginatedRequest=(Request)challengedRequest.clone();
+    ListIterator authHeaders=null;
+    if (challenge == null || reoriginatedRequest == null)     throw new NullPointerException("A null argument was passed to handle challenge.");
+    if (challenge.getStatusCode() == Response.UNAUTHORIZED)     authHeaders=challenge.getHeaders(WWWAuthenticateHeader.NAME);
+ else     if (challenge.getStatusCode() == Response.PROXY_AUTHENTICATION_REQUIRED)     authHeaders=challenge.getHeaders(ProxyAuthenticateHeader.NAME);
+    if (authHeaders == null)     throw new SecurityException("Could not find WWWAuthenticate or ProxyAuthenticate headers");
+    reoriginatedRequest.removeHeader(AuthorizationHeader.NAME);
+    reoriginatedRequest.removeHeader(ProxyAuthorizationHeader.NAME);
+    CSeqHeader cSeq=(CSeqHeader)reoriginatedRequest.getHeader((CSeqHeader.NAME));
+    cSeq.setSequenceNumber(cSeq.getSequenceNumber() + 1);
+    ClientTransaction retryTran=transactionCreator.getNewClientTransaction(reoriginatedRequest);
+    WWWAuthenticateHeader authHeader=null;
+    CredentialsCacheEntry ccEntry=null;
+    while (authHeaders.hasNext()) {
+      authHeader=(WWWAuthenticateHeader)authHeaders.next();
+      String realm=authHeader.getRealm();
+      ccEntry=cachedCredentials.remove(realm);
+      UserCredentials defaultCredentials=new UserCredentials();
+      FromHeader from=(FromHeader)reoriginatedRequest.getHeader(FromHeader.NAME);
+      URI uri=from.getAddress().getURI();
+      if (uri.isSipURI()) {
+        Log.debug("handleChallenge",SIPConfig.getAuthUserName());
+        String user=SIPConfig.getAuthUserName() != null ? SIPConfig.getAuthUserName() : ((SipURI)uri).getUser();
+        defaultCredentials.setAuthUserName(user == null ? SIPConfig.getUserName() : user);
+      }
+      boolean ccEntryHasSeenTran=false;
+      if (ccEntry != null)       ccEntryHasSeenTran=ccEntry.processResponse(branchID);
+      if (ccEntry == null || ((!authHeader.isStale() && ccEntryHasSeenTran))) {
+        if (ccEntry == null) {
+          ccEntry=new CredentialsCacheEntry();
+          ccEntry.userCredentials=defaultCredentials;
+        }
+        SIPConfig.setUserName(ccEntry.userCredentials.getUserName());
+      }
+ else       if (ccEntry != null && (!ccEntryHasSeenTran || authHeader.isStale())) {
+      }
+      if (ccEntry.userCredentials == null)       throw new SecurityException("Unable to authenticate with realm " + realm);
+      AuthorizationHeader authorization=this.getAuthorization(reoriginatedRequest.getMethod(),reoriginatedRequest.getRequestURI().toString(),reoriginatedRequest.getContent() == null ? "" : reoriginatedRequest.getContent().toString(),authHeader,ccEntry.userCredentials);
+      ccEntry.processRequest(retryTran.getBranchId());
+      cachedCredentials.cacheEntry(realm,ccEntry);
+      reoriginatedRequest.addHeader(authorization);
+      if (uri.isSipURI()) {
+        ((SipURI)uri).setUser(ccEntry.userCredentials.getUserName());
+        Address add=from.getAddress();
+        add.setURI(uri);
+        from.setAddress(add);
+        reoriginatedRequest.setHeader(from);
+        if (challengedRequest.getMethod().equals(Request.REGISTER)) {
+          ToHeader to=(ToHeader)reoriginatedRequest.getHeader(ToHeader.NAME);
+          add.setURI(uri);
+          to.setAddress(add);
+          reoriginatedRequest.setHeader(to);
+        }
+        sipManCallback.setCurrentlyUsedURI(uri.toString());
+        Log.debug("URI: " + uri.toString());
+      }
+    }
+    return retryTran;
+  }
+ catch (  Exception e) {
+    Log.debug("ERRO REG: " + e.toString());
+    return null;
+  }
+}

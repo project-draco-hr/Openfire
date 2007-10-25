@@ -1,0 +1,20 @@
+{
+  componentManager=ComponentManagerFactory.getComponentManager();
+  sipComponent=new SipComponent();
+  LogListenerImpl logListener=new LogListenerImpl(componentManager);
+  logComponent=new LogComponent(logListener);
+  try {
+    componentManager.addComponent(serviceName,sipComponent);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
+  try {
+    componentManager.addComponent(LogComponent.NAME,logComponent);
+  }
+ catch (  Exception e) {
+    componentManager.getLog().error(e);
+  }
+  PropertyEventDispatcher.addListener(this);
+  componentManager.getLog().debug("SIPARK STARTED");
+}
