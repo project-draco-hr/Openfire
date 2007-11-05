@@ -1,0 +1,15 @@
+{
+  List<String> discoIdentities=new ArrayList<String>();
+  Element query=packet.getChildElement();
+  Iterator identitiesIterator=query.elementIterator("identity");
+  if (identitiesIterator != null) {
+    while (identitiesIterator.hasNext()) {
+      Element identityElement=(Element)identitiesIterator.next();
+      String discoIdentity=identityElement.attributeValue("category");
+      discoIdentity+='/';
+      discoIdentity+=identityElement.attributeValue("type");
+      discoIdentities.add(discoIdentity);
+    }
+  }
+  return discoIdentities;
+}

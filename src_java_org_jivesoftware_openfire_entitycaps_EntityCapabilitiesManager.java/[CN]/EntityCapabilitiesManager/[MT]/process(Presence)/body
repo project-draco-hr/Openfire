@@ -1,0 +1,25 @@
+{
+  Element capsElement=packet.getChildElement("c","http://jabber.org/protocol/caps");
+  if (capsElement == null) {
+    return;
+  }
+  String newVerAttribute=capsElement.attributeValue("ver");
+  if (newVerAttribute == null) {
+    return;
+  }
+  if (isInCapsCache(newVerAttribute)) {
+    entityCapabilitiesUserMap.put(packet.getFrom(),newVerAttribute);
+  }
+ else {
+    IQ iq=new IQ(IQ.Type.get);
+    iq.setTo(packet.getFrom());
+    String serverName=XMPPServer.getInstance().getServerInfo().getName();
+    iq.setFrom(serverName);
+    iq.setChildElement("query","http://jabber.org/protocol/disco#info");
+    String packetId=iq.getID();
+    verAttributes.put(packetId,newVerAttribute);
+    IQRouter iqRouter=XMPPServer.getInstance().getIQRouter();
+    iqRouter.addIQResultListener(packetId,this);
+    iqRouter.route(iq);
+  }
+}

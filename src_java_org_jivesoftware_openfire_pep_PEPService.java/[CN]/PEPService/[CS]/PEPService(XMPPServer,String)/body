@@ -1,8 +1,8 @@
 {
   this.serviceOwnerJID=bareJID;
   router=server.getPacketRouter();
-  manager=new AdHocCommandManager();
-  manager.addCommand(new PendingSubscriptionsCommand(this));
+  adHocCommandManager=new AdHocCommandManager();
+  adHocCommandManager.addCommand(new PendingSubscriptionsCommand(this));
   publishedItemTask=new PublishedItemTask(this);
   timer.schedule(publishedItemTask,items_task_timeout,items_task_timeout);
   leafDefaultConfiguration=PubSubPersistenceManager.loadDefaultConfiguration(this,true);

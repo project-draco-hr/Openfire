@@ -1,0 +1,11 @@
+{
+  JID jid=XMPPServer.getInstance().createJID(user.getUsername(),null);
+  String verHashOfUser=entityCapabilitiesUserMap.get(jid);
+  entityCapabilitiesUserMap.remove(jid);
+  for (  String verHash : entityCapabilitiesUserMap.values()) {
+    if (verHash.equals(verHashOfUser)) {
+      return;
+    }
+  }
+  entityCapabilitiesMap.remove(verHashOfUser);
+}

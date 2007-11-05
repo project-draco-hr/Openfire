@@ -15,10 +15,12 @@
     Presence.Type type=packet.getType();
     if (type == null || Presence.Type.unavailable == type) {
       if (recipientJID == null || recipientJID.getDomain() == null || "".equals(recipientJID.getDomain()) || (recipientJID.getNode() == null && recipientJID.getResource() == null) && serverName.equals(recipientJID.getDomain())) {
+        entityCapsManager.process(packet);
         updateHandler.process(packet);
       }
  else {
         if (senderJID != null && !serverName.equals(senderJID.getDomain()) && !routingTable.hasComponentRoute(senderJID)) {
+          entityCapsManager.process(packet);
           if (type == null) {
             RemotePresenceEventDispatcher.remoteUserAvailable(packet);
           }

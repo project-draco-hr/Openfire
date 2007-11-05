@@ -41,10 +41,11 @@
  else {
         itemID=itemElement.attributeValue("id");
       }
-      Map<String,Set<String>> filteredNodesMap=XMPPServer.getInstance().getIQPEPHandler().getFilteredNodesMap();
-      Set<String> filteredNodesSet=filteredNodesMap.get(recipientFullJID.toString());
-      if (filteredNodesSet != null && !filteredNodesSet.contains(nodeID + "+notify")) {
-        return;
+      EntityCapabilities entityCaps=entityCapsManager.getEntityCapabilities(recipientFullJID);
+      if (entityCaps != null) {
+        if (!entityCaps.containsFeature(nodeID + "+notify")) {
+          return;
+        }
       }
       if (node.isCollectionNode()) {
         for (        Node leafNode : node.getNodes()) {
