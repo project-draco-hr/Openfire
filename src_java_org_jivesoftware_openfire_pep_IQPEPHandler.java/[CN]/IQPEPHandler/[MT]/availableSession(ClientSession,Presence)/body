@@ -1,5 +1,8 @@
 {
   JID newlyAvailableJID=presence.getFrom();
+  if (newlyAvailableJID == null) {
+    return;
+  }
   try {
     Roster roster=XMPPServer.getInstance().getRosterManager().getRoster(newlyAvailableJID.getNode());
     for (    RosterItem item : roster.getRosterItems()) {
