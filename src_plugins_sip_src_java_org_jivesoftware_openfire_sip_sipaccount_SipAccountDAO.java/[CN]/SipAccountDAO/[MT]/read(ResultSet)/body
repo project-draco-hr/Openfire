@@ -9,11 +9,11 @@
     String server=rs.getString("sipserver");
     String stunServer=rs.getString("stunserver");
     String stunPort=rs.getString("stunport");
-    boolean useStun=rs.getBoolean("usestun");
-    boolean enabled=rs.getBoolean("enabled");
+    boolean useStun=rs.getInt("usestun") == 1;
+    boolean enabled=rs.getInt("enabled") == 1;
     String voicemail=rs.getString("voicemail");
     String outboundproxy=rs.getString("outboundproxy");
-    boolean promptCredentials=rs.getBoolean("promptCredentials");
+    boolean promptCredentials=rs.getInt("promptCredentials") == 1;
     SipRegisterStatus status=SipRegisterStatus.valueOf(rs.getString("status"));
     sipAccount=new SipAccount(username);
     sipAccount.setSipUsername(sipusername);
