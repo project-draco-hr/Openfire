@@ -1,7 +1,15 @@
 {
+  if (in == null || pluginFilename == null || pluginFilename.length() < 1) {
+    Log.error("Error installing plugin: Input stream was null or pluginFilename was null or had no length.");
+    return false;
+  }
   try {
     byte[] b=new byte[1024];
     int len;
+    int index=pluginFilename.lastIndexOf(File.separator);
+    if (index != -1) {
+      pluginFilename=pluginFilename.substring(index + 1);
+    }
     String absolutePath=pluginDirectory + File.separator + pluginFilename;
     OutputStream out=new FileOutputStream(absolutePath + ".part");
     while ((len=in.read(b)) != -1) {
