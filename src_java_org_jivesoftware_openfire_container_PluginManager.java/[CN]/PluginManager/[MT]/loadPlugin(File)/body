@@ -43,7 +43,7 @@
           pluginLoader.addDirectory(pluginDir,classesDir != null);
         }
  else {
-          if (pluginDir.getName().compareTo(parentPlugin) < 0) {
+          if (pluginName.compareTo(parentPlugin) < 0) {
             File file=new File(pluginDir.getParentFile(),parentPlugin + ".jar");
             if (file.exists()) {
               return;
@@ -54,7 +54,7 @@
                 return;
               }
  else {
-                String msg="Ignoring plugin " + pluginDir.getName() + ": parent plugin "+ parentPlugin+ " not present.";
+                String msg="Ignoring plugin " + pluginName + ": parent plugin "+ parentPlugin+ " not present.";
                 Log.warn(msg);
                 System.out.println(msg);
                 return;
@@ -62,7 +62,7 @@
             }
           }
  else {
-            String msg="Ignoring plugin " + pluginDir.getName() + ": parent plugin "+ parentPlugin+ " not present.";
+            String msg="Ignoring plugin " + pluginName + ": parent plugin "+ parentPlugin+ " not present.";
             Log.warn(msg);
             System.out.println(msg);
             return;
@@ -107,7 +107,7 @@
           classloaders.put(plugin,pluginLoader);
         }
       }
-      plugins.put(pluginDir.getName(),plugin);
+      plugins.put(pluginName,plugin);
       pluginDirs.put(plugin,pluginDir);
       if (parentPluginNode != null) {
         String parentPlugin=parentPluginNode.getTextTrim();
@@ -116,7 +116,7 @@
           childrenPlugins=new ArrayList<String>();
           parentPluginMap.put(plugins.get(parentPlugin),childrenPlugins);
         }
-        childrenPlugins.add(pluginDir.getName());
+        childrenPlugins.add(pluginName);
         childPluginMap.put(plugin,parentPlugin);
       }
  else {
@@ -137,6 +137,7 @@
       if (dev != null) {
         pluginDevelopment.put(plugin,dev);
       }
+      configureCaches(pluginDir,pluginName);
       ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(pluginLoader);
       plugin.initializePlugin(this,pluginDir);
@@ -174,7 +175,7 @@
         }
         AdminConsole.addModel(pluginName,adminElement);
       }
-      firePluginCreatedEvent(pluginDir.getName(),plugin);
+      firePluginCreatedEvent(pluginName,plugin);
     }
  else {
       Log.warn("Plugin " + pluginDir + " could not be loaded: no plugin.xml file found");

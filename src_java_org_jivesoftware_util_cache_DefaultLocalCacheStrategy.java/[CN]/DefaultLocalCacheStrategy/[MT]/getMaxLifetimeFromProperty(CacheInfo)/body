@@ -1,0 +1,25 @@
+{
+  String lifetimeProp=cacheInfo.getParams().get("back-size-high");
+  if (lifetimeProp != null) {
+    if ("0".equals(lifetimeProp)) {
+      return -1l;
+    }
+    long factor=1;
+    if (lifetimeProp.endsWith("m")) {
+      factor=JiveConstants.MINUTE;
+    }
+ else     if (lifetimeProp.endsWith("h")) {
+      factor=JiveConstants.HOUR;
+    }
+ else     if (lifetimeProp.endsWith("d")) {
+      factor=JiveConstants.DAY;
+    }
+    try {
+      return Long.parseLong(lifetimeProp.substring(0,lifetimeProp.length() - 1)) * factor;
+    }
+ catch (    NumberFormatException nfe) {
+      Log.warn("Unable to parse back-size-high for cache: " + cacheInfo.getCacheName());
+    }
+  }
+  return DEFAULT_MAX_CACHE_LIFETIME;
+}

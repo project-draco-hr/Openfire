@@ -1,0 +1,15 @@
+{
+  String sizeProp=cacheInfo.getParams().get("back-size-high");
+  if (sizeProp != null) {
+    if ("0".equals(sizeProp)) {
+      return -1l;
+    }
+    try {
+      return Integer.parseInt(sizeProp);
+    }
+ catch (    NumberFormatException nfe) {
+      Log.warn("Unable to parse back-size-high for cache: " + cacheInfo.getCacheName());
+    }
+  }
+  return DEFAULT_MAX_CACHE_SIZE;
+}

@@ -3,5 +3,8 @@
   if (propname == null) {
     propname=name;
   }
-  return new DefaultCache(name,getMaxSizeFromProperty(propname),getMaxLifetimeFromProperty(propname));
+  CacheInfo cacheInfo=PluginCacheRegistry.getCacheInfo(name);
+  long maxSizeFromProperty=cacheInfo != null ? getMaxSizeFromProperty(cacheInfo) : getMaxSizeFromProperty(propname);
+  long lifetimeFromProperty=cacheInfo != null ? getMaxLifetimeFromProperty(cacheInfo) : getMaxLifetimeFromProperty(propname);
+  return new DefaultCache(name,maxSizeFromProperty,lifetimeFromProperty);
 }

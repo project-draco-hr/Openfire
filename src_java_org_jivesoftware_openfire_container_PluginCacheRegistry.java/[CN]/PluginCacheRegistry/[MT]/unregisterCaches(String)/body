@@ -1,0 +1,14 @@
+{
+  List<CacheInfo> caches=pluginCaches.remove(pluginName);
+  if (caches != null) {
+    for (    CacheInfo info : caches) {
+      extraCacheMappings.remove(info.getCacheName());
+      try {
+        CacheFactory.destroyCache(info.getCacheName());
+      }
+ catch (      Exception e) {
+        Log.warn(e);
+      }
+    }
+  }
+}

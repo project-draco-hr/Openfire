@@ -1,0 +1,14 @@
+{
+  try {
+    SAXReader saxReader=new SAXReader();
+    saxReader.setEncoding("UTF-8");
+    Document cacheXml=saxReader.read(configDataStream);
+    List<Node> mappings=cacheXml.selectNodes("/cache-config/cache-mapping");
+    for (    Node mapping : mappings) {
+      registerCache(pluginName,mapping);
+    }
+  }
+ catch (  DocumentException e) {
+    e.printStackTrace();
+  }
+}

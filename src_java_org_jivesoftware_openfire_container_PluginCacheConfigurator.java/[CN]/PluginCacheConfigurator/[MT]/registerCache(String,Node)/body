@@ -1,0 +1,10 @@
+{
+  String cacheName=configData.selectSingleNode("cache-name").getStringValue();
+  String schemeName=configData.selectSingleNode("scheme-name").getStringValue();
+  if (cacheName == null || schemeName == null) {
+    throw new IllegalArgumentException("Both cache-name and scheme-name elements are required. Found cache-name: " + cacheName + " and scheme-name: "+ schemeName);
+  }
+  Map<String,String> initParams=readInitParams(configData);
+  CacheInfo info=new CacheInfo(cacheName,CacheInfo.Type.valueof(schemeName),initParams);
+  PluginCacheRegistry.registerCache(pluginName,info);
+}
