@@ -6,4 +6,8 @@
     pluginCaches.put(pluginName,caches);
   }
   caches.add(info);
+  CacheFactory.setCacheTypeProperty(info.getCacheName(),info.getType().getName());
+  CacheFactory.setMaxSizeProperty(info.getCacheName(),getMaxSizeFromProperty(info));
+  CacheFactory.setMaxLifetimeProperty(info.getCacheName(),getMaxLifetimeFromProperty(info));
+  CacheFactory.setMinCacheSize(info.getCacheName(),getMinSizeFromProperty(info));
 }

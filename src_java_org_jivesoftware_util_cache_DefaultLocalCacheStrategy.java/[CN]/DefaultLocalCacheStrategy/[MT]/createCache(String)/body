@@ -1,10 +1,5 @@
 {
-  String propname=cacheNames.get(name);
-  if (propname == null) {
-    propname=name;
-  }
-  CacheInfo cacheInfo=PluginCacheRegistry.getCacheInfo(name);
-  long maxSizeFromProperty=cacheInfo != null ? getMaxSizeFromProperty(cacheInfo) : getMaxSizeFromProperty(propname);
-  long lifetimeFromProperty=cacheInfo != null ? getMaxLifetimeFromProperty(cacheInfo) : getMaxLifetimeFromProperty(propname);
-  return new DefaultCache(name,maxSizeFromProperty,lifetimeFromProperty);
+  long maxSize=CacheFactory.getMaxCacheSize(name);
+  long lifetime=CacheFactory.getMaxCacheLifetime(name);
+  return new DefaultCache(name,maxSize,lifetime);
 }

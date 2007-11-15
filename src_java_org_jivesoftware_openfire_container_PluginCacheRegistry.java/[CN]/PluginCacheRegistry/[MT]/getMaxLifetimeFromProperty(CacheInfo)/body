@@ -1,5 +1,5 @@
 {
-  String lifetimeProp=cacheInfo.getParams().get("back-size-high");
+  String lifetimeProp=cacheInfo.getParams().get("back-expiry");
   if (lifetimeProp != null) {
     if ("0".equals(lifetimeProp)) {
       return -1l;
@@ -18,8 +18,8 @@
       return Long.parseLong(lifetimeProp.substring(0,lifetimeProp.length() - 1)) * factor;
     }
  catch (    NumberFormatException nfe) {
-      Log.warn("Unable to parse back-size-high for cache: " + cacheInfo.getCacheName());
+      Log.warn("Unable to parse back-expiry for cache: " + cacheInfo.getCacheName());
     }
   }
-  return DEFAULT_MAX_CACHE_LIFETIME;
+  return CacheFactory.DEFAULT_MAX_CACHE_LIFETIME;
 }
