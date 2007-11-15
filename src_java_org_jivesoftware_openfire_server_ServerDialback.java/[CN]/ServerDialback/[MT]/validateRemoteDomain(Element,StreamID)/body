@@ -2,17 +2,17 @@
   StringBuilder sb;
   String recipient=doc.attributeValue("to");
   String hostname=doc.attributeValue("from");
-  Log.debug("RS - Received dialback key from host: " + hostname + " to: "+ recipient);
+  Log.debug("ServerDialback: RS - Received dialback key from host: " + hostname + " to: "+ recipient);
   if (!RemoteServerManager.canAccess(hostname)) {
     connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
     connection.close();
-    Log.debug("RS - Error, hostname is not allowed to establish a connection to " + "this server: " + recipient);
+    Log.debug("ServerDialback: RS - Error, hostname is not allowed to establish a connection to " + "this server: " + recipient);
     return false;
   }
  else   if (isHostUnknown(recipient)) {
     connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
     connection.close();
-    Log.debug("RS - Error, hostname not recognized: " + recipient);
+    Log.debug("ServerDialback: RS - Error, hostname not recognized: " + recipient);
     return false;
   }
  else {
@@ -25,7 +25,7 @@
     if (alreadyExists && !sessionManager.isMultipleServerConnectionsAllowed()) {
       connection.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
       connection.close();
-      Log.debug("RS - Error, incoming connection already exists from: " + hostname);
+      Log.debug("ServerDialback: RS - Error, incoming connection already exists from: " + hostname);
       return false;
     }
  else {
@@ -33,7 +33,7 @@
       DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname,RemoteServerManager.getPortForServer(hostname));
       try {
         boolean valid=verifyKey(key,streamID.toString(),recipient,hostname,address.getHost(),address.getPort());
-        Log.debug("RS - Sending key verification result to OS: " + hostname);
+        Log.debug("ServerDialback: RS - Sending key verification result to OS: " + hostname);
         sb=new StringBuilder();
         sb.append("<db:result");
         sb.append(" from=\"").append(recipient).append("\"");

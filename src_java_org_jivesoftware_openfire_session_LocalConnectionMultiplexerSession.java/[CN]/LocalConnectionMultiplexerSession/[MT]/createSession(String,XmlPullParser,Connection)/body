@@ -1,6 +1,6 @@
 {
   String domain=xpp.getAttributeValue("","to");
-  Log.debug("[ConMng] Starting registration of new connection manager for domain: " + domain);
+  Log.debug("LocalConnectionMultiplexerSession: [ConMng] Starting registration of new connection manager for domain: " + domain);
   StringBuilder sb=new StringBuilder();
   sb.append("<?xml version='1.0' encoding='");
   sb.append(CHARSET);
@@ -11,7 +11,7 @@
   sb.append(domain);
   sb.append("\" version=\"1.0\">");
   if (domain == null) {
-    Log.debug("[ConMng] Domain not specified in stanza: " + xpp.getText());
+    Log.debug("LocalConnectionMultiplexerSession: [ConMng] Domain not specified in stanza: " + xpp.getText());
     StreamError error=new StreamError(StreamError.Condition.bad_format);
     sb.append(error.toXML());
     connection.deliverRawText(sb.toString());
@@ -21,7 +21,7 @@
   JID address=new JID(domain);
   String secretKey=ConnectionMultiplexerManager.getDefaultSecret();
   if (secretKey == null) {
-    Log.debug("[ConMng] A shared secret for connection manager was not found.");
+    Log.debug("LocalConnectionMultiplexerSession: [ConMng] A shared secret for connection manager was not found.");
     StreamError error=new StreamError(StreamError.Condition.internal_server_error);
     sb.append(error.toXML());
     connection.deliverRawText(sb.toString());
@@ -29,7 +29,7 @@
     return null;
   }
   if (SessionManager.getInstance().getConnectionMultiplexerSession(address) != null) {
-    Log.debug("[ConMng] Another connection manager is already using domain: " + domain);
+    Log.debug("LocalConnectionMultiplexerSession: [ConMng] Another connection manager is already using domain: " + domain);
     StreamError error=new StreamError(StreamError.Condition.conflict);
     sb.append(error.toXML());
     connection.deliverRawText(sb.toString());
@@ -43,7 +43,7 @@
   session.setAddress(address);
   connection.init(session);
   try {
-    Log.debug("[ConMng] Send stream header with ID: " + session.getStreamID() + " for connection manager with domain: "+ domain);
+    Log.debug("LocalConnectionMultiplexerSession: [ConMng] Send stream header with ID: " + session.getStreamID() + " for connection manager with domain: "+ domain);
     sb=new StringBuilder();
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);

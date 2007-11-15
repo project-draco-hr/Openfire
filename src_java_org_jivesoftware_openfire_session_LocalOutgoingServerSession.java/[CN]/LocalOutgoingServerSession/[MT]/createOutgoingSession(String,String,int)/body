@@ -12,9 +12,9 @@
       DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname,port);
       realHostname=address.getHost();
       realPort=address.getPort();
-      Log.debug("OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
+      Log.debug("LocalOutgoingServerSession: OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
       socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
-      Log.debug("OS - Plain connection to " + hostname + ":"+ port+ " successful");
+      Log.debug("LocalOutgoingServerSession: OS - Plain connection to " + hostname + ":"+ port+ " successful");
     }
  catch (    Exception e) {
       Log.error("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
@@ -49,7 +49,7 @@
           }
         }
  else {
-          Log.debug("OS - Error, <starttls> was not received");
+          Log.debug("LocalOutgoingServerSession: OS - Error, <starttls> was not received");
         }
       }
       if (connection != null) {
@@ -57,7 +57,7 @@
       }
     }
  catch (    SSLHandshakeException e) {
-      Log.debug("Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+      Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
       if (connection != null) {
         connection.close();
       }
@@ -76,7 +76,7 @@ catch (    Exception e) {
     }
   }
   if (ServerDialback.isEnabled()) {
-    Log.debug("OS - Going to try connecting using server dialback with: " + hostname);
+    Log.debug("LocalOutgoingServerSession: OS - Going to try connecting using server dialback with: " + hostname);
     return new ServerDialback().createOutgoingSession(domain,hostname,port);
   }
   return null;

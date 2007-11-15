@@ -1,11 +1,11 @@
 {
-  Log.debug("Unloading plugin " + pluginName);
+  Log.debug("PluginManager: Unloading plugin " + pluginName);
   Plugin plugin=plugins.get(pluginName);
   if (plugin != null) {
     pluginDevelopment.remove(plugin);
     if (parentPluginMap.containsKey(plugin)) {
       for (      String childPlugin : parentPluginMap.get(plugin)) {
-        Log.debug("Unloading child plugin: " + childPlugin);
+        Log.debug("PluginManager: Unloading child plugin: " + childPlugin);
         unloadPlugin(childPlugin);
       }
       parentPluginMap.remove(plugin);

@@ -1,7 +1,7 @@
 {
   boolean debug=Log.isDebugEnabled();
   if (debug) {
-    Log.debug("In LdapManager.checkAuthentication(userDN, password), userDN is: " + userDN + "...");
+    Log.debug("LdapManager: In LdapManager.checkAuthentication(userDN, password), userDN is: " + userDN + "...");
   }
   DirContext ctx=null;
   try {
@@ -28,11 +28,11 @@
       env.put(Context.REFERRAL,"follow");
     }
     if (debug) {
-      Log.debug("Created context values, attempting to create context...");
+      Log.debug("LdapManager: Created context values, attempting to create context...");
     }
     ctx=new InitialDirContext(env);
     if (debug) {
-      Log.debug("... context created successfully, returning.");
+      Log.debug("LdapManager: ... context created successfully, returning.");
     }
   }
  catch (  NamingException ne) {
@@ -66,20 +66,20 @@
           env.put(Context.REFERRAL,"follow");
         }
         if (debug) {
-          Log.debug("Created context values, attempting to create context...");
+          Log.debug("LdapManager: Created context values, attempting to create context...");
         }
         ctx=new InitialDirContext(env);
       }
  catch (      NamingException e) {
         if (debug) {
-          Log.debug("Caught a naming exception when creating InitialContext",ne);
+          Log.debug("LdapManager: Caught a naming exception when creating InitialContext",ne);
         }
         return false;
       }
     }
  else {
       if (debug) {
-        Log.debug("Caught a naming exception when creating InitialContext",ne);
+        Log.debug("LdapManager: Caught a naming exception when creating InitialContext",ne);
       }
       return false;
     }

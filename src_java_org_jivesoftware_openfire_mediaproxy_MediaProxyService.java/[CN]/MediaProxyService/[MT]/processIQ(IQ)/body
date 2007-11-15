@@ -21,7 +21,7 @@
       childElementCopy.remove(candidateElement);
       Element candidate=childElementCopy.addElement("candidate ");
       ProxyCandidate proxyCandidate=mediaProxy.addRelayAgent(sid,iq.getFrom().toString());
-      Log.debug(sid);
+      Log.debug("MediaProxyService: " + sid);
       proxyCandidate.start();
       candidate.addAttribute("name","voicechannel");
       candidate.addAttribute("ip",mediaProxy.getPublicIP());
@@ -33,7 +33,7 @@
       candidateElement=childElementCopy.element("relay");
       if (candidateElement != null) {
         MediaProxySession session=mediaProxy.getSession(sid);
-        Log.debug(sid);
+        Log.debug("MediaProxyService: " + sid);
         if (session != null) {
           Attribute pass=candidateElement.attribute("pass");
           if (pass != null && pass.getValue().trim().equals(session.getPass().trim())) {
@@ -85,7 +85,7 @@
   }
   try {
     if (Log.isDebugEnabled()) {
-      Log.debug("RETURNED:" + reply.toXML());
+      Log.debug("MediaProxyService: RETURNED:" + reply.toXML());
     }
     router.route(reply);
   }

@@ -1,6 +1,6 @@
 {
   if (manager.isDebugEnabled()) {
-    Log.debug("Starting to populate groups with users.");
+    Log.debug("LdapGroupProvider: Starting to populate groups with users.");
   }
   DirContext ctx=null;
   try {
@@ -74,14 +74,14 @@
             }
  catch (            UserNotFoundException e) {
               if (manager.isDebugEnabled()) {
-                Log.debug("User not found: " + username);
+                Log.debug("LdapGroupProvider: User not found: " + username);
               }
             }
           }
           ne.close();
         }
         if (manager.isDebugEnabled()) {
-          Log.debug("Adding group \"" + name + "\" with "+ members.size()+ " members.");
+          Log.debug("LdapGroupProvider: Adding group \"" + name + "\" with "+ members.size()+ " members.");
         }
         Collection<JID> admins=Collections.emptyList();
         Group group=new Group(name,description,members,admins);
@@ -90,12 +90,12 @@
  catch (      Exception e) {
         e.printStackTrace();
         if (manager.isDebugEnabled()) {
-          Log.debug("Error while populating group, " + name + ".",e);
+          Log.debug("LdapGroupProvider: Error while populating group, " + name + ".",e);
         }
       }
     }
     if (manager.isDebugEnabled()) {
-      Log.debug("Finished populating group(s) with users.");
+      Log.debug("LdapGroupProvider: Finished populating group(s) with users.");
     }
     return groups.values();
   }

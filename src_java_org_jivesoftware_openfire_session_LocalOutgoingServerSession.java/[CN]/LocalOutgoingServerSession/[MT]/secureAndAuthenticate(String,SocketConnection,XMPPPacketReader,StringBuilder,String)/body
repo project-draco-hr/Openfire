@@ -1,14 +1,14 @@
 {
   Element features;
-  Log.debug("OS - Indicating we want TLS to " + hostname);
+  Log.debug("LocalOutgoingServerSession: OS - Indicating we want TLS to " + hostname);
   connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
   MXParser xpp=reader.getXPPParser();
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
-    Log.debug("OS - Negotiating TLS with " + hostname);
+    Log.debug("LocalOutgoingServerSession: OS - Negotiating TLS with " + hostname);
     boolean needed=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true) && JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true) && !JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false);
     connection.startTLS(true,hostname,needed ? Connection.ClientAuth.needed : Connection.ClientAuth.wanted);
-    Log.debug("OS - TLS negotiation with " + hostname + " was successful");
+    Log.debug("LocalOutgoingServerSession: OS - TLS negotiation with " + hostname + " was successful");
     connection.deliverRawText(openingStream.toString());
     xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
@@ -35,7 +35,7 @@
             if ("compressed".equals(answer.getName())) {
               connection.addCompression();
               connection.startCompression();
-              Log.debug("OS - Stream compression was successful with " + hostname);
+              Log.debug("LocalOutgoingServerSession: OS - Stream compression was successful with " + hostname);
               connection.deliverRawText(openingStream.toString());
               ZInputStream in=new ZInputStream(connection.getTLSStreamHandler().getInputStream());
               in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
@@ -45,29 +45,29 @@
               }
               features=reader.parseDocument().getRootElement();
               if (features == null || features.element("mechanisms") == null) {
-                Log.debug("OS - Error, EXTERNAL SASL was not offered by " + hostname);
+                Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL was not offered by " + hostname);
                 return null;
               }
             }
  else {
-              Log.debug("OS - Stream compression was rejected by " + hostname);
+              Log.debug("LocalOutgoingServerSession: OS - Stream compression was rejected by " + hostname);
             }
           }
  else {
-            Log.debug("OS - Stream compression found but zlib method is not supported by" + hostname);
+            Log.debug("LocalOutgoingServerSession: OS - Stream compression found but zlib method is not supported by" + hostname);
           }
         }
  else {
-          Log.debug("OS - Stream compression not supoprted by " + hostname);
+          Log.debug("LocalOutgoingServerSession: OS - Stream compression not supoprted by " + hostname);
         }
       }
       Iterator it=features.element("mechanisms").elementIterator();
       while (it.hasNext()) {
         Element mechanism=(Element)it.next();
         if ("EXTERNAL".equals(mechanism.getTextTrim())) {
-          Log.debug("OS - Starting EXTERNAL SASL with " + hostname);
+          Log.debug("LocalOutgoingServerSession: OS - Starting EXTERNAL SASL with " + hostname);
           if (doExternalAuthentication(domain,connection,reader)) {
-            Log.debug("OS - EXTERNAL SASL with " + hostname + " was successful");
+            Log.debug("LocalOutgoingServerSession: OS - EXTERNAL SASL with " + hostname + " was successful");
             connection.deliverRawText(openingStream.toString());
             xpp.resetInput();
             for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
@@ -82,19 +82,19 @@
             return session;
           }
  else {
-            Log.debug("OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
+            Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
             return null;
           }
         }
       }
-      Log.debug("OS - Error, EXTERNAL SASL was not offered by " + hostname);
+      Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL was not offered by " + hostname);
     }
  else {
-      Log.debug("OS - Error, no SASL mechanisms were offered by " + hostname);
+      Log.debug("LocalOutgoingServerSession: OS - Error, no SASL mechanisms were offered by " + hostname);
     }
   }
  else {
-    Log.debug("OS - Error, <proceed> was not received");
+    Log.debug("LocalOutgoingServerSession: OS - Error, <proceed> was not received");
   }
   return null;
 }

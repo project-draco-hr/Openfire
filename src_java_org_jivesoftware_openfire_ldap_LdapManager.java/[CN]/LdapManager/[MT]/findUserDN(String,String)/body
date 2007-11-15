@@ -2,13 +2,13 @@
   boolean debug=Log.isDebugEnabled();
   username=username + usernameSuffix;
   if (debug) {
-    Log.debug("Trying to find a user's DN based on their username. " + usernameField + ": "+ username+ ", Base DN: "+ baseDN+ "...");
+    Log.debug("LdapManager: Trying to find a user's DN based on their username. " + usernameField + ": "+ username+ ", Base DN: "+ baseDN+ "...");
   }
   DirContext ctx=null;
   try {
     ctx=getContext(baseDN);
     if (debug) {
-      Log.debug("Starting LDAP search...");
+      Log.debug("LdapManager: Starting LDAP search...");
     }
     SearchControls constraints=new SearchControls();
     if (subTreeSearch) {
@@ -20,18 +20,18 @@
     constraints.setReturningAttributes(new String[]{usernameField});
     NamingEnumeration answer=ctx.search("",getSearchFilter(),new String[]{username},constraints);
     if (debug) {
-      Log.debug("... search finished");
+      Log.debug("LdapManager: ... search finished");
     }
     if (answer == null || !answer.hasMoreElements()) {
       if (debug) {
-        Log.debug("User DN based on username '" + username + "' not found.");
+        Log.debug("LdapManager: User DN based on username '" + username + "' not found.");
       }
       throw new UserNotFoundException("Username " + username + " not found");
     }
     String userDN=((SearchResult)answer.next()).getName();
     if (answer.hasMoreElements()) {
       if (debug) {
-        Log.debug("Search for userDN based on username '" + username + "' found multiple "+ "responses, throwing exception.");
+        Log.debug("LdapManager: Search for userDN based on username '" + username + "' found multiple "+ "responses, throwing exception.");
       }
       throw new UserNotFoundException("LDAP username lookup for " + username + " matched multiple entries.");
     }
@@ -52,7 +52,7 @@
   }
  catch (  Exception e) {
     if (debug) {
-      Log.debug("Exception thrown when searching for userDN based on username '" + username + "'",e);
+      Log.debug("LdapManager: Exception thrown when searching for userDN based on username '" + username + "'",e);
     }
     throw e;
   }

@@ -1,11 +1,11 @@
 {
   XMPPPacketReader reader;
   Writer writer=null;
-  Log.debug("RS - Trying to connect to Authoritative Server: " + hostname + ":"+ port+ "(DNS lookup: "+ host+ ":"+ port+ ")");
+  Log.debug("ServerDialback: RS - Trying to connect to Authoritative Server: " + hostname + ":"+ port+ "(DNS lookup: "+ host+ ":"+ port+ ")");
   Socket socket=new Socket();
   socket.connect(new InetSocketAddress(host,port),RemoteServerManager.getSocketTimeout());
   socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
-  Log.debug("RS - Connection to AS: " + hostname + ":"+ port+ " successful");
+  Log.debug("ServerDialback: RS - Connection to AS: " + hostname + ":"+ port+ " successful");
   try {
     reader=new XMPPPacketReader();
     reader.setXPPFactory(FACTORY);
@@ -23,7 +23,7 @@
       eventType=xpp.next();
     }
     if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
-      Log.debug("RS - Asking AS to verify dialback key for id" + streamID);
+      Log.debug("ServerDialback: RS - Asking AS to verify dialback key for id" + streamID);
       StringBuilder sb=new StringBuilder();
       sb.append("<db:verify");
       sb.append(" from=\"").append(recipient).append("\"");
@@ -53,12 +53,12 @@
           }
  else {
             boolean valid="valid".equals(doc.attributeValue("type"));
-            Log.debug("RS - Key was " + (valid ? "" : "NOT ") + "VERIFIED by the Authoritative Server for: "+ hostname);
+            Log.debug("ServerDialback: RS - Key was " + (valid ? "" : "NOT ") + "VERIFIED by the Authoritative Server for: "+ hostname);
             return valid;
           }
         }
  else {
-          Log.debug("db:verify answer was: " + doc.asXML());
+          Log.debug("ServerDialback: db:verify answer was: " + doc.asXML());
         }
       }
  catch (      DocumentException e) {
@@ -74,7 +74,7 @@
   }
   finally {
     try {
-      Log.debug("RS - Closing connection to Authoritative Server: " + hostname);
+      Log.debug("ServerDialback: RS - Closing connection to Authoritative Server: " + hostname);
       StringBuilder sb=new StringBuilder();
       sb.append("</stream:stream>");
       writer.write(sb.toString());
