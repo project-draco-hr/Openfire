@@ -26,6 +26,9 @@
       Log.error(e);
     }
   }
+  plugins.remove(pluginName);
+  File pluginFile=pluginDirs.remove(plugin);
+  PluginClassLoader pluginLoader=classloaders.remove(plugin);
   File dir=new File(pluginDirectory,pluginName);
   try {
     Thread.sleep(2000);
@@ -43,13 +46,15 @@
   }
   if (plugin != null && !dir.exists()) {
     PluginCacheRegistry.getInstance().unregisterCaches(pluginName);
-    plugins.remove(pluginName);
-    pluginDirs.remove(plugin);
-    classloaders.remove(plugin);
     if (childPluginMap.containsKey(plugin)) {
       unloadPlugin(childPluginMap.get(plugin));
     }
     childPluginMap.remove(plugin);
     firePluginDestroyedEvent(pluginName,plugin);
+  }
+ else {
+    plugins.put(pluginName,plugin);
+    pluginDirs.put(plugin,pluginFile);
+    classloaders.put(plugin,pluginLoader);
   }
 }

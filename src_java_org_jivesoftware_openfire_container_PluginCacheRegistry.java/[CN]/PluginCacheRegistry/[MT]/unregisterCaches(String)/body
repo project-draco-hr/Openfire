@@ -3,6 +3,12 @@
   if (caches != null) {
     for (    CacheInfo info : caches) {
       extraCacheMappings.remove(info.getCacheName());
+      Collection<Object> answers=CacheFactory.doSynchronousClusterTask(new IsPluginInstalledTask(pluginName),false);
+      for (      Object installed : answers) {
+        if ((Boolean)installed) {
+          return;
+        }
+      }
       try {
         CacheFactory.destroyCache(info.getCacheName());
       }
