@@ -4,7 +4,13 @@
     Log.warn("Certificate already exists for alias: " + alias);
     return false;
   }
-  PEMReader pemReader=new PEMReader(new InputStreamReader(pkInputStream));
+  PasswordFinder passwordFinder=new PasswordFinder(){
+    public char[] getPassword(){
+      return passPhrase != null ? passPhrase.toCharArray() : new char[]{};
+    }
+  }
+;
+  PEMReader pemReader=new PEMReader(new InputStreamReader(pkInputStream),passwordFinder);
   KeyPair kp=(KeyPair)pemReader.readObject();
   PrivateKey privKey=kp.getPrivate();
   List<X509Certificate> certs=new ArrayList<X509Certificate>();
