@@ -1,12 +1,20 @@
 {
+  boolean c2s=(remoteServer == null);
   KeyStore ksKeys=SSLConfig.getKeyStore();
   String keypass=SSLConfig.getKeyPassword();
-  KeyStore ksTrust=SSLConfig.getTrustStore();
-  String trustpass=SSLConfig.getTrustPassword();
+  KeyStore ksTrust=(c2s ? SSLConfig.getc2sTrustStore() : SSLConfig.gets2sTrustStore());
+  String trustpass=(c2s ? SSLConfig.getc2sTrustPassword() : SSLConfig.gets2sTrustPassword());
+  if (c2s)   Log.debug("NIOConnection: startTLS: using c2s");
+ else   Log.debug("NIOConnection: startTLS: using s2s");
   KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
   TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
   if (clientMode || authentication == ClientAuth.needed || authentication == ClientAuth.wanted) {
-    tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+    if (c2s) {
+      tm=new TrustManager[]{new ClientTrustManager(ksTrust)};
+    }
+ else {
+      tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+    }
   }
   SSLContext tlsContext=SSLContext.getInstance("TLS");
   tlsContext.init(km,tm,null);

@@ -1,16 +1,22 @@
 {
+  boolean c2sConnection=(remoteServer == null);
   if (debug) {
     System.setProperty("javax.net.debug","all");
   }
   try {
     KeyStore ksKeys=SSLConfig.getKeyStore();
     String keypass=SSLConfig.getKeyPassword();
-    KeyStore ksTrust=SSLConfig.getTrustStore();
-    String trustpass=SSLConfig.getTrustPassword();
+    KeyStore ksTrust=(c2sConnection ? SSLConfig.getc2sTrustStore() : SSLConfig.gets2sTrustStore());
+    String trustpass=(c2sConnection ? SSLConfig.getc2sTrustPassword() : SSLConfig.gets2sTrustPassword());
     KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
     TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
     if (clientMode || needClientAuth) {
-      tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+      if (c2sConnection) {
+        tm=new TrustManager[]{new ClientTrustManager(ksTrust)};
+      }
+ else {
+        tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+      }
     }
     SSLContext tlsContext=SSLContext.getInstance(PROTOCOL);
     tlsContext.init(km,tm,null);
