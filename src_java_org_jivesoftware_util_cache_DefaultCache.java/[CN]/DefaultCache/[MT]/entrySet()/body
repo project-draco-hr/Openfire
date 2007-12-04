@@ -1,6 +1,10 @@
 {
   deleteExpiredEntries();
 synchronized (this) {
-    return new HashSet(map.entrySet());
+    final Map<K,V> result=new HashMap<K,V>();
+    for (    final Entry<K,DefaultCache.CacheObject<V>> entry : map.entrySet()) {
+      result.put(entry.getKey(),entry.getValue().object);
+    }
+    return result.entrySet();
   }
 }
