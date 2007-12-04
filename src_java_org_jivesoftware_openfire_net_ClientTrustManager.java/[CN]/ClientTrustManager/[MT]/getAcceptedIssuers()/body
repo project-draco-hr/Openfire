@@ -1,0 +1,25 @@
+{
+  if (JiveGlobals.getBooleanProperty("xmpp.client.certificate.accept-selfsigned",false)) {
+    return new X509Certificate[0];
+  }
+ else {
+    X509Certificate[] X509Certs=null;
+    try {
+      int numberOfEntry=trustStore.size();
+      if (numberOfEntry > 0) {
+        X509Certs=new X509Certificate[numberOfEntry];
+        Enumeration aliases=trustStore.aliases();
+        int i=0;
+        while (aliases.hasMoreElements()) {
+          X509Certs[i]=(X509Certificate)trustStore.getCertificate((String)aliases.nextElement());
+          i++;
+        }
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+      X509Certs=null;
+    }
+    return X509Certs;
+  }
+}

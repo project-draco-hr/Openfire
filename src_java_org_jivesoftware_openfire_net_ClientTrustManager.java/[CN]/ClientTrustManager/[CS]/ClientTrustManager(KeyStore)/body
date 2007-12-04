@@ -1,0 +1,37 @@
+{
+  super();
+  this.trustStore=trustTrust;
+  Collection<X509CRL> crls=new ArrayList<X509CRL>();
+  CollectionCertStoreParameters params=new CollectionCertStoreParameters(crls);
+  X509CRL crl;
+  CertificateFactory cf;
+  try {
+    crlStore=CertStore.getInstance("Collection",params);
+    FileInputStream crlFile=new FileInputStream(JiveGlobals.getProperty("xmpp.client.certificate.crl","/tmp/crl.pem"));
+    BufferedInputStream crlBuffer=new BufferedInputStream(crlFile);
+    cf=CertificateFactory.getInstance("X.509");
+    while (crlBuffer.available() > 0) {
+      crl=(X509CRL)cf.generateCRL(crlBuffer);
+      Log.debug("ClientTrustManager: adding CRL for " + crl.getIssuerDN());
+      crls.add(crl);
+    }
+  }
+ catch (  FileNotFoundException e) {
+    Log.debug("ClientTrustManager: CRL file not found: " + JiveGlobals.getProperty("xmpp.client.certificate.crl","/tmp/crl.pem"));
+  }
+catch (  IOException e) {
+    Log.error("ClientTrustManager: IOException while parsing CRLs",e);
+  }
+catch (  CertificateException e) {
+    Log.error("ClientTrustManager: ",e);
+  }
+catch (  CRLException e) {
+    Log.error("ClientTrustManager: CRLException while parsing CRLs",e);
+  }
+catch (  InvalidAlgorithmParameterException e) {
+    Log.error("ClientTrustManager: ",e);
+  }
+catch (  NoSuchAlgorithmException e) {
+    Log.error("ClientTrustManager: ",e);
+  }
+}
