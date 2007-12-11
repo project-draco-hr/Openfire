@@ -1,0 +1,24 @@
+{
+  List<Packet> answer=new ArrayList<Packet>();
+  for (  String packetXML : packets) {
+    try {
+      Packet packet=null;
+      Element element=localParser.get().read(new StringReader(packetXML)).getRootElement();
+      String tag=element.getName();
+      if ("message".equals(tag)) {
+        packet=new Message(element,true);
+      }
+ else       if ("presence".equals(tag)) {
+        packet=new Presence(element,true);
+      }
+ else       if ("iq".equals(tag)) {
+        packet=new IQ(element,true);
+      }
+      answer.add(packet);
+    }
+ catch (    Exception e) {
+      Log.error("Error while parsing Privacy Property",e);
+    }
+  }
+  return answer;
+}
