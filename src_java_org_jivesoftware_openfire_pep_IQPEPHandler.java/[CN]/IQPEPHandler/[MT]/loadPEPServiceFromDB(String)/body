@@ -1,11 +1,11 @@
 {
-  String GET_PEP_SERVICE="SELECT DISTINCT serviceID FROM pubsubNode " + "WHERE serviceID='" + jid + "'";
   PEPService pepService=null;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(GET_PEP_SERVICE);
+    pstmt.setString(1,jid);
     ResultSet rs=pstmt.executeQuery();
     while (rs.next()) {
       String serviceID=rs.getString(1);
