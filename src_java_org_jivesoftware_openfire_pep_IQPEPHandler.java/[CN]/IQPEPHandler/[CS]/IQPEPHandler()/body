@@ -2,4 +2,32 @@
   super("Personal Eventing Handler");
   pepServices=new ConcurrentHashMap<String,PEPService>();
   info=new IQHandlerInfo("pubsub","http://jabber.org/protocol/pubsub");
+  Thread thread=new Thread("PEP avaiable sessions handler "){
+    public void run(){
+      for (; ; ) {
+        try {
+          JID availableSessionJID=availableSessions.take();
+          try {
+            Roster roster=XMPPServer.getInstance().getRosterManager().getRoster(availableSessionJID.getNode());
+            for (            RosterItem item : roster.getRosterItems()) {
+              if (item.getSubStatus() == RosterItem.SUB_BOTH) {
+                PEPService pepService=getPEPService(item.getJid().toBareJID());
+                if (pepService != null) {
+                  pepService.sendLastPublishedItems(availableSessionJID);
+                }
+              }
+            }
+          }
+ catch (          UserNotFoundException e) {
+          }
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+    }
+  }
+;
+  thread.setDaemon(true);
+  thread.start();
 }
