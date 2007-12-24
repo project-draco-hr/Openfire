@@ -1,3 +1,8 @@
 {
-  throw new UnsupportedOperationException();
+  if (dbStorageEnabled && defaultProvider != null) {
+    defaultProvider.deleteVCard(username);
+  }
+ else {
+    throw new UnsupportedOperationException("LdapVCardProvider: Attempted to delete vcard in read-only mode.");
+  }
 }

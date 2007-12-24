@@ -1,0 +1,20 @@
+{
+  Element vcard=vCardElement.createCopy();
+  for (  Object obj : vcard.elements()) {
+    Element elem=(Element)obj;
+    if (!elem.getName().equals("PHOTO")) {
+      vcard.remove(elem);
+    }
+  }
+  try {
+    defaultProvider.createVCard(username,vcard);
+  }
+ catch (  AlreadyExistsException e) {
+    try {
+      defaultProvider.updateVCard(username,vcard);
+    }
+ catch (    NotFoundException ee) {
+      Log.error("LdapVCardProvider: Unable to find vcard, despite having been told it existed.");
+    }
+  }
+}

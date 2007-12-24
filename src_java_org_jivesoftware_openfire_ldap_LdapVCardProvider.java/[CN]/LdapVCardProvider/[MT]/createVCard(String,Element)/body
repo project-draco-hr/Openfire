@@ -1,3 +1,13 @@
 {
-  throw new UnsupportedOperationException();
+  if (dbStorageEnabled && defaultProvider != null) {
+    if (isValidVCardChange(username,vCardElement)) {
+      updateOrCreateVCard(username,vCardElement);
+    }
+ else {
+      throw new UnsupportedOperationException("LdapVCardProvider: Invalid vcard changes.");
+    }
+  }
+ else {
+    throw new UnsupportedOperationException("LdapVCardProvider: VCard changes not allowed.");
+  }
 }

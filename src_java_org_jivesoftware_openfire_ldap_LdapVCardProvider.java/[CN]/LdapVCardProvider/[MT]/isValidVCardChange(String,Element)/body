@@ -1,0 +1,113 @@
+{
+  if (othervCard == null) {
+    return true;
+  }
+  username=JID.unescapeNode(username);
+  Map<String,String> map=getLdapAttributes(username);
+  Element vcard=new VCard(template).getVCard(map);
+  if (vcard == null) {
+    return false;
+  }
+  if (!isPathEqual(Arrays.asList("N","GIVEN"),vcard,othervCard))   return false;
+  if (!isPathEqual(Arrays.asList("EMAIL","USERID"),vcard,othervCard))   return false;
+  if (!isPathEqual(Arrays.asList("FN"),vcard,othervCard))   return false;
+  if (!isPathEqual(Arrays.asList("NICKNAME"),vcard,othervCard))   return false;
+  if (!isPathEqual(Arrays.asList("BDAY"),vcard,othervCard))   return false;
+  for (  Object obja : vcard.elements("ADR")) {
+    Element firstelem=(Element)obja;
+    if (firstelem.element("HOME") != null) {
+      for (      Object objb : othervCard.elements("ADR")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("HOME") != null) {
+          if (!isPathEqual(Arrays.asList("STREET"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("LOCALITY"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("REGION"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("PCODE"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("CTRY"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("WORK") != null) {
+      for (      Object objb : othervCard.elements("ADR")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("WORK") != null) {
+          if (!isPathEqual(Arrays.asList("STREET"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("LOCALITY"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("REGION"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("PCODE"),firstelem,secondelem))           return false;
+          if (!isPathEqual(Arrays.asList("CTRY"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+  }
+  for (  Object obja : vcard.elements("TEL")) {
+    Element firstelem=(Element)obja;
+    if (firstelem.element("HOME") != null && firstelem.element("VOICE") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("HOME") != null && secondelem.element("VOICE") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("HOME") != null && firstelem.element("CELL") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("HOME") != null && secondelem.element("CELL") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("HOME") != null && firstelem.element("FAX") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("HOME") != null && secondelem.element("FAX") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("HOME") != null && firstelem.element("PAGER") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("HOME") != null && secondelem.element("PAGER") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+    if (firstelem.element("WORK") != null && firstelem.element("VOICE") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("WORK") != null && secondelem.element("VOICE") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("WORK") != null && firstelem.element("CELL") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("WORK") != null && secondelem.element("CELL") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("WORK") != null && firstelem.element("FAX") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("WORK") != null && secondelem.element("FAX") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+ else     if (firstelem.element("WORK") != null && firstelem.element("PAGER") != null) {
+      for (      Object objb : othervCard.elements("TEL")) {
+        Element secondelem=(Element)objb;
+        if (secondelem.element("WORK") != null && secondelem.element("PAGER") != null) {
+          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
+        }
+      }
+    }
+  }
+  if (!isPathEqual(Arrays.asList("TITLE"),vcard,othervCard))   return false;
+  if (!isPathEqual(Arrays.asList("ORG","ORGUNIT"),vcard,othervCard))   return false;
+  return true;
+}

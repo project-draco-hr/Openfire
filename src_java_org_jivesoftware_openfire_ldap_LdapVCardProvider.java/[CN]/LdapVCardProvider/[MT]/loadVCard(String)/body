@@ -3,6 +3,17 @@
   Map<String,String> map=getLdapAttributes(username);
   Log.debug("LdapVCardProvider: Getting mapped vcard for " + username);
   Element vcard=new VCard(template).getVCard(map);
+  if (dbStorageEnabled && vcard != null && (vcard.element("PHOTO") == null || vcard.element("PHOTO").element("BINVAL") == null || vcard.element("PHOTO").element("BINVAL").getText().matches("\\s*"))) {
+    Element avatarElement=loadAvatarFromDatabase(username);
+    if (avatarElement != null) {
+      Log.debug("LdapVCardProvider: Adding avatar element from local storage");
+      Element currentElement=vcard.element("PHOTO");
+      if (currentElement != null) {
+        vcard.remove(currentElement);
+      }
+      vcard.add(avatarElement);
+    }
+  }
   Log.debug("LdapVCardProvider: Returning vcard");
   return vcard;
 }

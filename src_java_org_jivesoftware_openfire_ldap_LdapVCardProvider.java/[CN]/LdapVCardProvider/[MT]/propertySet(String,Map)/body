@@ -1,2 +1,17 @@
 {
+  if ("ldap.vcardDBStorage".equals(property)) {
+    Boolean enabled=Boolean.parseBoolean((String)params.get("value"));
+    if (enabled) {
+      if (defaultProvider == null) {
+        defaultProvider=new DefaultVCardProvider();
+        dbStorageEnabled=true;
+      }
+    }
+ else {
+      if (defaultProvider != null) {
+        dbStorageEnabled=false;
+        defaultProvider=null;
+      }
+    }
+  }
 }
