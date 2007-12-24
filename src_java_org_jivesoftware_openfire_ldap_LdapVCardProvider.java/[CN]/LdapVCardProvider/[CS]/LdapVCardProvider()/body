@@ -2,8 +2,6 @@
   manager=LdapManager.getInstance();
   initTemplate();
   PropertyEventDispatcher.addListener(this);
-  if (JiveGlobals.getBooleanProperty("ldap.avatarDBStorage",false)) {
-    defaultProvider=new DefaultVCardProvider();
-    dbStorageEnabled=true;
-  }
+  defaultProvider=new DefaultVCardProvider();
+  dbStorageEnabled=JiveGlobals.getBooleanProperty("ldap.override.avatar",false);
 }

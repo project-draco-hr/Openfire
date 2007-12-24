@@ -1,7 +1,16 @@
 {
   if (dbStorageEnabled && defaultProvider != null) {
     if (isValidVCardChange(username,vCardElement)) {
-      updateOrCreateVCard(username,vCardElement);
+      try {
+        defaultProvider.updateVCard(username,vCardElement);
+      }
+ catch (      NotFoundException e) {
+        try {
+          defaultProvider.createVCard(username,vCardElement);
+        }
+ catch (        AlreadyExistsException e1) {
+        }
+      }
     }
  else {
       throw new UnsupportedOperationException("LdapVCardProvider: Invalid vcard changes.");
