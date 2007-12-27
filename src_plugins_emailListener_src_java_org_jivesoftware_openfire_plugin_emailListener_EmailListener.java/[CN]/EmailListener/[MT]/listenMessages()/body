@@ -3,18 +3,12 @@
     messageListener=new MessageCountAdapter(){
       public void messagesAdded(      MessageCountEvent ev){
         Message[] msgs=ev.getMessages();
-        System.out.println("Got " + msgs.length + " new messages");
-        for (int i=0; i < msgs.length; i++) {
+        for (        Message msg : msgs) {
           try {
-            System.out.println("-----");
-            System.out.println("Message " + msgs[i].getMessageNumber() + ":");
-            msgs[i].writeTo(System.out);
+            sendMessage(msg);
           }
- catch (          IOException ioex) {
-            ioex.printStackTrace();
-          }
-catch (          MessagingException mex) {
-            mex.printStackTrace();
+ catch (          Exception e) {
+            Log.error("Error while sending new email message",e);
           }
         }
       }
