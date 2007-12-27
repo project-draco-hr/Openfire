@@ -1,0 +1,55 @@
+{
+  try {
+    messageListener=new MessageCountAdapter(){
+      public void messagesAdded(      MessageCountEvent ev){
+        Message[] msgs=ev.getMessages();
+        System.out.println("Got " + msgs.length + " new messages");
+        for (int i=0; i < msgs.length; i++) {
+          try {
+            System.out.println("-----");
+            System.out.println("Message " + msgs[i].getMessageNumber() + ":");
+            msgs[i].writeTo(System.out);
+          }
+ catch (          IOException ioex) {
+            ioex.printStackTrace();
+          }
+catch (          MessagingException mex) {
+            mex.printStackTrace();
+          }
+        }
+      }
+    }
+;
+    folder.addMessageCountListener(messageListener);
+    int freq=getFrequency();
+    boolean supportsIdle=false;
+    try {
+      if (folder instanceof IMAPFolder) {
+        IMAPFolder f=(IMAPFolder)folder;
+        f.idle();
+        supportsIdle=true;
+      }
+    }
+ catch (    FolderClosedException fex) {
+      throw fex;
+    }
+catch (    MessagingException mex) {
+      supportsIdle=false;
+    }
+    while (messageListener != null) {
+      if (supportsIdle && folder instanceof IMAPFolder) {
+        IMAPFolder f=(IMAPFolder)folder;
+        f.idle();
+      }
+ else {
+        Thread.sleep(freq);
+        if (folder != null && folder.isOpen()) {
+          folder.getMessageCount();
+        }
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("Error listening new email messages",ex);
+  }
+}
