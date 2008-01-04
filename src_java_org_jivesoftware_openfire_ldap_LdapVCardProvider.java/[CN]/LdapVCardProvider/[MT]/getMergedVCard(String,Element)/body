@@ -1,0 +1,23 @@
+{
+  username=JID.unescapeNode(username);
+  Map<String,String> map=getLdapAttributes(username);
+  Log.debug("LdapVCardProvider: Retrieving LDAP mapped vcard for " + username);
+  Element vcard=new VCard(template).getVCard(map);
+  if (mergeVCard == null) {
+    return vcard;
+  }
+  Element photoElement=mergeVCard.element("PHOTO").createCopy();
+  if (photoElement == null || photoElement.element("BINVAL") == null || photoElement.element("BINVAL").getText().matches("\\s*")) {
+    return vcard;
+  }
+  if (!((vcard.element("PHOTO") == null || vcard.element("PHOTO").element("BINVAL") == null || vcard.element("PHOTO").element("BINVAL").getText().matches("\\s*")))) {
+    return vcard;
+  }
+  Log.debug("LdapVCardProvider: Merging avatar element from passed vcard");
+  Element currentElement=vcard.element("PHOTO");
+  if (currentElement != null) {
+    vcard.remove(currentElement);
+  }
+  vcard.add(photoElement);
+  return vcard;
+}

@@ -8,28 +8,31 @@
   if (oldVCard != null) {
     if (!oldVCard.equals(vCardElement)) {
       try {
-        provider.updateVCard(username,vCardElement);
+        Element newvCard=provider.updateVCard(username,vCardElement);
+        vcardCache.put(username,newvCard);
         updated=true;
       }
  catch (      NotFoundException e) {
         Log.warn("Tried to update a vCard that does not exist",e);
-        provider.createVCard(username,vCardElement);
+        Element newvCard=provider.createVCard(username,vCardElement);
+        vcardCache.put(username,newvCard);
         created=true;
       }
     }
   }
  else {
     try {
-      provider.createVCard(username,vCardElement);
+      Element newvCard=provider.createVCard(username,vCardElement);
+      vcardCache.put(username,newvCard);
       created=true;
     }
  catch (    AlreadyExistsException e) {
       Log.warn("Tried to create a vCard when one already exist",e);
-      provider.updateVCard(username,vCardElement);
+      Element newvCard=provider.updateVCard(username,vCardElement);
+      vcardCache.put(username,newvCard);
       updated=true;
     }
   }
-  vcardCache.put(username,vCardElement);
   if (created) {
     dispatchVCardCreated(username);
   }

@@ -1,113 +1,40 @@
 {
-  if (othervCard == null) {
+  if (newvCard == null) {
+    Log.debug("LdapVCardProvider: No new vcard provided (no changes), accepting.");
     return true;
   }
   username=JID.unescapeNode(username);
   Map<String,String> map=getLdapAttributes(username);
-  Element vcard=new VCard(template).getVCard(map);
-  if (vcard == null) {
+  Element ldapvCard=new VCard(template).getVCard(map);
+  if (ldapvCard == null) {
+    Log.debug("LdapVCardProvider: User has no LDAP vcard, nothing they can change, rejecting.");
     return false;
   }
-  if (!isPathEqual(Arrays.asList("N","GIVEN"),vcard,othervCard))   return false;
-  if (!isPathEqual(Arrays.asList("EMAIL","USERID"),vcard,othervCard))   return false;
-  if (!isPathEqual(Arrays.asList("FN"),vcard,othervCard))   return false;
-  if (!isPathEqual(Arrays.asList("NICKNAME"),vcard,othervCard))   return false;
-  if (!isPathEqual(Arrays.asList("BDAY"),vcard,othervCard))   return false;
-  for (  Object obja : vcard.elements("ADR")) {
-    Element firstelem=(Element)obja;
-    if (firstelem.element("HOME") != null) {
-      for (      Object objb : othervCard.elements("ADR")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("HOME") != null) {
-          if (!isPathEqual(Arrays.asList("STREET"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("LOCALITY"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("REGION"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("PCODE"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("CTRY"),firstelem,secondelem))           return false;
-        }
-      }
+  Element ldapPhotoElem=ldapvCard.element("PHOTO");
+  if (ldapPhotoElem != null) {
+    Element ldapBinvalElem=ldapPhotoElem.element("BINVAL");
+    if (ldapBinvalElem != null && !ldapBinvalElem.getTextTrim().matches("\\s*")) {
+      Log.debug("LdapVCardProvider: LDAP has a PHOTO element set, no way to override, rejecting.");
+      return false;
     }
- else     if (firstelem.element("WORK") != null) {
-      for (      Object objb : othervCard.elements("ADR")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("WORK") != null) {
-          if (!isPathEqual(Arrays.asList("STREET"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("LOCALITY"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("REGION"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("PCODE"),firstelem,secondelem))           return false;
-          if (!isPathEqual(Arrays.asList("CTRY"),firstelem,secondelem))           return false;
-        }
+  }
+  Element dbvCard=defaultProvider.loadVCard(username);
+  if (dbvCard != null) {
+    Element dbPhotoElem=dbvCard.element("PHOTO");
+    if (dbPhotoElem == null) {
+      Log.debug("LdapVCardProvider: Database has no PHOTO element, accepting update.");
+      return true;
+    }
+ else {
+      Element newPhotoElem=newvCard.element("PHOTO");
+      if (!dbPhotoElem.asXML().equals(newPhotoElem.asXML())) {
+        Log.debug("LdapVCardProvider: DB photo element is:\n" + dbPhotoElem.asXML());
+        Log.debug("LdapVCardProvider: New photo element is:\n" + newPhotoElem.asXML());
+        Log.debug("LdapVCardProvider: PHOTO element changed, accepting update.");
+        return true;
       }
     }
   }
-  for (  Object obja : vcard.elements("TEL")) {
-    Element firstelem=(Element)obja;
-    if (firstelem.element("HOME") != null && firstelem.element("VOICE") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("HOME") != null && secondelem.element("VOICE") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("HOME") != null && firstelem.element("CELL") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("HOME") != null && secondelem.element("CELL") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("HOME") != null && firstelem.element("FAX") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("HOME") != null && secondelem.element("FAX") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("HOME") != null && firstelem.element("PAGER") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("HOME") != null && secondelem.element("PAGER") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
-    if (firstelem.element("WORK") != null && firstelem.element("VOICE") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("WORK") != null && secondelem.element("VOICE") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("WORK") != null && firstelem.element("CELL") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("WORK") != null && secondelem.element("CELL") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("WORK") != null && firstelem.element("FAX") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("WORK") != null && secondelem.element("FAX") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
- else     if (firstelem.element("WORK") != null && firstelem.element("PAGER") != null) {
-      for (      Object objb : othervCard.elements("TEL")) {
-        Element secondelem=(Element)objb;
-        if (secondelem.element("WORK") != null && secondelem.element("PAGER") != null) {
-          if (!isPathEqual(Arrays.asList("NUMBER"),firstelem,secondelem))           return false;
-        }
-      }
-    }
-  }
-  if (!isPathEqual(Arrays.asList("TITLE"),vcard,othervCard))   return false;
-  if (!isPathEqual(Arrays.asList("ORG","ORGUNIT"),vcard,othervCard))   return false;
-  return true;
+  Log.debug("LdapVCardProvider: PHOTO element didn't change, no reason to accept this, rejecting.");
+  return false;
 }

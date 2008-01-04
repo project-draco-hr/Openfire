@@ -1,16 +1,18 @@
 {
   if (dbStorageEnabled && defaultProvider != null) {
     if (isValidVCardChange(username,vCardElement)) {
+      Element mergedVCard=getMergedVCard(username,vCardElement);
       try {
-        defaultProvider.updateVCard(username,vCardElement);
+        defaultProvider.updateVCard(username,mergedVCard);
       }
  catch (      NotFoundException e) {
         try {
-          defaultProvider.createVCard(username,vCardElement);
+          defaultProvider.createVCard(username,mergedVCard);
         }
  catch (        AlreadyExistsException e1) {
         }
       }
+      return mergedVCard;
     }
  else {
       throw new UnsupportedOperationException("LdapVCardProvider: Invalid vcard changes.");
