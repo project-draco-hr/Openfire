@@ -27,9 +27,11 @@
     }
  else {
       Element newPhotoElem=newvCard.element("PHOTO");
+      if (newPhotoElem == null) {
+        Log.debug("LdapVCardProvider: Photo element was removed, accepting update.");
+        return true;
+      }
       if (!dbPhotoElem.asXML().equals(newPhotoElem.asXML())) {
-        Log.debug("LdapVCardProvider: DB photo element is:\n" + dbPhotoElem.asXML());
-        Log.debug("LdapVCardProvider: New photo element is:\n" + newPhotoElem.asXML());
         Log.debug("LdapVCardProvider: PHOTO element changed, accepting update.");
         return true;
       }
