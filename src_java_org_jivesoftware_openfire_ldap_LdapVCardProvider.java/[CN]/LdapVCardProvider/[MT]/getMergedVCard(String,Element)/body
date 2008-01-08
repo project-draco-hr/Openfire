@@ -6,6 +6,9 @@
   if (mergeVCard == null) {
     return vcard;
   }
+  if (mergeVCard.element("PHOTO") == null) {
+    return vcard;
+  }
   Element photoElement=mergeVCard.element("PHOTO").createCopy();
   if (photoElement == null || photoElement.element("BINVAL") == null || photoElement.element("BINVAL").getText().matches("\\s*")) {
     return vcard;
