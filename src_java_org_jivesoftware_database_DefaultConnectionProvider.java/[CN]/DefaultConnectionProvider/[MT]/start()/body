@@ -1,10 +1,12 @@
 {
-synchronized (initLock) {
-    try {
-      connectionPool=new ConnectionPool(driver,serverURL,username,password,minConnections,maxConnections,connectionTimeout,mysqlUseUnicode);
-    }
- catch (    IOException e) {
-      Log.error(e);
-    }
-  }
+  proxoolURL="proxool.openfire:" + getDriver() + ":"+ getServerURL();
+  settings=new Properties();
+  settings.setProperty("proxool.maximum-connection-count",Integer.toString(getMaxConnections()));
+  settings.setProperty("proxool.minimum-connection-count",Integer.toString(getMinConnections()));
+  settings.setProperty("proxool.maximum-connection-lifetime",Integer.toString((int)(86400000 * getConnectionTimeout())));
+  settings.setProperty("proxool.test-before-use","true");
+  settings.setProperty("proxool.test-after-use","true");
+  settings.setProperty("proxool.house-keeping-test-sql","select 1");
+  settings.setProperty("user",getUsername());
+  settings.setProperty("password",getPassword());
 }
