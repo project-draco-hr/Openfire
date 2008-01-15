@@ -47,7 +47,7 @@
     connection.close();
     return null;
   }
-  if (InternalComponentManager.getInstance().hasComponent(componentJID)) {
+  if (!allowMultiple && InternalComponentManager.getInstance().hasComponent(componentJID)) {
     Log.debug("LocalComponentSession: [ExComp] Another component is already using domain: " + domain);
     StreamError error=new StreamError(StreamError.Condition.conflict);
     sb.append(error.toXML());

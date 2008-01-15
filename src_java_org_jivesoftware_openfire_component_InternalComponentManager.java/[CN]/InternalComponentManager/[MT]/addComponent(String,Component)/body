@@ -1,12 +1,18 @@
 {
-  Component existingComponent=components.get(subdomain);
-  if (existingComponent != null && existingComponent != component) {
-    throw new ComponentException("Domain (" + subdomain + ") already taken by another component: "+ existingComponent);
+  RoutableComponent routable=routables.get(subdomain);
+  if (routable != null && routable.hasComponent(component)) {
+    return;
   }
   Log.debug("InternalComponentManager: Registering component for domain: " + subdomain);
-  components.put(subdomain,component);
   JID componentJID=new JID(subdomain + "." + serverDomain);
-  XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,new RoutableComponent(componentJID,component));
+  if (routable != null) {
+    routable.addComponent(component);
+  }
+ else {
+    routable=new RoutableComponent(componentJID,component);
+    routables.put(subdomain,routable);
+  }
+  XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
   try {
     component.initialize(componentJID,this);
     component.start();
@@ -18,11 +24,16 @@
     Log.debug("InternalComponentManager: Component registered for domain: " + subdomain);
   }
  catch (  Exception e) {
-    components.remove(subdomain);
-    XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
+    routable.removeComponent(component);
     if (e instanceof ComponentException) {
       throw (ComponentException)e;
     }
     throw new ComponentException(e);
+  }
+ finally {
+    if (routable.numberOfComponents() == 0) {
+      routables.remove(subdomain);
+      XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
+    }
   }
 }

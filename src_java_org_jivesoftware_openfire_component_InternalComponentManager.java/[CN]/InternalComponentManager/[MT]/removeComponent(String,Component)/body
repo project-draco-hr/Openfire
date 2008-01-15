@@ -1,0 +1,25 @@
+{
+  Log.debug("InternalComponentManager: Unregistering component for domain: " + subdomain);
+  RoutableComponent routable=routables.get(subdomain);
+  routable.removeComponent(component);
+  if (routable.numberOfComponents() == 0) {
+    routables.remove(subdomain);
+  }
+  componentInfo.remove(subdomain);
+  JID componentJID=new JID(subdomain + "." + serverDomain);
+  RoutingTable routingTable=XMPPServer.getInstance().getRoutingTable();
+  if (routingTable != null) {
+    routingTable.removeComponentRoute(componentJID);
+  }
+  IQDiscoItemsHandler iqDiscoItemsHandler=XMPPServer.getInstance().getIQDiscoItemsHandler();
+  if (iqDiscoItemsHandler != null) {
+    iqDiscoItemsHandler.removeComponentItem(componentJID.toBareJID());
+  }
+  if (component != null) {
+    component.shutdown();
+  }
+  for (  ComponentEventListener listener : listeners) {
+    listener.componentUnregistered(component,componentJID);
+  }
+  Log.debug("InternalComponentManager: Component unregistered for domain: " + subdomain);
+}

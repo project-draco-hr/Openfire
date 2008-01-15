@@ -4,6 +4,7 @@
     eventType=xpp.next();
   }
   String host=reader.getXPPParser().getAttributeValue("","to");
+  String allowMultiple=reader.getXPPParser().getAttributeValue("","allowMultiple");
   if (validateHost() && isHostUnknown(host)) {
     StringBuilder sb=new StringBuilder(250);
     sb.append("<?xml version='1.0' encoding='");
@@ -21,7 +22,7 @@
     connection.close();
     Log.warn("Closing session due to incorrect hostname in stream header. Host: " + host + ". Connection: "+ connection);
   }
- else   if (!createSession(xpp.getNamespace(null))) {
+ else   if (!createSession(xpp.getNamespace(null),allowMultiple != null)) {
     StringBuilder sb=new StringBuilder(250);
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);
