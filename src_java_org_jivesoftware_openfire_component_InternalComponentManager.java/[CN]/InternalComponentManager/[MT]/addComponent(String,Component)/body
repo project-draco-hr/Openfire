@@ -11,8 +11,8 @@
  else {
     routable=new RoutableComponent(componentJID,component);
     routables.put(subdomain,routable);
+    XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
   }
-  XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
   try {
     component.initialize(componentJID,this);
     component.start();
