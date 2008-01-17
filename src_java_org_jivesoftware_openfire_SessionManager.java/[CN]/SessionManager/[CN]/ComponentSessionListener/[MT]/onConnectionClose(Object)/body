@@ -11,6 +11,8 @@
   }
  finally {
     localSessionManager.getComponentsSessions().remove(session);
-    componentSessionsCache.remove(session.getAddress().toString());
+    if (!InternalComponentManager.getInstance().hasComponent(session.getAddress())) {
+      componentSessionsCache.remove(session.getAddress().toString());
+    }
   }
 }

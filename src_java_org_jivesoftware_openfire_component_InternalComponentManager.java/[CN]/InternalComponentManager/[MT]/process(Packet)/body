@@ -4,31 +4,30 @@
     if (packet instanceof IQ && IQ.Type.result == ((IQ)packet).getType()) {
       IQ iq=(IQ)packet;
       Element childElement=iq.getChildElement();
-      String namespace=null;
       if (childElement != null) {
-        namespace=childElement.getNamespaceURI();
-      }
-      if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-        Element identity=childElement.element("identity");
-        if (identity == null) {
-          return;
-        }
-        try {
-          XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(packet.getFrom().toBareJID(),identity.attributeValue("name"));
-          if (component instanceof ComponentSession.ExternalComponent) {
-            ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
-            externalComponent.setName(identity.attributeValue("name"));
-            externalComponent.setType(identity.attributeValue("type"));
-            externalComponent.setCategory(identity.attributeValue("category"));
+        String namespace=childElement.getNamespaceURI();
+        if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+          Element identity=childElement.element("identity");
+          if (identity == null) {
+            return;
           }
-        }
- catch (        Exception e) {
-          Log.error("Error processing disco packet of component: " + component + " - "+ packet.toXML(),e);
-        }
-        String subdomain=packet.getFrom().getDomain().replace("." + serverDomain,"");
-        componentInfo.put(subdomain,iq);
-        for (        ComponentEventListener listener : listeners) {
-          listener.componentInfoReceived(component,iq);
+          try {
+            XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(packet.getFrom().toBareJID(),identity.attributeValue("name"));
+            if (component instanceof ComponentSession.ExternalComponent) {
+              ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
+              externalComponent.setName(identity.attributeValue("name"));
+              externalComponent.setType(identity.attributeValue("type"));
+              externalComponent.setCategory(identity.attributeValue("category"));
+            }
+          }
+ catch (          Exception e) {
+            Log.error("Error processing disco packet of component: " + component + " - "+ packet.toXML(),e);
+          }
+          String subdomain=packet.getFrom().getDomain().replace("." + serverDomain,"");
+          componentInfo.put(subdomain,iq);
+          for (          ComponentEventListener listener : listeners) {
+            listener.componentInfoReceived(component,iq);
+          }
         }
       }
     }

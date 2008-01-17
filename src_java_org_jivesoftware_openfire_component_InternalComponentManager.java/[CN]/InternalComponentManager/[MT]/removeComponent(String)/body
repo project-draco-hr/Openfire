@@ -1,6 +1,8 @@
 {
-  Log.debug("InternalComponentManager: Unregistering all components for domain: " + subdomain);
-  RoutableComponent routable=routables.get(subdomain);
-  routable.removeAllComponents();
-  routables.remove(subdomain);
+synchronized (routables) {
+    Log.debug("InternalComponentManager: Unregistering all components for domain: " + subdomain);
+    RoutableComponents routable=routables.get(subdomain);
+    routable.removeAllComponents();
+    routables.remove(subdomain);
+  }
 }

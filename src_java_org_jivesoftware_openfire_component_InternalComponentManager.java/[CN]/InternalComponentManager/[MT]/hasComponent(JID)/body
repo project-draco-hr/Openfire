@@ -1,6 +1,8 @@
 {
-  if (componentJID.getNode() != null || componentJID.getResource() != null) {
-    return false;
+synchronized (routables) {
+    if (componentJID.getNode() != null || componentJID.getResource() != null) {
+      return false;
+    }
+    return routingTable.hasComponentRoute(componentJID);
   }
-  return routingTable.hasComponentRoute(componentJID);
 }

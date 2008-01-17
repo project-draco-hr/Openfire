@@ -1,39 +1,41 @@
 {
-  RoutableComponent routable=routables.get(subdomain);
-  if (routable != null && routable.hasComponent(component)) {
-    return;
-  }
-  Log.debug("InternalComponentManager: Registering component for domain: " + subdomain);
-  JID componentJID=new JID(subdomain + "." + serverDomain);
-  if (routable != null) {
-    routable.addComponent(component);
-  }
+synchronized (routables) {
+    RoutableComponents routable=routables.get(subdomain);
+    if (routable != null && routable.hasComponent(component)) {
+      return;
+    }
+    Log.debug("InternalComponentManager: Registering component for domain: " + subdomain);
+    JID componentJID=new JID(subdomain + "." + serverDomain);
+    if (routable != null) {
+      routable.addComponent(component);
+    }
  else {
-    routable=new RoutableComponent(componentJID,component);
-    routables.put(subdomain,routable);
-    XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
-  }
-  try {
-    component.initialize(componentJID,this);
-    component.start();
-    for (    ComponentEventListener listener : listeners) {
-      listener.componentRegistered(component,componentJID);
+      routable=new RoutableComponents(componentJID,component);
+      routables.put(subdomain,routable);
+      XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
     }
-    checkPresences();
-    checkDiscoSupport(component,componentJID);
-    Log.debug("InternalComponentManager: Component registered for domain: " + subdomain);
-  }
- catch (  Exception e) {
-    routable.removeComponent(component);
-    if (e instanceof ComponentException) {
-      throw (ComponentException)e;
+    try {
+      component.initialize(componentJID,this);
+      component.start();
+      for (      ComponentEventListener listener : listeners) {
+        listener.componentRegistered(component,componentJID);
+      }
+      checkPresences();
+      checkDiscoSupport(component,componentJID);
+      Log.debug("InternalComponentManager: Component registered for domain: " + subdomain);
     }
-    throw new ComponentException(e);
-  }
+ catch (    Exception e) {
+      routable.removeComponent(component);
+      if (e instanceof ComponentException) {
+        throw (ComponentException)e;
+      }
+      throw new ComponentException(e);
+    }
  finally {
-    if (routable.numberOfComponents() == 0) {
-      routables.remove(subdomain);
-      XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
+      if (routable.numberOfComponents() == 0) {
+        routables.remove(subdomain);
+        XMPPServer.getInstance().getRoutingTable().removeComponentRoute(componentJID);
+      }
     }
   }
 }

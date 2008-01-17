@@ -1,20 +1,22 @@
 {
-  if (componentJID.getNode() != null) {
-    return null;
-  }
-  RoutableComponent routable=routables.get(componentJID.getDomain());
-  if (routable != null) {
-    return routable.getNextComponent();
-  }
+synchronized (routables) {
+    if (componentJID.getNode() != null) {
+      return null;
+    }
+    RoutableComponents routable=routables.get(componentJID.getDomain());
+    if (routable != null) {
+      return routable.getNextComponent();
+    }
  else {
-    String serverName=componentJID.getDomain();
-    int index=serverName.lastIndexOf("." + serverDomain);
-    if (index > -1) {
-      routable=routables.get(serverName.substring(0,index));
-      if (routable != null) {
-        return routable.getNextComponent();
+      String serverName=componentJID.getDomain();
+      int index=serverName.lastIndexOf("." + serverDomain);
+      if (index > -1) {
+        routable=routables.get(serverName.substring(0,index));
+        if (routable != null) {
+          return routable.getNextComponent();
+        }
       }
     }
+    return null;
   }
-  return null;
 }
