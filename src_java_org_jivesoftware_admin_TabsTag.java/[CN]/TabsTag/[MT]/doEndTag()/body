@@ -5,9 +5,7 @@
   if (tabs.size() > 0) {
     JspWriter out=pageContext.getOut();
     StringBuilder buf=new StringBuilder();
-    if (!justlinks) {
-      buf.append("<ul>");
-    }
+    buf.append("<ul>");
     String body=getBodyContent().getString();
     Element currentTab=null;
     if (pageID != null) {
@@ -27,20 +25,11 @@
       if (tab.equals(currentTab)) {
         css=getCurrentcss();
       }
-      if (!justlinks) {
-        buf.append("<li class=\"").append(css).append("\">");
-      }
-      if (justlinks && i > 0) {
-        buf.append(" | ");
-      }
+      buf.append("<li class=\"").append(css).append("\">");
       buf.append(value);
-      if (!justlinks) {
-        buf.append("</li>");
-      }
+      buf.append("</li>");
     }
-    if (!justlinks) {
-      buf.append("</ul>");
-    }
+    buf.append("</ul>");
     try {
       out.write(buf.toString());
     }
