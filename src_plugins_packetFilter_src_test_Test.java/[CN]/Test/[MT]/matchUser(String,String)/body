@@ -1,0 +1,17 @@
+{
+  boolean match=false;
+  packetToFrom=JID.unescapeNode(packetToFrom);
+  if (ruleToFrom.indexOf("*") == 0 && ruleToFrom.indexOf("@") == 1) {
+    System.out.println(getDomain(ruleToFrom));
+    System.out.println(getDomain(packetToFrom));
+    if (getDomain(ruleToFrom).equals(getDomain(packetToFrom))) {
+      match=true;
+    }
+  }
+ else {
+    if (ruleToFrom.equals(packetToFrom)) {
+      match=true;
+    }
+  }
+  return match;
+}

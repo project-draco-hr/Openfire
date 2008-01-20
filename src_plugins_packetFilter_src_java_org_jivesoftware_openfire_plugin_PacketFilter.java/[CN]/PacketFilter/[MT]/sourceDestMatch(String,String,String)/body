@@ -1,0 +1,22 @@
+{
+  if (type.equals(Rule.SourceDestType.Any.toString()))   return true;
+  if (type.equals(Rule.SourceDestType.User.toString())) {
+    if (ruleToFrom.equals(packetToFrom)) {
+      return true;
+    }
+  }
+ else   if (type.equals(Rule.SourceDestType.Group.toString())) {
+    return packetToFromGroup(ruleToFrom,packetToFrom);
+  }
+ else   if (type.equals(Rule.SourceDestType.Component.toString())) {
+    if (ruleToFrom.toLowerCase().equals(PacketFilterUtil.getComponent(packetToFrom).toLowerCase())) {
+      return true;
+    }
+  }
+ else   if (type.equals(Rule.SourceDestType.Other.toString())) {
+    if (matchUser(ruleToFrom,packetToFrom)) {
+      return true;
+    }
+  }
+  return false;
+}

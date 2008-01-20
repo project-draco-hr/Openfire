@@ -1,0 +1,17 @@
+{
+  Rule drop=new Drop();
+  drop.setSource("bart@localhost");
+  drop.setSourceType(Rule.SourceDestType.User.toString());
+  drop.setDestination("Any");
+  drop.setDestType(Rule.SourceDestType.Any.toString());
+  drop.isDisabled(false);
+  drop.setPacketType(Rule.PacketType.Any);
+  drop.doLog(false);
+  rmp.addRule(drop);
+  Presence presence=new Presence();
+  presence.setFrom("bart@localhost");
+  presence.setTo("lisa@localhost");
+  Rule rule=packetFilter.findMatch(presence);
+  assert(rule != null);
+  rule.doAction(presence);
+}

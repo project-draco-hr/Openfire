@@ -1,0 +1,21 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  int count=-1;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_LAST_ORDERID);
+    rs=pstmt.executeQuery();
+    rs.next();
+    count=rs.getInt(1);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+    return 0;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return count;
+}

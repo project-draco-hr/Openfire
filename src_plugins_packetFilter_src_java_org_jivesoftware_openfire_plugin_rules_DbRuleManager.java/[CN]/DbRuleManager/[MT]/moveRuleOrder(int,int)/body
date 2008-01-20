@@ -1,0 +1,18 @@
+{
+  Rule rule=getRuleById(ruleId);
+  Rule orderIWant=getRuleByOrderId(order);
+  if (orderIWant == null) {
+    updateRule(rule,order);
+  }
+ else {
+    List<Rule> rules=getRules();
+    for (int i=rules.size(); i > 0; i--) {
+      Rule moveRule=rules.get(i);
+      if (new Integer(moveRule.getOrder()) >= order) {
+        updateRule(moveRule,order + 1);
+      }
+ else       break;
+    }
+    updateRule(rule,order);
+  }
+}

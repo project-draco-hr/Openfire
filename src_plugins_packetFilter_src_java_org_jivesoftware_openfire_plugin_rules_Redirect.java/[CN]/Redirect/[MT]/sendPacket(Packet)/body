@@ -1,0 +1,10 @@
+{
+  SessionManager sessionManager=XMPPServer.getInstance().getSessionManager();
+  ClientSession clientSession;
+  clientSession=sessionManager.getSession(packet.getTo());
+  Log.info("Sending to " + packet.getTo());
+  if (clientSession != null) {
+    Log.info("***** Session Not Null ******");
+    clientSession.process(packet);
+  }
+}
