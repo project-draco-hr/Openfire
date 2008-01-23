@@ -8,6 +8,7 @@
   }
   String subPageID=(String)request.getAttribute("subPageID");
   String pageID=(String)request.getAttribute("pageID");
+  String subnavID=(String)request.getAttribute("subnavID");
   if (subPageID != null || pageID != null) {
     if (pageID == null) {
       Element subPage=AdminConsole.getElemnetByID(subPageID);
@@ -18,86 +19,87 @@
       StringBuilder buf=new StringBuilder();
       Element current=null;
       Element subcurrent=null;
+      Element subnav=null;
       if (subPageID != null) {
         subcurrent=AdminConsole.getElemnetByID(subPageID);
       }
       current=AdminConsole.getElemnetByID(pageID);
+      if (current != null) {
+        subnav=current.getParent();
+      }
       Element currentTab=(Element)AdminConsole.getModel().selectSingleNode("//*[@id='" + pageID + "']/ancestor::tab");
       boolean isSubmenu=false;
       if (subcurrent != null) {
         isSubmenu=subcurrent.getParent().getParent().getName().equals("item");
       }
-      if (currentTab != null) {
-        Collection items=currentTab.elements();
+      if (currentTab != null && subnav != null) {
+        Element sidebar=subnav.getParent().getParent();
+        String header=sidebar.attributeValue("name");
+        String pluginName=sidebar.attributeValue("plugin");
+        String hcss=getHeadercss();
+        if (hcss == null) {
+          hcss="";
+        }
+        Collection items=subnav.elements();
         if (items.size() > 0) {
           buf.append("<ul>");
-          for (Iterator iter=items.iterator(); iter.hasNext(); ) {
-            Element sidebar=(Element)iter.next();
-            String header=sidebar.attributeValue("name");
-            String pluginName=sidebar.attributeValue("plugin");
-            String hcss=getHeadercss();
-            if (hcss == null) {
-              hcss="";
+          for (          Object itemObj : items) {
+            Element item=(Element)itemObj;
+            String subitemID=item.attributeValue("id");
+            String subitemName=item.attributeValue("name");
+            String subitemURL=item.attributeValue("url");
+            String subitemDescr=item.attributeValue("description");
+            pluginName=item.attributeValue("plugin");
+            String value=getBodyContent().getString();
+            if (value != null) {
+              value=StringUtils.replace(value,"[id]",clean(subitemID));
+              value=StringUtils.replace(value,"[name]",clean(AdminConsole.getAdminText(subitemName,pluginName)));
+              value=StringUtils.replace(value,"[description]",clean(AdminConsole.getAdminText(subitemDescr,pluginName)));
+              value=StringUtils.replace(value,"[url]",request.getContextPath() + "/" + clean(subitemURL));
             }
-            buf.append("<li class=\"").append(hcss).append("\">").append(clean(AdminConsole.getAdminText(header,pluginName))).append("</li>");
-            for (Iterator subitems=sidebar.elementIterator(); subitems.hasNext(); ) {
-              Element item=(Element)subitems.next();
-              String subitemID=item.attributeValue("id");
-              String subitemName=item.attributeValue("name");
-              String subitemURL=item.attributeValue("url");
-              String subitemDescr=item.attributeValue("description");
-              pluginName=item.attributeValue("plugin");
-              String value=getBodyContent().getString();
-              if (value != null) {
-                value=StringUtils.replace(value,"[id]",clean(subitemID));
-                value=StringUtils.replace(value,"[name]",clean(AdminConsole.getAdminText(subitemName,pluginName)));
-                value=StringUtils.replace(value,"[description]",clean(AdminConsole.getAdminText(subitemDescr,pluginName)));
-                value=StringUtils.replace(value,"[url]",request.getContextPath() + "/" + clean(subitemURL));
+            String css=getCss();
+            boolean isCurrent=item.equals(current);
+            boolean showSubmenu=subPageID != null;
+            if (isCurrent && !showSubmenu) {
+              css=getCurrentcss();
+            }
+            buf.append("<li class=\"").append(css).append("\">").append(value).append("</li>");
+            if (isSubmenu && isCurrent) {
+              Iterator siblings=subcurrent.getParent().elementIterator();
+              boolean hadNext=siblings.hasNext();
+              if (hadNext) {
+                buf.append("<ul class=\"subitems\">\n");
+                String subheader=subcurrent.getParent().attributeValue("name");
+                pluginName=subcurrent.getParent().attributeValue("plugin");
+                buf.append("<li class=\"").append(hcss).append("\">").append(clean(AdminConsole.getAdminText(subheader,pluginName))).append("</li>");
               }
-              String css=getCss();
-              boolean isCurrent=item.equals(current);
-              boolean showSubmenu=subPageID != null;
-              if (isCurrent && !showSubmenu) {
-                css=getCurrentcss();
+              String extraParams=(String)request.getAttribute("extraParams");
+              while (siblings.hasNext()) {
+                Element sibling=(Element)siblings.next();
+                String sibID=sibling.attributeValue("id");
+                String sibName=sibling.attributeValue("name");
+                String sibDescr=sibling.attributeValue("description");
+                String sibURL=sibling.attributeValue("url");
+                pluginName=sibling.attributeValue("plugin");
+                if (extraParams != null) {
+                  sibURL+=((sibURL.indexOf('?') > -1 ? "&" : "?") + extraParams);
+                }
+                boolean isSubCurrent=sibling.equals(subcurrent);
+                String subcss=getCss();
+                if (isSubCurrent) {
+                  subcss=getCurrentcss();
+                }
+                String svalue=getSubsidebarTag().getBody();
+                if (svalue != null) {
+                  svalue=StringUtils.replace(svalue,"[id]",clean(sibID));
+                  svalue=StringUtils.replace(svalue,"[name]",clean(AdminConsole.getAdminText(sibName,pluginName)));
+                  svalue=StringUtils.replace(svalue,"[description]",clean(AdminConsole.getAdminText(sibDescr,pluginName)));
+                  svalue=StringUtils.replace(svalue,"[url]",request.getContextPath() + "/" + clean(sibURL));
+                }
+                buf.append("<li class=\"").append(subcss).append("\">").append(svalue).append("</li>\n");
               }
-              buf.append("<li class=\"").append(css).append("\">").append(value).append("</li>");
-              if (isSubmenu && isCurrent) {
-                Iterator siblings=subcurrent.getParent().elementIterator();
-                boolean hadNext=siblings.hasNext();
-                if (hadNext) {
-                  buf.append("<ul class=\"subitems\">\n");
-                  String subheader=subcurrent.getParent().attributeValue("name");
-                  pluginName=subcurrent.getParent().attributeValue("plugin");
-                  buf.append("<li class=\"").append(hcss).append("\">").append(clean(AdminConsole.getAdminText(subheader,pluginName))).append("</li>");
-                }
-                String extraParams=(String)request.getAttribute("extraParams");
-                while (siblings.hasNext()) {
-                  Element sibling=(Element)siblings.next();
-                  String sibID=sibling.attributeValue("id");
-                  String sibName=sibling.attributeValue("name");
-                  String sibDescr=sibling.attributeValue("description");
-                  String sibURL=sibling.attributeValue("url");
-                  pluginName=sibling.attributeValue("plugin");
-                  if (extraParams != null) {
-                    sibURL+=((sibURL.indexOf('?') > -1 ? "&" : "?") + extraParams);
-                  }
-                  boolean isSubCurrent=sibling.equals(subcurrent);
-                  String subcss=getCss();
-                  if (isSubCurrent) {
-                    subcss=getCurrentcss();
-                  }
-                  String svalue=getSubsidebarTag().getBody();
-                  if (svalue != null) {
-                    svalue=StringUtils.replace(svalue,"[id]",clean(sibID));
-                    svalue=StringUtils.replace(svalue,"[name]",clean(AdminConsole.getAdminText(sibName,pluginName)));
-                    svalue=StringUtils.replace(svalue,"[description]",clean(AdminConsole.getAdminText(sibDescr,pluginName)));
-                    svalue=StringUtils.replace(svalue,"[url]",request.getContextPath() + "/" + clean(sibURL));
-                  }
-                  buf.append("<li class=\"").append(subcss).append("\">").append(svalue).append("</li>\n");
-                }
-                if (hadNext) {
-                  buf.append("<br></ul>\n");
-                }
+              if (hadNext) {
+                buf.append("<br></ul>\n");
               }
             }
           }
