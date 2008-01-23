@@ -4,7 +4,9 @@
   String subPageID=(String)request.getAttribute("subPageID");
   if (pageID == null) {
     Element subPage=AdminConsole.getElemnetByID(subPageID);
-    pageID=subPage.getParent().getParent().attributeValue("id");
+    if (subPage != null) {
+      pageID=subPage.getParent().getParent().attributeValue("id");
+    }
   }
   List tabs=AdminConsole.getModel().selectNodes("//tab");
   if (tabs.size() > 0) {
