@@ -146,6 +146,10 @@
     innerfield.setType(FormField.TYPE_BOOLEAN);
     innerfield.addValue(Boolean.toString(room.isMembersOnly()));
     fields.add(innerfield);
+    innerfield=new XFormFieldImpl("jid");
+    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
+    innerfield.addValue(room.getRole().getRoleAddress().toString());
+    fields.add(innerfield);
     resultform.addItemFields(fields);
     atLeastoneResult=true;
   }
@@ -165,6 +169,9 @@
     final FormField rffPasswordProtected=new XFormFieldImpl("is_password_protected");
     rffPasswordProtected.setLabel("Is a password protected room.");
     resultform.addReportedField(rffPasswordProtected);
+    final FormField rffJID=new XFormFieldImpl("jid");
+    rffJID.setLabel("JID");
+    resultform.addReportedField(rffJID);
     FormField innerfield=new XFormFieldImpl("is_member_only");
     innerfield.setType(FormField.TYPE_TEXT_SINGLE);
     innerfield.setLabel("Is a member only room.");
