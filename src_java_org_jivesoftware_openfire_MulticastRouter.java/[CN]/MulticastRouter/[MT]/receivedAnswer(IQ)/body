@@ -25,7 +25,7 @@
  else {
       if (isRoot && IQ.Type.error != packet.getType()) {
         IQ iq=new IQ(IQ.Type.get);
-        iq.setFrom(server.getServerInfo().getName());
+        iq.setFrom(server.getServerInfo().getXMPPDomain());
         iq.setTo(packet.getFrom());
         iq.setChildElement("query","http://jabber.org/protocol/disco#items");
         iqRouter.addIQResultListener(iq.getID(),this);
@@ -67,7 +67,7 @@
       nodes.put(domain,new CopyOnWriteArrayList<String>(jids));
       for (      Element item : items) {
         IQ iq=new IQ(IQ.Type.get);
-        iq.setFrom(server.getServerInfo().getName());
+        iq.setFrom(server.getServerInfo().getXMPPDomain());
         iq.setTo(item.attributeValue("jid"));
         Element child=iq.setChildElement("query","http://jabber.org/protocol/disco#info");
         if (item.attributeValue("node") != null) {
