@@ -31,6 +31,7 @@
     oldAffiliation=MUCRole.Affiliation.outcast;
   }
   MUCPersistenceManager.saveAffiliationToDB(this,bareJID,nickname,MUCRole.Affiliation.member,oldAffiliation);
+  CacheFactory.doClusterTask(new AddMember(this,bareJID,(nickname == null ? "" : nickname)));
   try {
     return changeOccupantAffiliation(bareJID,MUCRole.Affiliation.member,MUCRole.Role.participant);
   }
