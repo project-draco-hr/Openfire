@@ -12,12 +12,16 @@
   streamTextRequired=false;
   maxRowsSupported=true;
   fetchSizeSupported=true;
+  dualTableSupported=false;
+  selectRequiresFrom=false;
   String dbName=metaData.getDatabaseProductName().toLowerCase();
   String driverName=metaData.getDriverName().toLowerCase();
   if (dbName.indexOf("oracle") != -1) {
     databaseType=DatabaseType.oracle;
     streamTextRequired=true;
     scrollResultsSupported=false;
+    dualTableSupported=true;
+    selectRequiresFrom=true;
     if (driverName.indexOf("auguro") != -1) {
       streamTextRequired=false;
       fetchSizeSupported=true;
@@ -44,6 +48,7 @@
  else   if (dbName.indexOf("mysql") != -1) {
     databaseType=DatabaseType.mysql;
     transactionsSupported=false;
+    dualTableSupported=true;
   }
  else   if (dbName.indexOf("hsql") != -1) {
     databaseType=DatabaseType.hsqldb;
