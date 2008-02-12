@@ -7,19 +7,16 @@
       if (realm == null) {
         realm=((RealmCallback)callback).getDefaultText();
       }
-      Log.debug("XMPPCallbackHandler: RealmCallback: " + realm);
     }
  else     if (callback instanceof NameCallback) {
       name=((NameCallback)callback).getName();
       if (name == null) {
         name=((NameCallback)callback).getDefaultName();
       }
-      Log.debug("XMPPCallbackHandler: NameCallback: " + name);
     }
  else     if (callback instanceof PasswordCallback) {
       try {
         ((PasswordCallback)callback).setPassword(AuthFactory.getPassword(name).toCharArray());
-        Log.debug("XMPPCallbackHandler: PasswordCallback");
       }
  catch (      UserNotFoundException e) {
         throw new IOException(e.toString());
@@ -29,7 +26,6 @@ catch (      UnsupportedOperationException uoe) {
       }
     }
  else     if (callback instanceof VerifyPasswordCallback) {
-      Log.debug("XMPPCallbackHandler: VerifyPasswordCallback");
       VerifyPasswordCallback vpcb=(VerifyPasswordCallback)callback;
       try {
         AuthToken at=AuthFactory.authenticate(name,new String(vpcb.getPassword()));
@@ -40,7 +36,6 @@ catch (      UnsupportedOperationException uoe) {
       }
     }
  else     if (callback instanceof AuthorizeCallback) {
-      Log.debug("XMPPCallbackHandler: AuthorizeCallback");
       AuthorizeCallback authCallback=((AuthorizeCallback)callback);
       String principal=authCallback.getAuthenticationID();
       String username=authCallback.getAuthorizationID();
@@ -50,26 +45,22 @@ catch (      UnsupportedOperationException uoe) {
       if (principal.equals(username)) {
         username=AuthorizationManager.map(principal);
         if (Log.isDebugEnabled()) {
-          Log.debug("XMPPCallbackHandler: no username requested, using " + username);
         }
       }
       if (AuthorizationManager.authorize(username,principal)) {
         if (Log.isDebugEnabled()) {
-          Log.debug("XMPPCallbackHandler: " + principal + " authorized to "+ username);
         }
         authCallback.setAuthorized(true);
         authCallback.setAuthorizedID(username);
       }
  else {
         if (Log.isDebugEnabled()) {
-          Log.debug("XMPPCallbackHandler: " + principal + " not authorized to "+ username);
         }
         authCallback.setAuthorized(false);
       }
     }
  else {
       if (Log.isDebugEnabled()) {
-        Log.debug("XMPPCallbackHandler: Callback: " + callback.getClass().getSimpleName());
       }
       throw new UnsupportedCallbackException(callback,"Unrecognized Callback");
     }
