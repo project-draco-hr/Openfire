@@ -9,9 +9,7 @@
     ResultSet rs=pstmt.executeQuery();
     ExternalComponentConfiguration configuration;
     while (rs.next()) {
-      configuration=new ExternalComponentConfiguration(rs.getString(1));
-      configuration.setSecret(rs.getString(2));
-      configuration.setPermission(permission);
+      configuration=new ExternalComponentConfiguration(rs.getString(1),permission,rs.getString(2));
       answer.add(configuration);
     }
     rs.close();

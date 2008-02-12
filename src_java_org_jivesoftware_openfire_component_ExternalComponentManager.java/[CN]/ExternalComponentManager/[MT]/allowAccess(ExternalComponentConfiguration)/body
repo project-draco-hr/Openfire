@@ -1,5 +1,8 @@
 {
-  deleteConfiguration(configuration.getSubdomain());
+  for (  ExternalComponentManagerListener listener : listeners) {
+    listener.componentAllowed(configuration.getSubdomain());
+  }
+  deleteConfigurationFromDB(configuration.getSubdomain());
   configuration.setPermission(Permission.allowed);
   addConfiguration(configuration);
 }

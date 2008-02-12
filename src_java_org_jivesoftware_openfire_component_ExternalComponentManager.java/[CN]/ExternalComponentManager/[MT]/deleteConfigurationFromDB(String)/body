@@ -1,16 +1,11 @@
 {
-  ExternalComponentConfiguration configuration=null;
   java.sql.Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(LOAD_CONFIGURATION);
+    pstmt=con.prepareStatement(DELETE_CONFIGURATION);
     pstmt.setString(1,subdomain);
-    ResultSet rs=pstmt.executeQuery();
-    while (rs.next()) {
-      configuration=new ExternalComponentConfiguration(subdomain,Permission.valueOf(rs.getString(2)),rs.getString(1));
-    }
-    rs.close();
+    pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
@@ -29,5 +24,4 @@
       Log.error(e);
     }
   }
-  return configuration;
 }

@@ -5,19 +5,9 @@
     permission=config.getPermission();
   }
   if (PermissionPolicy.blacklist == getPermissionPolicy()) {
-    if (Permission.blocked == permission) {
-      return false;
-    }
- else {
-      return true;
-    }
+    return Permission.blocked != permission;
   }
  else {
-    if (Permission.allowed == permission) {
-      return true;
-    }
- else {
-      return false;
-    }
+    return Permission.allowed == permission;
   }
 }
