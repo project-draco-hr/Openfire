@@ -1,0 +1,8 @@
+{
+  if (provider.isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  provider.unsetDisabledStatus(username);
+  lockOutCache.remove(username);
+  LockOutEventDispatcher.accountUnlocked(username);
+}

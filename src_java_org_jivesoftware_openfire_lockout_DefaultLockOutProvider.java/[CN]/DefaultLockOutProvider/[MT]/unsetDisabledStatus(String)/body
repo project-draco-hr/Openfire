@@ -1,0 +1,15 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_FLAG);
+    pstmt.setString(1,username);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

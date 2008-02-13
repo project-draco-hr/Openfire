@@ -1,0 +1,31 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  LockOutFlag ret=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(RETRIEVE_FLAG);
+    pstmt.setString(1,username);
+    rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new NotLockedOutException();
+    }
+    Date startTime=null;
+    if (rs.getString(2) != null) {
+      startTime=new Date(Long.parseLong(rs.getString(2).trim()));
+    }
+    Date endTime=null;
+    if (rs.getString(3) != null) {
+      endTime=new Date(Long.parseLong(rs.getString(3).trim()));
+    }
+    ret=new LockOutFlag(username,startTime,endTime);
+  }
+ catch (  Exception e) {
+    throw new NotLockedOutException();
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return ret;
+}

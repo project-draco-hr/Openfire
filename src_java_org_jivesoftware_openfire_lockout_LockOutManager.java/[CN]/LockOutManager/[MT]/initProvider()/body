@@ -1,0 +1,13 @@
+{
+  String className=JiveGlobals.getXMLProperty("provider.lockout.className","org.jivesoftware.openfire.lockout.DefaultLockOutProvider");
+  if (provider == null || !className.equals(provider.getClass().getName())) {
+    try {
+      Class c=ClassUtils.forName(className);
+      provider=(LockOutProvider)c.newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Error loading lockout provider: " + className,e);
+      provider=new DefaultLockOutProvider();
+    }
+  }
+}

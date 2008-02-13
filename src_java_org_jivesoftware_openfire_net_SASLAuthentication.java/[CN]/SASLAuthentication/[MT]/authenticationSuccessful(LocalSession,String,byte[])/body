@@ -1,4 +1,9 @@
 {
+  if (LockOutManager.getInstance().isAccountDisabled(username)) {
+    LockOutManager.getInstance().recordFailedLogin(username);
+    authenticationFailed(session);
+    return;
+  }
   StringBuilder reply=new StringBuilder(80);
   reply.append("<success xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"");
   if (successData != null) {

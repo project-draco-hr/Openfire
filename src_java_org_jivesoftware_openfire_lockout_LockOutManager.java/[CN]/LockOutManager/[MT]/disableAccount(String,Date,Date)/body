@@ -1,0 +1,9 @@
+{
+  if (provider.isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  LockOutFlag flag=new LockOutFlag(username,startTime,endTime);
+  provider.setDisabledStatus(flag);
+  lockOutCache.put(username,flag);
+  LockOutEventDispatcher.accountLocked(flag);
+}

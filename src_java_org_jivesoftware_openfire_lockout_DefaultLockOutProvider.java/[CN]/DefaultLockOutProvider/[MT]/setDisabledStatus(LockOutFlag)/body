@@ -1,0 +1,38 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_FLAG);
+    pstmt.setString(1,flag.getUsername());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ADD_FLAG);
+    pstmt.setString(1,flag.getUsername());
+    if (flag.getStartTime() != null) {
+      pstmt.setString(2,StringUtils.dateToMillis(flag.getStartTime()));
+    }
+ else {
+      pstmt.setNull(2,Types.VARCHAR);
+    }
+    if (flag.getStartTime() != null) {
+      pstmt.setString(3,StringUtils.dateToMillis(flag.getStartTime()));
+    }
+ else {
+      pstmt.setNull(3,Types.VARCHAR);
+    }
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}
