@@ -7,8 +7,10 @@
   char[] buf=charBuffer.array();
   int readByte=charBuffer.remaining();
   char lastChar=buf[readByte - 1];
-  if (Character.isISOControl(lastChar) || lastChar >= 0xfff0) {
-    Log.debug("Waiting to get complete char: " + String.valueOf(buf));
+  if (lastChar >= 0xfff0) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Waiting to get complete char: " + String.valueOf(buf));
+    }
     byteBuffer.position(byteBuffer.position() - 1);
     readByte--;
   }
