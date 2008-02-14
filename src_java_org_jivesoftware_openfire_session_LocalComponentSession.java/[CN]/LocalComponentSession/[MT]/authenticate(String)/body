@@ -1,0 +1,26 @@
+{
+  String secretKey=ExternalComponentManager.getSecretForComponent(defaultSubdomain);
+  String anticipatedDigest=AuthFactory.createDigest(getStreamID().getID(),secretKey);
+  if (!anticipatedDigest.equalsIgnoreCase(digest)) {
+    Log.debug("LocalComponentSession: [ExComp] Incorrect handshake for component with domain: " + defaultSubdomain);
+    conn.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
+    conn.close();
+    return false;
+  }
+ else {
+    setStatus(STATUS_AUTHENTICATED);
+    conn.deliverRawText("<handshake></handshake>");
+    ExternalComponent component=getExternalComponent();
+    try {
+      InternalComponentManager.getInstance().addComponent(defaultSubdomain,component);
+      Log.debug("LocalComponentSession: [ExComp] External component was registered SUCCESSFULLY with domain: " + defaultSubdomain);
+      return true;
+    }
+ catch (    ComponentException e) {
+      Log.debug("LocalComponentSession: [ExComp] Another component is already using domain: " + defaultSubdomain);
+      conn.deliverRawText(new StreamError(StreamError.Condition.conflict).toXML());
+      conn.close();
+      return false;
+    }
+  }
+}

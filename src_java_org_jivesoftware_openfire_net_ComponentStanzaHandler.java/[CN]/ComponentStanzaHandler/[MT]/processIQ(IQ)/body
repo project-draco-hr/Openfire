@@ -1,0 +1,13 @@
+{
+  if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+    IQ reply=new IQ();
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return;
+  }
+  super.processIQ(packet);
+}

@@ -2,9 +2,17 @@
   if (isComponentListenerEnabled()) {
     int port=getComponentListenerPort();
     try {
-      componentSocketThread.start();
+      String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+      InetAddress bindInterface=null;
+      if (interfaceName != null) {
+        if (interfaceName.trim().length() > 0) {
+          bindInterface=InetAddress.getByName(interfaceName);
+        }
+      }
+      componentAcceptor.bind(new InetSocketAddress(bindInterface,port),new ComponentConnectionHandler(serverName));
+      ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.component));
       List<String> params=new ArrayList<String>();
-      params.add(Integer.toString(componentSocketThread.getPort()));
+      params.add(Integer.toString(port));
       Log.info(LocaleUtils.getLocalizedString("startup.component",params));
     }
  catch (    Exception e) {

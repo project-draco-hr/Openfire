@@ -1,0 +1,12 @@
+{
+  if (session.getStatus() != Session.STATUS_AUTHENTICATED) {
+    Message reply=new Message();
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_authorized);
+    session.process(reply);
+    return;
+  }
+  super.processMessage(packet);
+}

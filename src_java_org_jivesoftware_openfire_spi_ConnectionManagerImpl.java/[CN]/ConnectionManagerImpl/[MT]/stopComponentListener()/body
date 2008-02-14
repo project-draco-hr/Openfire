@@ -1,7 +1,12 @@
 {
-  if (componentSocketThread != null) {
-    componentSocketThread.shutdown();
-    ports.remove(componentSocketThread.getServerPort());
-    componentSocketThread=null;
+  if (componentAcceptor != null) {
+    componentAcceptor.unbindAll();
+    for (    ServerPort port : ports) {
+      if (port.isComponentPort()) {
+        ports.remove(port);
+        break;
+      }
+    }
+    componentAcceptor=null;
   }
 }
