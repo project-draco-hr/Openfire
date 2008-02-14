@@ -1,34 +1,14 @@
 {
   this.properties=properties;
-  String secureStr=properties.get("clearspace.secure");
-  if (secureStr != null && (secureStr.equalsIgnoreCase("false") || secureStr.equals("0"))) {
-    secure=false;
-  }
-  String host=properties.get("clearspace.host");
-  if (host != null) {
-    this.host=host;
-  }
-  String portStr=properties.get("clearspace.port");
-  if (portStr != null) {
-    try {
-      this.port=Integer.parseInt(portStr);
-    }
- catch (    NumberFormatException nfe) {
-      Log.error(nfe);
-    }
-  }
-  String path=properties.get("clearspace.path");
-  if (path != null) {
-    this.path=path;
+  String uri=properties.get("clearspace.uri");
+  if (uri != null) {
+    this.uri=uri;
   }
   sharedSecret=properties.get("clearspace.sharedSecret");
   StringBuilder buf=new StringBuilder();
   buf.append("Created new ClearspaceManager() instance, fields:\n");
-  buf.append("\t host: ").append(host).append("\n");
-  buf.append("\t port: ").append(port).append("\n");
-  buf.append("\t path: ").append(path).append("\n");
+  buf.append("\t URI: ").append(uri).append("\n");
   buf.append("\t sharedSecret: ").append(sharedSecret).append("\n");
-  buf.append("\t secure: ").append(secure ? "yes" : "no").append("\n");
   if (Log.isDebugEnabled()) {
     Log.debug("ClearspaceManager: " + buf.toString());
   }
