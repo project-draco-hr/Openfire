@@ -1,0 +1,14 @@
+{
+  super.start();
+  if (isEnabled()) {
+    if (!ExternalComponentManager.isServiceEnabled()) {
+      try {
+        ExternalComponentManager.setServiceEnabled(true);
+      }
+ catch (      ModificationNotAllowedException e) {
+        Log.warn("Failed to start external component service",e);
+      }
+    }
+    ExternalComponentManager.addListener(this);
+  }
+}
