@@ -1,6 +1,14 @@
 {
   super.start();
   if (isEnabled()) {
+    if (ExternalComponentManager.getDefaultSecret() == null || "".equals(ExternalComponentManager.getDefaultSecret())) {
+      try {
+        ExternalComponentManager.setDefaultSecret(StringUtils.randomString(10));
+      }
+ catch (      ModificationNotAllowedException e) {
+        Log.warn("Failed to set a default secret to external component service",e);
+      }
+    }
     if (!ExternalComponentManager.isServiceEnabled()) {
       try {
         ExternalComponentManager.setServiceEnabled(true);
