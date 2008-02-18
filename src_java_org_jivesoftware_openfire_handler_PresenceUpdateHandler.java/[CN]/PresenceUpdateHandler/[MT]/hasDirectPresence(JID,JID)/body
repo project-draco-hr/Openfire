@@ -1,5 +1,8 @@
 {
-  Collection<DirectedPresence> directedPresences=directedPresencesCache.get(session.getAddress().toString());
+  if (recipientJID == null) {
+    return false;
+  }
+  Collection<DirectedPresence> directedPresences=directedPresencesCache.get(ownerJID.toString());
   if (directedPresences != null) {
     String recipient=recipientJID.toBareJID();
     for (    DirectedPresence directedPresence : directedPresences) {

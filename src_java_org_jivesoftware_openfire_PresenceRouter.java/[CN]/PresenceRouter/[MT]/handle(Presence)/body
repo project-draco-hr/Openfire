@@ -33,7 +33,7 @@
           Log.warn("Rejected available presence: " + packet + " - "+ session);
           return;
         }
-        for (        JID jid : routingTable.getRoutes(recipientJID)) {
+        for (        JID jid : routingTable.getRoutes(recipientJID,senderJID)) {
           updateHandler.directedPresenceSent(packet,jid,recipientJID.toString());
           routingTable.routePacket(jid,packet,false);
         }

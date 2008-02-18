@@ -6,7 +6,7 @@
       if (clientRoute == null) {
         clientRoute=anonymousUsersCache.get(route.toString());
       }
-      if (clientRoute != null && clientRoute.isAvailable()) {
+      if (clientRoute != null && (clientRoute.isAvailable() || presenceUpdateHandler.hasDirectPresence(route,requester))) {
         jids.add(route);
       }
     }
@@ -18,7 +18,7 @@
           if (clientRoute == null) {
             clientRoute=anonymousUsersCache.get(jid);
           }
-          if (clientRoute != null && clientRoute.isAvailable()) {
+          if (clientRoute != null && (clientRoute.isAvailable() || presenceUpdateHandler.hasDirectPresence(new JID(jid),requester))) {
             jids.add(new JID(jid));
           }
         }
