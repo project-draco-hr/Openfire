@@ -1,2 +1,14 @@
 {
+  try {
+    String path=AUDIT_URL_PREFIX + "auditMethodCall";
+    Document auditDoc=DocumentHelper.createDocument();
+    Element rootE=auditDoc.addElement("auditMethodCall");
+    rootE.addElement("username").addText(username);
+    rootE.addElement("description").addText(summary);
+    rootE.addElement("details").addText(details);
+    manager.executeRequest(POST,path,auditDoc.asXML());
+  }
+ catch (  Exception e) {
+    Log.error("Unable to send audit log via REST service to Clearspace:",e);
+  }
 }
