@@ -1,0 +1,74 @@
+{
+  List<SecurityAuditEvent> events=new ArrayList<SecurityAuditEvent>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  String sql=GET_EVENTS;
+  boolean addedOne=false;
+  if (username != null) {
+    sql+=" WHERE username = ?";
+    addedOne=true;
+  }
+  if (startTime != null) {
+    if (!addedOne) {
+      sql+=" WHERE";
+    }
+ else {
+      sql+=" AND";
+    }
+    sql+=" entryStamp >= ?";
+    addedOne=true;
+  }
+  if (endTime != null) {
+    if (!addedOne) {
+      sql+=" WHERE";
+    }
+ else {
+      sql+=" AND";
+    }
+    sql+=" entryStamp <= ?";
+  }
+  sql+=" ORDER BY entryStamp DESC";
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql);
+    if (skipEvents != null) {
+      DbConnectionManager.scrollResultSet(rs,skipEvents);
+    }
+    if (numEvents != null) {
+      DbConnectionManager.setFetchSize(rs,numEvents);
+    }
+    int i=1;
+    if (username != null) {
+      pstmt.setString(i,username);
+      i++;
+    }
+    if (startTime != null) {
+      pstmt.setLong(i,startTime.getTime());
+      i++;
+    }
+    if (endTime != null) {
+      pstmt.setLong(i,endTime.getTime());
+    }
+    rs=pstmt.executeQuery();
+    int count=0;
+    while (rs.next() && count < numEvents) {
+      SecurityAuditEvent event=new SecurityAuditEvent();
+      event.setMsgID(rs.getLong(1));
+      event.setUsername(rs.getString(2));
+      event.setEventStamp(new Date(rs.getLong(3)));
+      event.setSummary(rs.getString(4));
+      event.setNode(rs.getString(5));
+      event.setDetails(rs.getString(6));
+      events.add(event);
+      count++;
+    }
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return events;
+}

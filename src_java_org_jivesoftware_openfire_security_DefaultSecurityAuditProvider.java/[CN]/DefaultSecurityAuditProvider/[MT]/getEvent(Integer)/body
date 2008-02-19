@@ -1,0 +1,29 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  SecurityAuditEvent event=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_EVENT);
+    pstmt.setLong(1,msgID);
+    rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new EventNotFoundException();
+    }
+    event=new SecurityAuditEvent();
+    event.setMsgID(rs.getLong(1));
+    event.setUsername(rs.getString(2));
+    event.setEventStamp(new Date(rs.getLong(3)));
+    event.setSummary(rs.getString(4));
+    event.setNode(rs.getString(5));
+    event.setDetails(rs.getString(6));
+  }
+ catch (  Exception e) {
+    throw new EventNotFoundException();
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return event;
+}
