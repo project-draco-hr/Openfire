@@ -1,0 +1,21 @@
+{
+  Node groupNode=responseNode.selectSingleNode("return");
+  String name=null;
+  String description=null;
+  long id=-1;
+  name=groupNode.selectSingleNode("name").getText();
+  id=Long.parseLong(groupNode.selectSingleNode("ID").getText());
+  Node tmpNode=groupNode.selectSingleNode("description");
+  if (tmpNode != null) {
+    description=tmpNode.getText();
+  }
+  Collection<JID> members=null;
+  Collection<JID> administrators=null;
+  try {
+    members=getGroupMembers(id,false);
+    administrators=getGroupMembers(id,true);
+  }
+ catch (  GroupNotFoundException e) {
+  }
+  return new Group(name,description,members,administrators);
+}

@@ -1,3 +1,15 @@
 {
-  throw new UnsupportedOperationException("Test");
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException("Could not delete groups.");
+  }
+  try {
+    long groupID=manager.getGroupID(name);
+    String path=URL_PREFIX + "groups/" + groupID;
+    manager.executeRequest(DELETE,path);
+  }
+ catch (  GroupNotFoundException gnfe) {
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

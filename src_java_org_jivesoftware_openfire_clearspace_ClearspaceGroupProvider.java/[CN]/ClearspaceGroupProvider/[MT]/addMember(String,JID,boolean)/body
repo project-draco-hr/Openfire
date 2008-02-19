@@ -1,3 +1,31 @@
 {
-  throw new UnsupportedOperationException("Test");
+  try {
+    long userID=manager.getUserID(user);
+    long groupID=manager.getGroupID(groupName);
+    String path=URL_PREFIX;
+    Document groupDoc=DocumentHelper.createDocument();
+    Element rootE=null;
+    if (administrator) {
+      rootE=groupDoc.addElement("addAdministratorToGroup");
+      path+="groupAdmins";
+    }
+ else {
+      rootE=groupDoc.addElement("addMemberToGroup");
+      path+="groupMembers";
+    }
+    Element nameE=rootE.addElement("userID");
+    nameE.addText(String.valueOf(userID));
+    rootE.addElement("groupID");
+    nameE.addText(String.valueOf(groupID));
+    manager.executeRequest(POST,path,groupDoc.asXML());
+  }
+ catch (  GroupNotFoundException e) {
+    throw new UnsupportedOperationException("Group not found",e);
+  }
+catch (  UserNotFoundException e) {
+    throw new UnsupportedOperationException("User not found",e);
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

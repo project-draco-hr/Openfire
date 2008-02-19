@@ -1,3 +1,30 @@
 {
-  throw new UnsupportedOperationException("Test");
+  long userID=-1;
+  long groupID=-1;
+  try {
+    userID=manager.getUserID(user);
+    groupID=manager.getGroupID(groupName);
+  }
+ catch (  GroupNotFoundException e) {
+    return;
+  }
+catch (  UserNotFoundException e) {
+    return;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
+  try {
+    String path=URL_PREFIX + "groupAdmins/" + groupID+ "/"+ userID;
+    manager.executeRequest(DELETE,path);
+    path=URL_PREFIX + "groupMembers/" + groupID+ "/"+ userID;
+    manager.executeRequest(DELETE,path);
+  }
+ catch (  GroupNotFoundException e) {
+  }
+catch (  UserNotFoundException e) {
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

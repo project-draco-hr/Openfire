@@ -1,3 +1,11 @@
 {
-  return 0;
+  try {
+    String path=URL_PREFIX + "groupCount";
+    Element element=manager.executeRequest(GET,path);
+    int count=Integer.valueOf(getReturn(element));
+    return count;
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

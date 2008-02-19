@@ -1,0 +1,13 @@
+{
+  try {
+    String path=URL_PREFIX + "groups/" + name;
+    Element element=manager.executeRequest(GET,path);
+    return element;
+  }
+ catch (  GroupNotFoundException gnfe) {
+    throw gnfe;
+  }
+catch (  Exception e) {
+    throw new GroupNotFoundException("Unexpected error",e);
+  }
+}

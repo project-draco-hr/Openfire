@@ -1,3 +1,13 @@
 {
-  throw new UnsupportedOperationException("Test");
+  try {
+    Element group=getGroupByName(oldName);
+    WSUtils.modifyElementText(group,"name",newName);
+    String path=URL_PREFIX + "groups";
+    manager.executeRequest(PUT,path);
+  }
+ catch (  GroupNotFoundException gnfe) {
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }
