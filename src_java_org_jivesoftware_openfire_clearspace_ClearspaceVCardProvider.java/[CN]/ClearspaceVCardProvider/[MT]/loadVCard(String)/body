@@ -1,3 +1,13 @@
 {
-  return null;
+  try {
+    User user=UserManager.getInstance().getUser(username);
+    long userID=manager.getUserID(username);
+    String path=PROFILE_URL_PREFIX + "profiles/" + userID;
+    Element profile=manager.executeRequest(GET,path);
+    Element avatar=getAvatar(userID);
+    return translate(profile,user,avatar);
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Error loading the user",e);
+  }
 }

@@ -1,0 +1,41 @@
+{
+  List<Node> fields=(List<Node>)profile.selectNodes("return");
+  for (  Node field : fields) {
+    int fieldID=Integer.valueOf(field.selectSingleNode("fieldID").getText());
+    Node fieldNode=field.selectSingleNode("value");
+    if (fieldNode == null) {
+      fieldNode=field.selectSingleNode("values");
+    }
+    if (fieldNode == null) {
+      continue;
+    }
+    String fieldValue=fieldNode.getText();
+switch (fieldID) {
+case CS_FIELD_ID_TITLE:
+      vCard.addElement("TITLE").setText(fieldValue);
+    break;
+case CS_FIELD_ID_DEPARTMENT:
+  vCard.addElement("ORG").addElement("ORGUNIT").setText(fieldValue);
+break;
+case CS_FIELD_ID_TIME_ZONE:
+vCard.addElement("TZ").setText(fieldValue);
+break;
+case CS_FIELD_ID_WORK_ADDRESS:
+Element workAdr=vCard.addElement("ADR");
+workAdr.addElement("WORK");
+addAddress(fieldValue,workAdr);
+break;
+case CS_FIELD_ID_HOME_ADDRESS:
+Element homeAdr=vCard.addElement("ADR");
+homeAdr.addElement("HOME");
+addAddress(fieldValue,homeAdr);
+break;
+case CS_FIELD_ID_URL:
+vCard.addElement("URL").setText(fieldValue);
+break;
+case CS_FIELD_ID_ALTERNATE_EMAIL:
+vCard.addElement("EMAIL").addElement("USERID").setText(fieldValue);
+break;
+}
+}
+}

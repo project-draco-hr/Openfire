@@ -1,0 +1,16 @@
+{
+  try {
+    Document profilesDoc=DocumentHelper.createDocument();
+    Element rootE=profilesDoc.addElement("setActiveAvatar");
+    rootE.addElement("userID").setText(String.valueOf(userID));
+    rootE.addElement("avatarID").setText(String.valueOf(avatarID));
+    String path=AVATAR_URL_PREFIX + "activeAvatar/" + userID;
+    manager.executeRequest(POST,path,rootE.asXML());
+  }
+ catch (  UserNotFoundException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Error creating the avatar",e);
+  }
+}

@@ -1,2 +1,28 @@
 {
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  long userID=-1;
+  try {
+    userID=manager.getUserID(username);
+  }
+ catch (  UserNotFoundException gnfe) {
+    return;
+  }
+  if (!isAvatarReadOnly()) {
+    try {
+      String path=AVATAR_URL_PREFIX + "avatar/" + userID;
+      manager.executeRequest(DELETE,path);
+    }
+ catch (    Exception e) {
+      throw new UnsupportedOperationException("Unexpected error",e);
+    }
+  }
+  try {
+    String path=PROFILE_URL_PREFIX + "profiles/" + userID;
+    manager.executeRequest(DELETE,path);
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

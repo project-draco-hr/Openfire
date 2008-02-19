@@ -1,0 +1,20 @@
+{
+  try {
+    Document profilesDoc=DocumentHelper.createDocument();
+    Element rootE=profilesDoc.addElement("createAvatar");
+    rootE.addElement("ownerID").setText(String.valueOf(userID));
+    rootE.addElement("name").setText(String.valueOf(username));
+    rootE.addElement("contentType").setText(String.valueOf(contentType));
+    rootE.addElement("data").setText(String.valueOf(data));
+    String path=AVATAR_URL_PREFIX + "createAvatar/" + userID;
+    Element avatar=manager.executeRequest(POST,path,rootE.asXML());
+    long id=Long.valueOf(avatar.element("return").element("WSAvatar").elementTextTrim("id"));
+    return id;
+  }
+ catch (  UserNotFoundException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Error creating the avatar",e);
+  }
+}
