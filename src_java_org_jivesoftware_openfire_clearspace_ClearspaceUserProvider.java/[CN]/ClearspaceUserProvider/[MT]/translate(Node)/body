@@ -1,0 +1,34 @@
+{
+  String username=null;
+  String name=null;
+  String email=null;
+  Date creationDate=null;
+  Date modificationDate=null;
+  Node userNode=responseNode.selectSingleNode("return");
+  Node tmpNode;
+  username=userNode.selectSingleNode("username").getText();
+  boolean nameVisible=Boolean.valueOf(userNode.selectSingleNode("nameVisible").getText());
+  if (nameVisible) {
+    tmpNode=userNode.selectSingleNode("name");
+    if (tmpNode != null) {
+      name=tmpNode.getText();
+    }
+  }
+  boolean emailVisible=Boolean.valueOf(userNode.selectSingleNode("emailVisible").getText());
+  if (emailVisible) {
+    tmpNode=userNode.selectSingleNode("email");
+    if (tmpNode != null) {
+      email=tmpNode.getText();
+    }
+  }
+  tmpNode=userNode.selectSingleNode("creationDate");
+  if (tmpNode != null) {
+    creationDate=WSUtils.parseDate(tmpNode.getText());
+  }
+  tmpNode=userNode.selectSingleNode("modificationDate");
+  if (tmpNode != null) {
+    modificationDate=WSUtils.parseDate(tmpNode.getText());
+  }
+  User user=new User(username,name,email,creationDate,modificationDate);
+  return user;
+}

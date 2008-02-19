@@ -1,0 +1,13 @@
+{
+  try {
+    String path=USER_URL_PREFIX + "users/" + username;
+    Element response=manager.executeRequest(GET,path);
+    return response;
+  }
+ catch (  UserNotFoundException unfe) {
+    throw unfe;
+  }
+catch (  Exception e) {
+    throw new UserNotFoundException("Error loading the user",e);
+  }
+}

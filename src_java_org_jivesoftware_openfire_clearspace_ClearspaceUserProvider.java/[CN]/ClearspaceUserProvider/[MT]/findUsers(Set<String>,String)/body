@@ -1,3 +1,29 @@
 {
-  throw new UnsupportedOperationException("Test");
+  Document groupDoc=DocumentHelper.createDocument();
+  Element rootE=groupDoc.addElement("searchProfile");
+  Element queryE=rootE.addElement("WSProfileSearchQuery");
+  Element keywords=queryE.addElement("keywords");
+  keywords.addText(query);
+  Element searchUsername=queryE.addElement("searchUsername");
+  searchUsername.addText("true");
+  Element searchName=queryE.addElement("searchName");
+  searchName.addText("true");
+  Element searchEmail=queryE.addElement("searchEmail");
+  searchEmail.addText("true");
+  Element searchProfile=queryE.addElement("searchProfile");
+  searchProfile.addText("false");
+  try {
+    List<String> usernames=new ArrayList<String>();
+    String path=SEARCH_URL_PREFIX + "searchProfile";
+    Element element=manager.executeRequest(GET,path);
+    List<Node> userNodes=(List<Node>)element.selectNodes("return");
+    for (    Node userNode : userNodes) {
+      String username=userNode.selectSingleNode("username").getText();
+      usernames.add(username);
+    }
+    return new UserCollection(usernames.toArray(new String[usernames.size()]));
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

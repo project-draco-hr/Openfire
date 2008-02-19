@@ -1,2 +1,15 @@
 {
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  try {
+    long userID=manager.getUserID(username);
+    String path=USER_URL_PREFIX + "users/" + userID;
+    manager.executeRequest(DELETE,path);
+  }
+ catch (  UserNotFoundException gnfe) {
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

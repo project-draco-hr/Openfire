@@ -1,0 +1,15 @@
+{
+  Document groupDoc=DocumentHelper.createDocument();
+  Element rootE=groupDoc.addElement("updateUser");
+  Element newUser=rootE.addElement("user");
+  List<Element> userAttributes=user.elements();
+  for (  Element userAttribute : userAttributes) {
+    if (userAttribute.getName().equals(attributeName)) {
+      newUser.addElement(userAttribute.getName()).setText(newValue);
+    }
+ else {
+      newUser.addElement(userAttribute.getName()).setText(userAttribute.getText());
+    }
+  }
+  return rootE;
+}

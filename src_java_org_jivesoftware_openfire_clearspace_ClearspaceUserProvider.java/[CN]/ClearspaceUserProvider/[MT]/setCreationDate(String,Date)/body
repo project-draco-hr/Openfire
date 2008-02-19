@@ -1,2 +1,14 @@
 {
+  try {
+    Element user=getUserByUsername(username);
+    Element modifiedUser=modifyUser(user.element("return"),"creationDate",WSUtils.formatDate(creationDate));
+    String path=USER_URL_PREFIX + "users";
+    manager.executeRequest(PUT,path,modifiedUser.asXML());
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("User with name " + username + " not found.");
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
 }

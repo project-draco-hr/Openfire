@@ -1,3 +1,31 @@
 {
-  return new User(username,name,email,new Date(),new Date());
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  try {
+    String path=USER_URL_PREFIX + "users/";
+    Document groupDoc=DocumentHelper.createDocument();
+    Element rootE=groupDoc.addElement("createUserWithUser");
+    Element userE=rootE.addElement("user");
+    Element usernameE=userE.addElement("username");
+    usernameE.addText(username);
+    if (name != null && !"".equals(name.trim())) {
+      Element nameE=userE.addElement("name");
+      nameE.addText(name);
+    }
+    Element passwordE=userE.addElement("password");
+    passwordE.addText(password);
+    Element emailE=userE.addElement("email");
+    emailE.addText(email);
+    Element enabledE=userE.addElement("enabled");
+    enabledE.addText("true");
+    Element user=manager.executeRequest(POST,path,groupDoc.asXML());
+    return translate(user);
+  }
+ catch (  UserAlreadyExistsException uaee) {
+    throw uaee;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Error creatin the user",e);
+  }
 }
