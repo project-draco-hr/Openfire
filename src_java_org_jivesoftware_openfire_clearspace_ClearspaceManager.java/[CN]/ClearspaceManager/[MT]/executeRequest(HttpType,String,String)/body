@@ -1,0 +1,46 @@
+{
+  System.out.println(xmlParams);
+  String wsUrl=getConnectionURI() + WEBSERVICES_PATH + urlSuffix;
+  String secret=getSharedSecret();
+  HttpClient client=new HttpClient();
+  HttpMethod method;
+  client.getParams().setAuthenticationPreemptive(true);
+  Credentials credentials=new UsernamePasswordCredentials(OPENFIRE_USERNAME,secret);
+  AuthScope scope=new AuthScope(host,port,AuthScope.ANY_REALM);
+  client.getState().setCredentials(scope,credentials);
+switch (type) {
+case GET:
+    method=new GetMethod(wsUrl);
+  break;
+case POST:
+PostMethod pm=new PostMethod(wsUrl);
+StringRequestEntity requestEntity=new StringRequestEntity(xmlParams);
+pm.setRequestEntity(requestEntity);
+method=pm;
+break;
+case PUT:
+PutMethod pm1=new PutMethod(wsUrl);
+StringRequestEntity requestEntity1=new StringRequestEntity(xmlParams);
+pm1.setRequestEntity(requestEntity1);
+method=pm1;
+break;
+case DELETE:
+method=new DeleteMethod(wsUrl);
+break;
+default :
+throw new IllegalArgumentException();
+}
+method.setRequestHeader("Accept","text/xml");
+method.setDoAuthentication(true);
+try {
+client.executeMethod(method);
+String body=method.getResponseBodyAsString();
+System.out.println(body);
+Element response=localParser.get().parseDocument(body).getRootElement();
+checkFault(response);
+return response;
+}
+  finally {
+method.releaseConnection();
+}
+}

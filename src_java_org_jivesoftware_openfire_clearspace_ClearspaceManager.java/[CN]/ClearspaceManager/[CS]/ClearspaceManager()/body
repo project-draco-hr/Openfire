@@ -41,6 +41,15 @@
 ;
   this.uri=JiveGlobals.getXMLProperty("clearspace.uri");
   sharedSecret=JiveGlobals.getXMLProperty("clearspace.sharedSecret");
+  if (uri != null && !"".equals(uri.trim())) {
+    try {
+      URL url=new URL(uri);
+      host=url.getHost();
+      port=url.getPort();
+    }
+ catch (    MalformedURLException e) {
+    }
+  }
   if (Log.isDebugEnabled()) {
     StringBuilder buf=new StringBuilder();
     buf.append("Created new ClearspaceManager() instance, fields:\n");

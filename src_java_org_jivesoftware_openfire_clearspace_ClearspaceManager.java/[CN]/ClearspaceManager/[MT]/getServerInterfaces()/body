@@ -1,0 +1,39 @@
+{
+  List<String> bindInterfaces=new ArrayList<String>();
+  String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+  String bindInterface=null;
+  if (interfaceName != null) {
+    if (interfaceName.trim().length() > 0) {
+      bindInterface=interfaceName;
+    }
+  }
+  int adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
+  int adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
+  if (bindInterface == null) {
+    Enumeration<NetworkInterface> nets=null;
+    try {
+      nets=NetworkInterface.getNetworkInterfaces();
+    }
+ catch (    SocketException e) {
+      return null;
+    }
+    for (    NetworkInterface netInterface : Collections.list(nets)) {
+      Enumeration<InetAddress> addresses=netInterface.getInetAddresses();
+      for (      InetAddress address : Collections.list(addresses)) {
+        if ("127.0.0.1".equals(address.getHostAddress())) {
+          continue;
+        }
+        Socket socket=new Socket();
+        InetSocketAddress remoteAddress=new InetSocketAddress(address,adminPort > 0 ? adminPort : adminSecurePort);
+        try {
+          socket.connect(remoteAddress);
+          bindInterfaces.add(address.getHostAddress());
+          break;
+        }
+ catch (        IOException e) {
+        }
+      }
+    }
+  }
+  return bindInterfaces;
+}

@@ -1,0 +1,15 @@
+{
+  XMPPServer server=XMPPServer.getInstance();
+  String username=server.isLocal(user) ? JID.unescapeNode(user.getNode()) : user.toString();
+  try {
+    String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/" + username;
+    Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
+    return Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
+  }
+ catch (  UserNotFoundException unfe) {
+    throw unfe;
+  }
+catch (  Exception e) {
+    throw new UserNotFoundException("Unexpected error",e);
+  }
+}

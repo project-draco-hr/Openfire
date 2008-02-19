@@ -1,6 +1,11 @@
 {
-  if (uri.equals("http://localhost:80/fail")) {
-    return false;
+  try {
+    String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/count";
+    Element element=executeRequest(GET,path);
+    int count=Integer.valueOf(getReturn(element));
+    return true;
   }
-  return true;
+ catch (  Exception e) {
+  }
+  return false;
 }
