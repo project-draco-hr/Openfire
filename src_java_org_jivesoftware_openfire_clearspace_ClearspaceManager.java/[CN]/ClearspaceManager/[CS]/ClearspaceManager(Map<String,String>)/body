@@ -2,6 +2,9 @@
   super("Clearspace integration module for testing only");
   this.properties=properties;
   this.uri=properties.get("clearspace.uri");
+  if (!this.uri.endsWith("/")) {
+    this.uri=this.uri + "/";
+  }
   sharedSecret=properties.get("clearspace.sharedSecret");
   if (Log.isDebugEnabled()) {
     StringBuilder buf=new StringBuilder();
