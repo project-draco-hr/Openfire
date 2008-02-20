@@ -1,0 +1,19 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  Integer cnt=0;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_EVENT_COUNT);
+    rs=pstmt.executeQuery();
+    cnt=rs.getInt(1);
+  }
+ catch (  Exception e) {
+    Log.error("Error while looking up number of security audit events: ",e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return cnt;
+}
