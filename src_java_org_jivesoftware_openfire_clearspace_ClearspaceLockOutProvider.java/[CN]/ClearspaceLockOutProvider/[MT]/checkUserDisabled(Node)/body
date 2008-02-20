@@ -1,11 +1,17 @@
 {
-  Node userNode=responseNode.selectSingleNode("return");
-  String username=userNode.selectSingleNode("username").getText();
-  boolean isEnabled=Boolean.valueOf(userNode.selectSingleNode("enabled").getText());
-  if (isEnabled) {
-    throw new NotLockedOutException();
-  }
+  try {
+    Node userNode=responseNode.selectSingleNode("return");
+    String username=userNode.selectSingleNode("username").getText();
+    boolean isEnabled=Boolean.valueOf(userNode.selectSingleNode("enabled").getText());
+    if (isEnabled) {
+      throw new NotLockedOutException();
+    }
  else {
-    return new LockOutFlag(username,null,null);
+      return new LockOutFlag(username,null,null);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error while looking up user's disabled status from Clearspace: ",e);
+    throw new NotLockedOutException();
   }
 }

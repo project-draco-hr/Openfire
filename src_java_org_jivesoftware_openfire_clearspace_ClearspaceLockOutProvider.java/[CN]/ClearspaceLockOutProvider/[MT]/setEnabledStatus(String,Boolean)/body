@@ -1,0 +1,14 @@
+{
+  try {
+    Element user=getUserByUsername(username);
+    Element modifiedUser=modifyUser(user.element("return"),"enabled",enabled ? "true" : "false");
+    String path=USER_URL_PREFIX + "users";
+    manager.executeRequest(PUT,path,modifiedUser.asXML());
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("User with name " + username + " not found.",e);
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
+}
