@@ -1,3 +1,10 @@
 {
-  return "Default Connection Provider";
+  try {
+    ConnectionPoolDefinitionIF poolDef=ProxoolFacade.getConnectionPoolDefinition("openfire");
+    SnapshotIF poolStats=ProxoolFacade.getSnapshot("openfire",true);
+    return poolDef.getMinimumConnectionCount() + "," + poolDef.getMinimumConnectionCount()+ ","+ poolStats.getAvailableConnectionCount()+ ","+ poolStats.getActiveConnectionCount();
+  }
+ catch (  ProxoolException e) {
+    return "Default Connection Provider";
+  }
 }
