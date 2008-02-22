@@ -1,7 +1,10 @@
 {
   try {
-    XMPPServerInfo serverInfo=XMPPServer.getInstance().getServerInfo();
     List<String> bindInterfaces=getServerInterfaces();
+    if (bindInterfaces.size() == 0) {
+      return;
+    }
+    XMPPServerInfo serverInfo=XMPPServer.getInstance().getServerInfo();
     String path=IM_URL_PREFIX + "configureComponent/" + serverInfo.getXMPPDomain()+ "/"+ WSUtils.marshallList(bindInterfaces)+ "/"+ String.valueOf(ExternalComponentManager.getServicePort());
     executeRequest(GET,path);
     TaskEngine.getInstance().cancelScheduledTask(configClearspaceTask);

@@ -10,29 +10,31 @@
   int adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
   int adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
   if (bindInterface == null) {
-    Enumeration<NetworkInterface> nets=null;
     try {
-      nets=NetworkInterface.getNetworkInterfaces();
+      Enumeration<NetworkInterface> nets=NetworkInterface.getNetworkInterfaces();
+      for (      NetworkInterface netInterface : Collections.list(nets)) {
+        Enumeration<InetAddress> addresses=netInterface.getInetAddresses();
+        for (        InetAddress address : Collections.list(addresses)) {
+          if ("127.0.0.1".equals(address.getHostAddress())) {
+            continue;
+          }
+          if (address.getHostAddress().startsWith("0.")) {
+            continue;
+          }
+          Socket socket=new Socket();
+          InetSocketAddress remoteAddress=new InetSocketAddress(address,adminPort > 0 ? adminPort : adminSecurePort);
+          try {
+            socket.connect(remoteAddress);
+            bindInterfaces.add(address.getHostAddress());
+            break;
+          }
+ catch (          IOException e) {
+          }
+        }
+      }
     }
  catch (    SocketException e) {
       return null;
-    }
-    for (    NetworkInterface netInterface : Collections.list(nets)) {
-      Enumeration<InetAddress> addresses=netInterface.getInetAddresses();
-      for (      InetAddress address : Collections.list(addresses)) {
-        if ("127.0.0.1".equals(address.getHostAddress())) {
-          continue;
-        }
-        Socket socket=new Socket();
-        InetSocketAddress remoteAddress=new InetSocketAddress(address,adminPort > 0 ? adminPort : adminSecurePort);
-        try {
-          socket.connect(remoteAddress);
-          bindInterfaces.add(address.getHostAddress());
-          break;
-        }
- catch (        IOException e) {
-        }
-      }
     }
   }
   return bindInterfaces;
