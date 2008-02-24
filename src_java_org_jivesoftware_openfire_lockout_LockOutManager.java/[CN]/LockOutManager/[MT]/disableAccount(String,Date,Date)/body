@@ -4,6 +4,8 @@
   }
   LockOutFlag flag=new LockOutFlag(username,startTime,endTime);
   provider.setDisabledStatus(flag);
-  lockOutCache.put(username,flag);
+  if (!provider.shouldNotBeCached()) {
+    lockOutCache.put(username,flag);
+  }
   LockOutEventDispatcher.accountLocked(flag);
 }

@@ -3,6 +3,8 @@
     throw new UnsupportedOperationException();
   }
   provider.unsetDisabledStatus(username);
-  lockOutCache.remove(username);
+  if (!provider.shouldNotBeCached()) {
+    lockOutCache.remove(username);
+  }
   LockOutEventDispatcher.accountUnlocked(username);
 }

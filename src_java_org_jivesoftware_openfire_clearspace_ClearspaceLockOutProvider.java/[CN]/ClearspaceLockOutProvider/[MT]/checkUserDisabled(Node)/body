@@ -10,7 +10,10 @@
       return new LockOutFlag(username,null,null);
     }
   }
- catch (  Exception e) {
+ catch (  NotLockedOutException e) {
+    throw e;
+  }
+catch (  Exception e) {
     Log.error("Error while looking up user's disabled status from Clearspace: ",e);
     throw new NotLockedOutException();
   }
