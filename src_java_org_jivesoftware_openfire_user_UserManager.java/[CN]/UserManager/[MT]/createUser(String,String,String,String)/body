@@ -8,6 +8,12 @@
  catch (  StringprepException se) {
     throw new IllegalArgumentException("Invalid username: " + username,se);
   }
+  if (provider.isNameRequired() && (name == null || name.equals(""))) {
+    throw new IllegalArgumentException("Invalid or empty name specified with provider that requires name");
+  }
+  if (provider.isEmailRequired() && !StringUtils.isValidEmailAddress(email)) {
+    throw new IllegalArgumentException("Invalid or empty email address specified with provider that requires email address");
+  }
   User user=provider.createUser(username,password,name,email);
   userCache.put(username,user);
   Map<String,Object> params=Collections.emptyMap();

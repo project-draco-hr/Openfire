@@ -2,6 +2,9 @@
   if (UserManager.getUserProvider().isReadOnly()) {
     throw new UnsupportedOperationException("User provider is read-only.");
   }
+  if ((name == null || name.equals("")) && UserManager.getUserProvider().isNameRequired()) {
+    throw new IllegalArgumentException("User provider requires name.");
+  }
   try {
     String originalName=this.name;
     UserManager.getUserProvider().setName(username,name);

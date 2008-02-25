@@ -2,6 +2,9 @@
   if (UserManager.getUserProvider().isReadOnly()) {
     throw new UnsupportedOperationException("User provider is read-only.");
   }
+  if (UserManager.getUserProvider().isEmailRequired() && !StringUtils.isValidEmailAddress(email)) {
+    throw new IllegalArgumentException("User provider requires email address.");
+  }
   try {
     String originalEmail=this.email;
     UserManager.getUserProvider().setEmail(username,email);

@@ -24,10 +24,16 @@
     field=new XFormFieldImpl("name");
     field.setType(FormField.TYPE_TEXT_SINGLE);
     field.setLabel("Full name");
+    if (UserManager.getUserProvider().isNameRequired()) {
+      field.setRequired(true);
+    }
     registrationForm.addField(field);
     field=new XFormFieldImpl("email");
     field.setType(FormField.TYPE_TEXT_SINGLE);
     field.setLabel("Email");
+    if (UserManager.getUserProvider().isEmailRequired()) {
+      field.setRequired(true);
+    }
     registrationForm.addField(field);
     field=new XFormFieldImpl("password");
     field.setType(FormField.TYPE_TEXT_PRIVATE);

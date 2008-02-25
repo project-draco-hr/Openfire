@@ -15,6 +15,9 @@
           if (UserManager.getUserProvider().isReadOnly()) {
             return false;
           }
+          if (UserManager.getUserProvider().isNameRequired() || UserManager.getUserProvider().isEmailRequired()) {
+            return false;
+          }
           try {
             UserManager.getUserProvider().createUser(username,StringUtils.randomString(8),null,null);
             if (Log.isDebugEnabled()) {

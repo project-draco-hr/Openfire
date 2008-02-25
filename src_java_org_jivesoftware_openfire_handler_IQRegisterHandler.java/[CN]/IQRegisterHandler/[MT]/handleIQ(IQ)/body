@@ -121,6 +121,9 @@
         if (email == null || "".equals(email)) {
           email=" ";
         }
+        if (username != null) {
+          Stringprep.nodeprep(username);
+        }
         if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
           boolean onlyPassword=false;
           if (iqElement.elements().size() == 2 && iqElement.element("username") != null && iqElement.element("password") != null) {
@@ -193,10 +196,15 @@ catch (    UserNotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.bad_request);
     }
-catch (    IllegalArgumentException e) {
+catch (    StringprepException e) {
       reply=IQ.createResultIQ(packet);
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.jid_malformed);
+    }
+catch (    IllegalArgumentException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(PacketError.Condition.not_acceptable);
     }
 catch (    UnsupportedOperationException e) {
       reply=IQ.createResultIQ(packet);
