@@ -5,8 +5,18 @@
       return;
     }
     XMPPServerInfo serverInfo=XMPPServer.getInstance().getServerInfo();
-    String path=IM_URL_PREFIX + "configureComponent/" + serverInfo.getXMPPDomain()+ "/"+ WSUtils.marshallList(bindInterfaces)+ "/"+ String.valueOf(ExternalComponentManager.getServicePort());
-    executeRequest(GET,path);
+    String path=IM_URL_PREFIX + "configureComponent/";
+    Document groupDoc=DocumentHelper.createDocument();
+    Element rootE=groupDoc.addElement("configureComponent");
+    Element domainE=rootE.addElement("domain");
+    domainE.setText(serverInfo.getXMPPDomain());
+    for (    String bindInterface : bindInterfaces) {
+      Element hostsE=rootE.addElement("hosts");
+      hostsE.setText(bindInterface);
+    }
+    Element portE=rootE.addElement("port");
+    portE.setText(String.valueOf(ExternalComponentManager.getServicePort()));
+    executeRequest(POST,path,rootE.asXML());
     TaskEngine.getInstance().cancelScheduledTask(configClearspaceTask);
     configClearspaceTask=null;
   }

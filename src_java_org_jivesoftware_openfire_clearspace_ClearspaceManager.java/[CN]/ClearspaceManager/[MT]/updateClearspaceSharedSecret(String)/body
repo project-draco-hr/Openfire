@@ -1,7 +1,10 @@
 {
   try {
-    String path=IM_URL_PREFIX + "updateSharedSecret/" + newSecret;
-    executeRequest(GET,path);
+    String path=IM_URL_PREFIX + "updateSharedSecret/";
+    Document groupDoc=DocumentHelper.createDocument();
+    Element rootE=groupDoc.addElement("updateSharedSecret");
+    rootE.addElement("newSecret").setText(newSecret);
+    executeRequest(POST,path,groupDoc.asXML());
   }
  catch (  UnauthorizedException ue) {
   }
