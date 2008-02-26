@@ -40,6 +40,9 @@ String body=method.getResponseBodyAsString();
 if (Log.isDebugEnabled()) {
 Log.debug("Outgoing REST call results: " + body);
 }
+if (method.getStatusCode() != 200) {
+throw new ConnectException("Error connecting to Clearspace, http status code: " + method.getStatusCode());
+}
 Element response=localParser.get().parseDocument(body).getRootElement();
 checkFault(response);
 return response;

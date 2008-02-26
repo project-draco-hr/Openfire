@@ -1,0 +1,19 @@
+{
+  this.uri=properties.get("clearspace.uri");
+  if (uri != null) {
+    if (!this.uri.endsWith("/")) {
+      this.uri=this.uri + "/";
+    }
+    updateHostPort();
+  }
+  sharedSecret=properties.get("clearspace.sharedSecret");
+  userIDCache=Collections.synchronizedMap(new HashMap<String,Long>());
+  groupIDCache=Collections.synchronizedMap(new HashMap<String,Long>());
+  if (Log.isDebugEnabled()) {
+    StringBuilder buf=new StringBuilder();
+    buf.append("Created new ClearspaceManager() instance, fields:\n");
+    buf.append("\t URI: ").append(uri).append("\n");
+    buf.append("\t sharedSecret: ").append(sharedSecret).append("\n");
+    Log.debug("ClearspaceManager: " + buf.toString());
+  }
+}
