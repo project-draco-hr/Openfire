@@ -5,5 +5,20 @@
     }
     username=username.substring(0,username.lastIndexOf("@"));
   }
-  return getUserID(XMPPServer.getInstance().createJID(username,null));
+  if (userIDCache.containsKey(username)) {
+    return userIDCache.get(username);
+  }
+  try {
+    String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/" + username;
+    Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
+    Long id=Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
+    userIDCache.put(username,id);
+    return id;
+  }
+ catch (  UserNotFoundException unfe) {
+    throw unfe;
+  }
+catch (  Exception e) {
+    throw new UserNotFoundException("Unexpected error",e);
+  }
 }

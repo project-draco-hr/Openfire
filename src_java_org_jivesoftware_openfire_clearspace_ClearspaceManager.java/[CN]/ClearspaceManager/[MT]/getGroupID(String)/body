@@ -1,8 +1,13 @@
 {
+  if (groupIDCache.containsKey(groupname)) {
+    return groupIDCache.get(groupname);
+  }
   try {
     String path=ClearspaceGroupProvider.URL_PREFIX + "groups/" + groupname;
     Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
-    return Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
+    Long id=Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
+    groupIDCache.put(groupname,id);
+    return id;
   }
  catch (  GroupNotFoundException gnfe) {
     throw gnfe;

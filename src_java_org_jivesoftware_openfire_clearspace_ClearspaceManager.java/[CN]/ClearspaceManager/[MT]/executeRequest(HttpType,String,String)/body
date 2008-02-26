@@ -1,5 +1,7 @@
 {
-  Log.debug("Outgoing REST call [" + type + "] to "+ urlSuffix+ ": "+ xmlParams);
+  if (Log.isDebugEnabled()) {
+    Log.debug("Outgoing REST call [" + type + "] to "+ urlSuffix+ ": "+ xmlParams);
+  }
   String wsUrl=getConnectionURI() + WEBSERVICES_PATH + urlSuffix;
   String secret=getSharedSecret();
   HttpClient client=new HttpClient();
@@ -35,7 +37,9 @@ method.setDoAuthentication(true);
 try {
 client.executeMethod(method);
 String body=method.getResponseBodyAsString();
+if (Log.isDebugEnabled()) {
 Log.debug("Outgoing REST call results: " + body);
+}
 Element response=localParser.get().parseDocument(body).getRootElement();
 checkFault(response);
 return response;
