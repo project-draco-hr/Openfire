@@ -1,79 +1,46 @@
 {
-  Log.debug("Saving VCARD: " + vCardElement.asXML());
-  Document profilesDoc=DocumentHelper.createDocument();
-  Element rootE=profilesDoc.addElement("setProfile");
-  try {
-    long userID=manager.getUserID(username);
-    rootE.addElement("userID").setText(String.valueOf(userID));
-    Element profiles=rootE.addElement("profiles");
-    addNotEmptyProfile(vCardElement,"TITLE",CS_FIELD_ID_TITLE,profiles);
-    Element tmpElement=vCardElement.element("ORG");
-    if (tmpElement != null) {
-      addNotEmptyProfile(tmpElement,"ORGUNIT",CS_FIELD_ID_DEPARTMENT,profiles);
-    }
-    List<Element> addressElements=(List<Element>)vCardElement.elements("ADR");
-    if (addressElements != null) {
-      for (      Element address : addressElements) {
-        if (address.element("WORK") != null) {
-          addProfile(CS_FIELD_ID_WORK_ADDRESS,marshallAddress(address),profiles);
-        }
- else         if (address.element("HOME") != null) {
-          addProfile(CS_FIELD_ID_HOME_ADDRESS,marshallAddress(address),profiles);
-        }
-      }
-    }
-    addNotEmptyProfile(vCardElement,"URL",CS_FIELD_ID_URL,profiles);
-    List<Element> emailsElement=(List<Element>)vCardElement.elements("EMAIL");
-    if (emailsElement != null) {
-      for (      Element email : emailsElement) {
-        if (email.element("PREF") == null) {
-          addNotEmptyProfile(email,"USERID",CS_FIELD_ID_ALTERNATE_EMAIL,profiles);
-        }
- else {
-          String emailAddress=email.elementTextTrim("USERID");
-          if (emailAddress != null && !"".equals(emailAddress)) {
-            UserManager.getUserProvider().setEmail(username,emailAddress);
-          }
-        }
-      }
-    }
-    String fullName=vCardElement.elementTextTrim("FN");
-    if (fullName != null && !"".equals(fullName)) {
-      UserManager.getUserProvider().setName(username,fullName);
-    }
-    try {
-      String path=PROFILE_URL_PREFIX + "profiles";
-      Element group=manager.executeRequest(POST,path,rootE.asXML());
-    }
- catch (    Exception e) {
-      throw new UnsupportedOperationException("Unexpected error",e);
-    }
-    try {
-      Element currAvatar=getAvatar(userID);
-      String[] currAvatarData=getAvatarContentTypeAndImage(currAvatar);
-      Element photoElement=vCardElement.element("PHOTO");
-      if (photoElement != null) {
-        String contentType=photoElement.elementTextTrim("TYPE");
-        String data=photoElement.elementTextTrim("BINVAL");
-        if (contentType == null && currAvatarData[0] != null) {
-          long avatarID=createAvatar(contentType,data,userID,username);
-          setActiveAvatar(userID,avatarID);
-        }
- else         if (contentType != null && currAvatarData[0] == null) {
-          setActiveAvatar(userID,-1);
-        }
- else         if ((contentType != null && !contentType.equals(currAvatarData[0])) || (data != null && !data.equals(currAvatarData[1]))) {
-          long avatarID=createAvatar(contentType,data,userID,username);
-          setActiveAvatar(userID,avatarID);
-        }
-      }
-    }
- catch (    Exception e) {
-      throw new UnsupportedOperationException("Error loading the user",e);
+  if (Log.isDebugEnabled()) {
+    Log.debug("Saving VCARD: " + vCardElement.asXML());
+  }
+  if (!fieldsIDLoaded) {
+    loadDefaultProfileFields();
+    if (!fieldsIDLoaded) {
+      throw new UnsupportedOperationException("Error loading the profiles IDs");
     }
   }
- catch (  UserNotFoundException e) {
-    throw new UnsupportedOperationException("User not found",e);
+  try {
+    long userID=manager.getUserID(username);
+    ClearspaceUserProvider userProvider=(ClearspaceUserProvider)UserManager.getUserProvider();
+    Element userUpdateParams=userProvider.getUserUpdateParams(username);
+    Element userElement=userUpdateParams.element("user");
+    Element profilesUpdateParams=getProfilesUpdateParams(userID);
+    Element avatarCreateParams=getAvatarCreateParams(userID);
+    ClearspaceVCardTranslator.Action[] actions;
+    actions=ClearspaceVCardTranslator.getInstance().translateVCard(vCardElement,profilesUpdateParams,userElement,avatarCreateParams);
+    if ((actions[1] != NO_ACTION && userProvider.isReadOnly()) || (actions[2] != NO_ACTION && isAvatarReadOnly())) {
+      throw new UnsupportedOperationException("ClearspaceVCardProvider: Invalid vcard changes.");
+    }
+    if (actions[0] != NO_ACTION) {
+      updateProfiles(profilesUpdateParams);
+    }
+    if (actions[1] != NO_ACTION) {
+      userProvider.updateUser(userUpdateParams);
+    }
+    if (actions[2] != NO_ACTION) {
+      if (actions[2] == DELETE) {
+        setActiveAvatar(userID,-1);
+      }
+ else {
+        long avatarID=createAvatar(avatarCreateParams);
+        setActiveAvatar(userID,avatarID);
+      }
+    }
+  }
+ catch (  UnsupportedOperationException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Error saving the VCard",e);
   }
   return loadVCard(username);
 }

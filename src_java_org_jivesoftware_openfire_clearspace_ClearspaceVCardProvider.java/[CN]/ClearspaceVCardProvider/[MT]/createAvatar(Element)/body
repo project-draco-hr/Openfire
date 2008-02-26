@@ -1,0 +1,10 @@
+{
+  try {
+    String path=AVATAR_URL_PREFIX + "createAvatar";
+    Element avatar=manager.executeRequest(POST,path,avatarCreateParams.asXML());
+    return Long.valueOf(avatar.element("return").element("WSAvatar").elementTextTrim("id"));
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Error creating the avatar",e);
+  }
+}

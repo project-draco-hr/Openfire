@@ -1,14 +1,10 @@
 {
-  try {
-    Element user=getUserByUsername(username);
-    Element modifiedUser=modifyUser(user.element("return"),"creationDate",WSUtils.formatDate(creationDate));
-    String path=USER_URL_PREFIX + "users";
-    manager.executeRequest(PUT,path,modifiedUser.asXML());
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException();
   }
- catch (  UserNotFoundException e) {
-    throw new UserNotFoundException("User with name " + username + " not found.");
-  }
-catch (  Exception e) {
-    throw new UnsupportedOperationException("Unexpected error",e);
-  }
+  Element userUpdateParams=getUserUpdateParams(username);
+  String[] path=new String[]{"user","creationDate"};
+  String newValue=WSUtils.formatDate(creationDate);
+  WSUtils.modifyElementText(userUpdateParams,path,newValue);
+  updateUser(userUpdateParams);
 }

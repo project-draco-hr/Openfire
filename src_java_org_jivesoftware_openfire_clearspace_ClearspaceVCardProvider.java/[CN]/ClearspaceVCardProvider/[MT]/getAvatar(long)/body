@@ -1,5 +1,9 @@
 {
-  String path=AVATAR_URL_PREFIX + "activeAvatar/" + userID;
-  Element avatar=manager.executeRequest(GET,path);
-  return avatar;
+  try {
+    String path=AVATAR_URL_PREFIX + "activeAvatar/" + userID;
+    return manager.executeRequest(GET,path);
+  }
+ catch (  Exception e) {
+    throw new UnsupportedOperationException("Error getting the avatar of user: " + userID,e);
+  }
 }

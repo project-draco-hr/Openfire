@@ -1,0 +1,12 @@
+{
+  try {
+    String path=USER_URL_PREFIX + "users";
+    manager.executeRequest(PUT,path,userUpdateParams.asXML());
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("User not found.");
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Unexpected error",e);
+  }
+}

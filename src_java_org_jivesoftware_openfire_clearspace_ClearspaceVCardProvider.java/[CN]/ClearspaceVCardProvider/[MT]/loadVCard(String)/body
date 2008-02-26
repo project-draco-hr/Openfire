@@ -1,13 +1,21 @@
 {
+  if (!fieldsIDLoaded) {
+    loadDefaultProfileFields();
+    if (!fieldsIDLoaded) {
+      throw new UnsupportedOperationException("Error loading the profiles IDs");
+    }
+  }
   try {
     User user=UserManager.getInstance().getUser(username);
     long userID=manager.getUserID(username);
-    String path=PROFILE_URL_PREFIX + "profiles/" + userID;
-    Element profile=manager.executeRequest(GET,path);
+    Element profiles=getProfiles(userID);
     Element avatar=getAvatar(userID);
-    return translate(profile,user,avatar);
+    return ClearspaceVCardTranslator.getInstance().translateClearspaceInfo(profiles,user,avatar);
   }
- catch (  Exception e) {
-    throw new UnsupportedOperationException("Error loading the user",e);
+ catch (  UnsupportedOperationException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new UnsupportedOperationException("Error loading the vCard",e);
   }
 }
