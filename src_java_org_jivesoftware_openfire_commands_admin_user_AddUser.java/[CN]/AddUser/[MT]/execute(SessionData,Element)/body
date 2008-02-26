@@ -32,6 +32,11 @@
   String surName=get(data,"surname",0);
   String name=(givenName == null ? "" : givenName) + (surName == null ? "" : surName);
   name=(name.equals("") ? null : name);
+  if (UserManager.getUserProvider().isEmailRequired() && !StringUtils.isValidEmailAddress(email)) {
+    note.addAttribute("type","error");
+    note.setText("No email was specified.");
+    return;
+  }
   try {
     UserManager.getInstance().createUser(account.getNode(),password,name,email);
   }
