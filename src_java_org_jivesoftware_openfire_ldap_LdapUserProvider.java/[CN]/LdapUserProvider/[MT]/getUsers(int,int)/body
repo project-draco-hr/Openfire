@@ -1,11 +1,20 @@
 {
   List<String> usernames=new ArrayList<String>();
+  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
+  Boolean clientSideSort=JiveGlobals.getXMLProperty("ldap.clientSideSorting",false);
   LdapContext ctx=null;
   LdapContext ctx2=null;
   try {
     ctx=manager.getContext(baseDN);
-    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
-    ctx.setRequestControls(searchControl);
+    List<Control> tmpRequestControls=new ArrayList<Control>();
+    if (!clientSideSort) {
+      tmpRequestControls.add(new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL));
+    }
+    if (pageSize > -1) {
+      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+    ctx.setRequestControls(requestControls);
     SearchControls searchControls=new SearchControls();
     if (manager.isSubTreeSearch()) {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -14,7 +23,7 @@
       searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
-    if (!(Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting")))) {
+    if (!clientSideSort) {
       searchControls.setCountLimit(startIndex + numResults);
     }
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
@@ -22,11 +31,26 @@
     NamingEnumeration answer2=null;
     if (alternateBaseDN != null) {
       ctx2=manager.getContext(alternateBaseDN);
-      ctx2.setRequestControls(searchControl);
+      ctx2.setRequestControls(requestControls);
       answer2=ctx2.search("",filter,searchControls);
     }
-    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+    int skip=-1;
+    int lastRes=-1;
+    if (!clientSideSort) {
+      skip=startIndex;
+      lastRes=startIndex + numResults;
+    }
+    byte[] cookie=null;
+    int count=0;
+    do {
       while (answer.hasMoreElements()) {
+        count++;
+        if (skip > -1 && count < skip) {
+          continue;
+        }
+        if (lastRes > -1 && count > lastRes) {
+          break;
+        }
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
         String suffix=manager.getUsernameSuffix();
         if (suffix.length() > 0 && username.endsWith(suffix)) {
@@ -34,8 +58,30 @@
         }
         usernames.add(JID.escapeNode(username));
       }
-      if (alternateBaseDN != null) {
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+            break;
+          }
+        }
+      }
+    }
+ while (cookie != null);
+    if (count <= lastRes && alternateBaseDN != null) {
+      cookie=null;
+      do {
         while (answer2.hasMoreElements()) {
+          count++;
+          if (skip > -1 && count < skip) {
+            continue;
+          }
+          if (lastRes > -1 && count > lastRes) {
+            break;
+          }
           String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
           String suffix=manager.getUsernameSuffix();
           if (suffix.length() > 0 && username.endsWith(suffix)) {
@@ -43,44 +89,24 @@
           }
           usernames.add(JID.escapeNode(username));
         }
+        Control[] controls=ctx.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              break;
+            }
+          }
+        }
       }
+ while (cookie != null);
+    }
+    if (clientSideSort) {
       Collections.sort(new ArrayList<String>(usernames));
       int endIndex=Math.min(startIndex + numResults,usernames.size() - 1);
       usernames=usernames.subList(startIndex,endIndex);
-    }
- else {
-      for (int i=0; i < startIndex; i++) {
-        if (answer.hasMoreElements()) {
-          answer.next();
-        }
- else         if (alternateBaseDN != null && answer2.hasMoreElements()) {
-          answer2.next();
-        }
- else {
-          return Collections.emptyList();
-        }
-      }
-      for (int i=0; i < numResults; i++) {
-        if (answer.hasMoreElements()) {
-          String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
-          String suffix=manager.getUsernameSuffix();
-          if (suffix.length() > 0 && username.endsWith(suffix)) {
-            username=username.substring(0,username.length() - suffix.length());
-          }
-          usernames.add(JID.escapeNode(username));
-        }
- else         if (alternateBaseDN != null && answer2.hasMoreElements()) {
-          String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
-          String suffix=manager.getUsernameSuffix();
-          if (suffix.length() > 0 && username.endsWith(suffix)) {
-            username=username.substring(0,username.length() - suffix.length());
-          }
-          usernames.add(JID.escapeNode(username));
-        }
- else {
-          break;
-        }
-      }
     }
     answer.close();
   }

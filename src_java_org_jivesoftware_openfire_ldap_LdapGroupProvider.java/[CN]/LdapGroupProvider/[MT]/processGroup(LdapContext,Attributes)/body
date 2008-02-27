@@ -1,0 +1,83 @@
+{
+  XMPPServer server=XMPPServer.getInstance();
+  String serverName=server.getServerInfo().getXMPPDomain();
+  Pattern pattern=Pattern.compile("(?i)(^" + manager.getUsernameField() + "=)([^,]+)(.+)");
+  SearchControls searchControls=new SearchControls();
+  searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
+  if (manager.isSubTreeSearch()) {
+    searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+  }
+ else {
+    searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+  }
+  String name;
+  String description;
+  try {
+    name=((String)((a.get(manager.getGroupNameField())).get()));
+  }
+ catch (  Exception e) {
+    name="";
+  }
+  try {
+    description=((String)((a.get(manager.getGroupDescriptionField())).get()));
+  }
+ catch (  Exception e) {
+    description="";
+  }
+  Set<JID> members=new TreeSet<JID>();
+  Attribute memberField=a.get(manager.getGroupMemberField());
+  if (memberField != null) {
+    NamingEnumeration ne=memberField.getAll();
+    while (ne.hasMore()) {
+      String username=(String)ne.next();
+      if (!manager.isPosixMode()) {
+        try {
+          Matcher matcher=pattern.matcher(username);
+          if (matcher.matches() && matcher.groupCount() == 3) {
+            username=matcher.group(2);
+          }
+ else {
+            LdapName ldapName=new LdapName(username);
+            String userDNPart=ldapName.get(ldapName.size() - 1);
+            NamingEnumeration usrAnswer=ctx.search("",userDNPart,searchControls);
+            if (usrAnswer != null && usrAnswer.hasMoreElements()) {
+              username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+            }
+            usrAnswer.close();
+          }
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+      try {
+        JID userJID;
+        int position=username.indexOf("@" + serverName);
+        if (position == -1) {
+          String escapedUsername=JID.escapeNode(username);
+          if (!escapedUsername.equals(username)) {
+            userManager.getUser(escapedUsername);
+          }
+          userJID=server.createJID(escapedUsername,null);
+        }
+ else {
+          String node=username.substring(0,position);
+          String escapedUsername=JID.escapeNode(node);
+          userJID=new JID(escapedUsername + "@" + serverName);
+        }
+        members.add(userJID);
+      }
+ catch (      UserNotFoundException e) {
+        if (manager.isDebugEnabled()) {
+          Log.debug("LdapGroupProvider: User not found: " + username);
+        }
+      }
+    }
+    ne.close();
+  }
+  if (manager.isDebugEnabled()) {
+    Log.debug("LdapGroupProvider: Adding group \"" + name + "\" with "+ members.size()+ " members.");
+  }
+  Collection<JID> admins=Collections.emptyList();
+  return new Group(name,description,members,admins);
+}

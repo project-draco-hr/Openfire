@@ -1,0 +1,18 @@
+{
+  try {
+    findGroupDN(groupname,baseDN);
+    return baseDN;
+  }
+ catch (  Exception e) {
+    try {
+      if (alternateBaseDN != null) {
+        findGroupDN(groupname,alternateBaseDN);
+        return alternateBaseDN;
+      }
+    }
+ catch (    Exception ex) {
+      Log.debug(ex);
+    }
+  }
+  return null;
+}

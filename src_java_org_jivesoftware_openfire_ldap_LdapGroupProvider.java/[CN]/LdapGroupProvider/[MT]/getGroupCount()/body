@@ -2,10 +2,21 @@
   if (manager.isDebugEnabled()) {
     Log.debug("LdapGroupProvider: Trying to get the number of groups in the system.");
   }
+  if (groupCount != -1 && System.currentTimeMillis() < expiresStamp) {
+    return groupCount;
+  }
   int count=0;
+  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
   LdapContext ctx=null;
+  LdapContext ctx2=null;
   try {
-    ctx=manager.getContext();
+    ctx=manager.getContext(baseDN);
+    List<Control> tmpRequestControls=new ArrayList<Control>();
+    if (pageSize > -1) {
+      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+    ctx.setRequestControls(requestControls);
     SearchControls searchControls=new SearchControls();
     if (manager.isSubTreeSearch()) {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -16,9 +27,47 @@
     searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
     String filter=MessageFormat.format(manager.getGroupSearchFilter(),"*");
     NamingEnumeration answer=ctx.search("",filter,searchControls);
-    while (answer.hasMoreElements()) {
-      answer.next();
-      count++;
+    byte[] cookie=null;
+    do {
+      while (answer.hasMoreElements()) {
+        answer.next();
+        count++;
+      }
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+            break;
+          }
+        }
+      }
+    }
+ while (cookie != null);
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      answer=ctx2.search("",filter,searchControls);
+      cookie=null;
+      do {
+        while (answer.hasMoreElements()) {
+          count++;
+          answer.nextElement();
+        }
+        Control[] controls=ctx.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              break;
+            }
+          }
+        }
+      }
+ while (cookie != null);
     }
     answer.close();
   }
@@ -31,9 +80,15 @@
         ctx.setRequestControls(null);
         ctx.close();
       }
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
+      }
     }
  catch (    Exception ignored) {
     }
   }
+  this.groupCount=count;
+  this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
   return count;
 }

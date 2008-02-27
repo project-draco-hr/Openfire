@@ -101,7 +101,13 @@
   if (encloseUserStr != null) {
     encloseUserDN=Boolean.valueOf(encloseUserStr);
   }
+  encloseGroupDN=true;
+  String encloseGroupStr=properties.get("ldap.encloseGroupDN");
+  if (encloseGroupStr != null) {
+    encloseGroupDN=Boolean.valueOf(encloseGroupStr);
+  }
   userDNPattern=Pattern.compile("(=)([^\\\"][^=]*[^\\\"])(?:,|$)");
+  groupDNPattern=Pattern.compile("(=)([^\\\"][^=]*[^\\\"])(?:,|$)");
   this.initialContextFactory=properties.get("ldap.initialContextFactory");
   if (initialContextFactory != null) {
     try {

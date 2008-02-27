@@ -3,10 +3,17 @@
     return userCount;
   }
   int count=0;
-  DirContext ctx=null;
-  DirContext ctx2=null;
+  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
+  LdapContext ctx=null;
+  LdapContext ctx2=null;
   try {
     ctx=manager.getContext(baseDN);
+    List<Control> tmpRequestControls=new ArrayList<Control>();
+    if (pageSize > -1) {
+      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+    ctx.setRequestControls(requestControls);
     SearchControls searchControls=new SearchControls();
     if (manager.isSubTreeSearch()) {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -17,17 +24,47 @@
     searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
     String filter=MessageFormat.format(manager.getSearchFilter(),"*");
     NamingEnumeration answer=ctx.search("",filter,searchControls);
-    while (answer.hasMoreElements()) {
-      count++;
-      answer.nextElement();
-    }
-    if (alternateBaseDN != null) {
-      ctx2=manager.getContext(alternateBaseDN);
-      answer=ctx2.search("",filter,searchControls);
+    byte[] cookie=null;
+    do {
       while (answer.hasMoreElements()) {
         count++;
         answer.nextElement();
       }
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+            break;
+          }
+        }
+      }
+    }
+ while (cookie != null);
+    if (alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      answer=ctx2.search("",filter,searchControls);
+      cookie=null;
+      do {
+        while (answer.hasMoreElements()) {
+          count++;
+          answer.nextElement();
+        }
+        Control[] controls=ctx.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              break;
+            }
+          }
+        }
+      }
+ while (cookie != null);
     }
     answer.close();
   }

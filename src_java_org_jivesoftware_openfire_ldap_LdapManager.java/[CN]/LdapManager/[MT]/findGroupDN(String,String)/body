@@ -1,0 +1,66 @@
+{
+  boolean debug=Log.isDebugEnabled();
+  if (debug) {
+    Log.debug("LdapManager: Trying to find a groups's DN based on it's groupname. " + groupNameField + ": "+ groupname+ ", Base DN: "+ baseDN+ "...");
+  }
+  DirContext ctx=null;
+  try {
+    ctx=getContext(baseDN);
+    if (debug) {
+      Log.debug("LdapManager: Starting LDAP search...");
+    }
+    SearchControls constraints=new SearchControls();
+    if (subTreeSearch) {
+      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    constraints.setReturningAttributes(new String[]{groupNameField});
+    String filter=MessageFormat.format(getGroupSearchFilter(),groupname);
+    NamingEnumeration answer=ctx.search("",filter,constraints);
+    if (debug) {
+      Log.debug("LdapManager: ... search finished");
+    }
+    if (answer == null || !answer.hasMoreElements()) {
+      if (debug) {
+        Log.debug("LdapManager: Group DN based on groupname '" + groupname + "' not found.");
+      }
+      throw new GroupNotFoundException("Groupname " + groupname + " not found");
+    }
+    String groupDN=((SearchResult)answer.next()).getName();
+    if (answer.hasMoreElements()) {
+      if (debug) {
+        Log.debug("LdapManager: Search for groupDN based on groupname '" + groupname + "' found multiple "+ "responses, throwing exception.");
+      }
+      throw new GroupNotFoundException("LDAP groupname lookup for " + groupname + " matched multiple entries.");
+    }
+    answer.close();
+    if (groupDN.startsWith("ldap://")) {
+      groupDN=groupDN.replace("," + baseDN,"");
+      groupDN=groupDN.substring(groupDN.lastIndexOf("/") + 1);
+      groupDN=java.net.URLDecoder.decode(groupDN,"UTF-8");
+    }
+    if (encloseGroupDN) {
+      Matcher matcher=groupDNPattern.matcher(groupDN);
+      groupDN=matcher.replaceAll("$1\"$2\",");
+      if (groupDN.endsWith(",")) {
+        groupDN=groupDN.substring(0,groupDN.length() - 1);
+      }
+    }
+    return groupDN;
+  }
+ catch (  Exception e) {
+    if (debug) {
+      Log.debug("LdapManager: Exception thrown when searching for groupDN based on groupname '" + groupname + "'",e);
+    }
+    throw e;
+  }
+ finally {
+    try {
+      ctx.close();
+    }
+ catch (    Exception ignored) {
+    }
+  }
+}

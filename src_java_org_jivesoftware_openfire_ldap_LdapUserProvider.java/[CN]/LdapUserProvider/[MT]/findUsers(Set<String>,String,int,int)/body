@@ -1,17 +1,29 @@
 {
-  if (fields.isEmpty()) {
+  if (fields.isEmpty() || query == null || "".equals(query)) {
     return Collections.emptyList();
   }
   if (!searchFields.keySet().containsAll(fields)) {
     throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
   }
+  if (!query.endsWith("*")) {
+    query=query + "*";
+  }
+  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
+  Boolean clientSideSort=JiveGlobals.getXMLProperty("ldap.clientSideSorting",false);
   List<String> usernames=new ArrayList<String>();
   LdapContext ctx=null;
   LdapContext ctx2=null;
   try {
     ctx=manager.getContext(baseDN);
-    Control[] searchControl=new Control[]{new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL)};
-    ctx.setRequestControls(searchControl);
+    List<Control> tmpRequestControls=new ArrayList<Control>();
+    if (!clientSideSort) {
+      tmpRequestControls.add(new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL));
+    }
+    if (pageSize > -1) {
+      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+    ctx.setRequestControls(requestControls);
     SearchControls searchControls=new SearchControls();
     if (manager.isSubTreeSearch()) {
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -37,46 +49,76 @@
     }
     filter.append(")");
     NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
-    NamingEnumeration answer2=null;
-    if (alternateBaseDN != null) {
-      ctx2=manager.getContext(alternateBaseDN);
-      ctx2.setRequestControls(searchControl);
-      answer2=ctx2.search("",filter.toString(),searchControls);
+    int skip=-1;
+    int lastRes=-1;
+    if (!clientSideSort) {
+      skip=startIndex;
+      lastRes=startIndex + numResults;
     }
-    for (int i=0; i < startIndex; i++) {
-      if (answer.hasMoreElements()) {
-        answer.next();
-      }
- else       if (alternateBaseDN != null && answer2.hasMoreElements()) {
-        answer2.next();
-      }
- else {
-        return Collections.emptyList();
-      }
-    }
-    for (int i=0; i < numResults; i++) {
-      if (answer.hasMoreElements()) {
+    byte[] cookie=null;
+    int count=0;
+    do {
+      while (answer.hasMoreElements()) {
+        count++;
+        if (skip > -1 && count < skip) {
+          continue;
+        }
+        if (lastRes > -1 && count > lastRes) {
+          break;
+        }
         String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
-        String suffix=manager.getUsernameSuffix();
-        if (suffix.length() > 0 && username.endsWith(suffix)) {
-          username=username.substring(0,username.length() - suffix.length());
-        }
         usernames.add(JID.escapeNode(username));
       }
- else       if (alternateBaseDN != null && answer2.hasMoreElements()) {
-        String username=(String)((SearchResult)answer2.next()).getAttributes().get(manager.getUsernameField()).get();
-        String suffix=manager.getUsernameSuffix();
-        if (suffix.length() > 0 && username.endsWith(suffix)) {
-          username=username.substring(0,username.length() - suffix.length());
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+            break;
+          }
         }
-        usernames.add(JID.escapeNode(username));
       }
- else {
-        break;
+    }
+ while (cookie != null);
+    if (count <= lastRes && alternateBaseDN != null) {
+      ctx2=manager.getContext(alternateBaseDN);
+      ctx2.setRequestControls(requestControls);
+      answer=ctx2.search("",filter.toString(),searchControls);
+      cookie=null;
+      do {
+        while (answer.hasMoreElements()) {
+          count++;
+          if (skip > -1 && count < skip) {
+            continue;
+          }
+          if (lastRes > -1 && count > lastRes) {
+            break;
+          }
+          String username=(String)((SearchResult)answer.next()).getAttributes().get(manager.getUsernameField()).get();
+          String suffix=manager.getUsernameSuffix();
+          if (suffix.length() > 0 && username.endsWith(suffix)) {
+            username=username.substring(0,username.length() - suffix.length());
+          }
+          usernames.add(JID.escapeNode(username));
+        }
+        Control[] controls=ctx.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              break;
+            }
+          }
+        }
       }
+ while (cookie != null);
     }
     answer.close();
-    if (Boolean.valueOf(JiveGlobals.getXMLProperty("ldap.clientSideSorting"))) {
+    if (clientSideSort) {
       Collections.sort(usernames);
     }
   }
