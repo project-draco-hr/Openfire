@@ -21,10 +21,10 @@
     fieldUsername.addValue(username);
     items.add(fieldUsername);
     XFormFieldImpl fieldName=new XFormFieldImpl(LocaleUtils.getLocalizedString("advance.user.search.name","search"));
-    fieldName.addValue(removeNull(user.getName()));
+    fieldName.addValue((user.isNameVisible() ? removeNull(user.getName()) : ""));
     items.add(fieldName);
     XFormFieldImpl fieldEmail=new XFormFieldImpl(LocaleUtils.getLocalizedString("advance.user.search.email","search"));
-    fieldEmail.addValue(removeNull(user.getEmail()));
+    fieldEmail.addValue((user.isEmailVisible() ? removeNull(user.getEmail()) : ""));
     items.add(fieldEmail);
     searchResults.addItemFields(items);
   }

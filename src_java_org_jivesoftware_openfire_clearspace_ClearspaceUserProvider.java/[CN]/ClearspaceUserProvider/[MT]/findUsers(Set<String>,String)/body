@@ -1,21 +1,15 @@
 {
-  Document groupDoc=DocumentHelper.createDocument();
-  Element rootE=groupDoc.addElement("searchProfile");
-  Element queryE=rootE.addElement("WSProfileSearchQuery");
-  Element keywords=queryE.addElement("keywords");
-  keywords.addText(query);
-  Element searchUsername=queryE.addElement("searchUsername");
-  searchUsername.addText("true");
-  Element searchName=queryE.addElement("searchName");
-  searchName.addText("true");
-  Element searchEmail=queryE.addElement("searchEmail");
-  searchEmail.addText("true");
-  Element searchProfile=queryE.addElement("searchProfile");
-  searchProfile.addText("false");
+  Element paramsE=DocumentHelper.createDocument().addElement("search");
+  Element queryE=paramsE.addElement("query");
+  queryE.addElement("keywords").addText(query);
+  queryE.addElement("searchUsername").addText("true");
+  queryE.addElement("searchName").addText("true");
+  queryE.addElement("searchEmail").addText("true");
+  queryE.addElement("searchProfile").addText("false");
   try {
     List<String> usernames=new ArrayList<String>();
     String path=SEARCH_URL_PREFIX + "searchProfile";
-    Element element=manager.executeRequest(GET,path);
+    Element element=manager.executeRequest(POST,path,paramsE.asXML());
     List<Node> userNodes=(List<Node>)element.selectNodes("return");
     for (    Node userNode : userNodes) {
       String username=userNode.selectSingleNode("username").getText();

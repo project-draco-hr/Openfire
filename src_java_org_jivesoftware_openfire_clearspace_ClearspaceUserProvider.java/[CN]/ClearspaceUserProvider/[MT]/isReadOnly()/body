@@ -1,6 +1,10 @@
 {
   if (readOnly == null) {
-    loadReadOnly();
+synchronized (this) {
+      if (readOnly == null) {
+        loadReadOnly();
+      }
+    }
   }
   return (readOnly == null ? false : readOnly);
 }
