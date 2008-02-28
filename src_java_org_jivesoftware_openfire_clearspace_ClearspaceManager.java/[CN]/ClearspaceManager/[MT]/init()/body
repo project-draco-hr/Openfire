@@ -7,8 +7,8 @@
     updateHostPort();
   }
   sharedSecret=properties.get("clearspace.sharedSecret");
-  userIDCache=Collections.synchronizedMap(new HashMap<String,Long>());
-  groupIDCache=Collections.synchronizedMap(new HashMap<String,Long>());
+  userIDCache=new DefaultCache<String,Long>("clearspace.userid",1000,JiveConstants.DAY);
+  groupIDCache=new DefaultCache<String,Long>("clearspace.groupid",1000,JiveConstants.DAY);
   if (Log.isDebugEnabled()) {
     StringBuilder buf=new StringBuilder();
     buf.append("Created new ClearspaceManager() instance, fields:\n");
