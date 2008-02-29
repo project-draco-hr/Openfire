@@ -1,8 +1,12 @@
 {
   if (!fieldsIDLoaded) {
-    loadDefaultProfileFields();
-    if (!fieldsIDLoaded) {
-      throw new UnsupportedOperationException("Error loading the profiles IDs");
+synchronized (this) {
+      if (!fieldsIDLoaded) {
+        loadDefaultProfileFields();
+        if (!fieldsIDLoaded) {
+          throw new UnsupportedOperationException("Error loading the profiles IDs");
+        }
+      }
     }
   }
   try {
