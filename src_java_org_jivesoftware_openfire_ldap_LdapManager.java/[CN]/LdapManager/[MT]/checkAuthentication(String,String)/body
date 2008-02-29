@@ -27,6 +27,9 @@
     if (followReferrals) {
       env.put(Context.REFERRAL,"follow");
     }
+    if (!followAliasReferrals) {
+      env.put("java.naming.ldap.derefAliases","never");
+    }
     if (debug) {
       Log.debug("LdapManager: Created context values, attempting to create context...");
     }
@@ -64,6 +67,9 @@
         }
         if (followReferrals) {
           env.put(Context.REFERRAL,"follow");
+        }
+        if (!followAliasReferrals) {
+          env.put("java.naming.ldap.derefAliases","never");
         }
         if (debug) {
           Log.debug("LdapManager: Created context values, attempting to create context...");
