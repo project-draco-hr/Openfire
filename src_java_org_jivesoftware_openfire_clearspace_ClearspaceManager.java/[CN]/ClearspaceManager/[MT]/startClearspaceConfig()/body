@@ -1,6 +1,9 @@
 {
-  if (configClearspaceTask == null) {
-    configClearspaceTask=new ConfigClearspaceTask();
-    TaskEngine.getInstance().schedule(configClearspaceTask,1,JiveConstants.MINUTE);
+  if (configClearspaceTask != null) {
+    configClearspaceTask.cancel();
+    Log.debug("Stopping previous configuration Clearspace task.");
   }
+  configClearspaceTask=new ConfigClearspaceTask();
+  TaskEngine.getInstance().schedule(configClearspaceTask,JiveConstants.SECOND * 10,JiveConstants.MINUTE);
+  Log.debug("Starting configuration Clearspace task in 10 seconds.");
 }

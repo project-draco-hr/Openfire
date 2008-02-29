@@ -47,7 +47,16 @@ Element response=localParser.get().parseDocument(body).getRootElement();
 checkFault(response);
 return response;
 }
-  finally {
+ catch (DocumentException e) {
+throw new ConnectException("Error parsing the response of Clearspace.",e);
+}
+catch (HttpException e) {
+throw new ConnectException("Error peforming http request to Clearspace",e);
+}
+catch (IOException e) {
+throw new ConnectException("Error peforming http request to Clearspace.",e);
+}
+ finally {
 method.releaseConnection();
 }
 }

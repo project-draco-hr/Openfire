@@ -1,9 +1,11 @@
 {
+  Log.debug("Starting Clearspace configuration.");
+  List<String> bindInterfaces=getServerInterfaces();
+  if (bindInterfaces.size() == 0) {
+    Log.debug("No bind interfaces found to config Clearspace");
+    throw new IllegalStateException("There are no binding interfaces.");
+  }
   try {
-    List<String> bindInterfaces=getServerInterfaces();
-    if (bindInterfaces.size() == 0) {
-      return;
-    }
     XMPPServerInfo serverInfo=XMPPServer.getInstance().getServerInfo();
     String path=IM_URL_PREFIX + "configureComponent/";
     Document groupDoc=DocumentHelper.createDocument();
@@ -16,7 +18,9 @@
     }
     Element portE=rootE.addElement("port");
     portE.setText(String.valueOf(ExternalComponentManager.getServicePort()));
+    Log.debug("Trying to configure Clearspace with: Domain: " + serverInfo.getXMPPDomain() + ", hosts: "+ bindInterfaces.toString()+ ", port: "+ port);
     executeRequest(POST,path,rootE.asXML());
+    Log.debug("Clearspace was configured, stopping the task.");
     TaskEngine.getInstance().cancelScheduledTask(configClearspaceTask);
     configClearspaceTask=null;
   }

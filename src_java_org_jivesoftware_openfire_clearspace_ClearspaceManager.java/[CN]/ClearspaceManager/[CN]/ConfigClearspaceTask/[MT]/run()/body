@@ -1,8 +1,12 @@
 {
   try {
+    Log.debug("Trying to configure Clearspace.");
     configClearspace();
   }
  catch (  UnauthorizedException e) {
-    Log.error("Unoauthorization problem trying to configure Clearspace",e);
+    Log.error("Unoauthorization problem trying to configure Clearspace, trying again in 1 minute",e);
+  }
+catch (  Exception e) {
+    Log.error("Unkown problem trying to configure Clearspace, trying again in 1 minute",e);
   }
 }
