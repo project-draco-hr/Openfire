@@ -28,6 +28,7 @@
       sslSocketAcceptor.getDefaultConfig().setThreadModel(ThreadModel.MANUAL);
       sslSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
       sslSocketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
+      sslSocketAcceptor.getFilterChain().addAfter("xmpp","outCap",new StalledSessionsFilter());
       SSLContext sslContext=SSLContext.getInstance(algorithm);
       KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
       keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());

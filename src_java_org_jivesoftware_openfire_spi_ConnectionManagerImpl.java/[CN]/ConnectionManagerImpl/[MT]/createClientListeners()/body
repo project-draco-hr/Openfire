@@ -9,5 +9,6 @@
     eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
     socketAcceptor.getDefaultConfig().setThreadModel(threadModel);
     socketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
+    socketAcceptor.getFilterChain().addAfter("xmpp","outCap",new StalledSessionsFilter());
   }
 }
