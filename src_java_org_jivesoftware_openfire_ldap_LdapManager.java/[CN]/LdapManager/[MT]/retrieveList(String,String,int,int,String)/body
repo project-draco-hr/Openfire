@@ -1,0 +1,121 @@
+{
+  List<String> results=new ArrayList<String>();
+  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
+  Boolean clientSideSort=JiveGlobals.getXMLProperty("ldap.clientSideSorting",false);
+  LdapContext ctx=null;
+  LdapContext ctx2=null;
+  try {
+    ctx=getContext(baseDN);
+    List<Control> tmpRequestControls=new ArrayList<Control>();
+    if (!clientSideSort) {
+      tmpRequestControls.add(new SortControl(new String[]{attribute},Control.NONCRITICAL));
+    }
+    if (pageSize > -1) {
+      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+    ctx.setRequestControls(requestControls);
+    SearchControls searchControls=new SearchControls();
+    if (isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{attribute});
+    int skip=-1;
+    int lastRes=-1;
+    if (!clientSideSort) {
+      skip=startIndex;
+      lastRes=startIndex + numResults;
+    }
+    byte[] cookie=null;
+    int count=0;
+    do {
+      NamingEnumeration answer=ctx.search("",searchFilter,searchControls);
+      while (answer.hasMoreElements()) {
+        count++;
+        if (skip > -1 && count < skip) {
+          continue;
+        }
+        if (lastRes > -1 && count > lastRes) {
+          break;
+        }
+        String result=(String)((SearchResult)answer.next()).getAttributes().get(attribute).get();
+        if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
+          result=result.substring(0,result.length() - suffixToTrim.length());
+        }
+        results.add(result);
+      }
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+            break;
+          }
+        }
+      }
+      answer.close();
+    }
+ while (cookie != null);
+    if (count <= lastRes && alternateBaseDN != null) {
+      ctx2=getContext(alternateBaseDN);
+      ctx2.setRequestControls(requestControls);
+      NamingEnumeration answer=ctx2.search("",searchFilter,searchControls);
+      cookie=null;
+      do {
+        while (answer.hasMoreElements()) {
+          count++;
+          if (skip > -1 && count < skip) {
+            continue;
+          }
+          if (lastRes > -1 && count > lastRes) {
+            break;
+          }
+          String result=(String)((SearchResult)answer.next()).getAttributes().get(attribute).get();
+          if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
+            result=result.substring(0,result.length() - suffixToTrim.length());
+          }
+          results.add(result);
+        }
+        Control[] controls=ctx.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              break;
+            }
+          }
+        }
+        answer.close();
+      }
+ while (cookie != null);
+    }
+    if (clientSideSort) {
+      Collections.sort(results);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return results;
+}

@@ -20,104 +20,13 @@
   if (username == null || "".equals(username)) {
     return Collections.emptyList();
   }
-  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
-  Boolean clientSideSort=JiveGlobals.getXMLProperty("ldap.clientSideSorting",false);
-  List<String> groupNames=new ArrayList<String>();
-  LdapContext ctx=null;
-  LdapContext ctx2=null;
-  try {
-    ctx=manager.getContext(baseDN);
-    List<Control> tmpRequestControls=new ArrayList<Control>();
-    if (!clientSideSort) {
-      tmpRequestControls.add(new SortControl(new String[]{manager.getUsernameField()},Control.NONCRITICAL));
-    }
-    if (pageSize > -1) {
-      tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
-    }
-    Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
-    ctx.setRequestControls(requestControls);
-    SearchControls searchControls=new SearchControls();
-    if (manager.isSubTreeSearch()) {
-      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-    }
- else {
-      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
-    }
-    searchControls.setReturningAttributes(new String[]{manager.getGroupNameField()});
-    StringBuilder filter=new StringBuilder();
-    filter.append("(&");
-    filter.append(MessageFormat.format(manager.getGroupSearchFilter(),"*"));
-    filter.append("(").append(manager.getGroupMemberField()).append("=").append(username);
-    filter.append("))");
-    if (Log.isDebugEnabled()) {
-      Log.debug("Trying to find group names for user: " + user + " using query: "+ filter.toString());
-    }
-    NamingEnumeration answer=ctx.search("",filter.toString(),searchControls);
-    byte[] cookie=null;
-    do {
-      while (answer.hasMoreElements()) {
-        String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
-        groupNames.add(JID.escapeNode(groupName));
-      }
-      Control[] controls=ctx.getResponseControls();
-      if (controls != null) {
-        for (        Control control : controls) {
-          if (control instanceof PagedResultsResponseControl) {
-            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
-            cookie=prrc.getCookie();
-            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
-            break;
-          }
-        }
-      }
-    }
- while (cookie != null);
-    if (alternateBaseDN != null) {
-      ctx2=manager.getContext(alternateBaseDN);
-      ctx2.setRequestControls(requestControls);
-      answer=ctx2.search("",filter.toString(),searchControls);
-      cookie=null;
-      do {
-        while (answer.hasMoreElements()) {
-          String groupName=(String)((SearchResult)answer.next()).getAttributes().get(manager.getGroupNameField()).get();
-          groupNames.add(JID.escapeNode(groupName));
-        }
-        Control[] controls=ctx.getResponseControls();
-        if (controls != null) {
-          for (          Control control : controls) {
-            if (control instanceof PagedResultsResponseControl) {
-              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
-              cookie=prrc.getCookie();
-              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
-              break;
-            }
-          }
-        }
-      }
- while (cookie != null);
-    }
-    answer.close();
-    if (clientSideSort) {
-      Collections.sort(groupNames);
-    }
+  StringBuilder filter=new StringBuilder();
+  filter.append("(&");
+  filter.append(MessageFormat.format(manager.getGroupSearchFilter(),"*"));
+  filter.append("(").append(manager.getGroupMemberField()).append("=").append(username);
+  filter.append("))");
+  if (Log.isDebugEnabled()) {
+    Log.debug("Trying to find group names for user: " + user + " using query: "+ filter.toString());
   }
- catch (  Exception e) {
-    Log.error("Error getting groups for user: " + user,e);
-    return Collections.emptyList();
-  }
- finally {
-    try {
-      if (ctx != null) {
-        ctx.setRequestControls(null);
-        ctx.close();
-      }
-      if (ctx2 != null) {
-        ctx2.setRequestControls(null);
-        ctx2.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
-  }
-  return groupNames;
+  return manager.retrieveList(manager.getGroupNameField(),filter.toString(),-1,-1,null);
 }
