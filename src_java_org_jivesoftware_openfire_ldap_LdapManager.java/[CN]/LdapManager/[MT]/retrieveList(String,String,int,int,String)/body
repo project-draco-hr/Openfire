@@ -53,8 +53,9 @@
           if (control instanceof PagedResultsResponseControl) {
             PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
             cookie=prrc.getCookie();
+            int total=prrc.getResultSize();
+            Log.debug("LdapManager: End of page found, count is " + count + ", total results are "+ total+ ", and cookie is "+ cookie);
             ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
-            break;
           }
         }
       }
@@ -87,7 +88,7 @@
             if (control instanceof PagedResultsResponseControl) {
               PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
               cookie=prrc.getCookie();
-              ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
+              ctx2.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
               break;
             }
           }
