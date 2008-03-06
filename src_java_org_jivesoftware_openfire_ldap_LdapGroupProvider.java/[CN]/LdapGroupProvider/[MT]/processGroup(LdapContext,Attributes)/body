@@ -41,7 +41,10 @@
             String userDNPart=ldapName.get(ldapName.size() - 1);
             NamingEnumeration usrAnswer=ctx.search("",userDNPart,searchControls);
             if (usrAnswer != null && usrAnswer.hasMoreElements()) {
-              username=(String)((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField()).get();
+              Attribute usernameAttr=((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField());
+              if (usernameAttr != null) {
+                username=(String)usernameAttr.get();
+              }
             }
             usrAnswer.close();
           }
