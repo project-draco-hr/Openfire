@@ -10,7 +10,7 @@
     if (!clientSideSort) {
       tmpRequestControls.add(new SortControl(new String[]{attribute},Control.NONCRITICAL));
     }
-    if (pageSize > -1) {
+    if (pageSize > 0) {
       tmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
     }
     Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
@@ -53,13 +53,11 @@
           if (control instanceof PagedResultsResponseControl) {
             PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
             cookie=prrc.getCookie();
-            int total=prrc.getResultSize();
-            Log.debug("LdapManager: End of page found, count is " + count + ", total results are "+ total+ ", and cookie is "+ cookie);
-            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
           }
         }
       }
       answer.close();
+      ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize,cookie,Control.CRITICAL)});
     }
  while (cookie != null);
     if (count <= lastRes && alternateBaseDN != null) {
