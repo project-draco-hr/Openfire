@@ -5,8 +5,7 @@
   if (groupCount != -1 && System.currentTimeMillis() < expiresStamp) {
     return groupCount;
   }
-  List<String> groups=manager.retrieveList(manager.getGroupNameField(),MessageFormat.format(manager.getGroupSearchFilter(),"*"),-1,-1,null);
-  this.groupCount=groups.size();
+  this.groupCount=manager.retrieveListCount(manager.getGroupNameField(),MessageFormat.format(manager.getGroupSearchFilter(),"*"));
   this.expiresStamp=System.currentTimeMillis() + JiveConstants.MINUTE * 5;
   return this.groupCount;
 }
