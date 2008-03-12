@@ -1,5 +1,5 @@
 {
-  if (userJID.getDomain().equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain()) && userManager.isRegisteredUser(userJID.getNode())) {
+  if (XMPPServer.getInstance().isLocal(userJID) && userManager.isRegisteredUser(userJID.getNode())) {
     for (    ClientSession session : sessionManager.getSessions(userJID.getNode())) {
       if (presenceUpdateHandler.hasDirectPresence(session.getAddress(),recipientJID)) {
         continue;
