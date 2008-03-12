@@ -11,6 +11,7 @@
  else {
     MUCRole role=roles.get(group);
     if (role == null) {
+      sendErrorPacket(packet,PacketError.Condition.not_authorized);
     }
  else     if (IQ.Type.result == packet.getType()) {
       if (packet.getTo().getResource() != null) {
