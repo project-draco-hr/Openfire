@@ -3,7 +3,9 @@
   if (occupantRole != null) {
     occupantRole.setPresence(changeNickname.getPresence());
     occupantRole.changeNickname(changeNickname.getNewNick());
-    server.fireNicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+    if (changeNickname.isOriginator()) {
+      server.fireNicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+    }
     occupants.put(changeNickname.getNewNick().toLowerCase(),occupantRole);
     occupants.remove(changeNickname.getOldNick().toLowerCase());
   }

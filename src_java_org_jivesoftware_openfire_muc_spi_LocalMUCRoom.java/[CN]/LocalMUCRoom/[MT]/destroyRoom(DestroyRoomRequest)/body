@@ -15,7 +15,7 @@
  else {
           hasRemoteOccupants=true;
         }
-        removeOccupantRole(leaveRole);
+        removeOccupantRole(leaveRole,destroyRequest.isOriginator());
       }
     }
     endTime=System.currentTimeMillis();
@@ -56,6 +56,6 @@
   }
   if (destroyRequest.isOriginator()) {
     MUCPersistenceManager.deleteFromDB(this);
+    server.fireRoomDestroyed(getRole().getRoleAddress());
   }
-  server.fireRoomDestroyed(getRole().getRoleAddress());
 }

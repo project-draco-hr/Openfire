@@ -5,13 +5,13 @@
   }
   lock.writeLock().lock();
   try {
-    removeOccupantRole(leaveRole);
+    removeOccupantRole(leaveRole,event.isOriginator());
     if (occupants.isEmpty() && !isPersistent()) {
       endTime=System.currentTimeMillis();
       if (event.isOriginator()) {
         server.removeChatRoom(name);
+        server.fireRoomDestroyed(getRole().getRoleAddress());
       }
-      server.fireRoomDestroyed(getRole().getRoleAddress());
     }
     if (occupants.isEmpty()) {
       setEmptyDate(new Date());

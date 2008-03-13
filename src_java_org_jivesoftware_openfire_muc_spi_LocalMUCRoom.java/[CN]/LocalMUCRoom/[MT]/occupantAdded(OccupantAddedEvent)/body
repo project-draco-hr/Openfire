@@ -12,7 +12,9 @@
   list.add(joinRole);
   occupantsByFullJID.put(event.getUserAddress(),joinRole);
   setEmptyDate(null);
-  server.fireOccupantJoined(getRole().getRoleAddress(),event.getUserAddress(),joinRole.getNickname());
+  if (event.isOriginator()) {
+    server.fireOccupantJoined(getRole().getRoleAddress(),event.getUserAddress(),joinRole.getNickname());
+  }
   if (event.isSendPresence()) {
     for (    MUCRole occupant : occupants.values()) {
       if (occupant.isLocal()) {
