@@ -5,7 +5,7 @@
   if (destination.getAuthToken().isAnonymous()) {
     added=anonymousUsersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
     if (route.getResource() != null && (!available || added)) {
-      Lock lock=LockManager.getLock(route.toBareJID());
+      Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
       try {
         lock.lock();
         usersSessions.put(route.toBareJID(),Arrays.asList(route.toString()));
@@ -18,7 +18,7 @@
  else {
     added=usersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
     if (route.getResource() != null && (!available || added)) {
-      Lock lock=LockManager.getLock(route.toBareJID());
+      Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
       try {
         lock.lock();
         Collection<String> jids=usersSessions.get(route.toBareJID());

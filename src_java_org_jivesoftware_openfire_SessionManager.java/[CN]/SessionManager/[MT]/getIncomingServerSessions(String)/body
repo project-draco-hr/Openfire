@@ -1,6 +1,6 @@
 {
   List<String> streamIDs;
-  Lock lock=LockManager.getLock(hostname);
+  Lock lock=CacheFactory.getLock(hostname,hostnameSessionsCache);
   try {
     lock.lock();
     streamIDs=hostnameSessionsCache.get(hostname);

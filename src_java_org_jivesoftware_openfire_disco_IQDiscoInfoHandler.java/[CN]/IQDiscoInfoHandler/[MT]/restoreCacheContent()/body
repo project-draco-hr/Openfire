@@ -1,6 +1,6 @@
 {
   for (  String feature : localServerFeatures) {
-    Lock lock=LockManager.getLock(feature);
+    Lock lock=CacheFactory.getLock(feature,serverFeatures);
     try {
       lock.lock();
       Set<NodeID> nodeIDs=serverFeatures.get(feature);

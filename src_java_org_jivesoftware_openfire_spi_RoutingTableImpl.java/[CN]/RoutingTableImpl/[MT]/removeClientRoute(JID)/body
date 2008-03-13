@@ -7,7 +7,7 @@
     anonymous=true;
   }
   if (clientRoute != null && route.getResource() != null) {
-    Lock lock=LockManager.getLock(route.toBareJID());
+    Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
     try {
       lock.lock();
       if (anonymous) {

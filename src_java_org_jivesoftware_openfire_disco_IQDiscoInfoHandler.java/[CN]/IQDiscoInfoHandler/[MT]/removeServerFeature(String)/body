@@ -1,6 +1,6 @@
 {
   if (localServerFeatures.remove(namespace)) {
-    Lock lock=LockManager.getLock(namespace);
+    Lock lock=CacheFactory.getLock(namespace,serverFeatures);
     try {
       lock.lock();
       Set<NodeID> nodeIDs=serverFeatures.get(namespace);

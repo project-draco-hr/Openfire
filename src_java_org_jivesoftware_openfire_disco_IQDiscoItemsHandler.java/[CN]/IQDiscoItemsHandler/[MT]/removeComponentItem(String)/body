@@ -1,5 +1,8 @@
 {
-  Lock lock=LockManager.getLock(jid + "item");
+  if (serverItems == null) {
+    return;
+  }
+  Lock lock=CacheFactory.getLock(jid + "item",serverItems);
   try {
     lock.lock();
     ClusteredServerItem item=serverItems.get(jid);

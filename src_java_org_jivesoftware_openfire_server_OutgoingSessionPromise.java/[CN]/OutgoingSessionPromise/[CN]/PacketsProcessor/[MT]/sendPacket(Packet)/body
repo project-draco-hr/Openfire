@@ -1,6 +1,6 @@
 {
   boolean created;
-  Lock lock=LockManager.getLock(domain + "oss");
+  Lock lock=CacheFactory.getLock(domain + "oss",serversCache);
   try {
     lock.lock();
     created=LocalOutgoingServerSession.authenticateDomain(packet.getFrom().getDomain(),packet.getTo().getDomain());

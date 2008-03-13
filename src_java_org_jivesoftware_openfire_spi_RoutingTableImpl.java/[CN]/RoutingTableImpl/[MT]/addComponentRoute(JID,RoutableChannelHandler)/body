@@ -1,7 +1,7 @@
 {
   String address=route.getDomain();
   localRoutingTable.addRoute(address,destination);
-  Lock lock=LockManager.getLock(address + "rt");
+  Lock lock=CacheFactory.getLock(address + "rt",componentsCache);
   try {
     lock.lock();
     Set<NodeID> nodes=componentsCache.get(address);

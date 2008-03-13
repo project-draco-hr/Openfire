@@ -1,6 +1,10 @@
 {
   if (!XMPPServer.getInstance().isShuttingDown()) {
     for (    Map.Entry<String,Collection<DirectedPresence>> entry : localDirectedPresences.entrySet()) {
+      if (entry.getValue().isEmpty()) {
+        Log.warn("PresenceUpdateHandler - Skipping empty directed presences when leaving cluster for sender: " + entry.getKey());
+        continue;
+      }
       directedPresencesCache.put(entry.getKey(),entry.getValue());
     }
   }
