@@ -1,6 +1,4 @@
 {
-  this.sharedSecret=sharedSecret;
-  properties.put("clearspace.sharedSecret",sharedSecret);
   ExternalComponentConfiguration configuration=new ExternalComponentConfiguration("clearspace",ExternalComponentConfiguration.Permission.allowed,sharedSecret);
   try {
     ExternalComponentManager.allowAccess(configuration);
@@ -8,4 +6,6 @@
  catch (  ModificationNotAllowedException e) {
     Log.warn("Failed to configure password for Clearspace",e);
   }
+  this.sharedSecret=sharedSecret;
+  properties.put("clearspace.sharedSecret",sharedSecret);
 }
