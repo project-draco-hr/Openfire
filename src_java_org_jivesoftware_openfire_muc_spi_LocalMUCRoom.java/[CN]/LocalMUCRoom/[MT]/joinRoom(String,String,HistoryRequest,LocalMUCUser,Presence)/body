@@ -36,7 +36,7 @@
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
- else     if (server.getSysadmins().contains(user.getAddress().toBareJID())) {
+ else     if (mucService.getSysadmins().contains(user.getAddress().toBareJID())) {
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
@@ -58,7 +58,7 @@
       role=(isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant);
       affiliation=MUCRole.Affiliation.none;
     }
-    joinRole=new LocalMUCRole(server,this,nickname,role,affiliation,user,presence,router);
+    joinRole=new LocalMUCRole(mucService,this,nickname,role,affiliation,user,presence,router);
     occupants.put(nickname.toLowerCase(),joinRole);
     List<MUCRole> list=occupantsByBareJID.get(user.getAddress().toBareJID());
     if (list == null) {
@@ -118,6 +118,6 @@
     historyRequest.sendHistory(joinRole,roomHistory);
   }
   setEmptyDate(null);
-  server.fireOccupantJoined(getRole().getRoleAddress(),user.getAddress(),joinRole.getNickname());
+  MUCEventDispatcher.occupantJoined(getRole().getRoleAddress(),user.getAddress(),joinRole.getNickname());
   return joinRole;
 }

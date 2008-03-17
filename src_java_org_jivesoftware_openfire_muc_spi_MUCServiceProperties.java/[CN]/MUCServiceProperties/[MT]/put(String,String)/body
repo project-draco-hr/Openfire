@@ -1,0 +1,25 @@
+{
+  if (key == null || value == null) {
+    throw new NullPointerException("Key or value cannot be null. Key=" + key + ", value="+ value);
+  }
+  if (key.endsWith(".")) {
+    key=key.substring(0,key.length() - 1);
+  }
+  key=key.trim();
+  String result;
+synchronized (this) {
+    if (properties.containsKey(key)) {
+      if (!properties.get(key).equals(value)) {
+        updateProperty(key,value);
+      }
+    }
+ else {
+      insertProperty(key,value);
+    }
+    result=properties.put(key,value);
+  }
+  Map<String,Object> params=new HashMap<String,Object>();
+  params.put("value",value);
+  MUCServicePropertyEventDispatcher.dispatchEvent(subdomain,key,MUCServicePropertyEventDispatcher.EventType.property_set,params);
+  return result;
+}

@@ -1,11 +1,5 @@
 {
   Element note=command.addElement("note");
-  MultiUserChatServer server=XMPPServer.getInstance().getMultiUserChatServer();
-  if (!server.isServiceEnabled()) {
-    note.addAttribute("type","error");
-    note.setText("Multi user chat is disabled on server.");
-    return;
-  }
   Collection<JID> admins=XMPPServer.getInstance().getAdmins();
   if (admins.size() <= 0) {
     note.addAttribute("type","error");
@@ -13,6 +7,27 @@
     return;
   }
   Map<String,List<String>> data=sessionData.getData();
+  String servicehostname=get(data,"servicename",0);
+  if (servicehostname == null) {
+    note.addAttribute("type","error");
+    note.setText("Service name must be specified.");
+    return;
+  }
+  String servicename=servicehostname.replace("." + XMPPServer.getInstance().getServerInfo().getXMPPDomain(),"");
+  MultiUserChatService mucService;
+  try {
+    mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(servicename);
+    if (!mucService.isServiceEnabled()) {
+      note.addAttribute("type","error");
+      note.setText("Multi user chat is disabled for specified service.");
+      return;
+    }
+  }
+ catch (  NotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("Invalid service name specified.");
+    return;
+  }
   String roomname=get(data,"roomname",0);
   if (roomname == null) {
     note.addAttribute("type","error");
@@ -22,7 +37,7 @@
   JID admin=admins.iterator().next();
   MUCRoom room;
   try {
-    room=server.getChatRoom(roomname,admin);
+    room=mucService.getChatRoom(roomname,admin);
   }
  catch (  NotAllowedException e) {
     note.addAttribute("type","error");

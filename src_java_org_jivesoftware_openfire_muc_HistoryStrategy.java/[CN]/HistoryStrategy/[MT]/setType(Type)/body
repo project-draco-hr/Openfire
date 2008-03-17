@@ -6,9 +6,9 @@
     type=newType;
   }
   if (contextPrefix != null) {
-    JiveGlobals.setProperty(contextPrefix + ".type",type.toString());
+    MUCPersistenceManager.setProperty(contextSubdomain,contextPrefix + ".type",type.toString());
   }
   if (parent == null) {
-    CacheFactory.doClusterTask(new UpdateHistoryStrategy(this));
+    CacheFactory.doClusterTask(new UpdateHistoryStrategy(contextSubdomain,this));
   }
 }

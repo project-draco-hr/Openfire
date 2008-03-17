@@ -1,0 +1,12 @@
+{
+  super.stop();
+  ClusterManager.removeListener(this);
+  StatisticsManager.getInstance().removeStatistic(roomsStatKey);
+  StatisticsManager.getInstance().removeStatistic(occupantsStatKey);
+  StatisticsManager.getInstance().removeStatistic(usersStatKey);
+  StatisticsManager.getInstance().removeStatistic(incomingStatKey);
+  StatisticsManager.getInstance().removeStatistic(outgoingStatKey);
+  for (  MultiUserChatService service : mucServices.values()) {
+    unregisterMultiUserChatService(service.getServiceName());
+  }
+}

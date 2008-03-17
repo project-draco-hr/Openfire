@@ -1,0 +1,13 @@
+{
+  super.start();
+  loadServices();
+  for (  MultiUserChatService service : mucServices.values()) {
+    registerMultiUserChatService(service);
+  }
+  addTotalRoomStats();
+  addTotalOccupantsStats();
+  addTotalConnectedUsers();
+  addNumberIncomingMessages();
+  addNumberOutgoingMessages();
+  ClusterManager.addListener(this);
+}

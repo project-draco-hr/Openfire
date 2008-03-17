@@ -1,16 +1,17 @@
 {
   rooms=new ArrayList<RoomInfo>();
-  MultiUserChatServer mucServer=XMPPServer.getInstance().getMultiUserChatServer();
-  for (  MUCRoom room : mucServer.getChatRooms()) {
-    LocalMUCRoom localRoom=(LocalMUCRoom)room;
-    Collection<MUCRole> localOccupants=new ArrayList<MUCRole>();
-    for (    MUCRole occupant : room.getOccupants()) {
-      if (occupant.isLocal()) {
-        localOccupants.add(occupant);
+  for (  MultiUserChatService mucService : XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServices()) {
+    for (    MUCRoom room : mucService.getChatRooms()) {
+      LocalMUCRoom localRoom=(LocalMUCRoom)room;
+      Collection<MUCRole> localOccupants=new ArrayList<MUCRole>();
+      for (      MUCRole occupant : room.getOccupants()) {
+        if (occupant.isLocal()) {
+          localOccupants.add(occupant);
+        }
       }
-    }
-    if (!localOccupants.isEmpty()) {
-      rooms.add(new RoomInfo(localRoom,localOccupants));
+      if (!localOccupants.isEmpty()) {
+        rooms.add(new RoomInfo(localRoom,localOccupants));
+      }
     }
   }
 }

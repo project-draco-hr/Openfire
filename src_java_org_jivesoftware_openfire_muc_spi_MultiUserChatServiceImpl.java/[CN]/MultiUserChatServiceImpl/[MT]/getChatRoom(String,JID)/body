@@ -1,0 +1,37 @@
+{
+  LocalMUCRoom room;
+  boolean loaded=false;
+  boolean created=false;
+synchronized (roomName.intern()) {
+    room=rooms.get(roomName);
+    if (room == null) {
+      room=new LocalMUCRoom(this,roomName,router);
+      try {
+        MUCPersistenceManager.loadFromDB(room);
+        loaded=true;
+      }
+ catch (      IllegalArgumentException e) {
+        if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
+          if (!allowedToCreate.contains(userjid.toBareJID())) {
+            throw new NotAllowedException();
+          }
+        }
+        room.addFirstOwner(userjid.toBareJID());
+        created=true;
+      }
+      rooms.put(roomName,room);
+    }
+  }
+  if (created) {
+    MUCEventDispatcher.roomCreated(room.getRole().getRoleAddress());
+  }
+  if (loaded || created) {
+    CacheFactory.doClusterTask(new RoomAvailableEvent(room));
+    for (    MUCRole role : room.getOccupants()) {
+      if (role instanceof LocalMUCRole) {
+        CacheFactory.doClusterTask(new OccupantAddedEvent(room,role));
+      }
+    }
+  }
+  return room;
+}

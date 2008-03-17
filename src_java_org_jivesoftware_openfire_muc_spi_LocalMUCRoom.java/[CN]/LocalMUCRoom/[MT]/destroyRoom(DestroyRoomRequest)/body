@@ -24,7 +24,7 @@
       if (hasRemoteOccupants) {
         CacheFactory.doClusterTask(new DestroyRoomRequest(this,alternateJID,reason));
       }
-      server.removeChatRoom(name);
+      mucService.removeChatRoom(name);
     }
   }
   finally {
@@ -56,6 +56,6 @@
   }
   if (destroyRequest.isOriginator()) {
     MUCPersistenceManager.deleteFromDB(this);
-    server.fireRoomDestroyed(getRole().getRoleAddress());
+    MUCEventDispatcher.roomDestroyed(getRole().getRoleAddress());
   }
 }

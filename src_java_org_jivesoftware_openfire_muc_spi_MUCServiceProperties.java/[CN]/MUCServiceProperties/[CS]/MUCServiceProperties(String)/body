@@ -1,0 +1,16 @@
+{
+  this.subdomain=subdomain;
+  if (properties == null) {
+    properties=new ConcurrentHashMap<String,String>();
+  }
+ else {
+    properties.clear();
+  }
+  try {
+    serviceID=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServiceID(subdomain);
+  }
+ catch (  NotFoundException e) {
+    Log.debug("MUCServiceProperties: Unable to find service ID for subdomain " + subdomain);
+  }
+  loadProperties();
+}

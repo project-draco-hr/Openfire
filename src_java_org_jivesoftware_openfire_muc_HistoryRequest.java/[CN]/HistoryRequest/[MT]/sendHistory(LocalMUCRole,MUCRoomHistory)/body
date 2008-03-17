@@ -13,7 +13,7 @@
     int accumulatedChars=0;
     int accumulatedStanzas=0;
     Element delayInformation;
-    LinkedList historyToSend=new LinkedList();
+    LinkedList<Message> historyToSend=new LinkedList<Message>();
     ListIterator iterator=roomHistory.getReverseMessageHistory();
     while (iterator.hasPrevious()) {
       message=(Message)iterator.previous();
@@ -32,7 +32,7 @@
       if (getSeconds() > -1 || getSince() != null) {
         delayInformation=message.getChildElement("x","jabber:x:delay");
         try {
-          Date delayedDate=null;
+          Date delayedDate;
 synchronized (delayedFormatter) {
             delayedDate=delayedFormatter.parse(delayInformation.attributeValue("stamp"));
           }
@@ -53,9 +53,8 @@ synchronized (delayedFormatter) {
       }
       historyToSend.addFirst(message);
     }
-    Iterator history=historyToSend.iterator();
-    while (history.hasNext()) {
-      joinRole.send((Message)history.next());
+    for (    Object aHistoryToSend : historyToSend) {
+      joinRole.send((Message)aHistoryToSend);
     }
   }
 }

@@ -1,0 +1,18 @@
+{
+  if (!isServiceEnabled()) {
+    return;
+  }
+  try {
+    if (packet instanceof IQ) {
+      if (process((IQ)packet)) {
+        return;
+      }
+    }
+    JID receipient=packet.getTo();
+    String roomName=receipient != null ? receipient.getNode() : null;
+    getChatUser(packet.getFrom(),roomName).process(packet);
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+}

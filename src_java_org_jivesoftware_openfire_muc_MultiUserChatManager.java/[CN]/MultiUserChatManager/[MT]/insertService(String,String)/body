@@ -1,0 +1,39 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  Long serviceID=SequenceManager.nextID(JiveConstants.MUC_SERVICE);
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(CREATE_SERVICE);
+    pstmt.setLong(1,serviceID);
+    pstmt.setString(2,subdomain);
+    if (description != null) {
+      pstmt.setString(3,description);
+    }
+ else {
+      pstmt.setNull(3,Types.VARCHAR);
+    }
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

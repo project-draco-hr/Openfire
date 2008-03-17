@@ -9,8 +9,8 @@
     if (occupants.isEmpty() && !isPersistent()) {
       endTime=System.currentTimeMillis();
       if (event.isOriginator()) {
-        server.removeChatRoom(name);
-        server.fireRoomDestroyed(getRole().getRoleAddress());
+        mucService.removeChatRoom(name);
+        MUCEventDispatcher.roomDestroyed(getRole().getRoleAddress());
       }
     }
     if (occupants.isEmpty()) {

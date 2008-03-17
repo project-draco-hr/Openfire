@@ -4,7 +4,7 @@
     occupantRole.setPresence(changeNickname.getPresence());
     occupantRole.changeNickname(changeNickname.getNewNick());
     if (changeNickname.isOriginator()) {
-      server.fireNicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+      MUCEventDispatcher.nicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
     }
     occupants.put(changeNickname.getNewNick().toLowerCase(),occupantRole);
     occupants.remove(changeNickname.getOldNick().toLowerCase());

@@ -30,11 +30,16 @@
     emptyDate=new Date(ExternalizableUtil.getInstance().readLong(in));
   }
   savedToDB=ExternalizableUtil.getInstance().readBoolean(in);
-  server=(MultiUserChatServerImpl)XMPPServer.getInstance().getMultiUserChatServer();
-  roomHistory=new MUCRoomHistory(this,new HistoryStrategy(server.getHistoryStrategy()));
+  String subdomain=ExternalizableUtil.getInstance().readSafeUTF(in);
+  try {
+    mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(subdomain);
+  }
+ catch (  NotFoundException e) {
+    throw new IllegalArgumentException("MUC service not found for subdomain: " + subdomain);
+  }
+  roomHistory=new MUCRoomHistory(this,new HistoryStrategy(mucService.getHistoryStrategy()));
   PacketRouter packetRouter=XMPPServer.getInstance().getPacketRouter();
   this.iqOwnerHandler=new IQOwnerHandler(this,packetRouter);
   this.iqAdminHandler=new IQAdminHandler(this,packetRouter);
-  server=(MultiUserChatServerImpl)XMPPServer.getInstance().getMultiUserChatServer();
   router=packetRouter;
 }

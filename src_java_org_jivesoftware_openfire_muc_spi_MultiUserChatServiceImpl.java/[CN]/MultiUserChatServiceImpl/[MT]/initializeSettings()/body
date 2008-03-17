@@ -1,0 +1,73 @@
+{
+  serviceEnabled=MUCPersistenceManager.getBooleanProperty(chatServiceName,"enabled",true);
+  historyStrategy.setContext(chatServiceName,"history");
+  String property=MUCPersistenceManager.getProperty(chatServiceName,"sysadmin.jid");
+  String[] jids;
+  sysadmins.clear();
+  if (property != null) {
+    jids=property.split(",");
+    for (    String jid : jids) {
+      sysadmins.add(jid.trim().toLowerCase());
+    }
+  }
+  allowToDiscoverLockedRooms=MUCPersistenceManager.getBooleanProperty(chatServiceName,"discover.locked",true);
+  roomCreationRestricted=MUCPersistenceManager.getBooleanProperty(chatServiceName,"create.anyone",false);
+  property=MUCPersistenceManager.getProperty(chatServiceName,"create.jid");
+  allowedToCreate.clear();
+  if (property != null) {
+    jids=property.split(",");
+    for (    String jid : jids) {
+      allowedToCreate.add(jid.trim().toLowerCase());
+    }
+  }
+  String value=MUCPersistenceManager.getProperty(chatServiceName,"tasks.user.timeout");
+  user_timeout=300000;
+  if (value != null) {
+    try {
+      user_timeout=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property tasks.user.timeout for service " + chatServiceName,e);
+    }
+  }
+  value=MUCPersistenceManager.getProperty(chatServiceName,"tasks.user.idle");
+  user_idle=-1;
+  if (value != null) {
+    try {
+      user_idle=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property tasks.user.idle for service " + chatServiceName,e);
+    }
+  }
+  value=MUCPersistenceManager.getProperty(chatServiceName,"tasks.log.timeout");
+  log_timeout=300000;
+  if (value != null) {
+    try {
+      log_timeout=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property tasks.log.timeout for service " + chatServiceName,e);
+    }
+  }
+  value=MUCPersistenceManager.getProperty(chatServiceName,"tasks.log.batchsize");
+  log_batch_size=50;
+  if (value != null) {
+    try {
+      log_batch_size=Integer.parseInt(value);
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property tasks.log.batchsize for service " + chatServiceName,e);
+    }
+  }
+  value=MUCPersistenceManager.getProperty(chatServiceName,"unload.empty_days");
+  emptyLimit=30 * 24;
+  if (value != null) {
+    try {
+      emptyLimit=Integer.parseInt(value) * 24;
+    }
+ catch (    NumberFormatException e) {
+      Log.error("Wrong number format of property unload.empty_days for service " + chatServiceName,e);
+    }
+  }
+}

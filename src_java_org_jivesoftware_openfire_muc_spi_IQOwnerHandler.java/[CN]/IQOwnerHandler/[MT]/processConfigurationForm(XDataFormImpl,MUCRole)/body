@@ -24,7 +24,7 @@
   if (ownersSent && owners.isEmpty()) {
     throw new ConflictException();
   }
-  List presences=new ArrayList(admins.size() + owners.size());
+  List<Presence> presences=new ArrayList<Presence>(admins.size() + owners.size());
   room.lock.writeLock().lock();
   try {
     field=completedForm.getField("muc#roomconfig_roomname");
@@ -41,7 +41,7 @@
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setCanOccupantsChangeSubject(("1".equals(booleanValue) ? true : false));
+      room.setCanOccupantsChangeSubject(("1".equals(booleanValue)));
     }
     field=completedForm.getField("muc#roomconfig_maxusers");
     if (field != null) {
@@ -61,13 +61,13 @@
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setPublicRoom(("1".equals(booleanValue) ? true : false));
+      room.setPublicRoom(("1".equals(booleanValue)));
     }
     field=completedForm.getField("muc#roomconfig_persistentroom");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      boolean isPersistent=("1".equals(booleanValue) ? true : false);
+      boolean isPersistent=("1".equals(booleanValue));
       if (room.isPersistent() && !isPersistent) {
         MUCPersistenceManager.deleteFromDB(room);
       }
@@ -77,19 +77,19 @@
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setModerated(("1".equals(booleanValue) ? true : false));
+      room.setModerated(("1".equals(booleanValue)));
     }
     field=completedForm.getField("muc#roomconfig_membersonly");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      presences.addAll(room.setMembersOnly(("1".equals(booleanValue) ? true : false)));
+      presences.addAll(room.setMembersOnly(("1".equals(booleanValue))));
     }
     field=completedForm.getField("muc#roomconfig_allowinvites");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setCanOccupantsInvite(("1".equals(booleanValue) ? true : false));
+      room.setCanOccupantsInvite(("1".equals(booleanValue)));
     }
     field=completedForm.getField("muc#roomconfig_passwordprotectedroom");
     if (field != null) {
@@ -111,31 +111,31 @@
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setCanAnyoneDiscoverJID(("anyone".equals(booleanValue) ? true : false));
+      room.setCanAnyoneDiscoverJID(("anyone".equals(booleanValue)));
     }
     field=completedForm.getField("muc#roomconfig_enablelogging");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setLogEnabled(("1".equals(booleanValue) ? true : false));
+      room.setLogEnabled(("1".equals(booleanValue)));
     }
     field=completedForm.getField("x-muc#roomconfig_reservednick");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setLoginRestrictedToNickname(("1".equals(booleanValue) ? true : false));
+      room.setLoginRestrictedToNickname(("1".equals(booleanValue)));
     }
     field=completedForm.getField("x-muc#roomconfig_canchangenick");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setChangeNickname(("1".equals(booleanValue) ? true : false));
+      room.setChangeNickname(("1".equals(booleanValue)));
     }
     field=completedForm.getField("x-muc#roomconfig_registration");
     if (field != null) {
       values=field.getValues();
       booleanValue=(values.hasNext() ? values.next() : "1");
-      room.setRegistrationEnabled(("1".equals(booleanValue) ? true : false));
+      room.setRegistrationEnabled(("1".equals(booleanValue)));
     }
     room.setModificationDate(new Date());
     if (room.isPersistent()) {
@@ -166,7 +166,7 @@
   finally {
     room.lock.writeLock().unlock();
   }
-  for (Iterator it=presences.iterator(); it.hasNext(); ) {
-    room.send((Presence)it.next());
+  for (  Object presence : presences) {
+    room.send((Presence)presence);
   }
 }

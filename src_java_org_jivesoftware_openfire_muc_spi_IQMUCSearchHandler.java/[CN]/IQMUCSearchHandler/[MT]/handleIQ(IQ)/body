@@ -13,7 +13,7 @@
   int numaxusers=-1;
   boolean includePasswordProtectedRooms=true;
   final Set<String> names=new HashSet<String>();
-  final Iterator<FormField> formFields=df.getFields();
+  @SuppressWarnings("unchecked") final Iterator<FormField> formFields=df.getFields();
   while (formFields.hasNext()) {
     final FormField field=formFields.next();
     if (field.getVariable().equals("name")) {
@@ -61,7 +61,7 @@
     }
   }
   final List<MUCRoom> mucs=new ArrayList<MUCRoom>();
-  for (  MUCRoom room : mucServer.getChatRooms()) {
+  for (  MUCRoom room : mucService.getChatRooms()) {
     boolean find=false;
     if (names.size() > 0) {
       for (      final String name : names) {
@@ -116,12 +116,11 @@
  else {
     mucrsm=new ArrayList<MUCRoom>(searchResults);
   }
-  ArrayList<XFormFieldImpl> fields=null;
   final Element res=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
   final XDataFormImpl resultform=new XDataFormImpl(DataForm.TYPE_RESULT);
   boolean atLeastoneResult=false;
   for (  MUCRoom room : mucrsm) {
-    fields=new ArrayList<XFormFieldImpl>();
+    ArrayList<XFormFieldImpl> fields=new ArrayList<XFormFieldImpl>();
     XFormFieldImpl innerfield=new XFormFieldImpl("name");
     innerfield.setType(FormField.TYPE_TEXT_SINGLE);
     innerfield.addValue(room.getNaturalLanguageName());

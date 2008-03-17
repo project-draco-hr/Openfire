@@ -1,0 +1,16 @@
+{
+  String value;
+synchronized (this) {
+    value=properties.remove(key);
+    Collection<String> propNames=getPropertyNames();
+    for (    String name : propNames) {
+      if (name.startsWith((String)key)) {
+        properties.remove(name);
+      }
+    }
+    deleteProperty((String)key);
+  }
+  Map<String,Object> params=Collections.emptyMap();
+  MUCServicePropertyEventDispatcher.dispatchEvent(subdomain,(String)key,MUCServicePropertyEventDispatcher.EventType.property_deleted,params);
+  return value;
+}

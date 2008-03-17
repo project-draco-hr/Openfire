@@ -1,0 +1,18 @@
+{
+  userTimeoutTask=new UserTimeoutTask();
+  timer.schedule(userTimeoutTask,user_timeout,user_timeout);
+  logConversationTask=new LogConversationTask();
+  timer.schedule(logConversationTask,log_timeout,log_timeout);
+  cleanupTask=new CleanupTask();
+  timer.schedule(cleanupTask,CLEANUP_FREQUENCY,CLEANUP_FREQUENCY);
+  XMPPServer.getInstance().getIQDiscoItemsHandler().addServerItemsProvider(this);
+  XMPPServer.getInstance().getIQDiscoInfoHandler().setServerNodeInfoProvider(this.getServiceDomain(),this);
+  XMPPServer.getInstance().getServerItemsProviders().add(this);
+  ArrayList<String> params=new ArrayList<String>();
+  params.clear();
+  params.add(getServiceDomain());
+  Log.info(LocaleUtils.getLocalizedString("startup.starting.muc",params));
+  for (  LocalMUCRoom room : MUCPersistenceManager.loadRoomsFromDB(this,this.getCleanupDate(),router)) {
+    rooms.put(room.getName().toLowerCase(),room);
+  }
+}

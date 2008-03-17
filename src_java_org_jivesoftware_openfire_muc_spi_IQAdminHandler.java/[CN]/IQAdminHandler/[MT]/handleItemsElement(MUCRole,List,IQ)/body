@@ -5,8 +5,8 @@
   boolean hasJID=((Element)itemsList.get(0)).attributeValue("jid") != null;
   boolean hasNick=((Element)itemsList.get(0)).attributeValue("nick") != null;
   if (!hasJID && !hasNick) {
-    for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
-      item=(Element)items.next();
+    for (    Object anItem : itemsList) {
+      item=(Element)anItem;
       affiliation=item.attributeValue("affiliation");
       roleAttribute=item.attributeValue("role");
       Element result=reply.setChildElement("query","http://jabber.org/protocol/muc#admin");
@@ -74,9 +74,9 @@
     String target;
     boolean hasAffiliation=((Element)itemsList.get(0)).attributeValue("affiliation") != null;
     List<Presence> presences=new ArrayList<Presence>(itemsList.size());
-    for (Iterator items=itemsList.iterator(); items.hasNext(); ) {
+    for (    Object anItem : itemsList) {
       try {
-        item=(Element)items.next();
+        item=(Element)anItem;
         target=(hasAffiliation ? item.attributeValue("affiliation") : item.attributeValue("role"));
         if (hasJID) {
           jid=new JID(item.attributeValue("jid"));

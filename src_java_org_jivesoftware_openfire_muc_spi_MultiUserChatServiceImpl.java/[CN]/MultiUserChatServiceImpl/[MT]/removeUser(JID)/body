@@ -1,0 +1,13 @@
+{
+  LocalMUCUser user=users.remove(jabberID);
+  if (user != null) {
+    for (    LocalMUCRole role : user.getRoles()) {
+      try {
+        role.getChatRoom().leaveRoom(role);
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+    }
+  }
+}

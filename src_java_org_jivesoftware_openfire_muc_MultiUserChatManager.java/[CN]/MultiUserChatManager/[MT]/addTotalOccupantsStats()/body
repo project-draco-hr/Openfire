@@ -1,0 +1,28 @@
+{
+  Statistic statistic=new Statistic(){
+    public String getName(){
+      return LocaleUtils.getLocalizedString("muc.stats.occupants.name");
+    }
+    public Type getStatType(){
+      return Type.count;
+    }
+    public String getDescription(){
+      return LocaleUtils.getLocalizedString("muc.stats.occupants.description");
+    }
+    public String getUnits(){
+      return LocaleUtils.getLocalizedString("muc.stats.occupants.label");
+    }
+    public double sample(){
+      double occupants=0;
+      for (      MultiUserChatService service : getMultiUserChatServices()) {
+        occupants+=service.getNumberRoomOccupants();
+      }
+      return occupants;
+    }
+    public boolean isPartialSample(){
+      return false;
+    }
+  }
+;
+  StatisticsManager.getInstance().addStatistic(occupantsStatKey,statistic);
+}

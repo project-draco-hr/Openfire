@@ -1,0 +1,14 @@
+{
+  Log.debug("MultiUserChatManager: Unregistering MUC service " + subdomain);
+  MultiUserChatService service=mucServices.get(subdomain);
+  if (service != null) {
+    service.shutdown();
+    try {
+      ComponentManagerFactory.getComponentManager().removeComponent(subdomain);
+    }
+ catch (    ComponentException e) {
+      Log.error("MultiUserChatManager: Unable to remove " + subdomain + " from component manager.",e);
+    }
+    mucServices.remove(subdomain);
+  }
+}

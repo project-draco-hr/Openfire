@@ -1,0 +1,11 @@
+{
+  this.subdomain=service.getServiceName();
+  this.description=service.getDescription();
+  rooms=new ArrayList<RoomInfo>();
+  for (  MUCRoom room : service.getChatRooms()) {
+    LocalMUCRoom localRoom=(LocalMUCRoom)room;
+    if (!room.getOccupants().isEmpty()) {
+      rooms.add(new RoomInfo(localRoom,localRoom.getOccupants()));
+    }
+  }
+}

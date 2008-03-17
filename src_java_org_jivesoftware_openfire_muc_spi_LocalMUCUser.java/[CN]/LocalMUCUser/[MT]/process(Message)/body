@@ -57,7 +57,7 @@
               Element userInfo=packet.getChildElement("x","http://jabber.org/protocol/muc#user");
               LocalMUCRoom room=(LocalMUCRoom)role.getChatRoom();
               if (userInfo != null && userInfo.element("invite") != null) {
-                List<Element> extensions=new ArrayList<Element>(packet.getElement().elements());
+                @SuppressWarnings("unchecked") List<Element> extensions=new ArrayList<Element>(packet.getElement().elements());
                 extensions.remove(userInfo);
                 for (Iterator it=userInfo.elementIterator("invite"); it.hasNext(); ) {
                   Element info=(Element)it.next();

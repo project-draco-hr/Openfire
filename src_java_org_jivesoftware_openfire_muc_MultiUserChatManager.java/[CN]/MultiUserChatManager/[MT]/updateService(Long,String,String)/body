@@ -1,0 +1,38 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_SERVICE);
+    pstmt.setString(1,subdomain);
+    if (description != null) {
+      pstmt.setString(2,description);
+    }
+ else {
+      pstmt.setNull(2,Types.VARCHAR);
+    }
+    pstmt.setLong(3,serviceID);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e);
+    }
+  }
+}

@@ -4,9 +4,9 @@
   }
   this.maxNumber=max;
   if (contextPrefix != null) {
-    JiveGlobals.setProperty(contextPrefix + ".maxNumber",Integer.toString(maxNumber));
+    MUCPersistenceManager.setProperty(contextSubdomain,contextPrefix + ".maxNumber",Integer.toString(maxNumber));
   }
   if (parent == null) {
-    CacheFactory.doClusterTask(new UpdateHistoryStrategy(this));
+    CacheFactory.doClusterTask(new UpdateHistoryStrategy(contextSubdomain,this));
   }
 }

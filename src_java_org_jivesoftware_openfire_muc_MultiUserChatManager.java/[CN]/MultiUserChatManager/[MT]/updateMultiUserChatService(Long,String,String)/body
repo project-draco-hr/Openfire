@@ -1,0 +1,17 @@
+{
+  MultiUserChatServiceImpl muc=(MultiUserChatServiceImpl)getMultiUserChatService(serviceID);
+  String oldsubdomain=muc.getServiceName();
+  if (!mucServices.containsKey(oldsubdomain)) {
+    throw new NotFoundException();
+  }
+  if (oldsubdomain.equals(subdomain)) {
+    updateService(serviceID,subdomain,description);
+    muc.setDescription(description);
+  }
+ else {
+    unregisterMultiUserChatService(subdomain);
+    updateService(serviceID,subdomain,description);
+    muc=new MultiUserChatServiceImpl(subdomain,description);
+    registerMultiUserChatService(muc);
+  }
+}

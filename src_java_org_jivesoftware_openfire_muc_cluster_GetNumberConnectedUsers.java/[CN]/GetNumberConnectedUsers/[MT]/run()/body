@@ -1,4 +1,6 @@
 {
-  MultiUserChatServerImpl mucServer=(MultiUserChatServerImpl)XMPPServer.getInstance().getMultiUserChatServer();
-  count=mucServer.getNumberConnectedUsers(true);
+  count=0;
+  for (  MultiUserChatService mucService : XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServices()) {
+    count+=mucService.getNumberConnectedUsers(true);
+  }
 }

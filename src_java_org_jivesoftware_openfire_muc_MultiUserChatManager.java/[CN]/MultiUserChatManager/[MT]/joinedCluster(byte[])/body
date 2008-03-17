@@ -1,0 +1,18 @@
+{
+  @SuppressWarnings("unchecked") List<RoomInfo> result=(List<RoomInfo>)CacheFactory.doSynchronousClusterTask(new GetNewMemberRoomsRequest(),nodeID);
+  if (result != null) {
+    for (    RoomInfo roomInfo : result) {
+      LocalMUCRoom remoteRoom=roomInfo.getRoom();
+      MultiUserChatServiceImpl service=(MultiUserChatServiceImpl)remoteRoom.getMUCService();
+      LocalMUCRoom localRoom=service.getLocalChatRoom(remoteRoom.getName());
+      if (localRoom == null) {
+        localRoom=remoteRoom;
+        service.chatRoomAdded(localRoom);
+      }
+      for (      OccupantAddedEvent event : roomInfo.getOccupants()) {
+        event.setSendPresence(true);
+        event.run();
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  boolean loaded=false;
+  LocalMUCRoom room=rooms.get(roomName);
+  if (room == null) {
+synchronized (roomName.intern()) {
+      room=rooms.get(roomName);
+      if (room == null) {
+        room=new LocalMUCRoom(this,roomName,router);
+        try {
+          MUCPersistenceManager.loadFromDB(room);
+          loaded=true;
+          rooms.put(roomName,room);
+        }
+ catch (        IllegalArgumentException e) {
+          room=null;
+        }
+      }
+    }
+  }
+  if (loaded) {
+    CacheFactory.doClusterTask(new RoomAvailableEvent(room));
+  }
+  return room;
+}

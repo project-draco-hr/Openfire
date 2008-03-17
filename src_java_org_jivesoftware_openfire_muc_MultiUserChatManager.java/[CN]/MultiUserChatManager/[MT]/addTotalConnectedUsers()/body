@@ -1,0 +1,28 @@
+{
+  Statistic statistic=new Statistic(){
+    public String getName(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.name");
+    }
+    public Type getStatType(){
+      return Type.count;
+    }
+    public String getDescription(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.description");
+    }
+    public String getUnits(){
+      return LocaleUtils.getLocalizedString("muc.stats.users.label");
+    }
+    public double sample(){
+      double users=0;
+      for (      MultiUserChatService service : getMultiUserChatServices()) {
+        users+=service.getNumberConnectedUsers(false);
+      }
+      return users;
+    }
+    public boolean isPartialSample(){
+      return false;
+    }
+  }
+;
+  StatisticsManager.getInstance().addStatistic(usersStatKey,statistic);
+}
