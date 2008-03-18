@@ -35,56 +35,63 @@ catch (        PacketException e) {
     }
     if (keepTrack) {
       String sender=update.getFrom().toString();
-      Collection<DirectedPresence> directedPresences=directedPresencesCache.get(sender);
-      if (Presence.Type.unavailable.equals(update.getType())) {
-        if (directedPresences != null) {
-          if (routingTable.hasClientRoute(handlerJID)) {
-            for (            DirectedPresence directedPresence : directedPresences) {
-              if (directedPresence.getHandler().equals(handlerJID)) {
-                directedPresences.remove(directedPresence);
-                break;
-              }
-            }
-          }
- else {
-            for (            DirectedPresence directedPresence : directedPresences) {
-              if (directedPresence.getHandler().equals(handlerJID)) {
-                directedPresence.removeReceiver(jid);
-                if (directedPresence.isEmpty()) {
+      Lock lock=CacheFactory.getLock(sender,directedPresencesCache);
+      try {
+        lock.lock();
+        Collection<DirectedPresence> directedPresences=directedPresencesCache.get(sender);
+        if (Presence.Type.unavailable.equals(update.getType())) {
+          if (directedPresences != null) {
+            if (routingTable.hasClientRoute(handlerJID)) {
+              for (              DirectedPresence directedPresence : directedPresences) {
+                if (directedPresence.getHandler().equals(handlerJID)) {
                   directedPresences.remove(directedPresence);
+                  break;
                 }
-                break;
               }
             }
-          }
-          if (directedPresences.isEmpty()) {
-            directedPresencesCache.remove(sender);
-            localDirectedPresences.remove(sender);
-          }
  else {
-            directedPresencesCache.put(sender,directedPresences);
-            localDirectedPresences.put(sender,directedPresences);
+              for (              DirectedPresence directedPresence : directedPresences) {
+                if (directedPresence.getHandler().equals(handlerJID)) {
+                  directedPresence.removeReceiver(jid);
+                  if (directedPresence.isEmpty()) {
+                    directedPresences.remove(directedPresence);
+                  }
+                  break;
+                }
+              }
+            }
+            if (directedPresences.isEmpty()) {
+              directedPresencesCache.remove(sender);
+              localDirectedPresences.remove(sender);
+            }
+ else {
+              directedPresencesCache.put(sender,directedPresences);
+              localDirectedPresences.put(sender,directedPresences);
+            }
           }
+        }
+ else {
+          if (directedPresences == null) {
+            directedPresences=new ConcurrentLinkedQueue<DirectedPresence>();
+          }
+          DirectedPresence affectedDirectedPresence=null;
+          for (          DirectedPresence directedPresence : directedPresences) {
+            if (directedPresence.getHandler().equals(handlerJID)) {
+              affectedDirectedPresence=directedPresence;
+              break;
+            }
+          }
+          if (affectedDirectedPresence == null) {
+            affectedDirectedPresence=new DirectedPresence(handlerJID);
+            directedPresences.add(affectedDirectedPresence);
+          }
+          affectedDirectedPresence.addReceiver(jid);
+          directedPresencesCache.put(sender,directedPresences);
+          localDirectedPresences.put(sender,directedPresences);
         }
       }
- else {
-        if (directedPresences == null) {
-          directedPresences=new ConcurrentLinkedQueue<DirectedPresence>();
-        }
-        DirectedPresence affectedDirectedPresence=null;
-        for (        DirectedPresence directedPresence : directedPresences) {
-          if (directedPresence.getHandler().equals(handlerJID)) {
-            affectedDirectedPresence=directedPresence;
-            break;
-          }
-        }
-        if (affectedDirectedPresence == null) {
-          affectedDirectedPresence=new DirectedPresence(handlerJID);
-          directedPresences.add(affectedDirectedPresence);
-        }
-        affectedDirectedPresence.addReceiver(jid);
-        directedPresencesCache.put(sender,directedPresences);
-        localDirectedPresences.put(sender,directedPresences);
+  finally {
+        lock.unlock();
       }
     }
   }

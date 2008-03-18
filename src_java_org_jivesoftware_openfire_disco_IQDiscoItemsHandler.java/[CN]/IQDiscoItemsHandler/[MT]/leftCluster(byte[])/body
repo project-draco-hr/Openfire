@@ -3,7 +3,7 @@
     NodeID leftNode=NodeID.getInstance(nodeID);
     for (    Map.Entry<String,ClusteredServerItem> entry : serverItems.entrySet()) {
       String jid=entry.getKey();
-      Lock lock=CacheFactory.getLock(jid + "item",serverItems);
+      Lock lock=CacheFactory.getLock(jid,serverItems);
       try {
         lock.lock();
         ClusteredServerItem item=entry.getValue();

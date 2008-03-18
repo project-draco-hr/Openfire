@@ -4,7 +4,15 @@
     return;
   }
   if (localServer.isLocal(from)) {
-    Collection<DirectedPresence> directedPresences=directedPresencesCache.remove(from.toString());
+    Collection<DirectedPresence> directedPresences=null;
+    Lock lock=CacheFactory.getLock(from.toString(),directedPresencesCache);
+    try {
+      lock.lock();
+      directedPresences=directedPresencesCache.remove(from.toString());
+    }
+  finally {
+      lock.unlock();
+    }
     if (directedPresences != null) {
       for (      DirectedPresence directedPresence : directedPresences) {
         for (        String receiver : directedPresence.getReceivers()) {

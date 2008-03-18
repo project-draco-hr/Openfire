@@ -5,7 +5,14 @@
         Log.warn("PresenceUpdateHandler - Skipping empty directed presences when leaving cluster for sender: " + entry.getKey());
         continue;
       }
-      directedPresencesCache.put(entry.getKey(),entry.getValue());
+      Lock lock=CacheFactory.getLock(entry.getKey(),directedPresencesCache);
+      try {
+        lock.lock();
+        directedPresencesCache.put(entry.getKey(),entry.getValue());
+      }
+  finally {
+        lock.unlock();
+      }
     }
   }
 }
