@@ -1,0 +1,23 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  String username;
+  try {
+    username=get(data,"username",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Username required parameter.");
+    return;
+  }
+  User user;
+  try {
+    user=UserManager.getInstance().getUser(username);
+    Map<String,Object> params=Collections.emptyMap();
+    UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_deleting,params);
+  }
+ catch (  UserNotFoundException e) {
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

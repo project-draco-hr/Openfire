@@ -3,4 +3,16 @@
   String cacheName="VCard";
   vcardCache=CacheFactory.createCache(cacheName);
   this.eventHandler=new EventHandler();
+  VCardEventDispatcher.addListener(new VCardListener(){
+    public void vCardCreated(    String username,    Element vCard){
+      vcardCache.put(username,vCard);
+    }
+    public void vCardUpdated(    String username,    Element vCard){
+      vcardCache.put(username,vCard);
+    }
+    public void vCardDeleted(    String username,    Element vCard){
+      vcardCache.remove(username);
+    }
+  }
+);
 }

@@ -1,0 +1,57 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  String groupname;
+  try {
+    groupname=get(data,"groupName",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Group name required parameter.");
+    return;
+  }
+  String type;
+  try {
+    type=get(data,"changeType",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Change type required parameter.");
+    return;
+  }
+  String valueVariable=null;
+  String valueVariableName=null;
+  if ("nameModified".equals(type) || "descriptionModified".equals(type)) {
+    valueVariable="originalValue";
+    valueVariableName="Original value";
+  }
+ else   if ("propertyModified".equals(type) || "propertyAdded".equals(type) || "propertyDeleted".equals(type)) {
+    valueVariable="propertyKey";
+    valueVariableName="Property key";
+  }
+  Map<String,Object> params=new HashMap<String,Object>();
+  String value;
+  if (valueVariable != null) {
+    try {
+      value=get(data,valueVariable,0);
+      params.put(valueVariable,value);
+    }
+ catch (    NullPointerException npe) {
+      note.addAttribute("type","error");
+      note.setText(valueVariableName + " required parameter.");
+      return;
+    }
+  }
+  params.put("type",type);
+  Group group;
+  try {
+    group=GroupManager.getInstance().getGroup(groupname);
+    GroupEventDispatcher.dispatchEvent(group,GroupEventDispatcher.EventType.group_modified,params);
+  }
+ catch (  GroupNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("Group not found.");
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

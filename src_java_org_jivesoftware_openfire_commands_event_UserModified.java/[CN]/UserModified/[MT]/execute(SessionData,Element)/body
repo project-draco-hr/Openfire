@@ -1,0 +1,58 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  String username;
+  try {
+    username=get(data,"username",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Username required parameter.");
+    return;
+  }
+  String type;
+  try {
+    type=get(data,"changeType",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Change type required parameter.");
+    return;
+  }
+  String valueVariable=null;
+  String valueVariableName=null;
+  if ("nameModified".equals(type) || "emailModified".equals(type) || "creationDateModified".equals(type)|| "modificationDateModified".equals(type)) {
+    valueVariable="originalValue";
+    valueVariableName="Original value";
+  }
+ else   if ("propertyModified".equals(type) || "propertyAdded".equals(type) || "propertyDeleted".equals(type)) {
+    valueVariable="propertyKey";
+    valueVariableName="Property key";
+  }
+  Map<String,Object> params=new HashMap<String,Object>();
+  String value;
+  if (valueVariable != null) {
+    try {
+      value=get(data,valueVariable,0);
+      params.put(valueVariable,value);
+    }
+ catch (    NullPointerException npe) {
+      note.addAttribute("type","error");
+      note.setText(valueVariableName + " required parameter.");
+      return;
+    }
+  }
+  params.put("type",type);
+  User user;
+  try {
+    user=UserManager.getUserProvider().loadUser(username);
+    UserEventDispatcher.dispatchEvent(user,UserEventDispatcher.EventType.user_modified,params);
+  }
+ catch (  UserNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("User not found.");
+    return;
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

@@ -1,0 +1,36 @@
+{
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.setTitle("Dispatching a user updated event.");
+  form.addInstruction("Fill out this form to dispatch a user updated event.");
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("The username of the user that was updated");
+  field.setVariable("username");
+  field.setRequired(true);
+  field.setType(FormField.Type.list_single);
+  field.setLabel("Change type");
+  field.setVariable("changeType");
+  field.addOption("Name modified","nameModified");
+  field.addOption("Email modified","emailModified");
+  field.addOption("Password modified","passwordModified");
+  field.addOption("Creation date modified","creationDateModified");
+  field.addOption("Modification date modified","modificationDateModified");
+  field.addOption("Property modified","propertyModified");
+  field.addOption("Property added","propertyAdded");
+  field.addOption("Property deleted","propertyDeleted");
+  field.addOption("Other","other");
+  field.setRequired(true);
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Original value");
+  field.setVariable("originalValue");
+  field=form.addField();
+  field.setType(FormField.Type.text_single);
+  field.setLabel("Name of the property");
+  field.setVariable("propertyKey");
+  command.add(form.getElement());
+}

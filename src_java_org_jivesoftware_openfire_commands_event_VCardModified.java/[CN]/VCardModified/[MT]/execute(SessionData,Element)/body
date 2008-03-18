@@ -1,0 +1,22 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  String username;
+  try {
+    username=get(data,"username",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Username required parameter.");
+    return;
+  }
+  Element vCard=VCardManager.getProvider().loadVCard(username);
+  if (vCard == null) {
+    note.addAttribute("type","error");
+    note.setText("VCard not found.");
+    return;
+  }
+  VCardEventDispatcher.dispatchVCardUpdated(username,vCard);
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

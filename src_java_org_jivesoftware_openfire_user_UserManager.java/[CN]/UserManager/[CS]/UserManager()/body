@@ -19,8 +19,10 @@
   PropertyEventDispatcher.addListener(propListener);
   UserEventListener userListener=new UserEventListener(){
     public void userCreated(    User user,    Map<String,Object> params){
+      userCache.put(user.getUsername(),user);
     }
     public void userDeleting(    User user,    Map<String,Object> params){
+      userCache.remove(user.getUsername());
     }
     public void userModified(    User user,    Map<String,Object> params){
       userCache.put(user.getUsername(),user);

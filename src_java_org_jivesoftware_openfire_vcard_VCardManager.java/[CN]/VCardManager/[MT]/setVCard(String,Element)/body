@@ -5,16 +5,17 @@
     throw new UnsupportedOperationException("VCard provider is read-only.");
   }
   Element oldVCard=getOrLoadVCard(username);
+  Element newvCard=null;
   if (oldVCard != null) {
     if (!oldVCard.equals(vCardElement)) {
       try {
-        Element newvCard=provider.updateVCard(username,vCardElement);
+        newvCard=provider.updateVCard(username,vCardElement);
         vcardCache.put(username,newvCard);
         updated=true;
       }
  catch (      NotFoundException e) {
         Log.warn("Tried to update a vCard that does not exist",e);
-        Element newvCard=provider.createVCard(username,vCardElement);
+        newvCard=provider.createVCard(username,vCardElement);
         vcardCache.put(username,newvCard);
         created=true;
       }
@@ -22,21 +23,21 @@
   }
  else {
     try {
-      Element newvCard=provider.createVCard(username,vCardElement);
+      newvCard=provider.createVCard(username,vCardElement);
       vcardCache.put(username,newvCard);
       created=true;
     }
  catch (    AlreadyExistsException e) {
       Log.warn("Tried to create a vCard when one already exist",e);
-      Element newvCard=provider.updateVCard(username,vCardElement);
+      newvCard=provider.updateVCard(username,vCardElement);
       vcardCache.put(username,newvCard);
       updated=true;
     }
   }
   if (created) {
-    dispatchVCardCreated(username);
+    VCardEventDispatcher.dispatchVCardCreated(username,newvCard);
   }
  else   if (updated) {
-    dispatchVCardUpdated(username);
+    VCardEventDispatcher.dispatchVCardUpdated(username,newvCard);
   }
 }

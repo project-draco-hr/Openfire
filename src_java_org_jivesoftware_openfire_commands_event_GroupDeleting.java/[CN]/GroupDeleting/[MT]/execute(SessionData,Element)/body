@@ -1,0 +1,25 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  String groupname;
+  try {
+    groupname=get(data,"groupName",0);
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("Group name required parameter.");
+    return;
+  }
+  Group group;
+  try {
+    group=GroupManager.getInstance().getGroup(groupname);
+    Map<String,Object> params=Collections.emptyMap();
+    GroupEventDispatcher.dispatchEvent(group,GroupEventDispatcher.EventType.group_deleting,params);
+  }
+ catch (  GroupNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("Group not found.");
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}

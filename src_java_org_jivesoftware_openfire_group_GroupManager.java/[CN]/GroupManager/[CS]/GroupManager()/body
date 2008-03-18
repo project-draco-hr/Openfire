@@ -12,9 +12,11 @@
   }
   GroupEventDispatcher.addListener(new GroupEventListener(){
     public void groupCreated(    Group group,    Map params){
+      groupCache.put(group.getName(),group);
       groupMetaCache.clear();
     }
     public void groupDeleting(    Group group,    Map params){
+      groupCache.remove(group.getName());
       groupMetaCache.clear();
     }
     public void groupModified(    Group group,    Map params){
@@ -41,6 +43,16 @@
     public void adminRemoved(    Group group,    Map params){
       groupMetaCache.clear();
       groupCache.put(group.getName(),group);
+    }
+  }
+);
+  UserEventDispatcher.addListener(new UserEventListener(){
+    public void userCreated(    User user,    Map<String,Object> params){
+    }
+    public void userDeleting(    User user,    Map<String,Object> params){
+      deleteUser(user);
+    }
+    public void userModified(    User user,    Map<String,Object> params){
     }
   }
 );
