@@ -15,17 +15,15 @@
   }
   String servicename=servicehostname.replace("." + XMPPServer.getInstance().getServerInfo().getXMPPDomain(),"");
   MultiUserChatService mucService;
-  try {
-    mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(servicename);
-    if (!mucService.isServiceEnabled()) {
-      note.addAttribute("type","error");
-      note.setText("Multi user chat is disabled for specified service.");
-      return;
-    }
-  }
- catch (  NotFoundException e) {
+  mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(servicename);
+  if (mucService == null) {
     note.addAttribute("type","error");
     note.setText("Invalid service name specified.");
+    return;
+  }
+  if (!mucService.isServiceEnabled()) {
+    note.addAttribute("type","error");
+    note.setText("Multi user chat is disabled for specified service.");
     return;
   }
   String roomname=get(data,"roomname",0);

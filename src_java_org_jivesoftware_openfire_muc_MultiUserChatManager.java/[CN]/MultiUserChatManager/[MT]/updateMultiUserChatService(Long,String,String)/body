@@ -1,5 +1,6 @@
 {
   MultiUserChatServiceImpl muc=(MultiUserChatServiceImpl)getMultiUserChatService(serviceID);
+  if (muc == null)   throw new NotFoundException();
   String oldsubdomain=muc.getServiceName();
   if (!mucServices.containsKey(oldsubdomain)) {
     throw new NotFoundException();

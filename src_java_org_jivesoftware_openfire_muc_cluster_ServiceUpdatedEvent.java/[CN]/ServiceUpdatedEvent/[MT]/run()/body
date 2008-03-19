@@ -1,6 +1,6 @@
 {
-  try {
-    MultiUserChatService service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(subdomain);
+  MultiUserChatService service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(subdomain);
+  if (service != null) {
     if (service instanceof MultiUserChatServiceImpl) {
       MUCPersistenceManager.refreshProperties(subdomain);
       ((MultiUserChatServiceImpl)service).initializeSettings();
@@ -8,7 +8,7 @@
  else {
     }
   }
- catch (  NotFoundException e) {
+ else {
     Log.warn("ServiceUpdatedEvent: Received update for service we are not running: " + subdomain);
   }
 }

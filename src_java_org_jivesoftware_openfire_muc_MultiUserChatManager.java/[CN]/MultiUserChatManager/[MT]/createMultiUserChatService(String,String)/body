@@ -1,10 +1,5 @@
 {
-  try {
-    getMultiUserChatServiceID(subdomain);
-    throw new AlreadyExistsException();
-  }
- catch (  NotFoundException e) {
-  }
+  if (getMultiUserChatServiceID(subdomain) != null)   throw new AlreadyExistsException();
   insertService(subdomain,description);
   MultiUserChatServiceImpl muc=new MultiUserChatServiceImpl(subdomain,description);
   registerMultiUserChatService(muc);

@@ -4,10 +4,8 @@
     if (result != null) {
       for (      ServiceInfo serviceInfo : result) {
         MultiUserChatService service;
-        try {
-          service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceInfo.getSubdomain());
-        }
- catch (        NotFoundException e) {
+        service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceInfo.getSubdomain());
+        if (service == null) {
           service=new MultiUserChatServiceImpl(serviceInfo.getSubdomain(),serviceInfo.getDescription());
           XMPPServer.getInstance().getMultiUserChatManager().registerMultiUserChatService(service);
         }

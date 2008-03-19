@@ -1,10 +1,9 @@
 {
-  try {
-    MultiUserChatServiceImpl muc=(MultiUserChatServiceImpl)getMultiUserChatService(serviceID);
-    unregisterMultiUserChatService(muc.getServiceName());
-    deleteService(serviceID);
-  }
- catch (  NotFoundException e) {
+  MultiUserChatServiceImpl muc=(MultiUserChatServiceImpl)getMultiUserChatService(serviceID);
+  if (muc == null) {
     Log.error("MultiUserChatManager: Unable to find service to remove for service ID " + serviceID);
+    throw new NotFoundException();
   }
+  unregisterMultiUserChatService(muc.getServiceName());
+  deleteService(serviceID);
 }

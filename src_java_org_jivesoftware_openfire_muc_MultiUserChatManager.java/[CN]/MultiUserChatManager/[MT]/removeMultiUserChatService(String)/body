@@ -1,9 +1,8 @@
 {
-  try {
-    Long serviceID=getMultiUserChatServiceID(subdomain);
-    removeMultiUserChatService(serviceID);
-  }
- catch (  NotFoundException e) {
+  Long serviceID=getMultiUserChatServiceID(subdomain);
+  if (serviceID == null) {
     Log.error("MultiUserChatManager: Unable to find service to remove for " + subdomain);
+    throw new NotFoundException();
   }
+  removeMultiUserChatService(serviceID);
 }
