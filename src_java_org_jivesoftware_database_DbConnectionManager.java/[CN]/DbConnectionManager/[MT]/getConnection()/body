@@ -9,7 +9,7 @@ synchronized (providerLock) {
             setConnectionProvider((ConnectionProvider)conClass.newInstance());
           }
  catch (          Exception e) {
-            Log.error("Warning: failed to create the " + "connection provider specified by connection" + "Provider.className. Using the default pool.",e);
+            Log.warn("Failed to create the " + "connection provider specified by connection" + "Provider.className. Using the default pool.",e);
             setConnectionProvider(new DefaultConnectionProvider());
           }
         }
@@ -19,9 +19,25 @@ synchronized (providerLock) {
       }
     }
   }
-  Connection con=connectionProvider.getConnection();
+  Integer retryCnt=0;
+  Integer retryMax=10;
+  Integer retryWait=250;
+  Connection con;
+  do {
+    retryCnt++;
+    con=connectionProvider.getConnection();
+    if (con != null) {
+      break;
+    }
+    try {
+      Thread.sleep(retryWait);
+    }
+ catch (    Exception e) {
+    }
+  }
+ while (retryCnt <= retryMax);
   if (con == null) {
-    Log.error("WARNING: ConnectionManager.getConnection() " + "failed to obtain a connection.");
+    Log.warn("ConnectionManager.getConnection() " + "failed to obtain a connection.");
   }
   if (profilingEnabled) {
     return new ProfiledConnection(con);
