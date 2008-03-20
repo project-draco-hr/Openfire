@@ -1,0 +1,22 @@
+{
+  Map<String,String> roomConfig=getRoomConfig(room.getName());
+  if (roomConfig != null) {
+    room.setNaturalLanguageName(roomConfig.get("muc#roomconfig_roomname"));
+    room.setDescription(roomConfig.get("muc#roomconfig_roomdesc"));
+    room.setCanOccupantsChangeSubject("1".equals(roomConfig.get("muc#roomconfig_changesubject")));
+    room.setMaxUsers(Integer.parseInt(roomConfig.get("muc#roomconfig_maxusers")));
+    room.setPublicRoom("1".equals(roomConfig.get("muc#roomconfig_publicroom")));
+    room.setModerated("1".equals(roomConfig.get("muc#roomconfig_moderatedroom")));
+    room.setMembersOnly("1".equals(roomConfig.get("muc#roomconfig_membersonly")));
+    room.setCanOccupantsInvite("1".equals(roomConfig.get("muc#roomconfig_allowinvites")));
+    room.setPassword(roomConfig.get("muc#roomconfig_roomsecret"));
+    room.setCanAnyoneDiscoverJID("anyone".equals(roomConfig.get("muc#roomconfig_whois")));
+    room.setLogEnabled("1".equals(roomConfig.get("muc#roomconfig_enablelogging")));
+    room.setLoginRestrictedToNickname("1".equals(roomConfig.get("x-muc#roomconfig_reservednick")));
+    room.setChangeNickname("1".equals(roomConfig.get("x-muc#roomconfig_canchangenick")));
+    room.setRegistrationEnabled("1".equals(roomConfig.get("x-muc#roomconfig_registration")));
+    room.setPersistent("1".equals(roomConfig.get("muc#roomconfig_persistentroom")));
+    room.addFirstOwner(roomConfig.get("muc#roomconfig_roomowners"));
+  }
+  return roomConfig != null;
+}

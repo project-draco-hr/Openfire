@@ -1,0 +1,31 @@
+{
+  Map<String,String> roomConfig=new HashMap<String,String>();
+  Component csComponent=ClearspaceManager.getInstance().getComponent();
+  InternalComponentManager internalComponentManager=InternalComponentManager.getInstance();
+  IQ query=null;
+  IQ result;
+  try {
+    result=internalComponentManager.query(csComponent,query,15000);
+  }
+ catch (  ComponentException e) {
+  }
+  JID roomJid=new JID(roomName);
+  roomConfig.put("muc#roomconfig_roomname",roomJid.getNode());
+  roomConfig.put("muc#roomconfig_roomdesc","");
+  roomConfig.put("muc#roomconfig_changesubject","1");
+  roomConfig.put("muc#roomconfig_maxusers","0");
+  roomConfig.put("muc#roomconfig_publicroom","1");
+  roomConfig.put("muc#roomconfig_moderatedroom","0");
+  roomConfig.put("muc#roomconfig_membersonly","0");
+  roomConfig.put("muc#roomconfig_allowinvites","1");
+  roomConfig.put("muc#roomconfig_roomsecret","");
+  roomConfig.put("muc#roomconfig_whois","anyone");
+  roomConfig.put("muc#roomconfig_enablelogging","0");
+  roomConfig.put("x-muc#roomconfig_reservednick","0");
+  roomConfig.put("x-muc#roomconfig_canchangenick","1");
+  roomConfig.put("x-muc#roomconfig_registration","1");
+  roomConfig.put("muc#roomconfig_persistentroom","1");
+  String ownerJid=roomJid.getNode() + "@" + "clearspace."+ XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  roomConfig.put("muc#roomconfig_roomowners",ownerJid);
+  return roomConfig;
+}

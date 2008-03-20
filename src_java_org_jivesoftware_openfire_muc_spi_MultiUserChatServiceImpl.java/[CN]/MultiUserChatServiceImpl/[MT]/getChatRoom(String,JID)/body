@@ -11,13 +11,21 @@ synchronized (roomName.intern()) {
         loaded=true;
       }
  catch (      IllegalArgumentException e) {
-        if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
-          if (!allowedToCreate.contains(userjid.toBareJID())) {
-            throw new NotAllowedException();
+        if (mucEventDelegate != null && mucEventDelegate.loadConfig(room)) {
+          loaded=true;
+          if (room.isPersistent()) {
+            MUCPersistenceManager.saveToDB(room);
           }
         }
-        room.addFirstOwner(userjid.toBareJID());
-        created=true;
+ else {
+          if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
+            if (!allowedToCreate.contains(userjid.toBareJID())) {
+              throw new NotAllowedException();
+            }
+          }
+          room.addFirstOwner(userjid.toBareJID());
+          created=true;
+        }
       }
       rooms.put(roomName,room);
     }
