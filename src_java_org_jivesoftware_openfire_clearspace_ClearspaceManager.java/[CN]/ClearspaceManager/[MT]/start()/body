@@ -18,8 +18,15 @@
       }
     }
     ExternalComponentManager.addListener(this);
-    ClearspaceMultiUserChatService mucService=new ClearspaceMultiUserChatService(MUC_SUBDOMAIN,MUC_DESCRIPTION);
-    XMPPServer.getInstance().getMultiUserChatManager().registerMultiUserChatService(mucService);
+    MultiUserChatServiceImpl muc=(MultiUserChatServiceImpl)XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(MUC_SUBDOMAIN);
+    if (muc == null) {
+      try {
+        muc=XMPPServer.getInstance().getMultiUserChatManager().createMultiUserChatService(MUC_SUBDOMAIN,MUC_DESCRIPTION,true);
+      }
+ catch (      AlreadyExistsException e) {
+        Log.error("ClearspaceManager: Found no " + MUC_SUBDOMAIN + " service, but got already exists when creation attempted?  Service probably not started!");
+      }
+    }
     startClearspaceConfig();
   }
 }

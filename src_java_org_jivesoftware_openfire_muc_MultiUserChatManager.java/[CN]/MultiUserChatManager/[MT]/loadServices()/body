@@ -8,7 +8,8 @@
     while (rs.next()) {
       String subdomain=rs.getString(1);
       String description=rs.getString(2);
-      MultiUserChatServiceImpl muc=new MultiUserChatServiceImpl(subdomain,description);
+      Boolean isHidden=Boolean.valueOf(rs.getString(3));
+      MultiUserChatServiceImpl muc=new MultiUserChatServiceImpl(subdomain,description,isHidden);
       mucServices.put(subdomain,muc);
     }
     rs.close();

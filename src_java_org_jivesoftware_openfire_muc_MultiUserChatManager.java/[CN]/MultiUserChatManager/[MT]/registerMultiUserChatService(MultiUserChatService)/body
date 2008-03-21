@@ -1,11 +1,5 @@
 {
   Log.debug("MultiUserChatManager: Registering MUC service " + service.getServiceName());
-  if (!(service instanceof MultiUserChatServiceImpl)) {
-    Long serviceID=getMultiUserChatServiceID(service.getServiceName());
-    if (serviceID == null) {
-      insertService(service.getServiceName(),null,false);
-    }
-  }
   mucServices.put(service.getServiceName(),service);
   try {
     ComponentManagerFactory.getComponentManager().addComponent(service.getServiceName(),service);
