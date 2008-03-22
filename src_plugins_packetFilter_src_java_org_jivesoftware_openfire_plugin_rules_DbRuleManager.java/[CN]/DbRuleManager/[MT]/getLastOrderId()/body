@@ -7,12 +7,15 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(GET_LAST_ORDERID);
     rs=pstmt.executeQuery();
-    rs.next();
-    count=rs.getInt(1);
+    if (rs.next()) {
+      count=rs.getInt(1);
+    }
+ else {
+      count=0;
+    }
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
-    return 0;
   }
  finally {
     DbConnectionManager.closeConnection(pstmt,con);

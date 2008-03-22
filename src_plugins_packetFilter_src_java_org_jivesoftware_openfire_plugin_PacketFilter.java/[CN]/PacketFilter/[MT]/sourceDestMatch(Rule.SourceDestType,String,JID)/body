@@ -1,0 +1,22 @@
+{
+  if (type == Rule.SourceDestType.Any)   return true;
+  if (type == Rule.SourceDestType.User) {
+    if (ruleToFrom.equals(packetToFrom.toBareJID())) {
+      return true;
+    }
+  }
+ else   if (type == Rule.SourceDestType.Group) {
+    return packetToFromGroup(ruleToFrom,packetToFrom);
+  }
+ else   if (type == Rule.SourceDestType.Component) {
+    if (ruleToFrom.toLowerCase().equals(packetToFrom.getDomain().toLowerCase())) {
+      return true;
+    }
+  }
+ else   if (type == Rule.SourceDestType.Other) {
+    if (matchUser(ruleToFrom,packetToFrom)) {
+      return true;
+    }
+  }
+  return false;
+}

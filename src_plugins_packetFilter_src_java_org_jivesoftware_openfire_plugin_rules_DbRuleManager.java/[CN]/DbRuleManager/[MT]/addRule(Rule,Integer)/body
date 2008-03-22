@@ -13,13 +13,7 @@
     }
     rule.setOrder(order);
     pstmt.setString(2,rule.getPackeType().toString());
-    if (rule.getDestination().contains(" ")) {
-      rule.setDestination(rule.getDestination().replace(" ",""));
-    }
     pstmt.setString(3,rule.getDestination());
-    if (rule.getSource().contains(" ")) {
-      rule.setSource(rule.getSource().replace(" ",""));
-    }
     pstmt.setString(4,rule.getSource());
     pstmt.setString(5,rule.getClass().getName());
     if (rule.isDisabled()) {
@@ -35,8 +29,8 @@
       pstmt.setByte(7,new Byte("0"));
     }
     pstmt.setString(8,rule.getDescription());
-    pstmt.setString(9,rule.getSourceType());
-    pstmt.setString(10,rule.getDestType());
+    pstmt.setString(9,rule.getSourceType().toString());
+    pstmt.setString(10,rule.getDestType().toString());
     pstmt.execute();
     rules.clear();
   }

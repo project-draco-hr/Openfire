@@ -1,0 +1,29 @@
+{
+  if (rulePacketType == Rule.PacketType.Any)   return true;
+ else   if (packet instanceof Message) {
+    Message message=(Message)packet;
+    if (rulePacketType == Rule.PacketType.Message) {
+      return true;
+    }
+ else     if (rulePacketType == Rule.PacketType.MessageChat && message.getType() == Message.Type.chat) {
+      return true;
+    }
+ else     if (rulePacketType == Rule.PacketType.MessageGroupChat && message.getType() == Message.Type.groupchat) {
+      return true;
+    }
+    return false;
+  }
+ else   if (packet instanceof Presence) {
+    if (rulePacketType == Rule.PacketType.Presence) {
+      return true;
+    }
+ else     return false;
+  }
+ else   if (packet instanceof IQ) {
+    if (rulePacketType == Rule.PacketType.Iq) {
+      return true;
+    }
+ else     return false;
+  }
+  return false;
+}
