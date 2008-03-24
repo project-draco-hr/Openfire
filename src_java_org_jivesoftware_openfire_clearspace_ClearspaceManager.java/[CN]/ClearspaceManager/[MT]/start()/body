@@ -27,6 +27,11 @@
         Log.error("ClearspaceManager: Found no " + MUC_SUBDOMAIN + " service, but got already exists when creation attempted?  Service probably not started!");
       }
     }
+    if (muc != null) {
+      muc.setMUCDelegate(new ClearspaceMUCEventDelegate());
+      muc.addExtraFeature("clearspace:service");
+      muc.setDiscoIdentityType("clearspace");
+    }
     startClearspaceConfig();
   }
 }
