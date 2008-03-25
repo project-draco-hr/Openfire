@@ -1,13 +1,10 @@
 {
   Map<String,String> roomConfig=new HashMap<String,String>();
-  Component csComponent=ClearspaceManager.getInstance().getComponent();
   InternalComponentManager internalComponentManager=InternalComponentManager.getInstance();
   IQ query=null;
-  IQ result;
-  try {
-    result=internalComponentManager.query(csComponent,query,15000);
-  }
- catch (  ComponentException e) {
+  IQ result=ClearspaceManager.getInstance().query(query,15000);
+  if (result == null) {
+    return null;
   }
   JID roomJid=new JID(roomName);
   roomConfig.put("muc#roomconfig_roomname",roomJid.getNode());

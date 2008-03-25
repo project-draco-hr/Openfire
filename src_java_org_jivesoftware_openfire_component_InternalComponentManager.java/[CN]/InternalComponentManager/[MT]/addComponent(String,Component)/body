@@ -6,19 +6,24 @@ synchronized (routables) {
     }
     Log.debug("InternalComponentManager: Registering component for domain: " + subdomain);
     JID componentJID=new JID(subdomain + "." + serverDomain);
+    boolean notifyListeners=false;
     if (routable != null) {
       routable.addComponent(component);
     }
  else {
       routable=new RoutableComponents(componentJID,component);
       routables.put(subdomain,routable);
-      XMPPServer.getInstance().getRoutingTable().addComponentRoute(componentJID,routable);
+      if (!routingTable.hasComponentRoute(componentJID)) {
+        notifyListeners=true;
+      }
+      routingTable.addComponentRoute(componentJID,routable);
     }
     try {
       component.initialize(componentJID,this);
       component.start();
-      for (      ComponentEventListener listener : listeners) {
-        listener.componentRegistered(component,componentJID);
+      if (notifyListeners) {
+        notifyComponentRegistered(componentJID);
+        CacheFactory.doClusterTask(new NotifyComponentRegistered(componentJID));
       }
       checkPresences();
       checkDiscoSupport(component,componentJID);
