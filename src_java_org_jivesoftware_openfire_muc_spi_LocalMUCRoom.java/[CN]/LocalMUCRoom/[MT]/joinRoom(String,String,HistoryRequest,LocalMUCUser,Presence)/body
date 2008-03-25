@@ -1,4 +1,9 @@
 {
+  if (((MultiUserChatServiceImpl)mucService).getMUCDelegate() != null) {
+    if (!((MultiUserChatServiceImpl)mucService).getMUCDelegate().joiningRoom(this.getName(),user.getAddress())) {
+      throw new UnauthorizedException();
+    }
+  }
   LocalMUCRole joinRole=null;
   lock.writeLock().lock();
   try {

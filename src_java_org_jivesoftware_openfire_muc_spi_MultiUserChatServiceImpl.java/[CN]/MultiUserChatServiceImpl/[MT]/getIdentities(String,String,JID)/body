@@ -4,13 +4,16 @@
     Element identity=DocumentHelper.createElement("identity");
     identity.addAttribute("category","conference");
     identity.addAttribute("name",getDescription());
-    identity.addAttribute("type",discoIdentityType);
+    identity.addAttribute("type","text");
     identities.add(identity);
     Element searchId=DocumentHelper.createElement("identity");
     searchId.addAttribute("category","directory");
     searchId.addAttribute("name","Public Chatroom Search");
     searchId.addAttribute("type","chatroom");
     identities.add(searchId);
+    if (!extraDiscoIdentities.isEmpty()) {
+      identities.addAll(extraDiscoIdentities);
+    }
   }
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);

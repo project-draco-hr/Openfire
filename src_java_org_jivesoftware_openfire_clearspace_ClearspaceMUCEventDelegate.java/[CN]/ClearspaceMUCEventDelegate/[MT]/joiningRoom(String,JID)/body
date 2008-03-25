@@ -1,3 +1,16 @@
 {
+  IQ query=new IQ();
+  query.setFrom(csMucDomain);
+  Element cmd=DocumentHelper.createElement("join-check");
+  cmd.addElement("userjid").addText(userjid.toBareJID());
+  cmd.addElement("roomjid").addText(roomName + "@" + csMucDomain);
+  query.setChildElement(cmd);
+  IQ result=ClearspaceManager.getInstance().query(query,15000);
+  if (result == null) {
+    return false;
+  }
+  if (result.getType() != IQ.Type.error) {
+    return true;
+  }
   return false;
 }
