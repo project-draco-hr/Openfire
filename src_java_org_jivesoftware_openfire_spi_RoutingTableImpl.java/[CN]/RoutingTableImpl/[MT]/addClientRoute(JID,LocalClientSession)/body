@@ -3,7 +3,14 @@
   boolean available=destination.getPresence().isAvailable();
   localRoutingTable.addRoute(route.toString(),destination);
   if (destination.getAuthToken().isAnonymous()) {
-    added=anonymousUsersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
+    Lock lockAn=CacheFactory.getLock(route.toString(),anonymousUsersCache);
+    try {
+      lockAn.lock();
+      added=anonymousUsersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
+    }
+  finally {
+      lockAn.unlock();
+    }
     if (route.getResource() != null && (!available || added)) {
       Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
       try {
@@ -16,7 +23,14 @@
     }
   }
  else {
-    added=usersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
+    Lock lockU=CacheFactory.getLock(route.toString(),usersCache);
+    try {
+      lockU.lock();
+      added=usersCache.put(route.toString(),new ClientRoute(server.getNodeID(),available)) == null;
+    }
+  finally {
+      lockU.unlock();
+    }
     if (route.getResource() != null && (!available || added)) {
       Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
       try {

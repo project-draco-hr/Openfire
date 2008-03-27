@@ -1,6 +1,14 @@
 {
   String address=route.getDomain();
-  boolean removed=serversCache.remove(address) != null;
+  boolean removed=false;
+  Lock lock=CacheFactory.getLock(address,serversCache);
+  try {
+    lock.lock();
+    removed=serversCache.remove(address) != null;
+  }
+  finally {
+    lock.unlock();
+  }
   localRoutingTable.removeRoute(address);
   return removed;
 }

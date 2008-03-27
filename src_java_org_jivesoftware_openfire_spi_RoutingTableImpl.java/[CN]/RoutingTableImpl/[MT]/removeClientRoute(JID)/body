@@ -1,10 +1,25 @@
 {
   boolean anonymous=false;
   String address=route.toString();
-  ClientRoute clientRoute=usersCache.remove(address);
+  ClientRoute clientRoute=null;
+  Lock lockU=CacheFactory.getLock(address,usersCache);
+  try {
+    lockU.lock();
+    clientRoute=usersCache.remove(address);
+  }
+  finally {
+    lockU.unlock();
+  }
   if (clientRoute == null) {
-    clientRoute=anonymousUsersCache.remove(address);
-    anonymous=true;
+    Lock lockA=CacheFactory.getLock(address,anonymousUsersCache);
+    try {
+      lockA.lock();
+      clientRoute=anonymousUsersCache.remove(address);
+      anonymous=true;
+    }
+  finally {
+      lockA.unlock();
+    }
   }
   if (clientRoute != null && route.getResource() != null) {
     Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
