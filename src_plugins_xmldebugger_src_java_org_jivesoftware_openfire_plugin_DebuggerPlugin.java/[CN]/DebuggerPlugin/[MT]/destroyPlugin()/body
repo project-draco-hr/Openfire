@@ -7,14 +7,21 @@
   if (connManager.getSSLSocketAcceptor() != null && connManager.getSSLSocketAcceptor().getFilterChain().contains("rawDebugger")) {
     connManager.getSSLSocketAcceptor().getFilterChain().remove("rawDebugger");
   }
+  if (connManager.getComponentAcceptor() != null && connManager.getComponentAcceptor().getFilterChain().contains("rawDebugger")) {
+    connManager.getComponentAcceptor().getFilterChain().remove("rawDebugger");
+  }
   if (defaultPortFilter != null) {
     defaultPortFilter.shutdown();
   }
   if (oldPortFilter != null) {
     oldPortFilter.shutdown();
   }
+  if (componentPortFilter != null) {
+    componentPortFilter.shutdown();
+  }
   InterceptorManager.getInstance().removeInterceptor(interpretedPrinter);
   defaultPortFilter=null;
   oldPortFilter=null;
+  componentPortFilter=null;
   interpretedPrinter=null;
 }

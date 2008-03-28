@@ -1,14 +1,19 @@
 {
   ConnectionManagerImpl connManager=(ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager();
-  defaultPortFilter=new RawPrintFilter();
+  defaultPortFilter=new RawPrintFilter("C2S");
   SocketAcceptor socketAcceptor=connManager.getSocketAcceptor();
   if (socketAcceptor != null) {
     socketAcceptor.getFilterChain().addBefore("xmpp","rawDebugger",defaultPortFilter);
   }
-  oldPortFilter=new RawPrintFilter();
+  oldPortFilter=new RawPrintFilter("SSL");
   SocketAcceptor sslAcceptor=connManager.getSSLSocketAcceptor();
   if (sslAcceptor != null) {
     sslAcceptor.getFilterChain().addBefore("xmpp","rawDebugger",oldPortFilter);
+  }
+  componentPortFilter=new RawPrintFilter("ExComp");
+  SocketAcceptor componentAcceptor=connManager.getComponentAcceptor();
+  if (componentAcceptor != null) {
+    componentAcceptor.getFilterChain().addBefore("xmpp","rawDebugger",componentPortFilter);
   }
   interpretedPrinter=new InterpretedXMLPrinter();
   if (JiveGlobals.getBooleanProperty("plugin.debugger.interpretedAllowed")) {
