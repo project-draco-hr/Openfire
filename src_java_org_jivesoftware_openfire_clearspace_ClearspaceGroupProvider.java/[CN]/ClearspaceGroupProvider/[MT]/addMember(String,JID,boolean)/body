@@ -1,7 +1,7 @@
 {
   try {
-    long userID=manager.getUserID(user);
-    long groupID=manager.getGroupID(groupName);
+    long userID=ClearspaceManager.getInstance().getUserID(user);
+    long groupID=ClearspaceManager.getInstance().getGroupID(groupName);
     String path=URL_PREFIX;
     Document groupDoc=DocumentHelper.createDocument();
     Element rootE;
@@ -17,7 +17,7 @@
     nameE.addText(String.valueOf(userID));
     rootE.addElement("groupID");
     nameE.addText(String.valueOf(groupID));
-    manager.executeRequest(POST,path,groupDoc.asXML());
+    ClearspaceManager.getInstance().executeRequest(POST,path,groupDoc.asXML());
   }
  catch (  GroupNotFoundException e) {
     throw new UnsupportedOperationException("Group not found",e);

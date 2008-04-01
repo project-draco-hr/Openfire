@@ -6,8 +6,10 @@
       multicastRouter.route(packet);
       return;
     }
- else     if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
-      IQResultListener iqResultListener=resultListeners.remove(packet.getID());
+  }
+  if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
+    IQResultListener iqResultListener=resultListeners.remove(packet.getID());
+    if (iqResultListener != null) {
       resultTimeout.remove(packet.getID());
       if (iqResultListener != null) {
         try {

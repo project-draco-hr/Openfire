@@ -1,0 +1,21 @@
+{
+  Collection<String> owners=room.getOwners();
+  if (owners != null && owners.contains(userjid.toBareJID())) {
+    return true;
+  }
+  IQ query=new IQ();
+  query.setFrom(csMucDomain);
+  Element cmd=query.setChildElement("join-check","http://jivesoftware.com/clearspace");
+  Element userjidElement=cmd.addElement("userjid");
+  userjidElement.setText(userjid.toBareJID());
+  Element roomjidElement=cmd.addElement("roomjid");
+  roomjidElement.setText(room.getJID().toBareJID());
+  IQ result=ClearspaceManager.getInstance().query(query,15000);
+  if (result == null) {
+    return false;
+  }
+  if (result.getType() != IQ.Type.error) {
+    return true;
+  }
+  return false;
+}

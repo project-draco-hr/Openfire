@@ -2,8 +2,8 @@
   long userID;
   long groupID;
   try {
-    userID=manager.getUserID(user);
-    groupID=manager.getGroupID(groupName);
+    userID=ClearspaceManager.getInstance().getUserID(user);
+    groupID=ClearspaceManager.getInstance().getGroupID(groupName);
   }
  catch (  GroupNotFoundException e) {
     return;
@@ -16,9 +16,9 @@ catch (  Exception e) {
   }
   try {
     String path=URL_PREFIX + "groupAdmins/" + groupID+ "/"+ userID;
-    manager.executeRequest(DELETE,path);
+    ClearspaceManager.getInstance().executeRequest(DELETE,path);
     path=URL_PREFIX + "groupMembers/" + groupID+ "/"+ userID;
-    manager.executeRequest(DELETE,path);
+    ClearspaceManager.getInstance().executeRequest(DELETE,path);
   }
  catch (  GroupNotFoundException e) {
   }
