@@ -15,17 +15,29 @@
     DbConnectionManager.closeStatement(pstmt);
     if (schemaKey.equals("openfire")) {
       try {
-        if (pstmt != null) {
-          pstmt.close();
-        }
-        pstmt=con.prepareStatement(CHECK_VERSION_OLD);
+        pstmt=con.prepareStatement(CHECK_VERSION_JIVE);
+        pstmt.setString(1,schemaKey);
         rs=pstmt.executeQuery();
         if (rs.next()) {
           currentVersion=rs.getInt(1);
         }
       }
- catch (      SQLException sqle2) {
-        Log.debug("SchemaManager: Error verifying server version",sqle2);
+ catch (      SQLException sqlea) {
+        DbConnectionManager.closeResultSet(rs);
+        DbConnectionManager.closeStatement(pstmt);
+        try {
+          if (pstmt != null) {
+            pstmt.close();
+          }
+          pstmt=con.prepareStatement(CHECK_VERSION_OLD);
+          rs=pstmt.executeQuery();
+          if (rs.next()) {
+            currentVersion=rs.getInt(1);
+          }
+        }
+ catch (        SQLException sqle2) {
+          Log.debug("SchemaManager: Error verifying server version",sqle2);
+        }
       }
     }
   }
