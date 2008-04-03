@@ -1,0 +1,19 @@
+{
+  IQ query=new IQ();
+  query.setFrom(csMucDomain);
+  Element cmd=query.setChildElement("room-invite","http://jivesoftware.com/clearspace");
+  Element userjidElement=cmd.addElement("userjid");
+  userjidElement.setText(userjid.toBareJID());
+  Element roomjidElement=cmd.addElement("roomjid");
+  roomjidElement.setText(room.getJID().toBareJID());
+  IQ result=ClearspaceManager.getInstance().query(query,15000);
+  if (null != result) {
+    if (result.getType() != IQ.Type.error) {
+      return InvitationResult.HANDLED_BY_DELEGATE;
+    }
+ else     if (result.getError().getType() == PacketError.Type.continue_processing) {
+      return InvitationResult.HANDLED_BY_OPENFIRE;
+    }
+  }
+  return InvitationResult.REJECTED;
+}
