@@ -1,0 +1,16 @@
+{
+  MUCEventDispatcher.addListener(this);
+  transcriptUpdateTask=new TimerTask(){
+    public void run(){
+      if (roomEvents.isEmpty()) {
+        return;
+      }
+      for (      ClearspaceMUCTranscriptEvent event : roomEvents) {
+        Log.info(event.roomJID.getNode() + " - " + event.nickname+ ": "+ event.body);
+      }
+      roomEvents.clear();
+    }
+  }
+;
+  taskEngine.schedule(transcriptUpdateTask,FLUSH_PERIOD,FLUSH_PERIOD);
+}
