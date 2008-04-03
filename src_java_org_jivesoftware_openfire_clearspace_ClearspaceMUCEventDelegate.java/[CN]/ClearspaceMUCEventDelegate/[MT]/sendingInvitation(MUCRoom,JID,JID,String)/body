@@ -2,10 +2,14 @@
   IQ query=new IQ();
   query.setFrom(csMucDomain);
   Element cmd=query.setChildElement("room-invite","http://jivesoftware.com/clearspace");
-  Element userjidElement=cmd.addElement("userjid");
-  userjidElement.setText(userjid.toBareJID());
-  Element roomjidElement=cmd.addElement("roomjid");
+  Element inviterjidElement=cmd.addElement("inviter");
+  inviterjidElement.setText(inviter.toBareJID());
+  Element inviteejidElement=cmd.addElement("invitee");
+  inviteejidElement.setText(invitee.toBareJID());
+  Element roomjidElement=cmd.addElement("room");
   roomjidElement.setText(room.getJID().toBareJID());
+  Element messageElement=cmd.addElement("reason");
+  messageElement.setText(reason);
   IQ result=ClearspaceManager.getInstance().query(query,15000);
   if (null != result) {
     if (result.getType() != IQ.Type.error) {
