@@ -1,0 +1,14 @@
+{
+  if (adminList == null) {
+    adminList=new ArrayList<JID>();
+  }
+ else {
+    adminList.clear();
+  }
+  List<JID> admins=new ArrayList<JID>();
+  for (  String username : usernames) {
+    admins.add(XMPPServer.getInstance().createJID(username,null));
+  }
+  adminList.addAll(admins);
+  provider.setAdmins(admins);
+}

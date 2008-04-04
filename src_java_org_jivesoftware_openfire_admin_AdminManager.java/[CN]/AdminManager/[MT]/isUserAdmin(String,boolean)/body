@@ -1,0 +1,10 @@
+{
+  if (adminList == null) {
+    loadAdminList();
+  }
+  if (allowAdminIfEmpty && adminList.isEmpty()) {
+    return "admin".equals(username);
+  }
+  JID userJID=XMPPServer.getInstance().createJID(username,null);
+  return adminList.contains(userJID);
+}

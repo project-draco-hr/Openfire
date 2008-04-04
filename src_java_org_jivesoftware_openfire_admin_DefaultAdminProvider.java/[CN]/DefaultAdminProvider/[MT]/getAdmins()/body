@@ -1,0 +1,16 @@
+{
+  List<JID> adminList=new ArrayList<JID>();
+  String jids=JiveGlobals.getProperty("admin.authorizedJIDs");
+  jids=(jids == null || jids.trim().length() == 0) ? "" : jids;
+  StringTokenizer tokenizer=new StringTokenizer(jids,",");
+  while (tokenizer.hasMoreTokens()) {
+    String jid=tokenizer.nextToken().toLowerCase().trim();
+    try {
+      adminList.add(new JID(jid));
+    }
+ catch (    IllegalArgumentException e) {
+      Log.warn("Invalid JID found in admin.authorizedJIDs system property: " + jid,e);
+    }
+  }
+  return adminList;
+}

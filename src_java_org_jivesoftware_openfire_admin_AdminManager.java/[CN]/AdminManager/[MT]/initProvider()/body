@@ -1,0 +1,13 @@
+{
+  String className=JiveGlobals.getXMLProperty("provider.admin.className","org.jivesoftware.openfire.admin.DefaultAdminProvider");
+  if (provider == null || !className.equals(provider.getClass().getName())) {
+    try {
+      Class c=ClassUtils.forName(className);
+      provider=(AdminProvider)c.newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Error loading admin provider: " + className,e);
+      provider=new DefaultAdminProvider();
+    }
+  }
+}
