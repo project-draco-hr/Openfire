@@ -9,7 +9,7 @@
     pstmt.setString(1,username);
     rs=pstmt.executeQuery();
     if (!rs.next()) {
-      throw new NotLockedOutException();
+      return null;
     }
     Date startTime=null;
     if (rs.getString(2) != null) {
@@ -22,7 +22,8 @@
     ret=new LockOutFlag(username,startTime,endTime);
   }
  catch (  Exception e) {
-    throw new NotLockedOutException();
+    Log.error("Error loading lockout information from DB",e);
+    return null;
   }
  finally {
     DbConnectionManager.closeConnection(rs,pstmt,con);

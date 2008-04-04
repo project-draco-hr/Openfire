@@ -4,17 +4,14 @@
     String username=userNode.selectSingleNode("username").getText();
     boolean isEnabled=Boolean.valueOf(userNode.selectSingleNode("enabled").getText());
     if (isEnabled) {
-      throw new NotLockedOutException();
+      return null;
     }
  else {
       return new LockOutFlag(username,null,null);
     }
   }
- catch (  NotLockedOutException e) {
-    throw e;
-  }
-catch (  Exception e) {
+ catch (  Exception e) {
     Log.error("Error while looking up user's disabled status from Clearspace: ",e);
-    throw new NotLockedOutException();
+    return null;
   }
 }
