@@ -3,7 +3,10 @@
     String path=USER_URL_PREFIX + "users/" + username;
     return ClearspaceManager.getInstance().executeRequest(GET,path);
   }
- catch (  Exception e) {
+ catch (  UserNotFoundException e) {
+    throw e;
+  }
+catch (  Exception e) {
     throw new UserNotFoundException("Error loading the user from Clearspace: ",e);
   }
 }

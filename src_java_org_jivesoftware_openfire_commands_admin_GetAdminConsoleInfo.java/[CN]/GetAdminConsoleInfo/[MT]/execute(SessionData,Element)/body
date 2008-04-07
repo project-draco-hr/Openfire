@@ -1,10 +1,14 @@
 {
+  DataForm form=new DataForm(DataForm.Type.result);
+  FormField field=form.addField();
+  field.setType(FormField.Type.hidden);
+  field.setVariable("FORM_TYPE");
+  field.addValue("http://jabber.org/protocol/admin");
   PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
   AdminConsolePlugin adminConsolePlugin=((AdminConsolePlugin)pluginManager.getPlugin("admin"));
-  bindInterface=adminConsolePlugin.getBindInterface();
-  adminPort=adminConsolePlugin.getAdminUnsecurePort();
-  adminSecurePort=adminConsolePlugin.getAdminSecurePort();
-  adminSecret=AdminConsolePlugin.secret;
+  String bindInterface=adminConsolePlugin.getBindInterface();
+  int adminPort=adminConsolePlugin.getAdminUnsecurePort();
+  int adminSecurePort=adminConsolePlugin.getAdminSecurePort();
   if (bindInterface == null) {
     Enumeration<NetworkInterface> nets=null;
     try {
@@ -36,4 +40,23 @@
       }
     }
   }
+  if (bindInterface == null) {
+    Element note=command.addElement("note");
+    note.addAttribute("type","error");
+    note.setText("Couldn't find a valid interface.");
+    return;
+  }
+  field=form.addField();
+  field.setLabel("Bind interface");
+  field.setVariable("bindInterface");
+  field.addValue(bindInterface);
+  field=form.addField();
+  field.setLabel("Port");
+  field.setVariable("adminPort");
+  field.addValue(adminPort);
+  field=form.addField();
+  field.setLabel("Secure port");
+  field.setVariable("adminSecurePort");
+  field.addValue(adminSecurePort);
+  command.add(form.getElement());
 }
