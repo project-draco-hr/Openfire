@@ -1,5 +1,7 @@
 {
-  int pageSize=JiveGlobals.getXMLProperty("ldap.pagedResultsSize",-1);
+  int pageSize=-1;
+  String pageSizeStr=properties.get("ldap.pagedResultsSize");
+  if (pageSizeStr != null)   pageSize=Integer.parseInt(pageSizeStr,-1);
   LdapContext ctx=null;
   LdapContext ctx2=null;
   Integer count=0;

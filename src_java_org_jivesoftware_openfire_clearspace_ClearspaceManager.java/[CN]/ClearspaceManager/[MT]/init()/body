@@ -1,4 +1,26 @@
 {
+  JiveGlobals.migrateProperty("clearspace.uri");
+  JiveGlobals.migrateProperty("clearspace.sharedSecret");
+  if (isEnabled()) {
+    if (JiveGlobals.getProperty("provider.user.className") == null) {
+      JiveGlobals.setProperty("provider.user.className","org.jivesoftware.openfire.clearspace.ClearspaceUserProvider");
+    }
+    if (JiveGlobals.getProperty("provider.group.className") == null) {
+      JiveGlobals.setProperty("provider.group.className","org.jivesoftware.openfire.clearspace.ClearspaceGroupProvider");
+    }
+    if (JiveGlobals.getProperty("provider.vcard.className") == null) {
+      JiveGlobals.setProperty("provider.vcard.className","org.jivesoftware.openfire.clearspace.ClearspaceVCardProvider");
+    }
+    if (JiveGlobals.getProperty("provider.lockout.className") == null) {
+      JiveGlobals.setProperty("provider.lockout.className","org.jivesoftware.openfire.clearspace.ClearspaceLockOutProvider");
+    }
+    if (JiveGlobals.getProperty("provider.securityAudit.className") == null) {
+      JiveGlobals.setProperty("provider.securityAudit.className","org.jivesoftware.openfire.clearspace.ClearspaceSecurityAuditProvider");
+    }
+    if (JiveGlobals.getProperty("provider.admin.className") == null) {
+      JiveGlobals.setProperty("provider.admin.className","org.jivesoftware.openfire.clearspace.ClearspaceAdminProvider");
+    }
+  }
   this.uri=properties.get("clearspace.uri");
   if (uri != null) {
     if (!this.uri.endsWith("/")) {

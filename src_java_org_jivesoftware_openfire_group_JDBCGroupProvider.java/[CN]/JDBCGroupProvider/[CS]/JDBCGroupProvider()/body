@@ -1,5 +1,13 @@
 {
-  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.connectionString");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.groupCountSQL");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.allGroupsSQL");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.userGroupsSQL");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.descriptionSQL");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.loadMembersSQL");
+  JiveGlobals.migrateProperty("jdbcGroupProvider.loadAdminsSQL");
+  String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
   }
@@ -7,11 +15,11 @@
     Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
     return;
   }
-  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.connectionString");
-  groupCountSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.groupCountSQL");
-  allGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.allGroupsSQL");
-  userGroupsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.userGroupsSQL");
-  descriptionSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.descriptionSQL");
-  loadMembersSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.loadMembersSQL");
-  loadAdminsSQL=JiveGlobals.getXMLProperty("jdbcGroupProvider.loadAdminsSQL");
+  connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
+  groupCountSQL=JiveGlobals.getProperty("jdbcGroupProvider.groupCountSQL");
+  allGroupsSQL=JiveGlobals.getProperty("jdbcGroupProvider.allGroupsSQL");
+  userGroupsSQL=JiveGlobals.getProperty("jdbcGroupProvider.userGroupsSQL");
+  descriptionSQL=JiveGlobals.getProperty("jdbcGroupProvider.descriptionSQL");
+  loadMembersSQL=JiveGlobals.getProperty("jdbcGroupProvider.loadMembersSQL");
+  loadAdminsSQL=JiveGlobals.getProperty("jdbcGroupProvider.loadAdminsSQL");
 }

@@ -1,5 +1,6 @@
 {
-  String className=JiveGlobals.getXMLProperty("provider.lockout.className","org.jivesoftware.openfire.lockout.DefaultLockOutProvider");
+  JiveGlobals.migrateProperty("provider.lockout.className");
+  String className=JiveGlobals.getProperty("provider.lockout.className","org.jivesoftware.openfire.lockout.DefaultLockOutProvider");
   if (provider == null || !className.equals(provider.getClass().getName())) {
     try {
       Class c=ClassUtils.forName(className);

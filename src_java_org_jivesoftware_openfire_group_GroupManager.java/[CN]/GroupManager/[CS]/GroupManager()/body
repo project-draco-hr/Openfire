@@ -1,15 +1,7 @@
 {
   groupCache=CacheFactory.createCache("Group");
   groupMetaCache=CacheFactory.createCache("Group Metadata Cache");
-  String className=JiveGlobals.getXMLProperty("provider.group.className","org.jivesoftware.openfire.group.DefaultGroupProvider");
-  try {
-    Class c=ClassUtils.forName(className);
-    provider=(GroupProvider)c.newInstance();
-  }
- catch (  Exception e) {
-    Log.error("Error loading group provider: " + className,e);
-    provider=new DefaultGroupProvider();
-  }
+  initProvider();
   GroupEventDispatcher.addListener(new GroupEventListener(){
     public void groupCreated(    Group group,    Map params){
       groupCache.put(group.getName(),group);
@@ -56,6 +48,21 @@
     }
   }
 );
+  PropertyEventListener propListener=new PropertyEventListener(){
+    public void propertySet(    String property,    Map params){
+      if ("provider.group.className".equals(property)) {
+        initProvider();
+      }
+    }
+    public void propertyDeleted(    String property,    Map params){
+    }
+    public void xmlPropertySet(    String property,    Map params){
+    }
+    public void xmlPropertyDeleted(    String property,    Map params){
+    }
+  }
+;
+  PropertyEventDispatcher.addListener(propListener);
   Runnable task=new Runnable(){
     public void run(){
       Collection<Group> groups=getSharedGroups();

@@ -1,8 +1,10 @@
 {
+  JiveGlobals.migrateProperty("ldap.princField");
+  JiveGlobals.migrateProperty("ldap.princSearchFilter");
   manager=LdapManager.getInstance();
   usernameField=manager.getUsernameField();
-  princField=JiveGlobals.getXMLProperty("ldap.princField","k5login");
-  princSearchFilter=JiveGlobals.getXMLProperty("ldap.princSearchFilter");
+  princField=JiveGlobals.getProperty("ldap.princField","k5login");
+  princSearchFilter=JiveGlobals.getProperty("ldap.princSearchFilter");
   StringBuilder filter=new StringBuilder();
   if (princSearchFilter == null) {
     filter.append("(").append(princField).append("={0})");

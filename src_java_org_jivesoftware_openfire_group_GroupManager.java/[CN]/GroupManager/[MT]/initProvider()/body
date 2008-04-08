@@ -1,0 +1,12 @@
+{
+  JiveGlobals.migrateProperty("provider.group.className");
+  String className=JiveGlobals.getProperty("provider.group.className","org.jivesoftware.openfire.group.DefaultGroupProvider");
+  try {
+    Class c=ClassUtils.forName(className);
+    provider=(GroupProvider)c.newInstance();
+  }
+ catch (  Exception e) {
+    Log.error("Error loading group provider: " + className,e);
+    provider=new DefaultGroupProvider();
+  }
+}

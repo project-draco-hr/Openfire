@@ -1,5 +1,6 @@
 {
-  String className=JiveGlobals.getXMLProperty("provider.auth.className","org.jivesoftware.openfire.auth.DefaultAuthProvider");
+  JiveGlobals.migrateProperty("provider.auth.className");
+  String className=JiveGlobals.getProperty("provider.auth.className","org.jivesoftware.openfire.auth.DefaultAuthProvider");
   if (authProvider == null || !className.equals(authProvider.getClass().getName())) {
     try {
       Class c=ClassUtils.forName(className);

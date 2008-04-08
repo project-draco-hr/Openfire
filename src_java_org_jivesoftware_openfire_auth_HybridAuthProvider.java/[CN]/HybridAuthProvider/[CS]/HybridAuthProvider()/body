@@ -1,5 +1,12 @@
 {
-  String primaryClass=JiveGlobals.getXMLProperty("hybridAuthProvider.primaryProvider.className");
+  JiveGlobals.migrateProperty("hybridAuthProvider.primaryProvider.className");
+  JiveGlobals.migrateProperty("hybridAuthProvider.primaryProvider.className");
+  JiveGlobals.migrateProperty("hybridAuthProvider.secondaryProvider.className");
+  JiveGlobals.migrateProperty("hybridAuthProvider.tertiaryProvider.className");
+  JiveGlobals.migrateProperty("hybridAuthProvider.primaryProvider.overrideList");
+  JiveGlobals.migrateProperty("hybridAuthProvider.secondaryProvider.overrideList");
+  JiveGlobals.migrateProperty("hybridAuthProvider.tertiaryProvider.overrideList");
+  String primaryClass=JiveGlobals.getProperty("hybridAuthProvider.primaryProvider.className");
   if (primaryClass == null) {
     Log.error("A primary AuthProvider must be specified. Authentication will be disabled.");
     return;
@@ -18,7 +25,7 @@
     Log.error("Unable to load primary auth provider: " + primaryClass + ". Authentication will be disabled.",e);
     return;
   }
-  String secondaryClass=JiveGlobals.getXMLProperty("hybridAuthProvider.secondaryProvider.className");
+  String secondaryClass=JiveGlobals.getProperty("hybridAuthProvider.secondaryProvider.className");
   if (secondaryClass != null) {
     try {
       Class c=ClassUtils.forName(secondaryClass);
@@ -35,7 +42,7 @@
       Log.error("Unable to load secondary auth provider: " + secondaryClass,e);
     }
   }
-  String tertiaryClass=JiveGlobals.getXMLProperty("hybridAuthProvider.tertiaryProvider.className");
+  String tertiaryClass=JiveGlobals.getProperty("hybridAuthProvider.tertiaryProvider.className");
   if (tertiaryClass != null) {
     try {
       Class c=ClassUtils.forName(tertiaryClass);
@@ -53,18 +60,18 @@
       Log.error("Unable to load tertiary auth provider: " + tertiaryClass,e);
     }
   }
-  String overrideList=JiveGlobals.getXMLProperty("hybridAuthProvider.primaryProvider.overrideList","");
+  String overrideList=JiveGlobals.getProperty("hybridAuthProvider.primaryProvider.overrideList","");
   for (  String user : overrideList.split(",")) {
     primaryOverrides.add(user.trim().toLowerCase());
   }
   if (secondaryProvider != null) {
-    overrideList=JiveGlobals.getXMLProperty("hybridAuthProvider.secondaryProvider.overrideList","");
+    overrideList=JiveGlobals.getProperty("hybridAuthProvider.secondaryProvider.overrideList","");
     for (    String user : overrideList.split(",")) {
       secondaryOverrides.add(user.trim().toLowerCase());
     }
   }
   if (tertiaryProvider != null) {
-    overrideList=JiveGlobals.getXMLProperty("hybridAuthProvider.tertiaryProvider.overrideList","");
+    overrideList=JiveGlobals.getProperty("hybridAuthProvider.tertiaryProvider.overrideList","");
     for (    String user : overrideList.split(",")) {
       tertiaryOverrides.add(user.trim().toLowerCase());
     }

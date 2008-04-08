@@ -1,5 +1,9 @@
 {
-  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.connectionString");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.passwordSQL");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.passwordType");
+  String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
   }
@@ -7,11 +11,11 @@
     Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
     return;
   }
-  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.connectionString");
-  passwordSQL=JiveGlobals.getXMLProperty("jdbcAuthProvider.passwordSQL");
+  connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
+  passwordSQL=JiveGlobals.getProperty("jdbcAuthProvider.passwordSQL");
   passwordType=PasswordType.plain;
   try {
-    passwordType=PasswordType.valueOf(JiveGlobals.getXMLProperty("jdbcAuthProvider.passwordType","plain"));
+    passwordType=PasswordType.valueOf(JiveGlobals.getProperty("jdbcAuthProvider.passwordType","plain"));
   }
  catch (  IllegalArgumentException iae) {
     Log.error(iae);

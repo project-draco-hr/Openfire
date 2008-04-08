@@ -1,5 +1,14 @@
 {
-  String jdbcDriver=JiveGlobals.getXMLProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.connectionString");
+  JiveGlobals.migrateProperty("jdbcUserProvider.loadUserSQL");
+  JiveGlobals.migrateProperty("jdbcUserProvider.userCountSQL");
+  JiveGlobals.migrateProperty("jdbcUserProvider.allUsersSQL");
+  JiveGlobals.migrateProperty("jdbcUserProvider.searchSQL");
+  JiveGlobals.migrateProperty("jdbcUserProvider.usernameField");
+  JiveGlobals.migrateProperty("jdbcUserProvider.nameField");
+  JiveGlobals.migrateProperty("jdbcUserProvider.emailField");
+  String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
   }
@@ -7,12 +16,12 @@
     Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
     return;
   }
-  connectionString=JiveGlobals.getXMLProperty("jdbcProvider.connectionString");
-  loadUserSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.loadUserSQL");
-  userCountSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.userCountSQL");
-  allUsersSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.allUsersSQL");
-  searchSQL=JiveGlobals.getXMLProperty("jdbcUserProvider.searchSQL");
-  usernameField=JiveGlobals.getXMLProperty("jdbcUserProvider.usernameField");
-  nameField=JiveGlobals.getXMLProperty("jdbcUserProvider.nameField");
-  emailField=JiveGlobals.getXMLProperty("jdbcUserProvider.emailField");
+  connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
+  loadUserSQL=JiveGlobals.getProperty("jdbcUserProvider.loadUserSQL");
+  userCountSQL=JiveGlobals.getProperty("jdbcUserProvider.userCountSQL");
+  allUsersSQL=JiveGlobals.getProperty("jdbcUserProvider.allUsersSQL");
+  searchSQL=JiveGlobals.getProperty("jdbcUserProvider.searchSQL");
+  usernameField=JiveGlobals.getProperty("jdbcUserProvider.usernameField");
+  nameField=JiveGlobals.getProperty("jdbcUserProvider.nameField");
+  emailField=JiveGlobals.getProperty("jdbcUserProvider.emailField");
 }
