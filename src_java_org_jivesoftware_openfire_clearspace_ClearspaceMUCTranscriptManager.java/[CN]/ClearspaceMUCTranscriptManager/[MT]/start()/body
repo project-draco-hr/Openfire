@@ -5,12 +5,40 @@
       if (roomEvents.isEmpty()) {
         return;
       }
+      IQ packet=new IQ();
+      packet.setTo(csComponentAddress);
+      packet.setFrom(csMucDomain);
+      packet.setType(IQ.Type.set);
+      Element transcriptElement=packet.setChildElement("transcript-update","http://jivesoftware.com/clearspace");
       for (      ClearspaceMUCTranscriptEvent event : roomEvents) {
-        Log.info(event.roomJID.getNode() + " - " + event.nickname+ ": "+ event.body);
-      }
-      roomEvents.clear();
-    }
-  }
+        Element mucEventElement=null;
+switch (event.type) {
+case roomMessageReceived:
+          mucEventElement=transcriptElement.addElement("message");
+        mucEventElement.addElement("body").setText(event.body);
+      break;
+case occupantJoined:
+    mucEventElement=transcriptElement.addElement("presence");
+  break;
+case occupantLeft:
+mucEventElement=transcriptElement.addElement("presence");
+mucEventElement.addAttribute("type","unavailable");
+break;
+}
+if (mucEventElement != null) {
+mucEventElement.addAttribute("from",event.user.toBareJID());
+mucEventElement.addElement("roomjid").setText(event.roomJID.toBareJID());
+mucEventElement.addElement("timestamp").setText(Long.toString(event.timestamp));
+}
+}
+IQ result=ClearspaceManager.getInstance().query(packet,15000);
+if (result == null) {
+Log.warn("Did not get a reply from sending a transcript-update packet to Clearspace.");
+return;
+}
+roomEvents.clear();
+}
+}
 ;
-  taskEngine.schedule(transcriptUpdateTask,FLUSH_PERIOD,FLUSH_PERIOD);
+taskEngine.schedule(transcriptUpdateTask,FLUSH_PERIOD,FLUSH_PERIOD);
 }

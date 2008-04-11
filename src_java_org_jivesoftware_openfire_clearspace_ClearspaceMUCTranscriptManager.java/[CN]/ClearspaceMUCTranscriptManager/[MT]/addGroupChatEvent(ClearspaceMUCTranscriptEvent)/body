@@ -1,8 +1,6 @@
 {
   roomEvents.add(event);
-  if (getEffectiveQueueSize(roomEvents) > MAX_QUEUE_SIZE) {
-    transcriptUpdateTask.cancel();
-    transcriptUpdateTask.run();
-    taskEngine.schedule(transcriptUpdateTask,FLUSH_PERIOD,FLUSH_PERIOD);
+  if (roomEvents.size() > MAX_QUEUE_SIZE) {
+    forceQueueFlush();
   }
 }
