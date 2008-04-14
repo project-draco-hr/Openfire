@@ -13,9 +13,9 @@
       for (      ClearspaceMUCTranscriptEvent event : roomEvents) {
         Element mucEventElement=null;
 switch (event.type) {
-case roomMessageReceived:
+case messageReceived:
           mucEventElement=transcriptElement.addElement("message");
-        mucEventElement.addElement("body").setText(event.body);
+        mucEventElement.addElement("body").setText(event.content);
       break;
 case occupantJoined:
     mucEventElement=transcriptElement.addElement("presence");
@@ -24,10 +24,18 @@ case occupantLeft:
 mucEventElement=transcriptElement.addElement("presence");
 mucEventElement.addAttribute("type","unavailable");
 break;
+case roomSubjectChanged:
+mucEventElement=transcriptElement.addElement("subject-change");
+mucEventElement.addElement("subject").setText(event.content);
+break;
 }
 if (mucEventElement != null) {
+if (event.user != null) {
 mucEventElement.addAttribute("from",event.user.toBareJID());
+}
+if (event.roomJID != null) {
 mucEventElement.addElement("roomjid").setText(event.roomJID.toBareJID());
+}
 mucEventElement.addElement("timestamp").setText(Long.toString(event.timestamp));
 }
 }
