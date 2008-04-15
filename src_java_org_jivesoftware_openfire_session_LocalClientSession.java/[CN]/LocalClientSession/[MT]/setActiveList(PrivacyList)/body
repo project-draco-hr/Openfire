@@ -1,3 +1,7 @@
 {
   this.activeList=activeList != null ? activeList.getName() : null;
+  if (ClusterManager.isClusteringStarted()) {
+    Cache<String,ClientSessionInfo> cache=SessionManager.getInstance().getSessionInfoCache();
+    cache.put(getAddress().toString(),new ClientSessionInfo(this));
+  }
 }

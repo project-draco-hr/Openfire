@@ -18,4 +18,8 @@
  else   if (this.presence.isAvailable()) {
     PresenceEventDispatcher.presenceChanged(this,presence);
   }
+  if (ClusterManager.isClusteringStarted()) {
+    Cache<String,ClientSessionInfo> cache=SessionManager.getInstance().getSessionInfoCache();
+    cache.put(getAddress().toString(),new ClientSessionInfo(this));
+  }
 }

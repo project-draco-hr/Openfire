@@ -1,3 +1,10 @@
 {
+  if ((this.defaultList == null && defaultList == null) || (defaultList != null && defaultList.getName().equals(this.defaultList))) {
+    return;
+  }
   this.defaultList=defaultList != null ? defaultList.getName() : null;
+  if (ClusterManager.isClusteringStarted()) {
+    Cache<String,ClientSessionInfo> cache=SessionManager.getInstance().getSessionInfoCache();
+    cache.put(getAddress().toString(),new ClientSessionInfo(this));
+  }
 }
