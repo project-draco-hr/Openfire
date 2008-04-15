@@ -4,6 +4,11 @@
   initProvider();
   GroupEventDispatcher.addListener(new GroupEventListener(){
     public void groupCreated(    Group group,    Map params){
+      if (group.getProperties().get("sharedRoster.showInRoster") == null) {
+        group.getProperties().put("sharedRoster.showInRoster","nobody");
+        group.getProperties().put("sharedRoster.displayName","");
+        group.getProperties().put("sharedRoster.groupList","");
+      }
       groupCache.put(group.getName(),group);
       groupMetaCache.clear();
     }

@@ -1,12 +1,9 @@
 {
   try {
-    String path=URL_PREFIX + "groups/" + URLEncoder.encode(name,"UTF-8");
+    String path=URL_PREFIX + "socialGroupsByName/" + name;
     return ClearspaceManager.getInstance().executeRequest(GET,path);
   }
- catch (  GroupNotFoundException gnfe) {
-    throw gnfe;
-  }
-catch (  Exception e) {
+ catch (  Exception e) {
     throw new GroupNotFoundException("Unexpected error",e);
   }
 }

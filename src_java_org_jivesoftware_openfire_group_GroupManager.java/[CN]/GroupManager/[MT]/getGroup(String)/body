@@ -1,13 +1,3 @@
 {
-  Group group=groupCache.get(name);
-  if (group == null) {
-synchronized (name.intern()) {
-      group=groupCache.get(name);
-      if (group == null) {
-        group=provider.getGroup(name);
-        groupCache.put(name,group);
-      }
-    }
-  }
-  return group;
+  return getGroup(name,false);
 }

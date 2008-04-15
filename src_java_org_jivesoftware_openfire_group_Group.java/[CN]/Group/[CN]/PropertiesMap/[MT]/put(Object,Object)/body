@@ -8,6 +8,9 @@
 synchronized (keyString.intern()) {
     if (properties.containsKey(keyString)) {
       String originalValue=properties.get(keyString);
+      if (originalValue != null && originalValue.equals(value)) {
+        return value;
+      }
       answer=properties.put(keyString,(String)value);
       updateProperty(keyString,(String)value);
       eventParams.put("type","propertyModified");

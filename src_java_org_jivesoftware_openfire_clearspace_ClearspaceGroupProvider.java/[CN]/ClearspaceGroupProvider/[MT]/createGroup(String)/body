@@ -1,21 +1,3 @@
 {
-  if (isReadOnly()) {
-    throw new UnsupportedOperationException("Could not create groups.");
-  }
-  try {
-    String path=URL_PREFIX + "groups";
-    Document groupDoc=DocumentHelper.createDocument();
-    Element rootE=groupDoc.addElement("createGroup");
-    Element nameE=rootE.addElement("name");
-    nameE.addText(name);
-    rootE.addElement("description");
-    Element group=ClearspaceManager.getInstance().executeRequest(POST,path,groupDoc.asXML());
-    return translateGroup(group);
-  }
- catch (  GroupAlreadyExistsException gaee) {
-    throw gaee;
-  }
-catch (  Exception e) {
-    throw new UnsupportedOperationException("Unexpected error",e);
-  }
+  throw new UnsupportedOperationException("Could not create groups.");
 }

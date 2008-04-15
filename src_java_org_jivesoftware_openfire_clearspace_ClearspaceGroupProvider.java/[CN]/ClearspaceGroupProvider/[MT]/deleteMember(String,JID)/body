@@ -1,30 +1,3 @@
 {
-  long userID;
-  long groupID;
-  try {
-    userID=ClearspaceManager.getInstance().getUserID(user);
-    groupID=ClearspaceManager.getInstance().getGroupID(groupName);
-  }
- catch (  GroupNotFoundException e) {
-    return;
-  }
-catch (  UserNotFoundException e) {
-    return;
-  }
-catch (  Exception e) {
-    throw new UnsupportedOperationException("Unexpected error",e);
-  }
-  try {
-    String path=URL_PREFIX + "groupAdmins/" + groupID+ "/"+ userID;
-    ClearspaceManager.getInstance().executeRequest(DELETE,path);
-    path=URL_PREFIX + "groupMembers/" + groupID+ "/"+ userID;
-    ClearspaceManager.getInstance().executeRequest(DELETE,path);
-  }
- catch (  GroupNotFoundException e) {
-  }
-catch (  UserNotFoundException e) {
-  }
-catch (  Exception e) {
-    throw new UnsupportedOperationException("Unexpected error",e);
-  }
+  throw new UnsupportedOperationException("Could not modify groups.");
 }

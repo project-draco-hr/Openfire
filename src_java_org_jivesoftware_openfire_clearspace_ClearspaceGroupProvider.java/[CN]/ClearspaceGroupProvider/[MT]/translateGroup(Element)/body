@@ -1,21 +1,42 @@
 {
   Node groupNode=responseNode.selectSingleNode("return");
-  String name=null;
+  String name=groupNode.selectSingleNode("displayName").getText();
+  String displayName=groupNode.selectSingleNode("name").getText();
+  long id=Long.parseLong(groupNode.selectSingleNode("ID").getText());
+  int type=Integer.parseInt(groupNode.selectSingleNode("typeID").getText());
   String description=null;
-  long id=-1;
-  name=groupNode.selectSingleNode("name").getText();
-  id=Long.parseLong(groupNode.selectSingleNode("ID").getText());
   Node tmpNode=groupNode.selectSingleNode("description");
   if (tmpNode != null) {
     description=tmpNode.getText();
   }
-  Collection<JID> members=null;
-  Collection<JID> administrators=null;
+  Collection<JID> members=new ArrayList<JID>();
+  Collection<JID> administrators=new ArrayList<JID>();
   try {
-    members=getGroupMembers(id,false);
-    administrators=getGroupMembers(id,true);
+    XMPPServer server=XMPPServer.getInstance();
+    List<Element> membersElement=(List<Element>)getGroupMembers(id).elements("return");
+    for (    Element memberElement : membersElement) {
+      String username=memberElement.element("user").element("username").getText();
+      String typeID=memberElement.element("typeID").getText();
+      if (TYPE_ID_OWNER.equals(typeID)) {
+        administrators.add(server.createJID(username,null));
+      }
+ else       if (TYPE_ID_MEMBER.equals(typeID)) {
+        members.add(server.createJID(username,null));
+      }
+ else {
+      }
+    }
   }
  catch (  GroupNotFoundException e) {
   }
-  return new Group(name,description,members,administrators);
+  Group group=new Group(name,description,members,administrators);
+  if (type == 0) {
+    group.getProperties().put("sharedRoster.showInRoster","everybody");
+  }
+ else {
+    group.getProperties().put("sharedRoster.showInRoster","onlyGroup");
+  }
+  group.getProperties().put("sharedRoster.displayName",displayName);
+  group.getProperties().put("sharedRoster.groupList","");
+  return group;
 }
