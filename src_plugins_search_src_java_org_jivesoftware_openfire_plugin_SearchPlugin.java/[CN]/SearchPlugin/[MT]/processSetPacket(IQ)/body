@@ -10,10 +10,19 @@
   }
   final Element incomingForm=packet.getChildElement();
   final boolean isDataFormQuery=(incomingForm.element(QName.get("x","jabber:x:data")) != null);
-  final Set<User> searchResults=performSearch(incomingForm);
   final Element rsmElement=incomingForm.element(QName.get("set",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT));
-  final boolean applyRSM=rsmElement != null && !searchResults.isEmpty();
-  if (applyRSM) {
+  if (rsmElement != null) {
+    final Element maxElement=rsmElement.element("max");
+    final Element startIndexElement=rsmElement.element("index");
+    int startIndex=0;
+    if (startIndexElement != null) {
+      startIndex=Integer.parseInt(startIndexElement.getTextTrim());
+    }
+    int max=-1;
+    if (maxElement != null) {
+      max=Integer.parseInt(maxElement.getTextTrim());
+    }
+    final Set<User> searchResults=performSearch(incomingForm,startIndex,max);
     final List<User> rsmResults;
     final ResultSet<User> rs=new ResultSetImpl<User>(searchResults);
     try {
@@ -34,6 +43,7 @@
     resultIQ.getChildElement().add(set);
   }
  else {
+    final Set<User> searchResults=performSearch(incomingForm);
     if (isDataFormQuery) {
       resultIQ=replyDataFormResult(searchResults,packet);
     }
