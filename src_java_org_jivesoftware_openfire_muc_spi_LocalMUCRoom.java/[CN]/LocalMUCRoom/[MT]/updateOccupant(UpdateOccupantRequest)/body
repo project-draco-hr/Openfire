@@ -1,7 +1,9 @@
 {
   MUCRole occupantRole=occupants.get(updateRequest.getNickname().toLowerCase());
   if (occupantRole != null) {
-    occupantRole.setAffiliation(updateRequest.getAffiliation());
+    if (updateRequest.isAffiliationChanged()) {
+      occupantRole.setAffiliation(updateRequest.getAffiliation());
+    }
     occupantRole.setRole(updateRequest.getRole());
     CacheFactory.doClusterTask(new UpdateOccupant(this,occupantRole));
     return occupantRole.getPresence();

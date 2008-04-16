@@ -1,9 +1,20 @@
 {
   MUCRole role=occupantsByFullJID.get(jid);
   if (role != null) {
-    role.setRole(newRole);
-    CacheFactory.doClusterTask(new UpdateOccupant(this,role));
-    return role.getPresence().createCopy();
+    if (role.isLocal()) {
+      role.setRole(newRole);
+      CacheFactory.doClusterTask(new UpdateOccupant(this,role));
+      return role.getPresence().createCopy();
+    }
+ else {
+      Element element=(Element)CacheFactory.doSynchronousClusterTask(new UpdateOccupantRequest(this,role.getNickname(),null,newRole),role.getNodeID().toByteArray());
+      if (element != null) {
+        return new Presence(element,true);
+      }
+ else {
+        throw new NotAllowedException();
+      }
+    }
   }
   return null;
 }
