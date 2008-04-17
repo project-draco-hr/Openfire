@@ -4,13 +4,14 @@
   info=new IQHandlerInfo("pubsub","http://jabber.org/protocol/pubsub");
   Thread thread=new Thread("PEP avaiable sessions handler "){
     public void run(){
-      for (; ; ) {
+      final XMPPServer server=XMPPServer.getInstance();
+      while (!server.isShuttingDown()) {
         try {
           JID availableSessionJID=availableSessions.take();
           try {
-            Roster roster=XMPPServer.getInstance().getRosterManager().getRoster(availableSessionJID.getNode());
+            Roster roster=server.getRosterManager().getRoster(availableSessionJID.getNode());
             for (            RosterItem item : roster.getRosterItems()) {
-              if (item.getSubStatus() == RosterItem.SUB_BOTH) {
+              if (server.isLocal(item.getJid()) && (item.getSubStatus() == RosterItem.SUB_BOTH || item.getSubStatus() == RosterItem.SUB_TO)) {
                 PEPService pepService=getPEPService(item.getJid().toBareJID());
                 if (pepService != null) {
                   pepService.sendLastPublishedItems(availableSessionJID);

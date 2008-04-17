@@ -1,4 +1,10 @@
 {
+  if (!isEnabled()) {
+    IQ reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(PacketError.Condition.service_unavailable);
+    return reply;
+  }
   JID senderJID=packet.getFrom();
   if (packet.getTo() == null) {
     if (packet.getType() == IQ.Type.set) {
