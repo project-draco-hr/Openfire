@@ -1,0 +1,27 @@
+{
+  if (!isAuthenticated(request,response))   return;
+  String path=request.getPathInfo();
+  Log.debug("WebDAVLiteServlet: DELETE with path = " + path);
+  if (path == null || !path.startsWith("/rooms/")) {
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+  String[] pathPcs=path.split("/");
+  if (pathPcs.length != 5) {
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+  String service=pathPcs[2];
+  String room=pathPcs[3];
+  String filename=pathPcs[4];
+  if (!isAuthorized(request,response,service,room))   return;
+  Log.debug("WebDAVListServlet: Service = " + service + ", room = "+ room+ ", file = "+ filename);
+  File file=getFileReference(service,room,filename);
+  if (file.exists()) {
+    file.delete();
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+  }
+ else {
+    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+  }
+}

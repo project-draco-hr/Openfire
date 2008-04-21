@@ -1,0 +1,32 @@
+{
+  String auth=request.getHeader("Authorization");
+  JID jid;
+  try {
+    if (auth == null || !request.getAuthType().equals(HttpServletRequest.BASIC_AUTH)) {
+      throw new Exception("No authorization or improper authorization provided.");
+    }
+    auth=auth.substring(auth.indexOf(" "));
+    String decoded=new String(Base64.decode(auth));
+    int i=decoded.indexOf(":");
+    String username=decoded.substring(0,i);
+    if (!username.contains("@")) {
+      throw new Exception("Not a valid JID.");
+    }
+    jid=new JID(username);
+    if (XMPPServer.getInstance().isLocal(jid)) {
+      String password=decoded.substring(i + 1,decoded.length());
+      if (AuthFactory.authenticate(username,password) == null) {
+        throw new Exception("Authentication failed.");
+      }
+    }
+ else {
+      throw new Exception("Not a local account.");
+    }
+    return true;
+  }
+ catch (  Exception e) {
+    response.setHeader("WWW-Authenticate","Basic realm=\"Openfire WebDAV\"");
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    return false;
+  }
+}

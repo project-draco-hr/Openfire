@@ -1,0 +1,43 @@
+{
+  if (!isAuthenticated(request,response))   return;
+  String path=request.getPathInfo();
+  Log.debug("WebDAVLiteServlet: PUT with path = " + path);
+  if (request.getContentLength() <= 0) {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    return;
+  }
+  if (path == null || !path.startsWith("/rooms/")) {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    return;
+  }
+  String[] pathPcs=path.split("/");
+  if (pathPcs.length != 5) {
+    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    return;
+  }
+  String service=pathPcs[2];
+  String room=pathPcs[3];
+  String filename=pathPcs[4];
+  if (!isAuthorized(request,response,service,room))   return;
+  Log.debug("WebDAVListServlet: Service = " + service + ", room = "+ room+ ", file = "+ filename);
+  File file=getFileReference(service,room,filename);
+  Boolean overwriteFile=file.exists();
+  FileOutputStream fileStream=new FileOutputStream(file,false);
+  ServletInputStream inputStream=request.getInputStream();
+  byte[] byteArray=new byte[request.getContentLength()];
+  int bytesRead=0;
+  while (bytesRead != -1) {
+    bytesRead=inputStream.read(byteArray,bytesRead,request.getContentLength());
+  }
+  fileStream.write(byteArray);
+  fileStream.close();
+  inputStream.close();
+  if (overwriteFile) {
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    response.setHeader("Location",request.getRequestURI());
+  }
+ else {
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    response.setHeader("Location",request.getRequestURI());
+  }
+}

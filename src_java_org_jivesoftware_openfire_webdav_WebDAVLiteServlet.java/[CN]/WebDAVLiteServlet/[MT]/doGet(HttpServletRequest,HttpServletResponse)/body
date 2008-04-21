@@ -1,0 +1,52 @@
+{
+  if (!isAuthenticated(request,response))   return;
+  String path=request.getPathInfo();
+  Log.debug("WebDAVLiteServlet: GET with path = " + path);
+  if (path == null || !path.startsWith("/rooms/")) {
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+  String[] pathPcs=path.split("/");
+  if (pathPcs.length < 4 || pathPcs.length > 5) {
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    return;
+  }
+  String service=pathPcs[2];
+  String room=pathPcs[3];
+  if (!isAuthorized(request,response,service,room))   return;
+  if (pathPcs.length == 5) {
+    String filename=pathPcs[4];
+    File file=getFileReference(service,room,filename);
+    Log.debug("WebDAVListServlet: File path = " + file.getAbsolutePath());
+    Log.debug("WebDAVListServlet: Service = " + service + ", room = "+ room+ ", file = "+ filename);
+    if (file.exists()) {
+      response.setStatus(HttpServletResponse.SC_OK);
+      response.setContentType("application/octet-stream");
+      response.setContentLength((int)file.length());
+      FileInputStream fileStream=new FileInputStream(file);
+      byte[] byteArray=new byte[(int)file.length()];
+      new DataInputStream(fileStream).readFully(byteArray);
+      fileStream.close();
+      response.getOutputStream().write(byteArray);
+    }
+ else {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    }
+  }
+ else {
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType("text/plain");
+    response.setCharacterEncoding("utf-8");
+    String content="Files available for " + room + "@"+ service+ ":\n";
+    File fileDir=getFileReference(service,room,null);
+    Log.debug("WebDAVListServlet: File path = " + fileDir.getAbsolutePath());
+    if (fileDir.exists()) {
+      File[] files=fileDir.listFiles();
+      for (      File file : files) {
+        content+=file.getName() + "\n";
+      }
+    }
+    response.getOutputStream().write(content.getBytes());
+    Log.debug("WebDAVListServlet: Service = " + service + ", room = "+ room);
+  }
+}
