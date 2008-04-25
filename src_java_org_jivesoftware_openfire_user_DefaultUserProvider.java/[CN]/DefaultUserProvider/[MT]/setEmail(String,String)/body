@@ -7,7 +7,12 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(UPDATE_EMAIL);
-    pstmt.setString(1,email);
+    if (email == null || email.matches("\\s*")) {
+      pstmt.setNull(1,Types.VARCHAR);
+    }
+ else {
+      pstmt.setString(1,email);
+    }
     pstmt.setString(2,username);
     pstmt.executeUpdate();
   }

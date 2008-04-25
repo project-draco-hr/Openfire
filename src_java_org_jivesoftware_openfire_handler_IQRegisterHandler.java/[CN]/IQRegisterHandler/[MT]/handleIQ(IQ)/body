@@ -118,8 +118,11 @@
           email=iqElement.elementText("email");
           name=iqElement.elementText("name");
         }
-        if (email == null || "".equals(email)) {
-          email=" ";
+        if (email != null && email.matches("\\s*")) {
+          email=null;
+        }
+        if (name != null && name.matches("\\s*")) {
+          name=null;
         }
         if (username != null) {
           Stringprep.nodeprep(username);

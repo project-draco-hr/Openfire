@@ -2,7 +2,10 @@
   if (UserManager.getUserProvider().isReadOnly()) {
     throw new UnsupportedOperationException("User provider is read-only.");
   }
-  if ((name == null || name.equals("")) && UserManager.getUserProvider().isNameRequired()) {
+  if (name != null && name.matches("\\s*")) {
+    name=null;
+  }
+  if (name == null && UserManager.getUserProvider().isNameRequired()) {
     throw new IllegalArgumentException("User provider requires name.");
   }
   try {
