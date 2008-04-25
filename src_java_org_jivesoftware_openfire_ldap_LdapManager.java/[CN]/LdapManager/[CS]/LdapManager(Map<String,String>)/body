@@ -25,6 +25,7 @@
   JiveGlobals.migrateProperty("ldap.autoFollowAliasReferrals");
   JiveGlobals.migrateProperty("ldap.encloseUserDN");
   JiveGlobals.migrateProperty("ldap.encloseGroupDN");
+  JiveGlobals.migrateProperty("ldap.encloseDNs");
   JiveGlobals.migrateProperty("ldap.initialContextFactory");
   JiveGlobals.migrateProperty("ldap.pagedResultsSize");
   JiveGlobals.migrateProperty("ldap.clientSideSorting");
@@ -63,11 +64,23 @@
   if (usernameSuffix == null) {
     usernameSuffix="";
   }
+  dnPattern=Pattern.compile("([^\\\\]=)([^\"].*?[^\\\\])(,|$)");
+  encloseDNs=true;
+  String encloseStr=properties.get("ldap.encloseDNs");
+  if (encloseStr != null) {
+    encloseDNs=Boolean.valueOf(encloseStr);
+  }
   baseDN=properties.get("ldap.baseDN");
   if (baseDN == null) {
     baseDN="";
   }
+  if (encloseDNs) {
+    baseDN=getEnclosedDN(baseDN);
+  }
   alternateBaseDN=properties.get("ldap.alternateBaseDN");
+  if (encloseDNs && alternateBaseDN != null) {
+    alternateBaseDN=getEnclosedDN(alternateBaseDN);
+  }
   nameField=properties.get("ldap.nameField");
   if (nameField == null) {
     nameField="cn";
@@ -109,6 +122,9 @@
   if (adminDN != null && adminDN.trim().equals("")) {
     adminDN=null;
   }
+  if (encloseDNs && adminDN != null) {
+    adminDN=getEnclosedDN(adminDN);
+  }
   adminPassword=properties.get("ldap.adminPassword");
   ldapDebugEnabled=false;
   String ldapDebugStr=properties.get("ldap.debugEnabled");
@@ -133,15 +149,13 @@
   encloseUserDN=true;
   String encloseUserStr=properties.get("ldap.encloseUserDN");
   if (encloseUserStr != null) {
-    encloseUserDN=Boolean.valueOf(encloseUserStr);
+    encloseUserDN=Boolean.valueOf(encloseUserStr) || encloseDNs;
   }
   encloseGroupDN=true;
   String encloseGroupStr=properties.get("ldap.encloseGroupDN");
   if (encloseGroupStr != null) {
-    encloseGroupDN=Boolean.valueOf(encloseGroupStr);
+    encloseGroupDN=Boolean.valueOf(encloseGroupStr) || encloseDNs;
   }
-  userDNPattern=Pattern.compile("(=)([^\\\"][^=]*[^\\\"])(?:,|$)");
-  groupDNPattern=Pattern.compile("(=)([^\\\"][^=]*[^\\\"])(?:,|$)");
   this.initialContextFactory=properties.get("ldap.initialContextFactory");
   if (initialContextFactory != null) {
     try {

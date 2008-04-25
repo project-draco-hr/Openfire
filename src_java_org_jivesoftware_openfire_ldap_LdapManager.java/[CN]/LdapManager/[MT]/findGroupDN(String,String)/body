@@ -42,11 +42,7 @@
       groupDN=java.net.URLDecoder.decode(groupDN,"UTF-8");
     }
     if (encloseGroupDN) {
-      Matcher matcher=groupDNPattern.matcher(groupDN);
-      groupDN=matcher.replaceAll("$1\"$2\",");
-      if (groupDN.endsWith(",")) {
-        groupDN=groupDN.substring(0,groupDN.length() - 1);
-      }
+      groupDN=getEnclosedDN(groupDN);
     }
     return groupDN;
   }

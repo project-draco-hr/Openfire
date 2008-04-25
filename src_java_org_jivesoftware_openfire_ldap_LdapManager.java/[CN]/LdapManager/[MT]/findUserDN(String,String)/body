@@ -42,11 +42,7 @@
       userDN=java.net.URLDecoder.decode(userDN,"UTF-8");
     }
     if (encloseUserDN) {
-      Matcher matcher=userDNPattern.matcher(userDN);
-      userDN=matcher.replaceAll("$1\"$2\",");
-      if (userDN.endsWith(",")) {
-        userDN=userDN.substring(0,userDN.length() - 1);
-      }
+      userDN=getEnclosedDN(userDN);
     }
     return userDN;
   }
