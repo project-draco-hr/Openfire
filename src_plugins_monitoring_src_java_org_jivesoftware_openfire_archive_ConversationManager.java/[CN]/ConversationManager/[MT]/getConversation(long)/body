@@ -1,0 +1,17 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    for (    Conversation conversation : conversations.values()) {
+      if (conversation.getConversationID() == conversationID) {
+        return conversation;
+      }
+    }
+    return new Conversation(this,conversationID);
+  }
+ else {
+    Conversation conversation=(Conversation)CacheFactory.doSynchronousClusterTask(new GetConversationTask(conversationID),ClusterManager.getSeniorClusterMember().toByteArray());
+    if (conversation == null) {
+      throw new NotFoundException("Conversation not found: " + conversationID);
+    }
+    return conversation;
+  }
+}

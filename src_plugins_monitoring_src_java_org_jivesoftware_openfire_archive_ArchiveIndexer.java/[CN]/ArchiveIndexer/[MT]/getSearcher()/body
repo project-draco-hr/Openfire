@@ -1,0 +1,10 @@
+{
+  if (searcher == null) {
+    searcher=new IndexSearcher(directory);
+  }
+ else   if (!searcher.getIndexReader().isCurrent()) {
+    searcher.close();
+    searcher=new IndexSearcher(directory);
+  }
+  return searcher;
+}

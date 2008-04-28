@@ -1,0 +1,25 @@
+{
+  if (Type.chatMessageReceived == type) {
+    conversationManager.processMessage(sender,receiver,body,date);
+  }
+ else   if (Type.roomDestroyed == type) {
+    conversationManager.roomConversationEnded(roomJID,date);
+  }
+ else   if (Type.occupantJoined == type) {
+    conversationManager.joinedGroupConversation(roomJID,user,nickname,date);
+  }
+ else   if (Type.occupantLeft == type) {
+    conversationManager.leftGroupConversation(roomJID,user,date);
+    MUCRoom mucRoom=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(roomJID).getChatRoom(roomJID.getNode());
+    if (mucRoom != null && mucRoom.getOccupantsCount() == 0) {
+      conversationManager.roomConversationEnded(roomJID,date);
+    }
+  }
+ else   if (Type.nicknameChanged == type) {
+    conversationManager.leftGroupConversation(roomJID,user,date);
+    conversationManager.joinedGroupConversation(roomJID,user,nickname,new Date(date.getTime() + 1));
+  }
+ else   if (Type.roomMessageReceived == type) {
+    conversationManager.processRoomMessage(roomJID,user,nickname,body,date);
+  }
+}

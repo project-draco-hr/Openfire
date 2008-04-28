@@ -1,0 +1,12 @@
+{
+  StatDefinition[] definitions=engine.getDefinition(statKey);
+  if (definitions == null) {
+    throw new IllegalArgumentException("Illegal stat key: " + statKey);
+  }
+  Statistic[] statistics=new Statistic[definitions.length];
+  int i=0;
+  for (  StatDefinition def : definitions) {
+    statistics[i++]=def.getStatistic();
+  }
+  return statistics;
+}

@@ -1,0 +1,13 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    conversationManager.leftGroupConversation(roomJID,user,new Date());
+    MUCRoom mucRoom=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(roomJID).getChatRoom(roomJID.getNode());
+    if (mucRoom != null && mucRoom.getOccupantsCount() == 0) {
+      conversationManager.roomConversationEnded(roomJID,new Date());
+    }
+  }
+ else {
+    ConversationEventsQueue eventsQueue=conversationManager.getConversationEventsQueue();
+    eventsQueue.addGroupChatEvent(conversationManager.getRoomConversationKey(roomJID),ConversationEvent.occupantLeft(roomJID,user,new Date()));
+  }
+}

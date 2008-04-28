@@ -1,0 +1,9 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    conversationManager.roomConversationEnded(roomJID,new Date());
+  }
+ else {
+    ConversationEventsQueue eventsQueue=conversationManager.getConversationEventsQueue();
+    eventsQueue.addGroupChatEvent(conversationManager.getRoomConversationKey(roomJID),ConversationEvent.roomDestroyed(roomJID,new Date()));
+  }
+}

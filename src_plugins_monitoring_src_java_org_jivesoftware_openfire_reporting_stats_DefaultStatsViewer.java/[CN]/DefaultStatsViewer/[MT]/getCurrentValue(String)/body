@@ -1,0 +1,17 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    return new double[]{engine.getDefinition(key)[0].getLastSample()};
+  }
+ else {
+    try {
+      if (RrdSqlBackend.exists(key)) {
+        RrdDb db=new RrdDb(key,true);
+        return new double[]{db.getLastDatasourceValues()[0]};
+      }
+    }
+ catch (    Exception e) {
+      Log.error("Error retrieving last sample value for: " + key,e);
+    }
+    return new double[]{0};
+  }
+}

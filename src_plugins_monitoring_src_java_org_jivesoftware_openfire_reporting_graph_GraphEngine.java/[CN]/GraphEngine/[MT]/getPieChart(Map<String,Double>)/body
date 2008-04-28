@@ -1,0 +1,25 @@
+{
+  DefaultPieDataset dataset=new DefaultPieDataset();
+  for (  String key : pieValues.keySet()) {
+    dataset.setValue(key,pieValues.get(key));
+  }
+  JFreeChart chart=ChartFactory.createPieChart3D(null,dataset,true,true,false);
+  chart.setBackgroundPaint(Color.white);
+  chart.setBorderVisible(false);
+  chart.setBorderPaint(null);
+  PiePlot plot=(PiePlot)chart.getPlot();
+  plot.setSectionOutlinesVisible(false);
+  plot.setLabelFont(new Font("SansSerif",Font.BOLD,12));
+  plot.setNoDataMessage("No data available");
+  plot.setCircular(true);
+  plot.setLabelGap(0.02);
+  plot.setOutlinePaint(null);
+  plot.setLabelLinksVisible(false);
+  plot.setLabelGenerator(null);
+  plot.setLegendLabelGenerator(new StandardPieSectionLabelGenerator("{0}"));
+  plot.setStartAngle(270);
+  plot.setDirection(Rotation.ANTICLOCKWISE);
+  plot.setForegroundAlpha(0.60f);
+  plot.setInteriorGap(0.33);
+  return chart;
+}

@@ -1,0 +1,140 @@
+{
+  if (null == timeperiod)   timeperiod="last60minutes";
+  Date fromDate=null;
+  Date toDate=null;
+  long dataPoints=60;
+  Calendar cal=Calendar.getInstance();
+  Date now=cal.getTime();
+  cal.set(Calendar.HOUR,0);
+  cal.set(Calendar.MINUTE,0);
+  cal.set(Calendar.SECOND,0);
+  cal.set(Calendar.MILLISECOND,0);
+  cal.set(Calendar.DAY_OF_WEEK,cal.getFirstDayOfWeek());
+  Date thisWeekStart=cal.getTime();
+  Date thisWeekEnd=now;
+  cal.add(Calendar.MILLISECOND,-1);
+  Date lastWeekEnd=cal.getTime();
+  cal.add(Calendar.MILLISECOND,1);
+  cal.add(Calendar.DAY_OF_YEAR,-7);
+  Date lastWeekStart=cal.getTime();
+  cal.setTime(now);
+  cal.set(Calendar.HOUR,0);
+  cal.set(Calendar.MINUTE,0);
+  cal.set(Calendar.SECOND,0);
+  cal.set(Calendar.MILLISECOND,0);
+  cal.set(Calendar.DAY_OF_MONTH,cal.getMinimum(Calendar.DAY_OF_MONTH));
+  Date thisMonthStart=cal.getTime();
+  Date thisMonthEnd=now;
+  cal.add(Calendar.MILLISECOND,-1);
+  Date lastMonthEnd=cal.getTime();
+  cal.add(Calendar.MILLISECOND,1);
+  cal.add(Calendar.MONTH,-1);
+  Date lastMonthStart=cal.getTime();
+  cal.setTime(now);
+  cal.add(Calendar.MONTH,-2);
+  cal.set(Calendar.HOUR,0);
+  cal.set(Calendar.MINUTE,0);
+  cal.set(Calendar.SECOND,0);
+  cal.set(Calendar.MILLISECOND,0);
+  Date last3MonthsStart=cal.getTime();
+  Date last3MonthsEnd=now;
+  cal.setTime(now);
+  cal.add(Calendar.DAY_OF_YEAR,-6);
+  cal.set(Calendar.HOUR,0);
+  cal.set(Calendar.MINUTE,0);
+  cal.set(Calendar.SECOND,0);
+  cal.set(Calendar.MILLISECOND,0);
+  Date last7DaysStart=cal.getTime();
+  Date last7DaysEnd=now;
+  cal.setTime(now);
+  cal.add(Calendar.MINUTE,-60);
+  Date last60MinutesStart=cal.getTime();
+  Date last60MinutesEnd=now;
+  cal.setTime(now);
+  cal.add(Calendar.HOUR,-23);
+  Date last24HoursStart=cal.getTime();
+  Date last24HoursEnd=now;
+  cal.setTime(now);
+  if ("thisweek".equals(timeperiod)) {
+    fromDate=thisWeekStart;
+    toDate=thisWeekEnd;
+    dataPoints=7;
+  }
+ else   if ("last7days".equals(timeperiod)) {
+    fromDate=last7DaysStart;
+    toDate=last7DaysEnd;
+    dataPoints=7;
+  }
+ else   if ("lastweek".equals(timeperiod)) {
+    fromDate=lastWeekStart;
+    toDate=lastWeekEnd;
+    dataPoints=7;
+  }
+ else   if ("thismonth".equals(timeperiod)) {
+    fromDate=thisMonthStart;
+    toDate=thisMonthEnd;
+    dataPoints=30;
+  }
+ else   if ("lastmonth".equals(timeperiod)) {
+    fromDate=lastMonthStart;
+    toDate=lastMonthEnd;
+    dataPoints=30;
+  }
+ else   if ("last3months".equals(timeperiod)) {
+    fromDate=last3MonthsStart;
+    toDate=last3MonthsEnd;
+    dataPoints=(long)Math.ceil((toDate.getTime() - fromDate.getTime()) / WEEK);
+  }
+ else   if ("last60minutes".equals(timeperiod)) {
+    fromDate=last60MinutesStart;
+    toDate=last60MinutesEnd;
+    dataPoints=60;
+  }
+ else   if ("last24hours".equals(timeperiod)) {
+    fromDate=last24HoursStart;
+    toDate=last24HoursEnd;
+    dataPoints=48;
+  }
+ else {
+    String[] dates=timeperiod.split("to");
+    if (dates.length > 0) {
+      DateFormat formDateFormatter=new SimpleDateFormat("MM/dd/yy");
+      String fromDateParam=dates[0];
+      String toDateParam=dates[1];
+      if (fromDateParam != null) {
+        try {
+          fromDate=formDateFormatter.parse(fromDateParam);
+        }
+ catch (        Exception e) {
+        }
+      }
+      if (toDateParam != null) {
+        try {
+          toDate=formDateFormatter.parse(toDateParam);
+          Calendar adjusted=Calendar.getInstance();
+          adjusted.setTime(toDate);
+          adjusted.set(Calendar.HOUR_OF_DAY,23);
+          adjusted.set(Calendar.MINUTE,59);
+          adjusted.set(Calendar.SECOND,59);
+          adjusted.set(Calendar.MILLISECOND,999);
+          toDate=adjusted.getTime();
+        }
+ catch (        Exception e) {
+        }
+      }
+      dataPoints=discoverDataPoints(fromDate,toDate);
+    }
+  }
+  if (null == fromDate && null == toDate) {
+    return new long[]{last60MinutesStart.getTime(),last60MinutesEnd.getTime(),dataPoints};
+  }
+ else   if (null == fromDate) {
+    return new long[]{0,toDate.getTime(),dataPoints};
+  }
+ else   if (null == toDate) {
+    return new long[]{fromDate.getTime(),now.getTime(),dataPoints};
+  }
+ else {
+    return new long[]{fromDate.getTime(),toDate.getTime(),dataPoints};
+  }
+}

@@ -1,0 +1,10 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    conversationManager.processRoomMessage(roomJID,user,nickname,message.getBody(),new Date());
+  }
+ else {
+    boolean withBody=conversationManager.isRoomArchivingEnabled() && (conversationManager.getRoomsArchived().isEmpty() || conversationManager.getRoomsArchived().contains(roomJID.getNode()));
+    ConversationEventsQueue eventsQueue=conversationManager.getConversationEventsQueue();
+    eventsQueue.addGroupChatEvent(conversationManager.getRoomConversationKey(roomJID),ConversationEvent.roomMessageReceived(roomJID,user,nickname,withBody ? message.getBody() : null,new Date()));
+  }
+}

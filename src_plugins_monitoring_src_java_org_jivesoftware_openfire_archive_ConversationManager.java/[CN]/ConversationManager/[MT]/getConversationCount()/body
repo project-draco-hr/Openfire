@@ -1,0 +1,6 @@
+{
+  if (ClusterManager.isSeniorClusterMember()) {
+    return conversations.size();
+  }
+  return (Integer)CacheFactory.doSynchronousClusterTask(new GetConversationCountTask(),ClusterManager.getSeniorClusterMember().toByteArray());
+}

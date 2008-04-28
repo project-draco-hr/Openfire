@@ -1,0 +1,21 @@
+{
+  List<StatDefinition> statList=multiMap.get(statGroup);
+  if (shouldCreate && statList == null) {
+    statList=new ArrayList<StatDefinition>();
+    multiMap.put(statGroup,statList);
+  }
+  if (statList == null) {
+    return null;
+  }
+  if (shouldCreate) {
+    statList.add(def);
+  }
+  StatDefinition[] definitions;
+  if (statsManager.getStatGroup(statGroup).size() == statList.size()) {
+    definitions=statList.toArray(new StatDefinition[statList.size()]);
+  }
+ else {
+    definitions=null;
+  }
+  return definitions;
+}

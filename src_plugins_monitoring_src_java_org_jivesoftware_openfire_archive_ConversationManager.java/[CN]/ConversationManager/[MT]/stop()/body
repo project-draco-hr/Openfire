@@ -1,0 +1,20 @@
+{
+  archiveTask.cancel();
+  archiveTask=null;
+  cleanupTask.cancel();
+  cleanupTask=null;
+  StatisticsManager.getInstance().removeStatistic(CONVERSATIONS_KEY);
+  PropertyEventDispatcher.removeListener(propertyListener);
+  propertyListener=null;
+  conversations.clear();
+  conversations=null;
+  new ArchivingTask().run();
+  conversationQueue.clear();
+  conversationQueue=null;
+  messageQueue.clear();
+  messageQueue=null;
+  conversationListeners.clear();
+  conversationListeners=null;
+  serverInfo=null;
+  InternalComponentManager.getInstance().removeListener(this);
+}
