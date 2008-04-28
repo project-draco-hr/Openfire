@@ -1,0 +1,12 @@
+{
+  Collection<Agent> answer=new HashSet<Agent>();
+  for (  RequestQueue queue : queues.values()) {
+    answer.addAll(queue.getMembers());
+    for (    Group group : queue.getGroups()) {
+      for (      Agent agent : agentManager.getAgents(group)) {
+        answer.add(agent);
+      }
+    }
+  }
+  return Collections.unmodifiableCollection(answer);
+}

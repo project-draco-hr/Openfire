@@ -1,0 +1,15 @@
+{
+  userRequest.removeRelatedRequest(this);
+  Message message=new Message();
+  message.setError(PacketError.Condition.recipient_unavailable);
+  message.setTo(inviter);
+  message.setFrom(workgroup.getJID());
+  message.setBody(body);
+  Element element=message.addChildElement("transfer","http://jabber.org/protocol/workgroup");
+  element.addAttribute("type",type.toString());
+  Element sessionElement=element.addElement("session","http://jivesoftware.com/protocol/workgroup");
+  sessionElement.addAttribute("id",sessionID);
+  element.addElement("inviter").setText(inviter.toString());
+  element.addElement("invitee").setText(invitee.toString());
+  workgroup.send(message);
+}

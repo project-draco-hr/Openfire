@@ -1,0 +1,18 @@
+{
+  RoutingManager routingManager=RoutingManager.getInstance();
+  boolean contains=containsValidReferer(request);
+  if (!contains) {
+    return false;
+  }
+  if (getStatus() != Workgroup.Status.OPEN) {
+    return false;
+  }
+  PacketError.Condition error=requestFilterFactory.getFilter().filter(request);
+  if (error == null) {
+synchronized (routingManager) {
+      routingManager.routeRequest(this,request);
+      return true;
+    }
+  }
+  return false;
+}

@@ -1,0 +1,18 @@
+{
+  try {
+    Request request=UserRequest.getRequest(workgroup,message.getFrom());
+    InterceptorManager interceptorManager=QueueInterceptorManager.getInstance();
+    try {
+      interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,false);
+      request.cancel(Request.CancelType.DEPART);
+      removeSession(message.getFrom());
+      interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,true);
+    }
+ catch (    PacketRejectedException e) {
+      workgroup.rejectPacket(message,e);
+    }
+  }
+ catch (  NotFoundException e) {
+    closeSession(message);
+  }
+}

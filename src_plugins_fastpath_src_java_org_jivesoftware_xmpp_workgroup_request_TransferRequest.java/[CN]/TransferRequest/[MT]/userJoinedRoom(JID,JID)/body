@@ -1,0 +1,17 @@
+{
+  Log.debug("User " + user + " has joined "+ roomJID+ ". User should be kicked.");
+  if (actualInvitee != null && actualInvitee.toBareJID().equals(user.toBareJID())) {
+    joinedRoom=System.currentTimeMillis();
+    userRequest.removeRelatedRequest(this);
+    IQ kick=new IQ(IQ.Type.set);
+    kick.setTo(roomJID);
+    kick.setFrom(workgroup.getFullJID());
+    Element childElement=kick.setChildElement("query","http://jabber.org/protocol/muc#admin");
+    Element item=childElement.addElement("item");
+    item.addAttribute("jid",inviter.toString());
+    item.addAttribute("role","none");
+    item.addElement("reason").setText("Transfer was successful");
+    workgroup.send(kick);
+    Log.debug("Sent kicked to  " + user + " in room "+ roomJID+ ".");
+  }
+}

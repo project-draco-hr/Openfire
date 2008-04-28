@@ -1,0 +1,13 @@
+{
+  ChatSetting setting=settingsList.get(key);
+  if (setting == null) {
+synchronized (key) {
+      setting=settingsList.get(key);
+      if (setting == null) {
+        ChatSettingsCreator.getInstance().createDefaultSetting(workgroup.getJID(),key);
+        setting=settingsList.get(key);
+      }
+    }
+  }
+  return setting;
+}

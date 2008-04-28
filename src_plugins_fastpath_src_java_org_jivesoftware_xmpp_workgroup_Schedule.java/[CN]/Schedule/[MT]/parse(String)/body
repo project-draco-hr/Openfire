@@ -1,0 +1,46 @@
+{
+  events.clear();
+  Arrays.fill(week,false);
+  if (data != null) {
+    data=data.trim();
+    int dayIndex=data.indexOf('#');
+    String days;
+    String events=null;
+    if (dayIndex == -1) {
+      days=data;
+    }
+ else {
+      days=data.substring(0,dayIndex);
+      data=data.substring(dayIndex + 1).trim();
+      int eventIndex=data.indexOf('#');
+      if (eventIndex == -1) {
+        events=data;
+      }
+ else {
+        events=data.substring(0,eventIndex).trim();
+      }
+    }
+    if (days.length() > 0) {
+      StringTokenizer tokenizer=new StringTokenizer(days,",",false);
+      while (tokenizer.hasMoreTokens()) {
+        String day=tokenizer.nextToken().trim();
+        for (int i=0; i < dayNames.length; i++) {
+          if (dayNames[i].equalsIgnoreCase(day)) {
+            week[i]=true;
+          }
+        }
+      }
+    }
+    if (events != null && events.length() > 0) {
+      StringTokenizer tokenizer=new StringTokenizer(events,",",false);
+      while (tokenizer.hasMoreTokens()) {
+        String event=tokenizer.nextToken();
+        StringTokenizer eventTokenizer=new StringTokenizer(event,"-",false);
+        int hour=Integer.parseInt(eventTokenizer.nextToken());
+        int min=Integer.parseInt(eventTokenizer.nextToken());
+        boolean on="1".equals(eventTokenizer.nextToken());
+        this.events.add(new Event(hour,min,on));
+      }
+    }
+  }
+}

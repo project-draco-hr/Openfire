@@ -1,0 +1,17 @@
+{
+  cancelled=true;
+  if (!pendingSessions.isEmpty() || !acceptedSessions.isEmpty()) {
+    for (    AgentSession session : pendingSessions) {
+      request.sendRevoke(session,queue);
+    }
+    for (    AgentSession session : acceptedSessions) {
+      request.sendRevoke(session,queue);
+    }
+    pendingSessions.clear();
+    acceptedSessions.clear();
+    updateUserSession(USER_CANCELLED);
+  }
+ else {
+    updateUserSession(ROUTE_EXPIRED);
+  }
+}

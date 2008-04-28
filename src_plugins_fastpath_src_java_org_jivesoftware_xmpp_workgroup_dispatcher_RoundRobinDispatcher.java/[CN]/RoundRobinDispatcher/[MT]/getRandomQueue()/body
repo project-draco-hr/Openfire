@@ -1,0 +1,18 @@
+{
+  int qCount=queue.getWorkgroup().getRequestQueueCount();
+  if (qCount > 1) {
+    LinkedList<RequestQueue> overflowQueueList=new LinkedList<RequestQueue>();
+    for (    RequestQueue overflowQueue : queue.getWorkgroup().getRequestQueues()) {
+      if (!queue.equals(overflowQueue) && overflowQueue.getAgentSessionList().containsAvailableAgents()) {
+        overflowQueueList.addLast(overflowQueue);
+      }
+    }
+    if (overflowQueueList.size() > 0) {
+      int targetIndex=(int)Math.floor(((float)(overflowQueueList.size())) * Math.random());
+      if (targetIndex < overflowQueueList.size()) {
+        return overflowQueueList.get(targetIndex);
+      }
+    }
+  }
+  return null;
+}

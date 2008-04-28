@@ -1,0 +1,12 @@
+{
+  long startTime=start.getTime();
+  long end=startTime;
+  List agents=session.getAgentList();
+  for (Iterator iterator=agents.iterator(); iterator.hasNext(); ) {
+    AgentChatSession chatSession=(AgentChatSession)iterator.next();
+    if (end < chatSession.getEndTime()) {
+      end=chatSession.getEndTime();
+    }
+  }
+  return (int)((end - startTime) / 1000 / 60);
+}

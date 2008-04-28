@@ -1,0 +1,12 @@
+{
+  boolean success=false;
+  Map<String,List<String>> metaData=request.getMetaData();
+  if (metaData != null) {
+    RequestQueue bestQueue=routeNoOverflow(workgroup,metaData);
+    if (bestQueue != null) {
+      setRoutingQueue(bestQueue.getID());
+      success=true;
+    }
+  }
+  return success;
+}

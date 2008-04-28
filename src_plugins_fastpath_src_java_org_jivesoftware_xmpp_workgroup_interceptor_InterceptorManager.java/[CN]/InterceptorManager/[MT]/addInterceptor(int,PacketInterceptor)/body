@@ -1,0 +1,17 @@
+{
+  if (interceptor == null) {
+    throw new NullPointerException("Parameter interceptor was null.");
+  }
+  if (index < 0 || (index > globalInterceptors.size())) {
+    throw new IndexOutOfBoundsException("Index " + index + " invalid.");
+  }
+  if (globalInterceptors.contains(interceptor)) {
+    int oldIndex=globalInterceptors.indexOf(interceptor);
+    if (oldIndex < index) {
+      index-=1;
+    }
+    globalInterceptors.remove(interceptor);
+  }
+  globalInterceptors.add(index,interceptor);
+  saveInterceptors();
+}

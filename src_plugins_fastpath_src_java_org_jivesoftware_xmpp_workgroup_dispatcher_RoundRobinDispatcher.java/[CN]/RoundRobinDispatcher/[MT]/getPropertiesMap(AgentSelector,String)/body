@@ -1,0 +1,13 @@
+{
+  Map<String,String> propertyMap=new HashMap<String,String>();
+  propertyMap.put(context + "className",agentSelector.getClass().getName());
+  Map<String,String> props=BeanUtils.getProperties(agentSelector);
+  for (  Map.Entry<String,String> entry : props.entrySet()) {
+    String name=entry.getKey();
+    String value=entry.getValue();
+    if (value != null && !"".equals(value)) {
+      propertyMap.put(context + "properties." + name,value);
+    }
+  }
+  return propertyMap;
+}

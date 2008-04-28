@@ -1,0 +1,13 @@
+{
+  try {
+    ComponentManagerFactory.getComponentManager().removeComponent("workgroup");
+  }
+ catch (  ComponentException e) {
+    Log.error("Error unregistering workgroup component",e);
+  }
+  if (workgroupManager != null) {
+    UserNameManager.removeUserNameProvider(workgroupManager.getAddress().toString());
+    workgroupManager.stop();
+  }
+  workgroupManager=null;
+}

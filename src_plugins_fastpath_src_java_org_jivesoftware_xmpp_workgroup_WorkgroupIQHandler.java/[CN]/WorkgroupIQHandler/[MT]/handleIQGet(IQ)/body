@@ -1,0 +1,150 @@
+{
+  IQ reply=null;
+  Element iq=packet.getChildElement();
+  UserRequest request;
+  final WorkgroupStats stats=new WorkgroupStats(workgroup);
+  String name=iq.getName();
+  String namespace=iq.getNamespaceURI();
+  if ("queue-status".equals(name)) {
+    try {
+      request=UserRequest.getRequest(workgroup,packet.getFrom());
+      request.updateQueueStatus(true);
+    }
+ catch (    NotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    }
+  }
+ else   if ("transcripts".equals(name)) {
+    try {
+      if (agentManager.getAgentSession(packet.getFrom()) == null) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.not_authorized));
+      }
+ else {
+        String userID=iq.attributeValue("userID");
+        stats.getChatTranscripts(packet,userID);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.not_authorized));
+    }
+  }
+ else   if ("transcript".equals(name)) {
+    try {
+      if (agentManager.getAgentSession(packet.getFrom()) == null) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.not_authorized));
+      }
+ else {
+        String sessionID=iq.attributeValue("sessionID");
+        stats.getChatTranscript(packet,sessionID);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.not_authorized));
+    }
+  }
+ else   if ("agent-status-request".equals(name)) {
+    try {
+      AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+      if (agentSession == null) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      }
+ else {
+        agentSession.sendAgentsInWorkgroup(packet,workgroup);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    }
+  }
+ else   if ("agent-info".equals(name)) {
+    try {
+      AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+      if (agentSession == null) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      }
+ else {
+        agentSession.sendAgentInfo(packet);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    }
+  }
+ else   if ("occupants-info".equals(name)) {
+    try {
+      AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+      if (agentSession == null) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.not_authorized));
+      }
+ else {
+        String roomID=iq.attributeValue("roomID");
+        workgroup.sendOccupantsInfo(packet,roomID);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.not_authorized));
+    }
+  }
+ else   if ("chat-settings".equals(name)) {
+    ChatSettingsManager chatSettingsManager=ChatSettingsManager.getInstance();
+    String key=iq.attributeValue("key");
+    String type=iq.attributeValue("type");
+    if (ModelUtil.hasLength(key)) {
+      chatSettingsManager.getChatSettingByKey(packet,workgroup,key);
+    }
+ else     if (ModelUtil.hasLength(type)) {
+      try {
+        int typeInt=Integer.parseInt(type);
+        chatSettingsManager.getChatSettingsByType(packet,workgroup,typeInt);
+      }
+ catch (      NumberFormatException e) {
+      }
+    }
+ else {
+      chatSettingsManager.getAllChatSettings(packet,workgroup);
+    }
+  }
+ else   if ("jabber:iq:private".equals(namespace)) {
+    getIQPrivate(packet);
+  }
+ else   if ("vcard-temp".equals(namespace)) {
+    getVCard(packet);
+  }
+ else {
+    for (    WorkgroupProvider provider : providerManager.getWorkgroupProviders()) {
+      if (provider.handleGet(packet)) {
+        provider.executeGet(packet,workgroup);
+        return;
+      }
+    }
+    dropPacket(packet);
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.bad_request));
+  }
+  if (reply != null) {
+    workgroup.send(reply);
+  }
+}

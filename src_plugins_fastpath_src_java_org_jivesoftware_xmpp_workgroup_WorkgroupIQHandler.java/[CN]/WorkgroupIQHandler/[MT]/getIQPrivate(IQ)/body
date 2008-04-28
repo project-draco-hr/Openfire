@@ -1,0 +1,22 @@
+{
+  WorkgroupSettings settings=new WorkgroupSettings();
+  IQ replyPacket=null;
+  Element child=packet.getChildElement();
+  Element dataElement=(Element)child.elementIterator().next();
+  if (dataElement != null) {
+    if (IQ.Type.get.equals(packet.getType())) {
+      replyPacket=IQ.createResultIQ(packet);
+      Element dataStored=settings.get(workgroup.getJID().toBareJID(),dataElement);
+      dataStored.setParent(null);
+      child.remove(dataElement);
+      child.setParent(null);
+      replyPacket.setChildElement(child);
+      child.add(dataStored);
+    }
+  }
+ else {
+    replyPacket=IQ.createResultIQ(packet);
+    replyPacket.setChildElement("query","jabber:iq:private");
+  }
+  workgroup.send(replyPacket);
+}

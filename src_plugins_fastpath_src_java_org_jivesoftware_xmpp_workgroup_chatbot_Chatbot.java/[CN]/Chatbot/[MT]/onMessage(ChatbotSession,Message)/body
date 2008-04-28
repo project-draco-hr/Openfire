@@ -1,0 +1,81 @@
+{
+  InterceptorManager interceptorManager=ChatbotInterceptorManager.getInstance();
+  try {
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,false);
+    session.setMessageThread(message.getThread());
+synchronized (session) {
+      if (workgroup.getStatus() != Workgroup.Status.OPEN) {
+        sendReply(message,getWorkgroupClosedMessage());
+      }
+ else       if (handleCommand(message,session)) {
+      }
+ else       if (session.getCurrentStep() < 0) {
+        sendWelcomeMessage(message);
+        sendJoinQuestion(message,session);
+      }
+ else       if (session.getCurrentStep() == 1) {
+        if (yes.equalsIgnoreCase(message.getBody().trim())) {
+          userAcceptedJoining(message,session);
+        }
+ else         if (no.equalsIgnoreCase(message.getBody().trim())) {
+          closeSession(message);
+        }
+ else {
+          sendJoinQuestion(message,session);
+        }
+      }
+ else       if (session.getCurrentStep() == 2) {
+        if (userAnsweredField(message,session)) {
+          if (session.getCurrentSubstep() < getForm().getFormElements().size() - 1) {
+            sendNextQuestion(message,session);
+          }
+ else {
+            userJoinQueue(message,session);
+          }
+        }
+ else {
+          repeatQuestion(message,session);
+        }
+      }
+ else       if (session.getCurrentStep() == 4) {
+        if (yes.equalsIgnoreCase(message.getBody().trim())) {
+          sendRoomInvitation(message,session);
+        }
+ else         if (no.equalsIgnoreCase(message.getBody().trim())) {
+        }
+ else {
+          sendInvitationQuestion(message.getFrom(),session);
+        }
+      }
+ else       if (session.getCurrentStep() == 6) {
+        if (yes.equalsIgnoreCase(message.getBody().trim())) {
+          List<String> emailValue=session.getAttributes().get("email");
+          if (emailValue == null || emailValue.isEmpty()) {
+            sendGetEmailQuestion(message,session);
+          }
+ else {
+            sendTranscriptByMail(emailValue.get(0),message,session);
+            closeSession(message);
+          }
+        }
+ else         if (no.equalsIgnoreCase(message.getBody().trim())) {
+          closeSession(message);
+        }
+ else {
+          sendEmailQuestion(message.getFrom(),session);
+        }
+      }
+ else       if (session.getCurrentStep() == 7) {
+        sendTranscriptByMail(message.getBody().trim(),message,session);
+        closeSession(message);
+      }
+ else {
+        sendReply(message,getNotAcceptableMessage());
+      }
+    }
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,true);
+  }
+ catch (  PacketRejectedException e) {
+    workgroup.rejectPacket(message,e);
+  }
+}

@@ -1,0 +1,14 @@
+{
+  DbProperties props=workgroup.getProperties();
+  String monitors=props.getProperty("monitors");
+  if (monitors != null) {
+    StringTokenizer tkn=new StringTokenizer(monitors,",");
+    while (tkn.hasMoreTokens()) {
+      String monitor=tkn.nextToken();
+      if (monitor.equalsIgnoreCase(jid)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

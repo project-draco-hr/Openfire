@@ -1,0 +1,22 @@
+{
+  Element agentStatus=statusPacket.getElement().addElement("agent-status","http://jabber.org/protocol/workgroup");
+  agentStatus.addAttribute("jid",workgroup.getJID().toBareJID());
+  Element maxChats=agentStatus.addElement("max-chats");
+  maxChats.setText(Integer.toString(getMaxChats(workgroup)));
+  Element currentChats=agentStatus.addElement("current-chats","http://jivesoftware.com/protocol/workgroup");
+  for (  ChatInfo chatInfo : getChats(workgroup)) {
+    Element chatElement=currentChats.addElement("chat");
+    chatElement.addAttribute("sessionID",chatInfo.getSessionID());
+    chatElement.addAttribute("userID",chatInfo.getUserID());
+    chatElement.addAttribute("startTime",UTC_FORMAT.format(chatInfo.getDate()));
+    if (chatInfo.getQuestion() != null) {
+      chatElement.addAttribute("question",chatInfo.getQuestion());
+    }
+    if (chatInfo.getUsername() != null) {
+      chatElement.addAttribute("username",chatInfo.getUsername());
+    }
+    if (chatInfo.getEmail() != null) {
+      chatElement.addAttribute("email",chatInfo.getEmail());
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  for (  AgentSession agentSession : workgroup.getAgentSessions()) {
+    if (agentSession.hasRequestedAgentInfo() && !agentSession.getJID().equals(address)) {
+      Presence statusPacket=presence.createCopy();
+      statusPacket.setFrom(address);
+      statusPacket.setTo(agentSession.getJID());
+      getAgentStatus(statusPacket,workgroup);
+      workgroup.send(statusPacket);
+    }
+  }
+}

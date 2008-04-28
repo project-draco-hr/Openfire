@@ -1,0 +1,31 @@
+{
+  groupEventListener=new GroupEventListener(){
+    public void groupCreated(    Group group,    Map params){
+    }
+    public void groupDeleting(    Group group,    Map params){
+    }
+    public void groupModified(    Group group,    Map params){
+    }
+    public void memberAdded(    Group group,    Map params){
+      String userJID=(String)params.get("member");
+      JID jid=new JID(userJID);
+      if (!agentManager.hasAgent(jid)) {
+        for (        Workgroup workgroup : workgroups.values()) {
+          for (          RequestQueue queue : workgroup.getRequestQueues()) {
+            if (queue.hasGroup(group)) {
+              agentManager.getAgents(group);
+            }
+          }
+        }
+      }
+    }
+    public void memberRemoved(    Group group,    Map params){
+    }
+    public void adminAdded(    Group group,    Map params){
+    }
+    public void adminRemoved(    Group group,    Map params){
+    }
+  }
+;
+  GroupEventDispatcher.addListener(groupEventListener);
+}

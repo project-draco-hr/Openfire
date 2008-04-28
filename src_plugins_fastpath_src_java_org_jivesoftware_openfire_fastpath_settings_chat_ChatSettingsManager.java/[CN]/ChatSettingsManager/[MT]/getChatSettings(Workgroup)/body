@@ -1,0 +1,13 @@
+{
+  String workgroupNode=workgroup.getJID().getNode();
+  ChatSettings chatSettings=cachedSettings.get(workgroupNode);
+  if (chatSettings == null) {
+synchronized (workgroupNode.intern()) {
+      chatSettings=cachedSettings.get(workgroupNode);
+      if (chatSettings == null) {
+        chatSettings=getChatSettingsFromDb(workgroup);
+      }
+    }
+  }
+  return chatSettings;
+}

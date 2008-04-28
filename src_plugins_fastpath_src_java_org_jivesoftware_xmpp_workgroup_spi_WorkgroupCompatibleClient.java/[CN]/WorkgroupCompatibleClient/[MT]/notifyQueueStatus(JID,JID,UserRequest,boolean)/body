@@ -1,0 +1,18 @@
+{
+  Packet statusPacket;
+  if (isPolling) {
+    statusPacket=new IQ();
+  }
+ else {
+    statusPacket=new Message();
+  }
+  statusPacket.setFrom(sender);
+  statusPacket.setTo(receiver);
+  Element status=statusPacket.getElement().addElement("queue-status","http://jabber.org/protocol/workgroup");
+  Element time=status.addElement("time");
+  time.setText(Integer.toString(request.getTimeStatus()));
+  Element position=status.addElement("position");
+  position.setText(Integer.toString(request.getPosition() + 1));
+  status.add(request.getSessionElement());
+  request.getWorkgroup().send(statusPacket);
+}

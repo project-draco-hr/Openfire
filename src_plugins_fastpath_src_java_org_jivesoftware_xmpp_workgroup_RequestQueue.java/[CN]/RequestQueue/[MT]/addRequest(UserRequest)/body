@@ -1,0 +1,9 @@
+{
+  if (request == null) {
+    throw new IllegalArgumentException();
+  }
+  request.setRequestQueue(this);
+  requests.add(request);
+  activeAgents.broadcastQueueStatus(this);
+  request.updateQueueStatus(false);
+}

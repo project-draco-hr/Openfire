@@ -1,0 +1,23 @@
+{
+  IQ statusPacket=IQ.createResultIQ(packet);
+  Element occupantsInfo=statusPacket.setChildElement("occupants-info","http://jivesoftware.com/protocol/workgroup");
+  occupantsInfo.addAttribute("roomID",roomID);
+  Map<Packet,java.util.Date> packets=transcripts.get(roomID);
+  if (packets != null) {
+    Collection<String> processed=new ArrayList<String>();
+    for (    Packet p : packets.keySet()) {
+      if (p instanceof Presence) {
+        Presence presence=(Presence)p;
+        String userJID=presence.getChildElement("x","http://jabber.org/protocol/muc#user").element("item").attributeValue("jid");
+        if (!processed.contains(userJID)) {
+          processed.add(userJID);
+          Element occupantInfo=occupantsInfo.addElement("occupant");
+          occupantInfo.addElement("jid").setText(userJID);
+          occupantInfo.addElement("nickname").setText(presence.getFrom().getResource());
+          occupantInfo.addElement("joined").setText(UTC_FORMAT.format(packets.get(p)));
+        }
+      }
+    }
+  }
+  send(statusPacket);
+}

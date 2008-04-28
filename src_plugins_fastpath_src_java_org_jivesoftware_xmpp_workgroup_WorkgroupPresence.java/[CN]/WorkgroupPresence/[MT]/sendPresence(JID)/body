@@ -1,0 +1,18 @@
+{
+  Presence presence=new Presence();
+  presence.setTo(address);
+  presence.setFrom(workgroup.getJID());
+  Presence.Type type;
+  if (workgroup.isAvailable()) {
+    type=null;
+    Element child=presence.addChildElement("workgroup","http://jivesoftware.com/protocol/workgroup");
+    child.addElement("lastModified").setText(UTC_FORMAT.format(workgroup.getModificationDate()));
+  }
+ else {
+    type=Presence.Type.unavailable;
+    Element child=presence.addChildElement("workgroup","http://jivesoftware.com/protocol/workgroup");
+    child.addElement("lastModified").setText(UTC_FORMAT.format(workgroup.getModificationDate()));
+  }
+  presence.setType(type);
+  workgroup.send(presence);
+}

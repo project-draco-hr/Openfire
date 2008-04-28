@@ -1,0 +1,23 @@
+{
+  InterceptorManager interceptorManager=WorkgroupInterceptorManager.getInstance();
+  try {
+    interceptorManager.invokeInterceptors(getJID().toBareJID(),packet,true,false);
+    String mucDomain=WorkgroupManager.getInstance().getMUCServiceName();
+    if (mucDomain.equals(packet.getFrom().getDomain())) {
+      roomActivity(packet);
+    }
+ else     if (packet instanceof Message) {
+      process((Message)packet);
+    }
+ else     if (packet instanceof Presence) {
+      process((Presence)packet);
+    }
+ else     if (packet instanceof IQ) {
+      process((IQ)packet);
+    }
+    interceptorManager.invokeInterceptors(getJID().toBareJID(),packet,true,true);
+  }
+ catch (  PacketRejectedException e) {
+    rejectPacket(packet,e);
+  }
+}

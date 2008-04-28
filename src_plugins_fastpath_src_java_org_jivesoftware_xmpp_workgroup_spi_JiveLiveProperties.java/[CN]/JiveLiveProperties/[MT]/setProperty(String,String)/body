@@ -1,0 +1,13 @@
+{
+  if (name == null || value == null || "".equals(name) || "".equals(value)) {
+    throw new NullPointerException("Cannot set property with empty or null value.");
+  }
+  boolean update=properties.containsKey(name);
+  properties.put(name,value);
+  if (update) {
+    updateProperty(name);
+  }
+ else {
+    insertProperty(name);
+  }
+}

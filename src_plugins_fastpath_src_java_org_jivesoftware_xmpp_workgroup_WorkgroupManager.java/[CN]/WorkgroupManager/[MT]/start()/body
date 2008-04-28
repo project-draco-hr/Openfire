@@ -1,0 +1,14 @@
+{
+  if (!SASLAuthentication.isSharedSecretAllowed()) {
+    SASLAuthentication.setSharedSecretAllowed(true);
+  }
+  if (!JiveGlobals.getBooleanProperty("fastpath.database.setup")) {
+    boolean createUser=createDemoUser();
+    if (createUser) {
+      createDemoWorkgroup();
+    }
+    JiveGlobals.setProperty("fastpath.database.setup","true");
+  }
+  commandManager.addCommand(new CreateWorkgroup());
+  commandManager.addCommand(new DeleteWorkgroup());
+}

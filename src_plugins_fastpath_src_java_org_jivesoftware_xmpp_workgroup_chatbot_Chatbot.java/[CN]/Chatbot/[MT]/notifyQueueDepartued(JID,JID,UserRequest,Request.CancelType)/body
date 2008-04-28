@@ -1,0 +1,15 @@
+{
+  ChatbotSession session=getSession(receiver,false);
+  if (session != null) {
+    Message packet=new Message();
+    packet.setTo(receiver);
+    packet.setFrom(sender);
+    packet.setThread(session.getMessageThread());
+    if (session.getMessageThread() != null) {
+      packet.setType(Message.Type.chat);
+    }
+    packet.setBody(getDepartureConfirmedMessage());
+    send(packet);
+    removeSession(receiver);
+  }
+}

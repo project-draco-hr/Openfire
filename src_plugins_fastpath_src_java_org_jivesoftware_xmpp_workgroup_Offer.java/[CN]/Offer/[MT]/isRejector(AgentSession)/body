@@ -1,0 +1,13 @@
+{
+  Date rejectionTime=rejectionTimes.get(agentSession.getJID().toBareJID());
+  boolean rejector=false;
+  if (rejectionTime != null) {
+    if (rejectionTime.getTime() > System.currentTimeMillis() - rejectionTimeout) {
+      rejector=true;
+    }
+ else {
+      rejectionTimes.remove(agentSession.getJID().toBareJID());
+    }
+  }
+  return rejector;
+}

@@ -1,0 +1,21 @@
+{
+  ChatSetting setting=new ChatSetting(key);
+  setting.setWorkgroupNode(workgroupJID.getNode());
+  setting.setType(type);
+  setting.setValue(value);
+  setting.setDefaultValue("");
+  String label=labelMap.get(key);
+  if (!ModelUtil.hasLength(label)) {
+    label="";
+  }
+  String description=descriptions.get(label);
+  if (!ModelUtil.hasLength(description)) {
+    description=descriptions.get(key.toString());
+  }
+  if (!ModelUtil.hasLength(description)) {
+    description="";
+  }
+  setting.setDescription(description);
+  setting.setLabel(label);
+  chatSettingsManager.addChatSetting(setting);
+}

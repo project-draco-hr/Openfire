@@ -1,0 +1,27 @@
+{
+  BasicDispatcherInfo userInfo=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_DISPATCHER_BY_ID);
+    pstmt.setLong(1,queueID);
+    rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new NotFoundException();
+    }
+    userInfo=new BasicDispatcherInfo(workgroup,queueID,rs.getString(1),rs.getString(2),rs.getInt(3),rs.getInt(4));
+  }
+ catch (  SQLException e) {
+    throw new NotFoundException("Failed to read dispatcher " + queueID + " from database. "+ e.getMessage());
+  }
+catch (  NumberFormatException nfe) {
+    Log.error("WARNING: There was an error parsing the dates " + "returned from the database. Ensure that they're being stored " + "correctly.");
+    throw new NotFoundException("Dispatcher with id " + queueID + " could not be loaded from the database.");
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return userInfo;
+}

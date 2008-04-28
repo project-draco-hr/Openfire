@@ -1,0 +1,14 @@
+{
+  final Set<Agent> set=new HashSet<Agent>();
+  for (  JID jid : group.getMembers()) {
+    Agent agent;
+    try {
+      agent=getAgent(jid);
+    }
+ catch (    AgentNotFoundException e) {
+      agent=createAgent(jid);
+    }
+    set.add(agent);
+  }
+  return set;
+}

@@ -1,0 +1,13 @@
+{
+  WorkgroupManager workgroupManager=WorkgroupManager.getInstance();
+  xstream.alias("macro",Macro.class);
+  xstream.alias("macrogroup",MacroGroup.class);
+  for (  Workgroup workgroup : workgroupManager.getWorkgroups()) {
+    DbProperties prop=workgroup.getProperties();
+    String macros=prop.getProperty("jive.macro" + workgroup.getID());
+    if (ModelUtil.hasLength(macros)) {
+      MacroGroup group=(MacroGroup)xstream.fromXML(macros);
+      rootGroups.put(workgroup,group);
+    }
+  }
+}

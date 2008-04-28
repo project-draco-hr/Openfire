@@ -1,0 +1,74 @@
+{
+  boolean ok=false;
+  String uidString="";
+  try {
+    final Properties props=System.getProperties();
+    props.put("mail.smtp.host",host);
+    props.put("mail.transport.protocol","smtp");
+    props.put("mail.server",host);
+    if (ModelUtil.hasLength(port)) {
+      props.put("mail.smtp.auth","true");
+      props.put("mail.smtp.port",port);
+    }
+    Session sess;
+    if (ModelUtil.hasLength(password) && ModelUtil.hasLength(username)) {
+      sess=Session.getInstance(props,new MailAuthentication(username,password));
+    }
+ else {
+      sess=Session.getDefaultInstance(props,null);
+    }
+    Message msg=new MimeMessage(sess);
+    StringTokenizer toST=new StringTokenizer(toField,",");
+    if (toST.countTokens() > 1) {
+      InternetAddress[] address=new InternetAddress[toST.countTokens()];
+      int addrIndex=0;
+      String addrString="";
+      while (toST.hasMoreTokens()) {
+        addrString=toST.nextToken();
+        address[addrIndex]=(new InternetAddress(addrString));
+        addrIndex=addrIndex + 1;
+      }
+      msg.setRecipients(Message.RecipientType.TO,address);
+    }
+ else {
+      InternetAddress[] address={new InternetAddress(toField)};
+      msg.setRecipients(Message.RecipientType.TO,address);
+    }
+    InternetAddress from=new InternetAddress(myAddress);
+    msg.setFrom(from);
+    msg.setSubject(subjectField);
+    UID msgUID=new UID();
+    uidString=msgUID.toString();
+    msg.setHeader("X-Mailer",uidString);
+    msg.setSentDate(new Date());
+    MimeMultipart mp=new MimeMultipart();
+    MimeBodyPart mbp1=new MimeBodyPart();
+    if (getCustomerName() != null) {
+      messageText="From: " + getCustomerName() + "\n"+ messageText;
+    }
+    if (isHTML) {
+      mbp1.setContent(messageText,"text/html");
+    }
+ else {
+      mbp1.setContent(messageText,"text/plain");
+    }
+    mp.addBodyPart(mbp1);
+    try {
+      if (!isHTML) {
+        msg.setContent(messageText,"text/plain");
+      }
+ else {
+        msg.setContent(messageText,"text/html");
+      }
+      Transport.send(msg);
+      ok=true;
+    }
+ catch (    SendFailedException sfe) {
+      Log.warn("Could not connect to SMTP server.");
+    }
+  }
+ catch (  Exception eq) {
+    Log.warn("Could not connect to SMTP server.");
+  }
+  return ok;
+}

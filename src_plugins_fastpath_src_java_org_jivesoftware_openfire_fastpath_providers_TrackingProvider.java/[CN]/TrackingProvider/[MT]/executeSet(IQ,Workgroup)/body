@@ -1,0 +1,33 @@
+{
+  IQ reply=null;
+  Element iq=packet.getChildElement();
+  reply=IQ.createResultIQ(packet);
+  workgroup.send(reply);
+  IQ update=new IQ();
+  Element elem=update.setChildElement("tracker","http://jivesoftware.com/protocol/workgroup");
+  Element leaving=iq.element("leaving");
+  if (leaving != null) {
+    elem.addElement("leaving").setText("true");
+    for (    AgentSession session : workgroup.getAgentSessions()) {
+      update.setTo(session.getJID());
+      update.setType(IQ.Type.set);
+      workgroup.send(update);
+    }
+    return;
+  }
+  String url=iq.element("url").getTextTrim();
+  String title=iq.element("title").getTextTrim();
+  String referrer=iq.element("referrer").getTextTrim();
+  String uniqueID=iq.element("uniqueID").getTextTrim();
+  String ipAddress=iq.element("ipAddress").getTextTrim();
+  elem.addElement("url").setText(url);
+  elem.addElement("title").setText(title);
+  elem.addElement("referrer").setText(referrer);
+  elem.addElement("uniqueID").setText(uniqueID);
+  elem.addElement("ipAddress").setText(ipAddress);
+  for (  AgentSession session : workgroup.getAgentSessions()) {
+    update.setTo(session.getJID());
+    update.setType(IQ.Type.set);
+    workgroup.send(update);
+  }
+}

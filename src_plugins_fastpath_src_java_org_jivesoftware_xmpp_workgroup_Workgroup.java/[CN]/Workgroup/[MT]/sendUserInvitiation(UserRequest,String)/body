@@ -1,0 +1,17 @@
+{
+  String userJID=request.getUserJID().toString();
+  final String sessionID=request.getSessionID();
+  final String serviceName=WorkgroupManager.getInstance().getMUCServiceName();
+  final String roomName=sessionID + "@" + serviceName;
+  Invitation invitation=new Invitation(userJID,"Please join me for a chat.");
+  invitation.setTo(roomName);
+  invitation.setFrom(getFullJID());
+  Element element=invitation.addChildElement("workgroup","http://jabber.org/protocol/workgroup");
+  element.addAttribute("jid",getJID().toBareJID());
+  element=invitation.addChildElement("session","http://jivesoftware.com/protocol/workgroup");
+  element.addAttribute("id",sessionID);
+  RoomInterceptorManager interceptorManager=RoomInterceptorManager.getInstance();
+  interceptorManager.invokeInterceptors(getJID().toBareJID(),invitation,false,false);
+  send(invitation);
+  interceptorManager.invokeInterceptors(getJID().toBareJID(),invitation,false,true);
+}

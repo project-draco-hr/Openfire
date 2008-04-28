@@ -1,0 +1,18 @@
+{
+  if (status == Status.OPEN || status == Status.READY) {
+    if (open) {
+      return;
+    }
+    this.open=true;
+  }
+ else {
+    if (!open) {
+      return;
+    }
+    this.open=false;
+  }
+  disableSchedule();
+  if (updateWorkgroup()) {
+    broadcastPresence();
+  }
+}

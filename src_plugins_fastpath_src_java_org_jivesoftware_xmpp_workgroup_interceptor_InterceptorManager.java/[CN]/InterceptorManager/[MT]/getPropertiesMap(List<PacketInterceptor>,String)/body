@@ -1,0 +1,20 @@
+{
+  Map propertyMap=new HashMap();
+  if (!interceptors.isEmpty()) {
+    propertyMap.put(context + "interceptorCount",String.valueOf(interceptors.size()));
+  }
+  for (int i=0; i < interceptors.size(); i++) {
+    PacketInterceptor interceptor=interceptors.get(i);
+    String interceptorContext=context + "interceptor" + i+ ".";
+    propertyMap.put(interceptorContext + "className",interceptor.getClass().getName());
+    Map interceptorProps=BeanUtils.getProperties(interceptor);
+    for (Iterator iter=interceptorProps.keySet().iterator(); iter.hasNext(); ) {
+      String name=(String)iter.next();
+      String value=(String)interceptorProps.get(name);
+      if (value != null && !"".equals(value)) {
+        propertyMap.put(interceptorContext + "properties." + name,value);
+      }
+    }
+  }
+  return propertyMap;
+}

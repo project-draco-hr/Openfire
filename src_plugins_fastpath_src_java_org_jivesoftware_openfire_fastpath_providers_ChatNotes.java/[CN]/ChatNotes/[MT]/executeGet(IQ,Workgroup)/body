@@ -1,0 +1,23 @@
+{
+  IQ reply;
+  Element iq=packet.getChildElement();
+  try {
+    AgentSession agentSession=workgroup.getAgentManager().getAgentSession(packet.getFrom());
+    if (agentSession != null) {
+      String sessionID=iq.element("sessionID").getTextTrim();
+      sendNotesPacket(packet,workgroup,sessionID);
+    }
+ else {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      workgroup.send(reply);
+    }
+  }
+ catch (  AgentNotFoundException e) {
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    workgroup.send(reply);
+  }
+}

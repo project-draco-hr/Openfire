@@ -1,0 +1,16 @@
+{
+  String bareJID=sender.toBareJID();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(CREATE_ROSTER_ITEM);
+    pstmt.setLong(1,workgroup.getID());
+    pstmt.setString(2,bareJID);
+    pstmt.executeUpdate();
+    presenceSubscribers.add(bareJID);
+  }
+  finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

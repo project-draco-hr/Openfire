@@ -1,0 +1,38 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  Element iq=packet.getChildElement();
+  String from=iq.element("fromAddress").getTextTrim();
+  String to=iq.element("toAddress").getTextTrim();
+  String subject=iq.element("subject").getTextTrim();
+  String body=iq.element("message").getTextTrim();
+  body=body.replace("\\n","\n");
+  String html=iq.element("useHTML").getTextTrim();
+  boolean useHTML=false;
+  if ("true".equals(html)) {
+    useHTML=true;
+  }
+  String sessionID=null;
+  if (iq.element("sessionID") != null) {
+    sessionID=iq.element("sessionID").getTextTrim();
+  }
+  if (!ModelUtil.hasLength(from) || !ModelUtil.hasLength(to) || !ModelUtil.hasLength(subject)|| (!ModelUtil.hasLength(body) && !ModelUtil.hasLength(sessionID))) {
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.not_acceptable));
+    workgroup.send(reply);
+    return;
+  }
+  if (ModelUtil.hasLength(sessionID)) {
+    ChatTranscriptManager.sendTranscriptByMail(sessionID,to);
+  }
+ else {
+    EmailService emailService=EmailService.getInstance();
+    if (!useHTML) {
+      emailService.sendMessage(null,to,null,from,subject,body,null);
+    }
+ else {
+      emailService.sendMessage(null,to,null,from,subject,null,body);
+    }
+  }
+  workgroup.send(reply);
+}
