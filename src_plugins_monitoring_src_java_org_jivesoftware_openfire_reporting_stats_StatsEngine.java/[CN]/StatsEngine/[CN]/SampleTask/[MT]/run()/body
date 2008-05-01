@@ -1,5 +1,13 @@
 {
   if (!ClusterManager.isSeniorClusterMember()) {
+    for (    Map.Entry<String,Statistic> statisticEntry : statsManager.getAllStatistics()) {
+      String key=statisticEntry.getKey();
+      StatDefinition def=createDefintion(key);
+      String group=statsManager.getMultistatGroup(key);
+      if (group != null) {
+        checkAndCreateGroup(group,def,false);
+      }
+    }
     return;
   }
   long newTime=getLastMinute();
