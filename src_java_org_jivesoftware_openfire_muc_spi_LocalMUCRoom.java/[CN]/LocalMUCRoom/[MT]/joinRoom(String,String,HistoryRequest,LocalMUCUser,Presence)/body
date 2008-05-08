@@ -17,7 +17,20 @@
       }
     }
     if (occupants.containsKey(nickname.toLowerCase())) {
-      throw new UserAlreadyExistsException();
+      if (occupants.get(nickname.toLowerCase()).getUserAddress().toBareJID().equals(user.getAddress().toBareJID())) {
+        String reason="Your account signed into this chatroom with the same nickname from another location.";
+        Presence updatedPresence=new Presence(Presence.Type.unavailable);
+        updatedPresence.setFrom(occupants.get(nickname.toLowerCase()).getRoleAddress());
+        updatedPresence.setTo(occupants.get(nickname.toLowerCase()).getUserAddress());
+        Element frag=updatedPresence.addChildElement("x","http://jabber.org/protocol/muc#user");
+        frag.addElement("item").addElement("actor").setText(user.getAddress().toString());
+        frag.element("item").addElement("reason").setText(reason);
+        frag.addElement("status").addAttribute("code","307");
+        router.route(updatedPresence);
+      }
+ else {
+        throw new UserAlreadyExistsException();
+      }
     }
     if (isPasswordProtected()) {
       if (password == null || !password.equals(getPassword())) {
