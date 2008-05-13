@@ -1,0 +1,34 @@
+{
+  final String clientBuild=request.getParameter("client");
+  final String os=request.getParameter("os");
+  if (clientBuild != null) {
+    sendClientBuild(response,clientBuild);
+  }
+ else {
+    File buildDir=new File(JiveGlobals.getHomeDirectory(),"enterprise/spark");
+    if (!buildDir.exists()) {
+      buildDir.mkdirs();
+    }
+    final List<String> fileList=new ArrayList<String>();
+    File[] list=buildDir.listFiles();
+    int no=list != null ? list.length : 0;
+    for (int i=0; i < no; i++) {
+      File clientFile=list[i];
+      if (clientFile.getName().endsWith(".exe") && "windows".equals(os)) {
+        fileList.add(clientFile.getName());
+      }
+ else       if (clientFile.getName().endsWith(".dmg") && "mac".equals(os)) {
+        fileList.add(clientFile.getName());
+      }
+ else       if (clientFile.getName().endsWith(".tar.gz") && "linux".equals(os)) {
+        fileList.add(clientFile.getName());
+      }
+    }
+    Collections.sort(fileList);
+    if (fileList.size() > 0) {
+      int size=fileList.size();
+      String fileName=fileList.get(size - 1);
+      sendClientBuild(response,fileName);
+    }
+  }
+}

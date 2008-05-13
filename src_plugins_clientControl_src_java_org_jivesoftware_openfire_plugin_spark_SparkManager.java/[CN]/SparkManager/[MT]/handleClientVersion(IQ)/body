@@ -1,0 +1,43 @@
+{
+  final String clientsAllowed=JiveGlobals.getProperty("clients.allowed","all");
+  final boolean disconnectIfNoMatch=!"all".equals(clientsAllowed);
+  if ("all".equals(clientsAllowed) || !disconnectIfNoMatch) {
+    return;
+  }
+  ClientSession session=sessionManager.getSession(iq.getFrom());
+  if (session == null) {
+    return;
+  }
+  if (IQ.Type.result == iq.getType()) {
+    final List<String> clients=new ArrayList<String>();
+    StringTokenizer clientTokens=new StringTokenizer(clientsAllowed,",");
+    while (clientTokens.hasMoreTokens()) {
+      clients.add(clientTokens.nextToken().toLowerCase());
+    }
+    final String otherClientsAllowed=JiveGlobals.getProperty("other.clients.allowed","");
+    clientTokens=new StringTokenizer(otherClientsAllowed,",");
+    while (clientTokens.hasMoreTokens()) {
+      clients.add(clientTokens.nextToken().toLowerCase().trim());
+    }
+    Element child=iq.getChildElement();
+    String clientName=child.elementTextTrim("name");
+    boolean disconnect=true;
+    if (clientName != null) {
+      for (      String c : clients) {
+        if (clientName.toLowerCase().contains(c)) {
+          disconnect=false;
+          break;
+        }
+      }
+    }
+ else {
+      disconnect=true;
+    }
+    if (disconnect) {
+      closeSession(session,clientName != null ? clientName : "Unknown");
+    }
+  }
+ else {
+    closeSession(session,"Unknown");
+  }
+}

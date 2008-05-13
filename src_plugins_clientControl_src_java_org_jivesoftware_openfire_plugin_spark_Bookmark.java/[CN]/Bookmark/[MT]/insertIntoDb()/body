@@ -1,0 +1,23 @@
+{
+  this.bookmarkID=SequenceManager.nextID(this);
+  Connection con=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    PreparedStatement pstmt=con.prepareStatement(INSERT_BOOKMARK);
+    pstmt.setLong(1,bookmarkID);
+    pstmt.setString(2,type.toString());
+    pstmt.setString(3,name);
+    pstmt.setString(4,value);
+    pstmt.setInt(5,global ? 1 : 0);
+    pstmt.executeUpdate();
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}
