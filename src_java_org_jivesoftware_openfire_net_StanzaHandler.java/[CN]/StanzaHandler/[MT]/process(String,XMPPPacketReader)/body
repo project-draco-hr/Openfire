@@ -2,7 +2,14 @@
   boolean initialStream=stanza.startsWith("<stream:stream") || stanza.startsWith("<flash:stream");
   if (!sessionCreated || initialStream) {
     if (!initialStream) {
-      return;
+      if (stanza.startsWith("<policy-file-request/>")) {
+        String crossDomainText=FlashCrossDomainHandler.CROSS_DOMAIN_TEXT + XMPPServer.getInstance().getConnectionManager().getClientListenerPort() + FlashCrossDomainHandler.CROSS_DOMAIN_END_TEXT+ '\0';
+        connection.deliverRawText(crossDomainText);
+        return;
+      }
+ else {
+        return;
+      }
     }
     if (!sessionCreated) {
       sessionCreated=true;
