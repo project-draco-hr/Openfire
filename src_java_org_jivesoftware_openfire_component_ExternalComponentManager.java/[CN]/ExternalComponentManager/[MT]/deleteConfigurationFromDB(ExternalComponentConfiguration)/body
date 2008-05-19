@@ -1,10 +1,14 @@
 {
+  if (configuration == null) {
+    return;
+  }
   java.sql.Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(DELETE_CONFIGURATION);
-    pstmt.setString(1,subdomain);
+    pstmt.setString(1,configuration.getSubdomain());
+    pstmt.setInt(2,configuration.isWildcard() ? 1 : 0);
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

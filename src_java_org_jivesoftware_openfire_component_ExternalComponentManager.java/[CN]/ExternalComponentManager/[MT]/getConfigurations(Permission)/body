@@ -9,7 +9,10 @@
     ResultSet rs=pstmt.executeQuery();
     ExternalComponentConfiguration configuration;
     while (rs.next()) {
-      configuration=new ExternalComponentConfiguration(rs.getString(1),permission,rs.getString(2));
+      String subdomain=rs.getString(1);
+      boolean wildcard=rs.getInt(2) == 1;
+      subdomain=wildcard ? subdomain.substring(0,subdomain.length() - 1) : subdomain;
+      configuration=new ExternalComponentConfiguration(subdomain,wildcard,permission,rs.getString(3));
       answer.add(configuration);
     }
     rs.close();

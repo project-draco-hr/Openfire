@@ -4,9 +4,10 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(ADD_CONFIGURATION);
-    pstmt.setString(1,configuration.getSubdomain());
-    pstmt.setString(2,configuration.getSecret());
-    pstmt.setString(3,configuration.getPermission().toString());
+    pstmt.setString(1,configuration.getSubdomain() + (configuration.isWildcard() ? "%" : ""));
+    pstmt.setInt(2,configuration.isWildcard() ? 1 : 0);
+    pstmt.setString(3,configuration.getSecret());
+    pstmt.setString(4,configuration.getPermission().toString());
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

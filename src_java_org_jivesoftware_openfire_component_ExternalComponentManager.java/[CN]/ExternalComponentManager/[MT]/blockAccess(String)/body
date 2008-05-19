@@ -2,8 +2,8 @@
   for (  ExternalComponentManagerListener listener : listeners) {
     listener.componentBlocked(subdomain);
   }
-  deleteConfigurationFromDB(subdomain);
-  ExternalComponentConfiguration config=new ExternalComponentConfiguration(subdomain,Permission.blocked,null);
+  deleteConfigurationFromDB(getConfiguration(subdomain,false));
+  ExternalComponentConfiguration config=new ExternalComponentConfiguration(subdomain,false,Permission.blocked,null);
   addConfiguration(config);
   String domain=subdomain + "." + XMPPServer.getInstance().getServerInfo().getXMPPDomain();
   Session session=SessionManager.getInstance().getComponentSession(domain);

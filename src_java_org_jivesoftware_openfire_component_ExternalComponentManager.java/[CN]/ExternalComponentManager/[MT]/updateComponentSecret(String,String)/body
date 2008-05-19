@@ -2,14 +2,14 @@
   for (  ExternalComponentManagerListener listener : listeners) {
     listener.componentSecretUpdated(subdomain,secret);
   }
-  ExternalComponentConfiguration configuration=getConfiguration(subdomain);
+  ExternalComponentConfiguration configuration=getConfiguration(subdomain,false);
   if (configuration != null) {
     configuration.setPermission(Permission.allowed);
     configuration.setSecret(secret);
-    deleteConfigurationFromDB(subdomain);
+    deleteConfigurationFromDB(configuration);
   }
  else {
-    configuration=new ExternalComponentConfiguration(subdomain,Permission.allowed,secret);
+    configuration=new ExternalComponentConfiguration(subdomain,false,Permission.allowed,secret);
   }
   addConfiguration(configuration);
 }
