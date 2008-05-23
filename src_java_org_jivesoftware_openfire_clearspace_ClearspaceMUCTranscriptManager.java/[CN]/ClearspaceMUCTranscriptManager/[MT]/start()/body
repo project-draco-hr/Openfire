@@ -5,6 +5,7 @@
       if (roomEvents.isEmpty()) {
         return;
       }
+      Set<String> presenceRoomJids=new HashSet<String>();
       IQ packet=new IQ();
       packet.setTo(csComponentAddress);
       packet.setFrom(csMucDomain);
@@ -19,10 +20,12 @@ case messageReceived:
       break;
 case occupantJoined:
     mucEventElement=transcriptElement.addElement("presence");
-  break;
+  presenceRoomJids.add(event.roomJID.toBareJID());
+break;
 case occupantLeft:
 mucEventElement=transcriptElement.addElement("presence");
 mucEventElement.addAttribute("type","unavailable");
+presenceRoomJids.add(event.roomJID.toBareJID());
 break;
 case roomSubjectChanged:
 mucEventElement=transcriptElement.addElement("subject-change");
@@ -38,6 +41,15 @@ mucEventElement.addElement("roomjid").setText(event.roomJID.toBareJID());
 }
 mucEventElement.addElement("timestamp").setText(Long.toString(event.timestamp));
 }
+}
+MultiUserChatManager mucManager=XMPPServer.getInstance().getMultiUserChatManager();
+for (String roomJid : presenceRoomJids) {
+JID jid=new JID(roomJid);
+MultiUserChatService mucService=mucManager.getMultiUserChatService(jid);
+MUCRoom room=mucService.getChatRoom(jid.getNode());
+Element occUpdateElement=transcriptElement.addElement("occupant-count-update");
+occUpdateElement.addElement("roomjid").setText(roomJid);
+occUpdateElement.addElement("count").setText(Integer.toString(room.getOccupantsCount()));
 }
 IQ result=ClearspaceManager.getInstance().query(packet,15000);
 if (result == null) {
