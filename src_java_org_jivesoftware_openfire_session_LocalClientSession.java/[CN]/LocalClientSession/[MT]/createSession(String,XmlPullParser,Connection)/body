@@ -8,24 +8,13 @@
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
   if (!allowedIPs.isEmpty()) {
-    boolean forbidAccess=false;
     String hostAddress="Unknown";
     try {
       hostAddress=connection.getHostAddress();
-      if (!allowedIPs.containsKey(hostAddress)) {
-        byte[] address=connection.getAddress();
-        String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
-        String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
-        String range3=(address[0] & 0xff) + ".*.*.*";
-        if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
-          forbidAccess=true;
-        }
-      }
     }
  catch (    UnknownHostException e) {
-      forbidAccess=true;
     }
-    if (forbidAccess) {
+    if (!isAllowed(connection)) {
       Log.debug("LocalClientSession: Closed connection to client attempting to connect from: " + hostAddress);
       StreamError error=new StreamError(StreamError.Condition.not_authorized);
       connection.deliverRawText(error.toXML());

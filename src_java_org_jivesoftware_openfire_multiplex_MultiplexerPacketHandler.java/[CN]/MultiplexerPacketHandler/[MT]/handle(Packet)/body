@@ -14,9 +14,18 @@
         sendErrorPacket(iq,PacketError.Condition.bad_request,extraError);
       }
  else       if ("session".equals(child.getName())) {
-        if (child.element("create") != null) {
-          multiplexerManager.createClientSession(connectionManagerDomain,streamID);
-          sendResultPacket(iq);
+        Element create=child.element("create");
+        if (create != null) {
+          Element hostElement=create.element("host");
+          String hostName=hostElement != null ? hostElement.attributeValue("name") : null;
+          String hostAddress=hostElement != null ? hostElement.attributeValue("address") : null;
+          boolean created=multiplexerManager.createClientSession(connectionManagerDomain,streamID,hostName,hostAddress);
+          if (created) {
+            sendResultPacket(iq);
+          }
+ else {
+            sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
+          }
         }
  else {
           ClientSession session=multiplexerManager.getClientSession(connectionManagerDomain,streamID);
