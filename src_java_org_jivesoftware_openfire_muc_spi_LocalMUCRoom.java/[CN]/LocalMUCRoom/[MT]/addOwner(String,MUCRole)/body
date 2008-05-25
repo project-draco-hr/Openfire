@@ -1,22 +1,28 @@
 {
-  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
-  if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
-    throw new ForbiddenException();
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+    if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+    if (owners.contains(bareJID)) {
+      return Collections.emptyList();
+    }
+    owners.add(bareJID);
+    if (removeAdmin(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (removeMember(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.member;
+    }
+ else     if (removeOutcast(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.outcast;
+    }
+    MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.owner,oldAffiliation);
   }
-  if (owners.contains(bareJID)) {
-    return Collections.emptyList();
+  finally {
+    lock.writeLock().unlock();
   }
-  owners.add(bareJID);
-  if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.admin;
-  }
- else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.member;
-  }
- else   if (removeOutcast(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.outcast;
-  }
-  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.owner,oldAffiliation);
   try {
     return changeOccupantAffiliation(bareJID,MUCRole.Affiliation.owner,MUCRole.Role.moderator);
   }

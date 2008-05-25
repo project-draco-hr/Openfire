@@ -86,44 +86,38 @@
           nick=item.attributeValue("nick");
           jid=room.getOccupant(nick).getUserAddress();
         }
-        room.lock.writeLock().lock();
-        try {
-          if ("moderator".equals(target)) {
-            presences.add(room.addModerator(jid,senderRole));
-          }
- else           if ("participant".equals(target)) {
-            presences.add(room.addParticipant(jid,item.elementTextTrim("reason"),senderRole));
-          }
- else           if ("visitor".equals(target)) {
-            presences.add(room.addVisitor(jid,senderRole));
-          }
- else           if ("member".equals(target)) {
-            boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.Affiliation.none;
-            presences.addAll(room.addMember(jid.toBareJID(),nick,senderRole));
-            if (!hadAffiliation && room.isMembersOnly()) {
-              room.sendInvitation(jid,null,senderRole,null);
-            }
-          }
- else           if ("outcast".equals(target)) {
-            presences.addAll(room.addOutcast(jid.toBareJID(),item.elementTextTrim("reason"),senderRole));
-          }
- else           if ("none".equals(target)) {
-            if (hasAffiliation) {
-              presences.addAll(room.addNone(jid.toBareJID(),senderRole));
-            }
- else {
-              if (MUCRole.Role.moderator != senderRole.getRole()) {
-                throw new ForbiddenException();
-              }
-              presences.add(room.kickOccupant(jid,senderRole.getUserAddress(),item.elementTextTrim("reason")));
-            }
-          }
- else {
-            reply.setError(PacketError.Condition.bad_request);
+        if ("moderator".equals(target)) {
+          presences.add(room.addModerator(jid,senderRole));
+        }
+ else         if ("participant".equals(target)) {
+          presences.add(room.addParticipant(jid,item.elementTextTrim("reason"),senderRole));
+        }
+ else         if ("visitor".equals(target)) {
+          presences.add(room.addVisitor(jid,senderRole));
+        }
+ else         if ("member".equals(target)) {
+          boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.Affiliation.none;
+          presences.addAll(room.addMember(jid.toBareJID(),nick,senderRole));
+          if (!hadAffiliation && room.isMembersOnly()) {
+            room.sendInvitation(jid,null,senderRole,null);
           }
         }
-  finally {
-          room.lock.writeLock().unlock();
+ else         if ("outcast".equals(target)) {
+          presences.addAll(room.addOutcast(jid.toBareJID(),item.elementTextTrim("reason"),senderRole));
+        }
+ else         if ("none".equals(target)) {
+          if (hasAffiliation) {
+            presences.addAll(room.addNone(jid.toBareJID(),senderRole));
+          }
+ else {
+            if (MUCRole.Role.moderator != senderRole.getRole()) {
+              throw new ForbiddenException();
+            }
+            presences.add(room.kickOccupant(jid,senderRole.getUserAddress(),item.elementTextTrim("reason")));
+          }
+        }
+ else {
+          reply.setError(PacketError.Condition.bad_request);
         }
       }
  catch (      UserNotFoundException e) {

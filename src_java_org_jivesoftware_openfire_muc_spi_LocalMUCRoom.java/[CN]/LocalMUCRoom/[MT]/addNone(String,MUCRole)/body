@@ -1,26 +1,33 @@
 {
-  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
-  if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
-    throw new ForbiddenException();
-  }
-  if (owners.contains(bareJID) && owners.size() == 1) {
-    throw new ConflictException();
-  }
   List<Presence> updatedPresences=null;
-  boolean wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
-  if (removeOwner(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.owner;
+  boolean wasMember=false;
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+    if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+    if (owners.contains(bareJID) && owners.size() == 1) {
+      throw new ConflictException();
+    }
+    wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
+    if (removeOwner(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (removeAdmin(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (removeMember(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.member;
+    }
+ else     if (removeOutcast(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.outcast;
+    }
+    MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
   }
- else   if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.admin;
+  finally {
+    lock.writeLock().unlock();
   }
- else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.member;
-  }
- else   if (removeOutcast(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.outcast;
-  }
-  MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
   try {
     MUCRole.Role newRole;
     if (isMembersOnly() && wasMember) {

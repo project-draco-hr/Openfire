@@ -75,7 +75,6 @@
         }
       }
       room.lock.readLock().unlock();
-      room.lock.writeLock().lock();
       try {
         for (        String bareJID : jids.keySet()) {
           String targetAffiliation=jids.get(bareJID);
@@ -98,7 +97,6 @@
         }
       }
   finally {
-        room.lock.writeLock().unlock();
         room.lock.readLock().lock();
       }
     }

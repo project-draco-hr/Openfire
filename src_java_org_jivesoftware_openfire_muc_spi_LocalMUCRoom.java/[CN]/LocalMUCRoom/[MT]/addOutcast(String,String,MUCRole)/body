@@ -1,13 +1,30 @@
 {
-  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
-  if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
-    throw new ForbiddenException();
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+    if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+    if (owners.contains(bareJID) && owners.size() == 1) {
+      throw new ConflictException();
+    }
+    if (outcasts.contains(bareJID)) {
+      return Collections.emptyList();
+    }
+    outcasts.add(bareJID);
+    if (removeOwner(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (removeAdmin(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (removeMember(bareJID)) {
+      oldAffiliation=MUCRole.Affiliation.member;
+    }
+    MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.outcast,oldAffiliation);
   }
-  if (owners.contains(bareJID) && owners.size() == 1) {
-    throw new ConflictException();
-  }
-  if (outcasts.contains(bareJID)) {
-    return Collections.emptyList();
+  finally {
+    lock.writeLock().unlock();
   }
   JID actorJID=senderRole.getUserAddress();
   List<Presence> updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.Affiliation.outcast,MUCRole.Role.none);
@@ -20,16 +37,5 @@
     }
     kickPresence(presence,actorJID);
   }
-  outcasts.add(bareJID);
-  if (removeOwner(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.owner;
-  }
- else   if (removeAdmin(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.admin;
-  }
- else   if (removeMember(bareJID)) {
-    oldAffiliation=MUCRole.Affiliation.member;
-  }
-  MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.outcast,oldAffiliation);
   return updatedPresences;
 }

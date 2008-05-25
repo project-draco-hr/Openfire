@@ -62,13 +62,7 @@
                 for (Iterator it=userInfo.elementIterator("invite"); it.hasNext(); ) {
                   Element info=(Element)it.next();
                   if (room.isMembersOnly()) {
-                    room.lock.writeLock().lock();
-                    try {
-                      room.addMember(info.attributeValue("to"),null,role);
-                    }
-  finally {
-                      room.lock.writeLock().unlock();
-                    }
+                    room.addMember(info.attributeValue("to"),null,role);
                   }
                   room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role,extensions);
                 }
