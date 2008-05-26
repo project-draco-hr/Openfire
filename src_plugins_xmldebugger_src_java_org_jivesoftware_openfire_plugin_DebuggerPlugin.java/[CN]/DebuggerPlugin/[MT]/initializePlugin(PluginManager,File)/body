@@ -15,6 +15,11 @@
   if (componentAcceptor != null) {
     componentAcceptor.getFilterChain().addBefore("xmpp","rawDebugger",componentPortFilter);
   }
+  multiplexerPortFilter=new RawPrintFilter("CM");
+  SocketAcceptor multiplexerAcceptor=connManager.getMultiplexerSocketAcceptor();
+  if (multiplexerAcceptor != null) {
+    multiplexerAcceptor.getFilterChain().addBefore("xmpp","rawDebugger",multiplexerPortFilter);
+  }
   interpretedPrinter=new InterpretedXMLPrinter();
   if (JiveGlobals.getBooleanProperty("plugin.debugger.interpretedAllowed")) {
     InterceptorManager.getInstance().addInterceptor(interpretedPrinter);
