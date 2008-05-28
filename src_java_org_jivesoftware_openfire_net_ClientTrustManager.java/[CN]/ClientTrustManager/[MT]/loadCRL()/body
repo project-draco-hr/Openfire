@@ -1,0 +1,36 @@
+{
+  File crlFile=new File(JiveGlobals.getProperty("xmpp.client.certificate.crl","resources" + File.separator + "security"+ File.separator+ "crl.pem"));
+  if (!crlFile.isFile()) {
+    return;
+  }
+  long modified=crlFile.lastModified();
+  if (modified > crlLastUpdated) {
+    crlLastUpdated=modified;
+    Log.debug("ClientTrustManager: Updating CRLs");
+    try {
+      CertificateFactory cf=CertificateFactory.getInstance("X.509");
+      ;
+      X509CRL crl;
+      FileInputStream crlStream=new FileInputStream(crlFile);
+      BufferedInputStream crlBuffer=new BufferedInputStream(crlStream);
+      crls.clear();
+      while (crlBuffer.available() > 0) {
+        crl=(X509CRL)cf.generateCRL(crlBuffer);
+        Log.debug("ClientTrustManager: adding CRL for " + crl.getIssuerDN());
+        crls.add(crl);
+      }
+    }
+ catch (    FileNotFoundException e) {
+      Log.debug("ClientTrustManager: CRL file not found: " + crlFile.toString());
+    }
+catch (    IOException e) {
+      Log.error("ClientTrustManager: IOException while parsing CRLs",e);
+    }
+catch (    CertificateException e) {
+      Log.error("ClientTrustManager: ",e);
+    }
+catch (    CRLException e) {
+      Log.error("ClientTrustManager: CRLException while parsing CRLs",e);
+    }
+  }
+}
