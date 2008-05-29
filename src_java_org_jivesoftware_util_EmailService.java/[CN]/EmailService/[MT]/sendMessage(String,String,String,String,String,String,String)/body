@@ -4,7 +4,7 @@
   }
  else {
     try {
-      String encoding=MimeUtility.mimeCharset("iso-8859-1");
+      String encoding=MimeUtility.mimeCharset("UTF-8");
       MimeMessage message=createMimeMessage();
       Address to;
       Address from;
@@ -34,8 +34,9 @@
         text.setDisposition(Part.INLINE);
         content.addBodyPart(text);
         MimeBodyPart html=new MimeBodyPart();
-        html.setContent(htmlBody,"text/html");
+        html.setContent(htmlBody,"text/html; charset=UTF-8");
         html.setDisposition(Part.INLINE);
+        html.setHeader("Content-Transfer-Encoding","8bit");
         content.addBodyPart(html);
         message.setContent(content);
         message.setDisposition(Part.INLINE);
@@ -45,6 +46,7 @@
         MimeBodyPart bPart=new MimeBodyPart();
         bPart.setText(textBody,encoding);
         bPart.setDisposition(Part.INLINE);
+        bPart.setHeader("Content-Transfer-Encoding","8bit");
         MimeMultipart mPart=new MimeMultipart();
         mPart.addBodyPart(bPart);
         message.setContent(mPart);
@@ -53,8 +55,9 @@
       }
  else       if (htmlBody != null) {
         MimeBodyPart bPart=new MimeBodyPart();
-        bPart.setContent(htmlBody,"text/html");
+        bPart.setContent(htmlBody,"text/html; charset=UTF-8");
         bPart.setDisposition(Part.INLINE);
+        bPart.setHeader("Content-Transfer-Encoding","8bit");
         MimeMultipart mPart=new MimeMultipart();
         mPart.addBodyPart(bPart);
         message.setContent(mPart);
