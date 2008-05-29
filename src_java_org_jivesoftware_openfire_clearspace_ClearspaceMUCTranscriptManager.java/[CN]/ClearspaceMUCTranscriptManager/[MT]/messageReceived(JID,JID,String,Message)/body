@@ -1,3 +1,5 @@
 {
-  addGroupChatEvent(ClearspaceMUCTranscriptEvent.messageReceived(roomJID,user,message.getBody(),new Date().getTime()));
+  if (!isRoomOwner(roomJID,user)) {
+    addGroupChatEvent(ClearspaceMUCTranscriptEvent.messageReceived(roomJID,user,message.getBody(),new Date().getTime()));
+  }
 }

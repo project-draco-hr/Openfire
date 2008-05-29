@@ -47,9 +47,19 @@ for (String roomJid : presenceRoomJids) {
 JID jid=new JID(roomJid);
 MultiUserChatService mucService=mucManager.getMultiUserChatService(jid);
 MUCRoom room=mucService.getChatRoom(jid.getNode());
+int totalOccupants=room.getOccupantsCount();
+for (String owner : room.getOwners()) {
+try {
+if (!room.getOccupantsByBareJID(owner).isEmpty()) {
+totalOccupants--;
+}
+}
+ catch (UserNotFoundException e) {
+}
+}
 Element occUpdateElement=transcriptElement.addElement("occupant-count-update");
 occUpdateElement.addElement("roomjid").setText(roomJid);
-occUpdateElement.addElement("count").setText(Integer.toString(room.getOccupantsCount()));
+occUpdateElement.addElement("count").setText(Integer.toString(totalOccupants));
 }
 IQ result=ClearspaceManager.getInstance().query(packet,15000);
 if (result == null) {
