@@ -11,10 +11,15 @@ synchronized (roomName.intern()) {
         loaded=true;
       }
  catch (      IllegalArgumentException e) {
-        if (mucEventDelegate != null && mucEventDelegate.loadConfig(room)) {
-          loaded=true;
-          if (room.isPersistent()) {
-            MUCPersistenceManager.saveToDB(room);
+        if (mucEventDelegate != null) {
+          if (mucEventDelegate.loadConfig(room)) {
+            loaded=true;
+            if (room.isPersistent()) {
+              MUCPersistenceManager.saveToDB(room);
+            }
+          }
+ else {
+            throw new NotAllowedException();
           }
         }
  else {
