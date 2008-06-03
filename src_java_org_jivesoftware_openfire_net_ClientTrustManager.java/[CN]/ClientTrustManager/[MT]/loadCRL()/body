@@ -1,12 +1,15 @@
 {
   File crlFile=new File(JiveGlobals.getProperty("xmpp.client.certificate.crl","resources" + File.separator + "security"+ File.separator+ "crl.pem"));
   if (!crlFile.isFile()) {
+    Log.debug("ClientTrustmanager: crl file not found " + crlFile.toString());
+    useCRLs=false;
     return;
   }
   long modified=crlFile.lastModified();
   if (modified > crlLastUpdated) {
     crlLastUpdated=modified;
     Log.debug("ClientTrustManager: Updating CRLs");
+    useCRLs=false;
     try {
       CertificateFactory cf=CertificateFactory.getInstance("X.509");
       ;
@@ -19,6 +22,7 @@
         Log.debug("ClientTrustManager: adding CRL for " + crl.getIssuerDN());
         crls.add(crl);
       }
+      useCRLs=true;
     }
  catch (    FileNotFoundException e) {
       Log.debug("ClientTrustManager: CRL file not found: " + crlFile.toString());

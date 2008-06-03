@@ -1,0 +1,173 @@
+{
+  Log.debug("OCSPChecker: check called");
+  InputStream in=null;
+  OutputStream out=null;
+  try {
+    X509Certificate responderCert=null;
+    boolean haveResponderCert=true;
+    X500Principal responderSubjectName=null;
+    boolean haveIssuerCert=false;
+    if (ocspServerSubject != null) {
+      haveResponderCert=false;
+      responderSubjectName=new X500Principal(ocspServerSubject);
+    }
+    X509Certificate issuerCert=null;
+    X509Certificate currCert=(X509Certificate)cert;
+    if (certIndex != 0) {
+      issuerCert=(X509Certificate)(certs[certIndex]);
+      haveIssuerCert=true;
+      if (haveResponderCert) {
+        responderCert=certs[certIndex];
+      }
+    }
+    if (!haveIssuerCert || !haveResponderCert) {
+      if (!haveResponderCert) {
+        Log.debug("OCSPChecker: Looking for responder's certificate");
+      }
+      if (!haveIssuerCert) {
+        Log.debug("OCSPChecker: Looking for issuer's certificate");
+      }
+      Iterator anchors=pkixParams.getTrustAnchors().iterator();
+      if (!anchors.hasNext()) {
+        throw new CertPathValidatorException("Must specify at least one trust anchor");
+      }
+      X500Principal certIssuerName=currCert.getIssuerX500Principal();
+      while (anchors.hasNext() && (!haveIssuerCert || !haveResponderCert)) {
+        TrustAnchor anchor=(TrustAnchor)anchors.next();
+        X509Certificate anchorCert=anchor.getTrustedCert();
+        X500Principal anchorSubjectName=anchorCert.getSubjectX500Principal();
+        if (!haveIssuerCert && certIssuerName.equals(anchorSubjectName)) {
+          issuerCert=anchorCert;
+          haveIssuerCert=true;
+          if (haveResponderCert && responderCert == null) {
+            responderCert=anchorCert;
+            Log.debug("OCSPChecker: Responder's certificate = issuer certificate");
+          }
+        }
+        if (!haveResponderCert) {
+          if (responderSubjectName != null && responderSubjectName.equals(anchorSubjectName)) {
+            responderCert=anchorCert;
+            haveResponderCert=true;
+          }
+        }
+      }
+      if (issuerCert == null) {
+        throw new CertPathValidatorException("No trusted certificate for " + currCert.getIssuerDN());
+      }
+      if (!haveResponderCert) {
+        Log.debug("OCSPChecker: Searching cert stores for responder's certificate");
+        if (responderSubjectName != null) {
+          X509CertSelector filter=new X509CertSelector();
+          filter.setSubject(responderSubjectName.getName());
+          List<CertStore> certStores=pkixParams.getCertStores();
+          for (          CertStore certStore : certStores) {
+            Iterator i=certStore.getCertificates(filter).iterator();
+            if (i.hasNext()) {
+              responderCert=(X509Certificate)i.next();
+              haveResponderCert=true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (!haveResponderCert) {
+      throw new CertPathValidatorException("Cannot find the responder's certificate.");
+    }
+    OCSPReqGenerator gen=new OCSPReqGenerator();
+    CertificateID certID=new CertificateID(CertificateID.HASH_SHA1,issuerCert,currCert.getSerialNumber());
+    gen.addRequest(certID);
+    OCSPReq ocspRequest=gen.generate();
+    URL url;
+    if (ocspServerUrl != null) {
+      try {
+        url=new URL(ocspServerUrl);
+      }
+ catch (      MalformedURLException e) {
+        throw new CertPathValidatorException(e);
+      }
+    }
+ else {
+      throw new CertPathValidatorException("Must set OCSP Server URL");
+    }
+    HttpURLConnection con=(HttpURLConnection)url.openConnection();
+    Log.debug("OCSPChecker: connecting to OCSP service at: " + url);
+    con.setDoOutput(true);
+    con.setDoInput(true);
+    con.setRequestMethod("POST");
+    con.setRequestProperty("Content-type","application/ocsp-request");
+    con.setRequestProperty("Accept","application/ocsp-response");
+    byte[] bytes=ocspRequest.getEncoded();
+    con.setRequestProperty("Content-length",String.valueOf(bytes.length));
+    out=con.getOutputStream();
+    out.write(bytes);
+    out.flush();
+    if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      Log.debug("OCSPChecker: Received HTTP error: " + con.getResponseCode() + " - "+ con.getResponseMessage());
+    }
+    in=con.getInputStream();
+    OCSPResp ocspResponse=new OCSPResp(in);
+    BigInteger serialNumber=currCert.getSerialNumber();
+    BasicOCSPResp brep=(BasicOCSPResp)ocspResponse.getResponseObject();
+    try {
+      if (!brep.verify(responderCert.getPublicKey(),"BC")) {
+        throw new CertPathValidatorException("OCSP response is not verified");
+      }
+    }
+ catch (    NoSuchProviderException e) {
+      throw new CertPathValidatorException("OCSP response could not be verified (" + e.getMessage() + ")",null,cp,certIndex);
+    }
+    SingleResp[] singleResp=brep.getResponses();
+    boolean foundResponse=false;
+    for (    SingleResp resp : singleResp) {
+      CertificateID respCertID=resp.getCertID();
+      if (respCertID.equals(certID)) {
+        Object status=resp.getCertStatus();
+        if (status == CertificateStatus.GOOD) {
+          Log.debug("OCSPChecker: Status of certificate (with serial number " + serialNumber.toString() + ") is: good");
+          foundResponse=true;
+          break;
+        }
+ else         if (status instanceof org.bouncycastle.ocsp.RevokedStatus) {
+          Log.debug("OCSPChecker: Status of certificate (with serial number " + serialNumber.toString() + ") is: revoked");
+          throw new CertPathValidatorException("Certificate has been revoked",null,cp,certIndex);
+        }
+ else         if (status instanceof org.bouncycastle.ocsp.UnknownStatus) {
+          Log.debug("OCSPChecker: Status of certificate (with serial number " + serialNumber.toString() + ") is: unknown");
+          throw new CertPathValidatorException("Certificate's revocation status is unknown",null,cp,certIndex);
+        }
+ else {
+          Log.debug("Status of certificate (with serial number " + serialNumber.toString() + ") is: not recognized");
+          throw new CertPathValidatorException("Unknown OCSP response for certificate",null,cp,certIndex);
+        }
+      }
+    }
+    if (!foundResponse) {
+      throw new CertPathValidatorException("No certificates in the OCSP response match the " + "certificate supplied in the OCSP request.");
+    }
+  }
+ catch (  CertPathValidatorException cpve) {
+    throw cpve;
+  }
+catch (  Exception e) {
+    throw new CertPathValidatorException(e);
+  }
+ finally {
+    if (in != null) {
+      try {
+        in.close();
+      }
+ catch (      IOException ioe) {
+        throw new CertPathValidatorException(ioe);
+      }
+    }
+    if (out != null) {
+      try {
+        out.close();
+      }
+ catch (      IOException ioe) {
+        throw new CertPathValidatorException(ioe);
+      }
+    }
+  }
+}
