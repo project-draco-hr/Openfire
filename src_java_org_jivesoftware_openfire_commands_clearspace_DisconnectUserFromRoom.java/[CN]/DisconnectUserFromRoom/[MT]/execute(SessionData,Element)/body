@@ -1,0 +1,55 @@
+{
+  Element note=command.addElement("note");
+  Map<String,List<String>> data=sessionData.getData();
+  Log.debug("Got command " + command.asXML());
+  String userjid=get(data,"userjid",0);
+  if (userjid == null || "".equals(userjid)) {
+    note.addAttribute("type","error");
+    note.setText("User JID is empty.");
+    return;
+  }
+  String roomjid=get(data,"roomjid",0);
+  if (roomjid == null || "".equals(roomjid)) {
+    note.addAttribute("type","error");
+    note.setText("Room JID is empty.");
+    return;
+  }
+  JID rjid=new JID(roomjid);
+  JID ujid=new JID(userjid);
+  String nickname=ujid.getNode();
+  Log.debug("userjid = " + userjid);
+  Log.debug("roomjid = " + roomjid);
+  Log.debug("nickname = " + nickname);
+  Log.debug("rjid = " + rjid);
+  Log.debug("ujid = " + ujid);
+  MultiUserChatService service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(rjid);
+  if (service != null) {
+    MUCRoom room=service.getChatRoom(rjid.getNode());
+    if (room != null) {
+      try {
+        for (        MUCRole role : room.getOccupantsByBareJID(ujid.toBareJID())) {
+          if (role.getNickname().equals(nickname)) {
+            room.leaveRoom(role);
+            note.addAttribute("type","info");
+            note.setText("Operation finished successfully");
+            return;
+          }
+        }
+        note.addAttribute("type","error");
+        note.setText("Occupant not found in room specified.");
+      }
+ catch (      UserNotFoundException e) {
+        note.addAttribute("type","error");
+        note.setText("Occupant not found in room specified.");
+      }
+    }
+ else {
+      note.addAttribute("type","error");
+      note.setText("Room not found on MUC service.");
+    }
+  }
+ else {
+    note.addAttribute("type","error");
+    note.setText("Service for room JID not found.");
+  }
+}
