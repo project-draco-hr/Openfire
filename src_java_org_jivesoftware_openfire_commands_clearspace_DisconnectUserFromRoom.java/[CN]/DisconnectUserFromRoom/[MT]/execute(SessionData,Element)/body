@@ -1,7 +1,6 @@
 {
   Element note=command.addElement("note");
   Map<String,List<String>> data=sessionData.getData();
-  Log.debug("Got command " + command.asXML());
   String userjid=get(data,"userjid",0);
   if (userjid == null || "".equals(userjid)) {
     note.addAttribute("type","error");
@@ -17,11 +16,6 @@
   JID rjid=new JID(roomjid);
   JID ujid=new JID(userjid);
   String nickname=ujid.getNode();
-  Log.debug("userjid = " + userjid);
-  Log.debug("roomjid = " + roomjid);
-  Log.debug("nickname = " + nickname);
-  Log.debug("rjid = " + rjid);
-  Log.debug("ujid = " + ujid);
   MultiUserChatService service=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(rjid);
   if (service != null) {
     MUCRoom room=service.getChatRoom(rjid.getNode());
