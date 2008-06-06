@@ -41,7 +41,7 @@ if (Log.isDebugEnabled()) {
 Log.debug("Outgoing REST call results: " + body);
 }
 if (method.getStatusCode() != 200) {
-throw new ConnectException("Error connecting to Clearspace, http status code: " + method.getStatusCode());
+throw new ConnectException("Error connecting to Clearspace, http status code: " + method.getStatusCode(),new HTTPConnectionException(method.getStatusCode()));
 }
 Element response=localParser.get().parseDocument(body).getRootElement();
 checkFault(response);
