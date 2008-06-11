@@ -1,13 +1,5 @@
 {
   originator=ExternalizableUtil.getInstance().readBoolean(in);
-  String roomName=ExternalizableUtil.getInstance().readSafeUTF(in);
-  String subdomain=ExternalizableUtil.getInstance().readSafeUTF(in);
-  MultiUserChatService mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(subdomain);
-  if (mucService == null) {
-    throw new IllegalArgumentException("MUC service not found for subdomain: " + subdomain);
-  }
-  room=(LocalMUCRoom)mucService.getChatRoom(roomName);
-  if (room == null) {
-    throw new IllegalArgumentException("Room not found: " + roomName);
-  }
+  roomName=ExternalizableUtil.getInstance().readSafeUTF(in);
+  subdomain=ExternalizableUtil.getInstance().readSafeUTF(in);
 }

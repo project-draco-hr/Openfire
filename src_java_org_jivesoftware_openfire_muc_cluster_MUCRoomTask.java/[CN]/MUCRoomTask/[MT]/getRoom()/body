@@ -1,3 +1,11 @@
 {
+  MultiUserChatService mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(subdomain);
+  if (mucService == null) {
+    throw new IllegalArgumentException("MUC service not found for subdomain: " + subdomain);
+  }
+  LocalMUCRoom room=(LocalMUCRoom)mucService.getChatRoom(roomName);
+  if (room == null) {
+    throw new IllegalArgumentException("Room not found: " + roomName);
+  }
   return room;
 }

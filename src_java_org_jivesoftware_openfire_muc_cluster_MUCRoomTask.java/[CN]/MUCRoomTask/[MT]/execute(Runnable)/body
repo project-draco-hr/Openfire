@@ -1,0 +1,15 @@
+{
+  boolean clusterStarting=ClusterManager.isClusteringStarting();
+  try {
+    getRoom();
+    runnable.run();
+  }
+ catch (  IllegalArgumentException e) {
+    if (clusterStarting) {
+      QueuedTasksManager.getInstance().addTask(this);
+    }
+ else {
+      Log.error(e);
+    }
+  }
+}
