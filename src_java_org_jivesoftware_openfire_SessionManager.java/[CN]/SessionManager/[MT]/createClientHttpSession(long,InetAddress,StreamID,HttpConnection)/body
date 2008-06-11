@@ -3,7 +3,7 @@
     throw new UnauthorizedException("Server not initialized");
   }
   PacketDeliverer backupDeliverer=server.getPacketDeliverer();
-  HttpSession session=new HttpSession(backupDeliverer,serverName,address,id,rid);
+  HttpSession session=new HttpSession(backupDeliverer,serverName,address,id,rid,connection);
   Connection conn=session.getConnection();
   conn.init(session);
   conn.registerCloseListener(clientSessionListener,session);

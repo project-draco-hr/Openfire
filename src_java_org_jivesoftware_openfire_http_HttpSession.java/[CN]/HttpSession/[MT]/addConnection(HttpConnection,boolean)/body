@@ -8,6 +8,7 @@
   if (isSecure && !connection.isSecure()) {
     throw new HttpBindException("Session was started from secure connection, all " + "connections on this session must be secured.",BoshBindingError.badRequest);
   }
+  sslCertificates=connection.getPeerCertificates();
   connection.setSession(this);
   if (hold <= 0 || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
     deliver(connection,pendingElements);

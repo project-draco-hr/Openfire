@@ -1,0 +1,12 @@
+{
+  try {
+    SSLSession sslSession=(SSLSession)ioSession.getAttribute(SSLFilter.SSL_SESSION);
+    if (sslSession != null) {
+      return sslSession.getPeerCertificates();
+    }
+  }
+ catch (  SSLPeerUnverifiedException e) {
+    Log.warn("Error retrieving client certificates of: " + session,e);
+  }
+  return new Certificate[0];
+}

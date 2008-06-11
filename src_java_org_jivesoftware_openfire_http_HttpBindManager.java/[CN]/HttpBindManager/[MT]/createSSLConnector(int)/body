@@ -10,8 +10,19 @@
       sslConnector.setTrustPassword(SSLConfig.getc2sTrustPassword());
       sslConnector.setTruststoreType(SSLConfig.getStoreType());
       sslConnector.setTruststore(SSLConfig.getc2sTruststoreLocation());
-      sslConnector.setNeedClientAuth(false);
-      sslConnector.setWantClientAuth(false);
+      String certPol=JiveGlobals.getProperty("xmpp.client.cert.policy","disabled");
+      if (certPol.equals("needed")) {
+        sslConnector.setNeedClientAuth(true);
+        sslConnector.setWantClientAuth(true);
+      }
+ else       if (certPol.equals("wanted")) {
+        sslConnector.setNeedClientAuth(false);
+        sslConnector.setWantClientAuth(true);
+      }
+ else {
+        sslConnector.setNeedClientAuth(false);
+        sslConnector.setWantClientAuth(false);
+      }
       sslConnector.setKeyPassword(SSLConfig.getKeyPassword());
       sslConnector.setKeystoreType(SSLConfig.getStoreType());
       sslConnector.setKeystore(SSLConfig.getKeystoreLocation());

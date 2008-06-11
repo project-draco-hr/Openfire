@@ -6,7 +6,7 @@
   int wait=getIntAttribute(rootNode.attributeValue("wait"),60);
   int hold=getIntAttribute(rootNode.attributeValue("hold"),1);
   double version=getDoubleAttribute(rootNode.attributeValue("ver"),1.5);
-  HttpSession session=createSession(connection.getRequestId(),address);
+  HttpSession session=createSession(connection.getRequestId(),address,connection);
   session.setWait(Math.min(wait,getMaxWait()));
   session.setHold(hold);
   session.setSecure(connection.isSecure());

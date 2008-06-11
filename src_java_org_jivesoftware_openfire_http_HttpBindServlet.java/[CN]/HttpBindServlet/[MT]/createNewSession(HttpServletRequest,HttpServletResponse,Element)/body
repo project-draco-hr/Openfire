@@ -5,7 +5,8 @@
     return;
   }
   try {
-    HttpConnection connection=new HttpConnection(rid,request.isSecure());
+    X509Certificate[] certificates=(X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
+    HttpConnection connection=new HttpConnection(rid,request.isSecure(),certificates);
     InetAddress address=InetAddress.getByName(request.getRemoteAddr());
     connection.setSession(sessionManager.createSession(address,rootNode,connection));
     respond(response,connection,request.getMethod());

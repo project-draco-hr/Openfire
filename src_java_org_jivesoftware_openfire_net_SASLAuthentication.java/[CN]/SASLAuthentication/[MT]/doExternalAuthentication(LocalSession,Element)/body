@@ -12,18 +12,13 @@
       return Status.authenticated;
     }
     SocketConnection connection=(SocketConnection)session.getConnection();
-    try {
-      for (      Certificate certificate : connection.getSSLSession().getPeerCertificates()) {
-        for (        String identity : CertificateManager.getPeerIdentities((X509Certificate)certificate)) {
-          if (identity.equals(hostname) || identity.equals("*." + hostname)) {
-            authenticationSuccessful(session,hostname,null);
-            return Status.authenticated;
-          }
+    for (    Certificate certificate : connection.getPeerCertificates()) {
+      for (      String identity : CertificateManager.getPeerIdentities((X509Certificate)certificate)) {
+        if (identity.equals(hostname) || identity.equals("*." + hostname)) {
+          authenticationSuccessful(session,hostname,null);
+          return Status.authenticated;
         }
       }
-    }
- catch (    SSLPeerUnverifiedException e) {
-      Log.warn("Error retrieving client certificates of: " + session,e);
     }
   }
  else   if (session instanceof LocalClientSession) {
@@ -32,18 +27,13 @@
     String principal="";
     ArrayList<String> principals=new ArrayList<String>();
     Connection connection=session.getConnection();
-    if (connection.getSSLSession() == null) {
-      Log.debug("SASLAuthentication: EXTERNAL authentication requested, but no SSL/TLS connection found.");
+    if (connection.getPeerCertificates().length < 1) {
+      Log.debug("SASLAuthentication: EXTERNAL authentication requested, but no certificates found.");
       authenticationFailed(session);
       return Status.failed;
     }
-    try {
-      for (      Certificate certificate : connection.getSSLSession().getPeerCertificates()) {
-        principals.addAll(CertificateManager.getPeerIdentities((X509Certificate)certificate));
-      }
-    }
- catch (    SSLPeerUnverifiedException e) {
-      Log.warn("Error retrieving client certificates of: " + session,e);
+    for (    Certificate certificate : connection.getPeerCertificates()) {
+      principals.addAll(CertificateManager.getPeerIdentities((X509Certificate)certificate));
     }
     if (principals.size() == 1) {
       principal=principals.get(0);

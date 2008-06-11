@@ -1,0 +1,11 @@
+{
+  if (tlsStreamHandler != null) {
+    try {
+      return tlsStreamHandler.getSSLSession().getPeerCertificates();
+    }
+ catch (    SSLPeerUnverifiedException e) {
+      Log.warn("Error retrieving client certificates of: " + tlsStreamHandler.getSSLSession(),e);
+    }
+  }
+  return new Certificate[0];
+}
