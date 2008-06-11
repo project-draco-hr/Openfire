@@ -1,0 +1,17 @@
+{
+  allowedAnonymIPs=allowed;
+  if (allowedAnonymIPs.isEmpty()) {
+    JiveGlobals.deleteProperty("xmpp.client.login.allowedAnonym");
+  }
+ else {
+    StringBuilder buf=new StringBuilder();
+    Iterator<String> iter=allowedAnonymIPs.keySet().iterator();
+    if (iter.hasNext()) {
+      buf.append(iter.next());
+    }
+    while (iter.hasNext()) {
+      buf.append(", ").append(iter.next());
+    }
+    JiveGlobals.setProperty("xmpp.client.login.allowedAnonym",buf.toString());
+  }
+}
