@@ -11,7 +11,7 @@ synchronized (roomName.intern()) {
         loaded=true;
       }
  catch (      IllegalArgumentException e) {
-        if (mucEventDelegate != null) {
+        if (mucEventDelegate != null && mucEventDelegate.shouldRecreate(roomName,userjid)) {
           if (mucEventDelegate.loadConfig(room)) {
             loaded=true;
             if (room.isPersistent()) {
