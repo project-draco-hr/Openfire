@@ -1,17 +1,3 @@
 {
-  if (Boolean.valueOf(JiveGlobals.getXMLProperty("setup"))) {
-    return false;
-  }
-  Connection con=null;
-  PreparedStatement pstmt=null;
-  try {
-    con=DbConnectionManager.getConnection();
-  }
- catch (  SQLException e) {
-    return true;
-  }
- finally {
-    DbConnectionManager.closeConnection(pstmt,con);
-  }
-  return false;
+  return !Boolean.valueOf(JiveGlobals.getXMLProperty("setup"));
 }
