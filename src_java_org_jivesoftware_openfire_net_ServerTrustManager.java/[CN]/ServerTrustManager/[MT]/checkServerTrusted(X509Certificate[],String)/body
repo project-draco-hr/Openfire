@@ -42,13 +42,14 @@
         throw new CertificateException("root certificate not trusted of " + peerIdentities);
       }
     }
-    if (peerIdentities.size() == 1 && peerIdentities.get(0).startsWith("*.")) {
-      String peerIdentity=peerIdentities.get(0).replace("*.","");
-      if (!server.endsWith(peerIdentity)) {
-        throw new CertificateException("target verification failed of " + peerIdentities);
+    Boolean found=false;
+    for (    String identity : peerIdentities) {
+      if (identity.equals(server) || identity.equals("*." + server)) {
+        found=true;
+        break;
       }
     }
- else     if (!peerIdentities.contains(server)) {
+    if (!found) {
       throw new CertificateException("target verification failed of " + peerIdentities);
     }
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.validity",true)) {
