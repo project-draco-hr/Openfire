@@ -44,18 +44,9 @@
     }
     Boolean found=false;
     for (    String identity : peerIdentities) {
-      if (identity.startsWith("*.")) {
-        identity=identity.replace("*.",".");
-        if (server.endsWith(identity)) {
-          found=true;
-          break;
-        }
-      }
- else {
-        if (server.equals(identity)) {
-          found=true;
-          break;
-        }
+      if ((identity.startsWith("*.") && (server.endsWith(identity.replace("*.",".")) || server.equals(identity.replace("*.","")))) || server.equals(identity)) {
+        found=true;
+        break;
       }
     }
     if (!found) {

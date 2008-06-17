@@ -14,7 +14,7 @@
     Connection connection=session.getConnection();
     for (    Certificate certificate : connection.getPeerCertificates()) {
       for (      String identity : CertificateManager.getPeerIdentities((X509Certificate)certificate)) {
-        if (identity.equals(hostname) || identity.equals("*." + hostname)) {
+        if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
           authenticationSuccessful(session,hostname,null);
           return Status.authenticated;
         }
