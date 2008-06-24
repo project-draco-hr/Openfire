@@ -1,11 +1,11 @@
 {
 synchronized (routables) {
     if (componentJID.getNode() != null) {
-      return null;
+      return Collections.emptyList();
     }
     RoutableComponents routable=routables.get(componentJID.getDomain());
     if (routable != null) {
-      return routable.getNextComponent();
+      return routable.getComponents();
     }
  else {
       String serverName=componentJID.getDomain();
@@ -13,10 +13,10 @@ synchronized (routables) {
       if (index > -1) {
         routable=routables.get(serverName.substring(0,index));
         if (routable != null) {
-          return routable.getNextComponent();
+          return routable.getComponents();
         }
       }
     }
-    return null;
+    return Collections.emptyList();
   }
 }

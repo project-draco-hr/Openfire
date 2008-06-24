@@ -1,6 +1,6 @@
 {
-  Component component=getComponent(packet.getFrom());
-  if (component != null) {
+  List<Component> components=getComponents(packet.getFrom());
+  if (!components.isEmpty()) {
     if (packet instanceof IQ && IQ.Type.result == ((IQ)packet).getType()) {
       IQ iq=(IQ)packet;
       Element childElement=iq.getChildElement();
@@ -13,15 +13,17 @@
           }
           try {
             XMPPServer.getInstance().getIQDiscoItemsHandler().addComponentItem(packet.getFrom().toBareJID(),identity.attributeValue("name"));
-            if (component instanceof ComponentSession.ExternalComponent) {
-              ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
-              externalComponent.setName(identity.attributeValue("name"));
-              externalComponent.setType(identity.attributeValue("type"));
-              externalComponent.setCategory(identity.attributeValue("category"));
+            for (            Component component : components) {
+              if (component instanceof ComponentSession.ExternalComponent) {
+                ComponentSession.ExternalComponent externalComponent=(ComponentSession.ExternalComponent)component;
+                externalComponent.setName(identity.attributeValue("name"));
+                externalComponent.setType(identity.attributeValue("type"));
+                externalComponent.setCategory(identity.attributeValue("category"));
+              }
             }
           }
  catch (          Exception e) {
-            Log.error("Error processing disco packet of component: " + component + " - "+ packet.toXML(),e);
+            Log.error("Error processing disco packet of components: " + components + " - "+ packet.toXML(),e);
           }
           addComponentInfo(iq);
           notifyComponentInfo(iq);
