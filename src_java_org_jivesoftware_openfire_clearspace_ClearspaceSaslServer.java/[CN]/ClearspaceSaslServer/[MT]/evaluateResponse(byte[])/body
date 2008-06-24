@@ -17,7 +17,10 @@
       throw new SaslException("SASL CLEARSPACE: user not authorized: " + jid);
     }
   }
- catch (  Exception e) {
+ catch (  SaslException e) {
+    throw e;
+  }
+catch (  Exception e) {
     Log.error("Failed communicating with Clearspace",e);
     throw new SaslException("SASL CLEARSPACE: user not authorized due to an error: " + jid);
   }
