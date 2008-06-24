@@ -9,5 +9,10 @@
     session.process(reply);
     return;
   }
+  if (packet.getType() == IQ.Type.get || packet.getType() == IQ.Type.set) {
+    LocalComponentSession componentSession=(LocalComponentSession)session;
+    LocalComponentSession.LocalExternalComponent component=(LocalComponentSession.LocalExternalComponent)componentSession.getExternalComponent();
+    component.track(packet);
+  }
   super.processIQ(packet);
 }

@@ -1,3 +1,16 @@
 {
+  if (packet instanceof IQ) {
+    IQ iq=(IQ)packet;
+    if (iq.getType() == IQ.Type.result || iq.getType() == IQ.Type.error) {
+      LocalExternalComponent targetComponent;
+synchronized (iqs) {
+        targetComponent=iqs.remove(packet.getID());
+      }
+      if (targetComponent != null) {
+        targetComponent.processPacket(packet);
+        return;
+      }
+    }
+  }
   session.process(packet);
 }
