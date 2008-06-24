@@ -1,0 +1,28 @@
+{
+  this.groupManager=GroupManager.getInstance();
+  this.provider=groupManager.getProvider();
+  this.name=name;
+  this.description=description;
+  this.members=new HashSet<JID>(members);
+  this.administrators=new HashSet<JID>(administrators);
+  this.properties=new ConcurrentHashMap<String,String>();
+  loadProperties();
+  for (  Map.Entry<String,String> property : properties.entrySet()) {
+    if (properties.containsKey(property.getKey())) {
+      if (!property.getValue().equals(properties.get(property.getKey()))) {
+        properties.put(property.getKey(),property.getValue());
+        updateProperty(property.getKey(),property.getValue());
+      }
+    }
+ else {
+      properties.put(property.getKey(),property.getValue());
+      insertProperty(property.getKey(),property.getValue());
+    }
+  }
+  for (  String oldPropName : properties.keySet()) {
+    if (!properties.containsKey(oldPropName)) {
+      properties.remove(oldPropName);
+      deleteProperty(oldPropName);
+    }
+  }
+}
