@@ -2,6 +2,7 @@
   try {
     Node userNode=responseNode.selectSingleNode("return");
     String username=userNode.selectSingleNode("username").getText();
+    username=JID.escapeNode(username);
     boolean isEnabled=Boolean.valueOf(userNode.selectSingleNode("enabled").getText());
     if (isEnabled) {
       return null;

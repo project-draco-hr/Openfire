@@ -6,6 +6,7 @@
     username=username.substring(0,username.lastIndexOf("@"));
   }
   try {
+    username=JID.unescapeNode(username);
     String path=USER_URL_PREFIX + "users/" + username;
     return ClearspaceManager.getInstance().executeRequest(GET,path);
   }

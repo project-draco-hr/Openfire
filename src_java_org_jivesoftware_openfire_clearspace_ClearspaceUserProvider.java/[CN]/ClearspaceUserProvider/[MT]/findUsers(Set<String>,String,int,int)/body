@@ -15,6 +15,7 @@
     List<Node> userNodes=(List<Node>)element.selectNodes("return");
     for (    Node userNode : userNodes) {
       String username=userNode.selectSingleNode("username").getText();
+      username=JID.escapeNode(username);
       usernames.add(username);
     }
     return new UserCollection(usernames.toArray(new String[usernames.size()]));

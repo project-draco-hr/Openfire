@@ -6,6 +6,7 @@
     String path=ClearspaceUserProvider.USER_URL_PREFIX + "usersByID/" + id;
     Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
     String username=WSUtils.getElementText(element.selectSingleNode("return"),"username");
+    username=JID.escapeNode(username);
     usernameCache.put(id,username);
     return username;
   }

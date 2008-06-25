@@ -8,8 +8,9 @@
   if (userIDCache.containsKey(username)) {
     return userIDCache.get(username);
   }
+  String unescapedUsername=JID.unescapeNode(username);
   try {
-    String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/" + username;
+    String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/" + unescapedUsername;
     Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
     Long id=Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
     userIDCache.put(username,id);
