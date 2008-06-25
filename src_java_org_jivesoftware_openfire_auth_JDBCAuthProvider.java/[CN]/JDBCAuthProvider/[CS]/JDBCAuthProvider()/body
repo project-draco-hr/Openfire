@@ -3,6 +3,8 @@
   JiveGlobals.migrateProperty("jdbcProvider.connectionString");
   JiveGlobals.migrateProperty("jdbcAuthProvider.passwordSQL");
   JiveGlobals.migrateProperty("jdbcAuthProvider.passwordType");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.setPasswordSQL");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.allowUpdate");
   String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
   try {
     Class.forName(jdbcDriver).newInstance();
@@ -13,6 +15,8 @@
   }
   connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
   passwordSQL=JiveGlobals.getProperty("jdbcAuthProvider.passwordSQL");
+  setPasswordSQL=JiveGlobals.getProperty("jdbcAuthProvider.setPasswordSQL");
+  allowUpdate=JiveGlobals.getBooleanProperty("jdbcAuthProvider.allowUpdate",false);
   passwordType=PasswordType.plain;
   try {
     passwordType=PasswordType.valueOf(JiveGlobals.getProperty("jdbcAuthProvider.passwordType","plain"));

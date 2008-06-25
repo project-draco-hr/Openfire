@@ -1,0 +1,35 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  if (username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
+      username=username.substring(0,index);
+    }
+ else {
+      throw new UserNotFoundException();
+    }
+  }
+  try {
+    con=DriverManager.getConnection(connectionString);
+    pstmt=con.prepareStatement(setPasswordSQL);
+    pstmt.setString(1,username);
+    if (passwordType == PasswordType.md5) {
+      password=StringUtils.hash(password,"MD5");
+    }
+ else     if (passwordType == PasswordType.sha1) {
+      password=StringUtils.hash(password,"SHA-1");
+    }
+    pstmt.setString(2,password);
+    rs=pstmt.executeQuery();
+  }
+ catch (  SQLException e) {
+    Log.error("Exception in JDBCAuthProvider",e);
+    throw new UserNotFoundException();
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}
