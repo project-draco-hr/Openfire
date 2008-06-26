@@ -9,6 +9,9 @@
     HttpConnection connection=new HttpConnection(rid,request.isSecure(),certificates);
     InetAddress address=InetAddress.getByName(request.getRemoteAddr());
     connection.setSession(sessionManager.createSession(address,rootNode,connection));
+    if (JiveGlobals.getBooleanProperty("log.httpbind.enabled",false)) {
+      System.out.println(new Date() + ": HTTP RECV(" + connection.getSession().getStreamID().getID()+ "): "+ rootNode.asXML());
+    }
     respond(response,connection,request.getMethod());
   }
  catch (  UnauthorizedException e) {
