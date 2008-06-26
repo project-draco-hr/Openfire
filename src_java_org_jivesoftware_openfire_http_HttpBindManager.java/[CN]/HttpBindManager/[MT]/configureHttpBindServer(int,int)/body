@@ -10,7 +10,11 @@
     httpBindServer.addConnector(httpConnector);
   }
   if (httpsConnector != null) {
+    sslEnabled=true;
     httpBindServer.addConnector(httpsConnector);
+  }
+ else {
+    sslEnabled=false;
   }
   createBoshHandler(contexts,"/http-bind");
   createCrossDomainHandler(contexts,"/");
