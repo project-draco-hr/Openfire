@@ -10,24 +10,37 @@
   }
   sslCertificates=connection.getPeerCertificates();
   connection.setSession(this);
-  if (hold <= 0 || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
+  if (isPollingSession() || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
     deliver(connection,pendingElements);
     lastRequestID=connection.getRequestId();
     pendingElements.clear();
+    connectionQueue.add(connection);
+    Collections.sort(connectionQueue,connectionComparator);
   }
  else {
-    int connectionsToClose=(getOpenConnectionCount() + 1) - hold;
+    connectionQueue.add(connection);
+    Collections.sort(connectionQueue,connectionComparator);
+    int connectionsToClose;
+    if (connectionQueue.get(connectionQueue.size() - 1) != connection) {
+      connectionsToClose=connectionQueue.size();
+    }
+ else {
+      connectionsToClose=getOpenConnectionCount() - hold;
+    }
     int closed=0;
     for (int i=0; i < connectionQueue.size() && closed < connectionsToClose; i++) {
       HttpConnection toClose=connectionQueue.get(i);
-      if (!toClose.isClosed()) {
+      if (!toClose.isClosed() && toClose.getRequestId() == lastRequestID + 1) {
+        if (toClose == connection) {
+          deliver("");
+        }
+ else {
+          toClose.close();
+        }
         lastRequestID=toClose.getRequestId();
-        toClose.close();
         closed++;
       }
     }
   }
-  connectionQueue.add(connection);
-  Collections.sort(connectionQueue,connectionComparator);
   fireConnectionOpened(connection);
 }
