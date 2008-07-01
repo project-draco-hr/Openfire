@@ -8,20 +8,20 @@
   this.properties=new ConcurrentHashMap<String,String>();
   loadProperties();
   for (  Map.Entry<String,String> property : properties.entrySet()) {
-    if (properties.containsKey(property.getKey())) {
-      if (!property.getValue().equals(properties.get(property.getKey()))) {
-        properties.put(property.getKey(),property.getValue());
+    if (this.properties.containsKey(property.getKey())) {
+      if (!property.getValue().equals(this.properties.get(property.getKey()))) {
+        this.properties.put(property.getKey(),property.getValue());
         updateProperty(property.getKey(),property.getValue());
       }
     }
  else {
-      properties.put(property.getKey(),property.getValue());
+      this.properties.put(property.getKey(),property.getValue());
       insertProperty(property.getKey(),property.getValue());
     }
   }
-  for (  String oldPropName : properties.keySet()) {
+  for (  String oldPropName : this.properties.keySet()) {
     if (!properties.containsKey(oldPropName)) {
-      properties.remove(oldPropName);
+      this.properties.remove(oldPropName);
       deleteProperty(oldPropName);
     }
   }
