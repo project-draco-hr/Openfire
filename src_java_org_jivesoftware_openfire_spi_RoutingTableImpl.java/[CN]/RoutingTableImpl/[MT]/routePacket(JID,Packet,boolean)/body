@@ -37,7 +37,7 @@
       }
     }
   }
- else   if (jid.getDomain().contains(serverName) && hasComponentRoute(jid)) {
+ else   if (jid.getDomain().contains(serverName) && (hasComponentRoute(jid) || ExternalComponentManager.hasConfiguration(jid.getDomain()))) {
     RoutableChannelHandler route=localRoutingTable.getRoute(jid.getDomain());
     if (route != null) {
       try {
