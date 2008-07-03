@@ -9,6 +9,7 @@
     return userIDCache.get(username);
   }
   String unescapedUsername=JID.unescapeNode(username);
+  unescapedUsername=URLUTF8Encoder.encode(unescapedUsername);
   try {
     String path=ClearspaceUserProvider.USER_URL_PREFIX + "users/" + unescapedUsername;
     Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
