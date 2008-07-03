@@ -2,8 +2,16 @@
   if (isReadOnly()) {
     throw new UnsupportedOperationException();
   }
-  Element userUpdateParams=getUserUpdateParams(username);
-  String[] path=new String[]{"user","email"};
-  WSUtils.modifyElementText(userUpdateParams,path,email);
-  updateUser(userUpdateParams);
+  try {
+    Element userUpdateParams=getUserUpdateParams(username);
+    String[] path=new String[]{"user","email"};
+    WSUtils.modifyElementText(userUpdateParams,path,email);
+    updateUser(userUpdateParams);
+  }
+ catch (  UserNotFoundException e) {
+    throw e;
+  }
+catch (  Exception e) {
+    throw new UserNotFoundException(e);
+  }
 }
