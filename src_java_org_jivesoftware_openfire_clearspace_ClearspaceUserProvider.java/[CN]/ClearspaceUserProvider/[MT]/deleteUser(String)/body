@@ -3,6 +3,7 @@
     throw new UnsupportedOperationException();
   }
   try {
+    username=URLUTF8Encoder.encode(username);
     long userID=ClearspaceManager.getInstance().getUserID(username);
     String path=USER_URL_PREFIX + "users/" + userID;
     ClearspaceManager.getInstance().executeRequest(DELETE,path);
