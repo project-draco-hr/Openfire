@@ -1,0 +1,34 @@
+{
+  int pendingConnections=0;
+  boolean overactivity=false;
+  String errorMessage="Overactivity detected";
+  for (  HttpConnection conn : connectionQueue) {
+    if (!conn.isClosed()) {
+      pendingConnections++;
+    }
+  }
+  if (pendingConnections >= maxRequests) {
+    overactivity=true;
+    errorMessage+=", too many simultaneous requests.";
+  }
+ else   if (isPoll) {
+    long time=System.currentTimeMillis();
+    if (time - lastPoll < maxPollingInterval * JiveConstants.SECOND) {
+      if (isPollingSession()) {
+        overactivity=lastResponseEmpty;
+      }
+ else {
+        overactivity=(pendingConnections >= maxRequests - 1);
+      }
+    }
+    lastPoll=time;
+    errorMessage+=", minimum polling interval is " + maxPollingInterval + ", current interval "+ ((time - lastPoll) / 1000);
+  }
+  setLastResponseEmpty(false);
+  if (overactivity) {
+    Log.debug(errorMessage);
+    if (!JiveGlobals.getBooleanProperty("xmpp.httpbind.client.requests.ignoreOveractivity",false)) {
+      throw new HttpBindException(errorMessage,BoshBindingError.policyViolation);
+    }
+  }
+}

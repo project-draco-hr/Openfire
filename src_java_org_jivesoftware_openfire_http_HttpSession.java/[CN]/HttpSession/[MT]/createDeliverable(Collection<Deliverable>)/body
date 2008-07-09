@@ -1,6 +1,10 @@
 {
   StringBuilder builder=new StringBuilder();
-  builder.append("<body xmlns='" + "http://jabber.org/protocol/httpbind" + "'>");
+  builder.append("<body xmlns='" + "http://jabber.org/protocol/httpbind" + "'");
+  long ack=getLastAcknowledged();
+  if (ack > lastRequestID)   builder.append(" ack='").append(ack).append("'");
+  builder.append(">");
+  setLastResponseEmpty(elements.size() == 0);
   for (  Deliverable child : elements) {
     builder.append(child.getDeliverable());
   }

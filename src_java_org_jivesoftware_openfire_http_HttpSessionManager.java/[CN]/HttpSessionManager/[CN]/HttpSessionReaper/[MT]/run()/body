@@ -1,8 +1,8 @@
 {
   long currentTime=System.currentTimeMillis();
   for (  HttpSession session : sessionMap.values()) {
-    long lastActive=(currentTime - session.getLastActivity()) / 1000;
-    if (lastActive > session.getInactivityTimeout()) {
+    long lastActive=currentTime - session.getLastActivity();
+    if (lastActive > session.getInactivityTimeout() * JiveConstants.SECOND) {
       session.close();
     }
   }

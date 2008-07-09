@@ -1,0 +1,10 @@
+{
+  long ack=lastRequestID;
+  Collections.sort(connectionQueue,connectionComparator);
+  for (  HttpConnection connection : connectionQueue) {
+    if (connection.getRequestId() == ack + 1) {
+      ack++;
+    }
+  }
+  return ack;
+}

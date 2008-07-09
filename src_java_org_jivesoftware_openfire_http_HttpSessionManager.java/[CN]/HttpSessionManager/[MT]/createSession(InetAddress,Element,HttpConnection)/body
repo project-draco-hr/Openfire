@@ -5,16 +5,28 @@
   }
   int wait=getIntAttribute(rootNode.attributeValue("wait"),60);
   int hold=getIntAttribute(rootNode.attributeValue("hold"),1);
-  double version=getDoubleAttribute(rootNode.attributeValue("ver"),1.5);
+  String version=rootNode.attributeValue("ver");
+  if (version == null || "".equals(version)) {
+    version="1.5";
+  }
   HttpSession session=createSession(connection.getRequestId(),address,connection);
   session.setWait(Math.min(wait,getMaxWait()));
   session.setHold(hold);
   session.setSecure(connection.isSecure());
   session.setMaxPollingInterval(getPollingInterval());
   session.setMaxRequests(getMaxRequests());
-  session.setInactivityTimeout(getInactivityTimeout());
-  session.setLanaguage(language);
-  session.setVersion(version);
+  session.setMaxPause(getMaxPause());
+  if (session.isPollingSession()) {
+    session.setDefaultInactivityTimeout(getPollingInactivityTimeout());
+  }
+ else {
+    session.setDefaultInactivityTimeout(getInactivityTimeout());
+  }
+  session.resetInactivityTimeout();
+  session.setLanguage(language);
+  String[] versionString=version.split("\\.");
+  session.setMajorVersion(Integer.parseInt(versionString[0]));
+  session.setMinorVersion(Integer.parseInt(versionString[1]));
   try {
     connection.deliverBody(createSessionCreationResponse(session));
   }

@@ -3,7 +3,7 @@
     System.out.println(new Date() + ": HTTP ERR(" + session.getStreamID().getID()+ "): "+ bindingError.getErrorType().getType()+ ", "+ bindingError.getCondition()+ ".");
   }
   try {
-    if (session.getVersion() >= 1.6) {
+    if ((session.getMajorVersion() == 1 && session.getMinorVersion() >= 6) || session.getMajorVersion() > 1) {
       respond(session,response,createErrorBody(bindingError.getErrorType().getType(),bindingError.getCondition()),request.getMethod());
     }
  else {

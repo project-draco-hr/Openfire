@@ -9,8 +9,8 @@
     connection.deliverBody(createDeliverable(deliverable.deliverables));
     return connection;
   }
- else   if (rid > (lastRequestID + hold + 1)) {
-    Log.warn("Request " + rid + " > "+ (lastRequestID + hold + 1)+ ", ending session.");
+ else   if (rid > (lastRequestID + maxRequests)) {
+    Log.warn("Request " + rid + " > "+ (lastRequestID + maxRequests)+ ", ending session.");
     throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
   }
   if (packetsToBeSent.size() > 0) {

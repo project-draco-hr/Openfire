@@ -9,8 +9,11 @@
   response.addAttribute("inactivity",String.valueOf(session.getInactivityTimeout()));
   response.addAttribute("polling",String.valueOf(session.getMaxPollingInterval()));
   response.addAttribute("wait",String.valueOf(session.getWait()));
-  if (session.getVersion() >= 1.6) {
-    response.addAttribute("ver",String.valueOf(session.getVersion()));
+  if ((session.getMajorVersion() == 1 && session.getMinorVersion() >= 6) || session.getMajorVersion() > 1) {
+    response.addAttribute("hold",String.valueOf(session.getHold()));
+    response.addAttribute("ack",String.valueOf(session.getLastAcknowledged()));
+    response.addAttribute("maxpause",String.valueOf(session.getMaxPause()));
+    response.addAttribute("ver",String.valueOf(session.getMajorVersion()) + "." + String.valueOf(session.getMinorVersion()));
   }
   Element features=response.addElement("stream:features");
   for (  Element feature : session.getAvailableStreamFeaturesElements()) {
