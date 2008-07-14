@@ -8,6 +8,14 @@
  catch (  UnauthorizedException ue) {
     throw ue;
   }
+catch (  org.jivesoftware.openfire.clearspace.ConnectionException e) {
+    if (e.getErrorType() == org.jivesoftware.openfire.clearspace.ConnectionException.ErrorType.AUTHENTICATION) {
+      throw new InternalUnauthenticatedException("Bad credentials to use Clearspace webservices",e);
+    }
+ else {
+      throw new ConnectionException("Error connection to Clearspace webservices",e);
+    }
+  }
 catch (  Exception e) {
     throw new UnauthorizedException("Unexpected error",e);
   }

@@ -41,20 +41,37 @@ if (Log.isDebugEnabled()) {
 Log.debug("Outgoing REST call results: " + body);
 }
 if (method.getStatusCode() != 200) {
-throw new ConnectException("Error connecting to Clearspace, http status code: " + method.getStatusCode(),new HTTPConnectionException(method.getStatusCode()));
+if (method.getStatusCode() == 401) {
+throw new ConnectionException("Invalid password to connect to Clearspace.",ConnectionException.ErrorType.AUTHENTICATION);
+}
+ else if (method.getStatusCode() == 404) {
+throw new ConnectionException("Web service not found in Clearspace.",ConnectionException.ErrorType.PAGE_NOT_FOUND);
+}
+ else if (method.getStatusCode() == 503) {
+throw new ConnectionException("Web service not avaible in Clearspace.",ConnectionException.ErrorType.SERVICE_NOT_AVAIBLE);
+}
+ else {
+throw new ConnectionException("Error connecting to Clearspace, http status code: " + method.getStatusCode(),new HTTPConnectionException(method.getStatusCode()),ConnectionException.ErrorType.OTHER);
+}
+}
+ else if (body.contains("Clearspace Upgrade Console")) {
+throw new ConnectionException("Clearspace is in an update state.",ConnectionException.ErrorType.UPDATE_STATE);
 }
 Element response=localParser.get().parseDocument(body).getRootElement();
 checkFault(response);
 return response;
 }
  catch (DocumentException e) {
-throw new ConnectException("Error parsing the response of Clearspace.",e);
+throw new ConnectionException("Error parsing the response of Clearspace.",e,ConnectionException.ErrorType.OTHER);
 }
 catch (HttpException e) {
-throw new ConnectException("Error peforming http request to Clearspace",e);
+throw new ConnectionException("Error performing http request to Clearspace",e,ConnectionException.ErrorType.OTHER);
+}
+catch (UnknownHostException e) {
+throw new ConnectionException("Unknown Host " + getConnectionURI() + " trying to connect to Clearspace",e,ConnectionException.ErrorType.UNKNOWN_HOST);
 }
 catch (IOException e) {
-throw new ConnectException("Error peforming http request to Clearspace.",e);
+throw new ConnectionException("Error peforming http request to Clearspace.",e,ConnectionException.ErrorType.OTHER);
 }
  finally {
 method.releaseConnection();

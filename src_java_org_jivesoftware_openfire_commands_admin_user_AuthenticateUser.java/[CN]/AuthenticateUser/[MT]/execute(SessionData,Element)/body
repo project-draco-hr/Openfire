@@ -37,6 +37,16 @@
     note.setText("Authentication failed.");
     return;
   }
+catch (  ConnectionException e) {
+    note.addAttribute("type","error");
+    note.setText("Authentication failed.");
+    return;
+  }
+catch (  InternalUnauthenticatedException e) {
+    note.addAttribute("type","error");
+    note.setText("Authentication failed.");
+    return;
+  }
   note.addAttribute("type","info");
   note.setText("Operation finished successfully.");
 }
