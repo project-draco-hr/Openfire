@@ -30,6 +30,7 @@
       boolean trusted=false;
       try {
         trusted=trustStore.getCertificateAlias(x509Certificates[nSize - 1]) != null;
+        connection.setUsingSelfSignedCertificate(!trusted && nSize == 1);
         if (!trusted && nSize == 1 && JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
           Log.warn("Accepting self-signed certificate of remote server: " + peerIdentities);
           trusted=true;

@@ -1,6 +1,21 @@
 {
+  StringBuilder sb=new StringBuilder();
   if (conn.getCompressionPolicy() != Connection.CompressionPolicy.disabled && !conn.isCompressed()) {
-    return "<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>";
+    sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
   }
-  return null;
+  boolean usingSelfSigned=false;
+  Certificate[] certificates=conn.getLocalCertificates();
+  for (  Certificate certificate : certificates) {
+    try {
+      if (CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)certificate)) {
+        usingSelfSigned=true;
+      }
+    }
+ catch (    Exception e) {
+    }
+  }
+  if (usingSelfSigned && ServerDialback.isEnabledForSelfSigned() && validatedDomains.isEmpty()) {
+    sb.append("<dialback xmlns=\"urn:xmpp:features:dialback\"/>");
+  }
+  return sb.toString();
 }

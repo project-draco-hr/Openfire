@@ -14,8 +14,9 @@
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
     }
+    String id=xpp.getAttributeValue("","id");
     features=reader.parseDocument().getRootElement();
-    if (features != null && features.element("mechanisms") != null) {
+    if (features != null && (features.element("mechanisms") != null || features.element("dialback") != null)) {
       String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
       Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
       if (Connection.CompressionPolicy.optional == compressionPolicy) {
@@ -61,36 +62,57 @@
           Log.debug("LocalOutgoingServerSession: OS - Stream compression not supoprted by " + hostname);
         }
       }
-      Iterator it=features.element("mechanisms").elementIterator();
-      while (it.hasNext()) {
-        Element mechanism=(Element)it.next();
-        if ("EXTERNAL".equals(mechanism.getTextTrim())) {
-          Log.debug("LocalOutgoingServerSession: OS - Starting EXTERNAL SASL with " + hostname);
-          if (doExternalAuthentication(domain,connection,reader)) {
-            Log.debug("LocalOutgoingServerSession: OS - EXTERNAL SASL with " + hostname + " was successful");
-            connection.deliverRawText(openingStream.toString());
-            xpp.resetInput();
-            for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
-              eventType=xpp.next();
+      boolean dialbackOffered=features.element("dialback") != null;
+      if (!dialbackOffered || !connection.isUsingSelfSignedCertificate()) {
+        Iterator it=features.element("mechanisms").elementIterator();
+        while (it.hasNext()) {
+          Element mechanism=(Element)it.next();
+          if ("EXTERNAL".equals(mechanism.getTextTrim())) {
+            Log.debug("LocalOutgoingServerSession: OS - Starting EXTERNAL SASL with " + hostname);
+            if (doExternalAuthentication(domain,connection,reader)) {
+              Log.debug("LocalOutgoingServerSession: OS - EXTERNAL SASL with " + hostname + " was successful");
+              connection.deliverRawText(openingStream.toString());
+              xpp.resetInput();
+              for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+                eventType=xpp.next();
+              }
+              id=xpp.getAttributeValue("","id");
+              StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
+              LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,new OutgoingServerSocketReader(reader),streamID);
+              connection.init(session);
+              session.setAddress(new JID(null,hostname,null));
+              session.usingServerDialback=false;
+              return session;
             }
-            String id=xpp.getAttributeValue("","id");
-            StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-            LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,new OutgoingServerSocketReader(reader),streamID);
-            connection.init(session);
-            session.setAddress(new JID(null,hostname,null));
-            session.usingServerDialback=false;
-            return session;
-          }
  else {
-            Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
-            return null;
+              Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL authentication with " + hostname + " failed");
+              return null;
+            }
           }
         }
       }
-      Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL was not offered by " + hostname);
+      if (dialbackOffered && (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned())) {
+        Log.debug("LocalOutgoingServerSession: OS - About to try connecting using server dialback over TLS with: " + hostname);
+        ServerDialback method=new ServerDialback(connection,domain);
+        OutgoingServerSocketReader newSocketReader=new OutgoingServerSocketReader(reader);
+        if (method.authenticateDomain(newSocketReader,domain,hostname,id)) {
+          Log.debug("LocalOutgoingServerSession: OS - SERVER DIALBACK OVER TLS with " + hostname + " was successful");
+          StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
+          LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,newSocketReader,streamID);
+          connection.init(session);
+          session.setAddress(new JID(null,hostname,null));
+          return session;
+        }
+ else {
+          Log.debug("LocalOutgoingServerSession: OS - Error, SERVER DIALBACK with " + hostname + " failed");
+        }
+      }
+ else {
+        Log.debug("LocalOutgoingServerSession: OS - Error, EXTERNAL SASL and SERVER DIALBACK were not offered by " + hostname);
+      }
     }
  else {
-      Log.debug("LocalOutgoingServerSession: OS - Error, no SASL mechanisms were offered by " + hostname);
+      Log.debug("LocalOutgoingServerSession: OS - Error, no SASL mechanisms or SERVER DIALBACK were offered by " + hostname);
     }
   }
  else {

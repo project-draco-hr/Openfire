@@ -15,16 +15,16 @@
         tm=new TrustManager[]{new ClientTrustManager(ksTrust)};
       }
  else {
-        tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust)};
+        tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust,connection)};
       }
     }
     SSLContext tlsContext=SSLContext.getInstance(PROTOCOL);
     tlsContext.init(km,tm,null);
     tlsEngine=tlsContext.createSSLEngine();
     tlsEngine.setUseClientMode(clientMode);
-    SSLSession session=tlsEngine.getSession();
-    netBuffSize=session.getPacketBufferSize();
-    appBuffSize=session.getApplicationBufferSize();
+    SSLSession sslSession=tlsEngine.getSession();
+    netBuffSize=sslSession.getPacketBufferSize();
+    appBuffSize=sslSession.getApplicationBufferSize();
   }
  catch (  KeyManagementException e) {
     Log.error("TLSHandler startup problem.\n" + "  SSLContext initialisation failed.",e);
