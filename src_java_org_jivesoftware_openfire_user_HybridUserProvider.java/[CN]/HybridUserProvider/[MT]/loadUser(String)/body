@@ -1,0 +1,22 @@
+{
+  try {
+    return primaryProvider.loadUser(username);
+  }
+ catch (  Exception e) {
+  }
+  if (secondaryProvider != null) {
+    try {
+      return secondaryProvider.loadUser(username);
+    }
+ catch (    Exception e) {
+    }
+  }
+  if (tertiaryProvider != null) {
+    try {
+      return tertiaryProvider.loadUser(username);
+    }
+ catch (    Exception e) {
+    }
+  }
+  throw new UserNotFoundException();
+}

@@ -1,0 +1,22 @@
+{
+  Vector<User> returnresult=new Vector<User>();
+  int numResultsLeft=numResults;
+  int currentStartIndex=startIndex;
+  for (  UserProvider provider : userproviders) {
+    if (numResultsLeft == 0) {
+      break;
+    }
+    int pusercount=this.getUserCount(provider);
+    if (pusercount == 0 || currentStartIndex >= pusercount) {
+      currentStartIndex=currentStartIndex - pusercount;
+      continue;
+    }
+ else {
+      Collection<User> subresult=provider.getUsers(currentStartIndex,numResultsLeft);
+      currentStartIndex=currentStartIndex - subresult.size();
+      numResultsLeft=numResultsLeft - subresult.size();
+      returnresult.addAll(subresult);
+    }
+  }
+  return returnresult;
+}

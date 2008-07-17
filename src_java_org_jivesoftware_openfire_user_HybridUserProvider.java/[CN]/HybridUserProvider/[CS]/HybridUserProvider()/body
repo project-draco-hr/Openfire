@@ -1,0 +1,54 @@
+{
+  String primaryClass=JiveGlobals.getXMLProperty("hybridUserProvider.primaryProvider.className");
+  if (primaryClass == null) {
+    Log.error("A primary UserProvider must be specified in the openfire.xml.");
+    return;
+  }
+  try {
+    Class c=ClassUtils.forName(primaryClass);
+    primaryProvider=(UserProvider)c.newInstance();
+    Log.debug("Primary user provider: " + primaryClass);
+  }
+ catch (  Exception e) {
+    Log.error("Unable to load primary user provider: " + primaryClass + ". Users in this provider will be disabled.",e);
+    return;
+  }
+  String secondaryClass=JiveGlobals.getXMLProperty("hybridUserProvider.secondaryProvider.className");
+  if (secondaryClass != null) {
+    try {
+      Class c=ClassUtils.forName(secondaryClass);
+      secondaryProvider=(UserProvider)c.newInstance();
+      Log.debug("Secondary user provider: " + secondaryClass);
+    }
+ catch (    Exception e) {
+      Log.error("Unable to load secondary user provider: " + secondaryClass,e);
+    }
+  }
+  String tertiaryClass=JiveGlobals.getXMLProperty("hybridUserProvider.tertiaryProvider.className");
+  if (secondaryClass != null) {
+    try {
+      Class c=ClassUtils.forName(secondaryClass);
+      tertiaryProvider=(UserProvider)c.newInstance();
+      Log.debug("Secondary user provider: " + secondaryClass);
+    }
+ catch (    Exception e) {
+      Log.error("Unable to load tertiary user provider: " + tertiaryClass,e);
+    }
+  }
+  String overrideList=JiveGlobals.getXMLProperty("hybridUserProvider.primaryProvider.overrideList","");
+  for (  String user : overrideList.split(",")) {
+    primaryOverrides.add(user.trim().toLowerCase());
+  }
+  if (secondaryProvider != null) {
+    overrideList=JiveGlobals.getXMLProperty("hybridUserProvider.secondaryProvider.overrideList","");
+    for (    String user : overrideList.split(",")) {
+      secondaryOverrides.add(user.trim().toLowerCase());
+    }
+  }
+  if (tertiaryProvider != null) {
+    overrideList=JiveGlobals.getXMLProperty("hybridUserProvider.tertiaryProvider.overrideList","");
+    for (    String user : overrideList.split(",")) {
+      tertiaryOverrides.add(user.trim().toLowerCase());
+    }
+  }
+}

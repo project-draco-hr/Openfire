@@ -1,0 +1,34 @@
+{
+  User returnvalue=null;
+  if (!primaryProvider.isReadOnly()) {
+    try {
+      returnvalue=primaryProvider.createUser(username,password,name,email);
+    }
+  finally {
+    }
+  }
+ else   if (secondaryProvider != null) {
+    if (!secondaryProvider.isReadOnly()) {
+      try {
+        returnvalue=secondaryProvider.createUser(username,password,name,email);
+      }
+  finally {
+      }
+    }
+  }
+ else   if (tertiaryProvider != null) {
+    if (!tertiaryProvider.isReadOnly()) {
+      try {
+        returnvalue=tertiaryProvider.createUser(username,password,name,email);
+      }
+  finally {
+      }
+    }
+  }
+  if (returnvalue != null) {
+    return returnvalue;
+  }
+ else {
+    throw new UnsupportedOperationException();
+  }
+}

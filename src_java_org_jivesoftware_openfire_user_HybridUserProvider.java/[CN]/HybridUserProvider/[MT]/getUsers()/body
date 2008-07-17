@@ -1,0 +1,28 @@
+{
+  Vector<User> returnvalue=null;
+  try {
+    returnvalue=new Vector<User>(primaryProvider.getUsers());
+  }
+  finally {
+  }
+  if (secondaryProvider != null) {
+    try {
+      returnvalue.addAll(secondaryProvider.getUsers());
+    }
+  finally {
+    }
+  }
+  if (tertiaryProvider != null) {
+    try {
+      returnvalue.addAll(tertiaryProvider.getUsers());
+    }
+  finally {
+    }
+  }
+  if (returnvalue != null) {
+    return returnvalue;
+  }
+ else {
+    throw new UnsupportedOperationException();
+  }
+}

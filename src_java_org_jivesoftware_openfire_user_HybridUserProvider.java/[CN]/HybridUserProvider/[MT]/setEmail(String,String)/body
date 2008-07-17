@@ -1,0 +1,25 @@
+{
+  if (primaryProvider != null)   try {
+    primaryProvider.setEmail(username,email);
+    return;
+  }
+ catch (  Exception e) {
+  }
+  if (secondaryProvider != null) {
+    try {
+      secondaryProvider.setEmail(username,email);
+      return;
+    }
+ catch (    Exception e) {
+    }
+  }
+  if (tertiaryProvider != null) {
+    try {
+      tertiaryProvider.setEmail(username,email);
+      return;
+    }
+ catch (    Exception e) {
+      throw new UserNotFoundException();
+    }
+  }
+}

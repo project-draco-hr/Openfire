@@ -1,0 +1,25 @@
+{
+  if (primaryProvider != null)   try {
+    primaryProvider.setModificationDate(username,modificationDate);
+    return;
+  }
+ catch (  Exception e) {
+  }
+  if (secondaryProvider != null) {
+    try {
+      secondaryProvider.setModificationDate(username,modificationDate);
+      return;
+    }
+ catch (    Exception e) {
+    }
+  }
+  if (tertiaryProvider != null) {
+    try {
+      tertiaryProvider.setModificationDate(username,modificationDate);
+      return;
+    }
+ catch (    Exception e) {
+      throw new UserNotFoundException();
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  Collection<User> returnvalue=null;
+  try {
+    returnvalue=primaryProvider.findUsers(fields,query);
+  }
+  finally {
+  }
+  if (secondaryProvider != null) {
+    try {
+      returnvalue=secondaryProvider.findUsers(fields,query);
+    }
+  finally {
+    }
+  }
+  if (tertiaryProvider != null) {
+    try {
+      returnvalue=tertiaryProvider.findUsers(fields,query);
+    }
+  finally {
+    }
+  }
+  if (returnvalue != null) {
+    return returnvalue;
+  }
+ else {
+    throw new UnsupportedOperationException();
+  }
+}
