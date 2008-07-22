@@ -2,6 +2,9 @@
   if (message == null) {
     return;
   }
+  if (message.getBody() == null || message.getBody().length() == 0) {
+    return;
+  }
   JID recipient=message.getTo();
   String username=recipient.getNode();
   if (username == null || !UserManager.getInstance().isRegisteredUser(recipient)) {
