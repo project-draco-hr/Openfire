@@ -1,26 +1,21 @@
 {
   String streamID=siElement.attributeValue("id");
   String mimeType=siElement.attributeValue("mime-type");
-  String profile=siElement.attributeValue("profile");
-  FileTransfer transfer=null;
-  if (NAMESPACE_SI_FILETRANSFER.equals(profile)) {
-    Element fileTransferElement=getChildElement(siElement,NAMESPACE_SI_FILETRANSFER);
-    if (fileTransferElement == null) {
-      return null;
-    }
-    String fileName=fileTransferElement.attributeValue("name");
-    String sizeString=fileTransferElement.attributeValue("size");
-    if (fileName == null || sizeString == null) {
-      return null;
-    }
-    long size;
-    try {
-      size=Long.parseLong(sizeString);
-    }
- catch (    Exception ex) {
-      return null;
-    }
-    transfer=new FileTransfer(from.toString(),to.toString(),streamID,fileName,size,mimeType);
+  Element fileTransferElement=getChildElement(siElement,NAMESPACE_SI_FILETRANSFER);
+  if (fileTransferElement == null) {
+    return null;
   }
-  return transfer;
+  String fileName=fileTransferElement.attributeValue("name");
+  String sizeString=fileTransferElement.attributeValue("size");
+  if (fileName == null || sizeString == null) {
+    return null;
+  }
+  long size;
+  try {
+    size=Long.parseLong(sizeString);
+  }
+ catch (  Exception ex) {
+    return null;
+  }
+  return new FileTransfer(from.toString(),to.toString(),streamID,fileName,size,mimeType);
 }
