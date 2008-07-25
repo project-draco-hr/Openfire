@@ -1,8 +1,10 @@
 {
   List<Element> elements=new ArrayList<Element>();
-  Element sasl=SASLAuthentication.getSASLMechanismsElement(this);
-  if (sasl != null) {
-    elements.add(sasl);
+  if (getAuthToken() == null) {
+    Element sasl=SASLAuthentication.getSASLMechanismsElement(this);
+    if (sasl != null) {
+      elements.add(sasl);
+    }
   }
   if (conn.getCompressionPolicy() != Connection.CompressionPolicy.disabled && !conn.isCompressed()) {
     Element compression=DocumentHelper.createElement(new QName("compression",new Namespace("","http://jabber.org/features/compress")));
