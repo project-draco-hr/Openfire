@@ -1,6 +1,10 @@
 {
   List<Element> elements=rootNode.elements();
-  HttpConnection connection=session.createConnection(rid,elements,isSecure);
+  boolean isPoll=(elements.size() == 0);
+  if ("terminate".equals(rootNode.attributeValue("type")))   isPoll=false;
+ else   if ("true".equals(rootNode.attributeValue(new QName("restart",rootNode.getNamespaceForPrefix("xmpp")))))   isPoll=false;
+ else   if (rootNode.attributeValue("pause") != null)   isPoll=false;
+  HttpConnection connection=session.createConnection(rid,elements,isSecure,isPoll);
   if (elements.size() > 0) {
     new HttpPacketSender(session).init();
   }
