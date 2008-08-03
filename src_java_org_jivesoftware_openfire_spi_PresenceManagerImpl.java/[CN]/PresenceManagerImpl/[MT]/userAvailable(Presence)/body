@@ -7,20 +7,7 @@
     if (sessionManager.getSessionCount(username) > 1) {
       return;
     }
-    Connection con=null;
-    PreparedStatement pstmt=null;
-    try {
-      con=DbConnectionManager.getConnection();
-      pstmt=con.prepareStatement(DELETE_OFFLINE_PRESENCE);
-      pstmt.setString(1,username);
-      pstmt.execute();
-    }
- catch (    SQLException sqle) {
-      Log.error(sqle);
-    }
- finally {
-      DbConnectionManager.closeConnection(pstmt,con);
-    }
+    deleteOfflinePresenceFromDB(username);
     offlinePresenceCache.remove(username);
     lastActivityCache.remove(username);
   }
