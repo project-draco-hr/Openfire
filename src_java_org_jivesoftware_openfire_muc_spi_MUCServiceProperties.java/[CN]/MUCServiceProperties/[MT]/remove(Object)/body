@@ -12,5 +12,6 @@ synchronized (this) {
   }
   Map<String,Object> params=Collections.emptyMap();
   MUCServicePropertyEventDispatcher.dispatchEvent(subdomain,(String)key,MUCServicePropertyEventDispatcher.EventType.property_deleted,params);
+  CacheFactory.doClusterTask(MUCServicePropertyClusterEventTask.createDeleteTask(subdomain,(String)key));
   return value;
 }

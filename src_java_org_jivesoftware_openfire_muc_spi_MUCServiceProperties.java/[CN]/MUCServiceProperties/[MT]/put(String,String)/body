@@ -21,5 +21,6 @@ synchronized (this) {
   Map<String,Object> params=new HashMap<String,Object>();
   params.put("value",value);
   MUCServicePropertyEventDispatcher.dispatchEvent(subdomain,key,MUCServicePropertyEventDispatcher.EventType.property_set,params);
+  CacheFactory.doClusterTask(MUCServicePropertyClusterEventTask.createPutTask(subdomain,key,value));
   return result;
 }
