@@ -1,0 +1,10 @@
+{
+  attemptsPerIP=new ConcurrentHashMap<String,Long>();
+  attemptsPerUsername=new ConcurrentHashMap<String,Long>();
+  maxAttemptsPerIP=JiveGlobals.getLongProperty("adminConsole.maxAttemptsPerIP",10);
+  millisecondsBetweenPerIP=JiveGlobals.getLongProperty("adminConsole.perIPAttemptResetInterval",900000);
+  maxAttemptsPerUsername=JiveGlobals.getLongProperty("adminConsole.maxAttemptsPerUsername",10);
+  millisecondsBetweenPerUsername=JiveGlobals.getLongProperty("adminConsole.perUsernameAttemptResetInterval",900000);
+  TaskEngine.getInstance().scheduleAtFixedRate(new PerUsernameTask(),0,millisecondsBetweenPerUsername);
+  TaskEngine.getInstance().scheduleAtFixedRate(new PerIPAddressTask(),0,millisecondsBetweenPerIP);
+}

@@ -1,0 +1,21 @@
+{
+  Log.warn("Failed admin console login attempt by " + username + " from "+ address);
+  Long cnt=(long)0;
+  if (attemptsPerIP.get(address) != null) {
+    cnt=attemptsPerIP.get(address);
+  }
+  cnt++;
+  attemptsPerIP.put(address,cnt);
+  if (cnt > maxAttemptsPerIP) {
+    Log.warn("Login attempt limit breeched for address " + address);
+  }
+  cnt=(long)0;
+  if (attemptsPerUsername.get(username) != null) {
+    cnt=attemptsPerUsername.get(username);
+  }
+  cnt++;
+  attemptsPerUsername.put(username,cnt);
+  if (cnt > maxAttemptsPerIP) {
+    Log.warn("Login attempt limit breeched for username " + username);
+  }
+}
