@@ -1,6 +1,11 @@
 {
   boolean installed=false;
   HttpClient httpClient=new HttpClient();
+  if (isUsingProxy()) {
+    HostConfiguration hc=new HostConfiguration();
+    hc.setProxy(getProxyHost(),getProxyPort());
+    httpClient.setHostConfiguration(hc);
+  }
   GetMethod getMethod=new GetMethod(url);
   try {
     int statusCode=httpClient.executeMethod(getMethod);
