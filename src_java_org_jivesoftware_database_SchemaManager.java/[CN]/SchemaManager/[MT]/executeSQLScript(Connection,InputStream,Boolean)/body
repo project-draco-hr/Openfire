@@ -23,8 +23,12 @@
           command.deleteCharAt(command.length() - 1);
         }
         try {
+          String cmdString=command.toString();
+          if (autoreplace) {
+            cmdString=cmdString.replaceAll("jiveVersion","ofVersion");
+          }
           Statement stmt=con.createStatement();
-          stmt.execute(command.toString());
+          stmt.execute(cmdString);
           stmt.close();
         }
  catch (        SQLException e) {
