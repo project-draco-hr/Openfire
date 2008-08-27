@@ -11,6 +11,7 @@
     }
   }
  catch (  SQLException sqle) {
+    Log.debug("SchemaManager: Error verifying " + schemaKey + " version, probably ignorable.",sqle);
     DbConnectionManager.closeResultSet(rs);
     DbConnectionManager.closeStatement(pstmt);
     if (schemaKey.equals("openfire")) {
@@ -23,6 +24,7 @@
         }
       }
  catch (      SQLException sqlea) {
+        Log.debug("SchemaManager: Error verifying " + schemaKey + " version, probably ignorable.",sqlea);
         DbConnectionManager.closeResultSet(rs);
         DbConnectionManager.closeStatement(pstmt);
         try {
@@ -36,7 +38,7 @@
           }
         }
  catch (        SQLException sqle2) {
-          Log.debug("SchemaManager: Error verifying server version",sqle2);
+          Log.debug("SchemaManager: Error verifying " + schemaKey + " version, probably ignorable",sqle2);
         }
       }
     }
