@@ -1,0 +1,29 @@
+{
+  if (pluginName == null) {
+    return getLocalizedString(key,arguments);
+  }
+  if (locale == null) {
+    locale=JiveGlobals.getLocale();
+  }
+  String i18nFile=pluginName + "_i18n";
+  final XMPPServer xmppServer=XMPPServer.getInstance();
+  PluginManager pluginManager=xmppServer.getPluginManager();
+  Plugin plugin=pluginManager.getPlugin(pluginName);
+  if (plugin == null) {
+    throw new NullPointerException("Plugin could not be located: " + pluginName);
+  }
+  ClassLoader pluginClassLoader=pluginManager.getPluginClassloader(plugin);
+  try {
+    ResourceBundle bundle=ResourceBundle.getBundle(i18nFile,locale,pluginClassLoader);
+    return getLocalizedString(key,locale,arguments,bundle);
+  }
+ catch (  MissingResourceException mre) {
+    Locale jivesLocale=JiveGlobals.getLocale();
+    if (fallback && !jivesLocale.equals(locale)) {
+      Log.info("Could not find the requested locale. Falling back to default locale.",mre);
+      return getLocalizedString(key,pluginName,arguments,jivesLocale,false);
+    }
+    Log.error(mre);
+    return key;
+  }
+}
