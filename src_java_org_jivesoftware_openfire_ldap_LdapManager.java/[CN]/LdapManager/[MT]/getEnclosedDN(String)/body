@@ -2,6 +2,9 @@
   if (dnValue == null || dnValue.equals("")) {
     return dnValue;
   }
+  if (dnPattern == null) {
+    dnPattern=Pattern.compile("([^\\\\]=)([^\"]*?[^\\\\])(,|$)");
+  }
   Matcher matcher=dnPattern.matcher(dnValue);
   dnValue=matcher.replaceAll("$1\"$2\"$3");
   dnValue=dnValue.replace("\\,",",");
