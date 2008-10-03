@@ -7,9 +7,9 @@
   Collection<Group> sharedGroups=rosterManager.getSharedGroups(username);
   Collection<Group> userGroups=GroupManager.getInstance().getGroups(getUserJID());
   rosterItemProvider=RosterItemProvider.getInstance();
-  Iterator items=rosterItemProvider.getItems(username);
+  Iterator<RosterItem> items=rosterItemProvider.getItems(username);
   while (items.hasNext()) {
-    RosterItem item=(RosterItem)items.next();
+    RosterItem item=items.next();
     for (    Group group : sharedGroups) {
       if (group.isUser(item.getJid())) {
         item.addSharedGroup(group);
@@ -19,12 +19,14 @@
     rosterItems.put(item.getJid().toBareJID(),item);
   }
   Map<JID,List<Group>> sharedUsers=getSharedUsers(sharedGroups);
-  for (  JID jid : sharedUsers.keySet()) {
+  for (  Map.Entry<JID,List<Group>> entry : sharedUsers.entrySet()) {
+    JID jid=entry.getKey();
+    List<Group> groups=entry.getValue();
     try {
       Collection<Group> itemGroups=new ArrayList<Group>();
       String nickname="";
       RosterItem item=new RosterItem(jid,RosterItem.SUB_TO,RosterItem.ASK_NONE,RosterItem.RECV_NONE,nickname,null);
-      for (      Group group : sharedUsers.get(jid)) {
+      for (      Group group : groups) {
         if (group.isUser(jid)) {
           item.addSharedGroup(group);
           itemGroups.add(group);
@@ -38,7 +40,7 @@
       }
  else {
         boolean belongsToGroup=false;
-        for (        Group group : sharedUsers.get(jid)) {
+        for (        Group group : groups) {
           if (group.isUser(jid)) {
             belongsToGroup=true;
           }
@@ -56,7 +58,7 @@
       }
     }
  catch (    UserNotFoundException e) {
-      Log.error("Groups (" + sharedUsers.get(jid) + ") include non-existent username ("+ jid.getNode()+ ")");
+      Log.error("Groups (" + groups + ") include non-existent username ("+ jid.getNode()+ ")");
     }
   }
   RosterEventDispatcher.rosterLoaded(this);
