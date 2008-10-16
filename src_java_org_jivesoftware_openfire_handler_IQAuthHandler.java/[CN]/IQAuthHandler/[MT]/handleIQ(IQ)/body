@@ -15,7 +15,7 @@
       Element query=iq.element("query");
       Element queryResponse=probeResponse.createCopy();
       if (IQ.Type.get == packet.getType()) {
-        String username=query.elementTextTrim("username");
+        String username=query.elementText("username");
         if (username != null) {
           queryResponse.element("username").setText(username);
         }
@@ -31,11 +31,11 @@
           resourceBound=session.getStatus() == Session.STATUS_AUTHENTICATED;
         }
  else {
-          String username=query.elementTextTrim("username");
-          String password=query.elementTextTrim("password");
+          String username=query.elementText("username");
+          String password=query.elementText("password");
           String digest=null;
           if (query.element("digest") != null) {
-            digest=query.elementTextTrim("digest").toLowerCase();
+            digest=query.elementText("digest").toLowerCase();
           }
           if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
             response=passwordReset(password,packet,username,session);

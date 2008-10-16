@@ -1,11 +1,17 @@
 {
-  String resource=iq.elementTextTrim("resource");
+  try {
+    Stringprep.nodeprep(username);
+  }
+ catch (  StringprepException e) {
+    throw new UnauthorizedException("Invalid username: " + username,e);
+  }
+  String resource=iq.elementText("resource");
   if (resource != null) {
     try {
       resource=JID.resourceprep(resource);
     }
  catch (    StringprepException e) {
-      throw new IllegalArgumentException("Invalid resource: " + resource);
+      throw new UnauthorizedException("Invalid resource: " + resource,e);
     }
   }
  else {
