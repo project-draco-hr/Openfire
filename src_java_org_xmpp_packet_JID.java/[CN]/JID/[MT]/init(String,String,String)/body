@@ -6,22 +6,22 @@
     resource=null;
   }
   try {
-    if (!stringprepCache.containsKey(node)) {
+    if (!stringprepCache.contains(node)) {
       this.node=Stringprep.nodeprep(node);
       if (this.node != null && this.node.length() * 2 > 1023) {
         throw new IllegalArgumentException("Node cannot be larger than 1023 bytes. " + "Size is " + (this.node.length() * 2) + " bytes.");
       }
-      stringprepCache.put(this.node,null);
+      stringprepCache.put(this.node);
     }
  else {
       this.node=node;
     }
-    if (!stringprepCache.containsKey(domain)) {
+    if (!stringprepCache.contains(domain)) {
       this.domain=Stringprep.nameprep(IDNA.toASCII(domain),false);
       if (this.domain.length() * 2 > 1023) {
         throw new IllegalArgumentException("Domain cannot be larger than 1023 bytes. " + "Size is " + (this.domain.length() * 2) + " bytes.");
       }
-      stringprepCache.put(this.domain,null);
+      stringprepCache.put(this.domain);
     }
  else {
       this.domain=domain;

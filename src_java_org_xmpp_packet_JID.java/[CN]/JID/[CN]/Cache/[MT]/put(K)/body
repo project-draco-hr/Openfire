@@ -1,0 +1,10 @@
+{
+synchronized (entry) {
+    if (cachedValues.put(entry,NULL) != null) {
+      fifoQueue.offer(entry);
+    }
+  }
+  while (cachedValues.size() > maxSize) {
+    cachedValues.remove(fifoQueue.poll());
+  }
+}
