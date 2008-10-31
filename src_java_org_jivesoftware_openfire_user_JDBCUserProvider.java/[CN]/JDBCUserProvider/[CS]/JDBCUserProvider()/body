@@ -8,15 +8,18 @@
   JiveGlobals.migrateProperty("jdbcUserProvider.usernameField");
   JiveGlobals.migrateProperty("jdbcUserProvider.nameField");
   JiveGlobals.migrateProperty("jdbcUserProvider.emailField");
-  String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
-  try {
-    Class.forName(jdbcDriver).newInstance();
+  useConnectionProvider=JiveGlobals.getBooleanProperty("jdbcUserProvider.useConnectionProvider");
+  if (!useConnectionProvider) {
+    String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
+    try {
+      Class.forName(jdbcDriver).newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+      return;
+    }
+    connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
   }
- catch (  Exception e) {
-    Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
-    return;
-  }
-  connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
   loadUserSQL=JiveGlobals.getProperty("jdbcUserProvider.loadUserSQL");
   userCountSQL=JiveGlobals.getProperty("jdbcUserProvider.userCountSQL");
   allUsersSQL=JiveGlobals.getProperty("jdbcUserProvider.allUsersSQL");

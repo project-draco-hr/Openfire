@@ -7,15 +7,18 @@
   JiveGlobals.migrateProperty("jdbcGroupProvider.descriptionSQL");
   JiveGlobals.migrateProperty("jdbcGroupProvider.loadMembersSQL");
   JiveGlobals.migrateProperty("jdbcGroupProvider.loadAdminsSQL");
-  String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
-  try {
-    Class.forName(jdbcDriver).newInstance();
+  useConnectionProvider=JiveGlobals.getBooleanProperty("jdbcGroupProvider.useConnectionProvider");
+  if (!useConnectionProvider) {
+    String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
+    try {
+      Class.forName(jdbcDriver).newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+      return;
+    }
+    connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
   }
- catch (  Exception e) {
-    Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
-    return;
-  }
-  connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
   groupCountSQL=JiveGlobals.getProperty("jdbcGroupProvider.groupCountSQL");
   allGroupsSQL=JiveGlobals.getProperty("jdbcGroupProvider.allGroupsSQL");
   userGroupsSQL=JiveGlobals.getProperty("jdbcGroupProvider.userGroupsSQL");
