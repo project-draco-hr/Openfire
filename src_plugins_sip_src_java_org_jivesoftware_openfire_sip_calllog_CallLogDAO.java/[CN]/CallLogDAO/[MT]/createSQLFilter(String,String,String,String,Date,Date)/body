@@ -1,15 +1,34 @@
 {
   ArrayList<String> conditions=new ArrayList<String>(10);
-  if (username != null && !username.trim().equals(""))   conditions.add(" username = '" + username.trim() + "' ");
-  if (numa != null && !numa.trim().equals(""))   conditions.add(" addressFrom = '" + numa.trim() + "' ");
-  if (numb != null && !numb.trim().equals(""))   conditions.add(" addressTo = '" + numb.trim() + "' ");
-  if (fromDate != null)   conditions.add(" datetime >= '" + fromDate.getTime() + "' ");
-  if (uptoDate != null)   conditions.add(" datetime <= '" + uptoDate.getTime() + "' ");
-  if (callType != null && !callType.trim().equals("") && !callType.trim().equals("all"))   conditions.add(" calltype = '" + callType.trim() + "' ");
+  ArrayList<String> values=new ArrayList<String>(10);
+  if (username != null && !username.trim().equals("")) {
+    conditions.add(" username = ? ");
+    values.add(username.trim());
+  }
+  if (numa != null && !numa.trim().equals("")) {
+    conditions.add(" addressFrom = ? ");
+    values.add(numa.trim());
+  }
+  if (numb != null && !numb.trim().equals("")) {
+    conditions.add(" addressTo = ? ");
+    values.add(numb.trim());
+  }
+  if (fromDate != null) {
+    conditions.add(" datetime >= ? ");
+    values.add(String.valueOf(fromDate.getTime()));
+  }
+  if (uptoDate != null) {
+    conditions.add(" datetime <= ? ");
+    values.add(String.valueOf(uptoDate.getTime()));
+  }
+  if (callType != null && !callType.trim().equals("") && !callType.trim().equals("all")) {
+    conditions.add(" calltype = ? ");
+    values.add(callType.trim());
+  }
   StringBuilder str=new StringBuilder();
   for (  String aux : conditions) {
     if (str.length() > 0)     str.append("AND");
     str.append(aux);
   }
-  return str.toString();
+  return new CallFilter(str.toString(),values);
 }

@@ -1,6 +1,6 @@
 {
   String sql="SELECT * FROM ofSipPhoneLog";
-  sql=SQLCondition != null && !SQLCondition.equals("") ? sql + " WHERE " + SQLCondition : sql;
+  sql=filter != null && !filter.getSQL().equals("") ? sql + " WHERE " + filter.getSQL() : sql;
   sql+=" ORDER BY datetime DESC";
   List<CallLog> calls=new ArrayList<CallLog>(numResults);
   Connection con=null;
@@ -8,6 +8,10 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql);
+    int i=1;
+    for (    String value : filter.getValues()) {
+      pstmt.setString(i++,value);
+    }
     ResultSet rs=pstmt.executeQuery();
     DbConnectionManager.setFetchSize(rs,startIndex + numResults);
     DbConnectionManager.scrollResultSet(rs,startIndex);
