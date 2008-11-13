@@ -6,6 +6,9 @@
     loginPage=request.getContextPath() + "/login.jsp";
   }
   String url=request.getRequestURI().substring(1);
+  if (url.startsWith("plugins/")) {
+    url=url.substring("plugins/".length());
+  }
   boolean doExclude=false;
   for (  String exclude : excludes) {
     if (testURLPassesExclude(url,exclude)) {
