@@ -5,10 +5,10 @@
   if (loginPage == null) {
     loginPage=request.getContextPath() + "/login.jsp";
   }
-  String url=request.getRequestURL().toString();
+  String url=request.getRequestURI().substring(1);
   boolean doExclude=false;
   for (  String exclude : excludes) {
-    if (url.indexOf(exclude) > -1) {
+    if (testURLPassesExclude(url,exclude)) {
       doExclude=true;
       break;
     }

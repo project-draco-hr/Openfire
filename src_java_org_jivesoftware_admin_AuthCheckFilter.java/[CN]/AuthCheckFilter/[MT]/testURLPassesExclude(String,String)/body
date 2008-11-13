@@ -1,0 +1,27 @@
+{
+  if (url.contains("@")) {
+    url=url.substring(url.indexOf("@"));
+  }
+  if (exclude.endsWith("*")) {
+    if (url.startsWith(exclude.substring(0,exclude.length() - 1))) {
+      if (!url.contains("..")) {
+        return true;
+      }
+    }
+  }
+ else   if (exclude.contains("?")) {
+    if (url.equals(exclude)) {
+      return true;
+    }
+  }
+ else {
+    int paramIndex=url.indexOf("?");
+    if (paramIndex != -1) {
+      url=url.substring(0,paramIndex);
+    }
+    if (url.equals(exclude)) {
+      return true;
+    }
+  }
+  return false;
+}
