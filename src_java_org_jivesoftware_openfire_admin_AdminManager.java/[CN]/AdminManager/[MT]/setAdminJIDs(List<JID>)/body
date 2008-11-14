@@ -5,6 +5,10 @@
  else {
     adminList.clear();
   }
-  adminList.addAll(jids);
-  provider.setAdmins(jids);
+  List<JID> admins=new ArrayList<JID>();
+  for (  JID jid : jids) {
+    admins.add(new JID(jid.toBareJID()));
+  }
+  adminList.addAll(admins);
+  provider.setAdmins(admins);
 }

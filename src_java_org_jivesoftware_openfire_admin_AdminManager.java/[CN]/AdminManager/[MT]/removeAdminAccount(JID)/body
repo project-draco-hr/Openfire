@@ -2,9 +2,10 @@
   if (adminList == null) {
     loadAdminList();
   }
-  if (!adminList.contains(jid)) {
+  JID bareJID=new JID(jid.toBareJID());
+  if (!adminList.contains(bareJID)) {
     return;
   }
-  adminList.remove(jid);
+  adminList.remove(bareJID);
   provider.setAdmins(adminList);
 }
