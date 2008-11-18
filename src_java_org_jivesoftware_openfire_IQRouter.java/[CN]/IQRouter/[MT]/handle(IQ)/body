@@ -7,7 +7,7 @@
       return;
     }
   }
-  if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
+  if (packet.getID() != null && (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType())) {
     IQResultListener iqResultListener=resultListeners.remove(packet.getID());
     if (iqResultListener != null) {
       resultTimeout.remove(packet.getID());

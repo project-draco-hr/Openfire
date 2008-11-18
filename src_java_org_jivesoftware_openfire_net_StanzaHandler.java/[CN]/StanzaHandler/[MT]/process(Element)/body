@@ -79,6 +79,12 @@
       session.process(reply);
       return;
     }
+    if (packet.getID() == null && JiveGlobals.getBooleanProperty("xmpp.server.validation.enabled",false)) {
+      StreamError error=new StreamError(StreamError.Condition.invalid_xml);
+      session.deliverRawText(error.toXML());
+      session.close();
+      return;
+    }
     processIQ(packet);
   }
  else {
