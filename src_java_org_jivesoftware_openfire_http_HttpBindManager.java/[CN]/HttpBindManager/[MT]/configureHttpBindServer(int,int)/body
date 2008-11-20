@@ -1,7 +1,7 @@
 {
   httpBindServer=new Server();
-  Connector httpConnector=createConnector(port);
-  Connector httpsConnector=createSSLConnector(securePort);
+  createConnector(port);
+  createSSLConnector(securePort);
   if (httpConnector == null && httpsConnector == null) {
     httpBindServer=null;
     return;
@@ -10,11 +10,7 @@
     httpBindServer.addConnector(httpConnector);
   }
   if (httpsConnector != null) {
-    sslEnabled=true;
     httpBindServer.addConnector(httpsConnector);
-  }
- else {
-    sslEnabled=false;
   }
   createBoshHandler(contexts,"/http-bind");
   createCrossDomainHandler(contexts,"/");

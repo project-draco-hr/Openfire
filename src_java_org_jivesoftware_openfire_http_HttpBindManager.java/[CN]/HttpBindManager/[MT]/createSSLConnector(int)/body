@@ -1,4 +1,5 @@
 {
+  httpsConnector=null;
   try {
     if (securePort > 0 && CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),"*")) {
       if (!CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
@@ -26,11 +27,10 @@
       sslConnector.setKeyPassword(SSLConfig.getKeyPassword());
       sslConnector.setKeystoreType(SSLConfig.getStoreType());
       sslConnector.setKeystore(SSLConfig.getKeystoreLocation());
-      return sslConnector;
+      httpsConnector=sslConnector;
     }
   }
  catch (  Exception e) {
     Log.error("Error creating SSL connector for Http bind",e);
   }
-  return null;
 }

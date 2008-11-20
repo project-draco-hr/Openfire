@@ -6,14 +6,14 @@
     int boshSslPort=HttpBindManager.getInstance().getHttpBindSecurePort();
     int boshPort=HttpBindManager.getInstance().getHttpBindUnsecurePort();
     try {
-      if (CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain()) && LocalClientSession.getTLSPolicy() != org.jivesoftware.openfire.Connection.TLSPolicy.disabled && boshSslPort > 0) {
+      if (HttpBindManager.getInstance().isHttpsBindActive() && LocalClientSession.getTLSPolicy() != org.jivesoftware.openfire.Connection.TLSPolicy.disabled) {
         xmppBoshSslPort=String.valueOf(boshSslPort);
       }
     }
  catch (    Exception e) {
       Log.debug("Error while checking SSL certificate.  Instructing Clearspace not to use SSL port.");
     }
-    if (boshPort > 0) {
+    if (HttpBindManager.getInstance().isHttpBindActive() && boshPort > 0) {
       xmppBoshPort=String.valueOf(boshPort);
     }
   }
