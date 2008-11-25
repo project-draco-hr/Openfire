@@ -1,0 +1,13 @@
+{
+  crossDomainServer=new Server();
+  createConnector(port);
+  if (crossDomainConnector == null) {
+    crossDomainServer=null;
+    return;
+  }
+ else {
+    crossDomainServer.addConnector(crossDomainConnector);
+  }
+  createCrossDomainHandler(contexts,"/");
+  crossDomainServer.setHandlers(new Handler[]{contexts,new DefaultHandler()});
+}
