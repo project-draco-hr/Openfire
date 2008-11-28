@@ -1,0 +1,53 @@
+{
+  try {
+    String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+    InetAddress bindInterface=null;
+    int port=5229;
+    if (interfaceName != null) {
+      if (interfaceName.trim().length() > 0) {
+        bindInterface=InetAddress.getByName(interfaceName);
+      }
+    }
+    serverSocket=new ServerSocket(port,-1,bindInterface);
+    Log.debug("Flash cross domain is listening on " + interfaceName + " on port "+ port);
+  }
+ catch (  IOException e) {
+    Log.error("Could not listen on port: 5229.",e);
+    return;
+  }
+  while (true) {
+    Socket clientSocket=null;
+    PrintWriter out=null;
+    BufferedReader in=null;
+    try {
+      clientSocket=serverSocket.accept();
+      clientSocket.setSoTimeout(10000);
+      out=new PrintWriter(clientSocket.getOutputStream(),true);
+      in=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+      String request="";
+      request=read(in);
+      System.out.println("Request was " + request);
+      if (request.contains("<policy-file-request/>") || request.contains("GET /crossdomain.xml")) {
+        out.write(CROSS_DOMAIN_TEXT + XMPPServer.getInstance().getConnectionManager().getClientListenerPort() + CROSS_DOMAIN_END_TEXT+ "\u0000");
+      }
+    }
+ catch (    IOException e) {
+      if (XMPPServer.getInstance().isShuttingDown()) {
+        break;
+      }
+      Log.error(e);
+    }
+ finally {
+      if (out != null) {
+        out.flush();
+        out.close();
+      }
+      if (in != null) {
+        in.close();
+      }
+      if (clientSocket != null) {
+        clientSocket.close();
+      }
+    }
+  }
+}

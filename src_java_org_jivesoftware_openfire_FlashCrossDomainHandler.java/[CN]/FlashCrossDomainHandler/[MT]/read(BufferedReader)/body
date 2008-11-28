@@ -1,0 +1,21 @@
+{
+  StringBuffer buffer=new StringBuffer();
+  int codePoint;
+  boolean zeroByteRead=false;
+  try {
+    do {
+      codePoint=in.read();
+      if (codePoint == 0 || codePoint == '\n') {
+        zeroByteRead=true;
+      }
+ else       if (Character.isValidCodePoint(codePoint)) {
+        buffer.appendCodePoint(codePoint);
+      }
+    }
+ while (!zeroByteRead && buffer.length() < 200);
+  }
+ catch (  Exception e) {
+    Log.debug("Exception (read): " + e.getMessage());
+  }
+  return buffer.toString();
+}

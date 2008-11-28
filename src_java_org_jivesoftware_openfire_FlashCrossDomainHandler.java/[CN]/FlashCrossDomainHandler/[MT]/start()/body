@@ -1,9 +1,14 @@
 {
-  configureCrossDomainServer(servletPort);
-  try {
-    crossDomainServer.start();
+  Thread thread=new Thread(new Runnable(){
+    public void run(){
+      try {
+        startServer();
+      }
+ catch (      Exception e) {
+        Log.error(e);
+      }
+    }
   }
- catch (  Exception e) {
-    Log.error("Error starting cross domain service",e);
-  }
+,"Flash Cross Domain");
+  thread.start();
 }
