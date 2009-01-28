@@ -3,7 +3,7 @@
   String subject=cert.getSubjectDN().getName();
   X509Name xname=new X509Name(subject);
   PublicKey pubKey=cert.getPublicKey();
-  String signatureAlgorithm="DSA".equals(pubKey.getAlgorithm()) ? "SHA1withDSA" : "MD5withRSA";
+  String signatureAlgorithm="DSA".equals(pubKey.getAlgorithm()) ? "SHA1withDSA" : "SHA1WITHRSAENCRYPTION";
   PKCS10CertificationRequest csr=new PKCS10CertificationRequest(signatureAlgorithm,xname,pubKey,null,privKey);
   ByteArrayOutputStream baos=new ByteArrayOutputStream();
   DEROutputStream deros=new DEROutputStream(baos);
