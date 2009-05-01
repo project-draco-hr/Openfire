@@ -12,5 +12,8 @@
       Log.warn("Invalid JID found in admin.authorizedJIDs system property: " + jid,e);
     }
   }
+  if (adminList.isEmpty()) {
+    adminList.add(new JID("admin",XMPPServer.getInstance().getServerInfo().getXMPPDomain(),null,true));
+  }
   return adminList;
 }
