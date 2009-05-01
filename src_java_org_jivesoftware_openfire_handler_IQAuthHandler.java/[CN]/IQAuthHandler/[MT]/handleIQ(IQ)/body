@@ -1,7 +1,8 @@
 {
-  LocalClientSession session=(LocalClientSession)sessionManager.getSession(packet.getFrom());
+  JID from=packet.getFrom();
+  LocalClientSession session=(LocalClientSession)sessionManager.getSession(from);
   if (session == null) {
-    Log.error("Error during authentication. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+    Log.error("Error during authentication. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ from);
     IQ reply=IQ.createResultIQ(packet);
     reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.internal_server_error);
@@ -38,7 +39,22 @@
             digest=query.elementText("digest").toLowerCase();
           }
           if (session.getStatus() == Session.STATUS_AUTHENTICATED) {
-            response=passwordReset(password,packet,username,session);
+            if (password == null || password.trim().length() == 0) {
+              response=IQ.createResultIQ(packet);
+              response.setError(PacketError.Condition.not_allowed);
+              response.setType(IQ.Type.error);
+            }
+ else {
+              if (session.getUsername().equalsIgnoreCase(username)) {
+                response=passwordReset(password,packet,username,session);
+              }
+ else               if (XMPPServer.getInstance().getAdmins().contains(new JID(from.getNode(),from.getDomain(),null,true))) {
+                response=passwordReset(password,packet,username,session);
+              }
+ else {
+                throw new UnauthorizedException();
+              }
+            }
           }
  else {
             response=login(username,query,packet,password,session,digest);
