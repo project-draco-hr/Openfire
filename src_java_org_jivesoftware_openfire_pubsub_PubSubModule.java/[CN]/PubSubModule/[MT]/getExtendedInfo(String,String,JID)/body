@@ -2,17 +2,7 @@
   if (name == null && node != null) {
     Node pubNode=getNode(node);
     if (canDiscoverNode(pubNode)) {
-      org.xmpp.forms.DataForm metadataForm=pubNode.getMetadataForm();
-      XDataFormImpl dataForm=new XDataFormImpl(DataForm.TYPE_RESULT);
-      for (      org.xmpp.forms.FormField formField : metadataForm.getFields()) {
-        XFormFieldImpl field=new XFormFieldImpl(formField.getVariable());
-        field.setLabel(formField.getLabel());
-        for (        String value : formField.getValues()) {
-          field.addValue(value);
-        }
-        dataForm.addField(field);
-      }
-      return dataForm;
+      return pubNode.getMetadataForm();
     }
   }
   return null;

@@ -40,7 +40,7 @@
  catch (    NotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(new PacketError(PacketError.Condition.item_not_found));
-      ComponentManagerFactory.getComponentManager().getLog().debug("Request not found" + " while departing queue:",e);
+      Log.debug("Request not found" + " while departing queue:",e);
     }
   }
  else   if ("offer-accept".equals(queryName)) {
@@ -62,7 +62,7 @@
           if (agentSession == null) {
             reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(new PacketError(PacketError.Condition.item_not_found));
-            ComponentManagerFactory.getComponentManager().getLog().debug("Agent not found while accepting offer");
+            Log.debug("Agent not found while accepting offer");
           }
  else {
             try {
@@ -85,12 +85,12 @@
  catch (    NotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(new PacketError(PacketError.Condition.item_not_found));
-      ComponentManagerFactory.getComponentManager().getLog().debug("Request not found " + "while accepting offer: ",e);
+      Log.debug("Request not found " + "while accepting offer: ",e);
     }
 catch (    AgentNotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(new PacketError(PacketError.Condition.item_not_found));
-      ComponentManagerFactory.getComponentManager().getLog().debug("Agent not found " + "while accepting offer: ",e);
+      Log.debug("Agent not found " + "while accepting offer: ",e);
     }
   }
  else   if ("offer-reject".equals(queryName)) {
@@ -112,7 +112,7 @@ catch (    AgentNotFoundException e) {
           if (agentSession == null) {
             reply.setChildElement(packet.getChildElement().createCopy());
             reply.setError(new PacketError(PacketError.Condition.item_not_found));
-            ComponentManagerFactory.getComponentManager().getLog().debug("Agent not found while accepting offer");
+            Log.debug("Agent not found while accepting offer");
           }
  else {
             try {
@@ -131,12 +131,12 @@ catch (    AgentNotFoundException e) {
  catch (    NotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(new PacketError(PacketError.Condition.item_not_found));
-      ComponentManagerFactory.getComponentManager().getLog().debug("Request not found " + "while rejecting offer: ",e);
+      Log.debug("Request not found " + "while rejecting offer: ",e);
     }
 catch (    AgentNotFoundException e) {
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(new PacketError(PacketError.Condition.item_not_found));
-      ComponentManagerFactory.getComponentManager().getLog().debug("Agent not found " + "while accepting offer: ",e);
+      Log.debug("Agent not found " + "while accepting offer: ",e);
     }
   }
  else   if ("invite".equals(queryName)) {

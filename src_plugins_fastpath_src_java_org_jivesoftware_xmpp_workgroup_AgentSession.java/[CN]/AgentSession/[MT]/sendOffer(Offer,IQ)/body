@@ -15,12 +15,12 @@ synchronized (this) {
       interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),offerPacket,false,true);
     }
  catch (    PacketRejectedException e) {
-      ComponentManagerFactory.getComponentManager().getLog().warn("Offer was not sent " + "due to interceptor REJECTION: " + offerPacket.toXML(),e);
+      Log.warn("Offer was not sent " + "due to interceptor REJECTION: " + offerPacket.toXML(),e);
     }
     return true;
   }
  catch (  Exception e) {
-    ComponentManagerFactory.getComponentManager().getLog().error(LocaleUtils.getLocalizedString("admin.error"),e);
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     return false;
   }
 }

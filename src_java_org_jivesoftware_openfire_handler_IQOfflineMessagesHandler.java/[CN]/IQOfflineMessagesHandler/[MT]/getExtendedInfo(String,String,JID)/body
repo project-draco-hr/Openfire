@@ -1,12 +1,12 @@
 {
   stopOfflineFlooding(senderJID);
-  XDataFormImpl dataForm=new XDataFormImpl(DataForm.TYPE_RESULT);
-  XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
-  field.setType(FormField.TYPE_HIDDEN);
-  field.addValue(NAMESPACE);
-  dataForm.addField(field);
-  field=new XFormFieldImpl("number_of_messages");
-  field.addValue(String.valueOf(messageStore.getMessages(senderJID.getNode(),false).size()));
-  dataForm.addField(field);
+  final DataForm dataForm=new DataForm(DataForm.Type.result);
+  final FormField field1=dataForm.addField();
+  field1.setVariable("FORM_TYPE");
+  field1.setType(FormField.Type.hidden);
+  field1.addValue(NAMESPACE);
+  final FormField field2=dataForm.addField();
+  field2.setVariable("number_of_messages");
+  field2.addValue(String.valueOf(messageStore.getMessages(senderJID.getNode(),false).size()));
   return dataForm;
 }

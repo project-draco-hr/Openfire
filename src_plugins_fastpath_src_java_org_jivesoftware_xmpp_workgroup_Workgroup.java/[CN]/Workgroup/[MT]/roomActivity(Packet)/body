@@ -10,7 +10,7 @@ synchronized (sessionID.intern()) {
       Presence presence=(Presence)packet;
       if (Presence.Type.error == presence.getType()) {
         String warnMessage="Possible server misconfiguration. Received error " + "presence:" + presence.toXML();
-        ComponentManagerFactory.getComponentManager().getLog().warn(warnMessage);
+        Log.warn(warnMessage);
         return;
       }
       Element mucUser=presence.getChildElement("x","http://jabber.org/protocol/muc#user");

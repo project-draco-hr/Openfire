@@ -8,7 +8,7 @@
       Workgroup workgroup=offer.getRequest().getWorkgroup();
       if (agentSession.isAvailableToChat() && agentSession.getCurrentChats(workgroup) < agentSession.getMaxChats(workgroup) && match) {
         bestSession=agentSession;
-        logger.debug("RR - Initial agent: " + bestSession.getJID() + " will receive offer for request: "+ offer.getRequest());
+        Log.debug("RR - Initial agent: " + bestSession.getJID() + " will receive offer for request: "+ offer.getRequest());
         return bestSession;
       }
     }
@@ -24,7 +24,7 @@
   }
   if (possibleSessions.size() > 0) {
     AgentSession s=agentSelector.bestAgentFrom(possibleSessions,offer);
-    logger.debug("RR - Agent SELECTED: " + s.getJID() + " for receiving offer for request: "+ offer.getRequest());
+    Log.debug("RR - Agent SELECTED: " + s.getJID() + " for receiving offer for request: "+ offer.getRequest());
     return s;
   }
   return null;
