@@ -88,28 +88,27 @@
         String email=null;
         String name=null;
         User newUser;
-        XDataFormImpl registrationForm;
+        DataForm registrationForm;
         FormField field;
         Element formElement=iqElement.element("x");
         if (formElement != null) {
-          registrationForm=new XDataFormImpl();
-          registrationForm.parse(formElement);
-          Iterator<String> values=registrationForm.getField("username").getValues();
-          username=(values.hasNext() ? values.next() : " ");
+          registrationForm=new DataForm(formElement);
+          List<String> values=registrationForm.getField("username").getValues();
+          username=(!values.isEmpty() ? values.get(0) : " ");
           field=registrationForm.getField("password");
           if (field != null) {
             values=field.getValues();
-            password=(values.hasNext() ? values.next() : " ");
+            password=(!values.isEmpty() ? values.get(0) : " ");
           }
           field=registrationForm.getField("email");
           if (field != null) {
             values=field.getValues();
-            email=(values.hasNext() ? values.next() : " ");
+            email=(!values.isEmpty() ? values.get(0) : " ");
           }
           field=registrationForm.getField("name");
           if (field != null) {
             values=field.getValues();
-            name=(values.hasNext() ? values.next() : " ");
+            name=(!values.isEmpty() ? values.get(0) : " ");
           }
         }
  else {

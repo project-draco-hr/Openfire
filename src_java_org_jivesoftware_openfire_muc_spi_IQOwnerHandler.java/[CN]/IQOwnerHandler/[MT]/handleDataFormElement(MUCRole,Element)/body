@@ -1,22 +1,26 @@
 {
-  XDataFormImpl completedForm=new XDataFormImpl();
-  completedForm.parse(formElement);
-  if (DataForm.TYPE_CANCEL.equals(completedForm.getType())) {
+  DataForm completedForm=new DataForm(formElement);
+switch (completedForm.getType()) {
+case cancel:
     if (room.isLocked()) {
       room.destroyRoom(null,null);
     }
-  }
- else   if (DataForm.TYPE_SUBMIT.equals(completedForm.getType())) {
-    if (completedForm.getFieldsSize() == 0) {
-    }
+  break;
+case submit:
+if (completedForm.getFields().isEmpty()) {
+}
  else {
-      processConfigurationForm(completedForm,senderRole);
-    }
-    if (room.isLocked() && !room.isManuallyLocked()) {
-      room.unlock(senderRole);
-    }
-    if (!room.isDestroyed) {
-      CacheFactory.doClusterTask(new RoomUpdatedEvent(room));
-    }
-  }
+  processConfigurationForm(completedForm,senderRole);
+}
+if (room.isLocked() && !room.isManuallyLocked()) {
+room.unlock(senderRole);
+}
+if (!room.isDestroyed) {
+CacheFactory.doClusterTask(new RoomUpdatedEvent(room));
+}
+break;
+default :
+Log.warn("cannot handle data form element: " + formElement.asXML());
+break;
+}
 }

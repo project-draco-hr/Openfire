@@ -8,38 +8,38 @@
     probeResult.addElement("password");
     probeResult.addElement("email");
     probeResult.addElement("name");
-    XDataFormImpl registrationForm=new XDataFormImpl(DataForm.TYPE_FORM);
+    final DataForm registrationForm=new DataForm(DataForm.Type.form);
     registrationForm.setTitle("XMPP Client Registration");
     registrationForm.addInstruction("Please provide the following information");
-    XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
-    field.setType(FormField.TYPE_HIDDEN);
-    field.addValue("jabber:iq:register");
-    registrationForm.addField(field);
-    field=new XFormFieldImpl("username");
-    field.setType(FormField.TYPE_TEXT_SINGLE);
-    field.setLabel("Username");
-    field.setRequired(true);
-    registrationForm.addField(field);
-    field=new XFormFieldImpl("name");
-    field.setType(FormField.TYPE_TEXT_SINGLE);
-    field.setLabel("Full name");
+    final FormField fieldForm=registrationForm.addField();
+    fieldForm.setVariable("FORM_TYPE");
+    fieldForm.setType(FormField.Type.hidden);
+    fieldForm.addValue("jabber:iq:register");
+    final FormField fieldUser=registrationForm.addField();
+    fieldUser.setVariable("username");
+    fieldUser.setType(FormField.Type.text_single);
+    fieldUser.setLabel("Username");
+    fieldUser.setRequired(true);
+    final FormField fieldName=registrationForm.addField();
+    fieldName.setVariable("name");
+    fieldName.setType(FormField.Type.text_single);
+    fieldName.setLabel("Full name");
     if (UserManager.getUserProvider().isNameRequired()) {
-      field.setRequired(true);
+      fieldName.setRequired(true);
     }
-    registrationForm.addField(field);
-    field=new XFormFieldImpl("email");
-    field.setType(FormField.TYPE_TEXT_SINGLE);
-    field.setLabel("Email");
+    final FormField fieldMail=registrationForm.addField();
+    fieldMail.setVariable("email");
+    fieldMail.setType(FormField.Type.text_single);
+    fieldMail.setLabel("Email");
     if (UserManager.getUserProvider().isEmailRequired()) {
-      field.setRequired(true);
+      fieldMail.setRequired(true);
     }
-    registrationForm.addField(field);
-    field=new XFormFieldImpl("password");
-    field.setType(FormField.TYPE_TEXT_PRIVATE);
-    field.setLabel("Password");
-    field.setRequired(true);
-    registrationForm.addField(field);
-    probeResult.add(registrationForm.asXMLElement());
+    final FormField fieldPwd=registrationForm.addField();
+    fieldPwd.setVariable("password");
+    fieldPwd.setType(FormField.Type.text_private);
+    fieldPwd.setLabel("Password");
+    fieldPwd.setRequired(true);
+    probeResult.add(registrationForm.getElement());
   }
   registrationEnabled=JiveGlobals.getBooleanProperty("register.inband",true);
   canChangePassword=JiveGlobals.getBooleanProperty("register.password",true);

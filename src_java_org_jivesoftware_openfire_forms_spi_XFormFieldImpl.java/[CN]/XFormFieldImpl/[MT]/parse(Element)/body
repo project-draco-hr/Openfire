@@ -1,0 +1,22 @@
+{
+  variable=formElement.attributeValue("var");
+  setLabel(formElement.attributeValue("label"));
+  setType(formElement.attributeValue("type"));
+  Element descElement=formElement.element("desc");
+  if (descElement != null) {
+    setDescription(descElement.getTextTrim());
+  }
+  if (formElement.element("required") != null) {
+    setRequired(true);
+  }
+  Iterator valueElements=formElement.elementIterator("value");
+  while (valueElements.hasNext()) {
+    addValue(((Element)valueElements.next()).getTextTrim());
+  }
+  Iterator optionElements=formElement.elementIterator("option");
+  Element optionElement;
+  while (optionElements.hasNext()) {
+    optionElement=(Element)optionElements.next();
+    addOption(optionElement.attributeValue("label"),optionElement.elementTextTrim("value"));
+  }
+}

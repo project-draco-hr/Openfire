@@ -49,10 +49,9 @@
  else {
         Element formElement=iq.element("x");
         if (formElement != null) {
-          XDataFormImpl registrationForm=new XDataFormImpl();
-          registrationForm.parse(formElement);
-          Iterator<String> values=registrationForm.getField("muc#register_roomnick").getValues();
-          String nickname=(values.hasNext() ? values.next() : null);
+          final DataForm registrationForm=new DataForm(formElement);
+          List<String> values=registrationForm.getField("muc#register_roomnick").getValues();
+          String nickname=(!values.isEmpty() ? values.get(0) : null);
           presences.addAll(room.addMember(packet.getFrom().toBareJID(),nickname,room.getRole()));
         }
  else {

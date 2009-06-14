@@ -1,0 +1,107 @@
+{
+  boolean hasJID=itemsList.get(0).attributeValue("jid") != null;
+  boolean hasNick=itemsList.get(0).attributeValue("nick") != null;
+  if (!hasJID && !hasNick) {
+    for (    final Element item : itemsList) {
+      String affiliation=item.attributeValue("affiliation");
+      Element result=reply.setChildElement("query","http://jabber.org/protocol/muc#owner");
+      if ("owner".equals(affiliation)) {
+        Element ownerMetaData;
+        MUCRole role;
+        for (        String jid : room.getOwners()) {
+          ownerMetaData=result.addElement("item","http://jabber.org/protocol/muc#owner");
+          ownerMetaData.addAttribute("affiliation","owner");
+          ownerMetaData.addAttribute("jid",jid);
+          try {
+            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+            role=roles.get(0);
+            ownerMetaData.addAttribute("role",role.getRole().toString());
+            ownerMetaData.addAttribute("nick",role.getNickname());
+          }
+ catch (          UserNotFoundException e) {
+          }
+        }
+      }
+ else       if ("admin".equals(affiliation)) {
+        Element adminMetaData;
+        MUCRole role;
+        for (        String jid : room.getAdmins()) {
+          adminMetaData=result.addElement("item","http://jabber.org/protocol/muc#owner");
+          adminMetaData.addAttribute("affiliation","admin");
+          adminMetaData.addAttribute("jid",jid);
+          try {
+            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+            role=roles.get(0);
+            adminMetaData.addAttribute("role",role.getRole().toString());
+            adminMetaData.addAttribute("nick",role.getNickname());
+          }
+ catch (          UserNotFoundException e) {
+          }
+        }
+      }
+ else {
+        reply.setError(PacketError.Condition.bad_request);
+      }
+    }
+  }
+ else {
+    Map<String,String> jids=new HashMap<String,String>();
+    String nick;
+    for (    final Element item : itemsList) {
+      try {
+        String affiliation=item.attributeValue("affiliation");
+        String bareJID;
+        if (hasJID) {
+          bareJID=new JID(item.attributeValue("jid")).toBareJID();
+        }
+ else {
+          nick=item.attributeValue("nick");
+          bareJID=room.getOccupant(nick).getUserAddress().toBareJID();
+        }
+        jids.put(bareJID,affiliation);
+      }
+ catch (      UserNotFoundException e) {
+      }
+    }
+    List<Presence> presences=new ArrayList<Presence>(jids.size());
+    room.lock.readLock().lock();
+    try {
+      if (jids.keySet().containsAll(room.owners)) {
+        if (!jids.containsValue("owner")) {
+          throw new ConflictException();
+        }
+      }
+      room.lock.readLock().unlock();
+      try {
+        for (        String bareJID : jids.keySet()) {
+          String targetAffiliation=jids.get(bareJID);
+          if ("owner".equals(targetAffiliation)) {
+            presences.addAll(room.addOwner(bareJID,senderRole));
+          }
+ else           if ("admin".equals(targetAffiliation)) {
+            presences.addAll(room.addAdmin(bareJID,senderRole));
+          }
+ else           if ("member".equals(targetAffiliation)) {
+            boolean hadAffiliation=room.getAffiliation(bareJID) != MUCRole.Affiliation.none;
+            presences.addAll(room.addMember(bareJID,null,senderRole));
+            if (!hadAffiliation && room.isMembersOnly()) {
+              room.sendInvitation(new JID(bareJID),null,senderRole,null);
+            }
+          }
+ else           if ("none".equals(targetAffiliation)) {
+            presences.addAll(room.addNone(bareJID,senderRole));
+          }
+        }
+      }
+  finally {
+        room.lock.readLock().lock();
+      }
+    }
+  finally {
+      room.lock.readLock().unlock();
+    }
+    for (    Presence presence : presences) {
+      room.send(presence);
+    }
+  }
+}

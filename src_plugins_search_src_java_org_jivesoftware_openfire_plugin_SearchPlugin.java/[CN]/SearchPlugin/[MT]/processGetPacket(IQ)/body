@@ -10,27 +10,20 @@
   queryResult.addElement("last");
   queryResult.addElement("nick");
   queryResult.addElement("email");
-  XDataFormImpl searchForm=new XDataFormImpl(DataForm.TYPE_FORM);
+  DataForm searchForm=new DataForm(DataForm.Type.form);
   searchForm.setTitle(LocaleUtils.getLocalizedString("advance.user.search.title","search"));
   searchForm.addInstruction(instructions);
-  XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
-  field.setType(FormField.TYPE_HIDDEN);
-  field.addValue(NAMESPACE_JABBER_IQ_SEARCH);
-  searchForm.addField(field);
-  field=new XFormFieldImpl("search");
-  field.setType(FormField.TYPE_TEXT_SINGLE);
-  field.setLabel(LocaleUtils.getLocalizedString("advance.user.search.search","search"));
-  field.setRequired(true);
-  searchForm.addField(field);
+  searchForm.addField("FORM_TYPE",null,FormField.Type.hidden).addValue(NAMESPACE_JABBER_IQ_SEARCH);
+  searchForm.addField("search",LocaleUtils.getLocalizedString("advance.user.search.search","search"),FormField.Type.text_single).setRequired(true);
   for (  String searchField : getFilteredSearchFields()) {
-    field=new XFormFieldImpl(searchField);
-    field.setType(FormField.TYPE_BOOLEAN);
+    final FormField field=searchForm.addField();
+    field.setVariable(searchField);
+    field.setType(FormField.Type.boolean_type);
     field.addValue("1");
     field.setLabel(LocaleUtils.getLocalizedString("advance.user.search." + searchField.toLowerCase(),"search"));
     field.setRequired(false);
-    searchForm.addField(field);
   }
-  queryResult.add(searchForm.asXMLElement());
+  queryResult.add(searchForm.getElement());
   replyPacket.setChildElement(queryResult);
   return replyPacket;
 }

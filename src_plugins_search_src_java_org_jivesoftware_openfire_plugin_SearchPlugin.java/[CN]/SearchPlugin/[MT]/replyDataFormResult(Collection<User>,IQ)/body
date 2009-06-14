@@ -1,35 +1,21 @@
 {
-  XDataFormImpl searchResults=new XDataFormImpl(DataForm.TYPE_RESULT);
-  XFormFieldImpl field=new XFormFieldImpl("FORM_TYPE");
-  field.setType(FormField.TYPE_HIDDEN);
-  searchResults.addField(field);
-  field=new XFormFieldImpl("jid");
-  field.setLabel("JID");
-  searchResults.addReportedField(field);
-  for (  String fieldName : getFilteredSearchFields()) {
-    field=new XFormFieldImpl(fieldName);
-    field.setLabel(LocaleUtils.getLocalizedString("advance.user.search." + fieldName.toLowerCase(),"search"));
-    searchResults.addReportedField(field);
+  final DataForm searchResults=new DataForm(DataForm.Type.result);
+  searchResults.addField("FORM_TYPE",null,FormField.Type.hidden);
+  searchResults.addReportedField("jid","JID",null);
+  for (  final String fieldName : getFilteredSearchFields()) {
+    searchResults.addReportedField(fieldName,LocaleUtils.getLocalizedString("advance.user.search." + fieldName.toLowerCase(),"search"),null);
   }
-  for (  User user : users) {
-    String username=JID.unescapeNode(user.getUsername());
-    ArrayList<XFormFieldImpl> items=new ArrayList<XFormFieldImpl>();
-    XFormFieldImpl fieldJID=new XFormFieldImpl("jid");
-    fieldJID.addValue(username + "@" + serverName);
-    items.add(fieldJID);
-    XFormFieldImpl fieldUsername=new XFormFieldImpl(LocaleUtils.getLocalizedString("advance.user.search.username","search"));
-    fieldUsername.addValue(username);
-    items.add(fieldUsername);
-    XFormFieldImpl fieldName=new XFormFieldImpl(LocaleUtils.getLocalizedString("advance.user.search.name","search"));
-    fieldName.addValue((user.isNameVisible() ? removeNull(user.getName()) : ""));
-    items.add(fieldName);
-    XFormFieldImpl fieldEmail=new XFormFieldImpl(LocaleUtils.getLocalizedString("advance.user.search.email","search"));
-    fieldEmail.addValue((user.isEmailVisible() ? removeNull(user.getEmail()) : ""));
-    items.add(fieldEmail);
-    searchResults.addItemFields(items);
+  for (  final User user : users) {
+    final String username=JID.unescapeNode(user.getUsername());
+    final Map<String,Object> item=new HashMap<String,Object>();
+    item.put("jid",username + "@" + serverName);
+    item.put(LocaleUtils.getLocalizedString("advance.user.search.username","search"),username);
+    item.put(LocaleUtils.getLocalizedString("advance.user.search.name","search"),(user.isNameVisible() ? removeNull(user.getName()) : ""));
+    item.put(LocaleUtils.getLocalizedString("advance.user.search.email","search"),(user.isEmailVisible() ? removeNull(user.getEmail()) : ""));
+    searchResults.addItemFields(item);
   }
   IQ replyPacket=IQ.createResultIQ(packet);
   Element reply=replyPacket.setChildElement("query",NAMESPACE_JABBER_IQ_SEARCH);
-  reply.add(searchResults.asXMLElement());
+  reply.add(searchResults.getElement());
   return replyPacket;
 }

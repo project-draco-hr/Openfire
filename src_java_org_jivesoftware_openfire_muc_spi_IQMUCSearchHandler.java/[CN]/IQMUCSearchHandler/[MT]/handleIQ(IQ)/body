@@ -5,43 +5,40 @@
     reply.setChildElement(getDataElement());
     return reply;
   }
-  final XDataFormImpl df=new XDataFormImpl();
-  df.parse(formElement);
+  final DataForm df=new DataForm(formElement);
   boolean name_is_exact_match=false;
   String subject=null;
   int numusers=-1;
   int numaxusers=-1;
   boolean includePasswordProtectedRooms=true;
   final Set<String> names=new HashSet<String>();
-  @SuppressWarnings("unchecked") final Iterator<FormField> formFields=df.getFields();
-  while (formFields.hasNext()) {
-    final FormField field=formFields.next();
+  for (  final FormField field : df.getFields()) {
     if (field.getVariable().equals("name")) {
-      names.add(getFirstValue(field));
+      names.add(field.getFirstValue());
     }
   }
   final FormField matchFF=df.getField("name_is_exact_match");
   if (matchFF != null) {
-    final String b=getFirstValue(matchFF);
+    final String b=matchFF.getFirstValue();
     if (b != null) {
       name_is_exact_match=b.equals("1") || b.equalsIgnoreCase("true") || b.equalsIgnoreCase("yes");
     }
   }
   final FormField subjectFF=df.getField("subject");
   if (subjectFF != null) {
-    subject=getFirstValue(subjectFF);
+    subject=subjectFF.getFirstValue();
   }
   try {
     final FormField userAmountFF=df.getField("num_users");
     if (userAmountFF != null) {
-      String value=getFirstValue(userAmountFF);
+      String value=userAmountFF.getFirstValue();
       if (value != null && !"".equals(value)) {
         numusers=Integer.parseInt(value);
       }
     }
     final FormField maxUsersFF=df.getField("num_max_users");
     if (maxUsersFF != null) {
-      String value=getFirstValue(maxUsersFF);
+      String value=maxUsersFF.getFirstValue();
       if (value != null && !"".equals(value)) {
         numaxusers=Integer.parseInt(value);
       }
@@ -53,7 +50,7 @@
   }
   final FormField includePasswordProtectedRoomsFF=df.getField("include_password_protected");
   if (includePasswordProtectedRoomsFF != null) {
-    final String b=getFirstValue(includePasswordProtectedRoomsFF);
+    final String b=includePasswordProtectedRoomsFF.getFirstValue();
     if (b != null) {
       if (b.equals("0") || b.equalsIgnoreCase("false") || b.equalsIgnoreCase("no")) {
         includePasswordProtectedRooms=false;
@@ -117,65 +114,28 @@
     mucrsm=new ArrayList<MUCRoom>(searchResults);
   }
   final Element res=DocumentHelper.createElement(QName.get("query","jabber:iq:search"));
-  final XDataFormImpl resultform=new XDataFormImpl(DataForm.TYPE_RESULT);
+  final DataForm resultform=new DataForm(DataForm.Type.result);
   boolean atLeastoneResult=false;
   for (  MUCRoom room : mucrsm) {
-    ArrayList<XFormFieldImpl> fields=new ArrayList<XFormFieldImpl>();
-    XFormFieldImpl innerfield=new XFormFieldImpl("name");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.addValue(room.getNaturalLanguageName());
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("subject");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.addValue(room.getSubject());
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("num_users");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.addValue(String.valueOf(room.getOccupantsCount()));
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("num_max_users");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.addValue(String.valueOf(room.getMaxUsers()));
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("is_password_protected");
-    innerfield.setType(FormField.TYPE_BOOLEAN);
-    innerfield.addValue(Boolean.toString(room.isPasswordProtected()));
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("is_member_only");
-    innerfield.setType(FormField.TYPE_BOOLEAN);
-    innerfield.addValue(Boolean.toString(room.isMembersOnly()));
-    fields.add(innerfield);
-    innerfield=new XFormFieldImpl("jid");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.addValue(room.getRole().getRoleAddress().toString());
-    fields.add(innerfield);
+    final Map<String,Object> fields=new HashMap<String,Object>();
+    fields.put("name",room.getNaturalLanguageName());
+    fields.put("subject",room.getSubject());
+    fields.put("num_users",room.getOccupantsCount());
+    fields.put("num_max_users",room.getMaxUsers());
+    fields.put("is_password_protected",room.isPasswordProtected());
+    fields.put("is_member_only",room.isMembersOnly());
+    fields.put("jid",room.getRole().getRoleAddress().toString());
     resultform.addItemFields(fields);
     atLeastoneResult=true;
   }
   if (atLeastoneResult) {
-    final FormField rffName=new XFormFieldImpl("name");
-    rffName.setLabel("Name");
-    resultform.addReportedField(rffName);
-    final FormField rffSubject=new XFormFieldImpl("subject");
-    rffSubject.setLabel("Subject");
-    resultform.addReportedField(rffSubject);
-    final FormField rffNumUsers=new XFormFieldImpl("num_users");
-    rffNumUsers.setLabel("Number of users");
-    resultform.addReportedField(rffNumUsers);
-    final FormField rffNumMaxUsers=new XFormFieldImpl("num_max_users");
-    rffNumMaxUsers.setLabel("Max number allowed of users");
-    resultform.addReportedField(rffNumMaxUsers);
-    final FormField rffPasswordProtected=new XFormFieldImpl("is_password_protected");
-    rffPasswordProtected.setLabel("Is a password protected room.");
-    resultform.addReportedField(rffPasswordProtected);
-    final FormField rffJID=new XFormFieldImpl("jid");
-    rffJID.setLabel("JID");
-    resultform.addReportedField(rffJID);
-    FormField innerfield=new XFormFieldImpl("is_member_only");
-    innerfield.setType(FormField.TYPE_TEXT_SINGLE);
-    innerfield.setLabel("Is a member only room.");
-    resultform.addReportedField(innerfield);
-    res.add(resultform.asXMLElement());
+    resultform.addReportedField("name","Name",FormField.Type.text_single);
+    resultform.addReportedField("subject","Subject",FormField.Type.text_single);
+    resultform.addReportedField("num_users","Number of users",FormField.Type.text_single);
+    resultform.addReportedField("num_max_users","Max number allowed of users",FormField.Type.text_single);
+    resultform.addReportedField("is_password_protected","Is a password protected room.",FormField.Type.boolean_type);
+    resultform.addReportedField("is_member_only","Is a member only room.",FormField.Type.boolean_type);
+    resultform.addReportedField("jid","JID",FormField.Type.text_single);
   }
   if (applyRSM) {
     res.add(searchResults.generateSetElementFromResults(mucrsm));
