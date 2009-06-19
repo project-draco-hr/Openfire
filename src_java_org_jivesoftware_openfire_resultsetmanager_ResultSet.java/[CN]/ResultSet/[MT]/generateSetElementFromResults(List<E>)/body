@@ -1,0 +1,14 @@
+{
+  if (returnedResults == null) {
+    throw new IllegalArgumentException("Argument 'returnedResults' cannot be null.");
+  }
+  final Element setElement=DocumentHelper.createElement(QName.get("set",ResultSet.NAMESPACE_RESULT_SET_MANAGEMENT));
+  setElement.addElement("count").setText(String.valueOf(size()));
+  if (returnedResults.size() > 0) {
+    final Element firstElement=setElement.addElement("first");
+    firstElement.addText(returnedResults.get(0).getUID());
+    firstElement.addAttribute("index",String.valueOf(indexOf(returnedResults.get(0))));
+    setElement.addElement("last").addText(returnedResults.get(returnedResults.size() - 1).getUID());
+  }
+  return setElement;
+}
