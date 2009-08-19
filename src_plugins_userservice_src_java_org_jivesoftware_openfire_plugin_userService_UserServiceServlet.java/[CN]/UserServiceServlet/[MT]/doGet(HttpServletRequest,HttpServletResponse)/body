@@ -34,7 +34,14 @@
     replyError("RequestNotAuthorised",response,out);
     return;
   }
+  if (username == null) {
+    replyError("IllegalArgumentException",response,out);
+    return;
+  }
   try {
+    username=username.trim().toLowerCase();
+    username=JID.escapeNode(username);
+    username=Stringprep.nodeprep(username);
     if ("add".equals(type)) {
       plugin.createUser(username,password,name,email,groupNames);
       replyMessage("ok",response,out);
