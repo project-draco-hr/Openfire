@@ -51,6 +51,7 @@
       loadSubscriptions(service,nodes,rs);
     }
     rs.close();
+    pstmt.close();
     pstmt=con.prepareStatement(LOAD_ALL_ITEMS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
@@ -58,6 +59,7 @@
       loadItems(nodes,rs);
     }
     rs.close();
+    pstmt.close();
   }
  catch (  SQLException sqle) {
     Log.error(sqle);
