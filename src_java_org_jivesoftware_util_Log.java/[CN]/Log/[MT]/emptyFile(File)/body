@@ -1,0 +1,20 @@
+{
+  BufferedWriter out=null;
+  try {
+    out=new BufferedWriter(new FileWriter(logFile));
+    out.write("");
+  }
+ catch (  IOException ex) {
+    Log.warn("Could not empty file " + logFile.getName(),ex);
+  }
+ finally {
+    if (out != null) {
+      try {
+        out.close();
+      }
+ catch (      IOException ex) {
+        Log.warn("Could not close file.",ex);
+      }
+    }
+  }
+}

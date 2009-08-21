@@ -1,4 +1,10 @@
 {
-  JiveGlobals.setXMLProperty("log.debug.enabled",Boolean.toString(enabled));
-  debugEnabled=enabled;
+  final org.apache.log4j.Level newLevel;
+  if (enabled) {
+    newLevel=org.apache.log4j.Level.ALL;
+  }
+ else {
+    newLevel=org.apache.log4j.Level.INFO;
+  }
+  org.apache.log4j.LogManager.getRootLogger().setLevel(newLevel);
 }
