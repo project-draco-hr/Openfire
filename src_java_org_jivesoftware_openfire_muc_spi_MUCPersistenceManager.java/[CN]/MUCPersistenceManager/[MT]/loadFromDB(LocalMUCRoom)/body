@@ -2,9 +2,11 @@
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
+    Long serviceID=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServiceID(room.getMUCService().getServiceName());
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_ROOM);
-    pstmt.setString(1,room.getName());
+    pstmt.setLong(1,serviceID);
+    pstmt.setString(2,room.getName());
     ResultSet rs=pstmt.executeQuery();
     if (!rs.next()) {
       throw new IllegalArgumentException("Room " + room.getName() + " was not found in the database.");
