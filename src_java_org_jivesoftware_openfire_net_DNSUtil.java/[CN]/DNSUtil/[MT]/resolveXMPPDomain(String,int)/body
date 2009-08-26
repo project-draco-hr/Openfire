@@ -8,17 +8,15 @@
       return results;
     }
   }
-  try {
-    results=srvLookup("_xmpp-server._tcp." + domain);
-  }
- catch (  Exception e) {
-    try {
-      results=srvLookup("_jabber._tcp." + domain);
-    }
- catch (    Exception e2) {
-    }
-  }
+  results=srvLookup("_xmpp-server._tcp." + domain);
   if (results == null || results.isEmpty()) {
+    results=srvLookup("_jabber._tcp." + domain);
+  }
+  if (results == null) {
+    results=new ArrayList<HostAddress>();
+    results.add(new HostAddress(domain,defaultPort));
+  }
+ else   if (results.isEmpty()) {
     results.add(new HostAddress(domain,defaultPort));
   }
   return results;
