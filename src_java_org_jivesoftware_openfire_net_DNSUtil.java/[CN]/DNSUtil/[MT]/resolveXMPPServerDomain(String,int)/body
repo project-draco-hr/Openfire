@@ -1,35 +1,3 @@
 {
-  if (dnsOverride != null) {
-    HostAddress hostAddress=dnsOverride.get(domain);
-    if (hostAddress != null) {
-      return hostAddress;
-    }
-  }
-  if (context == null) {
-    return new HostAddress(domain,defaultPort);
-  }
-  String host=domain;
-  int port=defaultPort;
-  try {
-    Attributes dnsLookup=context.getAttributes("_xmpp-server._tcp." + domain,new String[]{"SRV"});
-    String srvRecord=(String)dnsLookup.get("SRV").get();
-    String[] srvRecordEntries=srvRecord.split(" ");
-    port=Integer.parseInt(srvRecordEntries[srvRecordEntries.length - 2]);
-    host=srvRecordEntries[srvRecordEntries.length - 1];
-  }
- catch (  Exception e) {
-    try {
-      Attributes dnsLookup=context.getAttributes("_jabber._tcp." + domain,new String[]{"SRV"});
-      String srvRecord=(String)dnsLookup.get("SRV").get();
-      String[] srvRecordEntries=srvRecord.split(" ");
-      port=Integer.parseInt(srvRecordEntries[srvRecordEntries.length - 2]);
-      host=srvRecordEntries[srvRecordEntries.length - 1];
-    }
- catch (    Exception e2) {
-    }
-  }
-  if (host.endsWith(".")) {
-    host=host.substring(0,host.length() - 1);
-  }
-  return new HostAddress(host,port);
+  return resolveXMPPDomain(domain,defaultPort).get(0);
 }

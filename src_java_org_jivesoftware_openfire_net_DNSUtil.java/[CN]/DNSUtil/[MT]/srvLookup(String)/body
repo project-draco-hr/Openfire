@@ -1,0 +1,12 @@
+{
+  Attributes dnsLookup=context.getAttributes(lookup,new String[]{"SRV"});
+  Attribute srvRecords=dnsLookup.get("SRV");
+  HostAddress[] hosts=new WeightedHostAddress[srvRecords.size()];
+  for (int i=0; i < srvRecords.size(); i++) {
+    hosts[i]=new WeightedHostAddress(((String)srvRecords.get(i)).split(" "));
+  }
+  if (srvRecords.size() > 1) {
+    Arrays.sort(hosts,new SrvRecordWeightedPriorityComparator());
+  }
+  return Arrays.asList(hosts);
+}

@@ -2,13 +2,22 @@
   String realHostname=null;
   int realPort=port;
   try {
-    DNSUtil.HostAddress address=DNSUtil.resolveXMPPServerDomain(hostname,port);
-    realHostname=address.getHost();
-    realPort=address.getPort();
-    Log.debug("ServerDialback: OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
     Socket socket=new Socket();
-    socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
-    Log.debug("ServerDialback: OS - Connection to " + hostname + ":"+ port+ " successful");
+    List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,port);
+    for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
+      try {
+        DNSUtil.HostAddress address=it.next();
+        realHostname=address.getHost();
+        realPort=address.getPort();
+        Log.debug("ServerDialback: OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
+        socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
+        Log.debug("ServerDialback: OS - Connection to " + hostname + ":"+ port+ " successful");
+        break;
+      }
+ catch (      Exception e) {
+        Log.warn("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+      }
+    }
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     StringBuilder stream=new StringBuilder();
     stream.append("<stream:stream");
