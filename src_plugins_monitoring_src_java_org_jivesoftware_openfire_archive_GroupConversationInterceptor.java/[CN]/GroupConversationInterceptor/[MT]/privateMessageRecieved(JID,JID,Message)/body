@@ -1,0 +1,11 @@
+{
+  if (message.getBody() != null) {
+    if (ClusterManager.isSeniorClusterMember()) {
+      conversationManager.processMessage(fromJID,toJID,message.getBody(),new Date());
+    }
+ else {
+      ConversationEventsQueue eventsQueue=conversationManager.getConversationEventsQueue();
+      eventsQueue.addChatEvent(conversationManager.getConversationKey(fromJID,toJID),ConversationEvent.chatMessageReceived(toJID,fromJID,conversationManager.isMessageArchivingEnabled() ? message.getBody() : null,new Date()));
+    }
+  }
+}
