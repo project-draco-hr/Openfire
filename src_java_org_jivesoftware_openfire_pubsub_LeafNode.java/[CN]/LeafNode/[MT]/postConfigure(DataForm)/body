@@ -11,10 +11,8 @@
     }
   }
 synchronized (publishedItems) {
-    while (!publishedItems.isEmpty() && publishedItems.size() > maxPublishedItems) {
-      PublishedItem removedItem=publishedItems.remove(0);
-      itemsByID.remove(removedItem.getID());
-      service.queueItemToRemove(removedItem);
+    while (!publishedItems.isEmpty() && isMaxItemsReached()) {
+      removeItem(0);
     }
   }
 }

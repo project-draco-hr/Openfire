@@ -10,18 +10,20 @@
       payload=entries.isEmpty() ? null : (Element)entries.get(0);
 synchronized (publishedItems) {
         if (itemID == null) {
-          itemID=StringUtils.randomString(15);
-        }
-        while (itemsByID.get(itemID) != null) {
-          itemID=StringUtils.randomString(15);
+          do {
+            itemID=StringUtils.randomString(15);
+          }
+ while (itemsByID.containsKey(itemID));
         }
         newItem=new PublishedItem(this,publisher,itemID,new Date());
         newItem.setPayload(payload);
         newPublishedItems.add(newItem);
-        while (!publishedItems.isEmpty() && publishedItems.size() >= maxPublishedItems) {
-          PublishedItem removedItem=publishedItems.remove(0);
-          itemsByID.remove(removedItem.getID());
-          service.queueItemToRemove(removedItem);
+        PublishedItem duplicate=itemsByID.get(newItem.getID());
+        if (duplicate != null) {
+          removeItem(findIndexById(duplicate.getID()));
+        }
+        while (!publishedItems.isEmpty() && isMaxItemsReached()) {
+          removeItem(0);
         }
         addPublishedItem(newItem);
         service.queueItemToAdd(newItem);
