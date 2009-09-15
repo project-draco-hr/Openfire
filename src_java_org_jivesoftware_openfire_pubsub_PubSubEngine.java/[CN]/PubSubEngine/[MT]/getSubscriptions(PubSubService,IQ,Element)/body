@@ -1,8 +1,15 @@
 {
   JID owner=new JID(iq.getFrom().toBareJID());
+  Element subscriptionsElement=childElement.element("subscriptions");
+  String nodeID=subscriptionsElement.attributeValue("node");
   Collection<NodeSubscription> subscriptions=new ArrayList<NodeSubscription>();
-  for (  Node node : service.getNodes()) {
-    subscriptions.addAll(node.getSubscriptions(owner));
+  if (nodeID == null) {
+    for (    Node node : service.getNodes()) {
+      subscriptions.addAll(node.getSubscriptions(owner));
+    }
+  }
+ else {
+    subscriptions.addAll(service.getNode(nodeID).getSubscriptions(owner));
   }
   IQ reply=IQ.createResultIQ(iq);
   Element replyChildElement=childElement.createCopy();
@@ -12,7 +19,7 @@
     Element subElement=affiliationsElement.addElement("subscription");
     Node node=subscription.getNode();
     NodeAffiliate nodeAffiliate=subscription.getAffiliate();
-    if (!node.isRootCollectionNode()) {
+    if (!node.isRootCollectionNode() && (nodeID == null)) {
       subElement.addAttribute("node",node.getNodeID());
     }
     subElement.addAttribute("jid",subscription.getJID().toString());
