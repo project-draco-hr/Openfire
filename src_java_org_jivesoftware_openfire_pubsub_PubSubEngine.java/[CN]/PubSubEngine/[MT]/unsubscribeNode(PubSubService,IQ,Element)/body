@@ -1,6 +1,12 @@
 {
   String nodeID=unsubscribeElement.attributeValue("node");
   String subID=unsubscribeElement.attributeValue("subid");
+  String jidAttribute=unsubscribeElement.attributeValue("jid");
+  if (jidAttribute == null) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("jid-required","http://jabber.org/protocol/pubsub#errors"));
+    sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
+    return;
+  }
   Node node;
   if (nodeID == null) {
     if (service.isCollectionNodesSupported()) {
@@ -20,7 +26,8 @@
     }
   }
   NodeSubscription subscription;
-  if (node.isMultipleSubscriptionsEnabled()) {
+  JID owner=new JID(jidAttribute);
+  if (node.isMultipleSubscriptionsEnabled() && node.getSubscriptions(owner).size() > 1) {
     if (subID == null) {
       Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
       sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
@@ -36,12 +43,6 @@
     }
   }
  else {
-    String jidAttribute=unsubscribeElement.attributeValue("jid");
-    if (jidAttribute == null) {
-      Element pubsubError=DocumentHelper.createElement(QName.get("jid-required","http://jabber.org/protocol/pubsub#errors"));
-      sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
-      return;
-    }
     JID subscriberJID=new JID(jidAttribute);
     subscription=node.getSubscription(subscriberJID);
     if (subscription == null) {
@@ -55,7 +56,6 @@
     sendErrorPacket(iq,PacketError.Condition.not_allowed,null);
     return;
   }
-  JID owner=new JID(from.toBareJID());
   if (!subscription.canModify(from) && !subscription.canModify(owner)) {
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;

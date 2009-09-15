@@ -33,7 +33,7 @@
     return;
   }
   NodeSubscription subscription=null;
-  if (node.isMultipleSubscriptionsEnabled() && !node.getSubscriptions(owner).isEmpty()) {
+  if (node.isMultipleSubscriptionsEnabled() && (node.getSubscriptions(owner).size() > 1)) {
     if (subID == null) {
       Element pubsubError=DocumentHelper.createElement(QName.get("subid-required","http://jabber.org/protocol/pubsub#errors"));
       sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
