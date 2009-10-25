@@ -91,6 +91,15 @@
     }
     for (int i=currentVersion + 1; i <= requiredVersion; i++) {
       InputStream resource=getUpgradeResource(resourceLoader,i,schemaKey);
+      try {
+        if (i == 21 && schemaKey.equals("openfire")) {
+          OF33.executeFix(con);
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e);
+        return false;
+      }
       if (resource == null) {
         continue;
       }
