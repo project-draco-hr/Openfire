@@ -1,0 +1,25 @@
+{
+  InvocationService service=com.tangosol.net.CacheFactory.getInvocationService("OpenFire Cluster Service");
+  Map results=service.query(new AbstractInvocable(){
+    public void run(){
+      Runtime runtime=Runtime.getRuntime();
+      long free=runtime.freeMemory();
+      long total=runtime.totalMemory();
+      long max=runtime.maxMemory();
+      long time=System.currentTimeMillis();
+      com.tangosol.coherence.component.net.Cluster cluster=(com.tangosol.coherence.component.net.Cluster)((SafeCluster)com.tangosol.net.CacheFactory.ensureCluster()).getCluster();
+      long[] publisherStats=new long[3];
+      publisherStats[STATS_CPU_TIME]=cluster.getPublisher().getStatsCpu();
+      publisherStats[STATS_SENT]=cluster.getPublisher().getStatsSent();
+      publisherStats[STATS_RESENT]=cluster.getPublisher().getStatsResent();
+      long[] receiverStats=new long[3];
+      receiverStats[STATS_CPU_TIME]=-1L;
+      receiverStats[STATS_SENT]=cluster.getReceiver().getStatsReceived();
+      receiverStats[STATS_RESENT]=cluster.getReceiver().getStatsRepeated();
+      NodeInfo nodeInfo=new NodeInfo(free,total,max,time,publisherStats,receiverStats);
+      setResult(nodeInfo);
+    }
+  }
+,null);
+  return results;
+}

@@ -1,0 +1,20 @@
+{
+  Map<String,Collection<String>> senders=nodePresences.remove(nodeID);
+  if (senders != null) {
+    for (    Map.Entry<String,Collection<String>> entry : senders.entrySet()) {
+      String sender=entry.getKey();
+      Collection<String> receivers=entry.getValue();
+      for (      String receiver : receivers) {
+        try {
+          Presence presence=new Presence(Presence.Type.unavailable);
+          presence.setFrom(sender);
+          presence.setTo(receiver);
+          XMPPServer.getInstance().getPresenceRouter().route(presence);
+        }
+ catch (        PacketException e) {
+          Log.error(e);
+        }
+      }
+    }
+  }
+}

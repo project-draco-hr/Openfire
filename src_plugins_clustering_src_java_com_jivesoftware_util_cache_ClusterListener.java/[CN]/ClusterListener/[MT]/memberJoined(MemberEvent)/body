@@ -1,0 +1,24 @@
+{
+  if (memberEvent.isLocal()) {
+    done=false;
+    Log.info("Rejoining cluster as node: " + new UID(CacheFactory.getClusterMemberID()) + ". Senior Member: "+ (CacheFactory.isSeniorClusterMember() ? "YES" : "NO"));
+    simuateCacheInserts(C2SCache);
+    simuateCacheInserts(anonymousC2SCache);
+    simuateCacheInserts(S2SCache);
+    simuateCacheInserts(componentsCache);
+    simuateCacheInserts(componentSessionsCache);
+    simuateCacheInserts(multiplexerSessionsCache);
+    simuateCacheInserts(incomingServerSessionsCache);
+    simuateCacheInserts(directedPresencesCache);
+    XMPPServer.getInstance().setNodeID(NodeID.getInstance(CacheFactory.getClusterMemberID()));
+    ClusterManager.fireJoinedCluster(true);
+    if (CacheFactory.isSeniorClusterMember()) {
+      seniorClusterMember=true;
+      ClusterManager.fireMarkedAsSeniorClusterMember();
+    }
+  }
+ else {
+    nodePresences.put(NodeID.getInstance(memberEvent.getMember().getUid().toByteArray()),new ConcurrentHashMap<String,Collection<String>>());
+    ClusterManager.fireJoinedCluster(memberEvent.getMember().getUid().toByteArray(),true);
+  }
+}

@@ -1,0 +1,17 @@
+{
+  if (taskService != null) {
+    Set setMembers=taskService.getInfo().getServiceMembers();
+    for (Iterator it=setMembers.iterator(); it.hasNext(); ) {
+      Member member=(Member)it.next();
+      if (!Arrays.equals(member.getUid().toByteArray(),nodeID)) {
+        it.remove();
+      }
+    }
+    if (!setMembers.isEmpty()) {
+      taskService.execute(buildInvocable(task),setMembers,null);
+      return true;
+    }
+    throw new IllegalStateException("Requested node not found in cluster");
+  }
+  throw new IllegalStateException("Cluster service is not available");
+}
