@@ -1,0 +1,12 @@
+{
+  if (presence == null) {
+    return false;
+  }
+  if (hasToCheckRoleToBroadcastPresence()) {
+    Element frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
+      return false;
+    }
+  }
+  return true;
+}

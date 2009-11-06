@@ -4,7 +4,8 @@
     CacheFactory.doClusterTask(event);
   }
   try {
-    Presence presence=leaveRole.getPresence().createCopy();
+    Presence originalPresence=leaveRole.getPresence();
+    Presence presence=originalPresence.createCopy();
     presence.setType(Presence.Type.unavailable);
     presence.setStatus(null);
     Element childElement=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
@@ -16,8 +17,12 @@
       item=childElement.addElement("item");
     }
     item.addAttribute("role","none");
-    leaveRole.send(presence);
-    broadcastPresence(presence);
+    if (!shouldBroadcastPresence(originalPresence)) {
+      leaveRole.send(presence);
+    }
+ else {
+      broadcastPresence(presence);
+    }
   }
  catch (  Exception e) {
     Log.error(e);

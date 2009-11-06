@@ -2,17 +2,14 @@
   if (presence == null) {
     return;
   }
-  if (hasToCheckRoleToBroadcastPresence()) {
-    Element frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
-    if (!canBroadcastPresence(frag.element("item").attributeValue("role"))) {
-      try {
-        MUCRole occupant=getOccupant(presence.getFrom().getResource());
-        occupant.send(presence);
-      }
- catch (      UserNotFoundException e) {
-      }
-      return;
+  if (!shouldBroadcastPresence(presence)) {
+    try {
+      MUCRole occupant=getOccupant(presence.getFrom().getResource());
+      occupant.send(presence);
     }
+ catch (    UserNotFoundException e) {
+    }
+    return;
   }
   BroadcastPresenceRequest request=new BroadcastPresenceRequest(this,presence);
   CacheFactory.doClusterTask(request);
