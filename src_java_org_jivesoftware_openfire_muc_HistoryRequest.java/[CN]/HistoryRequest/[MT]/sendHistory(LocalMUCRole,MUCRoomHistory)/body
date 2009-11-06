@@ -6,7 +6,12 @@
     }
   }
  else {
+    Message changedSubject=roomHistory.getChangedSubject();
+    boolean addChangedSubject=(changedSubject != null) ? true : false;
     if (getMaxChars() == 0) {
+      if (addChangedSubject) {
+        joinRole.send(changedSubject);
+      }
       return;
     }
     Message message;
@@ -51,7 +56,15 @@ synchronized (delayedFormatter) {
           Log.error("Error parsing date from historic message",e);
         }
       }
+      if (addChangedSubject) {
+        if (changedSubject != null && changedSubject.equals(message)) {
+          addChangedSubject=false;
+        }
+      }
       historyToSend.addFirst(message);
+    }
+    if (addChangedSubject) {
+      historyToSend.addFirst(changedSubject);
     }
     for (    Object aHistoryToSend : historyToSend) {
       joinRole.send((Message)aHistoryToSend);
