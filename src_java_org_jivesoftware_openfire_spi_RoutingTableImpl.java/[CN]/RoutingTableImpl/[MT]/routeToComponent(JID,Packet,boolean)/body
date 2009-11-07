@@ -1,0 +1,41 @@
+{
+  if (!hasComponentRoute(jid) && !ExternalComponentManager.hasConfiguration(jid.getDomain())) {
+    return false;
+  }
+  RoutableChannelHandler route=localRoutingTable.getRoute(jid.getDomain());
+  if (route != null) {
+    try {
+      route.process(packet);
+      routed=true;
+    }
+ catch (    UnauthorizedException e) {
+      Log.error(e);
+    }
+  }
+ else {
+    Set<NodeID> nodes=componentsCache.get(jid.getDomain());
+    if (nodes != null) {
+      for (      NodeID nodeID : nodes) {
+        if (server.getNodeID().equals(nodeID)) {
+          try {
+            localRoutingTable.getRoute(jid.getDomain()).process(packet);
+            routed=true;
+            break;
+          }
+ catch (          UnauthorizedException e) {
+            Log.error(e);
+          }
+        }
+ else {
+          if (remotePacketRouter != null) {
+            routed=remotePacketRouter.routePacket(nodeID.toByteArray(),jid,packet);
+            if (routed) {
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  return routed;
+}

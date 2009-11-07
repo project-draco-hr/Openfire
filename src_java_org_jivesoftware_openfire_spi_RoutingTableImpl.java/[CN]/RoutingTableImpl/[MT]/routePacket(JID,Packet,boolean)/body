@@ -1,101 +1,13 @@
 {
   boolean routed=false;
   if (serverName.equals(jid.getDomain())) {
-    if (jid.getResource() == null) {
-      if (packet instanceof Message) {
-        routed=routeToBareJID(jid,(Message)packet);
-      }
- else {
-        throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet);
-      }
-    }
- else {
-      ClientRoute clientRoute=usersCache.get(jid.toString());
-      if (clientRoute == null) {
-        clientRoute=anonymousUsersCache.get(jid.toString());
-      }
-      if (clientRoute != null) {
-        if (!clientRoute.isAvailable() && routeOnlyAvailable(packet,fromServer) && !presenceUpdateHandler.hasDirectPresence(packet.getTo(),packet.getFrom())) {
-          routed=false;
-        }
- else {
-          if (server.getNodeID().equals(clientRoute.getNodeID())) {
-            try {
-              localRoutingTable.getRoute(jid.toString()).process(packet);
-              routed=true;
-            }
- catch (            UnauthorizedException e) {
-              Log.error(e);
-            }
-          }
- else {
-            if (remotePacketRouter != null) {
-              routed=remotePacketRouter.routePacket(clientRoute.getNodeID().toByteArray(),jid,packet);
-            }
-          }
-        }
-      }
-    }
+    routed=routeToLocalDomain(jid,packet,fromServer);
   }
- else   if (jid.getDomain().contains(serverName) && (hasComponentRoute(jid) || ExternalComponentManager.hasConfiguration(jid.getDomain()))) {
-    RoutableChannelHandler route=localRoutingTable.getRoute(jid.getDomain());
-    if (route != null) {
-      try {
-        route.process(packet);
-        routed=true;
-      }
- catch (      UnauthorizedException e) {
-        Log.error(e);
-      }
-    }
- else {
-      Set<NodeID> nodes=componentsCache.get(jid.getDomain());
-      if (nodes != null) {
-        for (        NodeID nodeID : nodes) {
-          if (server.getNodeID().equals(nodeID)) {
-            try {
-              localRoutingTable.getRoute(jid.getDomain()).process(packet);
-              routed=true;
-              break;
-            }
- catch (            UnauthorizedException e) {
-              Log.error(e);
-            }
-          }
- else {
-            if (remotePacketRouter != null) {
-              routed=remotePacketRouter.routePacket(nodeID.toByteArray(),jid,packet);
-              if (routed) {
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
+ else   if (jid.getDomain().contains(serverName)) {
+    routed=routeToComponent(jid,packet,routed);
   }
  else {
-    byte[] nodeID=serversCache.get(jid.getDomain());
-    if (nodeID != null) {
-      if (server.getNodeID().equals(nodeID)) {
-        try {
-          localRoutingTable.getRoute(jid.getDomain()).process(packet);
-          routed=true;
-        }
- catch (        UnauthorizedException e) {
-          Log.error(e);
-        }
-      }
- else {
-        if (remotePacketRouter != null) {
-          routed=remotePacketRouter.routePacket(nodeID,jid,packet);
-        }
-      }
-    }
- else {
-      OutgoingSessionPromise.getInstance().process(packet);
-      routed=true;
-    }
+    routed=routeToRemoteDomain(jid,packet,routed);
   }
   if (!routed) {
     if (Log.isDebugEnabled()) {

@@ -1,0 +1,39 @@
+{
+  boolean routed=false;
+  if (jid.getResource() == null) {
+    if (packet instanceof Message) {
+      routed=routeToBareJID(jid,(Message)packet);
+    }
+ else {
+      throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet);
+    }
+  }
+ else {
+    ClientRoute clientRoute=usersCache.get(jid.toString());
+    if (clientRoute == null) {
+      clientRoute=anonymousUsersCache.get(jid.toString());
+    }
+    if (clientRoute != null) {
+      if (!clientRoute.isAvailable() && routeOnlyAvailable(packet,fromServer) && !presenceUpdateHandler.hasDirectPresence(packet.getTo(),packet.getFrom())) {
+        routed=false;
+      }
+ else {
+        if (server.getNodeID().equals(clientRoute.getNodeID())) {
+          try {
+            localRoutingTable.getRoute(jid.toString()).process(packet);
+            routed=true;
+          }
+ catch (          UnauthorizedException e) {
+            Log.error(e);
+          }
+        }
+ else {
+          if (remotePacketRouter != null) {
+            routed=remotePacketRouter.routePacket(clientRoute.getNodeID().toByteArray(),jid,packet);
+          }
+        }
+      }
+    }
+  }
+  return routed;
+}

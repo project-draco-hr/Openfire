@@ -1,0 +1,24 @@
+{
+  byte[] nodeID=serversCache.get(jid.getDomain());
+  if (nodeID != null) {
+    if (server.getNodeID().equals(nodeID)) {
+      try {
+        localRoutingTable.getRoute(jid.getDomain()).process(packet);
+        routed=true;
+      }
+ catch (      UnauthorizedException e) {
+        Log.error(e);
+      }
+    }
+ else {
+      if (remotePacketRouter != null) {
+        routed=remotePacketRouter.routePacket(nodeID,jid,packet);
+      }
+    }
+  }
+ else {
+    OutgoingSessionPromise.getInstance().process(packet);
+    routed=true;
+  }
+  return routed;
+}
