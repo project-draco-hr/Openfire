@@ -21,7 +21,7 @@
     room.setSavedToDB(false);
   }
  catch (  SQLException sqle) {
-    Log.error(sqle);
+    Log.error(sqle.getMessage(),sqle);
     abortTransaction=true;
   }
  finally {
@@ -29,7 +29,7 @@
       if (pstmt != null)       pstmt.close();
     }
  catch (    Exception e) {
-      Log.error(e);
+      Log.error(e.getMessage(),e);
     }
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }

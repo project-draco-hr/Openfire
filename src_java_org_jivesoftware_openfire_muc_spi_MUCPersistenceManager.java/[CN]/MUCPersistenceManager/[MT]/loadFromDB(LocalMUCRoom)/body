@@ -93,7 +93,7 @@ Log.error("Unkown affiliation value " + affiliation + " for user "+ jid+ " in pe
 }
 }
  catch (Exception e) {
-Log.error(e);
+Log.error(e.getMessage(),e);
 }
 }
 rs.close();
@@ -106,7 +106,7 @@ try {
 room.addMember(rs.getString(1),rs.getString(2),room.getRole());
 }
  catch (Exception e) {
-Log.error(e);
+Log.error(e.getMessage(),e);
 }
 }
 rs.close();
@@ -116,20 +116,20 @@ room.setEmptyDate(new Date());
 }
 }
  catch (SQLException sqle) {
-Log.error(sqle);
+Log.error(sqle.getMessage(),sqle);
 }
  finally {
 try {
 if (pstmt != null) pstmt.close();
 }
  catch (Exception e) {
-Log.error(e);
+Log.error(e.getMessage(),e);
 }
 try {
 if (con != null) con.close();
 }
  catch (Exception e) {
-Log.error(e);
+Log.error(e.getMessage(),e);
 }
 }
 }

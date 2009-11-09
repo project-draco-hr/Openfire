@@ -20,7 +20,7 @@
     pstmt.executeUpdate();
   }
  catch (  SQLException e) {
-    Log.error(e);
+    Log.error(e.getMessage(),e);
     abortTransaction=true;
   }
  finally {
@@ -30,7 +30,7 @@
       }
     }
  catch (    Exception e) {
-      Log.error(e);
+      Log.error(e.getMessage(),e);
     }
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }

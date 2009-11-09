@@ -27,7 +27,7 @@
     store=session.getStore(useSSL ? "pop3s" : "pop3");
   }
  catch (  NoSuchProviderException e) {
-    Log.error(e);
+    Log.error(e.getMessage(),e);
     throw new UnauthorizedException(e);
   }
   try {
@@ -39,7 +39,7 @@
     }
   }
  catch (  Exception e) {
-    Log.error(e);
+    Log.error(e.getMessage(),e);
     throw new UnauthorizedException(e);
   }
   if (!store.isConnected()) {

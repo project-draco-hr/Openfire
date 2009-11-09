@@ -207,7 +207,7 @@ catch (    IllegalArgumentException e) {
       reply=IQ.createResultIQ(packet);
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.not_acceptable);
-      Log.warn(e);
+      Log.warn(e.getMessage(),e);
     }
 catch (    UnsupportedOperationException e) {
       reply=IQ.createResultIQ(packet);
@@ -218,7 +218,7 @@ catch (    Exception e) {
       reply=IQ.createResultIQ(packet);
       reply.setChildElement(packet.getChildElement().createCopy());
       reply.setError(PacketError.Condition.internal_server_error);
-      Log.error(e);
+      Log.error(e.getMessage(),e);
     }
   }
   if (reply != null) {

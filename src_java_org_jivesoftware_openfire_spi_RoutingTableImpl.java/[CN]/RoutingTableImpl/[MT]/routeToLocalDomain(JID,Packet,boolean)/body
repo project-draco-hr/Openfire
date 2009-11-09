@@ -5,7 +5,7 @@
       routed=routeToBareJID(jid,(Message)packet);
     }
  else {
-      throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet);
+      throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet.toXML());
     }
   }
  else {
@@ -15,6 +15,7 @@
     }
     if (clientRoute != null) {
       if (!clientRoute.isAvailable() && routeOnlyAvailable(packet,fromServer) && !presenceUpdateHandler.hasDirectPresence(packet.getTo(),packet.getFrom())) {
+        Log.debug("Unable to route packet. Packet should only be sent to available sessions and the route is not available. {} ",packet.toXML());
         routed=false;
       }
  else {
@@ -24,7 +25,7 @@
             routed=true;
           }
  catch (          UnauthorizedException e) {
-            Log.error(e);
+            Log.error("Unable to route packet " + packet.toXML(),e);
           }
         }
  else {
