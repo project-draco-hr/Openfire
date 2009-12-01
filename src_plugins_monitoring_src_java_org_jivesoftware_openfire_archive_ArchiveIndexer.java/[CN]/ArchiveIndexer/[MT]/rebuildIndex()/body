@@ -28,7 +28,7 @@
         }
       }
  catch (      SQLException sqle) {
-        Log.error(sqle);
+        Log.error(sqle.getMessage(),sqle);
       }
  finally {
         DbConnectionManager.closeConnection(rs,pstmt,con);
@@ -46,7 +46,7 @@
           }
         }
  catch (        IOException ioe) {
-          Log.error(ioe);
+          Log.error(ioe.getMessage(),ioe);
         }
  finally {
           if (writer != null) {
@@ -54,7 +54,7 @@
               writer.close();
             }
  catch (            Exception e) {
-              Log.error(e);
+              Log.error(e.getMessage(),e);
             }
           }
           writerLock.unlock();

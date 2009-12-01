@@ -1,10 +1,10 @@
 {
-  final Iterator hitsIterator=hits.iterator();
+  final Iterator<Hit> hitsIterator=hits.iterator();
   for (int i=0; i < index; i++) {
     hitsIterator.next();
   }
-  return new Iterator(){
-    private Object nextElement=null;
+  return new Iterator<Conversation>(){
+    private Conversation nextElement=null;
     public boolean hasNext(){
       if (nextElement == null) {
         nextElement=getNextElement();
@@ -14,8 +14,8 @@
       }
       return true;
     }
-    public Object next(){
-      Object element;
+    public Conversation next(){
+      Conversation element;
       if (nextElement != null) {
         element=nextElement;
         nextElement=null;
@@ -31,7 +31,7 @@
     public void remove(){
       throw new UnsupportedOperationException();
     }
-    private Object getNextElement(){
+    private Conversation getNextElement(){
       if (!hitsIterator.hasNext()) {
         return null;
       }
@@ -40,13 +40,13 @@
       }
       while (hitsIterator.hasNext()) {
         try {
-          Hit hit=(Hit)hitsIterator.next();
+          Hit hit=hitsIterator.next();
           index++;
           long conversationID=Long.parseLong(hit.get("conversationID"));
           return new Conversation(conversationManager,conversationID);
         }
  catch (        Exception e) {
-          Log.error(e);
+          Log.error(e.getMessage(),e);
         }
       }
       return null;
