@@ -3,17 +3,17 @@
   UserManager userManager=UserManager.getInstance();
   RosterItemProvider rosterItemProvider=RosterItemProvider.getInstance();
   Element users=document.getRootElement();
-  Iterator usersIter=users.elementIterator("User");
+  Iterator<Element> usersIter=users.elementIterator("User");
   while (usersIter.hasNext()) {
-    Element user=(Element)usersIter.next();
+    Element user=usersIter.next();
     String userName=null;
     String password=null;
     String email=null;
     String name=null;
     List<RosterItem> rosterItems=new ArrayList<RosterItem>();
-    Iterator userElements=user.elementIterator();
+    Iterator<Element> userElements=user.elementIterator();
     while (userElements.hasNext()) {
-      Element userElement=(Element)userElements.next();
+      Element userElement=userElements.next();
       String nameElement=userElement.getName();
       if ("Username".equals(nameElement)) {
         userName=userElement.getText();
@@ -28,18 +28,18 @@
         email=userElement.getText();
       }
  else       if ("Roster".equals(nameElement)) {
-        Iterator rosterIter=userElement.elementIterator("Item");
+        Iterator<Element> rosterIter=userElement.elementIterator("Item");
         while (rosterIter.hasNext()) {
-          Element rosterElement=(Element)rosterIter.next();
+          Element rosterElement=rosterIter.next();
           String jid=rosterElement.attributeValue("jid");
           String askstatus=rosterElement.attributeValue("askstatus");
           String recvstatus=rosterElement.attributeValue("recvstatus");
           String substatus=rosterElement.attributeValue("substatus");
           String nickname=rosterElement.attributeValue("name");
           List<String> groups=new ArrayList<String>();
-          Iterator groupIter=rosterElement.elementIterator("Group");
+          Iterator<Element> groupIter=rosterElement.elementIterator("Group");
           while (groupIter.hasNext()) {
-            Element group=(Element)groupIter.next();
+            Element group=groupIter.next();
             groups.add(group.getText());
           }
           if (previousDomain != null) {
