@@ -18,7 +18,7 @@
       Properties props=new Properties();
       try {
         props.load(new FileInputStream(file));
-        Enumeration properties=props.propertyNames();
+        Enumeration<?> properties=props.propertyNames();
         while (properties.hasMoreElements()) {
           String key=(String)properties.nextElement();
           String value=props.getProperty(key);
@@ -26,15 +26,14 @@
         }
       }
  catch (      IOException e) {
-        Log.error(e);
+        Log.error(e.getMessage(),e);
       }
     }
   }
   final Element genericSetting=reply.setChildElement("generic-metadata","http://jivesoftware.com/protocol/workgroup");
-  final Iterator mappings=map.keySet().iterator();
-  while (mappings.hasNext()) {
-    String key=(String)mappings.next();
-    String value=map.get(key);
+  for (  Map.Entry<String,String> entry : map.entrySet()) {
+    String key=entry.getKey();
+    String value=entry.getValue();
     Element element=genericSetting.addElement("entry");
     element.addElement("name").setText(key);
     element.addElement("value").setText(value);

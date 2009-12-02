@@ -17,15 +17,15 @@
       }
     }
  catch (    SQLException sqle) {
-      Log.error(sqle);
+      Log.error(sqle.getMessage(),sqle);
     }
  finally {
       DbConnectionManager.closeConnection(rs,pstmt,con);
     }
     if (transcriptXML != null) {
       Document element=DocumentHelper.parseText(transcriptXML);
-      for (Iterator it=element.getRootElement().elementIterator(); it.hasNext(); ) {
-        Element packet=(Element)it.next();
+      for (Iterator<Element> it=element.getRootElement().elementIterator(); it.hasNext(); ) {
+        Element packet=it.next();
         transcript.add(packet.createCopy());
       }
     }

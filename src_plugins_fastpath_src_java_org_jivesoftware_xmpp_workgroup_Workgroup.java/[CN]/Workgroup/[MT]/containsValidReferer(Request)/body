@@ -3,13 +3,13 @@
     final DbProperties props=getProperties();
     String validDomains=props.getProperty("validDomains");
     if (ModelUtil.hasLength(validDomains)) {
-      Map metadata=request.getMetaData();
-      List list=(List)metadata.get("referer");
+      Map<String,List<String>> metadata=request.getMetaData();
+      List<String> list=metadata.get("referer");
       if (metadata.containsKey("referer")) {
         metadata.remove("referer");
       }
       if (list != null && list.size() > 0) {
-        String referer=(String)list.get(0);
+        String referer=list.get(0);
         URL refererURL=new URL(referer);
         String domain=refererURL.getHost().toLowerCase();
         StringTokenizer tkn=new StringTokenizer(validDomains,",");
@@ -29,7 +29,7 @@
     }
   }
  catch (  Exception e) {
-    Log.error(e);
+    Log.error(e.getMessage(),e);
   }
   return true;
 }

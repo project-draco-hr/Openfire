@@ -1,8 +1,7 @@
 {
   if (packet.getType() == IQ.Type.result) {
-    List items=packet.getChildElement().elements("item");
-    for (Iterator it=items.iterator(); it.hasNext(); ) {
-      Element item=(Element)it.next();
+    List<Element> items=packet.getChildElement().elements("item");
+    for (    Element item : items) {
       String jid=item.attributeValue("jid");
       IQ disco=new IQ(IQ.Type.get);
       disco.setTo(jid);

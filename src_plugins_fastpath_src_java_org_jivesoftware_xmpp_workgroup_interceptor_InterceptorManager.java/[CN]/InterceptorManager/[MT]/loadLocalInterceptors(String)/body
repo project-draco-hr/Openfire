@@ -16,7 +16,7 @@
       String className=workgroup.getProperties().getProperty(interceptorContext + "className");
       Class interceptorClass=loadClass(className);
       interceptorList.add((PacketInterceptor)interceptorClass.newInstance());
-      Map interceptorProps=new HashMap();
+      Map<String,String> interceptorProps=new HashMap<String,String>();
       for (      String key : getChildrenPropertyNames(interceptorContext + "properties",workgroup.getProperties().getPropertyNames())) {
         String value=workgroup.getProperties().getProperty(key);
         interceptorProps.put(key.substring(key.lastIndexOf(".") + 1),value);

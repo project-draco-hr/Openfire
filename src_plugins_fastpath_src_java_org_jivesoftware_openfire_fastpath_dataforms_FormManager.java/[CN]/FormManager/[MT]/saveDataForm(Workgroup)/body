@@ -48,16 +48,12 @@
       field.setType(FormField.Type.text_private);
     }
     if (elem.getAnswers().size() > 0 && elem.getAnswerType() != WorkgroupForm.FormEnum.hidden) {
-      Iterator iter=elem.getAnswers().iterator();
-      while (iter.hasNext()) {
-        String item=(String)iter.next();
+      for (      String item : elem.getAnswers()) {
         field.addOption(item,item);
       }
     }
  else     if (elem.getAnswers().size() > 0) {
-      Iterator iter=elem.getAnswers().iterator();
-      while (iter.hasNext()) {
-        String item=(String)iter.next();
+      for (      String item : elem.getAnswers()) {
         field.addValue(item);
       }
     }
@@ -71,6 +67,6 @@
     props.setProperty(context,xmlToSave);
   }
  catch (  UnauthorizedException e) {
-    Log.error(e);
+    Log.error(e.getMessage(),e);
   }
 }

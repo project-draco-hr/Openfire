@@ -10,7 +10,7 @@
     analyzerClass=getAnalyzerClass();
     words=JiveGlobals.getProperty("workgroup.search.analyzer.stopWordList");
   }
-  List stopWords=new ArrayList();
+  List<String> stopWords=new ArrayList<String>();
   if (words != null) {
     StringTokenizer st=new StringTokenizer(words,",");
     while (st.hasMoreTokens()) {
@@ -24,7 +24,7 @@
     Log.error("Error loading custom " + "search analyzer: " + analyzerClass,e);
   }
   if (analyzer == null && stopWords.size() > 0) {
-    analyzer=new StandardAnalyzer((String[])stopWords.toArray(new String[stopWords.size()]));
+    analyzer=new StandardAnalyzer(stopWords.toArray(new String[stopWords.size()]));
   }
  else   if (analyzer == null) {
     analyzer=new StandardAnalyzer();

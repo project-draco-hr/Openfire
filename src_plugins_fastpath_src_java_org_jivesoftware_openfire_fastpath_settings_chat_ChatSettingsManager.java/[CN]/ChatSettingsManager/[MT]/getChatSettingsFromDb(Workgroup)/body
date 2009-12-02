@@ -11,7 +11,6 @@
     ResultSet result=pstmt.executeQuery();
     if (result.next()) {
       do {
-        String wg=result.getString("workgroupNode");
         int type=result.getInt("type");
         String label=result.getString("label");
         String description=result.getString("description");
@@ -35,7 +34,7 @@
   }
  catch (  Exception ex) {
     cachedSettings.remove(workgroup.getJID().getNode());
-    Log.error(ex);
+    Log.error(ex.getMessage(),ex);
   }
  finally {
     DbConnectionManager.closeConnection(pstmt,con);

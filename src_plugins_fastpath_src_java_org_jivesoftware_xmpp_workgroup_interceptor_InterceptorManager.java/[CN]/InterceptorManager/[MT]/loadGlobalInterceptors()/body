@@ -7,11 +7,11 @@
       String className=JiveGlobals.getProperty(interceptorContext + "className");
       Class interceptorClass=loadClass(className);
       interceptorList.add((PacketInterceptor)interceptorClass.newInstance());
-      List props=JiveGlobals.getPropertyNames(interceptorContext + "properties");
-      Map interceptorProps=new HashMap();
+      List<String> props=JiveGlobals.getPropertyNames(interceptorContext + "properties");
+      Map<String,String> interceptorProps=new HashMap<String,String>();
       for (int k=0; k < props.size(); k++) {
-        String key=(String)props.get(k);
-        String value=JiveGlobals.getProperty((String)props.get(k));
+        String key=props.get(k);
+        String value=JiveGlobals.getProperty(props.get(k));
         interceptorProps.put(key.substring(key.lastIndexOf(".") + 1),value);
       }
       BeanUtils.setProperties(interceptorList.get(i),interceptorProps);

@@ -1,8 +1,7 @@
 {
   if (packet.getType() == IQ.Type.result) {
-    List features=packet.getChildElement().elements("feature");
-    for (Iterator it=features.iterator(); it.hasNext(); ) {
-      Element feature=(Element)it.next();
+    List<Element> features=packet.getChildElement().elements("feature");
+    for (    Element feature : features) {
       String variable=feature.attributeValue("var");
       if ("http://jabber.org/protocol/muc".equals(variable)) {
         workgroupManager.setMUCServiceName(packet.getFrom().getDomain());

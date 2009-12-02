@@ -8,10 +8,10 @@
  catch (    Exception e) {
     }
   }
-  List classNames=JiveGlobals.getProperties("interceptor.interceptorClasses." + getPropertySuffix());
+  List<String> classNames=JiveGlobals.getProperties("interceptor.interceptorClasses." + getPropertySuffix());
   for (int i=0; i < classNames.size(); i++) {
     install_interceptor:     try {
-      Class interceptorClass=loadClass((String)classNames.get(i));
+      Class interceptorClass=loadClass(classNames.get(i));
       for (int j=0; j < interceptorList.size(); j++) {
         if (interceptorClass.equals(interceptorList.get(j).getClass())) {
           break install_interceptor;
@@ -21,7 +21,7 @@
       interceptorList.add(interceptor);
     }
  catch (    Exception e) {
-      Log.error(e);
+      Log.error(e.getMessage(),e);
     }
   }
   availableInterceptors.addAll(interceptorList);

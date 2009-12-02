@@ -5,9 +5,9 @@
   presence=sessionPresence;
   Element elem=packet.getChildElement("agent-status","http://jabber.org/protocol/workgroup");
   if (elem != null) {
-    Iterator metaIter=elem.elementIterator();
+    Iterator<Element> metaIter=elem.elementIterator();
     while (metaIter.hasNext()) {
-      Element agentStatusElement=(Element)metaIter.next();
+      Element agentStatusElement=metaIter.next();
       if ("max-chats".equals(agentStatusElement.getName())) {
         String maxChats=agentStatusElement.getText();
         if (maxChats == null || maxChats.trim().length() == 0) {

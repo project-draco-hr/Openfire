@@ -1,11 +1,11 @@
 {
-  IQ reply=null;
   Element iq=packet.getChildElement();
   IQ update=new IQ();
   Element elem=update.setChildElement("site-invite","http://jivesoftware.com/protocol/workgroup");
   String sessionID=iq.attribute("sessionID").getText();
   elem.addAttribute("sessionID",sessionID);
   SiteUser siteUser=siteUsers.get(sessionID);
+  IQ reply=IQ.createResultIQ(packet);
   if (siteUser == null) {
     reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(new PacketError(PacketError.Condition.item_not_found));
@@ -13,7 +13,6 @@
     return;
   }
  else {
-    reply=IQ.createResultIQ(packet);
     workgroup.send(reply);
   }
   String agent=iq.element("agent").getText();

@@ -1,0 +1,16 @@
+{
+  final String action=map.get(ACTION);
+  if (END_OF_CHAT.equals(action)) {
+    String agent=map.get(AGENT_JID);
+    Long startTime=new Long(map.get(START_TIME));
+    Long endTime=new Long(map.get(END_TIME));
+    chatList.add(new Object[]{agent,startTime,endTime});
+  }
+ else   if (AGENT_TRANSFER.equals(action)) {
+    final String agent=map.get(AGENT_JID);
+    final Long startTime=new Long(map.get(START_TIME));
+    final Long transferTime=new Long(map.get(END_TIME));
+    final String agentTransferedTo=map.get(OTHER_AGENT_JID);
+    transferList.add(new Object[]{agent,startTime,transferTime,agentTransferedTo});
+  }
+}

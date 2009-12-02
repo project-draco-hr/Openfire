@@ -55,8 +55,8 @@
     Log.debug("Transcript sent to " + to);
   }
   UserManager um=UserManager.getInstance();
-  for (Iterator iterator=chatSession.getAgents(); iterator.hasNext(); ) {
-    AgentChatSession agentSession=(AgentChatSession)iterator.next();
+  for (Iterator<AgentChatSession> iterator=chatSession.getAgents(); iterator.hasNext(); ) {
+    AgentChatSession agentSession=iterator.next();
     try {
       User user=um.getUser(new JID(agentSession.getAgentJID()).getNode());
       emailService.sendMessage("Chat Transcript",user.getEmail(),"Chat Transcript",from,subject,builder.toString(),null);

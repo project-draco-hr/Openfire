@@ -5,9 +5,9 @@
   this.anonymousUser=false;
   this.workgroup=wg;
   this.communicationMethod=WorkgroupCompatibleClient.getInstance();
-  Iterator elementIter=packet.getChildElement().elementIterator();
+  Iterator<Element> elementIter=packet.getChildElement().elementIterator();
   while (elementIter.hasNext()) {
-    Element element=(Element)elementIter.next();
+    Element element=elementIter.next();
     if ("queue-notifications".equals(element.getName())) {
       setNotify(true);
     }
@@ -18,8 +18,8 @@
       }
     }
  else     if ("metadata".equals(element.getName())) {
-      for (Iterator i=element.elementIterator(); i.hasNext(); ) {
-        Element item=(Element)i.next();
+      for (Iterator<Element> i=element.elementIterator(); i.hasNext(); ) {
+        Element item=i.next();
         if ("value".equals(item.getName())) {
           String name=item.attributeValue("name");
           if (name != null) {
