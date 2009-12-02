@@ -18,26 +18,26 @@
       }
  catch (      CommunicationsException e) {
         setResult(Result.NetworkError);
-        Log.error(e);
+        Log.error(e.getMessage(),e);
       }
       try {
         Thread.sleep(timeout);
       }
  catch (      InterruptedException e) {
-        Log.error(e);
+        Log.error(e.getMessage(),e);
       }
       if (getResult().equals(Result.Trying))       setResult(Result.Timeout);
     }
  catch (    CommunicationsException e) {
       setResult(Result.NetworkError);
-      Log.error(e);
+      Log.error(e.getMessage(),e);
     }
  finally {
       try {
         sipManager.stop();
       }
  catch (      CommunicationsException e) {
-        Log.error(e);
+        Log.error(e.getMessage(),e);
       }
     }
   }
