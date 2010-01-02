@@ -97,17 +97,17 @@
         }
  else         if ("member".equals(target)) {
           boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.Affiliation.none;
-          presences.addAll(room.addMember(jid.toBareJID(),nick,senderRole));
+          presences.addAll(room.addMember(jid,nick,senderRole));
           if (!hadAffiliation && room.isMembersOnly()) {
             room.sendInvitation(jid,null,senderRole,null);
           }
         }
  else         if ("outcast".equals(target)) {
-          presences.addAll(room.addOutcast(jid.toBareJID(),item.elementTextTrim("reason"),senderRole));
+          presences.addAll(room.addOutcast(jid,item.elementTextTrim("reason"),senderRole));
         }
  else         if ("none".equals(target)) {
           if (hasAffiliation) {
-            presences.addAll(room.addNone(jid.toBareJID(),senderRole));
+            presences.addAll(room.addNone(jid,senderRole));
           }
  else {
             if (MUCRole.Role.moderator != senderRole.getRole()) {

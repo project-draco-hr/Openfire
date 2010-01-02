@@ -1,0 +1,35 @@
+{
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+    if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+    if (owners.contains(jid.toBareJID()) && owners.size() == 1) {
+      throw new ConflictException();
+    }
+    if (admins.contains(jid.toBareJID())) {
+      return Collections.emptyList();
+    }
+    admins.add(jid.toBareJID());
+    if (removeOwner(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (removeMember(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.member;
+    }
+ else     if (removeOutcast(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.outcast;
+    }
+    MUCPersistenceManager.saveAffiliationToDB(this,jid.toBareJID(),null,MUCRole.Affiliation.admin,oldAffiliation);
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  try {
+    return changeOccupantAffiliation(jid,MUCRole.Affiliation.admin,MUCRole.Role.moderator);
+  }
+ catch (  NotAllowedException e) {
+    return null;
+  }
+}

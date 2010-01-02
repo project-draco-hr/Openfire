@@ -44,7 +44,7 @@
       reply=IQ.createResultIQ(packet);
       Element iq=packet.getChildElement();
       if (ElementUtil.includesProperty(iq,"query.remove")) {
-        presences.addAll(room.addNone(packet.getFrom().toBareJID(),room.getRole()));
+        presences.addAll(room.addNone(packet.getFrom(),room.getRole()));
       }
  else {
         Element formElement=iq.element("x");
@@ -52,7 +52,7 @@
           final DataForm registrationForm=new DataForm(formElement);
           List<String> values=registrationForm.getField("muc#register_roomnick").getValues();
           String nickname=(!values.isEmpty() ? values.get(0) : null);
-          presences.addAll(room.addMember(packet.getFrom().toBareJID(),nickname,room.getRole()));
+          presences.addAll(room.addMember(packet.getFrom(),nickname,room.getRole()));
         }
  else {
           reply.setChildElement(packet.getChildElement().createCopy());

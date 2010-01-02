@@ -1,0 +1,47 @@
+{
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=(members.containsKey(jid.toBareJID()) ? MUCRole.Affiliation.member : MUCRole.Affiliation.none);
+    if (isMembersOnly()) {
+      if (!canOccupantsInvite()) {
+        if (MUCRole.Affiliation.admin != sendRole.getAffiliation() && MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
+          throw new ForbiddenException();
+        }
+      }
+    }
+ else {
+      if (MUCRole.Affiliation.admin != sendRole.getAffiliation() && MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
+        throw new ForbiddenException();
+      }
+    }
+    if (nickname != null && nickname.trim().length() > 0 && members.containsValue(nickname)) {
+      if (!nickname.equals(members.get(jid.toBareJID()))) {
+        throw new ConflictException();
+      }
+    }
+    if (owners.contains(jid.toBareJID()) && owners.size() == 1) {
+      throw new ConflictException();
+    }
+    members.put(jid.toBareJID(),(nickname == null ? "" : nickname));
+    if (removeOwner(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (removeAdmin(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (removeOutcast(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.outcast;
+    }
+    MUCPersistenceManager.saveAffiliationToDB(this,jid.toBareJID(),nickname,MUCRole.Affiliation.member,oldAffiliation);
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  CacheFactory.doClusterTask(new AddMember(this,jid.toBareJID(),(nickname == null ? "" : nickname)));
+  try {
+    return changeOccupantAffiliation(jid,MUCRole.Affiliation.member,MUCRole.Role.participant);
+  }
+ catch (  NotAllowedException e) {
+    return null;
+  }
+}

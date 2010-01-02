@@ -89,7 +89,7 @@
     rs=pstmt.executeQuery();
     while (rs.next()) {
       long roomID=rs.getLong(1);
-      String jid=rs.getString(2);
+      JID jid=new JID(rs.getString(2));
       MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(3));
       LocalMUCRoom room=rooms.get(roomID);
       if (room == null) {
@@ -125,7 +125,7 @@ if (room == null) {
 continue;
 }
 try {
-room.addMember(rs.getString(2),rs.getString(3),room.getRole());
+room.addMember(new JID(rs.getString(2)),rs.getString(3),room.getRole());
 }
  catch (Exception e) {
 Log.error(e.getMessage(),e);

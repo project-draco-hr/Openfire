@@ -1,0 +1,41 @@
+{
+  lock.writeLock().lock();
+  try {
+    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+    if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
+      throw new ForbiddenException();
+    }
+    if (owners.contains(jid.toBareJID()) && owners.size() == 1) {
+      throw new ConflictException();
+    }
+    if (outcasts.contains(jid.toBareJID())) {
+      return Collections.emptyList();
+    }
+    outcasts.add(jid.toBareJID());
+    if (removeOwner(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (removeAdmin(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (removeMember(jid.toBareJID())) {
+      oldAffiliation=MUCRole.Affiliation.member;
+    }
+    MUCPersistenceManager.saveAffiliationToDB(this,jid.toBareJID(),null,MUCRole.Affiliation.outcast,oldAffiliation);
+  }
+  finally {
+    lock.writeLock().unlock();
+  }
+  JID actorJID=senderRole.getUserAddress();
+  List<Presence> updatedPresences=changeOccupantAffiliation(jid,MUCRole.Affiliation.outcast,MUCRole.Role.none);
+  Element frag;
+  for (  Presence presence : updatedPresences) {
+    frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    frag.addElement("status").addAttribute("code","301");
+    if (reason != null && reason.trim().length() > 0) {
+      frag.element("item").addElement("reason").setText(reason);
+    }
+    kickPresence(presence,actorJID);
+  }
+  return updatedPresences;
+}

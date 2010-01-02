@@ -135,7 +135,7 @@
     ownersToRemove.removeAll(admins);
     ownersToRemove.removeAll(owners);
     for (    String jid : ownersToRemove) {
-      presences.addAll(room.addMember(jid,null,senderRole));
+      presences.addAll(room.addMember(new JID(jid),null,senderRole));
     }
   }
   if (adminsSent) {
@@ -143,7 +143,7 @@
     adminsToRemove.removeAll(admins);
     adminsToRemove.removeAll(owners);
     for (    String jid : adminsToRemove) {
-      presences.addAll(room.addMember(jid,null,senderRole));
+      presences.addAll(room.addMember(new JID(jid),null,senderRole));
     }
   }
   if (!room.isPersistent() && room.getOccupantsCount() == 0) {

@@ -61,10 +61,11 @@
                 extensions.remove(userInfo);
                 for (Iterator it=userInfo.elementIterator("invite"); it.hasNext(); ) {
                   Element info=(Element)it.next();
+                  JID jid=new JID(info.attributeValue("to"));
                   if (room.isMembersOnly()) {
-                    room.addMember(info.attributeValue("to"),null,role);
+                    room.addMember(jid,null,role);
                   }
-                  room.sendInvitation(new JID(info.attributeValue("to")),info.elementTextTrim("reason"),role,extensions);
+                  room.sendInvitation(jid,info.elementTextTrim("reason"),role,extensions);
                 }
               }
  else               if (userInfo != null && userInfo.element("decline") != null) {
