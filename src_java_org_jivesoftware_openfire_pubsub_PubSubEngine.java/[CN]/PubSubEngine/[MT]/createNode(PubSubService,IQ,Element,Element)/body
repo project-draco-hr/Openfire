@@ -1,6 +1,6 @@
 {
   JID from=iq.getFrom();
-  if (!service.canCreateNode(from) || !UserManager.getInstance().isRegisteredUser(from)) {
+  if (!service.canCreateNode(from) || (!UserManager.getInstance().isRegisteredUser(from) && !isComponent(from))) {
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;
   }
