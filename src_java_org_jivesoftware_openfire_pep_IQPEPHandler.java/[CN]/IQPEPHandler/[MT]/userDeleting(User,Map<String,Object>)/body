@@ -1,15 +1,8 @@
 {
-  JID bareJID=XMPPServer.getInstance().createJID(user.getUsername(),null);
-  PEPService pepService=getPEPService(bareJID.toString());
+  final JID bareJID=XMPPServer.getInstance().createJID(user.getUsername(),null);
+  final PEPService pepService=pepServiceManager.getPEPService(bareJID.toString());
   if (pepService == null) {
     return;
   }
-  CollectionNode rootNode=pepService.getRootCollectionNode();
-  for (  Node node : pepService.getNodes()) {
-    if (rootNode.isChildNode(node)) {
-      node.delete();
-    }
-  }
-  rootNode.delete();
-  pepServices.remove(bareJID.toString());
+  pepServiceManager.remove(bareJID);
 }

@@ -1,6 +1,9 @@
 {
   super.stop();
-  for (  PEPService service : pepServices.values()) {
-    pubSubEngine.shutdown(service);
-  }
+  PresenceEventDispatcher.removeListener(this);
+  RemotePresenceEventDispatcher.removeListener(this);
+  RosterEventDispatcher.removeListener(this);
+  UserEventDispatcher.removeListener(this);
+  stopExecutor();
+  pepServiceManager.stop();
 }

@@ -1,0 +1,12 @@
+{
+  Log.debug("Stopping executor service...");
+  executor.shutdown();
+  try {
+    if (!executor.awaitTermination(2,TimeUnit.SECONDS)) {
+      Log.debug("Forcing a shutdown for the executor service (after a two-second timeout has elapsed...");
+      executor.shutdownNow();
+    }
+  }
+ catch (  InterruptedException e) {
+  }
+}

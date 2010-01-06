@@ -1,0 +1,18 @@
+{
+  PEPService pepService=null;
+  final Lock lock=CacheFactory.getLock(jid,pepServices);
+  try {
+    lock.lock();
+    if (pepServices.containsKey(jid)) {
+      pepService=pepServices.get(jid);
+    }
+ else {
+      pepService=loadPEPServiceFromDB(jid);
+      pepServices.put(jid,pepService);
+    }
+  }
+  finally {
+    lock.unlock();
+  }
+  return pepService;
+}

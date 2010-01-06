@@ -1,0 +1,21 @@
+{
+  PEPService service=null;
+  final Lock lock=CacheFactory.getLock(owner,pepServices);
+  try {
+    lock.lock();
+    service=pepServices.remove(owner.toBareJID());
+  }
+  finally {
+    lock.unlock();
+  }
+  if (service == null) {
+    return;
+  }
+  CollectionNode rootNode=service.getRootCollectionNode();
+  for (  final Node node : service.getNodes()) {
+    if (rootNode.isChildNode(node)) {
+      node.delete();
+    }
+  }
+  rootNode.delete();
+}
