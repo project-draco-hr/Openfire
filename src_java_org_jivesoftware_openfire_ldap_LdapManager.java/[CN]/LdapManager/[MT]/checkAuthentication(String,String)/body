@@ -2,8 +2,9 @@
   boolean debug=Log.isDebugEnabled();
   if (debug) {
     Log.debug("LdapManager: In LdapManager.checkAuthentication(userDN, password), userDN is: " + userDN + "...");
+    if (!sslEnabled && !startTlsEnabled)     Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
   }
-  DirContext ctx=null;
+  JiveInitialLdapContext ctx=null;
   try {
     Hashtable<String,Object> env=new Hashtable<String,Object>();
     env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
@@ -12,9 +13,14 @@
       env.put("java.naming.ldap.factory.socket","org.jivesoftware.util.SimpleSSLSocketFactory");
       env.put(Context.SECURITY_PROTOCOL,"ssl");
     }
-    env.put(Context.SECURITY_AUTHENTICATION,"simple");
-    env.put(Context.SECURITY_PRINCIPAL,userDN + "," + baseDN);
-    env.put(Context.SECURITY_CREDENTIALS,password);
+    if (!(startTlsEnabled && !sslEnabled)) {
+      env.put(Context.SECURITY_AUTHENTICATION,"simple");
+      env.put(Context.SECURITY_PRINCIPAL,userDN + "," + baseDN);
+      env.put(Context.SECURITY_CREDENTIALS,password);
+    }
+ else {
+      if (followReferrals)       Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+    }
     if (!sslEnabled) {
       env.put("com.sun.jndi.ldap.connect.timeout","10000");
     }
@@ -33,7 +39,28 @@
     if (debug) {
       Log.debug("LdapManager: Created context values, attempting to create context...");
     }
-    ctx=new InitialDirContext(env);
+    ctx=new JiveInitialLdapContext(env,null);
+    if (startTlsEnabled && !sslEnabled) {
+      if (debug) {
+        Log.debug("LdapManager: ... StartTlsRequest");
+      }
+      StartTlsResponse tls=(StartTlsResponse)ctx.extendedOperation(new StartTlsRequest());
+      try {
+        SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
+        ctx.setTlsResponse(tls);
+        ctx.setSslSession(session);
+        if (debug) {
+          Log.debug("LdapManager: ... peer host: " + session.getPeerHost() + ", CipherSuite: "+ session.getCipherSuite());
+        }
+        ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION,"simple");
+        ctx.addToEnvironment(Context.SECURITY_PRINCIPAL,userDN + "," + baseDN);
+        ctx.addToEnvironment(Context.SECURITY_CREDENTIALS,password);
+      }
+ catch (      java.io.IOException ex) {
+        Log.error(ex.getMessage(),ex);
+      }
+      lookupExistence(ctx,userDN + "," + baseDN,new String[]{usernameField});
+    }
     if (debug) {
       Log.debug("LdapManager: ... context created successfully, returning.");
     }
@@ -56,9 +83,11 @@
           env.put("java.naming.ldap.factory.socket","org.jivesoftware.util.SimpleSSLSocketFactory");
           env.put(Context.SECURITY_PROTOCOL,"ssl");
         }
-        env.put(Context.SECURITY_AUTHENTICATION,"simple");
-        env.put(Context.SECURITY_PRINCIPAL,userDN + "," + alternateBaseDN);
-        env.put(Context.SECURITY_CREDENTIALS,password);
+        if (!(startTlsEnabled && !sslEnabled)) {
+          env.put(Context.SECURITY_AUTHENTICATION,"simple");
+          env.put(Context.SECURITY_PRINCIPAL,userDN + "," + alternateBaseDN);
+          env.put(Context.SECURITY_CREDENTIALS,password);
+        }
         if (!sslEnabled) {
           env.put("com.sun.jndi.ldap.connect.timeout","10000");
         }
@@ -74,7 +103,28 @@
         if (debug) {
           Log.debug("LdapManager: Created context values, attempting to create context...");
         }
-        ctx=new InitialDirContext(env);
+        ctx=new JiveInitialLdapContext(env,null);
+        if (startTlsEnabled && !sslEnabled) {
+          if (debug) {
+            Log.debug("LdapManager: ... StartTlsRequest");
+          }
+          StartTlsResponse tls=(StartTlsResponse)ctx.extendedOperation(new StartTlsRequest());
+          try {
+            SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
+            ctx.setTlsResponse(tls);
+            ctx.setSslSession(session);
+            if (debug) {
+              Log.debug("LdapManager: ... peer host: " + session.getPeerHost() + ", CipherSuite: "+ session.getCipherSuite());
+            }
+            ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION,"simple");
+            ctx.addToEnvironment(Context.SECURITY_PRINCIPAL,userDN + "," + alternateBaseDN);
+            ctx.addToEnvironment(Context.SECURITY_CREDENTIALS,password);
+          }
+ catch (          java.io.IOException ex) {
+            Log.error(ex.getMessage(),ex);
+          }
+          lookupExistence(ctx,userDN + "," + alternateBaseDN,new String[]{usernameField});
+        }
       }
  catch (      NamingException e) {
         if (debug) {

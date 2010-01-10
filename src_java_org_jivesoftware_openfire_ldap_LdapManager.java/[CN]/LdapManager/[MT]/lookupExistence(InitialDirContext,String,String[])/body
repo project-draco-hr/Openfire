@@ -1,0 +1,28 @@
+{
+  boolean debug=Log.isDebugEnabled();
+  if (debug) {
+    Log.debug("LdapManager: In lookupExistence(ctx, dn, returnattrs), searchdn is: " + dn);
+  }
+  ctx.addToEnvironment(Context.PROVIDER_URL,getProviderURL(dn));
+  String filter="(&(objectClass=*))";
+  SearchControls srcnt=new SearchControls();
+  srcnt.setSearchScope(SearchControls.OBJECT_SCOPE);
+  srcnt.setReturningAttributes(returnattrs);
+  NamingEnumeration<SearchResult> answer=null;
+  try {
+    answer=ctx.search("",filter,srcnt);
+  }
+ catch (  javax.naming.NameNotFoundException nex) {
+  }
+catch (  NamingException ex) {
+    throw ex;
+  }
+  if (answer == null || !answer.hasMoreElements()) {
+    Log.debug("LdapManager: .... lookupExistence: DN not found.");
+    return false;
+  }
+ else {
+    Log.debug("LdapManager: .... lookupExistence: DN found.");
+    return true;
+  }
+}

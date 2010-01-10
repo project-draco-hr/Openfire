@@ -2,6 +2,7 @@
   boolean debug=Log.isDebugEnabled();
   if (debug) {
     Log.debug("LdapManager: Creating a DirContext in LdapManager.getContext()...");
+    if (!sslEnabled && !startTlsEnabled)     Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
   }
   Hashtable<String,Object> env=new Hashtable<String,Object>();
   env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
@@ -11,10 +12,12 @@
     env.put(Context.SECURITY_PROTOCOL,"ssl");
   }
   if (adminDN != null) {
-    env.put(Context.SECURITY_AUTHENTICATION,"simple");
-    env.put(Context.SECURITY_PRINCIPAL,adminDN);
-    if (adminPassword != null) {
-      env.put(Context.SECURITY_CREDENTIALS,adminPassword);
+    if (!(startTlsEnabled && !sslEnabled)) {
+      env.put(Context.SECURITY_AUTHENTICATION,"simple");
+      env.put(Context.SECURITY_PRINCIPAL,adminDN);
+      if (adminPassword != null) {
+        env.put(Context.SECURITY_CREDENTIALS,adminPassword);
+      }
     }
   }
  else {
@@ -24,8 +27,15 @@
     env.put("com.sun.jndi.ldap.trace.ber",System.err);
   }
   if (connectionPoolEnabled) {
-    env.put("com.sun.jndi.ldap.connect.pool","true");
+    if (!startTlsEnabled)     env.put("com.sun.jndi.ldap.connect.pool","true");
+ else {
+      if (debug) {
+        Log.debug("LdapManager: connection pooling was requested but has been disabled because of StartTLS.");
+      }
+      env.put("com.sun.jndi.ldap.connect.pool","false");
+    }
   }
+ else   env.put("com.sun.jndi.ldap.connect.pool","false");
   if (followReferrals) {
     env.put(Context.REFERRAL,"follow");
   }
@@ -35,7 +45,30 @@
   if (debug) {
     Log.debug("LdapManager: Created hashtable with context values, attempting to create context...");
   }
-  LdapContext context=new InitialLdapContext(env,null);
+  JiveInitialLdapContext context=new JiveInitialLdapContext(env,null);
+  if (startTlsEnabled && !sslEnabled) {
+    if (debug) {
+      Log.debug("LdapManager: ... StartTlsRequest");
+    }
+    if (followReferrals)     Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+    StartTlsResponse tls=(StartTlsResponse)context.extendedOperation(new StartTlsRequest());
+    try {
+      SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
+      context.setTlsResponse(tls);
+      context.setSslSession(session);
+      if (debug) {
+        Log.debug("LdapManager: ... peer host: " + session.getPeerHost() + ", CipherSuite: "+ session.getCipherSuite());
+      }
+      if (adminDN != null) {
+        context.addToEnvironment(Context.SECURITY_AUTHENTICATION,"simple");
+        context.addToEnvironment(Context.SECURITY_PRINCIPAL,adminDN);
+        if (adminPassword != null)         context.addToEnvironment(Context.SECURITY_CREDENTIALS,adminPassword);
+      }
+    }
+ catch (    java.io.IOException ex) {
+      Log.error(ex.getMessage(),ex);
+    }
+  }
   if (debug) {
     Log.debug("LdapManager: ... context created successfully, returning.");
   }

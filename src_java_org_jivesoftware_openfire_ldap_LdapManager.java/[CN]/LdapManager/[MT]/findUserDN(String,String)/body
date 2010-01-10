@@ -18,7 +18,7 @@
       constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     constraints.setReturningAttributes(new String[]{usernameField});
-    NamingEnumeration answer=ctx.search("",getSearchFilter(),new String[]{username},constraints);
+    NamingEnumeration<SearchResult> answer=ctx.search("",getSearchFilter(),new String[]{username},constraints);
     if (debug) {
       Log.debug("LdapManager: ... search finished");
     }
@@ -28,7 +28,7 @@
       }
       throw new UserNotFoundException("Username " + username + " not found");
     }
-    String userDN=((SearchResult)answer.next()).getName();
+    String userDN=answer.next().getName();
     if (answer.hasMoreElements()) {
       if (debug) {
         Log.debug("LdapManager: Search for userDN based on username '" + username + "' found multiple "+ "responses, throwing exception.");

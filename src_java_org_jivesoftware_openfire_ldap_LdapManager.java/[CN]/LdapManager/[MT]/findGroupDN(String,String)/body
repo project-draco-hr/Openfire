@@ -18,7 +18,7 @@
     }
     constraints.setReturningAttributes(new String[]{groupNameField});
     String filter=MessageFormat.format(getGroupSearchFilter(),groupname);
-    NamingEnumeration answer=ctx.search("",filter,constraints);
+    NamingEnumeration<SearchResult> answer=ctx.search("",filter,constraints);
     if (debug) {
       Log.debug("LdapManager: ... search finished");
     }
@@ -28,7 +28,7 @@
       }
       throw new GroupNotFoundException("Groupname " + groupname + " not found");
     }
-    String groupDN=((SearchResult)answer.next()).getName();
+    String groupDN=answer.next().getName();
     if (answer.hasMoreElements()) {
       if (debug) {
         Log.debug("LdapManager: Search for groupDN based on groupname '" + groupname + "' found multiple "+ "responses, throwing exception.");

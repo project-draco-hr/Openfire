@@ -45,7 +45,7 @@
     int count=0;
     do {
       cookie=null;
-      NamingEnumeration answer=ctx.search("",searchFilter,searchControls);
+      NamingEnumeration<SearchResult> answer=ctx.search("",searchFilter,searchControls);
       while (answer.hasMoreElements()) {
         count++;
         if (skip > 0 && count <= skip) {
@@ -56,7 +56,7 @@
           answer.next();
           break;
         }
-        String result=(String)((SearchResult)answer.next()).getAttributes().get(attribute).get();
+        String result=(String)answer.next().getAttributes().get(attribute).get();
         if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
           result=result.substring(0,result.length() - suffixToTrim.length());
         }
@@ -88,7 +88,7 @@
       ctx2.setRequestControls(baseRequestControls);
       do {
         cookie=null;
-        NamingEnumeration answer=ctx2.search("",searchFilter,searchControls);
+        NamingEnumeration<SearchResult> answer=ctx2.search("",searchFilter,searchControls);
         while (answer.hasMoreElements()) {
           count++;
           if (skip > 0 && count <= skip) {
@@ -99,7 +99,7 @@
             answer.next();
             break;
           }
-          String result=(String)((SearchResult)answer.next()).getAttributes().get(attribute).get();
+          String result=(String)answer.next().getAttributes().get(attribute).get();
           if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
             result=result.substring(0,result.length() - suffixToTrim.length());
           }
