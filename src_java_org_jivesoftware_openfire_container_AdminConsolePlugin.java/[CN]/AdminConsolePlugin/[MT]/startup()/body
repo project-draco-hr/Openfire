@@ -43,7 +43,9 @@
     log(LocaleUtils.getLocalizedString("admin.console.warning"));
     return;
   }
-  adminServer.setHandlers(new Handler[]{contexts,new DefaultHandler()});
+  HandlerCollection collection=new HandlerCollection();
+  adminServer.setHandler(collection);
+  collection.setHandlers(new Handler[]{contexts,new DefaultHandler()});
   try {
     adminServer.start();
   }

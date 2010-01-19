@@ -15,5 +15,7 @@
   createBoshHandler(contexts,"/http-bind");
   createCrossDomainHandler(contexts,"/");
   loadStaticDirectory(contexts);
-  httpBindServer.setHandlers(new Handler[]{contexts,new DefaultHandler()});
+  HandlerCollection collection=new HandlerCollection();
+  httpBindServer.setHandler(collection);
+  collection.setHandlers(new Handler[]{contexts,new DefaultHandler()});
 }

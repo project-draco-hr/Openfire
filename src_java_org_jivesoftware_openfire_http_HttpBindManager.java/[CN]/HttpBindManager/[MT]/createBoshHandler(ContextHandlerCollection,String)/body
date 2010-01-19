@@ -1,6 +1,7 @@
 {
   ServletHandler handler=new ServletHandler();
   handler.addServletWithMapping(HttpBindServlet.class,"/");
+  handler.addFilterWithMapping(org.eclipse.jetty.continuation.ContinuationFilter.class,"/*",0);
   ContextHandler boshContextHandler=new ContextHandler(contexts,boshPath);
   boshContextHandler.setHandler(handler);
 }
