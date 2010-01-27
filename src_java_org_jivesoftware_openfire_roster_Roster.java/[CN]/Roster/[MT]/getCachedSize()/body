@@ -3,5 +3,9 @@
   size+=CacheSizes.sizeOfObject();
   size+=CacheSizes.sizeOfCollection(rosterItems.values());
   size+=CacheSizes.sizeOfString(username);
+  for (  Map.Entry<String,Set<String>> entry : implicitFrom.entrySet()) {
+    size+=CacheSizes.sizeOfString(entry.getKey());
+    size+=CacheSizes.sizeOfCollection(entry.getValue());
+  }
   return size;
 }
