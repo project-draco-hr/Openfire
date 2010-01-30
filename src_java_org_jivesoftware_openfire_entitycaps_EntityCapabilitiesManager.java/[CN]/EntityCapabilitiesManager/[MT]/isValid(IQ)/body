@@ -1,5 +1,8 @@
 {
-  String newVerHash=generateVerHash(packet);
-  String originalVerAttribute=verAttributes.get(packet.getID());
-  return originalVerAttribute.equals(newVerHash);
+  final EntityCapabilities original=verAttributes.get(packet.getID());
+  if (original == null) {
+    return false;
+  }
+  final String newVerHash=generateVerHash(packet,original.getHashAttribute());
+  return newVerHash.equals(original.getVerAttribute());
 }

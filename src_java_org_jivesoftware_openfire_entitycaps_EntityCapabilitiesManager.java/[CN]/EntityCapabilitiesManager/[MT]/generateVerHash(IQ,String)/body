@@ -1,0 +1,22 @@
+{
+  final StringBuilder s=new StringBuilder();
+  final List<String> discoIdentities=getIdentitiesFrom(packet);
+  Collections.sort(discoIdentities);
+  for (  String discoIdentity : discoIdentities) {
+    s.append(discoIdentity);
+    s.append('<');
+  }
+  final List<String> discoFeatures=getFeaturesFrom(packet);
+  Collections.sort(discoFeatures);
+  for (  String discoFeature : discoFeatures) {
+    s.append(discoFeature);
+    s.append('<');
+  }
+  final List<String> extendedDataForms=getExtendedDataForms(packet);
+  Collections.sort(extendedDataForms);
+  for (  String extendedDataForm : extendedDataForms) {
+    s.append(extendedDataForm);
+  }
+  final String hashed=StringUtils.hash(s.toString(),"SHA-1");
+  return StringUtils.encodeBase64(StringUtils.decodeHex(hashed));
+}

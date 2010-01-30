@@ -1,0 +1,17 @@
+{
+  final IQ iq=new IQ(IQ.Type.result);
+  iq.setFrom("nurse@capulet.lit/chamber");
+  iq.setTo("juliet@capulet.lit");
+  iq.setID("simpleexample1");
+  final Element query=iq.setChildElement("query","http://jabber.org/protocol/disco#info");
+  final Element identity=query.addElement("identity");
+  identity.addAttribute("category","client");
+  identity.addAttribute("type","pc");
+  identity.addAttribute("name","Exodus 0.9.1");
+  query.addElement("feature").addAttribute("var","http://jabber.org/protocol/disco#info");
+  query.addElement("feature").addAttribute("var","http://jabber.org/protocol/disco#items");
+  query.addElement("feature").addAttribute("var","http://jabber.org/protocol/muc");
+  query.addElement("feature").addAttribute("var","http://jabber.org/protocol/caps");
+  final String verification=EntityCapabilitiesManager.generateVerHash(iq,"sha-1");
+  assertEquals("QgayPKawpkPSDYmwT/WM94uAlu0=",verification);
+}

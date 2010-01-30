@@ -1,14 +1,31 @@
 {
   List<String> discoIdentities=new ArrayList<String>();
   Element query=packet.getChildElement();
-  Iterator identitiesIterator=query.elementIterator("identity");
+  Iterator<Element> identitiesIterator=query.elementIterator("identity");
   if (identitiesIterator != null) {
     while (identitiesIterator.hasNext()) {
-      Element identityElement=(Element)identitiesIterator.next();
-      String discoIdentity=identityElement.attributeValue("category");
-      discoIdentity+='/';
-      discoIdentity+=identityElement.attributeValue("type");
-      discoIdentities.add(discoIdentity);
+      Element identityElement=identitiesIterator.next();
+      StringBuilder discoIdentity=new StringBuilder();
+      String cat=identityElement.attributeValue("category");
+      String type=identityElement.attributeValue("type");
+      String lang=identityElement.attributeValue("xml:lang");
+      String name=identityElement.attributeValue("name");
+      if (cat != null) {
+        discoIdentity.append(cat);
+      }
+      discoIdentity.append('/');
+      if (type != null) {
+        discoIdentity.append(type);
+      }
+      discoIdentity.append('/');
+      if (lang != null) {
+        discoIdentity.append(lang);
+      }
+      discoIdentity.append('/');
+      if (name != null) {
+        discoIdentity.append(name);
+      }
+      discoIdentities.add(discoIdentity.toString());
     }
   }
   return discoIdentities;

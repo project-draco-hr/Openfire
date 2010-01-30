@@ -6,12 +6,12 @@
   if (capsElement == null) {
     return;
   }
-  String hashAttribute=capsElement.attributeValue("hash");
-  if (hashAttribute == null) {
+  final String hashAttribute=capsElement.attributeValue("hash");
+  if (hashAttribute == null || hashAttribute.trim().length() == 0) {
     return;
   }
-  String newVerAttribute=capsElement.attributeValue("ver");
-  if (newVerAttribute == null) {
+  final String newVerAttribute=capsElement.attributeValue("ver");
+  if (newVerAttribute == null || newVerAttribute.trim().length() == 0) {
     return;
   }
   if (isInCapsCache(newVerAttribute)) {
@@ -24,8 +24,11 @@
     iq.setFrom(serverName);
     iq.setChildElement("query","http://jabber.org/protocol/disco#info");
     String packetId=iq.getID();
-    verAttributes.put(packetId,newVerAttribute);
-    IQRouter iqRouter=XMPPServer.getInstance().getIQRouter();
+    final EntityCapabilities caps=new EntityCapabilities();
+    caps.setHashAttribute(hashAttribute);
+    caps.setVerAttribute(newVerAttribute);
+    verAttributes.put(packetId,caps);
+    final IQRouter iqRouter=XMPPServer.getInstance().getIQRouter();
     iqRouter.addIQResultListener(packetId,this);
     iqRouter.route(iq);
   }

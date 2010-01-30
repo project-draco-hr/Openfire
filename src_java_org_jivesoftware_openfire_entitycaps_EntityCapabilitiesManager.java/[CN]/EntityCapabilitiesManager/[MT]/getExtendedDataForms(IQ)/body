@@ -1,0 +1,43 @@
+{
+  List<String> results=new ArrayList<String>();
+  Element query=packet.getChildElement();
+  Iterator<Element> extensionIterator=query.elementIterator(QName.get("x","jabber:x:data"));
+  if (extensionIterator != null) {
+    while (extensionIterator.hasNext()) {
+      Element extensionElement=extensionIterator.next();
+      final StringBuilder formType=new StringBuilder();
+      Iterator<Element> fieldIterator=extensionElement.elementIterator("field");
+      List<String> vars=new ArrayList<String>();
+      while (fieldIterator != null && fieldIterator.hasNext()) {
+        final Element fieldElement=fieldIterator.next();
+        if (fieldElement.attributeValue("var").equals("FORM_TYPE")) {
+          formType.append(fieldElement.element("value").getText());
+          formType.append('<');
+        }
+ else {
+          final StringBuilder var=new StringBuilder();
+          var.append(fieldElement.attributeValue("var"));
+          var.append('<');
+          Iterator<Element> valIter=fieldElement.elementIterator("value");
+          List<String> values=new ArrayList<String>();
+          while (valIter != null && valIter.hasNext()) {
+            Element value=valIter.next();
+            values.add(value.getText());
+          }
+          Collections.sort(values);
+          for (          String v : values) {
+            var.append(v);
+            var.append('<');
+          }
+          vars.add(var.toString());
+        }
+      }
+      Collections.sort(vars);
+      for (      String v : vars) {
+        formType.append(v);
+      }
+      results.add(formType.toString());
+    }
+  }
+  return results;
+}

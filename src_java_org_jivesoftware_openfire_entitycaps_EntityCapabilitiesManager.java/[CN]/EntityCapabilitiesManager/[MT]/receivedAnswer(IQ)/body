@@ -1,19 +1,17 @@
 {
   String packetId=packet.getID();
   if (isValid(packet)) {
-    EntityCapabilities entityCapabilities=new EntityCapabilities();
+    EntityCapabilities caps=verAttributes.get(packetId);
     List<String> identities=getIdentitiesFrom(packet);
     for (    String identity : identities) {
-      entityCapabilities.addIdentity(identity);
+      caps.addIdentity(identity);
     }
     List<String> features=getFeaturesFrom(packet);
     for (    String feature : features) {
-      entityCapabilities.addFeature(feature);
+      caps.addFeature(feature);
     }
-    String originalVerAttribute=verAttributes.get(packetId);
-    entityCapabilities.setVerAttribute(originalVerAttribute);
-    entityCapabilitiesMap.put(originalVerAttribute,entityCapabilities);
-    entityCapabilitiesUserMap.put(packet.getFrom(),originalVerAttribute);
+    entityCapabilitiesMap.put(caps.getVerAttribute(),caps);
+    entityCapabilitiesUserMap.put(packet.getFrom(),caps.getVerAttribute());
   }
   verAttributes.remove(packetId);
 }
