@@ -1,10 +1,10 @@
 {
-  XMLLightweightParser parser=new XMLLightweightParser(CHARSET);
+  final XMLLightweightParser parser=new XMLLightweightParser(CHARSET);
   session.setAttribute(XML_PARSER,parser);
-  NIOConnection connection=createNIOConnection(session);
+  final NIOConnection connection=createNIOConnection(session);
   session.setAttribute(CONNECTION,connection);
   session.setAttribute(HANDLER,createStanzaHandler(connection));
-  int idleTime=getMaxIdleTime();
+  final int idleTime=getMaxIdleTime() / 2;
   if (idleTime > 0) {
     session.setIdleTime(IdleStatus.READER_IDLE,idleTime);
   }

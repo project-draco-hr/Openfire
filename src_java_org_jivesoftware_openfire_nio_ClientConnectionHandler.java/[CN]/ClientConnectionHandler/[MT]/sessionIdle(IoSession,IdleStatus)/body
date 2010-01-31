@@ -1,0 +1,18 @@
+{
+  super.sessionIdle(session,status);
+  if (session.getIdleCount(status) == 1) {
+    final ClientStanzaHandler handler=(ClientStanzaHandler)session.getAttribute(HANDLER);
+    final JID entity=handler.getAddress();
+    if (entity != null) {
+      final IQ pingRequest=new IQ(Type.get);
+      pingRequest.setChildElement("ping",IQPingHandler.NAMESPACE);
+      pingRequest.setFrom(serverName);
+      pingRequest.setTo(entity);
+      final Connection connection=(Connection)session.getAttribute(CONNECTION);
+      if (Log.isDebugEnabled()) {
+        Log.debug("ConnectionHandler: Pinging connection that has been idle: " + connection);
+      }
+      connection.deliver(pingRequest);
+    }
+  }
+}
