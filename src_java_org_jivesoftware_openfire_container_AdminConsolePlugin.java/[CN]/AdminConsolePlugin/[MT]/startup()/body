@@ -5,6 +5,9 @@
   adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
   adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
   adminServer=new Server();
+  final QueuedThreadPool tp=new QueuedThreadPool(254);
+  tp.setName("Jetty-QTP-AdminConsole");
+  adminServer.setThreadPool(tp);
   adminServer.setSendServerVersion(false);
   if (adminPort > 0) {
     Connector httpConnector=new SelectChannelConnector();

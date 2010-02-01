@@ -1,5 +1,8 @@
 {
   httpBindServer=new Server();
+  final QueuedThreadPool tp=new QueuedThreadPool(254);
+  tp.setName("Jetty-QTP-BOSH");
+  httpBindServer.setThreadPool(tp);
   createConnector(port);
   createSSLConnector(securePort);
   if (httpConnector == null && httpsConnector == null) {
