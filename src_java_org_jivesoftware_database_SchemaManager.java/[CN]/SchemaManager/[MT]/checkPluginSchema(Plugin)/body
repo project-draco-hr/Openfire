@@ -9,7 +9,7 @@
   try {
     con=DbConnectionManager.getConnection();
     return checkSchema(con,schemaKey,schemaVersion,new ResourceLoader(){
-      public InputStream loadResource(      String resourceName){
+      @Override public InputStream loadResource(      String resourceName){
         File file=new File(pluginManager.getPluginDirectory(plugin) + File.separator + "database",resourceName);
         try {
           return new FileInputStream(file);

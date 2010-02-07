@@ -1,12 +1,12 @@
 {
   return new OutputStream(){
-    public synchronized void write(    int b) throws IOException {
+    @Override public synchronized void write(    int b) throws IOException {
       outAppData.put((byte)b);
       outAppData.flip();
       doWrite(outAppData);
       outAppData.clear();
     }
-    public synchronized void write(    byte[] bytes,    int off,    int len) throws IOException {
+    @Override public synchronized void write(    byte[] bytes,    int off,    int len) throws IOException {
       outAppData=resizeApplicationBuffer(bytes.length);
       outAppData.put(bytes,off,len);
       outAppData.flip();

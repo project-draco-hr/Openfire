@@ -9,7 +9,7 @@
   dialog.pack();
   dialog.setSize(225,55);
   final SwingWorker installerThread=new SwingWorker(){
-    public Object construct(){
+    @Override public Object construct(){
       File pluginsDir=new File(binDir.getParentFile(),"plugins");
       String tempName=plugin.getName() + ".part";
       File tempPluginsFile=new File(pluginsDir,tempName);
@@ -24,7 +24,7 @@
       }
       return realPluginsFile;
     }
-    public void finished(){
+    @Override public void finished(){
       dialog.setVisible(false);
     }
   }

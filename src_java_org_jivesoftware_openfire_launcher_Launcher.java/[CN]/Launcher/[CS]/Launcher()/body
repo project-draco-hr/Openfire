@@ -24,7 +24,7 @@
   }
   configFile=new File(new File(binDir.getParent(),"conf"),"openfire.xml");
   frame=new DroppableFrame(){
-    public void fileDropped(    File file){
+    @Override public void fileDropped(    File file){
       String fileName=file.getName();
       if (fileName.endsWith(".jar") || fileName.endsWith(".war")) {
         installPlugin(file);
@@ -97,7 +97,7 @@
         frame.setIconImage(onIcon.getImage());
         trayIcon.setIcon(onIcon);
         Thread thread=new Thread(){
-          public void run(){
+          @Override public void run(){
             try {
               sleep(8000);
             }
@@ -163,11 +163,11 @@
     tray.addTrayIcon(trayIcon);
   }
   frame.addWindowListener(new WindowAdapter(){
-    public void windowClosing(    WindowEvent e){
+    @Override public void windowClosing(    WindowEvent e){
       stopApplication();
       System.exit(0);
     }
-    public void windowIconified(    WindowEvent e){
+    @Override public void windowIconified(    WindowEvent e){
       frame.setVisible(false);
       showMenuItem.setText("Show");
     }
@@ -182,7 +182,7 @@
   frame.setVisible(true);
   final ImageIcon icon=new ImageIcon(getClass().getClassLoader().getResource("splash2.gif"));
   pane=new DroppableTextPane(){
-    public void paintComponent(    Graphics g){
+    @Override public void paintComponent(    Graphics g){
       final Dimension size=pane.getSize();
       int x=(size.width - icon.getIconWidth()) / 2;
       int y=(size.height - icon.getIconHeight()) / 2;
@@ -192,7 +192,7 @@
       setOpaque(false);
       super.paintComponent(g);
     }
-    public void fileDropped(    File file){
+    @Override public void fileDropped(    File file){
       String fileName=file.getName();
       if (fileName.endsWith(".jar") || fileName.endsWith(".war")) {
         installPlugin(file);

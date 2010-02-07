@@ -7,7 +7,7 @@
   message.setBody("You are using an invalid client, and therefore will be disconnected. " + "Please ask your system administrator for client choices.");
   sendPacket(message);
   taskEngine.schedule(new TimerTask(){
-    public void run(){
+    @Override public void run(){
       StreamError error=new StreamError(StreamError.Condition.policy_violation);
       session.deliverRawText(error.toXML());
       session.close();

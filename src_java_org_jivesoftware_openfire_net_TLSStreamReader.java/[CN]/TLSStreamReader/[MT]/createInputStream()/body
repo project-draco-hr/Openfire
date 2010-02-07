@@ -1,13 +1,13 @@
 {
   return new InputStream(){
-    public synchronized int read() throws IOException {
+    @Override public synchronized int read() throws IOException {
       doRead();
       if (!inAppBB.hasRemaining()) {
         return -1;
       }
       return inAppBB.get();
     }
-    public synchronized int read(    byte[] bytes,    int off,    int len) throws IOException {
+    @Override public synchronized int read(    byte[] bytes,    int off,    int len) throws IOException {
       if (inAppBB.position() == 0) {
         doRead();
       }

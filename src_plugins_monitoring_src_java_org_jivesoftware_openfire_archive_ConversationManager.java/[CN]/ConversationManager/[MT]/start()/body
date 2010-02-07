@@ -20,14 +20,14 @@
   participantQueue=new ConcurrentLinkedQueue<RoomParticipant>();
   conversationListeners=new CopyOnWriteArraySet<ConversationListener>();
   archiveTask=new TimerTask(){
-    public void run(){
+    @Override public void run(){
       new ArchivingTask().run();
     }
   }
 ;
   taskEngine.scheduleAtFixedRate(archiveTask,JiveConstants.MINUTE,JiveConstants.MINUTE);
   cleanupTask=new TimerTask(){
-    public void run(){
+    @Override public void run(){
       for (      String key : conversations.keySet()) {
         Conversation conversation=conversations.get(key);
         long now=System.currentTimeMillis();

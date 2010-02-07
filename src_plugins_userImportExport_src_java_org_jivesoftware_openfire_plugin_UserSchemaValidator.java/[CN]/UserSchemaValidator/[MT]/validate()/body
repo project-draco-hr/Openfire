@@ -3,7 +3,7 @@
     SAXParserFactory saxFactory=SAXParserFactory.newInstance();
     saxFactory.setNamespaceAware(true);
     DocumentDeclaration docDeclaration=GrammarLoader.loadVGM(schema,new IgnoreController(){
-      public void error(      Locator[] locations,      String message,      Exception exception){
+      @Override public void error(      Locator[] locations,      String message,      Exception exception){
         Log.error("ERROR: " + message);
       }
       public void error(      Locator[] locations,      String message){
