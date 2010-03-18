@@ -1,5 +1,6 @@
 {
-  serviceEnabled=MUCPersistenceManager.getBooleanProperty(chatServiceName,"enabled",true);
+  serviceEnabled=JiveProperties.getInstance().getBooleanProperty("xmpp.muc.enabled",true);
+  serviceEnabled=MUCPersistenceManager.getBooleanProperty(chatServiceName,"enabled",serviceEnabled);
   historyStrategy.setContext(chatServiceName,"history");
   String property=MUCPersistenceManager.getProperty(chatServiceName,"sysadmin.jid");
   String[] jids;
