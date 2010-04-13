@@ -1,5 +1,5 @@
 {
-  close();
+  final String filePrefix="jive.audit-" + dateFormat.format(auditDate) + "-";
   if (currentDateLimit == null || auditDate.after(currentDateLimit)) {
     Calendar calendar=Calendar.getInstance();
     calendar.setTime(auditDate);
@@ -8,8 +8,8 @@
     calendar.set(Calendar.SECOND,59);
     calendar.set(Calendar.MILLISECOND,999);
     currentDateLimit=calendar.getTime();
+    filesIndex=0;
   }
-  final String filePrefix="jive.audit-" + dateFormat.format(auditDate) + "-";
   FilenameFilter filter=new FilenameFilter(){
     public boolean accept(    File dir,    String name){
       return name.startsWith(filePrefix) && name.endsWith(".log");
@@ -17,23 +17,22 @@
   }
 ;
   File[] files=baseFolder.listFiles(filter);
-  if (files.length == 0) {
-    currentAuditFile=new File(logDir,filePrefix + "000.log");
+  filesIndex=Math.max(files.length,filesIndex);
+  if (filesIndex >= maxTotalFilesDay) {
+    return;
   }
- else {
-    File lastFile=files[files.length - 1];
-    StringTokenizer tokenizer=new StringTokenizer(lastFile.getName(),"-.");
-    tokenizer.nextToken();
-    tokenizer.nextToken();
-    tokenizer.nextToken();
-    int index=Integer.parseInt(tokenizer.nextToken()) + 1;
-    if (index > 999) {
-      Log.warn("Failed to created audit file. Max limit of 999 files has been reached " + "for the date: " + dateFormat.format(auditDate));
-      return;
-    }
-    currentAuditFile=new File(logDir,filePrefix + StringUtils.zeroPadString(Integer.toString(index),3) + ".log");
+  File tmpAuditFile=new File(logDir,filePrefix + StringUtils.zeroPadString(Integer.toString(filesIndex),3) + ".log");
+  if ((filesIndex == maxTotalFilesDay - 1) && !tmpAuditFile.exists()) {
+    Log.warn("Creating last audit file for this date: " + dateFormat.format(auditDate));
   }
-  writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentAuditFile),"UTF-8"));
+  while ((filesIndex < (maxTotalFilesDay - 1)) && (tmpAuditFile.exists())) {
+    Log.debug("Audit file '" + tmpAuditFile.getName() + "' does already exist.");
+    filesIndex++;
+    tmpAuditFile=new File(logDir,filePrefix + StringUtils.zeroPadString(Integer.toString(filesIndex),3) + ".log");
+  }
+  currentAuditFile=tmpAuditFile;
+  close();
+  writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(currentAuditFile,true),"UTF-8"));
   writer.write("<jive xmlns=\"http://www.jivesoftware.org\">");
   xmlWriter=new org.jivesoftware.util.XMLWriter(writer);
 }
