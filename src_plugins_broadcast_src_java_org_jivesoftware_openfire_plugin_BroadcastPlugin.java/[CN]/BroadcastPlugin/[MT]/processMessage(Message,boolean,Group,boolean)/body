@@ -18,7 +18,23 @@
       }
       return;
     }
-    sessionManager.broadcast(message);
+    if (all2ofline == false) {
+      sessionManager.broadcast(message);
+    }
+ else {
+      Collection<User> users=userManager.getUsers();
+      String xmppdomain="@" + JiveGlobals.getProperty("xmpp.domain");
+      for (      User u : users) {
+        Message newMessage=message.createCopy();
+        newMessage.setTo(u.getUsername() + xmppdomain);
+        try {
+          componentManager.sendPacket(this,newMessage);
+        }
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
   }
  else {
     if (group == null) {
