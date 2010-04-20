@@ -98,7 +98,7 @@
  else         if ("member".equals(target)) {
           boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.Affiliation.none;
           presences.addAll(room.addMember(jid,nick,senderRole));
-          if (!hadAffiliation && room.isMembersOnly()) {
+          if (!skipInvite && !hadAffiliation && room.isMembersOnly()) {
             room.sendInvitation(jid,null,senderRole,null);
           }
         }
