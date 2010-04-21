@@ -6,7 +6,7 @@
   if (maxThreads < 10) {
     maxThreads=10;
   }
-  threadPool=new ThreadPoolExecutor(Math.round(maxThreads / 4),maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(queueSize),new ThreadPoolExecutor.CallerRunsPolicy());
+  threadPool=new ThreadPoolExecutor(maxThreads / 4,maxThreads,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(queueSize),new ThreadPoolExecutor.CallerRunsPolicy());
   Thread thread=new Thread(new Runnable(){
     public void run(){
       while (!shutdown) {
