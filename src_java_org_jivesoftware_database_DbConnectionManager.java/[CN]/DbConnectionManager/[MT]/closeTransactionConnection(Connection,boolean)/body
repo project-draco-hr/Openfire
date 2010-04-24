@@ -1,7 +1,4 @@
 {
-  if (con == null) {
-    return;
-  }
   if (isTransactionsSupported()) {
     try {
       if (abortTransaction) {
@@ -14,19 +11,12 @@
  catch (    Exception e) {
       Log.error(e.getMessage(),e);
     }
-  }
-  try {
-    if (isTransactionsSupported()) {
+    try {
       con.setAutoCommit(true);
     }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
   }
- catch (  Exception e) {
-    Log.error(e.getMessage(),e);
-  }
-  try {
-    con.close();
-  }
- catch (  Exception e) {
-    Log.error(e.getMessage(),e);
-  }
+  closeConnection(con);
 }

@@ -16,14 +16,7 @@ synchronized (providerLock) {
       Log.error(e.getMessage(),e);
     }
  finally {
-      try {
-        if (con != null) {
-          con.close();
-        }
-      }
- catch (      Exception e) {
-        Log.error(e.getMessage(),e);
-      }
+      closeConnection(con);
     }
   }
   JiveGlobals.setXMLProperty("connectionProvider.className",provider.getClass().getName());
