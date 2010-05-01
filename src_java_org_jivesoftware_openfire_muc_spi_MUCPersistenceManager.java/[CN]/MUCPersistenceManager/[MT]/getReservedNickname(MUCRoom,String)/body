@@ -1,34 +1,23 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   String answer=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(GET_RESERVED_NAME);
     pstmt.setLong(1,room.getID());
     pstmt.setString(2,bareJID);
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     if (rs.next()) {
       answer=rs.getString(1);
     }
-    rs.close();
   }
  catch (  SQLException sqle) {
     Log.error(sqle.getMessage(),sqle);
   }
  finally {
-    try {
-      if (pstmt != null)       pstmt.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null)       con.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return answer;
 }

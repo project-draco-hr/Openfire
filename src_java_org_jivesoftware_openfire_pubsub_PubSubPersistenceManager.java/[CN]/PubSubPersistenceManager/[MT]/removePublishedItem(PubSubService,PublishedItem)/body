@@ -15,22 +15,7 @@
     Log.error(sqle.getMessage(),sqle);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
   return success;
 }

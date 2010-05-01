@@ -11,7 +11,7 @@
     pstmt.setString(4,item.getNickname());
     pstmt.setLong(5,rosterID);
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_ROSTER_ITEM_GROUPS);
     pstmt.setLong(1,rosterID);
     pstmt.executeUpdate();

@@ -3,7 +3,7 @@
   Map<Long,RosterItem> itemsByID=new HashMap<Long,RosterItem>();
   Connection con=null;
   PreparedStatement pstmt=null;
-  ResultSet rs;
+  ResultSet rs=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_ROSTER);
@@ -14,8 +14,7 @@
       itemList.add(item);
       itemsByID.put(item.getID(),item);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=null;
     if (!itemList.isEmpty()) {
       StringBuilder sb=new StringBuilder(100);
@@ -30,14 +29,13 @@
       while (rs.next()) {
         itemsByID.get(rs.getLong(1)).getGroups().add(rs.getString(2));
       }
-      rs.close();
     }
   }
  catch (  SQLException e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
  finally {
-    DbConnectionManager.closeConnection(pstmt,con);
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return itemList.iterator();
 }

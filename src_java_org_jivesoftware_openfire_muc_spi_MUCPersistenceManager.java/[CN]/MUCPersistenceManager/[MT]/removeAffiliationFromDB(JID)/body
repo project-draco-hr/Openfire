@@ -6,7 +6,7 @@
     pstmt=con.prepareStatement(DELETE_USER_MEMBER);
     pstmt.setString(1,bareJID.toBareJID());
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_USER_MUCAFFILIATION);
     pstmt.setString(1,bareJID.toBareJID());
     pstmt.executeUpdate();
@@ -15,17 +15,6 @@
     Log.error(sqle.getMessage(),sqle);
   }
  finally {
-    try {
-      if (pstmt != null)       pstmt.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null)       con.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
 }

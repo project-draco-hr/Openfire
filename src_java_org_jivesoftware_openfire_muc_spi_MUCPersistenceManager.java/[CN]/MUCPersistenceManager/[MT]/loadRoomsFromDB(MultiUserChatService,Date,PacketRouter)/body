@@ -1,6 +1,7 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   Map<Long,LocalMUCRoom> rooms=new HashMap<Long,LocalMUCRoom>();
   try {
     Long serviceID=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServiceID(chatserver.getServiceName());
@@ -8,7 +9,7 @@
     pstmt=con.prepareStatement(LOAD_ALL_ROOMS);
     pstmt.setLong(1,serviceID);
     pstmt.setString(2,StringUtils.dateToMillis(emptyDate));
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     while (rs.next()) {
       LocalMUCRoom room=new LocalMUCRoom(chatserver,rs.getString(4),packetRouter);
       room.setID(rs.getLong(1));
@@ -51,8 +52,7 @@
       room.setPersistent(true);
       rooms.put(room.getID(),room);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_ALL_HISTORY);
     long from=System.currentTimeMillis() - (86400000 * 2);
     pstmt.setLong(1,serviceID);
@@ -77,8 +77,7 @@
         Log.error(e.getMessage(),e);
       }
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     for (    MUCRoom loadedRoom : rooms.values()) {
       if (!loadedRoom.getRoomHistory().hasChangedSubject() && loadedRoom.getSubject() != null && loadedRoom.getSubject().length() > 0) {
         loadedRoom.getRoomHistory().addOldMessage(loadedRoom.getRole().getRoleAddress().toString(),null,loadedRoom.getModificationDate(),loadedRoom.getSubject(),null);
@@ -114,8 +113,7 @@ Log.error("Unkown affiliation value " + affiliation + " for user "+ jid+ " in pe
 Log.error(e.getMessage(),e);
 }
 }
-rs.close();
-pstmt.close();
+DbConnectionManager.fastcloseStmt(rs,pstmt);
 pstmt=con.prepareStatement(LOAD_ALL_MEMBERS);
 pstmt.setLong(1,serviceID);
 rs=pstmt.executeQuery();
@@ -131,24 +129,12 @@ room.addMember(new JID(rs.getString(2)),rs.getString(3),room.getRole());
 Log.error(e.getMessage(),e);
 }
 }
-rs.close();
 }
  catch (SQLException sqle) {
 Log.error(sqle.getMessage(),sqle);
 }
  finally {
-try {
-if (pstmt != null) pstmt.close();
-}
- catch (Exception e) {
-Log.error(e.getMessage(),e);
-}
-try {
-if (con != null) con.close();
-}
- catch (Exception e) {
-Log.error(e.getMessage(),e);
-}
+DbConnectionManager.closeConnection(rs,pstmt,con);
 }
 for (MUCRoom room : rooms.values()) {
 room.setSavedToDB(true);

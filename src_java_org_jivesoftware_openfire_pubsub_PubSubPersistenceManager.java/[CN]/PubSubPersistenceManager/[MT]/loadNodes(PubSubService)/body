@@ -1,81 +1,64 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   Map<String,Node> nodes=new HashMap<String,Node>();
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_NON_LEAF_NODES);
     pstmt.setString(1,service.getServiceID());
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     while (rs.next()) {
       loadNode(service,nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_LEAF_NODES);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadNode(service,nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_NODES_JIDS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAssociatedJIDs(nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_NODES_GROUPS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAssociatedGroups(nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_AFFILIATIONS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAffiliations(nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_SUBSCRIPTIONS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadSubscriptions(service,nodes,rs);
     }
-    rs.close();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=con.prepareStatement(LOAD_ALL_ITEMS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadItems(nodes,rs);
     }
-    rs.close();
   }
  catch (  SQLException sqle) {
     Log.error(sqle.getMessage(),sqle);
   }
  finally {
-    try {
-      if (pstmt != null)       pstmt.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null)       con.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   for (  Node node : nodes.values()) {
     node.setSavedToDB(true);

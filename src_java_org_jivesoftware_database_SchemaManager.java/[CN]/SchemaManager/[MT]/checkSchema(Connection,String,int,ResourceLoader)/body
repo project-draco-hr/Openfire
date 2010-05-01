@@ -12,8 +12,7 @@
   }
  catch (  SQLException sqle) {
     Log.debug("SchemaManager: Error verifying " + schemaKey + " version, probably ignorable.",sqle);
-    DbConnectionManager.closeResultSet(rs);
-    DbConnectionManager.closeStatement(pstmt);
+    DbConnectionManager.closeStatement(rs,pstmt);
     if (schemaKey.equals("openfire")) {
       try {
         pstmt=con.prepareStatement(CHECK_VERSION_JIVE);
@@ -25,12 +24,8 @@
       }
  catch (      SQLException sqlea) {
         Log.debug("SchemaManager: Error verifying " + schemaKey + " version, probably ignorable.",sqlea);
-        DbConnectionManager.closeResultSet(rs);
-        DbConnectionManager.closeStatement(pstmt);
+        DbConnectionManager.closeStatement(rs,pstmt);
         try {
-          if (pstmt != null) {
-            pstmt.close();
-          }
           pstmt=con.prepareStatement(CHECK_VERSION_OLD);
           rs=pstmt.executeQuery();
           if (rs.next()) {
@@ -44,8 +39,7 @@
     }
   }
  finally {
-    DbConnectionManager.closeResultSet(rs);
-    DbConnectionManager.closeStatement(pstmt);
+    DbConnectionManager.closeStatement(rs,pstmt);
   }
   if (currentVersion >= requiredVersion) {
     return true;

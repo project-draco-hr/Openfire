@@ -22,18 +22,21 @@
         if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.oracle || DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.db2) {
           command.deleteCharAt(command.length() - 1);
         }
+        PreparedStatement pstmt=null;
         try {
           String cmdString=command.toString();
           if (autoreplace) {
             cmdString=cmdString.replaceAll("jiveVersion","ofVersion");
           }
-          Statement stmt=con.createStatement();
-          stmt.execute(cmdString);
-          stmt.close();
+          pstmt=con.prepareStatement(cmdString);
+          pstmt.execute();
         }
  catch (        SQLException e) {
           Log.error("SchemaManager: Failed to execute SQL:\n" + command.toString());
           throw e;
+        }
+ finally {
+          DbConnectionManager.closeStatement(pstmt);
         }
       }
     }

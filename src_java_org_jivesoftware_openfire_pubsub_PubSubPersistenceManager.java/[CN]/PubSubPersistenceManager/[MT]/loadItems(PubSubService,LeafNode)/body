@@ -1,6 +1,7 @@
 {
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   SAXReader xmlReader=null;
   try {
     xmlReader=xmlReaders.take();
@@ -8,7 +9,7 @@
     pstmt=con.prepareStatement(LOAD_ITEMS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     while (rs.next()) {
       String itemID=rs.getString(1);
       JID publisher=new JID(rs.getString(2));
@@ -19,7 +20,6 @@
       }
       node.addPublishedItem(item);
     }
-    rs.close();
   }
  catch (  Exception sqle) {
     Log.error(sqle.getMessage(),sqle);
@@ -28,17 +28,6 @@
     if (xmlReader != null) {
       xmlReaders.add(xmlReader);
     }
-    try {
-      if (pstmt != null)       pstmt.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null)       con.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
 }

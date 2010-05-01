@@ -1,5 +1,5 @@
 {
-  java.sql.Connection con=null;
+  Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
@@ -11,21 +11,6 @@
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
 }

@@ -10,11 +10,11 @@
     pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
     pstmt.setLong(1,room.getID());
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_MEMBERS);
     pstmt.setLong(1,room.getID());
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_ROOM);
     pstmt.setLong(1,room.getID());
     pstmt.executeUpdate();
@@ -25,12 +25,7 @@
     abortTransaction=true;
   }
  finally {
-    try {
-      if (pstmt != null)       pstmt.close();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeStatement(pstmt);
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }
 }

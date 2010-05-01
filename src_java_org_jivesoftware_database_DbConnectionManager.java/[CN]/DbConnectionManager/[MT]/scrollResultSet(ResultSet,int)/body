@@ -1,11 +1,12 @@
 {
   if (isScrollResultsSupported()) {
     if (rowNumber > 0) {
-      rs.setFetchDirection(ResultSet.FETCH_FORWARD);
       try {
+        rs.setFetchDirection(ResultSet.FETCH_FORWARD);
         rs.relative(rowNumber);
       }
  catch (      SQLException e) {
+        Log.error("Error in JDBC method rs.relative(rowNumber).",e);
         for (int i=0; i < rowNumber; i++) {
           rs.next();
         }

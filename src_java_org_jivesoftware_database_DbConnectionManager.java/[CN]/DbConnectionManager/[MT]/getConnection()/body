@@ -25,31 +25,28 @@ synchronized (providerLock) {
   Connection con=null;
   SQLException lastException=null;
   do {
-    retryCnt++;
     try {
       con=connectionProvider.getConnection();
+      if (con != null) {
+        if (!profilingEnabled) {
+          return con;
+        }
+ else {
+          return new ProfiledConnection(con);
+        }
+      }
     }
  catch (    SQLException e) {
       lastException=e;
       Log.info("Unable to get a connection from the database pool " + "(attempt " + retryCnt + " out of "+ retryMax+ ").",e);
-    }
-    if (con != null) {
-      break;
     }
     try {
       Thread.sleep(retryWait);
     }
  catch (    Exception e) {
     }
+    retryCnt++;
   }
  while (retryCnt <= retryMax);
-  if (con == null) {
-    throw new SQLException("ConnectionManager.getConnection() " + "failed to obtain a connection after " + retryCnt + " retries. "+ "The exception from the last attempt is as follows: "+ lastException);
-  }
-  if (profilingEnabled) {
-    return new ProfiledConnection(con);
-  }
- else {
-    return con;
-  }
+  throw new SQLException("ConnectionManager.getConnection() " + "failed to obtain a connection after " + retryCnt + " retries. "+ "The exception from the last attempt is as follows: "+ lastException);
 }

@@ -31,7 +31,7 @@
         pstmt.executeUpdate();
       }
     }
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(ADD_NODE_GROUPS);
     for (    String groupName : node.getRosterGroupsAllowed()) {
       pstmt.setString(1,service.getServiceID());
@@ -41,6 +41,6 @@
     }
   }
   finally {
-    pstmt.close();
+    DbConnectionManager.closeStatement(pstmt);
   }
 }

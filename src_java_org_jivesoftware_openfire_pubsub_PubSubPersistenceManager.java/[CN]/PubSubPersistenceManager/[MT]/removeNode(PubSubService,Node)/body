@@ -8,27 +8,27 @@
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_NODE_JIDS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_NODE_GROUPS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_ITEMS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.closeStatement(pstmt);
     pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_SUBSCRIPTIONS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
@@ -39,14 +39,7 @@
     abortTransaction=true;
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeStatement(pstmt);
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }
   return !abortTransaction;
