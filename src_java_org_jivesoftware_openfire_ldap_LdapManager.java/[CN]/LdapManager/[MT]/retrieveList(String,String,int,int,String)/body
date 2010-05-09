@@ -2,10 +2,12 @@
   List<String> results=new ArrayList<String>();
   int pageSize=-1;
   String pageSizeStr=properties.get("ldap.pagedResultsSize");
-  try {
-    if (pageSizeStr != null)     pageSize=Integer.parseInt(pageSizeStr,-1);
-  }
- catch (  NumberFormatException e) {
+  if (pageSizeStr != null) {
+    try {
+      pageSize=Integer.parseInt(pageSizeStr);
+    }
+ catch (    NumberFormatException e) {
+    }
   }
   Boolean clientSideSort=false;
   String clientSideSortStr=properties.get("ldap.clientSideSorting");

@@ -1,10 +1,12 @@
 {
   int pageSize=-1;
   String pageSizeStr=properties.get("ldap.pagedResultsSize");
-  try {
-    if (pageSizeStr != null)     pageSize=Integer.parseInt(pageSizeStr,-1);
-  }
- catch (  NumberFormatException e) {
+  if (pageSizeStr != null) {
+    try {
+      pageSize=Integer.parseInt(pageSizeStr);
+    }
+ catch (    NumberFormatException e) {
+    }
   }
   LdapContext ctx=null;
   LdapContext ctx2=null;
