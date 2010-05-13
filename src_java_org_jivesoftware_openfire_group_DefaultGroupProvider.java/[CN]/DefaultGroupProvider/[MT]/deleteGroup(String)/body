@@ -7,11 +7,11 @@
     pstmt=con.prepareStatement(DELETE_GROUP_USERS);
     pstmt.setString(1,groupName);
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_PROPERTIES);
     pstmt.setString(1,groupName);
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_GROUP);
     pstmt.setString(1,groupName);
     pstmt.executeUpdate();
@@ -21,14 +21,7 @@
     abortTransaction=true;
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeStatement(pstmt);
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }
 }

@@ -2,6 +2,7 @@
   List<JID> members=new ArrayList<JID>();
   Connection con=null;
   PreparedStatement pstmt=null;
+  ResultSet rs=null;
   try {
     con=DbConnectionManager.getConnection();
     if (adminsOnly) {
@@ -11,7 +12,7 @@
       pstmt=con.prepareStatement(LOAD_MEMBERS);
     }
     pstmt.setString(1,groupName);
-    ResultSet rs=pstmt.executeQuery();
+    rs=pstmt.executeQuery();
     while (rs.next()) {
       String user=rs.getString(1);
       JID userJID=null;
@@ -25,28 +26,12 @@
       }
       members.add(userJID);
     }
-    rs.close();
   }
  catch (  SQLException e) {
     Log.error(e.getMessage(),e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return members;
 }

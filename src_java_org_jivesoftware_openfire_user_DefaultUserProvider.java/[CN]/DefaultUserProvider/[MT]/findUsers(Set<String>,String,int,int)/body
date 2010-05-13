@@ -14,44 +14,68 @@
   }
   List<String> usernames=new ArrayList<String>(50);
   Connection con=null;
-  Statement stmt=null;
+  PreparedStatement pstmt=null;
+  int queries=0;
   ResultSet rs=null;
   try {
-    con=DbConnectionManager.getConnection();
-    stmt=con.createStatement();
-    StringBuilder sql=new StringBuilder();
+    StringBuilder sql=new StringBuilder(90);
     sql.append("SELECT username FROM ofUser WHERE");
     boolean first=true;
     if (fields.contains("Username")) {
-      sql.append(" username LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+      sql.append(" username LIKE ?");
+      queries++;
       first=false;
     }
     if (fields.contains("Name")) {
       if (!first) {
         sql.append(" AND");
       }
-      sql.append(" name LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+      sql.append(" name LIKE ?");
+      queries++;
       first=false;
     }
     if (fields.contains("Email")) {
       if (!first) {
         sql.append(" AND");
       }
-      sql.append(" email LIKE '").append(StringUtils.escapeForSQL(query)).append("'");
+      sql.append(" email LIKE ?");
+      queries++;
     }
-    rs=stmt.executeQuery(sql.toString());
-    DbConnectionManager.scrollResultSet(rs,startIndex);
-    int count=0;
-    while (rs.next() && count < numResults) {
-      usernames.add(rs.getString(1));
-      count++;
+    con=DbConnectionManager.getConnection();
+    if ((startIndex == 0) && (numResults == Integer.MAX_VALUE)) {
+      pstmt=con.prepareStatement(sql.toString());
+      for (int i=1; i <= queries; i++) {
+        pstmt.setString(i,query);
+      }
+      rs=pstmt.executeQuery();
+      while (rs.next()) {
+        usernames.add(rs.getString(1));
+      }
+    }
+ else {
+      pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql.toString());
+      DbConnectionManager.limitRowsAndFetchSize(pstmt,startIndex,numResults);
+      for (int i=1; i <= queries; i++) {
+        pstmt.setString(i,query);
+      }
+      rs=pstmt.executeQuery();
+      DbConnectionManager.scrollResultSet(rs,startIndex);
+      int count=0;
+      while (rs.next() && count < numResults) {
+        usernames.add(rs.getString(1));
+        count++;
+      }
+    }
+    if (Log.isDebugEnabled()) {
+      Log.debug("Results: " + usernames.size());
+      LogResults(usernames);
     }
   }
  catch (  SQLException e) {
     Log.error(e.getMessage(),e);
   }
  finally {
-    DbConnectionManager.closeConnection(rs,stmt,con);
+    DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return new UserCollection(usernames.toArray(new String[usernames.size()]));
 }

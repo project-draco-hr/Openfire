@@ -12,22 +12,7 @@
     Log.error(e.getMessage(),e);
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
-    try {
-      if (con != null) {
-        con.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeConnection(pstmt,con);
   }
   Collection<JID> members=getMembers(name,false);
   Collection<JID> administrators=getMembers(name,true);

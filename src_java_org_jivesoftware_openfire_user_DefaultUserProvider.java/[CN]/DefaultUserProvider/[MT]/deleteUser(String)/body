@@ -1,7 +1,4 @@
 {
-  if (isReadOnly()) {
-    throw new UnsupportedOperationException();
-  }
   Connection con=null;
   PreparedStatement pstmt=null;
   boolean abortTransaction=false;
@@ -10,7 +7,7 @@
     pstmt=con.prepareStatement(DELETE_USER_PROPS);
     pstmt.setString(1,username);
     pstmt.execute();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_USER);
     pstmt.setString(1,username);
     pstmt.execute();
@@ -20,6 +17,7 @@
     abortTransaction=true;
   }
  finally {
+    DbConnectionManager.closeStatement(pstmt);
     DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
   }
 }

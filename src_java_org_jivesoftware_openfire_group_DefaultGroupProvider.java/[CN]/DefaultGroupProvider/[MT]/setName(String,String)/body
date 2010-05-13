@@ -8,12 +8,12 @@
     pstmt.setString(1,newName);
     pstmt.setString(2,oldName);
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(SET_GROUP_NAME_2);
     pstmt.setString(1,newName);
     pstmt.setString(2,oldName);
     pstmt.executeUpdate();
-    pstmt.close();
+    DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(SET_GROUP_NAME_3);
     pstmt.setString(1,newName);
     pstmt.setString(2,oldName);
@@ -24,14 +24,7 @@
     abortTransaction=true;
   }
  finally {
-    try {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+    DbConnectionManager.closeStatement(pstmt);
     DbConnectionManager.closeTransactionConnection(con,abortTransaction);
   }
 }

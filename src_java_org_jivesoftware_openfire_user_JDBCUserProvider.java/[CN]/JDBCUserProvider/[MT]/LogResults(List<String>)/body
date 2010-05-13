@@ -1,0 +1,16 @@
+{
+  String callingMethod=Thread.currentThread().getStackTrace()[3].getMethodName();
+  StringBuilder sb=new StringBuilder(256);
+  int count=0;
+  for (  String element : listElements) {
+    if (count > 20) {
+      Log.debug(callingMethod + " results: " + sb.toString());
+      sb.delete(0,sb.length());
+      count=0;
+    }
+    sb.append(element).append(",");
+    count++;
+  }
+  sb.append(".");
+  Log.debug(callingMethod + " results: " + sb.toString());
+}

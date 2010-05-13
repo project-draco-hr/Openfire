@@ -1,0 +1,13 @@
+{
+  final int MAX_FETCHRESULTS=500;
+  final int maxRows=startIndex + numResults;
+  setMaxRows(pstmt,maxRows);
+  if (pstmt_fetchSizeSupported) {
+    if (scrollResultsSupported) {
+      setFetchSize(pstmt,Math.min(MAX_FETCHRESULTS,numResults));
+    }
+ else {
+      setFetchSize(pstmt,Math.min(MAX_FETCHRESULTS,maxRows));
+    }
+  }
+}
