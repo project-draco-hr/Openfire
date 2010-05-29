@@ -2,11 +2,18 @@
   if (maxCacheSize < 0) {
     return;
   }
-  if (cacheSize >= maxCacheSize * .97) {
+  int desiredSize=(int)(maxCacheSize * .97);
+  if (cacheSize >= desiredSize) {
     deleteExpiredEntries();
-    int desiredSize=(int)(maxCacheSize * .90);
-    while (cacheSize > desiredSize) {
-      remove(lastAccessedList.getLast().object);
+    desiredSize=(int)(maxCacheSize * .90);
+    if (cacheSize > desiredSize) {
+      long t=System.currentTimeMillis();
+      do {
+        remove(lastAccessedList.getLast().object);
+      }
+ while (cacheSize > desiredSize);
+      t=System.currentTimeMillis() - t;
+      Log.warn("Cache " + name + " was full, shrinked to 90% in "+ t+ "ms.");
     }
   }
 }
