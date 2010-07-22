@@ -1,0 +1,45 @@
+{
+  final IQ reply=IQ.createResultIQ(iq);
+  final Element element=iq.getChildElement();
+  if (element != null) {
+    final String namespace=element.getNamespaceURI();
+    if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+      if (iq.getTo().getNode() == null) {
+        Element identity=element.addElement("identity");
+        identity.addAttribute("category","component");
+        identity.addAttribute("type","relay");
+        identity.addAttribute("name",getName());
+        element.addElement("feature").addAttribute("var","http://jabber.org/protocol/disco#info");
+        element.addElement("feature").addAttribute("var",JingleChannelIQ.NAMESPACE);
+      }
+    }
+ else     if (JingleChannelIQ.NAME.equals(element.getName()) && JingleChannelIQ.NAMESPACE.equals(namespace) && UDP.equals(element.attributeValue(PROTOCOL))) {
+      final Element childElement=iq.getChildElement().createCopy();
+      final RelayChannel channel=plugin.createRelayChannel();
+      if (channel != null) {
+        childElement.addAttribute(HOST,LocalIPResolver.getLocalIP());
+        childElement.addAttribute(LOCAL_PORT,Integer.toString(channel.getPortA()));
+        childElement.addAttribute(REMOTE_PORT,Integer.toString(channel.getPortB()));
+        reply.setChildElement(childElement);
+      }
+ else {
+        reply.setError(PacketError.Condition.internal_server_error);
+      }
+    }
+ else {
+      reply.setError(PacketError.Condition.feature_not_implemented);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.feature_not_implemented);
+  }
+  try {
+    componentManager.sendPacket(this,reply);
+    if (Log.isDebugEnabled()) {
+      Log.debug("Packet sent: {}",reply.toXML());
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}
