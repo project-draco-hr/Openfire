@@ -1,5 +1,5 @@
 {
-  KeyPair keyPair=generateKeyPair("RSA",1024);
+  KeyPair keyPair=generateKeyPair("RSA",JiveGlobals.getIntProperty("cert.rsa.keysize",2048));
   X509Certificate cert=createX509V3Certificate(keyPair,60,issuerDN,subjectDN,domain,"SHA1WITHRSAENCRYPTION");
   ksKeys.setKeyEntry(alias,keyPair.getPrivate(),keyPassword.toCharArray(),new X509Certificate[]{cert});
   for (  CertificateEventListener listener : listeners) {
