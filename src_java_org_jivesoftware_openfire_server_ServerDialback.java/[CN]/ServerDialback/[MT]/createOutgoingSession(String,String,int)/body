@@ -1,21 +1,21 @@
 {
-  String realHostname=null;
+  String hostname=null;
   int realPort=port;
   try {
     Socket socket=new Socket();
-    List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,port);
+    List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(remoteDomain,port);
     for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
       try {
         DNSUtil.HostAddress address=it.next();
-        realHostname=address.getHost();
+        hostname=address.getHost();
         realPort=address.getPort();
-        Log.debug("ServerDialback: OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
-        socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
-        Log.debug("ServerDialback: OS - Connection to " + hostname + ":"+ port+ " successful");
+        Log.debug("ServerDialback: OS - Trying to connect to " + remoteDomain + ":"+ port+ "(DNS lookup: "+ hostname+ ":"+ realPort+ ")");
+        socket.connect(new InetSocketAddress(hostname,realPort),RemoteServerManager.getSocketTimeout());
+        Log.debug("ServerDialback: OS - Connection to " + remoteDomain + ":"+ port+ " successful");
         break;
       }
  catch (      Exception e) {
-        Log.warn("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+        Log.warn("Error trying to connect to remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ":"+ realPort+ ")",e);
       }
     }
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
@@ -23,7 +23,10 @@
     stream.append("<stream:stream");
     stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
     stream.append(" xmlns=\"jabber:server\"");
-    stream.append(" xmlns:db=\"jabber:server:dialback\">");
+    stream.append(" to=\"").append(remoteDomain).append("\"");
+    stream.append(" from=\"").append(localDomain).append("\"");
+    stream.append(" xmlns:db=\"jabber:server:dialback\"");
+    stream.append(" version=\"1.0\">");
     connection.deliverRawText(stream.toString());
     int soTimeout=socket.getSoTimeout();
     socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
@@ -38,11 +41,11 @@
       socket.setSoTimeout(soTimeout);
       String id=xpp.getAttributeValue("","id");
       OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
-      if (authenticateDomain(socketReader,domain,hostname,id)) {
+      if (authenticateDomain(socketReader,localDomain,remoteDomain,id)) {
         StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-        LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,socketReader,streamID);
+        LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,socketReader,streamID);
         connection.init(session);
-        session.setAddress(new JID(null,hostname,null));
+        session.setAddress(new JID(null,remoteDomain,null));
         return session;
       }
  else {
@@ -56,13 +59,13 @@
     }
   }
  catch (  IOException e) {
-    Log.debug("ServerDialback: Error connecting to the remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    Log.debug("ServerDialback: Error connecting to the remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ":"+ realPort+ ")",e);
     if (connection != null) {
       connection.close();
     }
   }
 catch (  Exception e) {
-    Log.error("Error creating outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ")",e);
+    Log.error("Error creating outgoing session to remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ")",e);
     if (connection != null) {
       connection.close();
     }
