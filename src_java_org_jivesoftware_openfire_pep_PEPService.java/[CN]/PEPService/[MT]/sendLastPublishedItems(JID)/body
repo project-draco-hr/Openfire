@@ -29,7 +29,7 @@
     if (subscription.isIncludingBody()) {
       notification.setBody(LocaleUtils.getLocalizedString("pubsub.notification.message.body"));
     }
-    notification.getElement().addElement("x","jabber:x:delay").addAttribute("stamp",fastDateFormat.format(leafLastPublishedItem.getCreationDate()));
+    notification.getElement().addElement("delay","urn:xmpp:delay").addAttribute("stamp",fastDateFormat.format(leafLastPublishedItem.getCreationDate()));
     this.sendNotification(subscription.getNode(),notification,subscription.getJID());
   }
 }

@@ -10,13 +10,17 @@
  else {
     message.setFrom(room.getRole().getRoleAddress());
   }
-  Element delayInformation=message.addChildElement("x","jabber:x:delay");
+  Element delayInformation=message.addChildElement("delay","urn:xmpp:delay");
+  Element delayInformationOld=message.addChildElement("x","jabber:x:delay");
   delayInformation.addAttribute("stamp",UTC_FORMAT.format(sentDate));
+  delayInformationOld.addAttribute("stamp",UTC_FORMAT_OLD.format(sentDate));
   if (room.canAnyoneDiscoverJID()) {
     delayInformation.addAttribute("from",senderJID);
+    delayInformationOld.addAttribute("from",senderJID);
   }
  else {
     delayInformation.addAttribute("from",room.getRole().getRoleAddress().toString());
+    delayInformationOld.addAttribute("from",room.getRole().getRoleAddress().toString());
   }
   historyStrategy.addMessage(message);
 }

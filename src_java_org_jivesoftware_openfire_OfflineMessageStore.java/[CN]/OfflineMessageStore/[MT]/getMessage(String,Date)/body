@@ -14,9 +14,12 @@
     while (rs.next()) {
       String msgXML=rs.getString(1);
       message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
-      Element delay=message.addChildElement("x","jabber:x:delay");
+      Element delay=message.addChildElement("delay","urn:xmpp:delay");
       delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
       delay.addAttribute("stamp",dateFormat.format(creationDate));
+      delay=message.addChildElement("x","jabber:x:delay");
+      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
+      delay.addAttribute("stamp",dateFormatOld.format(creationDate));
     }
   }
  catch (  Exception e) {
