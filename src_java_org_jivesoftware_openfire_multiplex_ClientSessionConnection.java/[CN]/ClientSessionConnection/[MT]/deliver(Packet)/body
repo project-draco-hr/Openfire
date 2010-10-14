@@ -1,7 +1,8 @@
 {
-  ConnectionMultiplexerSession multiplexerSession=multiplexerManager.getMultiplexerSession(connectionManagerName);
+  String streamID=session.getStreamID().getID();
+  ConnectionMultiplexerSession multiplexerSession=multiplexerManager.getMultiplexerSession(connectionManagerName,streamID);
   if (multiplexerSession != null) {
-    Route wrapper=new Route(session.getStreamID().getID());
+    Route wrapper=new Route(streamID);
     wrapper.setFrom(serverName);
     wrapper.setTo(connectionManagerName);
     wrapper.setChildElement(packet.getElement().createCopy());

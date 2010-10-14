@@ -1,0 +1,16 @@
+{
+  List<ConnectionMultiplexerSession> sessions=sessionManager.getConnectionMultiplexerSessions(connectionManagerDomain);
+  if (sessions.isEmpty()) {
+    return null;
+  }
+ else   if (sessions.size() == 1) {
+    return sessions.get(0);
+  }
+ else   if (streamID != null) {
+    int connectionIndex=Math.abs(streamID.hashCode()) % sessions.size();
+    return sessions.get(connectionIndex);
+  }
+ else {
+    return sessions.get(randGen.nextInt(sessions.size()));
+  }
+}
