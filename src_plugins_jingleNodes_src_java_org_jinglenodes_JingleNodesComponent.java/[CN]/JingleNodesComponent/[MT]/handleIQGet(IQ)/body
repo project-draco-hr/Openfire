@@ -17,5 +17,13 @@
     }
     return reply;
   }
+ else   if (JingleTrackerIQ.NAME.equals(element.getName()) && JingleTrackerIQ.NAMESPACE.equals(namespace)) {
+    final List<TrackerEntry> entries=new ArrayList<TrackerEntry>();
+    entries.add(new TrackerEntry(TrackerEntry.Type.relay,TrackerEntry.Policy._roster,plugin.getServiceName() + "." + getDomain(),UDP));
+    final String elements=getChildElementXML(entries);
+    final Element e=DocumentHelper.parseText(elements).getRootElement();
+    reply.setChildElement(e);
+    return reply;
+  }
   return null;
 }
