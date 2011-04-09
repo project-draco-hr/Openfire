@@ -3,15 +3,22 @@
   if (conn.getCompressionPolicy() != Connection.CompressionPolicy.disabled && !conn.isCompressed()) {
     sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
   }
-  boolean usingSelfSigned=false;
-  Certificate[] certificates=conn.getLocalCertificates();
-  for (  Certificate certificate : certificates) {
+  boolean usingSelfSigned;
+  final Certificate[] chain=conn.getLocalCertificates();
+  if (chain == null || chain.length == 0) {
+    usingSelfSigned=true;
+  }
+ else {
     try {
-      if (CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)certificate)) {
-        usingSelfSigned=true;
-      }
+      usingSelfSigned=CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)chain[0]);
     }
- catch (    Exception e) {
+ catch (    KeyStoreException ex) {
+      Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
+      usingSelfSigned=true;
+    }
+catch (    IOException ex) {
+      Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
+      usingSelfSigned=true;
     }
   }
   if (usingSelfSigned && ServerDialback.isEnabledForSelfSigned() && validatedDomains.isEmpty()) {

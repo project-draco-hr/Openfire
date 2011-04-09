@@ -6,15 +6,21 @@
   sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
   if (session instanceof IncomingServerSession) {
     if (session.isSecure()) {
-      boolean usingSelfSigned=false;
-      Certificate[] certificates=session.getConnection().getLocalCertificates();
-      for (      Certificate certificate : certificates) {
+      boolean usingSelfSigned;
+      final Certificate[] chain=session.getConnection().getLocalCertificates();
+      if (chain == null || chain.length == 0) {
+        usingSelfSigned=true;
+      }
+ else {
         try {
-          if (CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)certificate)) {
-            usingSelfSigned=true;
-          }
+          usingSelfSigned=CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)chain[0]);
         }
- catch (        Exception e) {
+ catch (        KeyStoreException ex) {
+          Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
+          usingSelfSigned=true;
+        }
+catch (        IOException ex) {
+          Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
           usingSelfSigned=true;
         }
       }
