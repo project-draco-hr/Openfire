@@ -4,9 +4,9 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(DELETE_RULE);
-    pstmt.setString(1,ruleId);
+    pstmt.setInt(1,new Integer(ruleId));
     pstmt.execute();
-    rules.remove(getRuleById(new Integer(ruleId)));
+    rules.remove(getRuleById(ruleId));
   }
  catch (  SQLException sqle) {
     Log.error(sqle.getMessage(),sqle);
