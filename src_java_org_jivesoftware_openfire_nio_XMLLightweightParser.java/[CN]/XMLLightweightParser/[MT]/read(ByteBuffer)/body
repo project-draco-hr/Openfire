@@ -3,18 +3,27 @@
   if (buffer.length() > maxBufferSize) {
     throw new Exception("Stopped parsing never ending stanza");
   }
-  CharBuffer charBuffer=CharBuffer.allocate(byteBuffer.capacity());
-  encoder.reset();
-  CoderResult coderResult=encoder.decode(byteBuffer.buf(),charBuffer,false);
-  char[] buf=Arrays.copyOf(charBuffer.array(),charBuffer.position());
-  int readChar=buf.length;
-  if (readChar == 0) {
+  CharBuffer charBuffer=encoder.decode(byteBuffer.buf());
+  char[] buf=charBuffer.array();
+  int readByte=charBuffer.remaining();
+  if (readByte == 0) {
     return;
   }
-  buffer.append(buf);
+  char lastChar=buf[readByte - 1];
+  if (lastChar >= 0xfff0) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Waiting to get complete char: " + String.valueOf(buf));
+    }
+    byteBuffer.position(byteBuffer.position() - 1);
+    readByte--;
+    if (readByte == 0) {
+      return;
+    }
+  }
+  buffer.append(buf,0,readByte);
   char ch;
   boolean isHighSurrogate=false;
-  for (int i=0; i < readChar; i++) {
+  for (int i=0; i < readByte; i++) {
     ch=buf[i];
     if (ch < 0x20 && ch != 0x9 && ch != 0xA && ch != 0xD && ch != 0x0) {
       throw new Exception("Disallowed character");
@@ -37,7 +46,7 @@
       if (depth < 1 && ch == head.charAt(tailCount)) {
         tailCount++;
         if (tailCount == head.length()) {
-          int end=buffer.length() - readChar + (i + 1);
+          int end=buffer.length() - readByte + (i + 1);
           String msg=buffer.substring(startLastMsg,end);
           foundMsg(msg);
           startLastMsg=end;
@@ -77,7 +86,7 @@
         depth--;
         status=XMLLightweightParser.OUTSIDE;
         if (depth < 1) {
-          int end=buffer.length() - readChar + (i + 1);
+          int end=buffer.length() - readByte + (i + 1);
           String msg=buffer.substring(startLastMsg,end);
           foundMsg(msg);
           startLastMsg=end;
@@ -127,7 +136,7 @@
  else       if (ch == '>') {
         status=XMLLightweightParser.OUTSIDE;
         if (insideRootTag && ("stream:stream>".equals(head.toString()) || ("?xml>".equals(head.toString())) || ("flash:stream>".equals(head.toString())))) {
-          int end=buffer.length() - readChar + (i + 1);
+          int end=buffer.length() - readByte + (i + 1);
           while (startLastMsg < end && '<' != buffer.charAt(startLastMsg)) {
             startLastMsg++;
           }
