@@ -1,8 +1,18 @@
 {
+  if (presence == null) {
+    throw new IllegalArgumentException("Argument 'presence' cannot be null.");
+  }
+  final Presence.Type type=presence.getType();
+  if (type != Presence.Type.subscribe && type != Presence.Type.unsubscribe && type != Presence.Type.subscribed && type != Presence.Type.unsubscribed) {
+    throw new IllegalArgumentException("Packet processed by PresenceSubscribeHandler is " + "not of a subscription-related type, but: " + type);
+  }
+  presence.setFrom(presence.getFrom().toBareJID());
+  if (presence.getTo() != null) {
+    presence.setTo(presence.getTo().toBareJID());
+  }
+  final JID senderJID=presence.getFrom();
+  final JID recipientJID=presence.getTo();
   try {
-    JID senderJID=presence.getFrom();
-    JID recipientJID=presence.getTo();
-    Presence.Type type=presence.getType();
     if (recipientJID == null || recipientJID.toString().equals(serverName)) {
       if (type == Presence.Type.subscribe) {
         Presence reply=new Presence();
