@@ -1,0 +1,13 @@
+{
+  String contact=getTransport().convertJIDToID(jid);
+  PseudoRosterItem rosterItem;
+  if (pseudoRoster.hasItem(contact)) {
+    rosterItem=pseudoRoster.getItem(contact);
+    rosterItem.setNickname(nickname);
+    rosterItem.setGroups(groups);
+  }
+ else {
+    rosterItem=pseudoRoster.createItem(contact,nickname,groups);
+  }
+  getBuddyManager().storeBuddy(new IRCBuddy(getBuddyManager(),contact,rosterItem));
+}

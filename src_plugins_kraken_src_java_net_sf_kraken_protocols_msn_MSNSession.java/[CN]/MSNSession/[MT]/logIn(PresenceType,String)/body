@@ -1,0 +1,41 @@
+{
+  if (!isLoggedIn()) {
+    Log.debug("Creating MSN session for " + registration.getUsername());
+    setPendingPresenceAndStatus(presenceType,verboseStatus);
+    msnMessenger=MsnMessengerFactory.createMsnMessenger(registration.getUsername(),registration.getPassword());
+    msnListener=new MSNListener(this);
+    ((BasicMessenger)msnMessenger).addSessionListener(msnListener);
+    if (JiveGlobals.getBooleanProperty("plugin.gateway.msn.uselegacyprotocol",true)) {
+      msnMessenger.setSupportedProtocol(new MsnProtocol[]{MsnProtocol.MSNP11});
+    }
+ else {
+      msnMessenger.setSupportedProtocol(new MsnProtocol[]{MsnProtocol.MSNP15});
+    }
+    if (JiveGlobals.getBooleanProperty("plugin.gateway.msn.avatars",true) && getAvatar() != null) {
+      try {
+        msnMessenger.getOwner().setInitDisplayPicture(MsnObject.getInstance(msnMessenger.getOwner().getEmail().getEmailAddress(),Base64.decode(getAvatar().getImageData())));
+        getAvatar().setLegacyIdentifier(msnMessenger.getOwner().getDisplayPicture().getSha1c());
+      }
+ catch (      NotFoundException e) {
+      }
+    }
+    try {
+      Log.debug("Logging in to MSN session for " + msnMessenger.getOwner().getEmail());
+      msnMessenger.getOwner().setInitStatus(((MSNTransport)getTransport()).convertXMPPStatusToMSN(presenceType));
+      msnMessenger.getOwner().setInitPersonalMessage(verboseStatus);
+      msnMessenger.setLogIncoming(false);
+      msnMessenger.setLogOutgoing(false);
+      msnMessenger.addContactListListener(msnListener);
+      msnMessenger.addEmailListener(msnListener);
+      msnMessenger.addMessageListener(msnListener);
+      msnMessenger.addMessengerListener(msnListener);
+      msnMessenger.addSwitchboardListener(msnListener);
+      ((BasicMessenger)msnMessenger).login(JiveGlobals.getProperty("plugin.gateway.msn.connecthost","messenger.hotmail.com"),JiveGlobals.getIntProperty("plugin.gateway.msn.connectport",1863));
+    }
+ catch (    Exception e) {
+      Log.debug("MSN user is not able to log in: " + msnMessenger.getOwner().getEmail(),e);
+      setFailureStatus(ConnectionFailureReason.UNKNOWN);
+      sessionDisconnected("Unable to log in.");
+    }
+  }
+}

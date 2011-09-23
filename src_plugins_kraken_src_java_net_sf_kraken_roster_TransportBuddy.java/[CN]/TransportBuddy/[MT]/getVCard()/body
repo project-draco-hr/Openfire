@@ -1,0 +1,10 @@
+{
+  Element vcard=DocumentHelper.createElement(QName.get("vCard",NameSpace.VCARD_TEMP));
+  vcard.addElement("VERSION").addCDATA("2.0");
+  vcard.addElement("JABBERID").addCDATA(getJID().toString());
+  vcard.addElement("NICKNAME").addCDATA(getNickname() == null ? getName() : getNickname());
+  if (JiveGlobals.getBooleanProperty("plugin.gateway." + getManager().getSession().getTransport().getType() + ".avatars",true)) {
+    addVCardPhoto(vcard);
+  }
+  return vcard;
+}

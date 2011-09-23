@@ -1,0 +1,37 @@
+{
+  try {
+    iSession.getConnectionService().disconnect();
+  }
+ catch (  Exception e) {
+  }
+  if (listener != null) {
+    try {
+      iSession.getConnectionService().removeConnectionListener(listener);
+    }
+ catch (    Exception e) {
+    }
+    try {
+      iSession.getLoginService().removeLoginListener(listener);
+    }
+ catch (    Exception e) {
+    }
+    try {
+      iSession.getMessageService().removeMessageListener(listener);
+    }
+ catch (    Exception e) {
+    }
+    try {
+      iSession.getContactListService().removeContactListlistener(listener);
+    }
+ catch (    Exception e) {
+    }
+    try {
+      iSession.getPresenceService().removeUserListener(listener);
+    }
+ catch (    Exception e) {
+    }
+    listener=null;
+  }
+  iSession=null;
+  loginContext=null;
+}

@@ -1,0 +1,8 @@
+{
+  Log.debug("MySpaceIM: Received error message packet: " + msgPacket);
+  getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),msgPacket.getErrorMessage(),Message.Type.error);
+  if (msgPacket.isFatal()) {
+    getSession().setFailureStatus(ConnectionFailureReason.UNKNOWN);
+    getSession().sessionDisconnected(msgPacket.getErrorMessage());
+  }
+}

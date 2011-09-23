@@ -1,0 +1,45 @@
+{
+  Log.debug("Received message packet: " + packet.toXML());
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  try {
+    TransportSession<B> session=getTransport().getSessionManager().getSession(from);
+    if (!session.isLoggedIn()) {
+      Message m=new Message();
+      m.setError(Condition.service_unavailable);
+      m.setTo(from);
+      m.setFrom(getJID());
+      m.setBody(LocaleUtils.getLocalizedString("gateway.base.notloggedin","kraken",Arrays.asList(getTransport().getType().toString().toUpperCase())));
+      reply.add(m);
+    }
+ else     if (to.getNode() == null) {
+    }
+ else {
+      MUCTransportSession mucSession=session.getMUCSessionManager().getSession(to.getNode());
+      if (packet.getBody() != null) {
+        if (to.getResource() == null) {
+          mucSession.sendMessage(packet.getBody());
+        }
+ else {
+          mucSession.sendPrivateMessage(to.getResource(),packet.getBody());
+        }
+      }
+ else {
+        if (packet.getSubject() != null) {
+          mucSession.updateTopic(packet.getSubject());
+        }
+      }
+    }
+  }
+ catch (  NotFoundException e) {
+    Log.debug("Unable to find session.");
+    Message m=new Message();
+    m.setError(Condition.service_unavailable);
+    m.setTo(from);
+    m.setFrom(getJID());
+    m.setBody(LocaleUtils.getLocalizedString("gateway.base.notloggedin","kraken",Arrays.asList(getTransport().getType().toString().toUpperCase())));
+    reply.add(m);
+  }
+  return reply;
+}

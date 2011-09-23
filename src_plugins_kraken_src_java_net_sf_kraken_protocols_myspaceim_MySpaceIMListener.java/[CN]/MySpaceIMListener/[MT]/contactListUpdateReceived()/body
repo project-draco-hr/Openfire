@@ -1,0 +1,21 @@
+{
+  Log.debug("MySpaceIM: Got contact list.");
+  List<Contact> contacts=getSession().getConnection().getContactManager().getContacts();
+  for (  Contact contact : contacts) {
+    MySpaceIMBuddy buddy;
+    try {
+      buddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(String.valueOf(contact.getContactID())));
+    }
+ catch (    NotFoundException e) {
+      buddy=new MySpaceIMBuddy(getSession().getBuddyManager(),contact.getContactID());
+      getSession().getBuddyManager().storeBuddy(buddy);
+    }
+  }
+  try {
+    getSession().getTransport().syncLegacyRoster(getSession().getJID(),getSession().getBuddyManager().getBuddies());
+  }
+ catch (  UserNotFoundException e) {
+    Log.debug("Unable to sync MySpaceIM contact list for " + getSession().getJID(),e);
+  }
+  getSession().getBuddyManager().activate();
+}

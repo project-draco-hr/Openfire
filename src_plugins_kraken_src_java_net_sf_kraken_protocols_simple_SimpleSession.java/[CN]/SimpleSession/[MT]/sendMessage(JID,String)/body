@@ -1,0 +1,20 @@
+{
+  Log.debug("SimpleSession(" + jid.getNode() + "):  Starting message sending process.");
+  ContentTypeHeader contentTypeHeader;
+  try {
+    contentTypeHeader=headerFactory.createContentTypeHeader("text","plain");
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").sendMessage:  Unable to initiate ContentType header.",e);
+    return;
+  }
+  Log.debug("SimpleSession(" + jid.getNode() + "):  Finished adding ContentType header.");
+  MessageContent content=new MessageContent(contentTypeHeader,message);
+  try {
+    Request request=prepareMessageRequest(content,getTransport().convertJIDToID(jid));
+    sendRequest(request,ListeningPoint.UDP);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").sendMessage:  Unable to send message.",e);
+  }
+}

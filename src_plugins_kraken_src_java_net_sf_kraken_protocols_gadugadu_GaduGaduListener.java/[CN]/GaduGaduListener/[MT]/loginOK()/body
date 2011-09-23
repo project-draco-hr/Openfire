@@ -1,0 +1,20 @@
+{
+  Log.debug("GaduGadu: Login successful");
+  getSession().setLoginStatus(TransportLoginStatus.LOGGED_IN);
+  getSession().loadRoster();
+  try {
+    getSession().getTransport().syncLegacyRoster(getSession().getJID(),getSession().getBuddyManager().getBuddies());
+  }
+ catch (  UserNotFoundException e) {
+    Log.debug("GaduGadu: User not found while syncing legacy roster:",e);
+  }
+  getSession().getBuddyManager().activate();
+  if (getSession().getPseudoRoster().getContacts().isEmpty()) {
+    try {
+      getSession().iSession.getContactListService().importContactList();
+    }
+ catch (    GGException e) {
+      Log.debug("GaduGadu: Unable to retrieve contact list.");
+    }
+  }
+}

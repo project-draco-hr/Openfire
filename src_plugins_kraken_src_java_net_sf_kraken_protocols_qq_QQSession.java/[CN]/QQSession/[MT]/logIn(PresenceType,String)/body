@@ -1,0 +1,22 @@
+{
+  setPendingPresenceAndStatus(presenceType,verboseStatus);
+  if (udpServerList.isEmpty()) {
+    sessionDisconnectedNoReconnect("Unable to log into any QQ servers.");
+    return;
+  }
+  String qqserver=udpServerList.remove(0);
+  setLoginStatus(TransportLoginStatus.LOGGING_IN);
+  qqclient=new QQClient();
+  qqclient.setUser(qquser);
+  qqclient.setConnectionPoolFactory(new PortGateFactory());
+  qqListener=new QQListener(this);
+  qqclient.addQQListener(qqListener);
+  qqclient.setLoginServer("sz.tencent.com");
+  try {
+    qqclient.sendTouch();
+  }
+ catch (  Exception e) {
+    Log.debug("Login attempt at server " + qqserver + " failed, trying next.");
+    setFailureStatus(ConnectionFailureReason.CAN_NOT_CONNECT);
+  }
+}

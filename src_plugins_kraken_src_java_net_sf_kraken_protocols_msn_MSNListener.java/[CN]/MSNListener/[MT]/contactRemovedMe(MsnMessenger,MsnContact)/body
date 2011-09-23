@@ -1,0 +1,8 @@
+{
+  Log.debug("MSN: Contact removed me: " + friend.getFriendlyName());
+  Presence p=new Presence();
+  p.setType(Presence.Type.unsubscribe);
+  p.setTo(getSession().getJID());
+  p.setFrom(getSession().getTransport().convertIDToJID(friend.getEmail().toString()));
+  getSession().getTransport().sendPacket(p);
+}

@@ -1,0 +1,47 @@
+{
+  format=-1;
+  width=-1;
+  height=-1;
+  bitsPerPixel=-1;
+  numberOfImages=1;
+  physicalHeightDpi=-1;
+  physicalWidthDpi=-1;
+  comments=null;
+  try {
+    int b1=read() & 0xff;
+    int b2=read() & 0xff;
+    if (b1 == 0x47 && b2 == 0x49) {
+      return checkGif();
+    }
+ else     if (b1 == 0x89 && b2 == 0x50) {
+      return checkPng();
+    }
+ else     if (b1 == 0xff && b2 == 0xd8) {
+      return checkJpeg();
+    }
+ else     if (b1 == 0x42 && b2 == 0x4d) {
+      return checkBmp();
+    }
+ else     if (b1 == 0x0a && b2 < 0x06) {
+      return checkPcx();
+    }
+ else     if (b1 == 0x46 && b2 == 0x4f) {
+      return checkIff();
+    }
+ else     if (b1 == 0x59 && b2 == 0xa6) {
+      return checkRas();
+    }
+ else     if (b1 == 0x50 && b2 >= 0x31 && b2 <= 0x36) {
+      return checkPnm(b2 - '0');
+    }
+ else     if (b1 == 0x38 && b2 == 0x42) {
+      return checkPsd();
+    }
+ else {
+      return false;
+    }
+  }
+ catch (  IOException ioe) {
+    return false;
+  }
+}

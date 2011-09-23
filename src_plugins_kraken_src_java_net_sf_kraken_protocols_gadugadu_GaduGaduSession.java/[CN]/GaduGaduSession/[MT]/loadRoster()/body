@@ -1,0 +1,12 @@
+{
+  for (  String contact : pseudoRoster.getContacts()) {
+    User user=new User(Integer.valueOf(contact));
+    getBuddyManager().storeBuddy(new GaduGaduBuddy(getBuddyManager(),pseudoRoster.getItem(contact)));
+    try {
+      iSession.getPresenceService().addMonitoredUser(user);
+    }
+ catch (    GGException e) {
+      Log.debug("GaduGadu: Error while setting up user to be monitored during add:",e);
+    }
+  }
+}

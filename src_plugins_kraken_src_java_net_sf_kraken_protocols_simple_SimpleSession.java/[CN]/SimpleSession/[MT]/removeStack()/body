@@ -1,0 +1,20 @@
+{
+  Log.debug("SimpleSession for " + jid.getNode() + " is going to shut down!");
+  tcpSipProvider.removeSipListener(myListener);
+  udpSipProvider.removeSipListener(myListener);
+  myListener=null;
+  Log.debug("SimpleSession for " + jid.getNode() + " has their listeners removed.");
+  try {
+    sipStack.deleteSipProvider(tcpSipProvider);
+    sipStack.deleteSipProvider(udpSipProvider);
+    Log.debug("SimpleSession(" + jid.getNode() + ").shutdown:  SIP Providers deleted.");
+    sipStack.deleteListeningPoint(tcp);
+    sipStack.deleteListeningPoint(udp);
+    Log.debug("SimpleSession(" + jid.getNode() + ").shutdown:  Listening points deleted.");
+  }
+ catch (  Exception ex) {
+    Log.debug("SimpleSession for " + jid.getNode() + " is unable to gracefully shut down.",ex);
+  }
+  sipStack.stop();
+  sipStack=null;
+}

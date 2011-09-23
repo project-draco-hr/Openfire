@@ -1,0 +1,13 @@
+{
+  Log.debug("OSCAR login service state change from " + e.getOldState() + " to "+ e.getNewState());
+  if (e.getNewState() == ClientFlapConn.STATE_CONNECTED) {
+    getFlapProcessor().sendFlap(new LoginFlapCmd());
+    request(new KeyRequest(getMainSession().getRegistration().getUsername()));
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_FAILED) {
+    getMainSession().setFailureStatus(ConnectionFailureReason.CAN_NOT_CONNECT);
+    getMainSession().sessionDisconnected(LocaleUtils.getLocalizedString("gateway.oscar.connectionfailed","kraken") + " " + e.getReason());
+  }
+ else   if (e.getNewState() == ClientFlapConn.STATE_NOT_CONNECTED) {
+  }
+}

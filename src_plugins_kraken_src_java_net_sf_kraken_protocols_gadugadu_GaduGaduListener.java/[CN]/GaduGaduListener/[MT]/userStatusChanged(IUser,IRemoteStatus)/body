@@ -1,0 +1,15 @@
+{
+  Log.debug("GaduGadu: User status changed for " + iUser + " to "+ iRemoteStatus);
+  if (getSession().getBuddyManager().isActivated()) {
+    try {
+      GaduGaduBuddy buddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(Integer.toString(iUser.getUin())));
+      buddy.setPresenceAndStatus(((GaduGaduTransport)getSession().getTransport()).convertGaduGaduStatusToXMPP(iRemoteStatus.getStatusType()),iRemoteStatus.getDescription());
+    }
+ catch (    NotFoundException e) {
+      Log.debug("GaduGadu: Received presense notification for contact we don't care about: " + iUser.getUin());
+    }
+  }
+ else {
+    getSession().getBuddyManager().storePendingStatus(getSession().getTransport().convertIDToJID(Integer.toString(iUser.getUin())),((GaduGaduTransport)getSession().getTransport()).convertGaduGaduStatusToXMPP(iRemoteStatus.getStatusType()),iRemoteStatus.getDescription());
+  }
+}

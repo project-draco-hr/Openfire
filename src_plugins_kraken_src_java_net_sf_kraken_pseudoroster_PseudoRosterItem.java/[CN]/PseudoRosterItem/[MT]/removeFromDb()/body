@@ -1,0 +1,19 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(REMOVE_ROSTER_ITEM);
+    pstmt.setLong(1,registrationID);
+    pstmt.setString(2,username);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+  }
+}

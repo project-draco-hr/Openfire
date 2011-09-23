@@ -1,0 +1,36 @@
+{
+  try {
+    getSession().getConnection().sendCommand(new PartCommand(roomname));
+  }
+ catch (  Exception e) {
+    Log.debug("IRC: Error while trying to part chat room:",e);
+  }
+  try {
+    autoJoin.disable();
+  }
+ catch (  Exception e) {
+  }
+  autoJoin=null;
+  for (  String contact : getContacts()) {
+    Presence p=new Presence();
+    p.setType(Presence.Type.unavailable);
+    p.setTo(session.getJID());
+    p.setFrom(transport.convertIDToJID(roomname,contact));
+    Element elem=p.addChildElement("x","http://jabber.org/protocol/muc#user");
+    Element item=elem.addElement("item");
+    item.addAttribute("affiliation","none");
+    item.addAttribute("role","none");
+    transport.sendPacket(p);
+  }
+  Presence p=new Presence();
+  p.setType(Presence.Type.unavailable);
+  p.setTo(session.getJID());
+  p.setFrom(transport.convertIDToJID(roomname,nickname));
+  Element elem=p.addChildElement("x","http://jabber.org/protocol/muc#user");
+  Element item=elem.addElement("item");
+  item.addAttribute("affiliation","none");
+  item.addAttribute("role","none");
+  Element status=elem.addElement("status");
+  status.addAttribute("code","110");
+  transport.sendPacket(p);
+}

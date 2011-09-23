@@ -1,0 +1,31 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  KrakenPlugin plugin=(KrakenPlugin)pluginManager.getPlugin("kraken");
+  JID jid;
+  if (user.contains("@")) {
+    jid=new JID(user);
+  }
+ else {
+    jid=new JID(user,XMPPServer.getInstance().getServerInfo().getXMPPDomain(),null);
+  }
+  if (!plugin.getTransportInstance(transportType).isEnabled()) {
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.notenabled","kraken");
+  }
+  try {
+    final BaseTransport transport=plugin.getTransportInstance(transportType).getTransport();
+    new RegistrationHandler(transport).addNewRegistration(jid,legacyUsername,legacyPassword,legacyNickname,false);
+    return null;
+  }
+ catch (  UserNotFoundException e) {
+    Log.error("Not found while adding account for " + jid.toString());
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.xmppnotfound","kraken");
+  }
+catch (  IllegalAccessException e) {
+    Log.error("Domain of JID specified for registration is not on this server: " + jid.toString());
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.illegaldomain","kraken");
+  }
+catch (  IllegalArgumentException e) {
+    Log.error("Username specified for registration is not valid.");
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.invaliduser","kraken");
+  }
+}

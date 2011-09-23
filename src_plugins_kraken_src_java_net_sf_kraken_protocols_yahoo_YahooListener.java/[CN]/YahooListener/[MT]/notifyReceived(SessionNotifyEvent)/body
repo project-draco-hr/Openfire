@@ -1,0 +1,15 @@
+{
+  Log.debug(event.toString());
+  if (event.isTyping()) {
+    final BaseTransport<YahooBuddy> transport=getSession().getTransport();
+    final ChatStateEventSource chatStateEventSource=transport.getChatStateEventSource();
+    final JID localJid=getSession().getJID();
+    final JID legacyJid=transport.convertIDToJID(event.getFrom());
+    if (event.isOn()) {
+      chatStateEventSource.isComposing(legacyJid,localJid);
+    }
+ else {
+      chatStateEventSource.isPaused(legacyJid,localJid);
+    }
+  }
+}

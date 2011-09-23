@@ -1,0 +1,20 @@
+{
+  Log.debug("SimpleSession(" + jid.getNode() + ").updateContact:  I was called!");
+  JID destJid=contact.getJID();
+  String destId=getTransport().convertJIDToID(destJid);
+  PseudoRosterItem rosterItem;
+  if (pseudoRoster.hasItem(destId)) {
+    rosterItem=pseudoRoster.getItem(destId);
+    rosterItem.setNickname(contact.getNickname());
+  }
+ else {
+    rosterItem=pseudoRoster.createItem(destId,contact.getNickname(),null);
+  }
+  try {
+    SimpleBuddy simpleBuddy=getBuddyManager().getBuddy(destJid);
+    simpleBuddy.pseudoRosterItem=rosterItem;
+  }
+ catch (  NotFoundException e) {
+    Log.debug("SIMPLE: Newly added buddy not found in buddy manager: " + destId);
+  }
+}

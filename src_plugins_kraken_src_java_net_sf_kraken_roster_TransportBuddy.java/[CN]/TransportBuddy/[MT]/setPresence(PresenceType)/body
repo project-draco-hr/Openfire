@@ -1,0 +1,25 @@
+{
+  if (newpresence == null) {
+    newpresence=PresenceType.unknown;
+  }
+  if (newpresence.equals(PresenceType.unavailable)) {
+    verboseStatus="";
+  }
+  if (!presence.equals(newpresence) && newpresence != PresenceType.unknown) {
+    Presence p=new Presence();
+    p.setTo(getManager().getSession().getJID());
+    p.setFrom(jid);
+    getManager().getSession().getTransport().setUpPresencePacket(p,newpresence);
+    if (!verboseStatus.equals("")) {
+      p.setStatus(verboseStatus);
+    }
+    if (avatarSet && avatar != null) {
+      Element vcard=p.addChildElement("x",NameSpace.VCARD_TEMP_X_UPDATE);
+      vcard.addElement("photo").addCDATA(avatar.getXmppHash());
+      vcard.addElement("hash").addCDATA(avatar.getXmppHash());
+    }
+    getManager().sendPacket(p);
+  }
+  presence=newpresence;
+  lastActivityTimestamp=new Date().getTime();
+}

@@ -1,0 +1,11 @@
+{
+  if (username.indexOf("/") > -1) {
+    username=username.substring(0,username.indexOf("/"));
+  }
+  if (JiveGlobals.getBooleanProperty("plugin.gateway.tweak.percenthack",false)) {
+    return new JID(username.replace('@','%').replace(" ",""),this.jid.getDomain(),null);
+  }
+ else {
+    return new JID(JID.escapeNode(username.replace(" ","")),this.jid.getDomain(),null);
+  }
+}

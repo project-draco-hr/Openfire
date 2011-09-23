@@ -1,0 +1,17 @@
+{
+  if (jid == null || transportType == null || username == null) {
+    throw new NullPointerException("Arguments cannot be null.");
+  }
+  this.jid=new JID(jid.toBareJID());
+  this.transportType=transportType;
+  this.username=username;
+  this.password=password;
+  this.nickname=nickname;
+  this.registrationDate=new Date();
+  try {
+    insertIntoDb();
+  }
+ catch (  Exception e) {
+    Log.error(e);
+  }
+}

@@ -1,0 +1,23 @@
+{
+  Log.debug("QQ: Processing friend online notification");
+  try {
+    for (    FriendOnlineEntry f : p.onlineFriends) {
+      Log.debug("QQ: Got an online friend");
+      if (getSession().getBuddyManager().isActivated()) {
+        try {
+          QQBuddy qqBuddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(String.valueOf(f.status.qqNum)));
+          qqBuddy.setPresenceAndStatus(((QQTransport)getSession().getTransport()).convertQQStatusToXMPP(f.status.status),null);
+        }
+ catch (        NotFoundException ee) {
+          Log.debug("QQ: Received presense notification for contact we don't care about: " + String.valueOf(f.status.qqNum));
+        }
+      }
+ else {
+        getSession().getBuddyManager().storePendingStatus(getSession().getTransport().convertIDToJID(String.valueOf(f.status.qqNum)),((QQTransport)getSession().getTransport()).convertQQStatusToXMPP(f.status.status),null);
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("Failed to handle friend online event: ",ex);
+  }
+}

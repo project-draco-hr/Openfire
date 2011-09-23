@@ -1,0 +1,21 @@
+{
+  resources.remove(resource);
+  JID retJID=new JID(getJID().getNode(),getJID().getDomain(),resource);
+  getBuddyManager().sendOfflineForAllAvailablePresences(retJID);
+  Presence p=new Presence();
+  p.setType(Presence.Type.unavailable);
+  p.setTo(retJID);
+  p.setFrom(getTransport().getJID());
+  getTransport().sendPacket(p);
+  if (resource.equals(highestResource)) {
+    Integer highestPriority=-255;
+    String tmpHighestResource=null;
+    for (    String res : resources.keySet()) {
+      if (resources.get(res) > highestPriority) {
+        tmpHighestResource=res;
+        highestPriority=resources.get(res);
+      }
+    }
+    highestResource=tmpHighestResource;
+  }
+}

@@ -1,0 +1,7 @@
+{
+  ActionMessage msg=new ActionMessage();
+  msg.setTo(getTransport().convertJIDToID(jid));
+  msg.setFrom(String.valueOf(connection.getUserID()));
+  msg.setAction(chatState == ChatStateType.composing ? ActionMessage.ACTION_TYPING : ActionMessage.ACTION_STOPTYPING);
+  connection.sendPacket(msg);
+}

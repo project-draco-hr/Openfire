@@ -1,0 +1,17 @@
+{
+  final org.jivesoftware.smack.packet.Presence presence=new org.jivesoftware.smack.packet.Presence(org.jivesoftware.smack.packet.Presence.Type.available);
+  final Presence.Mode pMode=((XMPPTransport)getTransport()).convertGatewayStatusToXMPP(this.presence);
+  if (pMode != null) {
+    presence.setMode(pMode);
+  }
+  if (verboseStatus != null && verboseStatus.trim().length() > 0) {
+    presence.setStatus(verboseStatus);
+  }
+  final Avatar avatar=getAvatar();
+  if (avatar != null) {
+    final VCardUpdateExtension ext=new VCardUpdateExtension();
+    ext.setPhotoHash(avatar.getLegacyIdentifier());
+    presence.addExtension(ext);
+  }
+  return presence;
+}

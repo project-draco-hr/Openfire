@@ -1,0 +1,29 @@
+{
+  setPendingPresenceAndStatus(presenceType,verboseStatus);
+  if (!isLoggedIn()) {
+    try {
+      stSession=new STSession("Kraken - " + jid);
+      stSession.loadSemanticComponents();
+      stSession.start();
+      listener=new SameTimeListener(this);
+      communityService=(CommunityService)stSession.getCompApi(CommunityService.COMP_NAME);
+      communityService.addLoginListener(listener);
+      communityService.disableAutomaticReconnect();
+      imService=(InstantMessagingService)stSession.getCompApi(InstantMessagingService.COMP_NAME);
+      imService.addImServiceListener(listener);
+      imService.registerImType(ImTypes.IM_TYPE_CHAT);
+      blService=(BLService)stSession.getCompApi(BLService.COMP_NAME);
+      blService.addBLServiceListener(listener);
+      awarenessService=(AwarenessService)stSession.getCompApi(AwarenessService.COMP_NAME);
+      awarenessService.addAwarenessServiceListener(listener);
+      watchList=awarenessService.createWatchList();
+      watchList.addStatusListener(listener);
+      communityService.loginByPassword(JiveGlobals.getProperty("plugin.gateway.sametime.connecthost","stdemo3.dfw.ibm.com"),getRegistration().getUsername(),getRegistration().getPassword());
+    }
+ catch (    DuplicateObjectException e) {
+      Log.error("SameTime: Tried to start up duplicate session for: " + jid);
+      setFailureStatus(ConnectionFailureReason.UNKNOWN);
+      sessionDisconnected("Duplicate session.");
+    }
+  }
+}

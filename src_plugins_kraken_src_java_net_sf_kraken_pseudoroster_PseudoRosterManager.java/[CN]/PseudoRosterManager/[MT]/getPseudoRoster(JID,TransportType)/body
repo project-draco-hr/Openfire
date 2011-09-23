@@ -1,0 +1,8 @@
+{
+  Collection<Registration> registrations=RegistrationManager.getInstance().getRegistrations(jid,type);
+  if (registrations.isEmpty()) {
+    throw new UserNotFoundException("Unable to find registration.");
+  }
+  Registration registration=registrations.iterator().next();
+  return getPseudoRoster(registration);
+}

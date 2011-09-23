@@ -1,0 +1,26 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  KrakenPlugin plugin=(KrakenPlugin)pluginManager.getPlugin("kraken");
+  Document optConfig=plugin.getOptionsConfig(TransportType.valueOf(transportName));
+  Element leftPanel=optConfig.getRootElement().element("leftpanel");
+  if (leftPanel != null && leftPanel.nodeCount() > 0) {
+    for (    Object nodeObj : leftPanel.elements("item")) {
+      Element node=(Element)nodeObj;
+      saveOptionSetting(node,options);
+    }
+  }
+  Element rightPanel=optConfig.getRootElement().element("rightpanel");
+  if (rightPanel != null && rightPanel.nodeCount() > 0) {
+    for (    Object nodeObj : rightPanel.elements("item")) {
+      Element node=(Element)nodeObj;
+      saveOptionSetting(node,options);
+    }
+  }
+  Element bottomPanel=optConfig.getRootElement().element("bottompanel");
+  if (bottomPanel != null && bottomPanel.nodeCount() > 0) {
+    for (    Object nodeObj : bottomPanel.elements("item")) {
+      Element node=(Element)nodeObj;
+      saveOptionSetting(node,options);
+    }
+  }
+}

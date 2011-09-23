@@ -1,0 +1,40 @@
+{
+  try {
+    Roster roster=rosterManager.getRoster(jid.getNode());
+    try {
+      TransportSession<B> session=sessionManager.getSession(jid.getNode());
+      session.lockRoster();
+    }
+ catch (    NotFoundException e) {
+    }
+    for (    RosterItem ri : roster.getRosterItems()) {
+      if (ri.getJid().getDomain().equals(this.jid.getDomain())) {
+        if (ri.isShared()) {
+          continue;
+        }
+        if (!removeNonPersistent && ri.getID() == 0) {
+          continue;
+        }
+        if (leaveDomain && ri.getJid().getNode() == null) {
+          continue;
+        }
+        try {
+          Log.debug("Cleaning up roster entry " + ri.getJid().toString());
+          roster.deleteRosterItem(ri.getJid(),false);
+        }
+ catch (        Exception e) {
+          Log.debug("Error removing roster item: " + ri.toString(),e);
+        }
+      }
+    }
+    try {
+      TransportSession<B> session=sessionManager.getSession(jid.getNode());
+      session.unlockRoster();
+    }
+ catch (    NotFoundException e) {
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("Unable to find roster.");
+  }
+}

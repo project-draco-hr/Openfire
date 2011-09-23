@@ -1,0 +1,13 @@
+{
+  Log.debug("QQ: Processing friend info request");
+  GetUserInfoReplyPacket p=(GetUserInfoReplyPacket)e.getSource();
+  try {
+    QQBuddy buddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(String.valueOf(p.contactInfo.qq)));
+    buddy.setNickname(p.contactInfo.nick);
+    buddy.contactInfo=p.contactInfo;
+    getSession().getBuddyManager().storeBuddy(buddy);
+  }
+ catch (  NotFoundException nfe) {
+    Log.debug("QQ: Received buddy " + p.contactInfo.qq + " that we don't know about.");
+  }
+}

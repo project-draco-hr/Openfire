@@ -1,0 +1,15 @@
+{
+  try {
+    JID contactJID=getTransport().convertIDToJID(targetSipAddress);
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Preparing presence packet...");
+    Presence presence=new Presence();
+    presence.setFrom(contactJID);
+    presence.setTo(getJID());
+    presence.setType(Presence.Type.subscribed);
+    getTransport().sendPacket(presence);
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Presence packet sent ==> \n"+ presence.toXML());
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").contactSubscribed:  Exception occured when adding pending contact "+ targetSipAddress,e);
+  }
+}

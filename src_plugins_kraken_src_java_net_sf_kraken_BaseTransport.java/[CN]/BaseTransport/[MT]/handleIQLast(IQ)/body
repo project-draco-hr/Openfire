@@ -1,0 +1,35 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  if (packet.getType() == IQ.Type.get) {
+    IQ result=IQ.createResultIQ(packet);
+    if (from.getNode() != null) {
+      try {
+        TransportSession<B> session=sessionManager.getSession(from);
+        Element response=DocumentHelper.createElement(QName.get("query",NameSpace.IQ_LAST));
+        Long timestamp=session.getBuddyManager().getBuddy(to).getLastActivityTimestamp();
+        String lastevent=session.getBuddyManager().getBuddy(to).getLastActivityEvent();
+        response.addAttribute("seconds",new Long(new Date().getTime() - timestamp).toString());
+        if (lastevent != null) {
+          response.addCDATA(lastevent);
+        }
+        result.setChildElement(response);
+      }
+ catch (      NotFoundException e) {
+        Log.debug("Contact not found while retrieving last activity for: " + from);
+        result.setError(Condition.item_not_found);
+      }
+    }
+ else {
+      result.setError(Condition.feature_not_implemented);
+    }
+    reply.add(result);
+  }
+ else   if (packet.getType() == IQ.Type.set) {
+    IQ result=IQ.createResultIQ(packet);
+    result.setError(Condition.forbidden);
+    reply.add(result);
+  }
+  return reply;
+}

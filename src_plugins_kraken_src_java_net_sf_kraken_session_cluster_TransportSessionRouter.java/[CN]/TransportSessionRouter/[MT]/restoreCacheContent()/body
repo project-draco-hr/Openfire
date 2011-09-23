@@ -1,0 +1,15 @@
+{
+  for (  String transportName : getPlugin().getTransports()) {
+    if (getPlugin().serviceEnabled(transportName)) {
+      TransportInstance ti=getPlugin().getTransportInstance(transportName);
+      if (ti != null) {
+        BaseTransport<? extends TransportBuddy> tr=ti.getTransport();
+        if (tr != null) {
+          for (          TransportSession<? extends TransportBuddy> session : tr.getSessionManager().getSessions()) {
+            addSession(transportName,session.getJID().toBareJID());
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  Log.debug("Disconnecting session " + getJID() + " from "+ getTransport().getJID());
+  try {
+    cleanUp();
+  }
+ catch (  Exception e) {
+    Log.info("sessionDisconnectedNoReconnect: Error=" + e);
+  }
+  setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+  if (getRegistrationPacket() != null) {
+    new RegistrationHandler(getTransport()).completeRegistration(this);
+  }
+ else {
+    Presence p=new Presence(Presence.Type.unavailable);
+    p.setTo(getJID());
+    p.setFrom(getTransport().getJID());
+    getTransport().sendPacket(p);
+    if (errorMessage != null) {
+      getTransport().sendMessage(getJIDWithHighestPriority(),getTransport().getJID(),errorMessage,Message.Type.error);
+    }
+    getBuddyManager().sendOfflineForAllAvailablePresences(getJID());
+  }
+  buddyManager.resetBuddies();
+  getTransport().getSessionManager().removeSession(getJID());
+}

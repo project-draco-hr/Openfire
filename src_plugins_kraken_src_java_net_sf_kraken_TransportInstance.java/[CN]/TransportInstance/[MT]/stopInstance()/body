@@ -1,0 +1,16 @@
+{
+  if (!running) {
+    return;
+  }
+  Log.info("Stopping transport service: " + type.toString());
+  transport.shutdown();
+  PropertyEventDispatcher.removeListener(this);
+  try {
+    componentManager.removeComponent(this.subDomain);
+  }
+ catch (  Exception e) {
+    Log.error("Error while removing component " + this.subDomain + ": ",e);
+  }
+  transport=null;
+  running=false;
+}

@@ -1,0 +1,19 @@
+{
+  Boolean changed=false;
+  if (groups != null && !groups.isEmpty()) {
+    if (this.groups == null || this.groups.isEmpty() || !groups.containsAll(this.groups) || !this.groups.containsAll(groups)) {
+      changed=true;
+    }
+    this.groups=groups;
+  }
+ else {
+    if (this.groups != null && !this.groups.isEmpty()) {
+      changed=true;
+    }
+    this.groups=null;
+  }
+  if (changed && getManager().isActivated()) {
+    Log.debug("TransportBuddy: Triggering contact update for " + this);
+    getManager().getSession().updateContact(this);
+  }
+}

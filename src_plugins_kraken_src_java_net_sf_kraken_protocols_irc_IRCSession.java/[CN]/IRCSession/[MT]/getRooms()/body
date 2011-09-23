@@ -1,0 +1,10 @@
+{
+  if (getTransport().getMUCTransport().isRoomCacheOutOfDate()) {
+    getTransport().getMUCTransport().clearRoomCache();
+    connection.sendCommand(new ListCommand());
+    getTransport().getMUCTransport().updateRoomCacheTimestamp();
+  }
+ else {
+    getTransport().getMUCTransport().sendRooms(getJID(),getTransport().getMUCTransport().getCachedRooms());
+  }
+}

@@ -1,0 +1,44 @@
+{
+  if (!session.getBuddyManager().isActivated()) {
+    session.getBuddyManager().storePendingStatus(session.getTransport().convertIDToJID(presence.getFrom()),((XMPPTransport)session.getTransport()).convertXMPPStatusToGateway(presence.getType(),presence.getMode()),presence.getStatus());
+  }
+ else {
+    try {
+      final XMPPBuddy xmppBuddy=session.getBuddyManager().getBuddy(session.getTransport().convertIDToJID(presence.getFrom()));
+      Log.debug("XMPP: Presence changed detected type " + presence.getType() + " and mode "+ presence.getMode()+ " for "+ presence.getFrom());
+      xmppBuddy.setPresenceAndStatus(((XMPPTransport)session.getTransport()).convertXMPPStatusToGateway(presence.getType(),presence.getMode()),presence.getStatus());
+      if (JiveGlobals.getBooleanProperty("plugin.gateway." + session.getTransport().getType() + ".avatars",true)) {
+        PacketExtension pe=presence.getExtension("x",NameSpace.VCARD_TEMP_X_UPDATE);
+        if (pe != null) {
+          DefaultPacketExtension dpe=(DefaultPacketExtension)pe;
+          String hash=dpe.getValue("photo");
+          final String from=presence.getFrom();
+          if (hash != null) {
+            Avatar curAvatar=xmppBuddy.getAvatar();
+            if (curAvatar == null || !curAvatar.getLegacyIdentifier().equals(hash)) {
+              new Thread(){
+                @Override public void run(){
+                  VCard vcard=new VCard();
+                  try {
+                    vcard.load(session.conn,from);
+                    xmppBuddy.setAvatar(new Avatar(xmppBuddy.getJID(),from,vcard.getAvatar()));
+                  }
+ catch (                  XMPPException e) {
+                    Log.debug("XMPP: Failed to load XMPP avatar: ",e);
+                  }
+catch (                  IllegalArgumentException e) {
+                    Log.debug("XMPP: Got null avatar, ignoring.");
+                  }
+                }
+              }
+.start();
+            }
+          }
+        }
+      }
+    }
+ catch (    NotFoundException e) {
+      Log.debug("XMPP: Received presence notification for contact that's not in the buddy manager of user " + session.getJID() + ". GTalk is known to do this occasionally: "+ presence.getFrom());
+    }
+  }
+}

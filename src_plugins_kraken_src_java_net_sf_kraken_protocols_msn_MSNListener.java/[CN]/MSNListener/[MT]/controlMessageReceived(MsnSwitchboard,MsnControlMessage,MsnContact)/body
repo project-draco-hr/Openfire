@@ -1,0 +1,10 @@
+{
+  if (message.getTypingUser() != null) {
+    final JID to=getSession().getJID();
+    final JID from=getSession().getTransport().convertIDToJID(friend.getEmail().toString());
+    getSession().getTransport().getChatStateEventSource().isComposing(from,to);
+  }
+ else {
+    Log.debug("MSN: Received unknown control msg to " + switchboard + " from "+ friend+ ": "+ message);
+  }
+}

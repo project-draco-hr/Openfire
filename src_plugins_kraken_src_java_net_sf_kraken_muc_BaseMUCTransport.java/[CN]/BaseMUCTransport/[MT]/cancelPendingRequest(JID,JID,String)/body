@@ -1,0 +1,17 @@
+{
+  for (  IQ request : pendingIQRequests.keySet()) {
+    if (request.getTo().equals(to) && request.getFrom().toBareJID().equals(from.toBareJID())) {
+      Element child=request.getChildElement();
+      if (child != null) {
+        String xmlns=child.getNamespaceURI();
+        if (xmlns.equals(namespace)) {
+          IQ result=IQ.createResultIQ(request);
+          result.setError(PacketError.Condition.item_not_found);
+          getTransport().sendPacket(result);
+          pendingIQRequests.remove(request);
+          return;
+        }
+      }
+    }
+  }
+}

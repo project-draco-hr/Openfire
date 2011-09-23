@@ -1,0 +1,17 @@
+{
+  String awayMsg=((IRCTransport)getTransport()).convertJabStatusToIRC(presenceType,verboseStatus);
+  if (awayMsg == null) {
+    try {
+      connection.sendCommand(new AwayCommand());
+    }
+ catch (    Exception e) {
+    }
+  }
+ else {
+    try {
+      connection.sendCommand(new AwayCommand(awayMsg));
+    }
+ catch (    Exception e) {
+    }
+  }
+}

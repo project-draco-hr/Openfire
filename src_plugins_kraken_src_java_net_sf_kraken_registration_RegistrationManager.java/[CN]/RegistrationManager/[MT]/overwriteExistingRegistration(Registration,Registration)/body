@@ -1,0 +1,41 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(UPDATE_REGISTRATION);
+    pstmt.setString(1,newReg.getJID().toString());
+    pstmt.setString(2,newReg.getTransportType().name());
+    pstmt.setString(3,newReg.getUsername());
+    if (newReg.getPassword() != null) {
+      String encryptedPassword=AuthFactory.encryptPassword(newReg.getPassword());
+      pstmt.setString(4,encryptedPassword);
+    }
+ else {
+      pstmt.setNull(4,Types.VARCHAR);
+    }
+    if (newReg.getNickname() != null) {
+      pstmt.setString(5,newReg.getNickname());
+    }
+ else {
+      pstmt.setNull(5,Types.VARCHAR);
+    }
+    pstmt.setLong(6,newReg.getRegistrationDate().getTime());
+    if (newReg.getLastLogin() != null) {
+      pstmt.setLong(7,newReg.getLastLogin().getTime());
+    }
+ else {
+      pstmt.setNull(7,Types.INTEGER);
+    }
+    pstmt.setLong(8,curReg.getRegistrationID());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+  }
+}

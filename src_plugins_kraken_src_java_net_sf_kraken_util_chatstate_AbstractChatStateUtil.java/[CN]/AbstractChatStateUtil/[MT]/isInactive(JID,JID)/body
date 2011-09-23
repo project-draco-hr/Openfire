@@ -1,0 +1,11 @@
+{
+  final ChatStateSession session=new ChatStateSession(sender,receiver);
+  final ChatStateType newState=ChatStateType.inactive;
+synchronized (mutex) {
+    final ChatStateType previousState=currentStates.put(session,newState);
+    if (previousState != newState) {
+      sendIsInactive(sender,receiver);
+    }
+    scheduleStateChange(480,TimeUnit.SECONDS,ChatStateType.gone,session);
+  }
+}

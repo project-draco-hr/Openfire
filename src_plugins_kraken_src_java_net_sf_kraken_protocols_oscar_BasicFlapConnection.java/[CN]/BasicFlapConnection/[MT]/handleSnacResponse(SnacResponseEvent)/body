@@ -1,0 +1,13 @@
+{
+  Log.debug("OSCAR snac packet response: " + e);
+  SnacCommand cmd=e.getSnacCommand();
+  if (cmd instanceof RateInfoCmd) {
+    RateInfoCmd ric=(RateInfoCmd)cmd;
+    List<RateClassInfo> rateClasses=ric.getRateClassInfos();
+    int[] classes=new int[rateClasses.size()];
+    for (int i=0; i < rateClasses.size(); i++) {
+      classes[i]=rateClasses.get(i).getRateClass();
+    }
+    request(new RateAck(classes));
+  }
+}

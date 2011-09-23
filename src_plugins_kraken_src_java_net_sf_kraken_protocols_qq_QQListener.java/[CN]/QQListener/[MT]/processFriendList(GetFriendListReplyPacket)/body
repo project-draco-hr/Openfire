@@ -1,0 +1,11 @@
+{
+  Log.debug("QQ: processing friend list");
+  try {
+    getSession().getTransport().syncLegacyRoster(getSession().getJID(),getSession().getBuddyManager().getBuddies());
+  }
+ catch (  UserNotFoundException ex) {
+    Log.debug("Unable to sync QQ contact list for " + getSession().getJID());
+  }
+  getSession().getBuddyManager().activate();
+  getSession().getQQClient().user_GetOnline();
+}

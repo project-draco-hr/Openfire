@@ -1,0 +1,13 @@
+{
+  try {
+    if (chatState.equals(ChatStateType.composing)) {
+      yahooSession.sendTypingNotification(getTransport().convertJIDToID(jid),true);
+    }
+ else {
+      yahooSession.sendTypingNotification(getTransport().convertJIDToID(jid),false);
+    }
+  }
+ catch (  IOException e) {
+    Log.debug("Failed to send typing notification to yahoo user.");
+  }
+}

@@ -1,0 +1,12 @@
+{
+  ArrayList<String> regList;
+  if (!registeredCache.containsKey(transportType.toString())) {
+    regList=new ArrayList<String>();
+  }
+ else {
+    regList=registeredCache.get(transportType.toString());
+  }
+  regList.add(jid.toBareJID());
+  registeredCache.put(transportType.toString(),regList);
+  return new Registration(jid,transportType,username,password,nickname);
+}

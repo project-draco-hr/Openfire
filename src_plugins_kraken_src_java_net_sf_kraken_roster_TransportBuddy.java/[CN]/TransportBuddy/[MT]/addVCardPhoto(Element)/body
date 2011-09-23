@@ -1,0 +1,15 @@
+{
+  if (!avatarSet) {
+    Log.debug("TransportBuddy: I've got nothing! (no avatar set)");
+    return;
+  }
+  Element photo=vcard.addElement("PHOTO");
+  if (avatar != null) {
+    try {
+      photo.addElement("TYPE").addCDATA(avatar.getMimeType());
+      photo.addElement("BINVAL").addCDATA(avatar.getImageData());
+    }
+ catch (    NotFoundException e) {
+    }
+  }
+}

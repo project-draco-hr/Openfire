@@ -1,0 +1,39 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  if (packet.getTo().getNode() == null) {
+    IQ result=IQ.createResultIQ(packet);
+    if (from.getNode() == null || getTransport().permissionManager.hasAccess(from)) {
+      Element response=DocumentHelper.createElement(QName.get("query",NameSpace.DISCO_INFO));
+      response.addElement("identity").addAttribute("category","conference").addAttribute("type","text").addAttribute("name",this.getDescription());
+      response.addElement("feature").addAttribute("var",NameSpace.DISCO_INFO);
+      response.addElement("feature").addAttribute("var",NameSpace.DISCO_ITEMS);
+      response.addElement("feature").addAttribute("var",NameSpace.MUC);
+      result.setChildElement(response);
+    }
+ else {
+      result.setError(PacketError.Condition.forbidden);
+    }
+    reply.add(result);
+  }
+ else {
+    IQ result=IQ.createResultIQ(packet);
+    try {
+      TransportSession<B> session=getTransport().getSessionManager().getSession(from);
+      if (session.isLoggedIn()) {
+        storePendingRequest(packet);
+        session.getRoomInfo(getTransport().convertJIDToID(to));
+      }
+ else {
+        result.setError(PacketError.Condition.forbidden);
+        reply.add(result);
+      }
+    }
+ catch (    NotFoundException e) {
+      result.setError(PacketError.Condition.forbidden);
+      reply.add(result);
+    }
+  }
+  return reply;
+}

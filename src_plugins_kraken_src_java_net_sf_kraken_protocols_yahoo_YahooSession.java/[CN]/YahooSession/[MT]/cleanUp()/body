@@ -1,0 +1,30 @@
+{
+  if (yahooSession != null) {
+    if (yahooListener != null) {
+      yahooSession.removeSessionListener(yahooListener);
+      yahooListener=null;
+    }
+    try {
+      yahooSession.logout();
+    }
+ catch (    IOException e) {
+      Log.debug("Failed to log out from Yahoo.");
+    }
+catch (    IllegalStateException e) {
+    }
+    try {
+      yahooSession.reset();
+    }
+ catch (    Exception e) {
+    }
+    yahooSession=null;
+  }
+  if (runThread != null) {
+    try {
+      runThread.interrupt();
+    }
+ catch (    Exception e) {
+    }
+    runThread=null;
+  }
+}

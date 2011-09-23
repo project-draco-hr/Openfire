@@ -1,0 +1,25 @@
+{
+  long registrationID=-1;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_REGISTRATION);
+    pstmt.setString(1,jid.toBareJID());
+    pstmt.setString(2,transportType.name());
+    pstmt.setString(3,username);
+    rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new NotFoundException("Could not load registration with ID " + registrationID);
+    }
+    registrationID=rs.getLong(1);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return new Registration(registrationID);
+}

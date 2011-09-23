@@ -1,0 +1,13 @@
+{
+  final ChatStateSession session=new ChatStateSession(sender,receiver);
+synchronized (mutex) {
+    final ChatStateType previousState=currentStates.remove(session);
+    if (previousState != null) {
+      sendIsGone(sender,receiver);
+    }
+    final ScheduledFuture<?> oldFuture=pendingStateChanges.remove(session);
+    if (oldFuture != null) {
+      oldFuture.cancel(false);
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  boolean currentHighest=false;
+  if (isHighestPriority(resource)) {
+    currentHighest=true;
+  }
+  updateResource(resource,priority);
+  if (currentHighest && !isHighestPriority(resource)) {
+    Presence p=new Presence(Presence.Type.probe);
+    p.setTo(getJIDWithHighestPriority());
+    p.setFrom(getTransport().getJID());
+    getTransport().sendPacket(p);
+  }
+}

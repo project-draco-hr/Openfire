@@ -1,0 +1,50 @@
+{
+  Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Roster of "+ jid.toString()+ " locked!");
+  String destId=getTransport().convertJIDToID(jid);
+  PseudoRosterItem rosterItem;
+  if (pseudoRoster.hasItem(destId)) {
+    rosterItem=pseudoRoster.getItem(destId);
+    rosterItem.setNickname(nickname);
+  }
+ else {
+    rosterItem=pseudoRoster.createItem(destId,nickname,null);
+  }
+  getBuddyManager().storeBuddy(new SimpleBuddy(getBuddyManager(),destId,rosterItem));
+  Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Starting addContact function for "+ destId);
+  Request subscribeRequest;
+  try {
+    subscribeRequest=prepareSubscribeRequest(destId);
+    subscribeRequest.addHeader(headerFactory.createExpiresHeader(365 * 24 * 60* 60));
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Unable to prepare SUBSCRIBE request.",e);
+    Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Roster of "+ jid.toString()+ " unlocked!");
+    return;
+  }
+  try {
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.ACK));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.BYE));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.CANCEL));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.INFO));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.INVITE));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.MESSAGE));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.NOTIFY));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.OPTIONS));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.REFER));
+    subscribeRequest.addHeader(headerFactory.createAllowHeader(Request.SUBSCRIBE));
+    subscribeRequest.addHeader(headerFactory.createEventHeader("presence"));
+    subscribeRequest.addHeader(headerFactory.createAcceptHeader("application","pidf+xml"));
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Unable to add a header",e);
+  }
+  try {
+    sendRequest(subscribeRequest,ListeningPoint.UDP);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Unable to send request.",e);
+    Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Roster of "+ jid.toString()+ " unlocked!");
+    return;
+  }
+  Log.debug("SimpleSession(" + jid.getNode() + ").addContact:  Roster of "+ jid.toString()+ " unlocked!");
+}

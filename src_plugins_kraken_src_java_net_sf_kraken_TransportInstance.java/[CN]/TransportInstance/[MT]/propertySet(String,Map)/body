@@ -1,0 +1,27 @@
+{
+  if (property.startsWith("plugin.gateway.")) {
+    if (property.equals("plugin.gateway." + this.type.toString() + ".enabled")) {
+      enabled=Boolean.parseBoolean((String)params.get("value"));
+      if (enabled) {
+        if (!running) {
+          startInstance();
+        }
+      }
+ else {
+        if (running) {
+          stopInstance();
+        }
+      }
+    }
+ else     if (property.equals("plugin.gateway." + this.type.toString() + ".subdomain")) {
+      String newSubDomain=(String)params.get("value");
+      if (!newSubDomain.equals(this.subDomain)) {
+        if (running) {
+          stopInstance();
+          this.subDomain=newSubDomain;
+          startInstance();
+        }
+      }
+    }
+  }
+}

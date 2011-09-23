@@ -1,0 +1,32 @@
+{
+  if (contact.getGroups() == null || contact.getGroups().isEmpty()) {
+    List<String> defaultGroup=new ArrayList<String>();
+    defaultGroup.add(DEFAULT_GROUPNAME);
+    contact.setGroups(defaultGroup);
+  }
+  String yahooContact=getTransport().convertJIDToID(contact.getJID());
+  PseudoRosterItem rosterItem;
+  if (pseudoRoster.hasItem(yahooContact)) {
+    rosterItem=pseudoRoster.getItem(yahooContact);
+    rosterItem.setNickname(contact.getNickname());
+  }
+ else {
+    rosterItem=pseudoRoster.createItem(yahooContact,contact.getNickname(),null);
+  }
+  try {
+    YahooBuddy yBuddy=getBuddyManager().getBuddy(contact.getJID());
+    yBuddy.pseudoRosterItem=rosterItem;
+    for (    String newGroup : yBuddy.getGroups()) {
+      if (!yBuddy.yahooUser.getGroupIds().contains(newGroup)) {
+        yBuddy.yahooUser.addGroupId(newGroup);
+      }
+    }
+    for (    String oldGroup : yBuddy.yahooUser.getGroupIds()) {
+      if (!yBuddy.getGroups().contains(oldGroup)) {
+      }
+    }
+  }
+ catch (  NotFoundException e) {
+    Log.debug("Yahoo: Updated buddy not found in buddy manager: " + yahooContact);
+  }
+}

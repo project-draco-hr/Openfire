@@ -1,0 +1,6 @@
+{
+  Log.debug("MSN: Got init email notify " + message.getInboxUnread() + " unread message(s)");
+  if (JiveGlobals.getBooleanProperty("plugin.gateway.msn.mailnotifications",true) && message.getInboxUnread() > 0) {
+    getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.initialmail","kraken",Arrays.asList(message.getInboxUnread())),Message.Type.headline);
+  }
+}

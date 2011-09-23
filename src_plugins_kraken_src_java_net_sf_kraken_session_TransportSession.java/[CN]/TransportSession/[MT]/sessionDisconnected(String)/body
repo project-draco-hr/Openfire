@@ -1,0 +1,18 @@
+{
+  reconnectionAttempts++;
+  if (getRegistrationPacket() != null || !JiveGlobals.getBooleanProperty("plugin.gateway." + getTransport().getType() + "reconnect",true) || (reconnectionAttempts > JiveGlobals.getIntProperty("plugin.gateway." + getTransport().getType() + "reconnectattempts",3))) {
+    sessionDisconnectedNoReconnect(errorMessage);
+  }
+ else {
+    cleanUp();
+    Log.debug("Session " + getJID() + " disconnected from "+ getTransport().getJID()+ ".  Reconnecting... (attempt "+ reconnectionAttempts+ ")");
+    setLoginStatus(TransportLoginStatus.RECONNECTING);
+    ClientSession session=XMPPServer.getInstance().getSessionManager().getSession(getJIDWithHighestPriority());
+    if (session != null) {
+      logIn(getTransport().getPresenceType(session.getPresence()),null);
+    }
+ else {
+      sessionDisconnectedNoReconnect(errorMessage);
+    }
+  }
+}

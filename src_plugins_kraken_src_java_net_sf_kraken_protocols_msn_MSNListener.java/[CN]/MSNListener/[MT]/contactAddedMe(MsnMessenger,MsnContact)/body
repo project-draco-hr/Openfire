@@ -1,0 +1,9 @@
+{
+  Log.debug("MSN: Contact added me: " + friend.getFriendlyName());
+  final JID from=getSession().getTransport().convertIDToJID(friend.getEmail().toString());
+  final Presence p=new Presence();
+  p.setType(Presence.Type.subscribe);
+  p.setTo(getSession().getJID());
+  p.setFrom(from);
+  getSession().getTransport().sendPacket(p);
+}

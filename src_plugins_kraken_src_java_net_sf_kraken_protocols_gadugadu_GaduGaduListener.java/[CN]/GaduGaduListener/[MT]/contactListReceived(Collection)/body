@@ -1,0 +1,30 @@
+{
+  Log.debug("GaduGadu: Contact list received: " + collection);
+  for (  Object localUserObj : collection) {
+    LocalUser localUser=(LocalUser)localUserObj;
+    if (localUser.getUin() > 0) {
+      String ggContact=Integer.toString(localUser.getUin());
+      String nickname=localUser.getDisplayName();
+      List<String> groups=new ArrayList<String>();
+      groups.add(localUser.getGroup());
+      if (getSession().getPseudoRoster().hasItem(ggContact)) {
+        PseudoRosterItem rosterItem=getSession().getPseudoRoster().getItem(ggContact);
+        rosterItem.setNickname(nickname);
+        rosterItem.setGroups(groups);
+      }
+ else {
+        PseudoRosterItem rosterItem=getSession().getPseudoRoster().createItem(ggContact,nickname,groups);
+        getSession().getBuddyManager().storeBuddy(new GaduGaduBuddy(getSession().getBuddyManager(),localUser,rosterItem));
+      }
+      try {
+        getSession().iSession.getPresenceService().addMonitoredUser(new User(localUser.getUin()));
+      }
+ catch (      GGException e) {
+        Log.debug("GaduGadu: Error while setting up user to be monitored:",e);
+      }
+    }
+ else {
+      Log.debug("GaduGadu: Ignoring user with UIN less than -1: " + localUser);
+    }
+  }
+}

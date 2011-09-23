@@ -1,0 +1,13 @@
+{
+  try {
+    getSession().getYahooSession().setStatus(((YahooTransport)getSession().getTransport()).convertXMPPStatusToYahoo(getSession().getPresence()));
+  }
+ catch (  IOException e) {
+    Log.debug("Yahoo login caused IO exception:",e);
+    getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.yahoo.unknownerror","kraken"),Message.Type.error);
+    getSession().setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+    getSession().setFailureStatus(ConnectionFailureReason.CAN_NOT_CONNECT);
+    getSession().sessionDisconnected(LocaleUtils.getLocalizedString("gateway.yahoo.unknownerror","kraken"));
+  }
+  getSession().syncUsers();
+}

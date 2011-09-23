@@ -1,0 +1,48 @@
+{
+  if (!this.isLoggedIn()) {
+    this.setLoginStatus(TransportLoginStatus.LOGGING_IN);
+    Log.debug("SimpleSession(" + jid.getNode() + ").login:  Start login as "+ registration.getUsername()+ ".");
+    Request registerRequest=prepareRegisterRequest();
+    if (registerRequest.getHeader(CallIdHeader.NAME) == null) {
+      Log.debug("SimpleSession(" + getJID().getNode() + ").login:  Unable to create a SIP session ID!!");
+      this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+      setFailureStatus(ConnectionFailureReason.UNKNOWN);
+      sessionDisconnected("Unable to create SIP session ID!");
+      return;
+    }
+ else {
+      sessionId=((CallIdHeader)registerRequest.getHeader(CallIdHeader.NAME)).getCallId();
+    }
+    try {
+      registerRequest.addHeader(headerFactory.createExpiresHeader(365 * 24 * 60* 60));
+    }
+ catch (    Exception e) {
+      Log.debug("SimpleSession(" + jid.getNode() + ").login:  "+ "Unable to set the expiry interval, which is essential for a login.",e);
+      this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+      return;
+    }
+    try {
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.ACK));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.BYE));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.CANCEL));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.INFO));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.INVITE));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.MESSAGE));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.NOTIFY));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.OPTIONS));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.REFER));
+      registerRequest.addHeader(headerFactory.createAllowHeader(Request.SUBSCRIBE));
+    }
+ catch (    Exception e) {
+    }
+    try {
+      sendRequest(registerRequest,ListeningPoint.UDP);
+    }
+ catch (    Exception e) {
+      Log.debug("SimpleSession(" + jid.getNode() + ").login:  Unable to send login packet.",e);
+      this.setLoginStatus(TransportLoginStatus.LOGGED_OUT);
+      setFailureStatus(ConnectionFailureReason.CAN_NOT_CONNECT);
+      sessionDisconnected("Unable to send login packet!");
+    }
+  }
+}

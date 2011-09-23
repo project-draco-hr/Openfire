@@ -1,0 +1,25 @@
+{
+  Presence.Type ptype=packet.getType();
+  Presence.Show stype=packet.getShow();
+  if (stype == Presence.Show.chat) {
+    return PresenceType.chat;
+  }
+ else   if (stype == Presence.Show.away) {
+    return PresenceType.away;
+  }
+ else   if (stype == Presence.Show.xa) {
+    return PresenceType.xa;
+  }
+ else   if (stype == Presence.Show.dnd) {
+    return PresenceType.dnd;
+  }
+ else   if (ptype == Presence.Type.unavailable) {
+    return PresenceType.unavailable;
+  }
+ else   if (packet.isAvailable()) {
+    return PresenceType.available;
+  }
+ else {
+    return PresenceType.unknown;
+  }
+}

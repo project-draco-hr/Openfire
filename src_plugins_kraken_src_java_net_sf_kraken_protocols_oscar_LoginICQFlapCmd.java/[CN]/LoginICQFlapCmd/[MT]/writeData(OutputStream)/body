@@ -1,0 +1,21 @@
+{
+  BinaryTools.writeUInt(out,version);
+  if (cookie != null)   new Tlv(TYPE_COOKIE,cookie).write(out);
+  if (uin != null) {
+    Tlv.getStringInstance(TYPE_UIN,uin).write(out);
+  }
+  if (encryptedPass != null) {
+    new Tlv(TYPE_XORPASS,encryptedPass).write(out);
+  }
+  if (clVersion != null)   clVersion.write(out);
+  if (locale != null) {
+    String language=locale.getLanguage();
+    if (!language.equals("")) {
+      Tlv.getStringInstance(TYPE_LANG,language).write(out);
+    }
+    String country=locale.getCountry();
+    if (!country.equals("")) {
+      Tlv.getStringInstance(TYPE_COUNTRY,country).write(out);
+    }
+  }
+}

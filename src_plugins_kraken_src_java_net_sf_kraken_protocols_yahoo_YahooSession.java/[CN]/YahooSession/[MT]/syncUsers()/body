@@ -1,0 +1,21 @@
+{
+  for (  Object userObj : yahooSession.getRoster().toArray()) {
+    YahooUser user=(YahooUser)userObj;
+    PseudoRosterItem rosterItem=pseudoRoster.getItem(user.getId());
+    String nickname=null;
+    if (rosterItem != null) {
+      nickname=rosterItem.getNickname();
+    }
+    if (nickname == null) {
+      nickname=user.getId();
+    }
+    getBuddyManager().storeBuddy(new YahooBuddy(this.getBuddyManager(),user,nickname,user.getGroupIds(),rosterItem));
+  }
+  try {
+    getTransport().syncLegacyRoster(getJID(),getBuddyManager().getBuddies());
+  }
+ catch (  UserNotFoundException e) {
+    Log.debug("Unable to sync yahoo contact list for " + getJID());
+  }
+  getBuddyManager().activate();
+}

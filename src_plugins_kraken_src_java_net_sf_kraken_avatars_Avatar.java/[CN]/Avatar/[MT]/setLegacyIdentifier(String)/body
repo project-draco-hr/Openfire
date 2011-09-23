@@ -1,0 +1,20 @@
+{
+  this.legacyIdentifier=identifier;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(UPDATE_LEGACY_ID);
+    pstmt.setString(1,jid.toString());
+    pstmt.setString(2,legacyIdentifier);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    Log.error("Avatar: Major SQL error while updating legacy identifier: ",sqle);
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+  }
+}

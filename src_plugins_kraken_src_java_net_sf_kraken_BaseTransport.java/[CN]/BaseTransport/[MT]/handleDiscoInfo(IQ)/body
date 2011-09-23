@@ -1,0 +1,48 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  IQ result=IQ.createResultIQ(packet);
+  if (packet.getTo().getNode() == null) {
+    if (from.getNode() == null || RegistrationManager.getInstance().isRegistered(from,this.transportType) || permissionManager.hasAccess(from)) {
+      Element response=DocumentHelper.createElement(QName.get("query",NameSpace.DISCO_INFO));
+      response.addElement("identity").addAttribute("category","gateway").addAttribute("type",this.transportType.discoIdentity()).addAttribute("name",this.description);
+      response.addElement("feature").addAttribute("var",NameSpace.DISCO_INFO);
+      response.addElement("feature").addAttribute("var",NameSpace.DISCO_ITEMS);
+      response.addElement("feature").addAttribute("var",NameSpace.IQ_GATEWAY);
+      response.addElement("feature").addAttribute("var",NameSpace.IQ_REGISTER);
+      response.addElement("feature").addAttribute("var",NameSpace.IQ_VERSION);
+      response.addElement("feature").addAttribute("var",NameSpace.IQ_LAST);
+      response.addElement("feature").addAttribute("var",NameSpace.VCARD_TEMP);
+      if (RegistrationManager.getInstance().isRegistered(from,this.transportType)) {
+        response.addElement("feature").addAttribute("var",NameSpace.IQ_REGISTERED);
+      }
+      result.setChildElement(response);
+    }
+ else {
+      result.setError(Condition.forbidden);
+    }
+  }
+ else {
+    final TransportSession<B> session;
+    try {
+      session=sessionManager.getSession(packet.getFrom());
+      if ((from.getNode() == null || permissionManager.hasAccess(from)) && session != null) {
+        final Element response=DocumentHelper.createElement(QName.get("query",NameSpace.DISCO_INFO));
+        response.addElement("identity").addAttribute("category","client").addAttribute("type","pc");
+        response.addElement("feature").addAttribute("var",NameSpace.DISCO_INFO);
+        for (        final SupportedFeature feature : session.supportedFeatures) {
+          response.addElement("feature").addAttribute("var",feature.getVar());
+        }
+        result.setChildElement(response);
+      }
+ else {
+        result.setError(Condition.forbidden);
+      }
+    }
+ catch (    NotFoundException ex) {
+      result.setError(Condition.item_not_found);
+    }
+  }
+  reply.add(result);
+  return reply;
+}
