@@ -2,6 +2,7 @@
   XmlPullParser xpp=reader.getXPPParser();
   StringBuilder sb;
   if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
+    Log.debug("ServerDialback: Processing incoming session.");
     StreamID streamID=sessionManager.nextStreamID();
     sb=new StringBuilder();
     sb.append("<stream:stream");
@@ -14,13 +15,19 @@
     try {
       Element doc=reader.parseDocument().getRootElement();
       if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+        String hostname=doc.attributeValue("from");
+        String recipient=doc.attributeValue("to");
+        Log.debug("ServerDialback: RS - Validating remote domain for incoming session from {} to {}",hostname,recipient);
         if (validateRemoteDomain(doc,streamID)) {
-          String hostname=doc.attributeValue("from");
-          String recipient=doc.attributeValue("to");
+          Log.debug("ServerDialback: RS - Validation of remote domain for incoming session from {} to {} was successful.",hostname,recipient);
           LocalIncomingServerSession session=sessionManager.createIncomingServerSession(connection,streamID);
           session.addValidatedDomain(hostname);
           session.setLocalDomain(recipient);
           return session;
+        }
+ else {
+          Log.debug("ServerDialback: RS - Validation of remote domain for incoming session from {} to {} was not successful.",hostname,recipient);
+          return null;
         }
       }
  else       if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
@@ -32,6 +39,7 @@
         return null;
       }
  else {
+        Log.debug("ServerDialback: Received an invalid/unknown packet while trying to process an incoming session: {}",doc.asXML());
         connection.deliverRawText(new StreamError(StreamError.Condition.invalid_xml).toXML());
         connection.close();
         return null;
@@ -44,9 +52,9 @@
     }
   }
  else {
+    Log.debug("ServerDialback: Received a stanza in an invalid namespace while trying to process an incoming session: {}",xpp.getNamespace("db"));
     connection.deliverRawText(new StreamError(StreamError.Condition.invalid_namespace).toXML());
     connection.close();
     return null;
   }
-  return null;
 }

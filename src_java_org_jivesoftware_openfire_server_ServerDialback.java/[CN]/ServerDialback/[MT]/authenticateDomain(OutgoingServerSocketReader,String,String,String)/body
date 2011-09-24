@@ -10,19 +10,20 @@ synchronized (socketReader) {
     sb.append("</db:result>");
     connection.deliverRawText(sb.toString());
     try {
-      Element doc=socketReader.getElement(RemoteServerManager.getSocketTimeout(),TimeUnit.MILLISECONDS);
-      if (doc == null) {
-        Log.debug("ServerDialback: OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
-        return false;
-      }
- else       if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
-        boolean success="valid".equals(doc.attributeValue("type"));
-        Log.debug("ServerDialback: OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
-        return success;
-      }
+      while (true) {
+        Element doc=socketReader.getElement(RemoteServerManager.getSocketTimeout(),TimeUnit.MILLISECONDS);
+        if (doc == null) {
+          Log.debug("ServerDialback: OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
+          return false;
+        }
+ else         if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+          boolean success="valid".equals(doc.attributeValue("type"));
+          Log.debug("ServerDialback: OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
+          return success;
+        }
  else {
-        Log.debug("ServerDialback: OS - Unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
-        return false;
+          Log.warn("ServerDialback: OS - Ignoring unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+        }
       }
     }
  catch (    InterruptedException e) {
