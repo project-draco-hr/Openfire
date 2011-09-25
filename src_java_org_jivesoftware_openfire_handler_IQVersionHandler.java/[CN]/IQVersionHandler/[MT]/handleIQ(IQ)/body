@@ -1,8 +1,13 @@
 {
   if (IQ.Type.get == packet.getType()) {
     Element answerElement=bodyElement.createCopy();
-    answerElement.element("name").setText(AdminConsole.getAppName());
-    answerElement.element("version").setText(AdminConsole.getVersionString());
+    try {
+      final String os=System.getProperty("os.name") + ' ' + System.getProperty("os.version")+ " ("+ System.getProperty("os.arch")+ ')';
+      final String java="Java " + System.getProperty("java.version");
+      answerElement.addElement("os").setText(os + " - " + java);
+    }
+ catch (    SecurityException ex) {
+    }
     IQ result=IQ.createResultIQ(packet);
     result.setChildElement(answerElement);
     return result;
