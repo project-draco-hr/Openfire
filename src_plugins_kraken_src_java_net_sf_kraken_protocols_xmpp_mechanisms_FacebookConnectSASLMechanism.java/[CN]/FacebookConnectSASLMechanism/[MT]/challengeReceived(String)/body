@@ -8,14 +8,14 @@
     String nonce=parameters.get("nonce");
     String method=parameters.get("method");
     Long callId=new GregorianCalendar().getTimeInMillis() / 1000;
-    String sig="api_key=" + apiKey + "call_id="+ callId+ "method="+ method+ "nonce="+ nonce+ "session_key="+ sessionKey+ "v="+ version+ appSecret;
+    String sig="api_key=" + apiKey + "call_id="+ callId+ "method="+ method+ "nonce="+ nonce+ "access_token="+ accessToken+ "v="+ version+ appSecret;
     try {
       sig=MD5(sig);
     }
  catch (    NoSuchAlgorithmException e) {
       throw new IllegalStateException(e);
     }
-    String composedResponse="api_key=" + apiKey + "&"+ "call_id="+ callId+ "&"+ "method="+ method+ "&"+ "nonce="+ nonce+ "&"+ "session_key="+ sessionKey+ "&"+ "v="+ version+ "&"+ "sig="+ sig;
+    String composedResponse="api_key=" + apiKey + "&"+ "call_id="+ callId+ "&"+ "method="+ method+ "&"+ "nonce="+ nonce+ "&"+ "access_token="+ accessToken+ "&"+ "v="+ version+ "&"+ "sig="+ sig;
     response=composedResponse.getBytes();
   }
   String authenticationText="";
