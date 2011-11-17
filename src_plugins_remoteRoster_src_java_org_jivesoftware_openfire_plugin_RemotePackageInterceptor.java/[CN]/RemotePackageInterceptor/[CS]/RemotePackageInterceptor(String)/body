@@ -1,0 +1,9 @@
+{
+  _mySubdomain=initialSubdomain;
+  XMPPServer server=XMPPServer.getInstance();
+  RosterManager rosterMananger=server.getRosterManager();
+  AbstractRemoteRosterProcessor sendroster=new SendRosterProcessor(rosterMananger,_mySubdomain);
+  AbstractRemoteRosterProcessor receiveChanges=new ReceiveComponentUpdatesProcessor(rosterMananger);
+  _packetProcessor.put("sendRoster",sendroster);
+  _packetProcessor.put("receiveChanges",receiveChanges);
+}

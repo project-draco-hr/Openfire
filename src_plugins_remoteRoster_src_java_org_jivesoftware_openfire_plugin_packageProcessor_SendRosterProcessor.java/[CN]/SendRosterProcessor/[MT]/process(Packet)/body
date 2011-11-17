@@ -1,0 +1,15 @@
+{
+  IQ myPacket=(IQ)packet;
+  String from=myPacket.getFrom().toString();
+  String to=myPacket.getFrom().toString();
+  String username=getUsernameFromJid(to);
+  Roster roster;
+  try {
+    roster=_rosterManager.getRoster(username);
+    Collection<RosterItem> items=roster.getRosterItems();
+    sendRosterToComponent(packet,items);
+  }
+ catch (  UserNotFoundException e) {
+    e.printStackTrace();
+  }
+}
