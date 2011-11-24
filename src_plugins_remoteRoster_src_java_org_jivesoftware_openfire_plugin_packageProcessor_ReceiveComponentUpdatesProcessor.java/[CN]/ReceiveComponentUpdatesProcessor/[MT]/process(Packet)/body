@@ -9,6 +9,9 @@
       roster=_rosterManager.getRoster(username);
       String jid=n.valueOf("@jid");
       String name=n.valueOf("@name");
+      if (jid.equals(myPacket.getFrom().toString())) {
+        break;
+      }
       List<String> grouplist=new ArrayList<String>();
       List<Node> groupnodes=findNodesInDocument(n.getDocument(),"//roster:group");
       for (      Node ne : groupnodes) {

@@ -17,20 +17,8 @@
           _packetProcessor.get("receiveChanges").process(packet);
         }
       }
- else       if (myPacket.getType().equals(IQ.Type.set) && myPacket.getTo().toString().equals(_mySubdomain)) {
-        if (packet.toXML().contains("jabber:iq:gateway:register")) {
-          _registeredJids.add(from);
-        }
- else         if (findNodesInDocument(myPacket.getChildElement().getDocument(),"//register:remove").size() == 1) {
-          _registeredJids.remove(from);
-        }
-      }
- else       if (myPacket.getType().equals(IQ.Type.result) && myPacket.getFrom().toString().equals(_mySubdomain)) {
-        if (_registeredJids.contains(to)) {
-          Element feature=new DefaultElement("feature");
-          feature.add(new DefaultAttribute("var","jabber:iq:registered"));
-          myPacket.getChildElement().add(feature);
-        }
+ else       if (myPacket.getType().equals(IQ.Type.get) && myPacket.toString().contains("http://jabber.org/protocol/disco#info") && myPacket.getTo().toString().equals(_mySubdomain)) {
+        _packetProcessor.get("sparkIQRegistered").process(packet);
       }
     }
   }

@@ -4,6 +4,8 @@
   RosterManager rosterMananger=server.getRosterManager();
   AbstractRemoteRosterProcessor sendroster=new SendRosterProcessor(rosterMananger,_mySubdomain);
   AbstractRemoteRosterProcessor receiveChanges=new ReceiveComponentUpdatesProcessor(rosterMananger);
+  AbstractRemoteRosterProcessor iqRegistered=new DiscoIQResigteredProcessor(_mySubdomain);
   _packetProcessor.put("sendRoster",sendroster);
   _packetProcessor.put("receiveChanges",receiveChanges);
+  _packetProcessor.put("sparkIQRegistered",iqRegistered);
 }

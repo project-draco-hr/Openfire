@@ -1,0 +1,47 @@
+{
+  boolean isFeatureEnabled=JiveGlobals.getBooleanProperty("plugin.remoteroster.sparkDiscoInfo",false);
+  if (!isFeatureEnabled) {
+    return;
+  }
+  String from=packet.getFrom().toString();
+  String to=packet.getTo().toString();
+  final InterceptorManager interceptorManager=InterceptorManager.getInstance();
+  final PacketInterceptor interceptor=new PacketInterceptor(){
+    @Override public void interceptPacket(    Packet packet,    Session session,    boolean incoming,    boolean processed) throws PacketRejectedException {
+      if (!processed && incoming) {
+        if (packet instanceof IQ) {
+          IQ iqPacket=(IQ)packet;
+          String ns=iqPacket.getChildElement().getNamespace().getURI();
+          if (iqPacket.getType().equals(IQ.Type.result) && ns.equals("jabber:iq:register") && iqPacket.getFrom().toString().equals(_mySubdoman)) {
+            setRegistered(iqPacket.toString().contains("<registered/>"));
+            throw new PacketRejectedException();
+          }
+ else           if (iqPacket.getType().equals(IQ.Type.result) && ns.equals("http://jabber.org/protocol/disco#info") && iqPacket.getFrom().toString().equals(_mySubdoman)) {
+            if (isRegistered()) {
+              Attribute attribut=new DefaultAttribute("var","jabber:iq:registered");
+              iqPacket.getChildElement().addElement("feature").add(attribut);
+            }
+          }
+        }
+      }
+    }
+  }
+;
+  interceptorManager.addInterceptor(interceptor);
+  IQ askComponent=new IQ();
+  askComponent.setTo(to);
+  askComponent.setFrom(from);
+  askComponent.setType(IQ.Type.get);
+  Element query=new DefaultElement("query");
+  query.addNamespace("","jabber:iq:register");
+  askComponent.setChildElement(query);
+  TimerTask removeInterceptorTask=new TimerTask(){
+    @Override public void run(){
+      interceptorManager.removeInterceptor(interceptor);
+    }
+  }
+;
+  Timer timer=new Timer();
+  timer.schedule(removeInterceptorTask,1000);
+  dispatchPacket(askComponent);
+}
