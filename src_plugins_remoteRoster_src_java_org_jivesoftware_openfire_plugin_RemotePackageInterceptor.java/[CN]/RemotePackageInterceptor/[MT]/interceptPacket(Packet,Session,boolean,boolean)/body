@@ -3,17 +3,22 @@
     if (packet instanceof IQ) {
       IQ myPacket=(IQ)packet;
       if (myPacket.getFrom() == null || myPacket.getTo() == null) {
+        if (myPacket.getFrom() != null && myPacket.getType().equals(IQ.Type.set) && myPacket.getTo() == null) {
+          if (Utils.findNodesInDocument(myPacket.getChildElement().getDocument(),"//roster:item").size() > 0) {
+            _packetProcessor.get("clientToComponentUpdate").process(myPacket);
+          }
+        }
         return;
       }
       String to=myPacket.getTo().toString();
       String from=myPacket.getFrom().toString();
       if (myPacket.getType().equals(IQ.Type.get) && from.equals(_mySubdomain)) {
-        if (findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {
+        if (Utils.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {
           _packetProcessor.get("sendRoster").process(packet);
         }
       }
  else       if (myPacket.getType().equals(IQ.Type.set) && from.equals(_mySubdomain)) {
-        if (findNodesInDocument(myPacket.getElement().getDocument(),"//roster:item").size() >= 1) {
+        if (Utils.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:item").size() >= 1) {
           _packetProcessor.get("receiveChanges").process(packet);
         }
       }

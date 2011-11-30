@@ -1,0 +1,24 @@
+{
+  Presence myPacket=(Presence)packet;
+  String to=myPacket.getTo().toString();
+  String username=getUsernameFromJid(to);
+  if (myPacket.getType() != null && myPacket.getType().equals(Presence.Type.unavailable)) {
+    System.out.println("is unavaibale ------------");
+    try {
+      Roster roster=_rosterManager.getRoster(username);
+      Collection<RosterItem> items=roster.getRosterItems();
+      for (      RosterItem item : items) {
+        String itemName=item.getJid().toString();
+        System.out.println("NAME: " + itemName + " sub: "+ _subDomain);
+        if (itemName.contains(_subDomain) && !itemName.equals(_subDomain)) {
+          System.out.println("entferne " + itemName);
+          roster.deleteRosterItem(item.getJid(),false);
+        }
+      }
+    }
+ catch (    Exception e) {
+      System.out.println("hier lief was falsch");
+      e.printStackTrace();
+    }
+  }
+}

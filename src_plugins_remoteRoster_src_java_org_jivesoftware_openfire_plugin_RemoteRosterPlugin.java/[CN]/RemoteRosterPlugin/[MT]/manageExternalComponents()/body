@@ -24,7 +24,7 @@
       if (_waitingForIQResponse.contains(from)) {
         Element packet=iq.getChildElement();
         Document doc=packet.getDocument();
-        List<Node> nodes=findNodesInDocument(doc,"//xmpp:identity[@category='gateway']");
+        List<Node> nodes=Utils.findNodesInDocument(doc,"//disco:identity[@category='gateway']");
         if (nodes.size() > 0 && !_interceptors.containsKey(from)) {
           updateInterceptors(from);
         }

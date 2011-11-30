@@ -1,0 +1,15 @@
+{
+  Element query=((IQ)packet).getChildElement();
+  if (query != null && query.getNamespaceURI().equals("jabber:iq:roster")) {
+    if (findNodesInDocument(query.getDocument(),"//roster:item").size() > 0) {
+      for (      Node n : findNodesInDocument(query.getDocument(),"//roster:item")) {
+        String jid=n.valueOf("@jid");
+        if (jid.contains("@" + _myDomain) && !n.valueOf("@subscription").equals("remove")) {
+          IQ forward=(IQ)packet.createCopy();
+          forward.setTo(_myDomain);
+          dispatchPacket(forward);
+        }
+      }
+    }
+  }
+}
