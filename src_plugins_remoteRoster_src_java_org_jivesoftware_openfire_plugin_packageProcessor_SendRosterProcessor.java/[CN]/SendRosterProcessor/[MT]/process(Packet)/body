@@ -1,7 +1,8 @@
 {
+  Log.debug("Processing packet in SendRosterProcessor for " + _componentName);
   IQ myPacket=(IQ)packet;
-  String to=myPacket.getFrom().toString();
-  String username=getUsernameFromJid(to);
+  String from=myPacket.getFrom().toString();
+  String username=getUsernameFromJid(from);
   Roster roster;
   try {
     roster=_rosterManager.getRoster(username);

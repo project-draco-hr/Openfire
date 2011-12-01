@@ -1,6 +1,7 @@
 {
   if (!processed && incoming) {
     if (packet instanceof IQ) {
+      Log.debug("Incomping unprocessed package i might be interested in. Package: \n" + packet.toString() + "\n");
       IQ myPacket=(IQ)packet;
       if (myPacket.getFrom() == null || myPacket.getTo() == null) {
         if (myPacket.getFrom() != null && myPacket.getType().equals(IQ.Type.set) && myPacket.getTo() == null) {
@@ -10,7 +11,7 @@
         }
         return;
       }
-      String to=myPacket.getTo().toString();
+      @SuppressWarnings("unused") String to=myPacket.getTo().toString();
       String from=myPacket.getFrom().toString();
       if (myPacket.getType().equals(IQ.Type.get) && from.equals(_mySubdomain)) {
         if (Utils.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {

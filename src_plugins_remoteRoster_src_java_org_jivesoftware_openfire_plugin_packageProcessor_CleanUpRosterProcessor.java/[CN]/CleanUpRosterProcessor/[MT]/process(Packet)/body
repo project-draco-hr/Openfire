@@ -1,23 +1,22 @@
 {
+  Log.debug("Processing packet in CleanUpRosterProcessor for " + _subDomain);
   Presence myPacket=(Presence)packet;
   String to=myPacket.getTo().toString();
   String username=getUsernameFromJid(to);
   if (myPacket.getType() != null && myPacket.getType().equals(Presence.Type.unavailable)) {
-    System.out.println("is unavaibale ------------");
     try {
       Roster roster=_rosterManager.getRoster(username);
       Collection<RosterItem> items=roster.getRosterItems();
       for (      RosterItem item : items) {
         String itemName=item.getJid().toString();
-        System.out.println("NAME: " + itemName + " sub: "+ _subDomain);
         if (itemName.contains(_subDomain) && !itemName.equals(_subDomain)) {
-          System.out.println("entferne " + itemName);
+          Log.debug("Removing contact " + item.getJid().toString() + " from contact list.");
           roster.deleteRosterItem(item.getJid(),false);
         }
       }
     }
  catch (    Exception e) {
-      System.out.println("hier lief was falsch");
+      Log.debug("Execption occured when cleaning up the Roster.",e);
       e.printStackTrace();
     }
   }

@@ -1,6 +1,8 @@
 {
+  Log.debug("Processing packet in DiscoIQResigteredProcessor for " + _mySubdoman);
   boolean isFeatureEnabled=JiveGlobals.getBooleanProperty("plugin.remoteroster.sparkDiscoInfo",false);
   if (!isFeatureEnabled) {
+    Log.debug("Spark extension is deactivated. Won't change the disco#info");
     return;
   }
   String from=packet.getFrom().toString();
@@ -20,6 +22,7 @@
           }
  else           if (iqPacket.getType().equals(IQ.Type.result) && ns.equals("http://jabber.org/protocol/disco#info") && iqPacket.getFrom().toString().equals(_mySubdoman)) {
             if (isRegistered()) {
+              Log.debug("Modifying disco#info packge to send registered iq feature to Spark user " + iqPacket.getTo().toString());
               Attribute attribut=new DefaultAttribute("var","jabber:iq:registered");
               iqPacket.getChildElement().addElement("feature").add(attribut);
             }
@@ -29,6 +32,7 @@
     }
   }
 ;
+  Log.debug("Creating my own listener for jabber:iq:register result to external component " + _mySubdoman);
   interceptorManager.addInterceptor(interceptor);
   IQ askComponent=new IQ();
   askComponent.setTo(to);
@@ -39,6 +43,7 @@
   askComponent.setChildElement(query);
   TimerTask removeInterceptorTask=new TimerTask(){
     @Override public void run(){
+      Log.debug("Removing my created listener for jabber:iq:register. Component " + _mySubdoman);
       interceptorManager.removeInterceptor(interceptor);
     }
   }
