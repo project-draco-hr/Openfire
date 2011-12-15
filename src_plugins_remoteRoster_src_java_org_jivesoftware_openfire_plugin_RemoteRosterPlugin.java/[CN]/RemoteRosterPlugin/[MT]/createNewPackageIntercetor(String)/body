@@ -1,6 +1,5 @@
 {
-  Log.debug("Creating package interceptor.");
-  RemotePackageInterceptor interceptor=new RemotePackageInterceptor(initialSubdomain);
+  AbstractInterceptorHandler interceptor=new GatewayInterceptorHandler(initialSubdomain);
   _interceptors.put(initialSubdomain,interceptor);
-  _interceptorManager.addInterceptor(interceptor);
+  interceptor.start();
 }

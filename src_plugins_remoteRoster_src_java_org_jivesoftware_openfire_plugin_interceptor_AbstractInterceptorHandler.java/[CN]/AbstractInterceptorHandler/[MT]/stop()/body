@@ -1,0 +1,8 @@
+{
+  System.out.println("Stop handling message interceptors for gateway " + _subdomain);
+  if (!_isRunning)   return;
+  _isRunning=false;
+  for (  PacketInterceptor interceptor : _interceptors) {
+    _iManager.removeInterceptor(interceptor);
+  }
+}
