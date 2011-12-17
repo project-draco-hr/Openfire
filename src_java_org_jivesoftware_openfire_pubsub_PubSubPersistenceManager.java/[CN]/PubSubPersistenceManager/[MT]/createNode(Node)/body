@@ -1,0 +1,66 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(ADD_NODE);
+    pstmt.setString(1,node.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
+    pstmt.setInt(3,(node.isCollectionNode() ? 0 : 1));
+    pstmt.setString(4,StringUtils.dateToMillis(node.getCreationDate()));
+    pstmt.setString(5,StringUtils.dateToMillis(node.getModificationDate()));
+    pstmt.setString(6,node.getParent() != null ? encodeNodeID(node.getParent().getNodeID()) : null);
+    pstmt.setInt(7,(node.isPayloadDelivered() ? 1 : 0));
+    if (!node.isCollectionNode()) {
+      pstmt.setInt(8,((LeafNode)node).getMaxPayloadSize());
+      pstmt.setInt(9,(((LeafNode)node).isPersistPublishedItems() ? 1 : 0));
+      pstmt.setInt(10,((LeafNode)node).getMaxPublishedItems());
+    }
+ else {
+      pstmt.setInt(8,0);
+      pstmt.setInt(9,0);
+      pstmt.setInt(10,0);
+    }
+    pstmt.setInt(11,(node.isNotifiedOfConfigChanges() ? 1 : 0));
+    pstmt.setInt(12,(node.isNotifiedOfDelete() ? 1 : 0));
+    pstmt.setInt(13,(node.isNotifiedOfRetract() ? 1 : 0));
+    pstmt.setInt(14,(node.isPresenceBasedDelivery() ? 1 : 0));
+    pstmt.setInt(15,(node.isSendItemSubscribe() ? 1 : 0));
+    pstmt.setString(16,node.getPublisherModel().getName());
+    pstmt.setInt(17,(node.isSubscriptionEnabled() ? 1 : 0));
+    pstmt.setInt(18,(node.isSubscriptionConfigurationRequired() ? 1 : 0));
+    pstmt.setString(19,node.getAccessModel().getName());
+    pstmt.setString(20,node.getPayloadType());
+    pstmt.setString(21,node.getBodyXSLT());
+    pstmt.setString(22,node.getDataformXSLT());
+    pstmt.setString(23,node.getCreator().toString());
+    pstmt.setString(24,node.getDescription());
+    pstmt.setString(25,node.getLanguage());
+    pstmt.setString(26,node.getName());
+    if (node.getReplyPolicy() != null) {
+      pstmt.setString(27,node.getReplyPolicy().name());
+    }
+ else {
+      pstmt.setString(27,null);
+    }
+    if (node.isCollectionNode()) {
+      pstmt.setString(28,((CollectionNode)node).getAssociationPolicy().name());
+      pstmt.setInt(29,((CollectionNode)node).getMaxLeafNodes());
+    }
+ else {
+      pstmt.setString(28,null);
+      pstmt.setInt(29,0);
+    }
+    pstmt.executeUpdate();
+    saveAssociatedElements(con,node);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+    abortTransaction=true;
+  }
+ finally {
+    DbConnectionManager.closeStatement(pstmt);
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

@@ -1,0 +1,17 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_ITEMS);
+    pstmt.setString(1,leafNode.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(leafNode.getNodeID()));
+    pstmt.executeUpdate();
+  }
+ catch (  Exception exc) {
+    Log.error(exc.getMessage(),exc);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

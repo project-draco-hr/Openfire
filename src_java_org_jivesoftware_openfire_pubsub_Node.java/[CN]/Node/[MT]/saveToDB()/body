@@ -1,12 +1,12 @@
 {
   if (!savedToDB) {
-    PubSubPersistenceManager.createNode(service,this);
+    PubSubPersistenceManager.createNode(this);
     setSavedToDB(true);
     for (    NodeAffiliate affialiate : affiliates) {
-      PubSubPersistenceManager.saveAffiliation(service,this,affialiate,true);
+      PubSubPersistenceManager.saveAffiliation(this,affialiate,true);
     }
     for (    NodeSubscription subscription : subscriptionsByID.values()) {
-      PubSubPersistenceManager.saveSubscription(service,this,subscription,true);
+      PubSubPersistenceManager.saveSubscription(this,subscription,true);
     }
     service.addNode(this);
     if (parent != null) {
@@ -14,6 +14,6 @@
     }
   }
  else {
-    PubSubPersistenceManager.updateNode(service,this);
+    PubSubPersistenceManager.updateNode(this);
   }
 }

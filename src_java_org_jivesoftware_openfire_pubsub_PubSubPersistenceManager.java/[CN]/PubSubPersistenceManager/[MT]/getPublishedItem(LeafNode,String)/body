@@ -1,0 +1,32 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  SAXReader xmlReader=null;
+  PublishedItem result=null;
+  try {
+    xmlReader=xmlReaders.take();
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_ITEM);
+    pstmt.setString(1,node.getService().getServiceID());
+    pstmt.setString(2,node.getNodeID());
+    pstmt.setString(3,itemID);
+    rs=pstmt.executeQuery();
+    if (rs.next()) {
+      JID publisher=new JID(rs.getString(1));
+      Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
+      result=new PublishedItem(node,publisher,itemID,creationDate);
+      if (rs.getString(3) != null) {
+        result.setPayload(xmlReader.read(new StringReader(rs.getString(3))).getRootElement());
+      }
+    }
+  }
+ catch (  Exception exc) {
+    Log.error(exc.getMessage(),exc);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+    if (xmlReader != null)     xmlReaders.add(xmlReader);
+  }
+  return result;
+}

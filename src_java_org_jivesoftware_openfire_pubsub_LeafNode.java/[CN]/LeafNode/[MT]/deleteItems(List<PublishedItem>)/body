@@ -1,12 +1,6 @@
 {
-synchronized (publishedItems) {
-    for (    PublishedItem item : toDelete) {
-      publishedItems.remove(item);
-      itemsByID.remove(item.getID());
-    }
-  }
   for (  PublishedItem item : toDelete) {
-    service.queueItemToRemove(item);
+    PubSubPersistenceManager.removePublishedItem(item);
   }
   if (isNotifiedOfRetract()) {
     Message message=new Message();

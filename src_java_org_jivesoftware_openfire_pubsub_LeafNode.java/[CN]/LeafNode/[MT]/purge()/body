@@ -1,21 +1,8 @@
 {
-  List<PublishedItem> toDelete=null;
-synchronized (publishedItems) {
-    if (publishedItems.size() > 1) {
-      toDelete=new ArrayList<PublishedItem>(publishedItems.subList(0,publishedItems.size() - 1));
-      publishedItems.removeAll(toDelete);
-      itemsByID=new HashMap<String,PublishedItem>();
-      itemsByID.put(publishedItems.get(0).getID(),publishedItems.get(0));
-    }
-  }
-  if (toDelete != null) {
-    for (    PublishedItem item : toDelete) {
-      service.queueItemToRemove(item);
-    }
-    Message message=new Message();
-    Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
-    Element items=event.addElement("purge");
-    items.addAttribute("node",nodeID);
-    broadcastNodeEvent(message,false);
-  }
+  PubSubPersistenceManager.purgeNode(this);
+  Message message=new Message();
+  Element event=message.addChildElement("event","http://jabber.org/protocol/pubsub#event");
+  Element items=event.addElement("purge");
+  items.addAttribute("node",nodeID);
+  broadcastNodeEvent(message,false);
 }

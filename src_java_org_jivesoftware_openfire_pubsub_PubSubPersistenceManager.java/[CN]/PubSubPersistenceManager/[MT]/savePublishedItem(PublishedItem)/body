@@ -1,0 +1,8 @@
+{
+synchronized (itemLock) {
+    LinkedListNode listNode=itemsToAdd.addLast(item);
+    itemMap.put(item.getID(),listNode);
+    publishedItemSize++;
+    if (publishedItemSize > ITEM_CACHE_SIZE)     flushItems();
+  }
+}

@@ -1,0 +1,38 @@
+{
+  flushItems();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  SAXReader xmlReader=null;
+  List<PublishedItem> results=new ArrayList<PublishedItem>(node.getMaxPublishedItems());
+  try {
+    xmlReader=xmlReaders.take();
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_ITEMS);
+    pstmt.setMaxRows(node.getMaxPublishedItems());
+    pstmt.setString(1,node.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String itemID=rs.getString(1);
+      JID publisher=new JID(rs.getString(2));
+      Date creationDate=new Date(Long.parseLong(rs.getString(3).trim()));
+      PublishedItem item=new PublishedItem(node,publisher,itemID,creationDate);
+      if (rs.getString(4) != null) {
+        item.setPayload(xmlReader.read(new StringReader(rs.getString(4))).getRootElement());
+      }
+      results.add(item);
+    }
+  }
+ catch (  Exception sqle) {
+    Log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    if (xmlReader != null) {
+      xmlReaders.add(xmlReader);
+    }
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  if (results.size() == 0)   return Collections.emptyList();
+  return results;
+}
