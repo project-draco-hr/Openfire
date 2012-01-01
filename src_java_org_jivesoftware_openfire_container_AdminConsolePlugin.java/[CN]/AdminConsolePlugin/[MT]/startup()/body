@@ -22,18 +22,18 @@
       if (!CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
         Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
       }
-      SslSelectChannelConnector httpsConnector=new SslSelectChannelConnector();
+      final SslContextFactory sslContextFactory=new SslContextFactory(SSLConfig.getKeystoreLocation());
+      sslContextFactory.setTrustStorePassword(SSLConfig.gets2sTrustPassword());
+      sslContextFactory.setTrustStoreType(SSLConfig.getStoreType());
+      sslContextFactory.setTrustStore(SSLConfig.gets2sTruststoreLocation());
+      sslContextFactory.setNeedClientAuth(false);
+      sslContextFactory.setWantClientAuth(false);
+      sslContextFactory.setKeyStorePassword(SSLConfig.getKeyPassword());
+      sslContextFactory.setKeyStoreType(SSLConfig.getStoreType());
+      final SslSelectChannelConnector httpsConnector=new SslSelectChannelConnector(sslContextFactory);
       String bindInterface=getBindInterface();
       httpsConnector.setHost(bindInterface);
       httpsConnector.setPort(adminSecurePort);
-      httpsConnector.setTrustPassword(SSLConfig.gets2sTrustPassword());
-      httpsConnector.setTruststoreType(SSLConfig.getStoreType());
-      httpsConnector.setTruststore(SSLConfig.gets2sTruststoreLocation());
-      httpsConnector.setNeedClientAuth(false);
-      httpsConnector.setWantClientAuth(false);
-      httpsConnector.setKeyPassword(SSLConfig.getKeyPassword());
-      httpsConnector.setKeystoreType(SSLConfig.getStoreType());
-      httpsConnector.setKeystore(SSLConfig.getKeystoreLocation());
       adminServer.addConnector(httpsConnector);
       sslEnabled=true;
     }
