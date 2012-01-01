@@ -5,7 +5,7 @@
       if (!CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
         Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
       }
-      JiveSslConnector sslConnector=new JiveSslConnector();
+      SslSelectChannelConnector sslConnector=new SslSelectChannelConnector();
       sslConnector.setHost(getBindInterface());
       sslConnector.setPort(securePort);
       sslConnector.setTrustPassword(SSLConfig.getc2sTrustPassword());
