@@ -1,6 +1,12 @@
 {
   V answer=remove(key);
-  int objectSize=calculateSize(value);
+  int objectSize=1;
+  try {
+    objectSize=CacheSizes.sizeOfAnything(value);
+  }
+ catch (  CannotCalculateSizeException e) {
+    Log.warn(e.getMessage(),e);
+  }
   if (maxCacheSize > 0 && objectSize > maxCacheSize * .90) {
     Log.warn("Cache: " + name + " -- object with key "+ key+ " is too large to fit in cache. Size is "+ objectSize);
     return value;
