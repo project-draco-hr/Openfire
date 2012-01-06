@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(CLEAN_OLD_DATA);
+    pstmt.setLong(1,System.currentTimeMillis() - 60 * 60 * 1000);
+    int rows=pstmt.executeUpdate();
+    Log.debug("Cleaned statistic database. Affected rows: " + rows);
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}
