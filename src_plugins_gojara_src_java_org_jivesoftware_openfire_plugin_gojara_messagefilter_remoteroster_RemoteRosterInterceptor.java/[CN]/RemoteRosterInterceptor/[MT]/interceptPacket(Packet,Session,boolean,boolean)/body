@@ -1,0 +1,31 @@
+{
+  if (!processed && incoming) {
+    if (packet instanceof IQ) {
+      Log.debug("Incomping unprocessed package i might be interested in. Package: \n" + packet.toString() + "\n");
+      IQ myPacket=(IQ)packet;
+      if (myPacket.getFrom() == null || myPacket.getTo() == null) {
+        if (myPacket.getFrom() != null && myPacket.getType().equals(IQ.Type.set) && myPacket.getTo() == null) {
+          if (XpathHelper.findNodesInDocument(myPacket.getChildElement().getDocument(),"//roster:item").size() > 0) {
+            _packetProcessor.get("clientToComponentUpdate").process(myPacket);
+          }
+        }
+        return;
+      }
+      @SuppressWarnings("unused") String to=myPacket.getTo().toString();
+      String from=myPacket.getFrom().toString();
+      if (myPacket.getType().equals(IQ.Type.get) && from.equals(_mySubdomain)) {
+        if (XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {
+          _packetProcessor.get("sendRoster").process(packet);
+        }
+      }
+ else       if (myPacket.getType().equals(IQ.Type.set) && from.equals(_mySubdomain)) {
+        if (XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:item").size() >= 1) {
+          _packetProcessor.get("receiveChanges").process(packet);
+        }
+      }
+ else       if (myPacket.getType().equals(IQ.Type.get) && myPacket.toString().contains("http://jabber.org/protocol/disco#info") && myPacket.getTo().toString().equals(_mySubdomain)) {
+        _packetProcessor.get("sparkIQRegistered").process(packet);
+      }
+    }
+  }
+}

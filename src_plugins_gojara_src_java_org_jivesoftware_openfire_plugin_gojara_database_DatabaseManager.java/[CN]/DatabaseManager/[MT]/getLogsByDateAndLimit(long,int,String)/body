@@ -1,0 +1,29 @@
+{
+  List<LogEntry> result=new ArrayList<LogEntry>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_LOGS_DATE_LIMIT_COMPONENT);
+    pstmt.setLong(1,olderThan);
+    pstmt.setString(2,component);
+    pstmt.setInt(3,limit);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String from=rs.getString(4);
+      String to=rs.getString(5);
+      String type=rs.getString(3);
+      long date=rs.getLong(2);
+      LogEntry res=new LogEntry(from,to,type,date);
+      result.add(res);
+    }
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return result;
+}

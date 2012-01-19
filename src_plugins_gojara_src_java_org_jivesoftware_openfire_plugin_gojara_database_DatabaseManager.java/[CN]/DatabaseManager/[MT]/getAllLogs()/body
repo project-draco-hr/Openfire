@@ -1,0 +1,27 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  List<String> _result=new ArrayList<String>();
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_ALL_LOGS);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String from=rs.getString(4);
+      String to=rs.getString(5);
+      String type=rs.getString(3);
+      String component=rs.getString(6);
+      Timestamp date=rs.getTimestamp(2);
+      String res="From: " + from + " To: "+ to+ " Type: "+ type+ " Timestamp: "+ date.toString()+ "Component: "+ component;
+      _result.add(res);
+    }
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return _result;
+}
