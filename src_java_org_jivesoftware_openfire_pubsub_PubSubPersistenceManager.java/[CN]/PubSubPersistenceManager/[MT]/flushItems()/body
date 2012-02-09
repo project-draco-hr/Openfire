@@ -1,42 +1,48 @@
 {
   Log.debug("Flushing items to database");
-  System.out.println("Flushing " + publishedItemSize + " items to database");
   LinkedList addList=null;
   LinkedList delList=null;
 synchronized (itemLock) {
     addList=itemsToAdd;
     delList=itemsToDelete;
     itemsToAdd=new LinkedList();
-    delList=new LinkedList();
+    itemsToDelete=new LinkedList();
     itemMap.clear();
     publishedItemSize=0;
   }
+  LinkedListNode addItem=addList.getFirst();
+  LinkedListNode delItem=delList.getFirst();
+  if ((addItem == null) && (delItem == null))   return;
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getTransactionConnection();
-    LinkedListNode itemNode=addList.getFirst();
-    while (itemNode != null) {
-      PublishedItem item=(PublishedItem)itemNode.object;
-      pstmt=con.prepareStatement(ADD_ITEM);
-      pstmt.setString(1,item.getNode().getService().getServiceID());
-      pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
-      pstmt.setString(3,item.getID());
-      pstmt.setString(4,item.getPublisher().toString());
-      pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));
-      pstmt.setString(6,item.getPayloadXML());
-      pstmt.executeUpdate();
-      itemNode=itemNode.next;
+    if (addItem != null) {
+      LinkedListNode addHead=addList.getLast().next;
+      while (addItem != addHead) {
+        PublishedItem item=(PublishedItem)addItem.object;
+        pstmt=con.prepareStatement(ADD_ITEM);
+        pstmt.setString(1,item.getNode().getService().getServiceID());
+        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
+        pstmt.setString(3,item.getID());
+        pstmt.setString(4,item.getPublisher().toString());
+        pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));
+        pstmt.setString(6,item.getPayloadXML());
+        pstmt.executeUpdate();
+        addItem=addItem.next;
+      }
     }
-    itemNode=delList.getFirst();
-    while (itemNode != null) {
-      PublishedItem item=(PublishedItem)itemNode.object;
-      pstmt=con.prepareStatement(DELETE_ITEM);
-      pstmt.setString(1,item.getNode().getService().getServiceID());
-      pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
-      pstmt.setString(3,item.getID());
-      pstmt.executeUpdate();
-      itemNode=itemNode.next;
+    if (delItem != null) {
+      LinkedListNode delHead=delList.getLast().next;
+      while (delItem != delHead) {
+        PublishedItem item=(PublishedItem)delItem.object;
+        pstmt=con.prepareStatement(DELETE_ITEM);
+        pstmt.setString(1,item.getNode().getService().getServiceID());
+        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
+        pstmt.setString(3,item.getID());
+        pstmt.executeUpdate();
+        delItem=delItem.next;
+      }
     }
     con.commit();
   }
