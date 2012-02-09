@@ -16,10 +16,15 @@
             Log.debug("CertificateManager: Ignoring non-XMPP otherName, " + objectId.getId());
             continue;
           }
-          DERUTF8String derStr=DERUTF8String.getInstance(otherNameSeq.getObjectAt(1));
-          String identity=derStr.getString();
-          if (identity != null && identity.length() > 0) {
-            identities.add(identity);
+          try {
+            DERUTF8String derStr=DERUTF8String.getInstance(otherNameSeq.getObjectAt(1));
+            String identity=derStr.getString();
+            if (identity != null && identity.length() > 0) {
+              identities.add(identity);
+            }
+          }
+ catch (          IllegalArgumentException ex) {
+            Log.debug("Cannot parse altName, likely because of unknown record format.",ex);
           }
         }
  catch (        UnsupportedEncodingException e) {

@@ -1,18 +1,20 @@
 {
+  boolean result=false;
   for (Enumeration<String> aliases=ksKeys.aliases(); aliases.hasMoreElements(); ) {
     X509Certificate certificate=(X509Certificate)ksKeys.getCertificate(aliases.nextElement());
     if ("*".equals(domain)) {
       if (certificate.getPublicKey().getAlgorithm().equals(algorithm)) {
-        return true;
+        result=true;
       }
     }
  else {
       for (      String identity : getPeerIdentities(certificate)) {
         if (identity.endsWith(domain) && certificate.getPublicKey().getAlgorithm().equals(algorithm)) {
-          return true;
+          result=true;
         }
       }
     }
   }
-  return false;
+  Log.info("Check for certificate for '{}' using algorithm {} returned: ",new Object[]{domain,algorithm,result});
+  return result;
 }
