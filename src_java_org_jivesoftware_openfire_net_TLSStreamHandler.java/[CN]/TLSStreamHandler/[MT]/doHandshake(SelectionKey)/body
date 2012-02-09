@@ -20,11 +20,7 @@ return initialHSComplete;
 }
 switch (initialHSStatus) {
 case NEED_UNWRAP:
-final int bytesRead=rbc.read(incomingNetBB);
-if (bytesRead == 0) {
-Log.error("Read 0 bytes!");
-}
-if (bytesRead == -1) {
+if (rbc.read(incomingNetBB) == -1) {
 tlsEngine.closeInbound();
 return initialHSComplete;
 }
@@ -37,7 +33,7 @@ switch (result.getStatus()) {
 case OK:
 switch (initialHSStatus) {
 case NOT_HANDSHAKING:
-throw new IOException("Not handshaking during initial handshake");
+  throw new IOException("Not handshaking during initial handshake");
 case NEED_TASK:
 initialHSStatus=doTasks();
 break;
