@@ -1,8 +1,10 @@
 {
-  MUCServiceProperties properties=propertyMaps.get(subdomain);
-  if (properties == null) {
-    properties=new MUCServiceProperties(subdomain);
-    propertyMaps.put(subdomain,properties);
+  final MUCServiceProperties newProps=new MUCServiceProperties(subdomain);
+  final MUCServiceProperties oldProps=propertyMaps.putIfAbsent(subdomain,newProps);
+  if (oldProps != null) {
+    return oldProps.get(name);
   }
-  return properties.get(name);
+ else {
+    return newProps.get(name);
+  }
 }

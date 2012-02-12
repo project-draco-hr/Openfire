@@ -19,15 +19,15 @@
   }
   if (IQ.Type.get == packet.getType()) {
     reply=IQ.createResultIQ(packet);
-    String nickname=room.getReservedNickname(packet.getFrom().toBareJID());
+    String nickname=room.getReservedNickname(packet.getFrom());
     Element currentRegistration=probeResult.createCopy();
     if (nickname != null) {
       ElementUtil.setProperty(currentRegistration,"query.registered",null);
       Element form=currentRegistration.element(QName.get("x","jabber:x:data"));
-      Iterator fields=form.elementIterator("field");
+      @SuppressWarnings("unchecked") Iterator<Element> fields=form.elementIterator("field");
       Element field;
       while (fields.hasNext()) {
-        field=(Element)fields.next();
+        field=fields.next();
         if ("muc#register_roomnick".equals(field.attributeValue("var"))) {
           field.addElement("value").addText(nickname);
         }

@@ -59,8 +59,9 @@
               if (userInfo != null && userInfo.element("invite") != null) {
                 @SuppressWarnings("unchecked") List<Element> extensions=new ArrayList<Element>(packet.getElement().elements());
                 extensions.remove(userInfo);
-                for (Iterator it=userInfo.elementIterator("invite"); it.hasNext(); ) {
-                  Element info=(Element)it.next();
+                @SuppressWarnings("unchecked") Iterator<Element> it=userInfo.elementIterator("invite");
+                while (it.hasNext()) {
+                  Element info=it.next();
                   JID jid=new JID(info.attributeValue("to"));
                   if (room.isMembersOnly()) {
                     room.addMember(jid,null,role);

@@ -1,5 +1,5 @@
 {
-  String alternateJID=destroyRequest.getAlternateJID();
+  JID alternateJID=destroyRequest.getAlternateJID();
   String reason=destroyRequest.getReason();
   MUCRole leaveRole;
   Collection<MUCRole> removedRoles=new ArrayList<MUCRole>();
@@ -38,8 +38,8 @@
       Element item=fragment.addElement("item");
       item.addAttribute("affiliation","none");
       item.addAttribute("role","none");
-      if (alternateJID != null && alternateJID.length() > 0) {
-        fragment.addElement("destroy").addAttribute("jid",alternateJID);
+      if (alternateJID != null) {
+        fragment.addElement("destroy").addAttribute("jid",alternateJID.toFullJID());
       }
       if (reason != null && reason.length() > 0) {
         Element destroy=fragment.element("destroy");

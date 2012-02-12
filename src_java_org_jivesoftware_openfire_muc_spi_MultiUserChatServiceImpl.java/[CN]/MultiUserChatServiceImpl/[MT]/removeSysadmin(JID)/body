@@ -1,0 +1,9 @@
+{
+  final JID bareJID=new JID(userJID.toBareJID());
+  sysadmins.remove(bareJID);
+  String[] jids=new String[sysadmins.size()];
+  for (int i=0; i < jids.length; i++) {
+    jids[i]=sysadmins.get(i).toBareJID();
+  }
+  MUCPersistenceManager.setProperty(chatServiceName,"sysadmin.jid",fromArray(jids));
+}

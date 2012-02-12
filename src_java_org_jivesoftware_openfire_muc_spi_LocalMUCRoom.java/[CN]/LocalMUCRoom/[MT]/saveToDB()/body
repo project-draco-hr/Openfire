@@ -2,16 +2,16 @@
   MUCPersistenceManager.saveToDB(this);
   if (!savedToDB) {
     savedToDB=true;
-    for (    String owner : owners) {
+    for (    JID owner : owners) {
       MUCPersistenceManager.saveAffiliationToDB(this,owner,null,MUCRole.Affiliation.owner,MUCRole.Affiliation.none);
     }
-    for (    String admin : admins) {
+    for (    JID admin : admins) {
       MUCPersistenceManager.saveAffiliationToDB(this,admin,null,MUCRole.Affiliation.admin,MUCRole.Affiliation.none);
     }
-    for (    String bareJID : members.keySet()) {
+    for (    JID bareJID : members.keySet()) {
       MUCPersistenceManager.saveAffiliationToDB(this,bareJID,members.get(bareJID),MUCRole.Affiliation.member,MUCRole.Affiliation.none);
     }
-    for (    String outcast : outcasts) {
+    for (    JID outcast : outcasts) {
       MUCPersistenceManager.saveAffiliationToDB(this,outcast,null,MUCRole.Affiliation.outcast,MUCRole.Affiliation.none);
     }
   }

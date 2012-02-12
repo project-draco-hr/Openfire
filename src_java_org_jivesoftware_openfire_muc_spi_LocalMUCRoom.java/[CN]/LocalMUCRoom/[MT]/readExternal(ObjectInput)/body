@@ -2,10 +2,10 @@
   name=ExternalizableUtil.getInstance().readSafeUTF(in);
   startTime=ExternalizableUtil.getInstance().readLong(in);
   lockedTime=ExternalizableUtil.getInstance().readLong(in);
-  owners.addAll(ExternalizableUtil.getInstance().readStringList(in));
-  admins.addAll(ExternalizableUtil.getInstance().readStringList(in));
-  members.putAll(ExternalizableUtil.getInstance().readStringMap(in));
-  outcasts.addAll(ExternalizableUtil.getInstance().readStringList(in));
+  ExternalizableUtil.getInstance().readSerializableCollection(in,owners,getClass().getClassLoader());
+  ExternalizableUtil.getInstance().readSerializableCollection(in,admins,getClass().getClassLoader());
+  ExternalizableUtil.getInstance().readSerializableMap(in,members,getClass().getClassLoader());
+  ExternalizableUtil.getInstance().readSerializableCollection(in,outcasts,getClass().getClassLoader());
   naturalLanguageName=ExternalizableUtil.getInstance().readSafeUTF(in);
   description=ExternalizableUtil.getInstance().readSafeUTF(in);
   canOccupantsChangeSubject=ExternalizableUtil.getInstance().readBoolean(in);

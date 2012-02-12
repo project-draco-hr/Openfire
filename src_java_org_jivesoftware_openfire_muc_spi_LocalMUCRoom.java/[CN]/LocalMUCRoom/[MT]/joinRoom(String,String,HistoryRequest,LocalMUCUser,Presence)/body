@@ -10,14 +10,15 @@
     if (isDestroyed || (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers())) {
       throw new ServiceUnavailableException();
     }
-    boolean isOwner=owners.contains(user.getAddress().toBareJID());
+    final JID bareJID=new JID(user.getAddress().toBareJID());
+    boolean isOwner=owners.contains(bareJID);
     if (isLocked()) {
       if (!isOwner) {
         throw new RoomLockedException();
       }
     }
     if (occupants.containsKey(nickname.toLowerCase())) {
-      if (occupants.get(nickname.toLowerCase()).getUserAddress().toBareJID().equals(user.getAddress().toBareJID())) {
+      if (occupants.get(nickname.toLowerCase()).getUserAddress().toBareJID().equals(bareJID.toBareJID())) {
         String reason="Your account signed into this chatroom with the same nickname from another location.";
         Presence updatedPresence=new Presence(Presence.Type.unavailable);
         updatedPresence.setFrom(occupants.get(nickname.toLowerCase()).getRoleAddress());
@@ -38,12 +39,12 @@
       }
     }
     if (members.containsValue(nickname)) {
-      if (!nickname.equals(members.get(user.getAddress().toBareJID()))) {
+      if (!nickname.equals(members.get(bareJID))) {
         throw new ConflictException();
       }
     }
     if (isLoginRestrictedToNickname()) {
-      String reservedNickname=members.get(user.getAddress().toBareJID());
+      String reservedNickname=members.get(bareJID);
       if (reservedNickname != null && !nickname.equals(reservedNickname)) {
         throw new NotAcceptableException();
       }
@@ -54,19 +55,19 @@
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
- else     if (mucService.getSysadmins().contains(user.getAddress().toBareJID())) {
+ else     if (mucService.getSysadmins().contains(bareJID)) {
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
- else     if (admins.contains(user.getAddress().toBareJID())) {
+ else     if (admins.contains(bareJID)) {
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.admin;
     }
- else     if (members.containsKey(user.getAddress().toBareJID())) {
+ else     if (members.containsKey(bareJID)) {
       role=MUCRole.Role.participant;
       affiliation=MUCRole.Affiliation.member;
     }
- else     if (outcasts.contains(user.getAddress().toBareJID())) {
+ else     if (outcasts.contains(bareJID)) {
       throw new ForbiddenException();
     }
  else {
@@ -78,10 +79,10 @@
     }
     joinRole=new LocalMUCRole(mucService,this,nickname,role,affiliation,user,presence,router);
     occupants.put(nickname.toLowerCase(),joinRole);
-    List<MUCRole> list=occupantsByBareJID.get(user.getAddress().toBareJID());
+    List<MUCRole> list=occupantsByBareJID.get(bareJID);
     if (list == null) {
       list=new ArrayList<MUCRole>();
-      occupantsByBareJID.put(user.getAddress().toBareJID(),list);
+      occupantsByBareJID.put(bareJID,list);
     }
     list.add(joinRole);
     occupantsByFullJID.put(user.getAddress(),joinRole);
@@ -127,9 +128,9 @@
     joinRole.send(message);
   }
   if (historyRequest == null) {
-    Iterator history=roomHistory.getMessageHistory();
+    Iterator<Message> history=roomHistory.getMessageHistory();
     while (history.hasNext()) {
-      joinRole.send((Message)history.next());
+      joinRole.send(history.next());
     }
   }
  else {

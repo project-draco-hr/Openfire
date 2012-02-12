@@ -1,8 +1,8 @@
 {
-  MUCServiceProperties properties=propertyMaps.get(subdomain);
-  if (properties == null) {
-    properties=new MUCServiceProperties(subdomain);
-    propertyMaps.put(subdomain,properties);
+  MUCServiceProperties properties=new MUCServiceProperties(subdomain);
+  final MUCServiceProperties oldProps=propertyMaps.putIfAbsent(subdomain,properties);
+  if (oldProps != null) {
+    properties=oldProps;
   }
   Collection<String> propertyNames=properties.getChildrenNames(parent);
   List<String> values=new ArrayList<String>();
