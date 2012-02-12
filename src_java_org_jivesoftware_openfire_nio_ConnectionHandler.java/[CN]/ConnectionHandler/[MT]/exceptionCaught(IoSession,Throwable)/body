@@ -2,8 +2,18 @@
   if (cause instanceof IOException) {
     Log.debug("ConnectionHandler: ",cause);
   }
+ else   if (cause instanceof XMLNotWellFormedException) {
+    Log.warn("Closing session due to malformed XML: " + session,cause);
+    final Connection connection=(Connection)session.getAttribute(CONNECTION);
+    final StreamError error=new StreamError(StreamError.Condition.xml_not_well_formed);
+    connection.deliverRawText(error.toXML());
+    session.close();
+  }
  else   if (cause instanceof ProtocolDecoderException) {
     Log.warn("Closing session due to exception: " + session,cause);
+    final Connection connection=(Connection)session.getAttribute(CONNECTION);
+    final StreamError error=new StreamError(StreamError.Condition.internal_server_error);
+    connection.deliverRawText(error.toXML());
     session.close();
   }
  else {

@@ -19,7 +19,7 @@
   for (int i=0; i < readChar; i++) {
     ch=buf[i];
     if (ch < 0x20 && ch != 0x9 && ch != 0xA && ch != 0xD && ch != 0x0) {
-      throw new Exception("Disallowed character");
+      throw new XMLNotWellFormedException("Character is invalid in: " + ch);
     }
     if (isHighSurrogate) {
       if (Character.isLowSurrogate(ch)) {
