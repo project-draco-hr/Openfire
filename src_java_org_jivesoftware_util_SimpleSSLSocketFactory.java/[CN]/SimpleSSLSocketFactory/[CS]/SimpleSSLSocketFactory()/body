@@ -1,6 +1,7 @@
 {
   try {
-    SSLContext sslcontent=SSLContext.getInstance("TLS");
+    String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm","TLS");
+    SSLContext sslcontent=SSLContext.getInstance(algorithm);
     sslcontent.init(null,new TrustManager[]{new DummyTrustManager()},new java.security.SecureRandom());
     factory=sslcontent.getSocketFactory();
   }
