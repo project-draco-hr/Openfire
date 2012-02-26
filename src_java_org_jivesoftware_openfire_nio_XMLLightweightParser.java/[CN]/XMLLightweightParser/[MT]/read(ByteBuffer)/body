@@ -5,7 +5,7 @@
   }
   CharBuffer charBuffer=CharBuffer.allocate(byteBuffer.capacity());
   encoder.reset();
-  CoderResult coderResult=encoder.decode(byteBuffer.buf(),charBuffer,false);
+  encoder.decode(byteBuffer.buf(),charBuffer,false);
   char[] buf=new char[charBuffer.position()];
   charBuffer.flip();
   charBuffer.get(buf);
@@ -19,7 +19,7 @@
   for (int i=0; i < readChar; i++) {
     ch=buf[i];
     if (ch < 0x20 && ch != 0x9 && ch != 0xA && ch != 0xD && ch != 0x0) {
-      throw new Exception("Disallowed character");
+      throw new XMLNotWellFormedException("Character is invalid in: " + ch);
     }
     if (isHighSurrogate) {
       if (Character.isLowSurrogate(ch)) {

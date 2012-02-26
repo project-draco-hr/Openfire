@@ -1,0 +1,22 @@
+{
+  if (_permissions.isGatewayLimited(_subDomain)) {
+    if (packet instanceof IQ) {
+      IQ iqpacket=(IQ)packet;
+      Element root=iqpacket.getChildElement();
+      if (root == null)       return;
+      String ns=root.getNamespaceURI();
+      if (ns.equals("http://jabber.org/protocol/disco#items") && iqpacket.getType().equals(IQ.Type.result)) {
+        if (!_permissions.allowedForUser(_subDomain,iqpacket.getTo())) {
+          if (iqpacket.getFrom().toString().equals(_host)) {
+            List<Node> nodes=XpathHelper.findNodesInDocument(root.getDocument(),"//discoitems:item");
+            for (            Node node : nodes) {
+              if (node.valueOf("@jid").equals(_subDomain)) {
+                root.remove(node);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

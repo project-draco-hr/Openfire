@@ -13,11 +13,9 @@
   Message packetToAdd=packet.createCopy();
   if (isNonAnonymousRoom != room.canAnyoneDiscoverJID()) {
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
-    Message message;
-    Element delayElement;
-    for (Iterator it=getMessageHistory(); it.hasNext(); ) {
-      message=(Message)it.next();
-      delayElement=message.getChildElement("x","jabber:x:delay");
+    for (Iterator<Message> it=getMessageHistory(); it.hasNext(); ) {
+      Message message=it.next();
+      Element delayElement=message.getChildElement("x","jabber:x:delay");
       if (room.canAnyoneDiscoverJID()) {
         try {
           MUCRole role=room.getOccupant(message.getFrom().getResource());

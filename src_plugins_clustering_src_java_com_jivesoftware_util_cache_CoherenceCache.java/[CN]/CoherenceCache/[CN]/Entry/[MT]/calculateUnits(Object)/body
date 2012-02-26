@@ -1,27 +1,14 @@
 {
-  if (object instanceof Cacheable) {
-    return ((Cacheable)object).getCachedSize();
-  }
- else   if (object instanceof com.tangosol.util.Binary) {
-    return ((com.tangosol.util.Binary)object).length();
-  }
- else   if (object instanceof Long) {
-    return CacheSizes.sizeOfLong();
-  }
- else   if (object instanceof Integer) {
-    return CacheSizes.sizeOfObject() + CacheSizes.sizeOfInt();
-  }
- else   if (object instanceof Boolean) {
-    return CacheSizes.sizeOfObject() + CacheSizes.sizeOfBoolean();
-  }
- else   if (object instanceof long[]) {
-    long[] array=(long[])object;
-    return CacheSizes.sizeOfObject() + array.length * CacheSizes.sizeOfLong();
-  }
- else   if (object instanceof String) {
-    return CacheSizes.sizeOfString((String)object);
-  }
+  try {
+    if (object instanceof com.tangosol.util.Binary) {
+      return ((com.tangosol.util.Binary)object).length();
+    }
  else {
+      return CacheSizes.sizeOfAnything(object);
+    }
+  }
+ catch (  CannotCalculateSizeException e) {
+    Log.warn(e.getMessage(),e);
     return 1;
   }
 }

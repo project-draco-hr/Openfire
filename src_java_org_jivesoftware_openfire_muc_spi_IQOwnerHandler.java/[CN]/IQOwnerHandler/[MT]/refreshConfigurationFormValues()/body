@@ -56,13 +56,13 @@
     field.addValue((room.isRegistrationEnabled() ? "1" : "0"));
     field=configurationForm.getField("muc#roomconfig_roomadmins");
     field.clearValues();
-    for (    String jid : room.getAdmins()) {
-      field.addValue(jid);
+    for (    JID jid : room.getAdmins()) {
+      field.addValue(jid.toString());
     }
     field=configurationForm.getField("muc#roomconfig_roomowners");
     field.clearValues();
-    for (    String jid : room.getOwners()) {
-      field.addValue(jid);
+    for (    JID jid : room.getOwners()) {
+      field.addValue(jid.toString());
     }
     probeResult.remove(probeResult.element(QName.get("x","jabber:x:data")));
     probeResult.add(configurationForm.getElement());

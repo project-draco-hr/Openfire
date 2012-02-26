@@ -1,0 +1,9 @@
+{
+  final JID bareJID=new JID(userJID.toBareJID());
+  allowedToCreate.remove(bareJID);
+  String[] jids=new String[allowedToCreate.size()];
+  for (int i=0; i < jids.length; i++) {
+    jids[i]=allowedToCreate.get(i).toBareJID();
+  }
+  MUCPersistenceManager.setProperty(chatServiceName,"create.jid",fromArray(jids));
+}

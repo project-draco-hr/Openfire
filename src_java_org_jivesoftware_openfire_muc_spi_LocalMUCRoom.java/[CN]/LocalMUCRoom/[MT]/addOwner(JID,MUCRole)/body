@@ -1,24 +1,25 @@
 {
+  final JID bareJID=new JID(jid.toBareJID());
   lock.writeLock().lock();
   try {
     MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
     if (MUCRole.Affiliation.owner != sendRole.getAffiliation()) {
       throw new ForbiddenException();
     }
-    if (owners.contains(jid.toBareJID())) {
+    if (owners.contains(bareJID)) {
       return Collections.emptyList();
     }
-    owners.add(jid.toBareJID());
-    if (removeAdmin(jid.toBareJID())) {
+    owners.add(bareJID);
+    if (removeAdmin(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.admin;
     }
- else     if (removeMember(jid.toBareJID())) {
+ else     if (removeMember(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.member;
     }
- else     if (removeOutcast(jid.toBareJID())) {
+ else     if (removeOutcast(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.outcast;
     }
-    MUCPersistenceManager.saveAffiliationToDB(this,jid.toBareJID(),null,MUCRole.Affiliation.owner,oldAffiliation);
+    MUCPersistenceManager.saveAffiliationToDB(this,bareJID,null,MUCRole.Affiliation.owner,oldAffiliation);
   }
   finally {
     lock.writeLock().unlock();

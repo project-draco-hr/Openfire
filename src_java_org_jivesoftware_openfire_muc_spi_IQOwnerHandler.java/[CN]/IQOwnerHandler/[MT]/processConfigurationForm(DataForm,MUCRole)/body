@@ -4,15 +4,19 @@
   FormField field;
   field=completedForm.getField("muc#roomconfig_roomadmins");
   boolean adminsSent=field != null;
-  List<String> admins=new ArrayList<String>();
+  List<JID> admins=new ArrayList<JID>();
   if (field != null) {
-    admins.addAll(field.getValues());
+    for (    String value : field.getValues()) {
+      admins.add(new JID(new JID(value).toBareJID()));
+    }
   }
   field=completedForm.getField("muc#roomconfig_roomowners");
   boolean ownersSent=field != null;
-  List<String> owners=new ArrayList<String>();
+  List<JID> owners=new ArrayList<JID>();
   if (field != null) {
-    owners.addAll(field.getValues());
+    for (    String value : field.getValues()) {
+      owners.add(new JID(new JID(value).toBareJID()));
+    }
   }
   if (ownersSent && owners.isEmpty()) {
     throw new ConflictException();
@@ -131,19 +135,19 @@
   presences.addAll(room.addOwners(owners,senderRole));
   presences.addAll(room.addAdmins(admins,senderRole));
   if (ownersSent) {
-    List<String> ownersToRemove=new ArrayList<String>(room.owners);
+    List<JID> ownersToRemove=new ArrayList<JID>(room.owners);
     ownersToRemove.removeAll(admins);
     ownersToRemove.removeAll(owners);
-    for (    String jid : ownersToRemove) {
-      presences.addAll(room.addMember(new JID(jid),null,senderRole));
+    for (    JID jid : ownersToRemove) {
+      presences.addAll(room.addMember(jid,null,senderRole));
     }
   }
   if (adminsSent) {
-    List<String> adminsToRemove=new ArrayList<String>(room.admins);
+    List<JID> adminsToRemove=new ArrayList<JID>(room.admins);
     adminsToRemove.removeAll(admins);
     adminsToRemove.removeAll(owners);
-    for (    String jid : adminsToRemove) {
-      presences.addAll(room.addMember(new JID(jid),null,senderRole));
+    for (    JID jid : adminsToRemove) {
+      presences.addAll(room.addMember(jid,null,senderRole));
     }
   }
   if (!room.isPersistent() && room.getOccupantsCount() == 0) {

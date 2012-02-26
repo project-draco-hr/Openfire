@@ -1,0 +1,27 @@
+{
+  final Matcher matcher=XML_HAS_CHARREF.matcher(string);
+  while (matcher.find()) {
+    final String decValue=matcher.group(2);
+    if (decValue != null) {
+      final int value=Integer.parseInt(decValue);
+      if (!isLegalXmlCharacter(value)) {
+        return true;
+      }
+ else {
+        continue;
+      }
+    }
+    final String hexValue=matcher.group(3);
+    if (hexValue != null) {
+      final int value=Integer.parseInt(hexValue,16);
+      if (!isLegalXmlCharacter(value)) {
+        return true;
+      }
+ else {
+        continue;
+      }
+    }
+    throw new IllegalStateException("An error occurred while searching for illegal character references in the value [" + string + "].");
+  }
+  return false;
+}

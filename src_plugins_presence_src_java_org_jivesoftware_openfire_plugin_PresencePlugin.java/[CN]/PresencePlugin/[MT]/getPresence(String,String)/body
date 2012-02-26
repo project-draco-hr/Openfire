@@ -32,8 +32,11 @@
     if (sender == null) {
       throw new UserNotFoundException("Sender is null");
     }
- else     if (!presenceManager.canProbePresence(new JID(sender),targetJID.getNode())) {
-      throw new UserNotFoundException("Sender is not allowed to probe this user");
+ else {
+      JID senderJID=new JID(sender);
+      if (!senderJID.getNode().equals(targetJID.getNode()) && !presenceManager.canProbePresence(new JID(sender),targetJID.getNode())) {
+        throw new UserNotFoundException("Sender is not allowed to probe this user");
+      }
     }
   }
   User user=userManager.getUser(targetJID.getNode());

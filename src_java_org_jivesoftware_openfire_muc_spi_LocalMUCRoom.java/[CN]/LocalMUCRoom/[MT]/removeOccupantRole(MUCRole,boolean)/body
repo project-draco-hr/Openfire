@@ -2,11 +2,12 @@
   occupants.remove(leaveRole.getNickname().toLowerCase());
   JID userAddress=leaveRole.getUserAddress();
   leaveRole.destroy();
-  List list=occupantsByBareJID.get(userAddress.toBareJID());
+  JID bareJID=new JID(userAddress.toBareJID());
+  List<MUCRole> list=occupantsByBareJID.get(bareJID);
   if (list != null) {
     list.remove(leaveRole);
     if (list.isEmpty()) {
-      occupantsByBareJID.remove(userAddress.toBareJID());
+      occupantsByBareJID.remove(bareJID);
     }
   }
   occupantsByFullJID.remove(userAddress);

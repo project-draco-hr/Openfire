@@ -1,0 +1,134 @@
+{
+  final String bareJID=jid.toBareJID();
+  if (!room.isPersistent() || !room.wasSavedToDB()) {
+    return;
+  }
+  if (MUCRole.Affiliation.none == oldAffiliation) {
+    if (MUCRole.Affiliation.member == newAffiliation) {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      try {
+        con=DbConnectionManager.getConnection();
+        pstmt=con.prepareStatement(ADD_MEMBER);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.setString(3,nickname);
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+      }
+ finally {
+        DbConnectionManager.closeConnection(pstmt,con);
+      }
+    }
+ else {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      try {
+        con=DbConnectionManager.getConnection();
+        pstmt=con.prepareStatement(ADD_AFFILIATION);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.setInt(3,newAffiliation.getValue());
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+      }
+ finally {
+        DbConnectionManager.closeConnection(pstmt,con);
+      }
+    }
+  }
+ else {
+    if (MUCRole.Affiliation.member == newAffiliation && MUCRole.Affiliation.member == oldAffiliation) {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      try {
+        con=DbConnectionManager.getConnection();
+        pstmt=con.prepareStatement(UPDATE_MEMBER);
+        pstmt.setString(1,nickname);
+        pstmt.setLong(2,room.getID());
+        pstmt.setString(3,bareJID);
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+      }
+ finally {
+        DbConnectionManager.closeConnection(pstmt,con);
+      }
+    }
+ else     if (MUCRole.Affiliation.member == newAffiliation) {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      boolean abortTransaction=false;
+      try {
+        con=DbConnectionManager.getTransactionConnection();
+        pstmt=con.prepareStatement(DELETE_AFFILIATION);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.executeUpdate();
+        DbConnectionManager.fastcloseStmt(pstmt);
+        pstmt=con.prepareStatement(ADD_MEMBER);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.setString(3,nickname);
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+        abortTransaction=true;
+      }
+ finally {
+        DbConnectionManager.closeStatement(pstmt);
+        DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+      }
+    }
+ else     if (MUCRole.Affiliation.member == oldAffiliation) {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      boolean abortTransaction=false;
+      try {
+        con=DbConnectionManager.getTransactionConnection();
+        pstmt=con.prepareStatement(DELETE_MEMBER);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.executeUpdate();
+        DbConnectionManager.fastcloseStmt(pstmt);
+        pstmt=con.prepareStatement(ADD_AFFILIATION);
+        pstmt.setLong(1,room.getID());
+        pstmt.setString(2,bareJID);
+        pstmt.setInt(3,newAffiliation.getValue());
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+        abortTransaction=true;
+      }
+ finally {
+        DbConnectionManager.closeStatement(pstmt);
+        DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+      }
+    }
+ else {
+      Connection con=null;
+      PreparedStatement pstmt=null;
+      try {
+        con=DbConnectionManager.getConnection();
+        pstmt=con.prepareStatement(UPDATE_AFFILIATION);
+        pstmt.setInt(1,newAffiliation.getValue());
+        pstmt.setLong(2,room.getID());
+        pstmt.setString(3,bareJID);
+        pstmt.executeUpdate();
+      }
+ catch (      SQLException sqle) {
+        Log.error(sqle.getMessage(),sqle);
+      }
+ finally {
+        DbConnectionManager.closeConnection(pstmt,con);
+      }
+    }
+  }
+}

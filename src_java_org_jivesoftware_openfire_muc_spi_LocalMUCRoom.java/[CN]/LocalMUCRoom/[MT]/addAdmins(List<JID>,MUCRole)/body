@@ -1,0 +1,10 @@
+{
+  List<Presence> answer=new ArrayList<Presence>(newAdmins.size());
+  for (  JID newAdmin : newAdmins) {
+    final JID bareJID=new JID(newAdmin.toBareJID());
+    if (!admins.contains(bareJID)) {
+      answer.addAll(addAdmin(bareJID,senderRole));
+    }
+  }
+  return answer;
+}

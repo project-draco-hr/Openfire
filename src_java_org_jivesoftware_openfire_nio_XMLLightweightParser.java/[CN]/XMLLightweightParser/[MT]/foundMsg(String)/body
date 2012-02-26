@@ -1,5 +1,8 @@
 {
   if (msg != null) {
+    if (hasIllegalCharacterReferences(msg)) {
+      throw new XMLNotWellFormedException("Illegal character reference found in: " + msg);
+    }
     msgs.add(msg);
   }
   status=XMLLightweightParser.INIT;

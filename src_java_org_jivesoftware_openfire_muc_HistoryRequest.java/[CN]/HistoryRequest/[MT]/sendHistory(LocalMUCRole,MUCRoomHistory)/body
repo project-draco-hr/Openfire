@@ -1,8 +1,8 @@
 {
   if (!isConfigured()) {
-    Iterator history=roomHistory.getMessageHistory();
+    Iterator<Message> history=roomHistory.getMessageHistory();
     while (history.hasNext()) {
-      joinRole.send((Message)history.next());
+      joinRole.send(history.next());
     }
   }
  else {
@@ -14,14 +14,13 @@
       }
       return;
     }
-    Message message;
     int accumulatedChars=0;
     int accumulatedStanzas=0;
     Element delayInformation;
     LinkedList<Message> historyToSend=new LinkedList<Message>();
-    ListIterator iterator=roomHistory.getReverseMessageHistory();
+    ListIterator<Message> iterator=roomHistory.getReverseMessageHistory();
     while (iterator.hasPrevious()) {
-      message=(Message)iterator.previous();
+      Message message=iterator.previous();
       String text=message.getBody() == null ? message.getSubject() : message.getBody();
       if (text == null) {
         continue;

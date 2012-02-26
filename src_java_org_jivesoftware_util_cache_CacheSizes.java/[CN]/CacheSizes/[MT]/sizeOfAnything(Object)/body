@@ -1,0 +1,50 @@
+{
+  if (object == null) {
+    return 0;
+  }
+  if (object instanceof Cacheable) {
+    return ((Cacheable)object).getCachedSize();
+  }
+ else   if (object instanceof String) {
+    return sizeOfString((String)object);
+  }
+ else   if (object instanceof Long) {
+    return sizeOfLong();
+  }
+ else   if (object instanceof Integer) {
+    return sizeOfObject() + sizeOfInt();
+  }
+ else   if (object instanceof Double) {
+    return sizeOfObject() + sizeOfDouble();
+  }
+ else   if (object instanceof Boolean) {
+    return sizeOfObject() + sizeOfBoolean();
+  }
+ else   if (object instanceof Map) {
+    return sizeOfMap((Map)object);
+  }
+ else   if (object instanceof long[]) {
+    long[] array=(long[])object;
+    return sizeOfObject() + array.length * sizeOfLong();
+  }
+ else   if (object instanceof Collection) {
+    return sizeOfCollection((Collection)object);
+  }
+ else   if (object instanceof byte[]) {
+    byte[] array=(byte[])object;
+    return sizeOfObject() + array.length;
+  }
+ else {
+    int size=1;
+    try {
+      CacheSizes.NullOutputStream out=new NullOutputStream();
+      ObjectOutputStream outObj=new ObjectOutputStream(out);
+      outObj.writeObject(object);
+      size=out.size();
+    }
+ catch (    IOException ioe) {
+      throw new CannotCalculateSizeException(object);
+    }
+    return size;
+  }
+}

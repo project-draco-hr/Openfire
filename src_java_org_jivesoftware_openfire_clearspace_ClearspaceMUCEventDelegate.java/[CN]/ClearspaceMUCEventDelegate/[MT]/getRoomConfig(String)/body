@@ -26,9 +26,9 @@
     Log.warn(GET_ROOM_CONFIG_WARNING + " Room: " + roomJid.toBareJID());
     return null;
   }
-  Iterator fields=xElement.elementIterator("field");
+  @SuppressWarnings("unchecked") Iterator<Element> fields=xElement.elementIterator("field");
   while (fields.hasNext()) {
-    Element field=(Element)fields.next();
+    Element field=fields.next();
     Attribute varAttribute=field.attribute("var");
     if (varAttribute != null) {
       Element value=field.element("value");

@@ -1,0 +1,10 @@
+{
+  List<Presence> answer=new ArrayList<Presence>(newOwners.size());
+  for (  JID newOwner : newOwners) {
+    final JID bareJID=new JID(newOwner.toBareJID());
+    if (!owners.contains(newOwner)) {
+      answer.addAll(addOwner(bareJID,senderRole));
+    }
+  }
+  return answer;
+}

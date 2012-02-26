@@ -23,12 +23,13 @@ synchronized (roomName.intern()) {
           }
         }
  else {
-          if (isRoomCreationRestricted() && !sysadmins.contains(userjid.toBareJID())) {
-            if (!allowedToCreate.contains(userjid.toBareJID())) {
+          final JID bareJID=new JID(userjid.toBareJID());
+          if (isRoomCreationRestricted() && !sysadmins.contains(bareJID)) {
+            if (!allowedToCreate.contains(bareJID)) {
               throw new NotAllowedException();
             }
           }
-          room.addFirstOwner(userjid.toBareJID());
+          room.addFirstOwner(userjid);
           created=true;
         }
       }

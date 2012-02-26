@@ -1,5 +1,6 @@
 {
-  List<Presence> updatedPresences=null;
+  final JID bareJID=new JID(jid.toBareJID());
+  List<Presence> updatedPresences=Collections.emptyList();
   boolean wasMember=false;
   lock.writeLock().lock();
   try {
@@ -7,23 +8,23 @@
     if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
       throw new ForbiddenException();
     }
-    if (owners.contains(jid.toBareJID()) && owners.size() == 1) {
+    if (owners.contains(bareJID) && owners.size() == 1) {
       throw new ConflictException();
     }
-    wasMember=members.containsKey(jid.toBareJID()) || admins.contains(jid.toBareJID()) || owners.contains(jid.toBareJID());
-    if (removeOwner(jid.toBareJID())) {
+    wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
+    if (removeOwner(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.owner;
     }
- else     if (removeAdmin(jid.toBareJID())) {
+ else     if (removeAdmin(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.admin;
     }
- else     if (removeMember(jid.toBareJID())) {
+ else     if (removeMember(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.member;
     }
- else     if (removeOutcast(jid.toBareJID())) {
+ else     if (removeOutcast(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.outcast;
     }
-    MUCPersistenceManager.removeAffiliationFromDB(this,jid.toBareJID(),oldAffiliation);
+    MUCPersistenceManager.removeAffiliationFromDB(this,bareJID,oldAffiliation);
   }
   finally {
     lock.writeLock().unlock();
@@ -36,7 +37,7 @@
  else {
       newRole=isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant;
     }
-    updatedPresences=changeOccupantAffiliation(jid,MUCRole.Affiliation.none,newRole);
+    updatedPresences=changeOccupantAffiliation(bareJID,MUCRole.Affiliation.none,newRole);
     if (isMembersOnly() && wasMember) {
       Element frag;
       for (      Presence presence : updatedPresences) {
@@ -50,6 +51,7 @@
     }
   }
  catch (  NotAllowedException e) {
+    Log.error(e.getMessage(),e);
   }
   return updatedPresences;
 }

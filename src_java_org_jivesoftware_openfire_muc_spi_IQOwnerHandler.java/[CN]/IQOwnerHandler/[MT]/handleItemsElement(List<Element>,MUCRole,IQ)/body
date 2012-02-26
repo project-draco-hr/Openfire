@@ -8,10 +8,10 @@
       if ("owner".equals(affiliation)) {
         Element ownerMetaData;
         MUCRole role;
-        for (        String jid : room.getOwners()) {
+        for (        JID jid : room.getOwners()) {
           ownerMetaData=result.addElement("item","http://jabber.org/protocol/muc#owner");
           ownerMetaData.addAttribute("affiliation","owner");
-          ownerMetaData.addAttribute("jid",jid);
+          ownerMetaData.addAttribute("jid",jid.toString());
           try {
             List<MUCRole> roles=room.getOccupantsByBareJID(jid);
             role=roles.get(0);
@@ -25,10 +25,10 @@
  else       if ("admin".equals(affiliation)) {
         Element adminMetaData;
         MUCRole role;
-        for (        String jid : room.getAdmins()) {
+        for (        JID jid : room.getAdmins()) {
           adminMetaData=result.addElement("item","http://jabber.org/protocol/muc#owner");
           adminMetaData.addAttribute("affiliation","admin");
-          adminMetaData.addAttribute("jid",jid);
+          adminMetaData.addAttribute("jid",jid.toString());
           try {
             List<MUCRole> roles=room.getOccupantsByBareJID(jid);
             role=roles.get(0);
@@ -82,7 +82,7 @@
             presences.addAll(room.addAdmin(jid,senderRole));
           }
  else           if ("member".equals(targetAffiliation)) {
-            boolean hadAffiliation=room.getAffiliation(jid.toBareJID()) != MUCRole.Affiliation.none;
+            boolean hadAffiliation=room.getAffiliation(jid) != MUCRole.Affiliation.none;
             presences.addAll(room.addMember(jid,null,senderRole));
             if (!skipInvite && !hadAffiliation && room.isMembersOnly()) {
               room.sendInvitation(jid,null,senderRole,null);
