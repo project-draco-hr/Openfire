@@ -1,5 +1,4 @@
 {
-  super.initialize(server);
   this.enabled=JiveGlobals.getBooleanProperty("stun.enabled",true);
   primaryAddress=JiveGlobals.getProperty("stun.address.primary");
   secondaryAddress=JiveGlobals.getProperty("stun.address.secondary");
@@ -17,6 +16,7 @@
       localEnabled=false;
     }
   }
+  start();
   PropertyEventDispatcher.addListener(new PropertyEventListener(){
     public void propertySet(    String property,    Map<String,Object> params){
       if (property.equals("stun.enabled")) {
