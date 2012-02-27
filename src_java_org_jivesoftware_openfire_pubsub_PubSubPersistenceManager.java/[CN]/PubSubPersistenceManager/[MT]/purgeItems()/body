@@ -7,16 +7,12 @@
     con=DbConnectionManager.getTransactionConnection();
     PreparedStatement nodeConfig=con.prepareStatement(persistentNodeQuery);
     rs=nodeConfig.executeQuery();
-    PreparedStatement purgeNode=con.prepareStatement(PURGE_FOR_SIZE);
+    PreparedStatement purgeNode=con.prepareStatement(getPurgeStatement(DbConnectionManager.getDatabaseType()));
     while (rs.next()) {
       String svcId=rs.getString(1);
       String nodeId=rs.getString(2);
       int maxItems=rs.getInt(3);
-      purgeNode.setString(1,svcId);
-      purgeNode.setString(2,nodeId);
-      purgeNode.setInt(3,maxItems);
-      purgeNode.setString(4,svcId);
-      purgeNode.setString(5,nodeId);
+      setPurgeParams(DbConnectionManager.getDatabaseType(),purgeNode,svcId,nodeId,maxItems);
       int rowsAffected=purgeNode.executeUpdate();
       if (log.isDebugEnabled())       log.debug(rowsAffected + " deleted rows from service: " + svcId+ " nodeId: "+ nodeId);
     }
