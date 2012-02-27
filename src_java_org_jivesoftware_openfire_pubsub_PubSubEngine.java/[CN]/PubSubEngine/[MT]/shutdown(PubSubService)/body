@@ -1,18 +1,5 @@
 {
-  service.getPublishedItemTask().cancel();
-  PublishedItem entry;
-  while (!service.getItemsToDelete().isEmpty()) {
-    entry=service.getItemsToDelete().poll();
-    if (entry != null) {
-      PubSubPersistenceManager.removePublishedItem(service,entry);
-    }
-  }
-  while (!service.getItemsToAdd().isEmpty()) {
-    entry=service.getItemsToAdd().poll();
-    if (entry != null) {
-      PubSubPersistenceManager.createPublishedItem(service,entry);
-    }
-  }
+  PubSubPersistenceManager.shutdown();
   service.getManager().stop();
   service.getNodes().clear();
 }

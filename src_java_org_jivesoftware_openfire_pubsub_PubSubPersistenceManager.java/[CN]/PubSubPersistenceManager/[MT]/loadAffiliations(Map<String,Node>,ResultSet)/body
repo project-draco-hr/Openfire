@@ -3,7 +3,7 @@
     String nodeID=decodeNodeID(rs.getString(1));
     Node node=nodes.get(nodeID);
     if (node == null) {
-      Log.warn("Affiliations found for a non-existent node: " + nodeID);
+      log.warn("Affiliations found for a non-existent node: " + nodeID);
       return;
     }
     NodeAffiliate affiliate=new NodeAffiliate(node,new JID(rs.getString(2)));
@@ -11,6 +11,6 @@
     node.addAffiliate(affiliate);
   }
  catch (  SQLException sqle) {
-    Log.error(sqle.getMessage(),sqle);
+    log.error(sqle.getMessage(),sqle);
   }
 }

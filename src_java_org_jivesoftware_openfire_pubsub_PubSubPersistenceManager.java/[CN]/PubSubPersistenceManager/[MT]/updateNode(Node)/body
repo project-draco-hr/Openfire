@@ -1,0 +1,73 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    pstmt=con.prepareStatement(UPDATE_NODE);
+    pstmt.setString(1,StringUtils.dateToMillis(node.getModificationDate()));
+    pstmt.setString(2,node.getParent() != null ? encodeNodeID(node.getParent().getNodeID()) : null);
+    pstmt.setInt(3,(node.isPayloadDelivered() ? 1 : 0));
+    if (!node.isCollectionNode()) {
+      pstmt.setInt(4,((LeafNode)node).getMaxPayloadSize());
+      pstmt.setInt(5,(((LeafNode)node).isPersistPublishedItems() ? 1 : 0));
+      pstmt.setInt(6,((LeafNode)node).getMaxPublishedItems());
+    }
+ else {
+      pstmt.setInt(4,0);
+      pstmt.setInt(5,0);
+      pstmt.setInt(6,0);
+    }
+    pstmt.setInt(7,(node.isNotifiedOfConfigChanges() ? 1 : 0));
+    pstmt.setInt(8,(node.isNotifiedOfDelete() ? 1 : 0));
+    pstmt.setInt(9,(node.isNotifiedOfRetract() ? 1 : 0));
+    pstmt.setInt(10,(node.isPresenceBasedDelivery() ? 1 : 0));
+    pstmt.setInt(11,(node.isSendItemSubscribe() ? 1 : 0));
+    pstmt.setString(12,node.getPublisherModel().getName());
+    pstmt.setInt(13,(node.isSubscriptionEnabled() ? 1 : 0));
+    pstmt.setInt(14,(node.isSubscriptionConfigurationRequired() ? 1 : 0));
+    pstmt.setString(15,node.getAccessModel().getName());
+    pstmt.setString(16,node.getPayloadType());
+    pstmt.setString(17,node.getBodyXSLT());
+    pstmt.setString(18,node.getDataformXSLT());
+    pstmt.setString(19,node.getDescription());
+    pstmt.setString(20,node.getLanguage());
+    pstmt.setString(21,node.getName());
+    if (node.getReplyPolicy() != null) {
+      pstmt.setString(22,node.getReplyPolicy().name());
+    }
+ else {
+      pstmt.setString(22,null);
+    }
+    if (node.isCollectionNode()) {
+      pstmt.setString(23,((CollectionNode)node).getAssociationPolicy().name());
+      pstmt.setInt(24,((CollectionNode)node).getMaxLeafNodes());
+    }
+ else {
+      pstmt.setString(23,null);
+      pstmt.setInt(24,0);
+    }
+    pstmt.setString(25,node.getService().getServiceID());
+    pstmt.setString(26,encodeNodeID(node.getNodeID()));
+    pstmt.executeUpdate();
+    DbConnectionManager.fastcloseStmt(pstmt);
+    pstmt=con.prepareStatement(DELETE_NODE_JIDS);
+    pstmt.setString(1,node.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
+    pstmt.executeUpdate();
+    DbConnectionManager.fastcloseStmt(pstmt);
+    pstmt=con.prepareStatement(DELETE_NODE_GROUPS);
+    pstmt.setString(1,node.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(node.getNodeID()));
+    pstmt.executeUpdate();
+    saveAssociatedElements(con,node);
+  }
+ catch (  SQLException sqle) {
+    log.error(sqle.getMessage(),sqle);
+    abortTransaction=true;
+  }
+ finally {
+    DbConnectionManager.closeStatement(pstmt);
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

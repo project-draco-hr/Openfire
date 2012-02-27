@@ -1,0 +1,46 @@
+{
+  PreparedStatement pstmt=con.prepareStatement(ADD_NODE_JIDS);
+  try {
+    for (    JID jid : node.getContacts()) {
+      pstmt.setString(1,node.getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
+      pstmt.setString(3,jid.toString());
+      pstmt.setString(4,"contacts");
+      pstmt.executeUpdate();
+    }
+    for (    JID jid : node.getReplyRooms()) {
+      pstmt.setString(1,node.getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
+      pstmt.setString(3,jid.toString());
+      pstmt.setString(4,"replyRooms");
+      pstmt.executeUpdate();
+    }
+    for (    JID jid : node.getReplyTo()) {
+      pstmt.setString(1,node.getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
+      pstmt.setString(3,jid.toString());
+      pstmt.setString(4,"replyTo");
+      pstmt.executeUpdate();
+    }
+    if (node.isCollectionNode()) {
+      for (      JID jid : ((CollectionNode)node).getAssociationTrusted()) {
+        pstmt.setString(1,node.getService().getServiceID());
+        pstmt.setString(2,encodeNodeID(node.getNodeID()));
+        pstmt.setString(3,jid.toString());
+        pstmt.setString(4,"associationTrusted");
+        pstmt.executeUpdate();
+      }
+    }
+    DbConnectionManager.fastcloseStmt(pstmt);
+    pstmt=con.prepareStatement(ADD_NODE_GROUPS);
+    for (    String groupName : node.getRosterGroupsAllowed()) {
+      pstmt.setString(1,node.getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
+      pstmt.setString(3,groupName);
+      pstmt.executeUpdate();
+    }
+  }
+  finally {
+    DbConnectionManager.closeStatement(pstmt);
+  }
+}

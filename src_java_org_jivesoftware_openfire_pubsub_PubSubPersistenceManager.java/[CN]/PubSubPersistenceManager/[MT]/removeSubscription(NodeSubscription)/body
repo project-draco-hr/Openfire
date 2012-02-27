@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_SUBSCRIPTION);
+    pstmt.setString(1,subscription.getNode().getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(subscription.getNode().getNodeID()));
+    pstmt.setString(3,subscription.getID());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

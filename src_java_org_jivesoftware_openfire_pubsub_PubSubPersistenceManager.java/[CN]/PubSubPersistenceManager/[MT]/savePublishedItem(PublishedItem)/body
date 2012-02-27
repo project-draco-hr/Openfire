@@ -1,0 +1,13 @@
+{
+synchronized (itemLock) {
+    LinkedListNode nodeToReplace=itemMap.get(item.getID());
+    if (nodeToReplace != null) {
+      nodeToReplace.remove();
+      publishedItemSize--;
+    }
+    LinkedListNode listNode=itemsToAdd.addLast(item);
+    itemMap.put(item.getID(),listNode);
+    publishedItemSize++;
+    if (publishedItemSize > ITEM_CACHE_SIZE)     flushItems();
+  }
+}

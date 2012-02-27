@@ -3,10 +3,6 @@
   router=server.getPacketRouter();
   adHocCommandManager=new AdHocCommandManager();
   adHocCommandManager.addCommand(new PendingSubscriptionsCommand(this));
-  publishedItemTask=new PublishedItemTask(this){
-  }
-;
-  timer.schedule(publishedItemTask,items_task_timeout,items_task_timeout);
   leafDefaultConfiguration=PubSubPersistenceManager.loadDefaultConfiguration(this,true);
   if (leafDefaultConfiguration == null) {
     leafDefaultConfiguration=new DefaultNodeConfiguration(true);

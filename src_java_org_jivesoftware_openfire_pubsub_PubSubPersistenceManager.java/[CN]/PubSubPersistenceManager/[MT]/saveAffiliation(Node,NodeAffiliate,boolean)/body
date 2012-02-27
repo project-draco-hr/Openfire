@@ -1,0 +1,29 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    if (create) {
+      pstmt=con.prepareStatement(ADD_AFFILIATION);
+      pstmt.setString(1,node.getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(node.getNodeID()));
+      pstmt.setString(3,affiliate.getJID().toString());
+      pstmt.setString(4,affiliate.getAffiliation().name());
+      pstmt.executeUpdate();
+    }
+ else {
+      pstmt=con.prepareStatement(UPDATE_AFFILIATION);
+      pstmt.setString(1,affiliate.getAffiliation().name());
+      pstmt.setString(2,node.getService().getServiceID());
+      pstmt.setString(3,encodeNodeID(node.getNodeID()));
+      pstmt.setString(4,affiliate.getJID().toString());
+      pstmt.executeUpdate();
+    }
+  }
+ catch (  SQLException sqle) {
+    log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}
