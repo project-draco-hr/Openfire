@@ -5,7 +5,7 @@
   }
   if (packet instanceof IQ && incoming && processed) {
     IQ iqpacket=(IQ)packet;
-    if (!iqpacket.getTo().toString().contains(_subDomain))     return;
+    if (iqpacket.getTo() == null || !iqpacket.getTo().toString().contains(_subDomain))     return;
     Element root=iqpacket.getChildElement();
     if (root == null)     return;
     String ns=root.getNamespaceURI();
