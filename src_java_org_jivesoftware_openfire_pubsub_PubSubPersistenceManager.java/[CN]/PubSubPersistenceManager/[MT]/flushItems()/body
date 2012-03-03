@@ -1,5 +1,6 @@
 {
   log.debug("Flushing items to database");
+  boolean abortTransaction=false;
   LinkedList addList=null;
   LinkedList delList=null;
 synchronized (itemLock) {
@@ -45,12 +46,12 @@ synchronized (itemLock) {
         delItem=delItem.next;
       }
     }
-    con.commit();
   }
  catch (  SQLException sqle) {
     log.error(sqle.getMessage(),sqle);
+    abortTransaction=true;
   }
  finally {
-    DbConnectionManager.closeConnection(pstmt,con);
+    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
   }
 }

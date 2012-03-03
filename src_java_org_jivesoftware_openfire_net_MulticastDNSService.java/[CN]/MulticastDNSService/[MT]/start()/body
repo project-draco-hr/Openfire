@@ -17,15 +17,15 @@
       }
       try {
         if (jmdns == null) {
-          jmdns=JmDNS.create();
+          jmdns=new JmDNS();
         }
         String serverName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
         if (clientPortNum != -1) {
-          ServiceInfo clientService=ServiceInfo.create("_xmpp-client._tcp.local.",serverName + "._xmpp-client._tcp.local.",clientPortNum,"XMPP Server");
+          ServiceInfo clientService=new ServiceInfo("_xmpp-client._tcp.local.",serverName + "._xmpp-client._tcp.local.",clientPortNum,"XMPP Server");
           jmdns.registerService(clientService);
         }
         if (componentPortNum != -1) {
-          ServiceInfo componentService=ServiceInfo.create("_xmpp-component._tcp.local.",serverName + "._xmpp-component._tcp.local.",componentPortNum,"XMPP Component Server");
+          ServiceInfo componentService=new ServiceInfo("_xmpp-component._tcp.local.",serverName + "._xmpp-component._tcp.local.",componentPortNum,"XMPP Component Server");
           jmdns.registerService(componentService);
         }
       }
