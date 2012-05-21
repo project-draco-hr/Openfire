@@ -11,5 +11,8 @@
  else   if (body == null) {
     throw new IllegalStateException("Continuation not set, cannot wait for deliverable.");
   }
+ else   if (CONNECTION_CLOSED.equals(body)) {
+    return null;
+  }
   return body;
 }

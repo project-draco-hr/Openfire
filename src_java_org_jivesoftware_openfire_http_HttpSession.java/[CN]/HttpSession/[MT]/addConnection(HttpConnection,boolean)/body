@@ -2,10 +2,40 @@
   if (connection == null) {
     throw new IllegalArgumentException("Connection cannot be null.");
   }
-  checkOveractivity(isPoll);
   if (isSecure && !connection.isSecure()) {
     throw new HttpBindException("Session was started from secure connection, all " + "connections on this session must be secured.",BoshBindingError.badRequest);
   }
+  final long rid=connection.getRequestId();
+  for (  HttpConnection queuedConnection : connectionQueue) {
+    if (queuedConnection.getRequestId() == rid) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("Found previous connection in queue with rid " + rid);
+      }
+      if (queuedConnection.isClosed()) {
+        if (Log.isDebugEnabled()) {
+          Log.debug("It's closed - copying deliverables");
+        }
+        Delivered deliverable=retrieveDeliverable(rid);
+        if (deliverable == null) {
+          Log.warn("Deliverable unavailable for " + rid);
+          throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
+        }
+        connection.deliverBody(createDeliverable(deliverable.deliverables));
+      }
+ else {
+        if (Log.isDebugEnabled()) {
+          Log.debug("It's still open - calling close()");
+        }
+        deliver(queuedConnection,Collections.singleton(new Deliverable("")));
+        connection.close();
+        if (rid == (lastRequestID + 1)) {
+          lastRequestID=rid;
+        }
+      }
+      break;
+    }
+  }
+  checkOveractivity(isPoll);
   sslCertificates=connection.getPeerCertificates();
   connection.setSession(this);
   if (isPollingSession() || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {

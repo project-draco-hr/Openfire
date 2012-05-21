@@ -51,8 +51,9 @@ catch (    HttpConnectionClosedException nc) {
       connection.setContinuation(ContinuationSupport.getContinuation(request));
       request.setAttribute("request-session",connection.getSession());
       request.setAttribute("request",connection.getRequestId());
+      request.setAttribute("connection",connection);
       try {
-        respond(session,response,session.getResponse(connection.getRequestId()),request.getMethod());
+        respond(session,response,session.consumeResponse(connection),request.getMethod());
       }
  catch (      HttpBindException e) {
         sendError(request,response,e.getBindingError(),session);
