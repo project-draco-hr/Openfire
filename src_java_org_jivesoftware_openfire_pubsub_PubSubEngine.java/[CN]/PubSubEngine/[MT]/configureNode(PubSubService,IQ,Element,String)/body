@@ -12,6 +12,7 @@
   if (completedForm != null) {
     try {
       node.configure(completedForm);
+      CacheFactory.doClusterTask(new RefreshNodeTask(node));
       router.route(IQ.createResultIQ(iq));
     }
  catch (    NotAcceptableException e) {

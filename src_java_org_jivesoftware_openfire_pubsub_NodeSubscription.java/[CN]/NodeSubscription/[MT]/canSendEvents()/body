@@ -6,13 +6,13 @@
     return false;
   }
   if (!getPresenceStates().isEmpty()) {
-    Collection<String> shows=service.getShowPresences(jid);
+    Collection<String> shows=node.getService().getShowPresences(jid);
     if (shows.isEmpty() || Collections.disjoint(getPresenceStates(),shows)) {
       return false;
     }
   }
   if (node.isPresenceBasedDelivery()) {
-    if (service.getShowPresences(jid).isEmpty()) {
+    if (node.getService().getShowPresences(jid).isEmpty()) {
       return false;
     }
   }

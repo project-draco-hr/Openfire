@@ -5,45 +5,41 @@
   Map<String,Node> nodes=new HashMap<String,Node>();
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(LOAD_NODES);
+    pstmt=con.prepareStatement(LOAD_NODE);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setInt(2,0);
+    pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
-    while (rs.next()) {
+    if (rs.next()) {
       loadNode(service,nodes,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_NODES);
+    pstmt=con.prepareStatement(LOAD_NODE_JIDS);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setInt(2,1);
-    rs=pstmt.executeQuery();
-    while (rs.next()) {
-      loadNode(service,nodes,rs);
-    }
-    DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_NODES_JIDS);
-    pstmt.setString(1,service.getServiceID());
+    pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAssociatedJIDs(nodes,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_NODES_GROUPS);
+    pstmt=con.prepareStatement(LOAD_NODE_GROUPS);
     pstmt.setString(1,service.getServiceID());
+    pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAssociatedGroups(nodes,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_AFFILIATIONS);
+    pstmt=con.prepareStatement(LOAD_NODE_AFFILIATIONS);
     pstmt.setString(1,service.getServiceID());
+    pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadAffiliations(nodes,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_SUBSCRIPTIONS);
+    pstmt=con.prepareStatement(LOAD_NODE_SUBSCRIPTIONS);
     pstmt.setString(1,service.getServiceID());
+    pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadSubscriptions(service,nodes,rs);

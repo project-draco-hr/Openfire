@@ -9,8 +9,11 @@
     if (parent != null) {
       parentNode=(CollectionNode)loadedNodes.get(parent);
       if (parentNode == null) {
-        log.warn("Node not loaded due to missing parent. NodeID: " + nodeID);
-        return;
+        parentNode=(CollectionNode)service.getNode(parent);
+        if (parentNode == null) {
+          log.warn("Node not loaded due to missing parent. NodeID: " + nodeID);
+          return;
+        }
       }
     }
     if (leaf) {
