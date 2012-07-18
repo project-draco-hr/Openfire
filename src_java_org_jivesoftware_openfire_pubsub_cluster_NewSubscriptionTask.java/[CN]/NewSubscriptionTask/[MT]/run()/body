@@ -1,0 +1,15 @@
+{
+  System.out.println("Running NewSubscriptionTask: " + toString());
+  Node node=getNode();
+  if (node == null)   return;
+  if (node.getAffiliate(getOwner()) == null) {
+    node.addNoneAffiliation(getOwner());
+  }
+  node.addSubscription(getSubscription());
+  if (node.isPresenceBasedDelivery() && node.getSubscriptions(getSubscription().getOwner()).size() == 1) {
+    if (getSubscription().getPresenceStates().isEmpty()) {
+      getService().presenceSubscriptionRequired(getNode(),getOwner());
+    }
+  }
+  PubSubPersistenceManager.flushItems();
+}
