@@ -1,5 +1,5 @@
 {
-  System.out.println("Running NewSubscriptionTask: " + toString());
+  log.debug("[TASK] New subscription : {}",toString());
   Node node=getNode();
   if (node == null)   return;
   if (node.getAffiliate(getOwner()) == null) {
@@ -11,5 +11,4 @@
       getService().presenceSubscriptionRequired(getNode(),getOwner());
     }
   }
-  PubSubPersistenceManager.flushItems();
 }
