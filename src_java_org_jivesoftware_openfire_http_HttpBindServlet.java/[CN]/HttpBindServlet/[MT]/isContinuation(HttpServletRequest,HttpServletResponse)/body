@@ -5,7 +5,7 @@
   }
 synchronized (session) {
     try {
-      respond(session,response,session.getResponse((Long)request.getAttribute("request")),request.getMethod());
+      respond(session,request,response,session.consumeResponse((HttpConnection)request.getAttribute("connection")),request.getMethod());
     }
  catch (    HttpBindException e) {
       sendError(request,response,e.getBindingError(),session);
