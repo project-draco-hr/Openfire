@@ -1,15 +1,3 @@
 {
-  subscriptionsByID.remove(subscription.getID());
-  subscriptionsByJID.remove(subscription.getJID().toString());
-  NodeAffiliate affiliate=subscription.getAffiliate();
-  if (affiliate != null && affiliate.getAffiliation() == NodeAffiliate.Affiliation.none && getSubscriptions(subscription.getOwner()).isEmpty()) {
-    removeAffiliation(affiliate);
-  }
-  if (savedToDB) {
-    PubSubPersistenceManager.removeSubscription(subscription);
-  }
-  CacheFactory.doClusterTask(new CancelSubscriptionTask(subscription));
-  if (isPresenceBasedDelivery() && getSubscriptions(subscription.getOwner()).isEmpty()) {
-    service.presenceSubscriptionNotRequired(this,subscription.getOwner());
-  }
+  cancelSubscription(subscription,ClusterManager.isClusteringEnabled());
 }
