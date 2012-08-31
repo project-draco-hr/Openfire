@@ -1,16 +1,21 @@
 {
-  flushItems();
+  Lock itemLock=CacheFactory.getLock(ITEM_CACHE,itemCache);
+  try {
+    itemLock.lock();
+    flushPendingItems();
+  }
+  finally {
+    itemLock.unlock();
+  }
   Connection con=null;
   PreparedStatement pstmt=null;
   ResultSet rs=null;
-  SAXReader xmlReader=null;
   int max=MAX_ROWS_FETCH;
   int maxPublished=node.getMaxPublishedItems();
   if (maxRows != -1)   max=maxPublished == -1 ? Math.min(maxRows,MAX_ROWS_FETCH) : Math.min(maxRows,maxPublished);
  else   if (maxPublished != -1)   max=Math.min(MAX_ROWS_FETCH,maxPublished);
   List<PublishedItem> results=new ArrayList<PublishedItem>(max);
   try {
-    xmlReader=xmlReaders.take();
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_ITEMS);
     pstmt.setMaxRows(max);
@@ -24,7 +29,7 @@
       Date creationDate=new Date(Long.parseLong(rs.getString(3).trim()));
       PublishedItem item=new PublishedItem(node,publisher,itemID,creationDate);
       if (rs.getString(4) != null) {
-        item.setPayload(xmlReader.read(new StringReader(rs.getString(4))).getRootElement());
+        item.setPayloadXML(rs.getString(4));
       }
       results.add(item);
       counter++;
@@ -34,9 +39,6 @@
     log.error(sqle.getMessage(),sqle);
   }
  finally {
-    if (xmlReader != null) {
-      xmlReaders.add(xmlReader);
-    }
     DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   if (results.size() == 0)   results=Collections.emptyList();

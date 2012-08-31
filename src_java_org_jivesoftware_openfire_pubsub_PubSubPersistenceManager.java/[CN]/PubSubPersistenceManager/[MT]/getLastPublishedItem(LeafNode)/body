@@ -1,12 +1,17 @@
 {
-  flushItems();
+  Lock itemLock=CacheFactory.getLock(ITEM_CACHE,itemCache);
+  try {
+    itemLock.lock();
+    flushPendingItems();
+  }
+  finally {
+    itemLock.unlock();
+  }
   Connection con=null;
   PreparedStatement pstmt=null;
   ResultSet rs=null;
-  SAXReader xmlReader=null;
   PublishedItem item=null;
   try {
-    xmlReader=xmlReaders.take();
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_LAST_ITEM);
     pstmt.setString(1,node.getService().getServiceID());
@@ -18,7 +23,7 @@
       Date creationDate=new Date(Long.parseLong(rs.getString(3).trim()));
       item=new PublishedItem(node,publisher,itemID,creationDate);
       if (rs.getString(4) != null) {
-        item.setPayload(xmlReader.read(new StringReader(rs.getString(4))).getRootElement());
+        item.setPayloadXML(rs.getString(4));
       }
     }
   }
@@ -26,9 +31,6 @@
     log.error(sqle.getMessage(),sqle);
   }
  finally {
-    if (xmlReader != null) {
-      xmlReaders.add(xmlReader);
-    }
     DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   return item;

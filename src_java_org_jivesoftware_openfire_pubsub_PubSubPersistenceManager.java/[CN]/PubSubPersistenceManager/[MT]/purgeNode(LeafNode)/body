@@ -1,5 +1,5 @@
 {
-  flushItems();
+  flushPendingItems();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
@@ -8,6 +8,14 @@
     pstmt.setString(1,leafNode.getService().getServiceID());
     pstmt.setString(2,encodeNodeID(leafNode.getNodeID()));
     pstmt.executeUpdate();
+synchronized (itemCache) {
+      Iterator<PublishedItem> items=itemCache.values().iterator();
+      while (items.hasNext()) {
+        if (leafNode.getNodeID().equals(items.next().getNodeID())) {
+          items.remove();
+        }
+      }
+    }
   }
  catch (  Exception exc) {
     log.error(exc.getMessage(),exc);

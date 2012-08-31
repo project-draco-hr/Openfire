@@ -1,18 +1,32 @@
 {
-  log.debug("Flushing items to database");
   if (sendToCluster) {
     CacheFactory.doSynchronousClusterTask(new FlushTask(),false);
+  }
+  if (itemsToAdd.getFirst() == null && itemsToDelete.getFirst() == null) {
+    return;
+  }
+  if (log.isDebugEnabled()) {
+    log.debug("Flush " + itemsPending.size() + " pending items to database");
   }
   boolean abortTransaction=false;
   LinkedList addList=null;
   LinkedList delList=null;
-synchronized (itemLock) {
+synchronized (itemsPending) {
     addList=itemsToAdd;
     delList=itemsToDelete;
     itemsToAdd=new LinkedList();
     itemsToDelete=new LinkedList();
-    itemMap.clear();
-    publishedItemSize=0;
+    int copied=0;
+    for (    String key : itemsPending.keySet()) {
+      if (!itemCache.containsKey(key)) {
+        itemCache.put(key,(PublishedItem)itemsPending.get(key).object);
+        copied++;
+      }
+    }
+    if (log.isDebugEnabled() && copied > 0) {
+      log.debug("Added " + copied + " pending items to published item cache");
+    }
+    itemsPending.clear();
   }
   LinkedListNode addItem=addList.getFirst();
   LinkedListNode delItem=delList.getFirst();
@@ -27,7 +41,7 @@ synchronized (itemLock) {
       while (addItem != addHead) {
         PublishedItem item=(PublishedItem)addItem.object;
         pstmt.setString(1,item.getNode().getService().getServiceID());
-        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
+        pstmt.setString(2,encodeNodeID(item.getNodeID()));
         pstmt.setString(3,item.getID());
         pstmt.setString(4,item.getPublisher().toString());
         pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));
