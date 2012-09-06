@@ -24,7 +24,7 @@
   if (subscription.isAuthorizationPending()) {
     subscription.sendAuthorizationRequest();
   }
-  CacheFactory.doSynchronousClusterTask(new NewSubscriptionTask(subscription),false);
+  CacheFactory.doClusterTask(new NewSubscriptionTask(subscription));
   if (isSendItemSubscribe() && subscription.isActive()) {
     PublishedItem lastItem=getLastPublishedItem();
     if (lastItem != null) {
