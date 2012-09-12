@@ -3,7 +3,6 @@
   for (  XMPPServerListener listener : listeners) {
     listener.serverStopping();
   }
-  TaskEngine.getInstance().shutdown();
   if (modules.isEmpty()) {
     return;
   }
@@ -16,5 +15,6 @@
   }
   modules.clear();
   DbConnectionManager.destroyConnectionProvider();
+  TaskEngine.getInstance().shutdown();
   Log.info("Openfire stopped");
 }
