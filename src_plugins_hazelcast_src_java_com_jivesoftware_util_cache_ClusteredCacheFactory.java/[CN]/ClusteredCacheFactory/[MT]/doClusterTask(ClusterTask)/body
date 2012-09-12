@@ -1,0 +1,16 @@
+{
+  Set<Member> members=new TreeSet<Member>();
+  Member current=cluster.getLocalMember();
+  for (  Member member : cluster.getMembers()) {
+    if (!member.getUuid().equals(current.getUuid())) {
+      members.add(member);
+    }
+  }
+  if (members.size() > 0) {
+    logger.debug("Executing asynchronous MultiTask: " + task.getClass().getName());
+    hazelcast.getExecutorService().execute(new MultiTask<Object>(new CallableTask<Object>(task),members));
+  }
+ else {
+    logger.debug("No cluster members selected for cluster task " + task.getClass().getName());
+  }
+}

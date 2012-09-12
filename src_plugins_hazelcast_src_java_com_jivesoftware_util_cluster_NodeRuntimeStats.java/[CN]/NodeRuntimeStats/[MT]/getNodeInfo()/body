@@ -1,0 +1,10 @@
+{
+  Collection<Object> taskResult=CacheFactory.doSynchronousClusterTask(new NodeInfoTask(),true);
+  Map<NodeID,NodeInfo> result=new HashMap<NodeID,NodeInfo>();
+  for (  Object tr : taskResult) {
+    NodeInfo nodeInfo=(NodeInfo)tr;
+    NodeID nodeId=NodeID.getInstance(nodeInfo.getNodeId());
+    result.put(nodeId,nodeInfo);
+  }
+  return result;
+}

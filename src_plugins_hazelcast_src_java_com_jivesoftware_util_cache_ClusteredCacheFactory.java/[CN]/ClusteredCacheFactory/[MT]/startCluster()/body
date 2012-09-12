@@ -1,0 +1,30 @@
+{
+  ClassLoader oldLoader=null;
+  state=State.starting;
+  try {
+    oldLoader=Thread.currentThread().getContextClassLoader();
+    ClassLoader loader=new ClusterClassLoader();
+    Thread.currentThread().setContextClassLoader(loader);
+    Config config=new ClasspathXmlConfig("hazelcast-cache-config.xml");
+    config.setInstanceName("openfire");
+    hazelcast=Hazelcast.newHazelcastInstance(config);
+    cluster=hazelcast.getCluster();
+    state=cluster != null ? State.started : State.stopped;
+    Member localMember=cluster.getLocalMember();
+    XMPPServer.getInstance().setNodeID(NodeID.getInstance(getClusterMemberID()));
+    clusterListener=new ClusterListener(cluster);
+    hazelcast.getLifecycleService().addLifecycleListener(clusterListener);
+    cluster.addMembershipListener(clusterListener);
+    return cluster != null;
+  }
+ catch (  Exception e) {
+    logger.error("Unable to start clustering - continuing in local mode",e);
+  }
+ finally {
+    if (oldLoader != null) {
+      Thread.currentThread().setContextClassLoader(oldLoader);
+    }
+  }
+  state=State.stopped;
+  return false;
+}

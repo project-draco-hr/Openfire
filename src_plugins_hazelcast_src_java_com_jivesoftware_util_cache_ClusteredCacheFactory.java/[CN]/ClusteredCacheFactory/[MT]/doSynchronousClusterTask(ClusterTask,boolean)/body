@@ -1,0 +1,29 @@
+{
+  Set<Member> members=new HashSet<Member>();
+  Member current=cluster.getLocalMember();
+  for (  Member member : cluster.getMembers()) {
+    if (includeLocalMember || (!member.getUuid().equals(current.getUuid()))) {
+      members.add(member);
+    }
+  }
+  Collection<Object> result=Collections.emptyList();
+  if (members.size() > 0) {
+    MultiTask<Object> multiTask=new MultiTask<Object>(new CallableTask<Object>(task),members);
+    try {
+      logger.debug("Executing MultiTask: " + task.getClass().getName());
+      hazelcast.getExecutorService().execute(multiTask);
+      result=multiTask.get(MAX_CLUSTER_EXECUTION_TIME,TimeUnit.SECONDS);
+      logger.debug("MultiTask result: " + (result == null ? "null" : result.size()));
+    }
+ catch (    TimeoutException te) {
+      logger.error("Failed to execute cluster task within " + MAX_CLUSTER_EXECUTION_TIME + " seconds",te);
+    }
+catch (    Exception e) {
+      logger.error("Failed to execute cluster task",e);
+    }
+  }
+ else {
+    logger.debug("No cluster members selected for cluster task " + task.getClass().getName());
+  }
+  return result;
+}

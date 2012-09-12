@@ -1,0 +1,21 @@
+{
+  byte[] nodeID=event.getMember().getUuid().getBytes();
+  if (!XMPPServer.getInstance().getNodeID().equals(nodeID)) {
+    RoutingTable routingTable=XMPPServer.getInstance().getRoutingTable();
+    String sender=event.getKey().toString();
+    Collection<String> handlers=new HashSet<String>();
+    for (    JID handler : getHandlers(event)) {
+      if (routingTable.isLocalRoute(handler)) {
+        handlers.addAll(getReceivers(event,handler));
+      }
+    }
+    if (!handlers.isEmpty()) {
+      Map<String,Collection<String>> senders=nodePresences.get(NodeID.getInstance(nodeID));
+      if (senders == null) {
+        senders=new ConcurrentHashMap<String,Collection<String>>();
+        nodePresences.put(NodeID.getInstance(nodeID),senders);
+      }
+      senders.put(sender,handlers);
+    }
+  }
+}

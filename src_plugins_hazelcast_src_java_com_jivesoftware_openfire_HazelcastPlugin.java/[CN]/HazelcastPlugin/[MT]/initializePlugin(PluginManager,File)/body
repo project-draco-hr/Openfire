@@ -1,0 +1,20 @@
+{
+  System.out.println("Starting Clustering Plugin");
+  File pluginDir=new File(JiveGlobals.getHomeDirectory(),"plugins");
+  File[] jars=pluginDir.listFiles(new FileFilter(){
+    public boolean accept(    File pathname){
+      String fileName=pathname.getName().toLowerCase();
+      return (fileName.equalsIgnoreCase("enterprise.jar") || fileName.equalsIgnoreCase("coherence.jar"));
+    }
+  }
+);
+  if (jars.length > 0) {
+    logger.warn("Conflicting clustering plugins found; remove Coherence and/or Enterprise jar files");
+    throw new IllegalStateException("Clustering plugin configuration conflict (Coherence)");
+  }
+  PropertyEventDispatcher.addListener(this);
+  if (ClusterManager.isClusteringEnabled()) {
+    initForClustering();
+    ClusterManager.startup();
+  }
+}

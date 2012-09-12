@@ -1,0 +1,13 @@
+{
+  super.writeExternal(out);
+  if (packet instanceof IQ) {
+    ExternalizableUtil.getInstance().writeInt(out,1);
+  }
+ else   if (packet instanceof Message) {
+    ExternalizableUtil.getInstance().writeInt(out,2);
+  }
+ else   if (packet instanceof Presence) {
+    ExternalizableUtil.getInstance().writeInt(out,3);
+  }
+  ExternalizableUtil.getInstance().writeSerializable(out,(DefaultElement)packet.getElement());
+}

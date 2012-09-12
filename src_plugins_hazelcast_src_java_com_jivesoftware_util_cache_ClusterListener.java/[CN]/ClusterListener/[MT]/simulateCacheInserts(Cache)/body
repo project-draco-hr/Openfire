@@ -1,0 +1,15 @@
+{
+  EntryListener EntryListener=EntryListeners.get(cache);
+  if (EntryListener != null) {
+    if (cache instanceof CacheWrapper) {
+      Cache wrapped=((CacheWrapper)cache).getWrappedCache();
+      if (wrapped instanceof ClusteredCache) {
+        ClusteredCache clusteredCache=(ClusteredCache)wrapped;
+        for (        Map.Entry entry : (Set<Map.Entry>)cache.entrySet()) {
+          EntryEvent event=new EntryEvent(clusteredCache.map.getName(),cluster.getLocalMember(),EntryEvent.TYPE_ADDED,entry.getKey(),null,entry.getValue());
+          EntryListener.entryAdded(event);
+        }
+      }
+    }
+  }
+}
