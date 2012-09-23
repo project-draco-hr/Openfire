@@ -1,0 +1,15 @@
+{
+  Member target=null;
+  for (  Member member : cluster.getMembers()) {
+    if (Arrays.equals(member.getUuid().getBytes(),nodeID)) {
+      target=member;
+      break;
+    }
+  }
+  if (target != null) {
+    logger.debug("Executing asynchronous DistributedTask: " + task.getClass().getName());
+    hazelcast.getExecutorService().execute(new DistributedTask<Object>(new CallableTask<Object>(task),target));
+    return true;
+  }
+  throw new IllegalStateException("Requested node " + nodeID + " not found in cluster");
+}

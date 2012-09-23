@@ -1,0 +1,61 @@
+{
+  if (operation == Operation.getStreamID) {
+    result=getSession().getStreamID().getID();
+  }
+ else   if (operation == Operation.getServerName) {
+    result=getSession().getServerName();
+  }
+ else   if (operation == Operation.getCreationDate) {
+    result=getSession().getCreationDate();
+  }
+ else   if (operation == Operation.getLastActiveDate) {
+    result=getSession().getLastActiveDate();
+  }
+ else   if (operation == Operation.getNumClientPackets) {
+    result=getSession().getNumClientPackets();
+  }
+ else   if (operation == Operation.getNumServerPackets) {
+    result=getSession().getNumServerPackets();
+  }
+ else   if (operation == Operation.close) {
+    final Session session=getSession();
+    if (session != null) {
+      final Future<?> future=TaskEngine.getInstance().submit(new Runnable(){
+        public void run(){
+          session.close();
+        }
+      }
+);
+      try {
+        future.get(15,TimeUnit.SECONDS);
+      }
+ catch (      Exception e) {
+      }
+    }
+  }
+ else   if (operation == Operation.isClosed) {
+    result=getSession().isClosed();
+  }
+ else   if (operation == Operation.isSecure) {
+    result=getSession().isSecure();
+  }
+ else   if (operation == Operation.getHostAddress) {
+    try {
+      result=getSession().getHostAddress();
+    }
+ catch (    UnknownHostException e) {
+      Log.error("Error getting address of session: " + getSession(),e);
+    }
+  }
+ else   if (operation == Operation.getHostName) {
+    try {
+      result=getSession().getHostName();
+    }
+ catch (    UnknownHostException e) {
+      Log.error("Error getting address of session: " + getSession(),e);
+    }
+  }
+ else   if (operation == Operation.validate) {
+    result=getSession().validate();
+  }
+}

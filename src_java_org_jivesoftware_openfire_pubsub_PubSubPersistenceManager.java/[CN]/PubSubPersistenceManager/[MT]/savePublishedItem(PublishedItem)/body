@@ -1,13 +1,16 @@
 {
-synchronized (itemLock) {
-    LinkedListNode nodeToReplace=itemMap.get(item.getID());
-    if (nodeToReplace != null) {
-      nodeToReplace.remove();
-      publishedItemSize--;
+  String itemKey=item.getItemKey();
+  itemCache.put(itemKey,item);
+  log.debug("Added new (inbound) item to cache");
+synchronized (itemsPending) {
+    LinkedListNode itemToReplace=itemsPending.remove(itemKey);
+    if (itemToReplace != null) {
+      itemToReplace.remove();
     }
     LinkedListNode listNode=itemsToAdd.addLast(item);
-    itemMap.put(item.getID(),listNode);
-    publishedItemSize++;
-    if (publishedItemSize > ITEM_CACHE_SIZE)     flushItems();
+    itemsPending.put(itemKey,listNode);
+  }
+  if (itemsPending.size() > MAX_ITEMS_FLUSH) {
+    flushPendingItems();
   }
 }

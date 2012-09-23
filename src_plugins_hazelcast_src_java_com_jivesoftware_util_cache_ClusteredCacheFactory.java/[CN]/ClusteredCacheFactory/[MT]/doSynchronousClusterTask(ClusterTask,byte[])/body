@@ -1,0 +1,29 @@
+{
+  Member target=null;
+  for (  Member member : cluster.getMembers()) {
+    if (Arrays.equals(member.getUuid().getBytes(),nodeID)) {
+      target=member;
+      break;
+    }
+  }
+  Object result=null;
+  if (target != null) {
+    DistributedTask<Object> distributedTask=new DistributedTask<Object>(new CallableTask<Object>(task),target);
+    logger.debug("Executing DistributedTask: " + task.getClass().getName());
+    hazelcast.getExecutorService().execute(distributedTask);
+    try {
+      result=distributedTask.get(MAX_CLUSTER_EXECUTION_TIME,TimeUnit.SECONDS);
+      logger.debug("DistributedTask result: " + (result == null ? "null" : result));
+    }
+ catch (    TimeoutException te) {
+      logger.error("Failed to execute cluster task within " + MAX_CLUSTER_EXECUTION_TIME + " seconds",te);
+    }
+catch (    Exception e) {
+      logger.error("Failed to execute cluster task",e);
+    }
+  }
+ else {
+    throw new IllegalStateException("Requested node " + nodeID + " not found in cluster");
+  }
+  return result;
+}

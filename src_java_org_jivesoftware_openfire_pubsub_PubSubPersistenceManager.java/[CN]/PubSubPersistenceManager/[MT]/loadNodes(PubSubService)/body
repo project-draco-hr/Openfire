@@ -5,15 +5,17 @@
   Map<String,Node> nodes=new HashMap<String,Node>();
   try {
     con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(LOAD_NON_LEAF_NODES);
+    pstmt=con.prepareStatement(LOAD_NODES);
     pstmt.setString(1,service.getServiceID());
+    pstmt.setInt(2,0);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadNode(service,nodes,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_LEAF_NODES);
+    pstmt=con.prepareStatement(LOAD_NODES);
     pstmt.setString(1,service.getServiceID());
+    pstmt.setInt(2,1);
     rs=pstmt.executeQuery();
     while (rs.next()) {
       loadNode(service,nodes,rs);

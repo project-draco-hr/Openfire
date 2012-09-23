@@ -1,0 +1,8 @@
+{
+  if (streamID == null) {
+    ClusterTask task=getRemoteSessionTask(RemoteSessionTask.Operation.getStreamID);
+    String id=(String)doSynchronousClusterTask(task);
+    streamID=new BasicStreamID(id);
+  }
+  return streamID;
+}

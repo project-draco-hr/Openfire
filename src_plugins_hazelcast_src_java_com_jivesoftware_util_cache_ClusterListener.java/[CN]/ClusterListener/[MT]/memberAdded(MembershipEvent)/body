@@ -1,0 +1,10 @@
+{
+  if (event.getMember().localMember()) {
+    joinCluster();
+  }
+ else {
+    nodePresences.put(NodeID.getInstance(event.getMember().getUuid().getBytes()),new ConcurrentHashMap<String,Collection<String>>());
+    ClusterManager.fireJoinedCluster(event.getMember().getUuid().getBytes(),true);
+  }
+  clusterNodesInfo.put(event.getMember().getUuid(),new HazelcastClusterNodeInfo(event.getMember(),cluster.getClusterTime()));
+}

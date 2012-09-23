@@ -1,0 +1,16 @@
+{
+  log.debug("[TASK] New subscription : {}",toString());
+  Node node=getNode();
+  if (node == null)   return;
+  if (node.getAffiliate(getOwner()) == null) {
+    NodeAffiliate affiliate=new NodeAffiliate(node,getOwner());
+    affiliate.setAffiliation(NodeAffiliate.Affiliation.none);
+    node.addAffiliate(affiliate);
+  }
+  node.addSubscription(getSubscription());
+  if (node.isPresenceBasedDelivery() && node.getSubscriptions(getSubscription().getOwner()).size() == 1) {
+    if (getSubscription().getPresenceStates().isEmpty()) {
+      getService().presenceSubscriptionRequired(getNode(),getOwner());
+    }
+  }
+}

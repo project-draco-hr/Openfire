@@ -1,3 +1,12 @@
 {
+  if (node == null) {
+    if (Node.PUBSUB_SVC_ID.equals(serviceId)) {
+      node=(LeafNode)XMPPServer.getInstance().getPubSubModule().getNode(nodeId);
+    }
+ else {
+      PEPServiceManager serviceMgr=XMPPServer.getInstance().getIQPEPHandler().getServiceManager();
+      node=serviceMgr.hasCachedService(new JID(serviceId)) ? (LeafNode)serviceMgr.getPEPService(serviceId).getNode(nodeId) : null;
+    }
+  }
   return node;
 }

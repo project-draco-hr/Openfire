@@ -1,0 +1,21 @@
+{
+  byte[] nodeID=event.getMember().getUuid().getBytes();
+  if (event.getMember().localMember()) {
+    logger.info("Leaving cluster: " + nodeID);
+    leaveCluster();
+  }
+ else {
+    ClusterManager.fireLeftCluster(nodeID);
+    cleanupDirectedPresences(NodeID.getInstance(nodeID));
+    if (!seniorClusterMember && CacheFactory.isSeniorClusterMember()) {
+      seniorClusterMember=true;
+      ClusterManager.fireMarkedAsSeniorClusterMember();
+    }
+    if (CacheFactory.isSeniorClusterMember()) {
+      cleanupNode(NodeID.getInstance(nodeID));
+    }
+    XMPPServer.getInstance().getPresenceUpdateHandler().removedExpiredPresences();
+  }
+  NodeID.deleteInstance(nodeID);
+  clusterNodesInfo.remove(event.getMember().getUuid());
+}

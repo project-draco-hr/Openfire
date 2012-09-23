@@ -1,0 +1,10 @@
+{
+  if (event.getValue() == null && ((Collection)event.getOldValue()).isEmpty()) {
+    return;
+  }
+  byte[] nodeID=event.getMember().getUuid().getBytes();
+  if (!XMPPServer.getInstance().getNodeID().equals(nodeID)) {
+    String sender=event.getKey().toString();
+    nodePresences.get(NodeID.getInstance(nodeID)).remove(sender);
+  }
+}

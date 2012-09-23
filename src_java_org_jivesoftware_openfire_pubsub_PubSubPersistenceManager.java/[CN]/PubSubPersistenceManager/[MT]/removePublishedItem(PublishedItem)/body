@@ -1,7 +1,9 @@
 {
-synchronized (itemLock) {
+  String itemKey=item.getItemKey();
+  itemCache.remove(itemKey);
+synchronized (itemsPending) {
     itemsToDelete.addLast(item);
-    LinkedListNode nodeToDelete=itemMap.remove(item.getID());
-    if (nodeToDelete != null)     nodeToDelete.remove();
+    LinkedListNode itemToDelete=itemsPending.remove(itemKey);
+    if (itemToDelete != null)     itemToDelete.remove();
   }
 }

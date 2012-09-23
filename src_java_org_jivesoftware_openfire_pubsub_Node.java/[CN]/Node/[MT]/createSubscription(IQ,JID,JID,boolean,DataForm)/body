@@ -10,7 +10,7 @@
     subState=NodeSubscription.State.pending;
   }
   String id=StringUtils.randomString(40);
-  NodeSubscription subscription=new NodeSubscription(service,this,owner,subscriber,subState,id);
+  NodeSubscription subscription=new NodeSubscription(this,owner,subscriber,subState,id);
   if (options != null) {
     subscription.configure(options);
   }
@@ -24,6 +24,7 @@
   if (subscription.isAuthorizationPending()) {
     subscription.sendAuthorizationRequest();
   }
+  CacheFactory.doClusterTask(new NewSubscriptionTask(subscription));
   if (isSendItemSubscribe() && subscription.isActive()) {
     PublishedItem lastItem=getLastPublishedItem();
     if (lastItem != null) {

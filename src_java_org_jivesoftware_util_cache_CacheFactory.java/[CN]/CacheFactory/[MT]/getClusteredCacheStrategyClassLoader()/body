@@ -1,8 +1,11 @@
 {
   PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
-  Plugin plugin=pluginManager.getPlugin("clustering");
+  Plugin plugin=pluginManager.getPlugin("hazelcast");
   if (plugin == null) {
-    plugin=pluginManager.getPlugin("enterprise");
+    plugin=pluginManager.getPlugin("clustering");
+    if (plugin == null) {
+      plugin=pluginManager.getPlugin("enterprise");
+    }
   }
   PluginClassLoader pluginLoader=pluginManager.getPluginClassloader(plugin);
   if (pluginLoader != null) {

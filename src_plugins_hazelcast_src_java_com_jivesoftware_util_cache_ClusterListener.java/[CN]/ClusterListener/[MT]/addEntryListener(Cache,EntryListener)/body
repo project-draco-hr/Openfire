@@ -1,0 +1,9 @@
+{
+  if (cache instanceof CacheWrapper) {
+    Cache wrapped=((CacheWrapper)cache).getWrappedCache();
+    if (wrapped instanceof ClusteredCache) {
+      ((ClusteredCache)wrapped).addEntryListener(listener,false);
+      EntryListeners.put(cache,listener);
+    }
+  }
+}

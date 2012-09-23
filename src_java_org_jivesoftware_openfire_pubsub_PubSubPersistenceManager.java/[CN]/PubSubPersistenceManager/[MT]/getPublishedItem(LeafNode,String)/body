@@ -1,33 +1,51 @@
 {
-  flushItems();
-  Connection con=null;
-  PreparedStatement pstmt=null;
-  ResultSet rs=null;
-  SAXReader xmlReader=null;
-  PublishedItem result=null;
-  try {
-    xmlReader=xmlReaders.take();
-    con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(LOAD_ITEM);
-    pstmt.setString(1,node.getService().getServiceID());
-    pstmt.setString(2,node.getNodeID());
-    pstmt.setString(3,itemID);
-    rs=pstmt.executeQuery();
-    if (rs.next()) {
-      JID publisher=new JID(rs.getString(1));
-      Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
-      result=new PublishedItem(node,publisher,itemID,creationDate);
-      if (rs.getString(3) != null) {
-        result.setPayload(xmlReader.read(new StringReader(rs.getString(3))).getRootElement());
+  String itemKey=PublishedItem.getItemKey(node,itemID);
+  PublishedItem result=itemCache.get(itemKey);
+  if (result == null) {
+    Lock itemLock=CacheFactory.getLock(ITEM_CACHE,itemCache);
+    try {
+      itemLock.lock();
+      result=itemCache.get(itemKey);
+      if (result == null) {
+        flushPendingItems();
+        Connection con=null;
+        PreparedStatement pstmt=null;
+        ResultSet rs=null;
+        try {
+          con=DbConnectionManager.getConnection();
+          pstmt=con.prepareStatement(LOAD_ITEM);
+          pstmt.setString(1,node.getService().getServiceID());
+          pstmt.setString(2,node.getNodeID());
+          pstmt.setString(3,itemID);
+          rs=pstmt.executeQuery();
+          if (rs.next()) {
+            JID publisher=new JID(rs.getString(1));
+            Date creationDate=new Date(Long.parseLong(rs.getString(2).trim()));
+            result=new PublishedItem(node,publisher,itemID,creationDate);
+            if (rs.getString(3) != null) {
+              result.setPayloadXML(rs.getString(3));
+            }
+            itemCache.put(itemKey,result);
+            log.debug("Loaded item into cache from DB");
+          }
+        }
+ catch (        Exception exc) {
+          log.error(exc.getMessage(),exc);
+        }
+ finally {
+          DbConnectionManager.closeConnection(pstmt,con);
+        }
+      }
+ else {
+        log.debug("Found cached item on second attempt (after acquiring lock)");
       }
     }
+  finally {
+      itemLock.unlock();
+    }
   }
- catch (  Exception exc) {
-    log.error(exc.getMessage(),exc);
-  }
- finally {
-    DbConnectionManager.closeConnection(pstmt,con);
-    if (xmlReader != null)     xmlReaders.add(xmlReader);
+ else {
+    log.debug("Found cached item on first attempt (no lock)");
   }
   return result;
 }

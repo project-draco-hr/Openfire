@@ -19,11 +19,9 @@
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     pstmt.executeUpdate();
     DbConnectionManager.fastcloseStmt(pstmt);
-    pstmt=con.prepareStatement(DELETE_ITEMS);
-    pstmt.setString(1,node.getService().getServiceID());
-    pstmt.setString(2,encodeNodeID(node.getNodeID()));
-    pstmt.executeUpdate();
-    DbConnectionManager.closeStatement(pstmt);
+    if (node instanceof LeafNode) {
+      purgeNode((LeafNode)node);
+    }
     pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
     pstmt.setString(1,node.getService().getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
