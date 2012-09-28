@@ -33,9 +33,32 @@ synchronized (itemsPending) {
   if ((addItem == null) && (delItem == null))   return;
   Connection con=null;
   PreparedStatement pstmt=null;
-  try {
-    con=DbConnectionManager.getTransactionConnection();
-    if (addItem != null) {
+  if (delItem != null) {
+    try {
+      con=DbConnectionManager.getTransactionConnection();
+      LinkedListNode delHead=delList.getLast().next;
+      pstmt=con.prepareStatement(DELETE_ITEM);
+      while (delItem != delHead) {
+        PublishedItem item=(PublishedItem)delItem.object;
+        pstmt.setString(1,item.getNode().getService().getServiceID());
+        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
+        pstmt.setString(3,item.getID());
+        pstmt.addBatch();
+        delItem=delItem.next;
+      }
+      pstmt.executeBatch();
+    }
+ catch (    SQLException sqle) {
+      log.error(sqle.getMessage(),sqle);
+      abortTransaction=true;
+    }
+ finally {
+      DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+    }
+  }
+  if (addItem != null) {
+    try {
+      con=DbConnectionManager.getTransactionConnection();
       LinkedListNode addHead=addList.getLast().next;
       pstmt=con.prepareStatement(ADD_ITEM);
       while (addItem != addHead) {
@@ -51,24 +74,12 @@ synchronized (itemsPending) {
       }
       pstmt.executeBatch();
     }
-    if (delItem != null) {
-      LinkedListNode delHead=delList.getLast().next;
-      pstmt=con.prepareStatement(DELETE_ITEM);
-      while (delItem != delHead) {
-        PublishedItem item=(PublishedItem)delItem.object;
-        pstmt.setString(1,item.getNode().getService().getServiceID());
-        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
-        pstmt.setString(3,item.getID());
-        pstmt.executeUpdate();
-        delItem=delItem.next;
-      }
+ catch (    SQLException sqle) {
+      log.error(sqle.getMessage(),sqle);
+      abortTransaction=true;
     }
-  }
- catch (  SQLException sqle) {
-    log.error(sqle.getMessage(),sqle);
-    abortTransaction=true;
-  }
  finally {
-    DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+      DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+    }
   }
 }
