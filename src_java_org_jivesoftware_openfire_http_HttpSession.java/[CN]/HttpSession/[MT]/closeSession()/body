@@ -1,8 +1,10 @@
 {
-  if (isClosed) {
-    return;
+synchronized (this) {
+    if (isClosed) {
+      return;
+    }
+    isClosed=true;
   }
-  isClosed=true;
   if (pendingElements.size() > 0) {
     failDelivery();
   }

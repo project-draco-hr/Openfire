@@ -2,9 +2,11 @@
   int pendingConnections=0;
   boolean overactivity=false;
   String errorMessage="Overactivity detected";
-  for (  HttpConnection conn : connectionQueue) {
-    if (!conn.isClosed()) {
-      pendingConnections++;
+synchronized (connectionQueue) {
+    for (    HttpConnection conn : connectionQueue) {
+      if (!conn.isClosed()) {
+        pendingConnections++;
+      }
     }
   }
   if (pendingConnections >= maxRequests) {

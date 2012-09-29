@@ -5,8 +5,10 @@
   if (ack > lastRequestID)   builder.append(" ack='").append(ack).append("'");
   builder.append(">");
   setLastResponseEmpty(elements.size() == 0);
-  for (  Deliverable child : elements) {
-    builder.append(child.getDeliverable());
+synchronized (elements) {
+    for (    Deliverable child : elements) {
+      builder.append(child.getDeliverable());
+    }
   }
   builder.append("</body>");
   return builder.toString();

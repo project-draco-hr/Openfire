@@ -1,12 +1,14 @@
 {
-  if (body == null) {
-    throw new IllegalArgumentException("Body cannot be null!");
-  }
-  if (isClosed) {
-    throw new HttpConnectionClosedException("The http connection is no longer " + "available to deliver content");
-  }
+synchronized (this) {
+    if (isClosed) {
+      throw new HttpConnectionClosedException("The http connection is no longer " + "available to deliver content");
+    }
  else {
-    isClosed=true;
+      isClosed=true;
+    }
+  }
+  if (body == null) {
+    body=CONNECTION_CLOSED;
   }
   if (continuation != null && continuation.isSuspended()) {
     continuation.setAttribute("response-body",body);

@@ -1,8 +1,10 @@
 {
-  for (  HttpConnection toClose : connectionQueue) {
-    if (!toClose.isClosed()) {
-      toClose.close();
-      lastRequestID=toClose.getRequestId();
+synchronized (connectionQueue) {
+    for (    HttpConnection toClose : connectionQueue) {
+      if (!toClose.isClosed()) {
+        toClose.close();
+        lastRequestID=toClose.getRequestId();
+      }
     }
   }
   setInactivityTimeout(duration);

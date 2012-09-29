@@ -1,5 +1,5 @@
 {
   this.sessionManager=SessionManager.getInstance();
-  int eventThreads=JiveGlobals.getIntProperty("xmpp.client.processing.threads",16);
+  int eventThreads=JiveGlobals.getIntProperty("httpbind.client.processing.threads",JiveGlobals.getIntProperty("xmpp.client.processing.threads",16));
   sendPacketPool=new ThreadPoolExecutor(eventThreads + 1,eventThreads + 1,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
 }

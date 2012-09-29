@@ -1,22 +1,26 @@
 {
-  for (  Deliverable deliverable : pendingElements) {
-    Collection<Packet> packet=deliverable.getPackets();
-    if (packet != null) {
-      failDelivery(packet);
-    }
-  }
-  for (  HttpConnection toClose : connectionQueue) {
-    if (!toClose.isDelivered()) {
-      Delivered delivered=retrieveDeliverable(toClose.getRequestId());
-      if (delivered != null) {
-        failDelivery(delivered.getPackets());
+synchronized (pendingElements) {
+    for (    Deliverable deliverable : pendingElements) {
+      Collection<Packet> packet=deliverable.getPackets();
+      if (packet != null) {
+        failDelivery(packet);
       }
+    }
+    pendingElements.clear();
+  }
+synchronized (connectionQueue) {
+    for (    HttpConnection toClose : connectionQueue) {
+      if (!toClose.isDelivered()) {
+        Delivered delivered=retrieveDeliverable(toClose.getRequestId());
+        if (delivered != null) {
+          failDelivery(delivered.getPackets());
+        }
  else {
-        Log.warn("Packets could not be found for session " + getStreamID() + " cannot "+ "be delivered to client");
+          Log.warn("Packets could not be found for session " + getStreamID() + " cannot "+ "be delivered to client");
+        }
       }
+      toClose.close();
+      fireConnectionClosed(toClose);
     }
-    toClose.close();
-    fireConnectionClosed(toClose);
   }
-  pendingElements.clear();
 }

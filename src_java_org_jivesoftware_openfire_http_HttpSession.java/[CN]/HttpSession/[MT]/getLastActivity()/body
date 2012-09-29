@@ -1,13 +1,13 @@
 {
-  if (connectionQueue.isEmpty()) {
-    return lastActivity;
-  }
- else {
-    for (    HttpConnection connection : connectionQueue) {
-      if (!connection.isClosed()) {
-        return System.currentTimeMillis();
+  if (!connectionQueue.isEmpty()) {
+synchronized (connectionQueue) {
+      for (      HttpConnection connection : connectionQueue) {
+        if (!connection.isClosed()) {
+          lastActivity=System.currentTimeMillis();
+          break;
+        }
       }
     }
-    return lastActivity;
   }
+  return lastActivity;
 }

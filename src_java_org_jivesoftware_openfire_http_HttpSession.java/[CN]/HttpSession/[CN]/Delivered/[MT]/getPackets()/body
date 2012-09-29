@@ -1,8 +1,10 @@
 {
   List<Packet> packets=new ArrayList<Packet>();
-  for (  Deliverable deliverable : deliverables) {
-    if (deliverable.packets != null) {
-      packets.addAll(deliverable.getPackets());
+synchronized (deliverables) {
+    for (    Deliverable deliverable : deliverables) {
+      if (deliverable.packets != null) {
+        packets.addAll(deliverable.getPackets());
+      }
     }
   }
   return packets;

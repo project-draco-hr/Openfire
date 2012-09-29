@@ -1,8 +1,12 @@
 {
-  for (  Delivered delivered : sentElements) {
-    if (delivered.getRequestID() == rid) {
-      return delivered;
+  Delivered result=null;
+synchronized (sentElements) {
+    for (    Delivered delivered : sentElements) {
+      if (delivered.getRequestID() == rid) {
+        result=delivered;
+        break;
+      }
     }
   }
-  return null;
+  return result;
 }

@@ -6,33 +6,35 @@
     throw new HttpBindException("Session was started from secure connection, all " + "connections on this session must be secured.",BoshBindingError.badRequest);
   }
   final long rid=connection.getRequestId();
-  for (  HttpConnection queuedConnection : connectionQueue) {
-    if (queuedConnection.getRequestId() == rid) {
-      if (Log.isDebugEnabled()) {
-        Log.debug("Found previous connection in queue with rid " + rid);
-      }
-      if (queuedConnection.isClosed()) {
+synchronized (connectionQueue) {
+    for (    HttpConnection queuedConnection : connectionQueue) {
+      if (queuedConnection.getRequestId() == rid) {
         if (Log.isDebugEnabled()) {
-          Log.debug("It's closed - copying deliverables");
+          Log.debug("Found previous connection in queue with rid " + rid);
         }
-        Delivered deliverable=retrieveDeliverable(rid);
-        if (deliverable == null) {
-          Log.warn("Deliverable unavailable for " + rid);
-          throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
+        if (queuedConnection.isClosed()) {
+          if (Log.isDebugEnabled()) {
+            Log.debug("It's closed - copying deliverables");
+          }
+          Delivered deliverable=retrieveDeliverable(rid);
+          if (deliverable == null) {
+            Log.warn("Deliverable unavailable for " + rid);
+            throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
+          }
+          connection.deliverBody(createDeliverable(deliverable.deliverables));
         }
-        connection.deliverBody(createDeliverable(deliverable.deliverables));
-      }
  else {
-        if (Log.isDebugEnabled()) {
-          Log.debug("It's still open - calling close()");
+          if (Log.isDebugEnabled()) {
+            Log.debug("It's still open - calling close()");
+          }
+          deliver(queuedConnection,Collections.singleton(new Deliverable("")));
+          connection.close();
+          if (rid == (lastRequestID + 1)) {
+            lastRequestID=rid;
+          }
         }
-        deliver(queuedConnection,Collections.singleton(new Deliverable("")));
-        connection.close();
-        if (rid == (lastRequestID + 1)) {
-          lastRequestID=rid;
-        }
+        break;
       }
-      break;
     }
   }
   checkOveractivity(isPoll);
@@ -48,25 +50,27 @@
  else {
     connectionQueue.add(connection);
     Collections.sort(connectionQueue,connectionComparator);
-    int connectionsToClose;
-    if (connectionQueue.get(connectionQueue.size() - 1) != connection) {
-      connectionsToClose=connectionQueue.size();
-    }
+synchronized (connectionQueue) {
+      int connectionsToClose;
+      if (connectionQueue.get(connectionQueue.size() - 1) != connection) {
+        connectionsToClose=connectionQueue.size();
+      }
  else {
-      connectionsToClose=getOpenConnectionCount() - hold;
-    }
-    int closed=0;
-    for (int i=0; i < connectionQueue.size() && closed < connectionsToClose; i++) {
-      HttpConnection toClose=connectionQueue.get(i);
-      if (!toClose.isClosed() && toClose.getRequestId() == lastRequestID + 1) {
-        if (toClose == connection) {
-          deliver("");
-        }
+        connectionsToClose=getOpenConnectionCount() - hold;
+      }
+      int closed=0;
+      for (int i=0; i < connectionQueue.size() && closed < connectionsToClose; i++) {
+        HttpConnection toClose=connectionQueue.get(i);
+        if (!toClose.isClosed() && toClose.getRequestId() == lastRequestID + 1) {
+          if (toClose == connection) {
+            deliver("");
+          }
  else {
-          toClose.close();
+            toClose.close();
+          }
+          lastRequestID=toClose.getRequestId();
+          closed++;
         }
-        lastRequestID=toClose.getRequestId();
-        closed++;
       }
     }
   }
