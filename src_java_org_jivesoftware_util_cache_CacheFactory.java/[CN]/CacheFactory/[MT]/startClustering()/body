@@ -1,14 +1,12 @@
 {
-  clusteringStarted=false;
-  clusteringStarting=true;
   try {
     cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
-    clusteringStarted=cacheFactoryStrategy.startCluster();
+    clusteringStarting=cacheFactoryStrategy.startCluster();
   }
  catch (  Exception e) {
     Log.error("Unable to start clustering - continuing in local mode",e);
   }
-  if (!clusteringStarted) {
+  if (!clusteringStarting) {
     try {
       cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
     }
@@ -66,5 +64,4 @@
       statsThread.start();
     }
   }
-  clusteringStarting=false;
 }
