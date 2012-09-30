@@ -1,0 +1,20 @@
+{
+  flushPendingItems(ClusterManager.isClusteringEnabled(),con);
+  PreparedStatement pstmt=null;
+  try {
+    pstmt=con.prepareStatement(DELETE_ITEMS);
+    pstmt.setString(1,leafNode.getService().getServiceID());
+    pstmt.setString(2,encodeNodeID(leafNode.getNodeID()));
+    pstmt.executeUpdate();
+  }
+  finally {
+    DbConnectionManager.closeStatement(pstmt);
+  }
+synchronized (itemCache) {
+    for (    PublishedItem item : itemCache.values()) {
+      if (leafNode.getNodeID().equals(item.getNodeID())) {
+        itemCache.remove(item.getItemKey());
+      }
+    }
+  }
+}

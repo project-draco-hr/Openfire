@@ -1,25 +1,25 @@
 {
-  flushPendingItems();
   Connection con=null;
-  PreparedStatement pstmt=null;
+  boolean rollback=false;
   try {
-    con=DbConnectionManager.getConnection();
-    pstmt=con.prepareStatement(DELETE_ITEMS);
-    pstmt.setString(1,leafNode.getService().getServiceID());
-    pstmt.setString(2,encodeNodeID(leafNode.getNodeID()));
-    pstmt.executeUpdate();
-synchronized (itemCache) {
-      for (      PublishedItem item : itemCache.values()) {
-        if (leafNode.getNodeID().equals(item.getNodeID())) {
-          itemCache.remove(item.getItemKey());
+    con=DbConnectionManager.getTransactionConnection();
+    purgeNode(leafNode,con);
+synchronized (itemsPending) {
+      Iterator<Map.Entry<String,LinkedListNode>> pendingIt=itemsPending.entrySet().iterator();
+      while (pendingIt.hasNext()) {
+        LinkedListNode itemNode=pendingIt.next().getValue();
+        if (((PublishedItem)itemNode.object).getNodeID().equals(leafNode.getNodeID())) {
+          itemNode.remove();
+          pendingIt.remove();
         }
       }
     }
   }
- catch (  Exception exc) {
+ catch (  SQLException exc) {
     log.error(exc.getMessage(),exc);
+    rollback=true;
   }
  finally {
-    DbConnectionManager.closeConnection(pstmt,con);
+    DbConnectionManager.closeTransactionConnection(con,rollback);
   }
 }

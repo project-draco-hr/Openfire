@@ -20,7 +20,7 @@
     pstmt.executeUpdate();
     DbConnectionManager.fastcloseStmt(pstmt);
     if (node instanceof LeafNode) {
-      purgeNode((LeafNode)node);
+      purgeNode((LeafNode)node,con);
     }
     pstmt=con.prepareStatement(DELETE_AFFILIATIONS);
     pstmt.setString(1,node.getService().getServiceID());
