@@ -1,16 +1,20 @@
 {
   if (payload == null && payloadXML != null) {
-    SAXReader xmlReader=null;
-    try {
-      xmlReader=xmlReaders.take();
-      payload=xmlReader.read(new StringReader(payloadXML)).getRootElement();
-    }
- catch (    Exception ex) {
-      log.error("Failed to parse payload XML",ex);
-    }
+synchronized (this) {
+      if (payload == null) {
+        SAXReader xmlReader=null;
+        try {
+          xmlReader=xmlReaders.take();
+          payload=xmlReader.read(new StringReader(payloadXML)).getRootElement();
+        }
+ catch (        Exception ex) {
+          log.error("Failed to parse payload XML",ex);
+        }
  finally {
-      if (xmlReader != null) {
-        xmlReaders.add(xmlReader);
+          if (xmlReader != null) {
+            xmlReaders.add(xmlReader);
+          }
+        }
       }
     }
   }
