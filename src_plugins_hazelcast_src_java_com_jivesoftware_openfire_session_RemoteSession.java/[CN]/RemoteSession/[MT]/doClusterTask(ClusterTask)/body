@@ -1,3 +1,11 @@
 {
-  CacheFactory.doClusterTask(task,nodeID);
+  try {
+    CacheFactory.doClusterTask(task,nodeID);
+  }
+ catch (  IllegalStateException ise) {
+    if (task instanceof RemoteSessionTask) {
+      SessionManager.getInstance().removeSession(null,((RemoteSessionTask)task).getSession().getAddress(),false,false);
+    }
+    throw ise;
+  }
 }

@@ -2,12 +2,17 @@
   if (packets == null) {
     return;
   }
-  for (  Packet packet : packets) {
-    try {
-      backupDeliverer.deliver(packet);
-    }
- catch (    UnauthorizedException e) {
-      Log.error("Unable to deliver message to backup deliverer",e);
+  TaskEngine.getInstance().submit(new Runnable(){
+    public void run(){
+      for (      Packet packet : packets) {
+        try {
+          backupDeliverer.deliver(packet);
+        }
+ catch (        UnauthorizedException e) {
+          Log.error("Unable to deliver message to backup deliverer",e);
+        }
+      }
     }
   }
+);
 }

@@ -11,17 +11,24 @@
       }
     }
  else {
-      Collection<String> sessions=usersSessions.get(route.toBareJID());
-      if (sessions != null) {
-        for (        String jid : sessions) {
-          ClientRoute clientRoute=usersCache.get(jid);
-          if (clientRoute == null) {
-            clientRoute=anonymousUsersCache.get(jid);
-          }
-          if (clientRoute != null && (clientRoute.isAvailable() || presenceUpdateHandler.hasDirectPresence(new JID(jid),requester))) {
-            jids.add(new JID(jid));
+      Lock lock=CacheFactory.getLock(route.toBareJID(),usersSessions);
+      try {
+        lock.lock();
+        Collection<String> sessions=usersSessions.get(route.toBareJID());
+        if (sessions != null) {
+          for (          String jid : sessions) {
+            ClientRoute clientRoute=usersCache.get(jid);
+            if (clientRoute == null) {
+              clientRoute=anonymousUsersCache.get(jid);
+            }
+            if (clientRoute != null && (clientRoute.isAvailable() || presenceUpdateHandler.hasDirectPresence(new JID(jid),requester))) {
+              jids.add(new JID(jid));
+            }
           }
         }
+      }
+  finally {
+        lock.unlock();
       }
     }
   }

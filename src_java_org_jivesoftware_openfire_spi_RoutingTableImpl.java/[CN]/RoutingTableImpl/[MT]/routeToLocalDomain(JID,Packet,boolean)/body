@@ -31,6 +31,9 @@
  else {
           if (remotePacketRouter != null) {
             routed=remotePacketRouter.routePacket(clientRoute.getNodeID().toByteArray(),jid,packet);
+            if (!routed) {
+              removeClientRoute(jid);
+            }
           }
         }
       }

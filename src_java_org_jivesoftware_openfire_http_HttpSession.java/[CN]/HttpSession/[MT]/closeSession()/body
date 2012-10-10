@@ -5,8 +5,31 @@ synchronized (this) {
     }
     isClosed=true;
   }
-  if (pendingElements.size() > 0) {
-    failDelivery();
+synchronized (connectionQueue) {
+    for (    HttpConnection toClose : connectionQueue) {
+      try {
+        if (!toClose.isClosed()) {
+          if (!pendingElements.isEmpty() && toClose.getRequestId() == lastRequestID + 1) {
+synchronized (pendingElements) {
+              deliver(toClose,pendingElements);
+              lastRequestID=toClose.getRequestId();
+              pendingElements.clear();
+            }
+          }
+ else {
+            toClose.deliverBody(null);
+          }
+        }
+      }
+ catch (      HttpConnectionClosedException e) {
+      }
+    }
+  }
+synchronized (pendingElements) {
+    for (    Deliverable deliverable : pendingElements) {
+      failDelivery(deliverable.getPackets());
+    }
+    pendingElements.clear();
   }
   for (  SessionListener listener : listeners) {
     listener.sessionClosed(this);
