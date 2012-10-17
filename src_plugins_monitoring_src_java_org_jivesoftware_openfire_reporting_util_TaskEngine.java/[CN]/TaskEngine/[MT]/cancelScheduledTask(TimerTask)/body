@@ -1,0 +1,10 @@
+{
+  TaskEngine.TimerTaskWrapper taskWrapper;
+synchronized (wrappedTasks) {
+    taskWrapper=wrappedTasks.remove(task);
+  }
+  if (taskWrapper != null) {
+    taskWrapper.cancel();
+    task.cancel();
+  }
+}

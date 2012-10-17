@@ -1,0 +1,14 @@
+{
+  MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+  ArchiveIndexer archiveIndexer=(ArchiveIndexer)plugin.getModule(ArchiveIndexer.class);
+  Future<Integer> future=archiveIndexer.getIndexRebuildProgress();
+  if (future != null) {
+    try {
+      return future.get();
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return -1;
+}

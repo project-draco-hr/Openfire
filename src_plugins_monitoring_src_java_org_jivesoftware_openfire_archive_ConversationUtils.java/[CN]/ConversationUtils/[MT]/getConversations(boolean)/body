@@ -1,0 +1,13 @@
+{
+  Map<String,ConversationInfo> cons=new HashMap<String,ConversationInfo>();
+  MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+  ConversationManager conversationManager=(ConversationManager)plugin.getModule(ConversationManager.class);
+  Collection<Conversation> conversations=conversationManager.getConversations();
+  List<Conversation> lConversations=Arrays.asList(conversations.toArray(new Conversation[conversations.size()]));
+  for (Iterator<Conversation> i=lConversations.iterator(); i.hasNext(); ) {
+    Conversation con=i.next();
+    ConversationInfo info=toConversationInfo(con,formatParticipants);
+    cons.put(Long.toString(con.getConversationID()),info);
+  }
+  return cons;
+}

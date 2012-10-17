@@ -1,0 +1,48 @@
+{
+  final Iterator<Long> convIterator=conversationIDs.iterator();
+  return new Iterator<Conversation>(){
+    private Conversation nextElement=null;
+    public boolean hasNext(){
+      if (nextElement == null) {
+        nextElement=getNextElement();
+        if (nextElement == null) {
+          return false;
+        }
+      }
+      return true;
+    }
+    public Conversation next(){
+      Conversation element;
+      if (nextElement != null) {
+        element=nextElement;
+        nextElement=null;
+      }
+ else {
+        element=getNextElement();
+        if (element == null) {
+          throw new NoSuchElementException();
+        }
+      }
+      return element;
+    }
+    public void remove(){
+      throw new UnsupportedOperationException();
+    }
+    private Conversation getNextElement(){
+      if (!convIterator.hasNext()) {
+        return null;
+      }
+      while (convIterator.hasNext()) {
+        try {
+          long conversationID=convIterator.next();
+          return new Conversation(conversationManager,conversationID);
+        }
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+      return null;
+    }
+  }
+;
+}

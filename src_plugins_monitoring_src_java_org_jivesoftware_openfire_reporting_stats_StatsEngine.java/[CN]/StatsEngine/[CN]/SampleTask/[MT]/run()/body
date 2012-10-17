@@ -1,0 +1,86 @@
+{
+  if (!ClusterManager.isSeniorClusterMember()) {
+    for (    Map.Entry<String,Statistic> statisticEntry : statsManager.getAllStatistics()) {
+      String key=statisticEntry.getKey();
+      StatDefinition def=createDefintion(key);
+      String group=statsManager.getMultistatGroup(key);
+      if (group != null) {
+        checkAndCreateGroup(group,def,false);
+      }
+    }
+    return;
+  }
+  long newTime=getLastMinute();
+  if (lastSampleTime != 0 && newTime <= lastSampleTime) {
+    Log.warn("Sample task not run because less then a second has passed since last " + "sample.");
+    return;
+  }
+  lastSampleTime=newTime;
+  Collection<Object> remoteSamples=CacheFactory.doSynchronousClusterTask(new GetStatistics(),false);
+  List<String> sampledStats=new ArrayList<String>();
+  for (  Map.Entry<String,Statistic> statisticEntry : statsManager.getAllStatistics()) {
+    String key=statisticEntry.getKey();
+    StatDefinition def=createDefintion(key);
+    String group=statsManager.getMultistatGroup(key);
+    StatDefinition[] definitions;
+    if (group != null) {
+      definitions=checkAndCreateGroup(group,def,false);
+      if (definitions == null || sampledStats.contains(def.getDatasourceName())) {
+        continue;
+      }
+    }
+ else {
+      definitions=new StatDefinition[]{def};
+    }
+    RrdDb db=null;
+    try {
+      newTime=getLastMinute();
+      if (def.lastSampleTime <= 0) {
+        for (        StatDefinition definition : definitions) {
+          definition.lastSampleTime=newTime;
+          sampleStat(key,definition);
+        }
+        continue;
+      }
+      db=new RrdDb(def.getDbPath(),false);
+      if (newTime <= db.getLastArchiveUpdateTime()) {
+        Log.warn("Sample time of " + newTime + " for statistic "+ key+ " is "+ "invalid.");
+      }
+      Sample sample=db.createSample(newTime);
+      if (Log.isDebugEnabled()) {
+        Log.debug("Stat: " + db.getPath() + ". Last sample: "+ db.getLastUpdateTime()+ ". New sample: "+ sample.getTime());
+      }
+      for (      StatDefinition definition : definitions) {
+        double statSample=sampleStat(key,definition);
+        for (        Object nodeResult : remoteSamples) {
+          Map<String,Double> nodeSamples=(Map<String,Double>)nodeResult;
+          Double remoteSample=nodeSamples.get(key);
+          if (remoteSample != null) {
+            statSample+=remoteSample;
+          }
+        }
+        sample.setValue(definition.getDatasourceName(),statSample);
+        sampledStats.add(definition.getDatasourceName());
+        definition.lastSampleTime=newTime;
+        definition.lastSample=statSample;
+      }
+      sample.update();
+    }
+ catch (    IOException e) {
+      Log.error("Error sampling for statistic " + key,e);
+    }
+catch (    RrdException e) {
+      Log.error("Error sampling for statistic " + key,e);
+    }
+ finally {
+      if (db != null) {
+        try {
+          db.close();
+        }
+ catch (        IOException e) {
+          Log.error("Error releasing db resource",e);
+        }
+      }
+    }
+  }
+}

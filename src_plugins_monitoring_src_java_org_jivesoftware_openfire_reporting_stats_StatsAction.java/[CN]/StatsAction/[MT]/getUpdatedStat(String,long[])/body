@@ -1,0 +1,10 @@
+{
+  MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+  StatsViewer viewer=(StatsViewer)plugin.getModule(StatsViewer.class);
+  String[] lowHigh=getLowAndHigh(statkey,timePeriod);
+  Map stat=new HashMap();
+  stat.put("low",lowHigh[0]);
+  stat.put("high",lowHigh[1]);
+  stat.put("count",(int)viewer.getCurrentValue(statkey)[0]);
+  return stat;
+}

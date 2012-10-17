@@ -1,0 +1,50 @@
+{
+  try {
+    Document document=new Document(PageSize.A4,50,50,50,50);
+    ByteArrayOutputStream baos=new ByteArrayOutputStream();
+    PdfWriter writer=PdfWriter.getInstance(document,baos);
+    writer.setPageEvent(new PDFEventListener(request));
+    document.open();
+    int index=0;
+    int chapIndex=0;
+    for (    Statistic stat : stats) {
+      String serverName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+      String dateName=JiveGlobals.formatDate(new Date(starttime)) + " - " + JiveGlobals.formatDate(new Date(endtime));
+      Paragraph paragraph=new Paragraph(serverName,FontFactory.getFont(FontFactory.HELVETICA,18,Font.BOLD));
+      document.add(paragraph);
+      paragraph=new Paragraph(dateName,FontFactory.getFont(FontFactory.HELVETICA,14,Font.PLAIN));
+      document.add(paragraph);
+      document.add(Chunk.NEWLINE);
+      document.add(Chunk.NEWLINE);
+      Paragraph chapterTitle=new Paragraph(++chapIndex + ". " + stat.getName(),FontFactory.getFont(FontFactory.HELVETICA,16,Font.BOLD));
+      document.add(chapterTitle);
+      String[] paragraphs=stat.getDescription().split("<p>");
+      for (      String s : paragraphs) {
+        Paragraph p=new Paragraph(s);
+        document.add(p);
+      }
+      document.add(Chunk.NEWLINE);
+      PdfContentByte contentByte=writer.getDirectContent();
+      PdfTemplate template=contentByte.createTemplate(width,height);
+      Graphics2D graphs2D=template.createGraphics(width,height,new DefaultFontMapper());
+      Rectangle2D rectangle2D=new Rectangle2D.Double(0,0,width,height);
+      charts[index++].draw(graphs2D,rectangle2D);
+      graphs2D.dispose();
+      float x=(document.getPageSize().width() / 2) - (width / 2);
+      contentByte.addTemplate(template,x,writer.getVerticalPosition(true) - height);
+      document.newPage();
+    }
+    document.close();
+    response.setHeader("Expires","0");
+    response.setHeader("Cache-Control","must-revalidate, post-check=0, pre-check=0");
+    response.setHeader("Pragma","public");
+    response.setContentType("application/pdf");
+    response.setContentLength(baos.size());
+    ServletOutputStream out=response.getOutputStream();
+    baos.writeTo(out);
+    out.flush();
+  }
+ catch (  DocumentException e) {
+    Log.error("error creating PDF document: " + e.getMessage());
+  }
+}

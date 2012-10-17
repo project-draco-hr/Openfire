@@ -1,0 +1,34 @@
+{
+  final XMPPServer server=XMPPServer.getInstance();
+  final ArchivedMessage.Direction direction;
+  final ArchivedMessage archivedMessage;
+  final Conversation conversation;
+  final JID ownerJid;
+  final JID withJid;
+  if (message.getType() != Message.Type.chat && message.getType() != Message.Type.normal) {
+    return;
+  }
+  if (server.isLocal(message.getFrom()) && incoming) {
+    ownerJid=message.getFrom();
+    withJid=message.getTo();
+    direction=ArchivedMessage.Direction.to;
+  }
+ else   if (server.isLocal(message.getTo()) && !incoming) {
+    ownerJid=message.getTo();
+    withJid=message.getFrom();
+    direction=ArchivedMessage.Direction.from;
+  }
+ else {
+    return;
+  }
+  archivedMessage=ArchiveFactory.createArchivedMessage(session,message,direction,withJid);
+  if (archivedMessage.isEmpty()) {
+    return;
+  }
+  conversation=determineConversation(ownerJid,withJid,message.getSubject(),message.getThread(),archivedMessage);
+  archivedMessage.setConversation(conversation);
+  persistenceManager.createMessage(archivedMessage);
+  if (indexManager != null) {
+    indexManager.indexObject(archivedMessage);
+  }
+}

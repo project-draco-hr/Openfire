@@ -1,0 +1,21 @@
+{
+  int conversationCount=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(CONVERSATION_COUNT);
+    rs=pstmt.executeQuery();
+    if (rs.next()) {
+      conversationCount=rs.getInt(1);
+    }
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return conversationCount;
+}

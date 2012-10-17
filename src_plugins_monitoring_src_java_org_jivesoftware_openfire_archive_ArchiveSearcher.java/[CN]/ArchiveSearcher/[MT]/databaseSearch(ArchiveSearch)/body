@@ -1,0 +1,135 @@
+{
+  CachedPreparedStatement cachedPstmt=new CachedPreparedStatement();
+  StringBuilder query=new StringBuilder(160);
+  query.append("SELECT DISTINCT ofConversation.conversationID");
+  Collection<JID> participants=search.getParticipants();
+  boolean filterParticipants=!participants.isEmpty();
+  boolean filterDate=search.getDateRangeMin() != null || search.getDateRangeMax() != null;
+  boolean filterTimestamp=search.getIncludeTimestamp() != null;
+  boolean filterRoom=search.getRoom() != null;
+  query.append(", ofConversation.startDate");
+  query.append(" FROM ofConversation");
+  if (filterParticipants) {
+    for (int i=0; i < participants.size(); i++) {
+      query.append(", ofConParticipant participant").append(i);
+    }
+  }
+  boolean whereSet=false;
+  if (search.isExternalWildcardMode() && search.getParticipants().size() != 2) {
+    query.append(" WHERE isExternal=?");
+    cachedPstmt.addInt(1);
+    whereSet=true;
+  }
+  if (filterParticipants) {
+    Iterator<JID> iter=participants.iterator();
+    for (int i=0; i < participants.size(); i++) {
+      if (!whereSet) {
+        query.append(" WHERE");
+        whereSet=true;
+      }
+ else {
+        query.append(" AND");
+      }
+      query.append(" ofConversation.conversationID=participant").append(i).append(".conversationID");
+      query.append(" AND ");
+      query.append("participant").append(i).append(".bareJID=?");
+      String partJID=iter.next().toString();
+      cachedPstmt.addString(partJID);
+    }
+  }
+  if (filterDate) {
+    if (search.getDateRangeMin() != null) {
+      if (!whereSet) {
+        query.append(" WHERE");
+        whereSet=true;
+      }
+ else {
+        query.append(" AND");
+      }
+      query.append(" ofConversation.startDate >= ?");
+      cachedPstmt.addLong(search.getDateRangeMin().getTime());
+    }
+    if (search.getDateRangeMax() != null) {
+      if (!whereSet) {
+        query.append(" WHERE");
+        whereSet=true;
+      }
+ else {
+        query.append(" AND");
+      }
+      query.append(" ofConversation.startDate <= ?");
+      cachedPstmt.addLong(search.getDateRangeMax().getTime());
+    }
+  }
+  if (filterTimestamp) {
+    if (!whereSet) {
+      query.append(" WHERE");
+      whereSet=true;
+    }
+ else {
+      query.append(" AND");
+    }
+    query.append(" ofConversation.startDate <= ?");
+    cachedPstmt.addLong(search.getIncludeTimestamp().getTime());
+    query.append(" AND");
+    query.append(" ofConversation.lastActivity >= ?");
+    cachedPstmt.addLong(search.getIncludeTimestamp().getTime());
+  }
+  if (filterRoom) {
+    if (!whereSet) {
+      query.append(" WHERE");
+      whereSet=true;
+    }
+ else {
+      query.append(" AND");
+    }
+    query.append(" ofConversation.room = ?");
+    cachedPstmt.addString(search.getRoom().toString());
+  }
+  query.append(" ORDER BY ofConversation.startDate");
+  if (search.getSortOrder() == ArchiveSearch.SortOrder.descending) {
+    query.append(" DESC");
+  }
+ else {
+    query.append(" ASC");
+  }
+  int startIndex=search.getStartIndex();
+  int numResults=search.getNumResults();
+  if (numResults != ArchiveSearch.NULL_INT) {
+    if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.mysql) {
+      query.append(" LIMIT ").append(startIndex).append(",").append(numResults);
+    }
+ else     if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.postgresql) {
+      query.append(" LIMIT ").append(numResults).append(" OFFSET ").append(startIndex);
+    }
+  }
+  cachedPstmt.setSQL(query.toString());
+  List<Long> conversationIDs=new ArrayList<Long>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,cachedPstmt.getSQL());
+    cachedPstmt.setParams(pstmt);
+    if (DbConnectionManager.getDatabaseType() != DbConnectionManager.DatabaseType.mysql && DbConnectionManager.getDatabaseType() != DbConnectionManager.DatabaseType.postgresql) {
+      DbConnectionManager.setMaxRows(pstmt,startIndex + numResults);
+    }
+    ResultSet rs=pstmt.executeQuery();
+    if (DbConnectionManager.getDatabaseType() != DbConnectionManager.DatabaseType.mysql && DbConnectionManager.getDatabaseType() != DbConnectionManager.DatabaseType.postgresql) {
+      DbConnectionManager.scrollResultSet(rs,startIndex);
+    }
+    int count=0;
+    while (rs.next() && count < numResults) {
+      conversationIDs.add(rs.getLong(1));
+      count++;
+    }
+    rs.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return new DatabaseQueryResults(conversationIDs);
+}

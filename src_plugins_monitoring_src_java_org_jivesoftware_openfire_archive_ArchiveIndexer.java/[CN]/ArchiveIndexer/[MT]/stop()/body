@@ -1,0 +1,24 @@
+{
+  stopped=true;
+  indexUpdater.cancel();
+  if (searcher != null) {
+    try {
+      searcher.close();
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+    searcher=null;
+  }
+  try {
+    directory.close();
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  directory=null;
+  indexProperties=null;
+  conversationManager=null;
+  searchDir=null;
+  rebuildFuture=null;
+}

@@ -1,0 +1,12 @@
+{
+  Statistic serverToServerStatistic=new i18nStatistic(SERVER_2_SERVER_SESSIONS_KEY,MonitoringConstants.NAME,Statistic.Type.count){
+    public double sample(){
+      return (SessionManager.getInstance().getIncomingServers().size() + SessionManager.getInstance().getOutgoingServers().size());
+    }
+    public boolean isPartialSample(){
+      return false;
+    }
+  }
+;
+  statisticsManager.addStatistic(SERVER_2_SERVER_SESSIONS_KEY,serverToServerStatistic);
+}

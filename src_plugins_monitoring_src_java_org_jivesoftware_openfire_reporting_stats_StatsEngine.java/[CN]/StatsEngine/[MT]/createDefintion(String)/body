@@ -1,0 +1,29 @@
+{
+  StatDefinition def=definitionMap.get(key);
+  if (def == null) {
+    Statistic statistic=statsManager.getStatistic(key);
+    String statGroup=statsManager.getMultistatGroup(key);
+    try {
+      def=new DefaultStatDefinition(statGroup != null ? statGroup : key,key,statistic);
+      StatDefinition[] definitions;
+      if (statGroup != null) {
+        definitions=checkAndCreateGroup(statGroup,def,true);
+      }
+ else {
+        definitions=new StatDefinition[]{def};
+        multiMap.put(key,Arrays.asList(definitions));
+      }
+      if (definitions != null) {
+        checkDatabase(definitions);
+      }
+      definitionMap.put(key,def);
+    }
+ catch (    RrdException e) {
+      Log.error("Error creating database definition",e);
+    }
+catch (    IOException e) {
+      Log.error("Error creating database definition",e);
+    }
+  }
+  return def;
+}

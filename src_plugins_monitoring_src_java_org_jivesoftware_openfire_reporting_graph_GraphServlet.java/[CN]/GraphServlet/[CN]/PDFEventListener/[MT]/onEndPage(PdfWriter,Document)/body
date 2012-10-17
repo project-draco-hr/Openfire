@@ -1,0 +1,16 @@
+{
+  PdfContentByte cb=writer.getDirectContent();
+  try {
+    cb.setColorStroke(new Color(156,156,156));
+    cb.setLineWidth(2);
+    cb.moveTo(document.leftMargin(),document.bottomMargin() + 32);
+    cb.lineTo(document.getPageSize().width() - document.rightMargin(),document.bottomMargin() + 32);
+    cb.stroke();
+    Image gif=Image.getInstance("http://" + request.getServerName() + ":"+ request.getServerPort()+ "/plugins/"+ MonitoringConstants.NAME+ "/images/pdf_generatedbyof.gif");
+    cb.addImage(gif,221,0,0,28,(int)document.leftMargin(),(int)document.bottomMargin());
+  }
+ catch (  Exception e) {
+    Log.error("error drawing PDF footer: " + e.getMessage());
+  }
+  cb.saveState();
+}
