@@ -31,7 +31,7 @@ catch (    HttpConnectionClosedException nc) {
     int pauseDuration=getIntAttribue(rootNode.attributeValue("pause"),-1);
     if ("terminate".equals(type)) {
       session.close();
-      respond(session,request,response,createEmptyBody(),request.getMethod());
+      respond(session,request,response,createEmptyBody(true),request.getMethod());
     }
  else     if ("true".equals(restartStream) && rootNode.elements().size() == 0) {
       try {
@@ -43,7 +43,7 @@ catch (    HttpConnectionClosedException nc) {
     }
  else     if (pauseDuration > 0 && pauseDuration <= session.getMaxPause()) {
       session.pause(pauseDuration);
-      respond(session,request,response,createEmptyBody(),request.getMethod());
+      respond(session,request,response,createEmptyBody(false),request.getMethod());
       session.setLastResponseEmpty(true);
     }
  else {
