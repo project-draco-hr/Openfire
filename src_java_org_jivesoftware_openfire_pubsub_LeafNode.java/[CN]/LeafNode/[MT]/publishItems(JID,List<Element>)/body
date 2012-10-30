@@ -15,7 +15,9 @@
       newItem.setPayload(payload);
       newPublishedItems.add(newItem);
       setLastPublishedItem(newItem);
-      PubSubPersistenceManager.savePublishedItem(newItem);
+      if (isPersistPublishedItems()) {
+        PubSubPersistenceManager.savePublishedItem(newItem);
+      }
     }
   }
   Message message=new Message();
