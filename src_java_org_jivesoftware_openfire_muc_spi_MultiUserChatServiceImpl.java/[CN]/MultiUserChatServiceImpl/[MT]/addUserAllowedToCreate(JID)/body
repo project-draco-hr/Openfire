@@ -1,12 +1,5 @@
 {
-  final JID bareJID=new JID(userJID.toBareJID());
-  allowedToCreate.add(bareJID);
-  ArrayList<JID> tempList=new ArrayList<JID>(allowedToCreate);
-  Collections.sort(tempList);
-  allowedToCreate=new CopyOnWriteArrayList<JID>(tempList);
-  String[] jids=new String[allowedToCreate.size()];
-  for (int i=0; i < jids.length; i++) {
-    jids[i]=allowedToCreate.get(i).toBareJID();
-  }
-  MUCPersistenceManager.setProperty(chatServiceName,"create.jid",fromArray(jids));
+  List<JID> asList=new ArrayList<JID>();
+  asList.add(userJID);
+  addUsersAllowedToCreate(asList);
 }

@@ -1,0 +1,12 @@
+{
+  boolean listChanged=false;
+  for (  JID userJID : userJIDs) {
+    listChanged|=allowedToCreate.add(userJID);
+  }
+  if (listChanged) {
+    List<JID> tempList=new ArrayList<JID>(allowedToCreate);
+    Collections.sort(tempList);
+    allowedToCreate=new CopyOnWriteArrayList<JID>(tempList);
+    MUCPersistenceManager.setProperty(chatServiceName,"create.jid",fromCollection(allowedToCreate));
+  }
+}
