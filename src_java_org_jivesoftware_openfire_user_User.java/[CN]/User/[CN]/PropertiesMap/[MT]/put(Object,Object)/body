@@ -2,7 +2,7 @@
   Map<String,Object> eventParams=new HashMap<String,Object>();
   Object answer;
   String keyString=(String)key;
-synchronized (keyString.intern()) {
+synchronized (getName() + keyString.intern()) {
     if (properties.containsKey(keyString)) {
       String originalValue=properties.get(keyString);
       answer=properties.put(keyString,(String)value);
