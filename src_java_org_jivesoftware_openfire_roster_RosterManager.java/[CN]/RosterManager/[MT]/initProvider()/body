@@ -1,0 +1,14 @@
+{
+  JiveGlobals.migrateProperty("provider.roster.className");
+  String className=JiveGlobals.getProperty("provider.roster.className","org.jivesoftware.openfire.roster.DefaultRosterItemProvider");
+  if (provider == null || !className.equals(provider.getClass().getName())) {
+    try {
+      Class c=ClassUtils.forName(className);
+      provider=(RosterItemProvider)c.newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Error loading roster provider: " + className,e);
+      provider=new DefaultRosterItemProvider();
+    }
+  }
+}
