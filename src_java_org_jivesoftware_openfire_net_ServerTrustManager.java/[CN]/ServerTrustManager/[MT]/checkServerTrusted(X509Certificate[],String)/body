@@ -2,13 +2,21 @@
   boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
   if (verify) {
     int nSize=x509Certificates.length;
+    if (Log.isDebugEnabled()) {
+      Log.debug("Certificate chain:");
+      for (int i=1; i <= nSize; i++) {
+        Log.debug("Certificate " + i + ": "+ x509Certificates[i - 1].toString());
+      }
+    }
     List<String> peerIdentities=CertificateManager.getPeerIdentities(x509Certificates[0]);
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true)) {
+      Log.debug("Verifying certificate chain...");
       Principal principalLast=null;
       for (int i=nSize - 1; i >= 0; i--) {
         X509Certificate x509certificate=x509Certificates[i];
         Principal principalIssuer=x509certificate.getIssuerDN();
         Principal principalSubject=x509certificate.getSubjectDN();
+        Log.debug("Certificate " + (i + 1) + " issuer: '"+ principalIssuer+ "' subject: '"+ principalSubject+ "'");
         if (principalLast != null) {
           if (principalIssuer.equals(principalLast)) {
             try {
@@ -16,17 +24,18 @@
               x509Certificates[i].verify(publickey);
             }
  catch (            GeneralSecurityException generalsecurityexception) {
-              throw new CertificateException("signature verification failed of " + peerIdentities);
+              throw new CertificateException("signature verification failed of " + peerIdentities,generalsecurityexception);
             }
           }
  else {
-            throw new CertificateException("subject/issuer verification failed of " + peerIdentities);
+            throw new CertificateException("subject/issuer verification failed of " + peerIdentities + ". In certificate "+ (i + 1)+ " of the chain, I expected the issuer to be '"+ principalLast+ "' but was '"+ principalIssuer+ "'.");
           }
         }
         principalLast=principalSubject;
       }
     }
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.root",true)) {
+      Log.debug("Verifying certificate chain root certificate...");
       boolean trusted=false;
       try {
         trusted=trustStore.getCertificateAlias(x509Certificates[nSize - 1]) != null;
@@ -54,10 +63,11 @@
       throw new CertificateException("target verification failed of " + peerIdentities);
     }
     if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.validity",true)) {
+      Log.debug("Verifying certificate chain validity (by date)...");
       Date date=new Date();
-      for (int i=0; i < nSize; i++) {
+      for (      X509Certificate x509Certificate : x509Certificates) {
         try {
-          x509Certificates[i].checkValidity(date);
+          x509Certificate.checkValidity(date);
         }
  catch (        GeneralSecurityException generalsecurityexception) {
           throw new CertificateException("invalid date of " + peerIdentities);
