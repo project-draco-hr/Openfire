@@ -1,16 +1,15 @@
 {
-  List<HostAddress> results=null;
+  List<HostAddress> results=new LinkedList<HostAddress>();
   if (dnsOverride != null) {
     HostAddress hostAddress=dnsOverride.get(domain);
     if (hostAddress != null) {
-      results=new ArrayList<HostAddress>();
       results.add(hostAddress);
       return results;
     }
   }
-  results=srvLookup("_xmpp-server._tcp." + domain);
-  if (results == null || results.isEmpty()) {
-    results=srvLookup("_jabber._tcp." + domain);
+  results.addAll(srvLookup("_xmpp-server._tcp." + domain));
+  if (results.isEmpty()) {
+    results.addAll(srvLookup("_jabber._tcp." + domain));
   }
   if (results.isEmpty()) {
     results.add(new HostAddress(domain,defaultPort));

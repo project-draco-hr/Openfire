@@ -1,0 +1,49 @@
+{
+  final List<WeightedHostAddress> result=new LinkedList<WeightedHostAddress>();
+  SortedMap<Integer,Set<WeightedHostAddress>> byPriority=new TreeMap<Integer,Set<WeightedHostAddress>>();
+  for (  final WeightedHostAddress record : records) {
+    if (byPriority.containsKey(record.getPriority())) {
+      byPriority.get(record.getPriority()).add(record);
+    }
+ else {
+      final Set<WeightedHostAddress> set=new HashSet<WeightedHostAddress>();
+      set.add(record);
+      byPriority.put(record.getPriority(),set);
+    }
+  }
+  for (  Map.Entry<Integer,Set<WeightedHostAddress>> weights : byPriority.entrySet()) {
+    List<WeightedHostAddress> zeroWeights=new LinkedList<WeightedHostAddress>();
+    int totalWeight=0;
+    final Iterator<WeightedHostAddress> i=weights.getValue().iterator();
+    while (i.hasNext()) {
+      final WeightedHostAddress next=i.next();
+      if (next.weight == 0) {
+        zeroWeights.add(next);
+        i.remove();
+        continue;
+      }
+      totalWeight+=next.getWeight();
+    }
+    int iterationWeight=totalWeight;
+    Iterator<WeightedHostAddress> iter=weights.getValue().iterator();
+    while (iter.hasNext()) {
+      int needle=new Random().nextInt(iterationWeight);
+      while (true) {
+        final WeightedHostAddress record=iter.next();
+        needle-=record.getWeight();
+        if (needle <= 0) {
+          result.add(record);
+          iter.remove();
+          iterationWeight-=record.getWeight();
+          break;
+        }
+      }
+      iter=weights.getValue().iterator();
+    }
+    Collections.shuffle(zeroWeights);
+    for (    WeightedHostAddress zero : zeroWeights) {
+      result.add(zero);
+    }
+  }
+  return result;
+}

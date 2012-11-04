@@ -9,14 +9,11 @@
       logger.debug("No SRV record found for domain: " + lookup);
       return new ArrayList<HostAddress>();
     }
-    HostAddress[] hosts=new WeightedHostAddress[srvRecords.size()];
+    WeightedHostAddress[] hosts=new WeightedHostAddress[srvRecords.size()];
     for (int i=0; i < srvRecords.size(); i++) {
       hosts[i]=new WeightedHostAddress(((String)srvRecords.get(i)).split(" "));
     }
-    if (srvRecords.size() > 1) {
-      Arrays.sort(hosts,new SrvRecordWeightedPriorityComparator());
-    }
-    return Arrays.asList(hosts);
+    return prioritize(hosts);
   }
  catch (  NameNotFoundException e) {
     logger.debug("No SRV record found for: " + lookup,e);

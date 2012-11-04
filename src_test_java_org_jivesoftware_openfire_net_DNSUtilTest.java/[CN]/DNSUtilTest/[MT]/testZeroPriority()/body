@@ -1,0 +1,10 @@
+{
+  final DNSUtil.WeightedHostAddress hostA=new DNSUtil.WeightedHostAddress("hostA",5222,0,1);
+  final DNSUtil.WeightedHostAddress hostB=new DNSUtil.WeightedHostAddress("hostB",5222,2,1);
+  final DNSUtil.WeightedHostAddress hostC=new DNSUtil.WeightedHostAddress("hostC",5222,1,1);
+  final List<DNSUtil.WeightedHostAddress> result=DNSUtil.prioritize(new DNSUtil.WeightedHostAddress[]{hostA,hostB,hostC});
+  Assert.assertEquals(3,result.size());
+  Assert.assertEquals(hostA,result.get(0));
+  Assert.assertEquals(hostC,result.get(1));
+  Assert.assertEquals(hostB,result.get(2));
+}

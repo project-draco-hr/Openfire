@@ -1,0 +1,11 @@
+{
+  final DNSUtil.WeightedHostAddress fallback=new DNSUtil.WeightedHostAddress("fallback.jabber.org",5269,31,31);
+  final DNSUtil.WeightedHostAddress hermes6=new DNSUtil.WeightedHostAddress("hermes6.jabber.org",5269,30,30);
+  final DNSUtil.WeightedHostAddress hermes=new DNSUtil.WeightedHostAddress("hermes.jabber.org",5269,30,30);
+  final List<DNSUtil.WeightedHostAddress> result=DNSUtil.prioritize(new DNSUtil.WeightedHostAddress[]{fallback,hermes6,hermes});
+  Assert.assertEquals("There were three records in the input, the output should have contained the same amount.",3,result.size());
+  Assert.assertTrue("The 'hermes' host should have been included somewhere in the output.",result.contains(hermes));
+  Assert.assertTrue("The 'hermes6' host should have been included somewhere in the output.",result.contains(hermes6));
+  Assert.assertTrue("The 'fallback' host should bhave been included somewhere in the output.",result.contains(fallback));
+  Assert.assertEquals("The 'fallback' host should have been the last record in the result.",fallback,result.get(2));
+}

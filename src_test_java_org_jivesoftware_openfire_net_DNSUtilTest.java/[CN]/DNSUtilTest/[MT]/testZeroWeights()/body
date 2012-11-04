@@ -1,0 +1,25 @@
+{
+  final DNSUtil.WeightedHostAddress hostA=new DNSUtil.WeightedHostAddress("hostA",5222,1,0);
+  final DNSUtil.WeightedHostAddress hostB=new DNSUtil.WeightedHostAddress("hostB",5222,1,0);
+  final DNSUtil.WeightedHostAddress[] hosts=new DNSUtil.WeightedHostAddress[]{hostA,hostB};
+  boolean hostAWasFirst=false;
+  boolean hostBWasFirst=false;
+  final int maxTries=Integer.MAX_VALUE;
+  for (int i=0; i < maxTries; i++) {
+    final List<DNSUtil.WeightedHostAddress> result=DNSUtil.prioritize(hosts);
+    if (hostA.equals(result.get(0))) {
+      hostAWasFirst=true;
+    }
+    if (hostB.equals(result.get(0))) {
+      hostBWasFirst=true;
+    }
+    if (hostAWasFirst && hostBWasFirst) {
+      break;
+    }
+    if (i % 1000000 == 0 && i > 0) {
+      System.err.println("The last " + i + " iterations of this test all had the same result, which is very unlikely to occur (there should be an even distribution between two possible outcomes). We'll iterate up to "+ maxTries+ " times, but you might want to abort the unit test at this point...");
+    }
+  }
+  Assert.assertTrue(hostAWasFirst);
+  Assert.assertTrue(hostBWasFirst);
+}
