@@ -3,7 +3,9 @@
     return;
   }
   if (message.getBody() == null || message.getBody().length() == 0) {
-    return;
+    if (message.getChildElement("event","http://jabber.org/protocol/pubsub#event") == null) {
+      return;
+    }
   }
   JID recipient=message.getTo();
   String username=recipient.getNode();
