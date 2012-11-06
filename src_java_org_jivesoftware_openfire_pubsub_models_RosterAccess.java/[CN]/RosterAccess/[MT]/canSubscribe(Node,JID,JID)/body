@@ -2,32 +2,33 @@
   if (node.isAdmin(owner)) {
     return true;
   }
-  JID nodeOwner=node.getOwners().iterator().next();
-  if (nodeOwner.toBareJID().equals(owner.toBareJID())) {
-    return true;
-  }
   XMPPServer server=XMPPServer.getInstance();
-  if (server.isLocal(nodeOwner)) {
-    try {
-      Roster roster=server.getRosterManager().getRoster(nodeOwner.getNode());
-      RosterItem item=roster.getRosterItem(owner);
-      boolean isSubscribed=item != null && (RosterItem.SUB_BOTH == item.getSubStatus() || RosterItem.SUB_FROM == item.getSubStatus());
-      if (isSubscribed) {
-        List<String> contactGroups=new ArrayList<String>(item.getGroups());
-        for (        Group group : item.getSharedGroups()) {
-          contactGroups.add(group.getName());
+  for (  JID nodeOwner : node.getOwners()) {
+    if (nodeOwner.equals(owner.toBareJID())) {
+      return true;
+    }
+    if (server.isLocal(nodeOwner)) {
+      try {
+        Roster roster=server.getRosterManager().getRoster(nodeOwner.getNode());
+        RosterItem item=roster.getRosterItem(owner);
+        boolean isSubscribed=item != null && (RosterItem.SUB_BOTH == item.getSubStatus() || RosterItem.SUB_FROM == item.getSubStatus());
+        if (isSubscribed) {
+          List<String> contactGroups=new ArrayList<String>(item.getGroups());
+          for (          Group group : item.getSharedGroups()) {
+            contactGroups.add(group.getName());
+          }
+          for (          Group group : item.getInvisibleSharedGroups()) {
+            contactGroups.add(group.getName());
+          }
+          return contactGroups.removeAll(node.getRosterGroupsAllowed());
         }
-        for (        Group group : item.getInvisibleSharedGroups()) {
-          contactGroups.add(group.getName());
-        }
-        return contactGroups.removeAll(node.getRosterGroupsAllowed());
+      }
+ catch (      UserNotFoundException e) {
       }
     }
- catch (    UserNotFoundException e) {
-    }
-  }
  else {
-    Log.warn("Node with access model Roster has a remote user as owner: " + node.getNodeID());
+      Log.warn("Node with access model Roster has a remote user as owner: " + node.getNodeID());
+    }
   }
   return false;
 }
