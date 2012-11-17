@@ -7,12 +7,7 @@
     Log.error("Unable to start clustering - continuing in local mode",e);
   }
   if (!clusteringStarting) {
-    try {
-      cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
-    }
- catch (    Exception e) {
-      Log.error("Fatal error - Failed to join the cluster and failed to use local cache",e);
-    }
+    cacheFactoryStrategy=localCacheFactoryStrategy;
   }
  else {
     if (statsThread == null) {
