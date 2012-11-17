@@ -16,5 +16,6 @@
   if (savedToDB) {
     PubSubPersistenceManager.saveAffiliation(this,affiliate,created);
   }
+  CacheFactory.doClusterTask(new AffiliationTask(this,jid,affiliation));
   return affiliate;
 }
