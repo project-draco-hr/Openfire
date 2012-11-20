@@ -1,4 +1,8 @@
 {
+  Collection<Object> result=Collections.emptyList();
+  if (cluster == null) {
+    return result;
+  }
   Set<Member> members=new HashSet<Member>();
   Member current=cluster.getLocalMember();
   for (  Member member : cluster.getMembers()) {
@@ -6,7 +10,6 @@
       members.add(member);
     }
   }
-  Collection<Object> result=Collections.emptyList();
   if (members.size() > 0) {
     MultiTask<Object> multiTask=new MultiTask<Object>(new CallableTask<Object>(task),members);
     try {
