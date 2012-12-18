@@ -1,21 +1,24 @@
 {
-  if (node.isAdmin(subscriber)) {
+  if (node.isAdmin(owner)) {
     return true;
   }
   for (  JID nodeOwner : node.getOwners()) {
-    if (nodeOwner.equals(subscriber)) {
+    if (nodeOwner.equals(owner)) {
       return true;
     }
   }
   XMPPServer server=XMPPServer.getInstance();
-  if (server.isLocal(subscriber)) {
+  if (server.isLocal(owner)) {
+    GroupManager gMgr=GroupManager.getInstance();
     Collection<String> nodeGroups=node.getRosterGroupsAllowed();
-    for (    Group group : server.getRosterManager().getSharedGroups(subscriber.getNode())) {
-      if (nodeGroups.contains(group.getName())) {
-        if (Log.isDebugEnabled()) {
-          Log.debug("Subscriber (" + subscriber + ") is a member of node group "+ group.getName());
+    for (    String groupName : nodeGroups) {
+      try {
+        Group group=gMgr.getGroup(groupName);
+        if (server.getRosterManager().isGroupVisible(group,owner)) {
+          return true;
         }
-        return true;
+      }
+ catch (      GroupNotFoundException gnfe) {
       }
     }
   }
