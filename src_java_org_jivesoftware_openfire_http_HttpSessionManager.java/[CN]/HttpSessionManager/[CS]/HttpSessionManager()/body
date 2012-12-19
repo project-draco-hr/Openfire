@@ -1,5 +1,14 @@
 {
   this.sessionManager=SessionManager.getInstance();
-  int eventThreads=JiveGlobals.getIntProperty("httpbind.client.processing.threads",JiveGlobals.getIntProperty("xmpp.client.processing.threads",16));
-  sendPacketPool=new ThreadPoolExecutor(eventThreads + 1,eventThreads + 1,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
+  int poolSize=JiveGlobals.getIntProperty("xmpp.httpbind.worker.threads",JiveGlobals.getIntProperty("xmpp.client.processing.threads",16));
+  int keepAlive=JiveGlobals.getIntProperty("xmpp.httpbind.worker.timeout",60);
+  sendPacketPool=new ThreadPoolExecutor(poolSize,poolSize,keepAlive,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new ThreadFactory(){
+    final AtomicInteger counter=new AtomicInteger(1);
+    public Thread newThread(    Runnable runnable){
+      Thread thread=new Thread(Thread.currentThread().getThreadGroup(),runnable,"httpbind-worker-" + counter.getAndIncrement());
+      return thread;
+    }
+  }
+);
+  sendPacketPool.allowCoreThreadTimeOut(true);
 }
