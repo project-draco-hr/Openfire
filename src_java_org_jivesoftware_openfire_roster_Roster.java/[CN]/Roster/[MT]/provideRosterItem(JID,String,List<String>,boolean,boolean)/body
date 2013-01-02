@@ -1,9 +1,12 @@
 {
   if (groups != null && !groups.isEmpty()) {
-    Collection<Group> sharedGroups=GroupManager.getInstance().getSharedGroups();
-    for (    String group : groups) {
-      for (      Group sharedGroup : sharedGroups) {
-        if (group.equals(sharedGroup.getProperties().get("sharedRoster.displayName"))) {
+    for (    String groupDisplayName : groups) {
+      Collection<Group> groupsWithProp=GroupManager.getInstance().search("sharedRoster.displayName",groupDisplayName);
+      Iterator<Group> itr=groupsWithProp.iterator();
+      while (itr.hasNext()) {
+        Group group=itr.next();
+        String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
+        if (showInRoster != null && !showInRoster.equals("nobody")) {
           throw new SharedGroupException("Cannot add an item to a shared group");
         }
       }

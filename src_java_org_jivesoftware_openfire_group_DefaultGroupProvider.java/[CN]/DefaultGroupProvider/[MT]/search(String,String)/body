@@ -1,0 +1,23 @@
+{
+  Set<String> groupNames=new HashSet<String>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GROUPS_FOR_PROP);
+    pstmt.setString(1,key);
+    pstmt.setString(2,value);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      groupNames.add(rs.getString(1));
+    }
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return groupNames;
+}

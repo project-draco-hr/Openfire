@@ -1,0 +1,13 @@
+{
+  Collection<String> groupNames=(Collection<String>)groupMetaCache.get(userName);
+  if (groupNames == null) {
+synchronized (userName.intern()) {
+      groupNames=(Collection<String>)groupMetaCache.get(userName);
+      if (groupNames == null) {
+        groupNames=provider.getSharedGroupNames(new JID(userName,XMPPServer.getInstance().getServerInfo().getXMPPDomain(),null));
+        groupMetaCache.put(userName,groupNames);
+      }
+    }
+  }
+  return new GroupCollection(groupNames);
+}

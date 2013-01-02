@@ -9,29 +9,21 @@
         throw new SharedGroupException("Cannot remove item from shared group");
       }
     }
-    Collection<Group> existingGroups=GroupManager.getInstance().getSharedGroups();
     for (Iterator<String> it=groups.iterator(); it.hasNext(); ) {
       String groupName=it.next();
       try {
         Group group=GroupManager.getInstance().getGroup(groupName);
-        String displayName=group.getProperties().get("sharedRoster.displayName");
-        if (displayName != null && displayName.equals(groupName)) {
-          try {
-            it.remove();
-          }
- catch (          IllegalStateException e) {
-          }
+        if (RosterManager.isSharedGroup(group)) {
+          it.remove();
         }
       }
  catch (      GroupNotFoundException e) {
-        for (        Group group : existingGroups) {
-          String displayName=group.getProperties().get("sharedRoster.displayName");
-          if (displayName != null && displayName.equals(groupName)) {
-            try {
-              it.remove();
-            }
- catch (            IllegalStateException ise) {
-            }
+        Collection<Group> groupsWithProp=GroupManager.getInstance().search("sharedRoster.displayName",groupName);
+        Iterator<Group> itr=groupsWithProp.iterator();
+        while (itr.hasNext()) {
+          Group group=itr.next();
+          if (RosterManager.isSharedGroup(group)) {
+            it.remove();
           }
         }
       }

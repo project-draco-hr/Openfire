@@ -10,36 +10,65 @@
         group.getProperties().put("sharedRoster.groupList","");
       }
       groupCache.put(group.getName(),group);
-      groupMetaCache.clear();
+      groupMetaCache.remove(GROUP_COUNT_KEY);
+      groupMetaCache.remove(GROUP_NAMES_KEY);
+      groupMetaCache.remove(SHARED_GROUPS_KEY);
+      evictCachedUsersForGroup(group);
     }
     public void groupDeleting(    Group group,    Map params){
       groupCache.remove(group.getName());
-      groupMetaCache.clear();
+      groupMetaCache.remove(GROUP_COUNT_KEY);
+      groupMetaCache.remove(GROUP_NAMES_KEY);
+      groupMetaCache.remove(SHARED_GROUPS_KEY);
+      evictCachedUsersForGroup(group);
     }
     public void groupModified(    Group group,    Map params){
       String type=(String)params.get("type");
-      if (type != null && (type.equals("propertyModified") || type.equals("propertyDeleted") || type.equals("propertyAdded"))) {
-        if (params.get("propertyKey") != null && params.get("propertyKey").equals("sharedRoster.showInRoster")) {
-          groupMetaCache.clear();
+      if (type != null) {
+        if (type.equals("propertyModified") || type.equals("propertyDeleted") || type.equals("propertyAdded")) {
+          Object key=params.get("propertyKey");
+          if (key instanceof String && (key.equals("sharedRoster.showInRoster") || key.equals("*"))) {
+            groupMetaCache.remove(GROUP_NAMES_KEY);
+            groupMetaCache.remove(SHARED_GROUPS_KEY);
+          }
+        }
+        if (type.equals("nameModified")) {
+          String originalName=(String)params.get("originalValue");
+          if (originalName != null) {
+            groupMetaCache.remove(originalName);
+          }
+          evictCachedUsersForGroup(group);
         }
       }
       groupCache.put(group.getName(),group);
     }
     public void memberAdded(    Group group,    Map params){
-      groupMetaCache.clear();
       groupCache.put(group.getName(),group);
+      String member=(String)params.get("member");
+      if (member != null) {
+        groupMetaCache.remove(member);
+      }
     }
     public void memberRemoved(    Group group,    Map params){
-      groupMetaCache.clear();
       groupCache.put(group.getName(),group);
+      String member=(String)params.get("member");
+      if (member != null) {
+        groupMetaCache.remove(member);
+      }
     }
     public void adminAdded(    Group group,    Map params){
-      groupMetaCache.clear();
       groupCache.put(group.getName(),group);
+      String member=(String)params.get("admin");
+      if (member != null) {
+        groupMetaCache.remove(member);
+      }
     }
     public void adminRemoved(    Group group,    Map params){
-      groupMetaCache.clear();
       groupCache.put(group.getName(),group);
+      String member=(String)params.get("admin");
+      if (member != null) {
+        groupMetaCache.remove(member);
+      }
     }
   }
 );
@@ -68,22 +97,4 @@
   }
 ;
   PropertyEventDispatcher.addListener(propListener);
-  Runnable task=new Runnable(){
-    public void run(){
-      Collection<Group> groups=getSharedGroups();
-      for (      Group group : groups) {
-        for (        JID jid : group.getMembers()) {
-          try {
-            if (XMPPServer.getInstance().isLocal(jid)) {
-              UserManager.getInstance().getUser(jid.getNode());
-            }
-          }
- catch (          UserNotFoundException unfe) {
-          }
-        }
-      }
-    }
-  }
-;
-  TaskEngine.getInstance().submit(task);
 }

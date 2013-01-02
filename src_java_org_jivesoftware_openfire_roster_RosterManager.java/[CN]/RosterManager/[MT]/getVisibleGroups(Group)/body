@@ -1,20 +1,3 @@
 {
-  Collection<Group> answer=new HashSet<Group>();
-  Collection<Group> groups=GroupManager.getInstance().getSharedGroups();
-  for (  Group group : groups) {
-    if (group.equals(groupToCheck)) {
-      continue;
-    }
-    String showInRoster=group.getProperties().get("sharedRoster.showInRoster");
-    if ("onlyGroup".equals(showInRoster)) {
-      Collection<String> groupList=parseGroupNames(group.getProperties().get("sharedRoster.groupList"));
-      if (groupList.contains(groupToCheck.getName())) {
-        answer.add(group);
-      }
-    }
- else     if ("everybody".equals(showInRoster)) {
-      answer.add(group);
-    }
-  }
-  return answer;
+  return GroupManager.getInstance().getVisibleGroups(groupToCheck);
 }

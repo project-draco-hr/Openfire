@@ -20,13 +20,5 @@
   if (username == null || "".equals(username)) {
     return Collections.emptyList();
   }
-  StringBuilder filter=new StringBuilder();
-  filter.append("(&");
-  filter.append(MessageFormat.format(manager.getGroupSearchFilter(),"*"));
-  filter.append("(").append(manager.getGroupMemberField()).append("=").append(username);
-  filter.append("))");
-  if (Log.isDebugEnabled()) {
-    Log.debug("Trying to find group names for user: " + user + " using query: "+ filter.toString());
-  }
-  return manager.retrieveList(manager.getGroupNameField(),filter.toString(),-1,-1,null);
+  return search(manager.getGroupMemberField(),username);
 }

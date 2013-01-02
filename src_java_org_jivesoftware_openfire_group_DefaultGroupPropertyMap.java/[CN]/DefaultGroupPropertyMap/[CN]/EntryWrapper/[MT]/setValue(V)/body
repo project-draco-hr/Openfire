@@ -1,0 +1,18 @@
+{
+  V oldValue=delegate.setValue(value);
+  K key=delegate.getKey();
+  if (key instanceof String) {
+    if (value instanceof String) {
+      if (oldValue == null) {
+        insertProperty((String)key,(String)value);
+      }
+ else       if (!value.equals(oldValue)) {
+        updateProperty((String)key,(String)value,(String)oldValue);
+      }
+    }
+ else {
+      deleteProperty((String)key);
+    }
+  }
+  return oldValue;
+}

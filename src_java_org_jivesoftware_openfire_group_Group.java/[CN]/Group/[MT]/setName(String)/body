@@ -4,16 +4,14 @@
   }
   try {
     String originalName=this.name;
-    provider.setName(this.name,name);
-    groupManager.groupCache.remove(this.name);
+    provider.setName(originalName,name);
     this.name=name;
-    groupManager.groupCache.put(name,this);
     Map<String,Object> params=new HashMap<String,Object>();
     params.put("type","nameModified");
     params.put("originalValue",originalName);
     GroupEventDispatcher.dispatchEvent(this,GroupEventDispatcher.EventType.group_modified,params);
   }
- catch (  Exception e) {
-    Log.error(e.getMessage(),e);
+ catch (  GroupAlreadyExistsException e) {
+    Log.error("Failed to change group name; group already exists");
   }
 }

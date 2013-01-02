@@ -5,24 +5,18 @@
   this.description=description;
   this.members=new HashSet<JID>(members);
   this.administrators=new HashSet<JID>(administrators);
-  this.properties=new ConcurrentHashMap<String,String>();
-  loadProperties();
-  for (  Map.Entry<String,String> property : properties.entrySet()) {
-    if (this.properties.containsKey(property.getKey())) {
+  this.properties=provider.loadProperties(this);
+  if (!provider.isReadOnly()) {
+    for (    Map.Entry<String,String> property : properties.entrySet()) {
       if (!property.getValue().equals(this.properties.get(property.getKey()))) {
         this.properties.put(property.getKey(),property.getValue());
-        updateProperty(property.getKey(),property.getValue());
       }
     }
- else {
-      this.properties.put(property.getKey(),property.getValue());
-      insertProperty(property.getKey(),property.getValue());
-    }
-  }
-  for (  String oldPropName : this.properties.keySet()) {
-    if (!properties.containsKey(oldPropName)) {
-      this.properties.remove(oldPropName);
-      deleteProperty(oldPropName);
+    Iterator<String> oldProps=this.properties.keySet().iterator();
+    while (oldProps.hasNext()) {
+      if (!properties.containsKey(oldProps.next())) {
+        oldProps.remove();
+      }
     }
   }
 }

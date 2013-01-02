@@ -1,9 +1,8 @@
 {
 synchronized (this) {
     if (properties == null) {
-      properties=new ConcurrentHashMap<String,String>();
-      loadProperties();
+      properties=provider.loadProperties(this);
     }
   }
-  return new PropertiesMap();
+  return properties;
 }

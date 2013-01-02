@@ -1,0 +1,14 @@
+{
+  Collection<String> groupNames=(Collection<String>)groupMetaCache.get(PUBLIC_GROUPS);
+  if (groupNames == null) {
+synchronized (PUBLIC_GROUPS.intern()) {
+      groupNames=(Collection<String>)groupMetaCache.get(PUBLIC_GROUPS);
+      if (groupNames == null) {
+        groupNames=provider.getPublicSharedGroupNames();
+        groupMetaCache.put(PUBLIC_GROUPS,groupNames);
+      }
+    }
+  }
+  groupNames.addAll(provider.getVisibleGroupNames(groupToCheck.getName()));
+  return new GroupCollection(groupNames);
+}

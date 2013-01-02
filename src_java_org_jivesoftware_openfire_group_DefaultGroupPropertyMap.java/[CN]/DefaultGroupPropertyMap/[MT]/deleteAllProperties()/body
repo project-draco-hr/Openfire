@@ -1,0 +1,20 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_ALL_PROPERTIES);
+    pstmt.setString(1,group.getName());
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    logger.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  Map<String,Object> event=new HashMap<String,Object>();
+  event.put("type","propertyDeleted");
+  event.put("propertyKey","*");
+  GroupEventDispatcher.dispatchEvent(group,GroupEventDispatcher.EventType.group_modified,event);
+}
