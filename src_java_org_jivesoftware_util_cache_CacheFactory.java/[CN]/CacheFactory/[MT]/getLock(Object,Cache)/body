@@ -3,6 +3,8 @@
     return localCacheFactoryStrategy.getLock(key,cache);
   }
  else {
-    return cacheFactoryStrategy.getLock(key,cache);
+synchronized (cache) {
+      return cacheFactoryStrategy.getLock(key,cache);
+    }
   }
 }
