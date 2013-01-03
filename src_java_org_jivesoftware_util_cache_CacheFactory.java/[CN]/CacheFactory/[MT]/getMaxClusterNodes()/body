@@ -1,13 +1,3 @@
 {
-  try {
-    CacheFactoryStrategy cacheFactory=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
-    return cacheFactory.getMaxClusterNodes();
-  }
- catch (  ClassNotFoundException e) {
-    log.warn("Clustering implementation class " + clusteredCacheFactoryClass + " not found");
-  }
-catch (  Exception e) {
-    log.error("Error instantiating clustered cache factory",e);
-  }
-  return 0;
+  return cacheFactoryStrategy.getMaxClusterNodes();
 }

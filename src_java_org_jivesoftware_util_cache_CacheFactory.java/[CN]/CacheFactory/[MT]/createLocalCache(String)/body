@@ -3,8 +3,8 @@
   if (cache != null) {
     return cache;
   }
-  strategyLookup.put(name,localCacheFactoryStrategy);
   cache=(T)localCacheFactoryStrategy.createCache(name);
-  log.info("Created local cache [" + localCacheFactoryClass + "] for "+ name);
+  localOnly.add(name);
+  log.info("Created local-only cache [" + localCacheFactoryClass + "] for "+ name);
   return wrapCache(cache,name);
 }

@@ -1,15 +1,10 @@
 {
   try {
-    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
-    localCacheFactoryStrategy=cacheFactoryStrategy;
+    localCacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(localCacheFactoryClass).newInstance();
+    cacheFactoryStrategy=localCacheFactoryStrategy;
   }
- catch (  InstantiationException e) {
-    throw new InitializationException(e);
-  }
-catch (  IllegalAccessException e) {
-    throw new InitializationException(e);
-  }
-catch (  ClassNotFoundException e) {
+ catch (  Exception e) {
+    log.error("Failed to instantiate local cache factory strategy: " + localCacheFactoryClass,e);
     throw new InitializationException(e);
   }
 }

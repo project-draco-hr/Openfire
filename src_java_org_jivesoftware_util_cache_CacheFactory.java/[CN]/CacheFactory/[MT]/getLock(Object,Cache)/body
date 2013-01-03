@@ -1,3 +1,8 @@
 {
-  return strategyLookup.get(cache.getName()).getLock(key,cache);
+  if (localOnly.contains(cache.getName())) {
+    return localCacheFactoryStrategy.getLock(key,cache);
+  }
+ else {
+    return cacheFactoryStrategy.getLock(key,cache);
+  }
 }

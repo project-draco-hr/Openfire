@@ -3,8 +3,7 @@
   if (cache != null) {
     return cache;
   }
-  strategyLookup.put(name,cacheFactoryStrategy);
   cache=(T)cacheFactoryStrategy.createCache(name);
-  log.info("Created default cache [" + clusteredCacheFactoryClass + "] for "+ name);
+  log.info("Created cache [" + cacheFactoryStrategy.getClass().getName() + "] for "+ name);
   return wrapCache(cache,name);
 }

@@ -3,11 +3,11 @@
   try {
     cacheFactoryStrategy=localCacheFactoryStrategy;
     for (    Cache cache : getAllCaches()) {
-      if (strategyLookup.get(cache.getName()) != localCacheFactoryStrategy) {
-        CacheWrapper cacheWrapper=((CacheWrapper)cache);
-        Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
-        cacheWrapper.setWrappedCache(standaloneCache);
-      }
+      if (localOnly.contains(cache.getName()))       continue;
+      cache.clear();
+      CacheWrapper cacheWrapper=((CacheWrapper)cache);
+      Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
+      cacheWrapper.setWrappedCache(standaloneCache);
     }
   }
  catch (  Exception e) {

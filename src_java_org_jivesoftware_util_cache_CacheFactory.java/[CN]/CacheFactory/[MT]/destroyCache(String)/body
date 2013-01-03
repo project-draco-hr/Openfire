@@ -1,6 +1,12 @@
 {
   Cache cache=caches.remove(name);
   if (cache != null) {
-    strategyLookup.get(name).destroyCache(cache);
+    if (localOnly.contains(name)) {
+      localOnly.remove(name);
+      localCacheFactoryStrategy.destroyCache(cache);
+    }
+ else {
+      cacheFactoryStrategy.destroyCache(cache);
+    }
   }
 }
