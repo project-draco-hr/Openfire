@@ -1,13 +1,13 @@
 {
+  cacheFactoryStrategy=clusteredCacheFactoryStrategy;
   for (  Cache cache : getAllCaches()) {
     if (localOnly.contains(cache.getName()))     continue;
-synchronized (cache) {
-      cache.clear();
-      CacheWrapper cacheWrapper=((CacheWrapper)cache);
-      Cache clusteredCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
-      cacheWrapper.setWrappedCache(clusteredCache);
-    }
+    cache.clear();
+    CacheWrapper cacheWrapper=((CacheWrapper)cache);
+    Cache clusteredCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
+    cacheWrapper.setWrappedCache(clusteredCache);
   }
   clusteringStarting=false;
   clusteringStarted=true;
+  log.info("Clustering started; cache migration complete");
 }

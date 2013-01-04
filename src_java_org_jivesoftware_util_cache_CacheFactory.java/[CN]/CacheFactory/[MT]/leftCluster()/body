@@ -1,18 +1,12 @@
 {
   clusteringStarted=false;
-  try {
-    cacheFactoryStrategy=localCacheFactoryStrategy;
-    for (    Cache cache : getAllCaches()) {
-      if (localOnly.contains(cache.getName()))       continue;
-synchronized (cache) {
-        cache.clear();
-        CacheWrapper cacheWrapper=((CacheWrapper)cache);
-        Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
-        cacheWrapper.setWrappedCache(standaloneCache);
-      }
-    }
+  cacheFactoryStrategy=localCacheFactoryStrategy;
+  for (  Cache cache : getAllCaches()) {
+    if (localOnly.contains(cache.getName()))     continue;
+    cache.clear();
+    CacheWrapper cacheWrapper=((CacheWrapper)cache);
+    Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
+    cacheWrapper.setWrappedCache(standaloneCache);
   }
- catch (  Exception e) {
-    log.error("Error reverting caches to local caches",e);
-  }
+  log.info("Clustering stopped; cache migration complete");
 }

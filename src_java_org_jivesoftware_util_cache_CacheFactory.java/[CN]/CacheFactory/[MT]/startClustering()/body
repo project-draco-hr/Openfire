@@ -1,15 +1,12 @@
 {
   try {
-    cacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
-    clusteringStarting=cacheFactoryStrategy.startCluster();
+    clusteredCacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
+    clusteringStarting=clusteredCacheFactoryStrategy.startCluster();
   }
  catch (  Exception e) {
-    log.error("Unable to start clustering - continuing in local mode",e);
+    log.error("Clustered cache factory strategy " + clusteredCacheFactoryClass + " not found",e);
   }
-  if (!clusteringStarting) {
-    cacheFactoryStrategy=localCacheFactoryStrategy;
-  }
- else {
+  if (clusteringStarting) {
     if (statsThread == null) {
       statsThread=new Thread("Cache Stats"){
         private volatile boolean destroyed=false;
