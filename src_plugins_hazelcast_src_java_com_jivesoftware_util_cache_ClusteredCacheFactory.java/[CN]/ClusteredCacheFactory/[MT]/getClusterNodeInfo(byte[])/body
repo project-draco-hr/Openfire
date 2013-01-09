@@ -1,0 +1,11 @@
+{
+  if (cluster == null) {
+    return null;
+  }
+  ClusterNodeInfo result=null;
+  Member member=getMember(nodeID);
+  if (member != null) {
+    result=new HazelcastClusterNodeInfo(member,cluster.getClusterTime());
+  }
+  return result;
+}

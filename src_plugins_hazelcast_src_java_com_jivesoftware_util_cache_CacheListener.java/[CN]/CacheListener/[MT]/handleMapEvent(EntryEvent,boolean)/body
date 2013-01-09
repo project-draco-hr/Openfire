@@ -1,5 +1,5 @@
 {
-  NodeID nodeID=NodeID.getInstance(event.getMember().getUuid().getBytes());
+  NodeID nodeID=NodeID.getInstance(StringUtils.getBytes(event.getMember().getUuid()));
   if (!XMPPServer.getInstance().getNodeID().equals(nodeID)) {
     Set<String> sessionJIDS=clusterListener.lookupJIDList(nodeID,cacheName);
     if (removal) {
