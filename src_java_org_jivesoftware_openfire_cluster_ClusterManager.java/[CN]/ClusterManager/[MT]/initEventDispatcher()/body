@@ -1,0 +1,68 @@
+{
+  if (dispatcher == null || !dispatcher.isAlive()) {
+    dispatcher=new Thread("ClusterManager events dispatcher"){
+      /** 
+ * This JVM is now the senior cluster member.
+ */
+      @Override public void run(){
+        while (ClusterManager.isClusteringEnabled()) {
+          try {
+            Event event=events.take();
+            EventType eventType=event.getType();
+            if (event.getNodeID() == null) {
+              if (eventType == EventType.joined_cluster) {
+                CacheFactory.joinedCluster();
+              }
+ else               if (eventType == EventType.left_cluster) {
+                CacheFactory.leftCluster();
+              }
+            }
+            for (            ClusterEventListener listener : listeners) {
+              try {
+switch (eventType) {
+case joined_cluster:
+{
+                    if (event.getNodeID() == null) {
+                      listener.joinedCluster();
+                    }
+ else {
+                      listener.joinedCluster(event.getNodeID());
+                    }
+                    break;
+                  }
+case left_cluster:
+{
+                  if (event.getNodeID() == null) {
+                    listener.leftCluster();
+                  }
+ else {
+                    listener.leftCluster(event.getNodeID());
+                  }
+                  break;
+                }
+case marked_senior_cluster_member:
+{
+                listener.markedAsSeniorClusterMember();
+                break;
+              }
+default :
+            break;
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+    event.setProcessed(true);
+  }
+ catch (  Exception e) {
+    Log.warn(e.getMessage(),e);
+  }
+}
+}
+}
+;
+dispatcher.setDaemon(true);
+dispatcher.start();
+}
+}

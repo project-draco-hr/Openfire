@@ -1,10 +1,9 @@
 {
-  for (  ClusterEventListener listener : listeners) {
-    try {
-      listener.leftCluster();
-    }
- catch (    Exception e) {
-      Log.error(e.getMessage(),e);
-    }
+  try {
+    Event event=new Event(EventType.left_cluster,null);
+    events.put(event);
+  }
+ catch (  InterruptedException e) {
+    Log.error(e.getMessage(),e);
   }
 }

@@ -1,10 +1,6 @@
 {
-  try {
-    clusteredCacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
+  if (isClusteringAvailable()) {
     clusteringStarting=clusteredCacheFactoryStrategy.startCluster();
-  }
- catch (  Exception e) {
-    log.error("Clustered cache factory strategy " + clusteredCacheFactoryClass + " not found",e);
   }
   if (clusteringStarting) {
     if (statsThread == null) {

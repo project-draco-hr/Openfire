@@ -1,3 +1,11 @@
 {
-  return getMaxClusterNodes() > 1;
+  if (clusteredCacheFactoryStrategy == null) {
+    try {
+      clusteredCacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
+    }
+ catch (    Exception e) {
+      log.warn("Clustered cache factory strategy " + clusteredCacheFactoryClass + " not found");
+    }
+  }
+  return (clusteredCacheFactoryStrategy != null);
 }

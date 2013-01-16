@@ -1,14 +1,6 @@
 {
-  if (isClusteringStarted()) {
-    return;
-  }
-  if (isClusteringEnabled()) {
-    if (XMPPServer.getInstance().getRemoteSessionLocator() == null) {
-      throw new IllegalStateException("No RemoteSessionLocator was found.");
-    }
-    if (XMPPServer.getInstance().getRoutingTable().getRemotePacketRouter() == null) {
-      throw new IllegalStateException("No RemotePacketRouter was found.");
-    }
+  if (isClusteringEnabled() && !isClusteringStarted()) {
+    initEventDispatcher();
     CacheFactory.startClustering();
   }
 }

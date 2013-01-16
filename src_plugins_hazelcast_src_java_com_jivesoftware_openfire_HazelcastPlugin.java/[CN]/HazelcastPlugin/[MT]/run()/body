@@ -12,9 +12,5 @@
     logger.warn("Conflicting clustering plugins found; remove Coherence and/or Enterprise jar files");
     throw new IllegalStateException("Clustering plugin configuration conflict (Coherence)");
   }
-  PropertyEventDispatcher.addListener(this);
-  if (ClusterManager.isClusteringEnabled()) {
-    initForClustering();
-    ClusterManager.startup();
-  }
+  ClusterManager.startup();
 }

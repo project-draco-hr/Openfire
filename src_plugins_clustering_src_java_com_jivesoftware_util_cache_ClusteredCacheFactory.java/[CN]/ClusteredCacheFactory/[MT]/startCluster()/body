@@ -1,6 +1,10 @@
 {
   ClassLoader oldLoader=null;
   state=State.starting;
+  serializationStrategy=ExternalizableUtil.getInstance().getStrategy();
+  ExternalizableUtil.getInstance().setStrategy(new CoherenceExternalizableUtil());
+  XMPPServer.getInstance().setRemoteSessionLocator(new RemoteSessionLocator());
+  XMPPServer.getInstance().getRoutingTable().setRemotePacketRouter(new CoherencePacketRouter());
   try {
     oldLoader=Thread.currentThread().getContextClassLoader();
     int allowedMembers=getMaxClusterNodes();

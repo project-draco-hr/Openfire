@@ -1,5 +1,9 @@
 {
   state=State.starting;
+  serializationStrategy=ExternalizableUtil.getInstance().getStrategy();
+  ExternalizableUtil.getInstance().setStrategy(new ClusterExternalizableUtil());
+  XMPPServer.getInstance().setRemoteSessionLocator(new RemoteSessionLocator());
+  XMPPServer.getInstance().getRoutingTable().setRemotePacketRouter(new ClusterPacketRouter());
   ClassLoader oldLoader=null;
   oldLoader=Thread.currentThread().getContextClassLoader();
   ClassLoader loader=new ClusterClassLoader();

@@ -2,7 +2,6 @@
   cacheFactoryStrategy=clusteredCacheFactoryStrategy;
   for (  Cache cache : getAllCaches()) {
     if (localOnly.contains(cache.getName()))     continue;
-    cache.clear();
     CacheWrapper cacheWrapper=((CacheWrapper)cache);
     Cache clusteredCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
     cacheWrapper.setWrappedCache(clusteredCache);

@@ -3,7 +3,6 @@
   cacheFactoryStrategy=localCacheFactoryStrategy;
   for (  Cache cache : getAllCaches()) {
     if (localOnly.contains(cache.getName()))     continue;
-    cache.clear();
     CacheWrapper cacheWrapper=((CacheWrapper)cache);
     Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
     cacheWrapper.setWrappedCache(standaloneCache);

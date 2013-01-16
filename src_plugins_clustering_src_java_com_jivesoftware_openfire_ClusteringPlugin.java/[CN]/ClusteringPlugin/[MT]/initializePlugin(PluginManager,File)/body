@@ -16,7 +16,6 @@
   if (!enterpriseDir.exists()) {
     enterpriseDir.mkdirs();
   }
-  PropertyEventDispatcher.addListener(this);
   File configFile=new File(enterpriseDir,COHERENCE_CONFIG + ".xml");
   if (configFile.exists()) {
     configFile.delete();
@@ -32,8 +31,6 @@
  catch (  MalformedURLException e) {
     Log.error("Error adding openfireHome/enterprise to the classpath of the enterprise plugin",e);
   }
-  if (ClusterManager.isClusteringEnabled()) {
-    initForClustering();
-    ClusterManager.startup();
-  }
+  CacheFactory.getClusterConfig();
+  ClusterManager.startup();
 }
