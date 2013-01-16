@@ -26,13 +26,14 @@
     if (jars != null) {
       for (int i=0; i < jars.length; i++) {
         if (jars[i] != null && jars[i].isFile()) {
+          String jarFileUri=jars[i].toURI().toString() + "!/";
           if (developmentMode) {
             if (!jars[i].getName().equals("plugin-" + directory.getName() + ".jar")) {
-              addURL(jars[i].toURL());
+              addURLFile(new URL("jar","",-1,jarFileUri));
             }
           }
  else {
-            addURL(jars[i].toURL());
+            addURLFile(new URL("jar","",-1,jarFileUri));
           }
         }
       }
