@@ -1,13 +1,12 @@
 {
   Log.debug("Sending contacts from user " + requestPacket.getFrom().toString() + " to external Component");
-  IQ iq=(IQ)requestPacket;
-  IQ response=IQ.createResultIQ(iq);
+  IQ response=IQ.createResultIQ(requestPacket);
   response.setTo(_componentName);
   Element query=new DefaultElement("query");
   for (  RosterItem i : items) {
     if (i.getJid().toString().contains(_componentName)) {
       Log.debug("Roster exchange for external component " + _componentName + ". Sending user "+ i.getJid().toString());
-      Element item=new DefaultElement("item");
+      Element item=new DefaultElement("item",null);
       item.add(new DefaultAttribute("jid",i.getJid().toString()));
       item.add(new DefaultAttribute("name",i.getNickname()));
       item.add(new DefaultAttribute("subscription","both"));

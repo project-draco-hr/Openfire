@@ -13,22 +13,22 @@
       }
       @SuppressWarnings("unused") String to=myPacket.getTo().toString();
       String from=myPacket.getFrom().toString();
-      if (myPacket.getType().equals(IQ.Type.get) && from.equals(_mySubdomain)) {
-        if (XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {
+      if (from.equals(_mySubdomain)) {
+        if (myPacket.getType().equals(IQ.Type.get) && XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:*").size() == 1) {
           _packetProcessor.get("sendRoster").process(packet);
         }
-      }
- else       if (myPacket.getType().equals(IQ.Type.set) && from.equals(_mySubdomain)) {
-        if (XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:item").size() >= 1) {
+ else         if (myPacket.getType().equals(IQ.Type.set) && XpathHelper.findNodesInDocument(myPacket.getElement().getDocument(),"//roster:item").size() >= 1) {
           _packetProcessor.get("receiveChanges").process(packet);
         }
       }
- else       if (myPacket.getType().equals(IQ.Type.get) && myPacket.toString().contains("http://jabber.org/protocol/disco#info") && myPacket.getTo().toString().equals(_mySubdomain)) {
+ else       if (myPacket.getTo().toString().equals(_mySubdomain) && myPacket.getType().equals(IQ.Type.get) && myPacket.toString().contains("http://jabber.org/protocol/disco#info")) {
         _packetProcessor.get("sparkIQRegistered").process(packet);
       }
- else       if (myPacket.getType().equals(IQ.Type.set) && myPacket.getTo().toString().equals(_mySubdomain)) {
-        System.out.println("war das ein remove an mich????");
-        _packetProcessor.get("handleCleanUp").process(packet);
+    }
+ else     if (!JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
+      if (packet instanceof Presence && packet.getFrom().toString().equals(_mySubdomain) && !packet.getElement().getStringValue().equals("Connecting")) {
+        System.out.println("Test for NonPersistant-Roster Cleanup!");
+        _packetProcessor.get("handleNonPersistant").process(packet);
       }
     }
   }

@@ -1,15 +1,20 @@
 {
   Log.debug("Processing packet in SendRosterProcessor for " + _componentName);
   IQ myPacket=(IQ)packet;
-  String from=myPacket.getFrom().toString();
-  String username=getUsernameFromJid(from);
+  String user=myPacket.getTo().toString();
+  String username=getUsernameFromJid(user);
   Roster roster;
-  try {
-    roster=_rosterManager.getRoster(username);
-    Collection<RosterItem> items=roster.getRosterItems();
-    sendRosterToComponent(packet,items);
+  if (JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
+    try {
+      roster=_rosterManager.getRoster(username);
+      Collection<RosterItem> items=roster.getRosterItems();
+      sendRosterToComponent(myPacket,items);
+    }
+ catch (    UserNotFoundException e) {
+      e.printStackTrace();
+    }
   }
- catch (  UserNotFoundException e) {
-    e.printStackTrace();
+ else {
+    sendEmptyRoster(myPacket);
   }
 }

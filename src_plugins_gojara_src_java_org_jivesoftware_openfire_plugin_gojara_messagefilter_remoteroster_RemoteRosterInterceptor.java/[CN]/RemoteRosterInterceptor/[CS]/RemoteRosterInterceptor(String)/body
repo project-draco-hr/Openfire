@@ -6,11 +6,11 @@
   AbstractRemoteRosterProcessor sendroster=new SendRosterProcessor(rosterMananger,_mySubdomain);
   AbstractRemoteRosterProcessor receiveChanges=new ReceiveComponentUpdatesProcessor(rosterMananger,_mySubdomain);
   AbstractRemoteRosterProcessor iqRegistered=new DiscoIQResigteredProcessor(_mySubdomain);
-  AbstractRemoteRosterProcessor cleanUp=new CleanUpRosterProcessor(rosterMananger,_mySubdomain);
+  AbstractRemoteRosterProcessor nonPersistant=new NonPersistantRosterProcessor(rosterMananger,_mySubdomain);
   AbstractRemoteRosterProcessor updateToComponent=new ClientToComponentUpdateProcessor(_mySubdomain);
   _packetProcessor.put("sendRoster",sendroster);
   _packetProcessor.put("receiveChanges",receiveChanges);
   _packetProcessor.put("sparkIQRegistered",iqRegistered);
-  _packetProcessor.put("handleCleanUp",cleanUp);
+  _packetProcessor.put("handleNonPersistant",nonPersistant);
   _packetProcessor.put("clientToComponentUpdate",updateToComponent);
 }
