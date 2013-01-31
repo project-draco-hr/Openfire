@@ -1,6 +1,7 @@
 {
   V originalValue=super.put(key,value);
   if (persist && key instanceof String && value instanceof String) {
+    if (logger.isDebugEnabled())     logger.debug("Persisting group property [" + key + "]: "+ value);
     if (originalValue instanceof String) {
       updateProperty((String)key,(String)value,(String)originalValue);
     }
