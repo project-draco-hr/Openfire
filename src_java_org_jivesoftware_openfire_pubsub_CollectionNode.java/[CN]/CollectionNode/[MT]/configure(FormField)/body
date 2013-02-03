@@ -1,12 +1,12 @@
 {
   List<String> values;
-  if ("pubsub#leaf_node_association_policy".equals(field.getVariable())) {
+  if ("pubsub#leaf_node_association_policy".equals(field.getVariable()) || "pubsub#children_association_policy".equals(field.getVariable())) {
     values=field.getValues();
     if (values.size() > 0) {
       associationPolicy=LeafNodeAssociationPolicy.valueOf(values.get(0));
     }
   }
- else   if ("pubsub#leaf_node_association_whitelist".equals(field.getVariable())) {
+ else   if ("pubsub#leaf_node_association_whitelist".equals(field.getVariable()) || "pubsub#children_association_whitelist".equals(field.getVariable())) {
     associationTrusted=new ArrayList<JID>();
     for (    String value : field.getValues()) {
       try {
@@ -16,8 +16,27 @@
       }
     }
   }
- else   if ("pubsub#leaf_nodes_max".equals(field.getVariable())) {
+ else   if ("pubsub#leaf_nodes_max".equals(field.getVariable()) || "pubsub#children_max".equals(field.getVariable())) {
     values=field.getValues();
     maxLeafNodes=values.size() > 0 ? Integer.parseInt(values.get(0)) : -1;
+  }
+ else   if ("pubsub#children".endsWith(field.getVariable())) {
+    values=field.getValues();
+    ArrayList<Node> childrenNodes=new ArrayList<Node>(values.size());
+    for (    String nodeId : values) {
+      Node childNode=service.getNode(nodeId);
+      if (childNode == null) {
+        throw new NotAcceptableException("Child node does not exist");
+      }
+      childrenNodes.add(childNode);
+    }
+    ArrayList<Node> toRemove=new ArrayList<Node>(nodes.values());
+    toRemove.removeAll(childrenNodes);
+    for (    Node node : toRemove) {
+      removeChildNode(node);
+    }
+    for (    Node node : childrenNodes) {
+      node.changeParent(this);
+    }
   }
 }

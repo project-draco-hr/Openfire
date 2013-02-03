@@ -1,20 +1,41 @@
 {
   super.addFormFields(form,isEditing);
+  FormField typeField=form.getField("pubsub#node_type");
+  typeField.addValue("collection");
   FormField formField=form.addField();
   formField.setVariable("pubsub#leaf_node_association_policy");
   if (isEditing) {
     formField.setType(FormField.Type.list_single);
-    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_node_association"));
-    formField.addOption(null,LeafNodeAssociationPolicy.all.name());
-    formField.addOption(null,LeafNodeAssociationPolicy.owners.name());
-    formField.addOption(null,LeafNodeAssociationPolicy.whitelist.name());
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy"));
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.all"),LeafNodeAssociationPolicy.all.name());
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.owners"),LeafNodeAssociationPolicy.owners.name());
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.whitelist"),LeafNodeAssociationPolicy.whitelist.name());
+  }
+  formField.addValue(associationPolicy.name());
+  formField=form.addField();
+  formField.setVariable("pubsub#children_association_policy");
+  if (isEditing) {
+    formField.setType(FormField.Type.list_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy"));
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.all"),LeafNodeAssociationPolicy.all.name());
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.owners"),LeafNodeAssociationPolicy.owners.name());
+    formField.addOption(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_policy.whitelist"),LeafNodeAssociationPolicy.whitelist.name());
   }
   formField.addValue(associationPolicy.name());
   formField=form.addField();
   formField.setVariable("pubsub#leaf_node_association_whitelist");
   if (isEditing) {
     formField.setType(FormField.Type.jid_multi);
-    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_node_whitelist"));
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_whitelist"));
+  }
+  for (  JID contact : associationTrusted) {
+    formField.addValue(contact.toString());
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#children_association_whitelist");
+  if (isEditing) {
+    formField.setType(FormField.Type.jid_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_association_whitelist"));
   }
   for (  JID contact : associationTrusted) {
     formField.addValue(contact.toString());
@@ -23,7 +44,23 @@
   formField.setVariable("pubsub#leaf_nodes_max");
   if (isEditing) {
     formField.setType(FormField.Type.text_single);
-    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.leaf_nodes_max"));
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_max"));
   }
   formField.addValue(maxLeafNodes);
+  formField=form.addField();
+  formField.setVariable("pubsub#chilren_max");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children_max"));
+  }
+  formField.addValue(maxLeafNodes);
+  formField=form.addField();
+  formField.setVariable("pubsub#children");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_multi);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.children"));
+  }
+  for (  String nodeId : nodes.keySet()) {
+    formField.addValue(nodeId);
+  }
 }

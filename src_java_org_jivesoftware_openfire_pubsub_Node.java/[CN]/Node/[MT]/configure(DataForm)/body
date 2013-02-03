@@ -136,6 +136,15 @@
           }
         }
       }
+ else       if ("pubsub#collection".equals(field.getVariable())) {
+        values=field.getValues();
+        String newParent=values.size() > 0 ? values.get(0) : " ";
+        Node newParentNode=service.getNode(newParent);
+        if (!(newParentNode instanceof CollectionNode)) {
+          throw new NotAcceptableException("Specified node in field pubsub#collection [" + newParent + "] "+ ((newParentNode == null) ? "does not exist" : "is not a collection node"));
+        }
+        changeParent((CollectionNode)newParentNode);
+      }
  else {
         configure(field);
       }

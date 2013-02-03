@@ -14,6 +14,21 @@
   }
   formField.addValue(description);
   formField=form.addField();
+  formField.setVariable("pubsub#node_type");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.node_type"));
+  }
+  formField=form.addField();
+  formField.setVariable("pubsub#collection");
+  if (isEditing) {
+    formField.setType(FormField.Type.text_single);
+    formField.setLabel(LocaleUtils.getLocalizedString("pubsub.form.conf.collection"));
+  }
+  if (!parent.isRootCollectionNode()) {
+    formField.addValue(parent.getNodeID());
+  }
+  formField=form.addField();
   formField.setVariable("pubsub#subscribe");
   if (isEditing) {
     formField.setType(FormField.Type.boolean_type);
