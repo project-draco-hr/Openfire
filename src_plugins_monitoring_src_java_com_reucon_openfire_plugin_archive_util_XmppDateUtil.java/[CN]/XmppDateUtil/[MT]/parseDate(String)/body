@@ -1,24 +1,8 @@
 {
-  Date date=null;
-  if (dateString == null) {
+  try {
+    return xmppDateTime.parseString(dateString);
+  }
+ catch (  ParseException e) {
     return null;
   }
-synchronized (dateFormat) {
-    try {
-      date=dateFormat.parse(dateString);
-    }
- catch (    ParseException e) {
-    }
-  }
-  if (date != null) {
-    return date;
-  }
-synchronized (dateFormatWithoutMillis) {
-    try {
-      date=dateFormatWithoutMillis.parse(dateString);
-    }
- catch (    ParseException e) {
-    }
-  }
-  return date;
 }

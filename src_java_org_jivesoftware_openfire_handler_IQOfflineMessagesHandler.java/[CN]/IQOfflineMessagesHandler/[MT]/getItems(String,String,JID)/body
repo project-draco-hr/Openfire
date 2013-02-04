@@ -2,9 +2,7 @@
   stopOfflineFlooding(senderJID);
   List<DiscoItem> answer=new ArrayList<DiscoItem>();
   for (  OfflineMessage offlineMessage : messageStore.getMessages(senderJID.getNode(),false)) {
-synchronized (dateFormat) {
-      answer.add(new DiscoItem(new JID(senderJID.toBareJID()),offlineMessage.getFrom().toString(),dateFormat.format(offlineMessage.getCreationDate()),null));
-    }
+    answer.add(new DiscoItem(new JID(senderJID.toBareJID()),offlineMessage.getFrom().toString(),XMPPDateTimeFormat.format(offlineMessage.getCreationDate()),null));
   }
   return answer.iterator();
 }

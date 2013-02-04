@@ -15,13 +15,11 @@
     for (Iterator it=offlineRequest.elementIterator("item"); it.hasNext(); ) {
       Element item=(Element)it.next();
       Date creationDate=null;
-synchronized (dateFormat) {
-        try {
-          creationDate=dateFormat.parse(item.attributeValue("node"));
-        }
- catch (        ParseException e) {
-          Log.error("Error parsing date",e);
-        }
+      try {
+        creationDate=xmppDateTime.parseString(item.attributeValue("node"));
+      }
+ catch (      ParseException e) {
+        Log.error("Error parsing date",e);
       }
       if ("view".equals(item.attributeValue("action"))) {
         OfflineMessage offlineMsg=messageStore.getMessage(from.getNode(),creationDate);

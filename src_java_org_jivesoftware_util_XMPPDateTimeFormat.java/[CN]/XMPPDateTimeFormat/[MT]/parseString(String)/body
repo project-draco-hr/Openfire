@@ -1,0 +1,23 @@
+{
+  Matcher xep82WoMillisMatcher=xep80DateTimePattern.matcher(dateString);
+  Matcher xep82Matcher=xep80DateTimeWoMillisPattern.matcher(dateString);
+  if (xep82WoMillisMatcher.matches() || xep82Matcher.matches()) {
+    String rfc822Date;
+    if (dateString.charAt(dateString.length() - 1) == 'Z') {
+      rfc822Date=dateString.replace("Z","+0000");
+    }
+ else {
+      int lastColon=dateString.lastIndexOf(':');
+      rfc822Date=dateString.substring(0,lastColon) + dateString.substring(lastColon + 1);
+    }
+    if (xep82WoMillisMatcher.matches()) {
+      return dateTimeFormatWoMillies.parse(rfc822Date);
+    }
+ else {
+      return dateTimeFormat.parse(rfc822Date);
+    }
+  }
+ else {
+    return dateTimeFormatOld.parse(dateString);
+  }
+}

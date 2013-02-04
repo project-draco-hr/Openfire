@@ -16,6 +16,6 @@
   if (isIncludingBody()) {
     notification.setBody(LocaleUtils.getLocalizedString("pubsub.notification.message.body"));
   }
-  notification.getElement().addElement("delay","urn:xmpp:delay").addAttribute("stamp",fastDateFormat.format(publishedItem.getCreationDate()));
+  notification.getElement().addElement("delay","urn:xmpp:delay").addAttribute("stamp",XMPPDateTimeFormat.format(publishedItem.getCreationDate()));
   node.getService().sendNotification(node,notification,jid);
 }

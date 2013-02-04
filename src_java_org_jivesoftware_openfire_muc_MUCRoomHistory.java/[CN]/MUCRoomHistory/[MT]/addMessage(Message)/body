@@ -32,8 +32,8 @@
   Element delayInformation=packetToAdd.addChildElement("delay","urn:xmpp:delay");
   Element delayInformationOld=packetToAdd.addChildElement("x","jabber:x:delay");
   Date current=new Date();
-  delayInformation.addAttribute("stamp",UTC_FORMAT.format(current));
-  delayInformationOld.addAttribute("stamp",UTC_FORMAT_OLD.format(current));
+  delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(current));
+  delayInformationOld.addAttribute("stamp",XMPPDateTimeFormat.formatOld(current));
   if (room.canAnyoneDiscoverJID()) {
     try {
       MUCRole role=room.getOccupant(packet.getFrom().getResource());

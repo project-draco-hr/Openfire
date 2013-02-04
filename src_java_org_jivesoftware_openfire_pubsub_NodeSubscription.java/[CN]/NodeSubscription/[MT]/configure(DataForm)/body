@@ -35,13 +35,11 @@
     }
  else     if ("pubsub#expire".equals(field.getVariable())) {
       values=field.getValues();
-synchronized (dateFormat) {
-        try {
-          expire=dateFormat.parse(values.get(0));
-        }
- catch (        ParseException e) {
-          Log.error("Error parsing date",e);
-        }
+      try {
+        expire=xmppDateTime.parseString(values.get(0));
+      }
+ catch (      ParseException e) {
+        Log.error("Error parsing date",e);
       }
     }
  else     if ("pubsub#include_body".equals(field.getVariable())) {

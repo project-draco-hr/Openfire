@@ -12,9 +12,7 @@
     }
     if (history.attribute("since") != null) {
       try {
-synchronized (formatter) {
-          this.since=formatter.parse(history.attributeValue("since"));
-        }
+        this.since=xmppDateTime.parseString(history.attributeValue("since"));
       }
  catch (      ParseException pe) {
         Log.error("Error parsing date from history management",pe);

@@ -1,7 +1,5 @@
 {
   Element offlineInfo=offlineMessage.addChildElement("offline",NAMESPACE);
-synchronized (dateFormat) {
-    offlineInfo.addElement("item").addAttribute("node",dateFormat.format(offlineMessage.getCreationDate()));
-  }
+  offlineInfo.addElement("item").addAttribute("node",XMPPDateTimeFormat.format(offlineMessage.getCreationDate()));
   routingTable.routePacket(receipient,offlineMessage,true);
 }
