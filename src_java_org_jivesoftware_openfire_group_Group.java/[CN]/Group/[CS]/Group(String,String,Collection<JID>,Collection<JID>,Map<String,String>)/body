@@ -6,17 +6,15 @@
   this.members=new HashSet<JID>(members);
   this.administrators=new HashSet<JID>(administrators);
   this.properties=provider.loadProperties(this);
-  if (!provider.isReadOnly()) {
-    for (    Map.Entry<String,String> property : properties.entrySet()) {
-      if (!property.getValue().equals(this.properties.get(property.getKey()))) {
-        this.properties.put(property.getKey(),property.getValue());
-      }
+  for (  Map.Entry<String,String> property : properties.entrySet()) {
+    if (!property.getValue().equals(this.properties.get(property.getKey()))) {
+      this.properties.put(property.getKey(),property.getValue());
     }
-    Iterator<String> oldProps=this.properties.keySet().iterator();
-    while (oldProps.hasNext()) {
-      if (!properties.containsKey(oldProps.next())) {
-        oldProps.remove();
-      }
+  }
+  Iterator<String> oldProps=this.properties.keySet().iterator();
+  while (oldProps.hasNext()) {
+    if (!properties.containsKey(oldProps.next())) {
+      oldProps.remove();
     }
   }
 }
