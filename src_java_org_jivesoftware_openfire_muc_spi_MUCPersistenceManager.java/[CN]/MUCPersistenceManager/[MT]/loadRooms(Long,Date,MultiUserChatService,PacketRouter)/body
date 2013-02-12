@@ -1,0 +1,64 @@
+{
+  final Map<Long,LocalMUCRoom> rooms=new HashMap<Long,LocalMUCRoom>();
+  Connection connection=null;
+  PreparedStatement statement=null;
+  ResultSet resultSet=null;
+  try {
+    connection=DbConnectionManager.getConnection();
+    statement=connection.prepareStatement(LOAD_ALL_ROOMS);
+    statement.setLong(1,serviceID);
+    statement.setString(2,StringUtils.dateToMillis(emptyDate));
+    resultSet=statement.executeQuery();
+    while (resultSet.next()) {
+      try {
+        LocalMUCRoom room=new LocalMUCRoom(chatserver,resultSet.getString(4),packetRouter);
+        room.setID(resultSet.getLong(1));
+        room.setCreationDate(new Date(Long.parseLong(resultSet.getString(2).trim())));
+        room.setModificationDate(new Date(Long.parseLong(resultSet.getString(3).trim())));
+        room.setNaturalLanguageName(resultSet.getString(5));
+        room.setDescription(resultSet.getString(6));
+        room.setLockedDate(new Date(Long.parseLong(resultSet.getString(7).trim())));
+        if (resultSet.getString(8) != null) {
+          room.setEmptyDate(new Date(Long.parseLong(resultSet.getString(8).trim())));
+        }
+ else {
+          room.setEmptyDate(null);
+        }
+        room.setCanOccupantsChangeSubject(resultSet.getInt(9) == 1);
+        room.setMaxUsers(resultSet.getInt(10));
+        room.setPublicRoom(resultSet.getInt(11) == 1);
+        room.setModerated(resultSet.getInt(12) == 1);
+        room.setMembersOnly(resultSet.getInt(13) == 1);
+        room.setCanOccupantsInvite(resultSet.getInt(14) == 1);
+        room.setPassword(resultSet.getString(15));
+        room.setCanAnyoneDiscoverJID(resultSet.getInt(16) == 1);
+        room.setLogEnabled(resultSet.getInt(17) == 1);
+        room.setSubject(resultSet.getString(18));
+        List<String> rolesToBroadcast=new ArrayList<String>();
+        String roles=Integer.toBinaryString(resultSet.getInt(19));
+        if (roles.charAt(0) == '1') {
+          rolesToBroadcast.add("moderator");
+        }
+        if (roles.length() > 1 && roles.charAt(1) == '1') {
+          rolesToBroadcast.add("participant");
+        }
+        if (roles.length() > 2 && roles.charAt(2) == '1') {
+          rolesToBroadcast.add("visitor");
+        }
+        room.setRolesToBroadcastPresence(rolesToBroadcast);
+        room.setLoginRestrictedToNickname(resultSet.getInt(20) == 1);
+        room.setChangeNickname(resultSet.getInt(21) == 1);
+        room.setRegistrationEnabled(resultSet.getInt(22) == 1);
+        room.setPersistent(true);
+        rooms.put(room.getID(),room);
+      }
+ catch (      SQLException e) {
+        Log.error("A database exception prevented one particular MUC room to be loaded from the database.",e);
+      }
+    }
+  }
+  finally {
+    DbConnectionManager.closeConnection(resultSet,statement,connection);
+  }
+  return rooms;
+}

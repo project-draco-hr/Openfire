@@ -1,0 +1,60 @@
+{
+  Connection connection=null;
+  PreparedStatement statement=null;
+  ResultSet resultSet=null;
+  try {
+    connection=DbConnectionManager.getConnection();
+    statement=connection.prepareStatement(LOAD_ALL_AFFILIATIONS);
+    statement.setLong(1,serviceID);
+    resultSet=statement.executeQuery();
+    while (resultSet.next()) {
+      try {
+        long roomID=resultSet.getLong(1);
+        LocalMUCRoom room=rooms.get(roomID);
+        if (room == null) {
+          continue;
+        }
+        final MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(resultSet.getInt(3));
+        final String jidValue=resultSet.getString(2);
+        final JID jid;
+        try {
+          jid=new JID(jidValue);
+        }
+ catch (        IllegalArgumentException ex) {
+          Log.warn("An illegal JID ({}) was found in the database, " + "while trying to load all affiliations for room " + "{}. The JID is ignored.",new Object[]{jidValue,roomID});
+          continue;
+        }
+        try {
+switch (affiliation) {
+case owner:
+            room.addOwner(jid,room.getRole());
+          break;
+case admin:
+        room.addAdmin(jid,room.getRole());
+      break;
+case outcast:
+    room.addOutcast(jid,null,room.getRole());
+  break;
+default :
+Log.error("Unknown affiliation value " + affiliation + " for user "+ jid+ " in persistent room "+ room.getID());
+}
+}
+ catch (ForbiddenException e) {
+Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
+}
+catch (ConflictException e) {
+Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
+}
+catch (NotAllowedException e) {
+Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
+}
+}
+ catch (SQLException e) {
+Log.error("A database exception prevented affiliations for one particular MUC room to be loaded from the database.",e);
+}
+}
+}
+  finally {
+DbConnectionManager.closeConnection(resultSet,statement,connection);
+}
+}

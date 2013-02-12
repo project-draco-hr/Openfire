@@ -1,0 +1,40 @@
+{
+  Connection connection=null;
+  PreparedStatement statement=null;
+  ResultSet resultSet=null;
+  try {
+    connection=DbConnectionManager.getConnection();
+    statement=connection.prepareStatement(LOAD_ALL_HISTORY);
+    final long from=System.currentTimeMillis() - (86400000 * 2);
+    statement.setLong(1,serviceID);
+    statement.setString(2,StringUtils.dateToMillis(new Date(from)));
+    resultSet=statement.executeQuery();
+    while (resultSet.next()) {
+      try {
+        LocalMUCRoom room=rooms.get(resultSet.getLong(1));
+        if (room == null) {
+          continue;
+        }
+        String senderJID=resultSet.getString(2);
+        String nickname=resultSet.getString(3);
+        Date sentDate=new Date(Long.parseLong(resultSet.getString(4).trim()));
+        String subject=resultSet.getString(5);
+        String body=resultSet.getString(6);
+        if (room.isLogEnabled()) {
+          room.getRoomHistory().addOldMessage(senderJID,nickname,sentDate,subject,body);
+        }
+      }
+ catch (      SQLException e) {
+        Log.warn("A database exception prevented the history for one particular MUC room to be loaded from the database.",e);
+      }
+    }
+  }
+  finally {
+    DbConnectionManager.closeConnection(resultSet,statement,connection);
+  }
+  for (  MUCRoom loadedRoom : rooms.values()) {
+    if (!loadedRoom.getRoomHistory().hasChangedSubject() && loadedRoom.getSubject() != null && loadedRoom.getSubject().length() > 0) {
+      loadedRoom.getRoomHistory().addOldMessage(loadedRoom.getRole().getRoleAddress().toString(),null,loadedRoom.getModificationDate(),loadedRoom.getSubject(),null);
+    }
+  }
+}

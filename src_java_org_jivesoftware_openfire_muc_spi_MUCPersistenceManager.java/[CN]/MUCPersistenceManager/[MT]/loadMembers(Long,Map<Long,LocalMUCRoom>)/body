@@ -1,0 +1,34 @@
+{
+  Connection connection=null;
+  PreparedStatement statement=null;
+  ResultSet resultSet=null;
+  try {
+    connection=DbConnectionManager.getConnection();
+    statement=connection.prepareStatement(LOAD_ALL_MEMBERS);
+    statement.setLong(1,serviceID);
+    resultSet=statement.executeQuery();
+    while (resultSet.next()) {
+      try {
+        LocalMUCRoom room=rooms.get(resultSet.getLong(1));
+        if (room == null) {
+          continue;
+        }
+        try {
+          room.addMember(new JID(resultSet.getString(2)),resultSet.getString(3),room.getRole());
+        }
+ catch (        ForbiddenException e) {
+          Log.warn("Unable to add member to room.",e);
+        }
+catch (        ConflictException e) {
+          Log.warn("Unable to add member to room.",e);
+        }
+      }
+ catch (      SQLException e) {
+        Log.error("A database exception prevented members for one particular MUC room to be loaded from the database.",e);
+      }
+    }
+  }
+  finally {
+    DbConnectionManager.closeConnection(resultSet,statement,connection);
+  }
+}
