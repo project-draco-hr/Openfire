@@ -11,13 +11,19 @@
       rfc822Date=dateString.substring(0,lastColon) + dateString.substring(lastColon + 1);
     }
     if (xep82WoMillisMatcher.matches()) {
-      return dateTimeFormatWoMillies.parse(rfc822Date);
+synchronized (dateTimeFormatWoMillies) {
+        return dateTimeFormatWoMillies.parse(rfc822Date);
+      }
     }
  else {
-      return dateTimeFormat.parse(rfc822Date);
+synchronized (dateTimeFormat) {
+        return dateTimeFormat.parse(rfc822Date);
+      }
     }
   }
  else {
-    return dateTimeFormatOld.parse(dateString);
+synchronized (dateTimeFormatOld) {
+      return dateTimeFormatOld.parse(dateString);
+    }
   }
 }
