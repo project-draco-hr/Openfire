@@ -1,17 +1,17 @@
 {
   InternalComponentManager compManager=InternalComponentManager.getInstance();
   compManager.addListener(new ComponentEventListener(){
-    @Override public void componentUnregistered(    JID componentJID){
+    public void componentUnregistered(    JID componentJID){
       ComponentSession session=_sessionManager.getComponentSession(componentJID.getDomain());
       if (session != null && _interceptors.containsKey(session.getExternalComponent().getInitialSubdomain())) {
         String initialSubdomain=session.getExternalComponent().getInitialSubdomain();
         removeInterceptor(initialSubdomain);
       }
     }
-    @Override public void componentRegistered(    JID componentJID){
+    public void componentRegistered(    JID componentJID){
       _waitingForIQResponse.add(componentJID.getDomain());
     }
-    @Override public void componentInfoReceived(    IQ iq){
+    public void componentInfoReceived(    IQ iq){
       String from=iq.getFrom().getDomain();
       if (_waitingForIQResponse.contains(from)) {
         Element packet=iq.getChildElement();
