@@ -37,9 +37,12 @@
         if (type.equals("nameModified")) {
           String originalName=(String)params.get("originalValue");
           if (originalName != null) {
-            groupMetaCache.remove(originalName);
+            groupCache.remove(originalName);
           }
+          groupMetaCache.remove(GROUP_NAMES_KEY);
+          groupMetaCache.remove(SHARED_GROUPS_KEY);
           evictCachedUsersForGroup(group);
+          evictCachedPaginatedGroupNames();
         }
       }
       groupCache.put(group.getName(),group);
