@@ -7,7 +7,7 @@
       String ns=root.getNamespaceURI();
       if (ns.equals("http://jabber.org/protocol/disco#items") && iqpacket.getType().equals(IQ.Type.result)) {
         if (!_permissions.allowedForUser(_subDomain,iqpacket.getTo())) {
-          if (iqpacket.getFrom().toString().equals(_host)) {
+          if (iqpacket.getFrom().toString().equals(_serverDomain)) {
             List<Node> nodes=XpathHelper.findNodesInDocument(root.getDocument(),"//discoitems:item");
             for (            Node node : nodes) {
               if (node.valueOf("@jid").equals(_subDomain)) {
