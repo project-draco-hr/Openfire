@@ -7,7 +7,9 @@
   }
   List<JID> admins=new ArrayList<JID>();
   for (  JID jid : jids) {
-    admins.add(new JID(jid.toBareJID()));
+    if (jid != null) {
+      admins.add(jid.asBareJID());
+    }
   }
   adminList.addAll(admins);
   provider.setAdmins(admins);

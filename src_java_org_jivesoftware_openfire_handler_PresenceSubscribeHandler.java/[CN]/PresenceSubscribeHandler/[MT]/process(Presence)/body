@@ -57,7 +57,7 @@
           deliverer.deliver(presence.createCopy());
         }
         if (type == Presence.Type.subscribed) {
-          JID prober=localServer.isLocal(recipientJID) ? new JID(recipientJID.toBareJID()) : recipientJID;
+          JID prober=localServer.isLocal(recipientJID) ? recipientJID.asBareJID() : recipientJID;
           presenceManager.probePresence(prober,senderJID);
           PresenceEventDispatcher.subscribedToPresence(recipientJID,senderJID);
         }

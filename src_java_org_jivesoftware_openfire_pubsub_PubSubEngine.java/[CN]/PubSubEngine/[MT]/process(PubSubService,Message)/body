@@ -1,7 +1,7 @@
 {
   if (message.getType() == Message.Type.error) {
     if (message.getError().getType() == PacketError.Type.cancel) {
-      JID owner=new JID(message.getFrom().toBareJID());
+      JID owner=message.getFrom().asBareJID();
       cancelAllSubscriptions(service,owner);
     }
  else     if (message.getError().getType() == PacketError.Type.auth) {

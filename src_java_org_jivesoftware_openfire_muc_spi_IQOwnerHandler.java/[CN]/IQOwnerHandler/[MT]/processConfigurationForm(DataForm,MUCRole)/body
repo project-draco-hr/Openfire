@@ -7,7 +7,9 @@
   List<JID> admins=new ArrayList<JID>();
   if (field != null) {
     for (    String value : field.getValues()) {
-      admins.add(new JID(new JID(value).toBareJID()));
+      if (value != null && value.trim().length() != 0) {
+        admins.add(new JID(value.trim()).asBareJID());
+      }
     }
   }
   field=completedForm.getField("muc#roomconfig_roomowners");
@@ -15,7 +17,9 @@
   List<JID> owners=new ArrayList<JID>();
   if (field != null) {
     for (    String value : field.getValues()) {
-      owners.add(new JID(new JID(value).toBareJID()));
+      if (value != null && value.trim().length() != 0) {
+        owners.add(new JID(value.trim()).asBareJID());
+      }
     }
   }
   if (ownersSent && owners.isEmpty()) {

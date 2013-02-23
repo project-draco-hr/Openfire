@@ -10,7 +10,7 @@
     if (isDestroyed || (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers())) {
       throw new ServiceUnavailableException();
     }
-    final JID bareJID=new JID(user.getAddress().toBareJID());
+    final JID bareJID=user.getAddress().asBareJID();
     boolean isOwner=owners.contains(bareJID);
     if (isLocked()) {
       if (!isOwner) {

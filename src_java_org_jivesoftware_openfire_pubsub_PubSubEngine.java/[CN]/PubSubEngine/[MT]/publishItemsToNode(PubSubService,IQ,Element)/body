@@ -14,7 +14,7 @@
     }
   }
   JID from=iq.getFrom();
-  JID owner=new JID(from.toBareJID());
+  JID owner=from.asBareJID();
   if (!node.getPublisherModel().canPublish(node,owner) && !service.isServiceAdmin(owner)) {
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;

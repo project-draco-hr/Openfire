@@ -21,7 +21,7 @@
     return;
   }
   JID subscriberJID=iq.getFrom();
-  JID owner=new JID(subscriberJID.toBareJID());
+  JID owner=subscriberJID.asBareJID();
   AccessModel accessModel=node.getAccessModel();
   if (!accessModel.canAccessItems(node,owner,subscriberJID)) {
     sendErrorPacket(iq,accessModel.getSubsriptionError(),accessModel.getSubsriptionErrorDetail());

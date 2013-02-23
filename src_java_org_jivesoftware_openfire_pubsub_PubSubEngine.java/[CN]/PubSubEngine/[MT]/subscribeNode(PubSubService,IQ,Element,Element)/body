@@ -25,7 +25,7 @@
     sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
     return;
   }
-  JID owner=new JID(subscriberJID.toBareJID());
+  JID owner=subscriberJID.asBareJID();
   AccessModel accessModel=node.getAccessModel();
   if (!accessModel.canSubscribe(node,owner,subscriberJID)) {
     sendErrorPacket(iq,accessModel.getSubsriptionError(),accessModel.getSubsriptionErrorDetail());

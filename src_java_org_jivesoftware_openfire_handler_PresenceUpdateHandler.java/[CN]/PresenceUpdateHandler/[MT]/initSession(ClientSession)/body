@@ -5,10 +5,10 @@
       Roster roster=rosterManager.getRoster(username);
       for (      RosterItem item : roster.getRosterItems()) {
         if (item.getRecvStatus() == RosterItem.RECV_SUBSCRIBE) {
-          session.process(createSubscribePresence(item.getJid(),new JID(session.getAddress().toBareJID()),true));
+          session.process(createSubscribePresence(item.getJid(),session.getAddress().asBareJID(),true));
         }
  else         if (item.getRecvStatus() == RosterItem.RECV_UNSUBSCRIBE) {
-          session.process(createSubscribePresence(item.getJid(),new JID(session.getAddress().toBareJID()),false));
+          session.process(createSubscribePresence(item.getJid(),session.getAddress().asBareJID(),false));
         }
         if (item.getSubStatus() == RosterItem.SUB_TO || item.getSubStatus() == RosterItem.SUB_BOTH) {
           presenceManager.probePresence(session.getAddress(),item.getJid());

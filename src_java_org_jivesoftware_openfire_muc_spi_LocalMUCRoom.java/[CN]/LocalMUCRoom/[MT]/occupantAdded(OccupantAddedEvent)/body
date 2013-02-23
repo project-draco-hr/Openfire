@@ -4,7 +4,7 @@
   }
   RemoteMUCRole joinRole=new RemoteMUCRole(mucService,event);
   occupants.put(event.getNickname().toLowerCase(),joinRole);
-  JID bareJID=new JID(event.getUserAddress().toBareJID());
+  JID bareJID=event.getUserAddress().asBareJID();
   List<MUCRole> list=occupantsByBareJID.get(bareJID);
   if (list == null) {
     list=new ArrayList<MUCRole>();
