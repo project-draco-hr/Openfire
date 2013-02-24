@@ -9,10 +9,21 @@
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
+    Map<String,String> parentMapping=new HashMap<String,String>();
     if (rs.next()) {
-      loadNode(service,nodes,rs);
+      loadNode(service,nodes,parentMapping,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
+    String parentId=parentMapping.get(nodeId);
+    if (parentId != null) {
+      CollectionNode parent=(CollectionNode)service.getNode(parentId);
+      if (parent == null) {
+        log.error("Could not find parent node " + parentId + " for node "+ nodeId);
+      }
+ else {
+        nodes.get(nodeId).changeParent(parent);
+      }
+    }
     pstmt=con.prepareStatement(LOAD_NODE_JIDS);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,nodeId);

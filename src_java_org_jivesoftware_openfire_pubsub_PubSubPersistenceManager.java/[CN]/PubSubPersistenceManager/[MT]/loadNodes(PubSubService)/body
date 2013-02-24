@@ -7,20 +7,26 @@
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_NODES);
     pstmt.setString(1,service.getServiceID());
-    pstmt.setInt(2,0);
     rs=pstmt.executeQuery();
+    Map<String,String> parentMappings=new HashMap<String,String>();
     while (rs.next()) {
-      loadNode(service,nodes,rs);
+      loadNode(service,nodes,parentMappings,rs);
     }
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_NODES);
-    pstmt.setString(1,service.getServiceID());
-    pstmt.setInt(2,1);
-    rs=pstmt.executeQuery();
-    while (rs.next()) {
-      loadNode(service,nodes,rs);
+    if (nodes.size() == 0) {
+      log.info("No nodes found in pubsub");
+      return;
     }
-    DbConnectionManager.fastcloseStmt(rs,pstmt);
+    for (    Map.Entry<String,String> entry : parentMappings.entrySet()) {
+      Node child=nodes.get(entry.getKey());
+      CollectionNode parent=(CollectionNode)nodes.get(entry.getValue());
+      if (parent == null) {
+        log.error("Could not find parent node " + entry.getValue() + " for node "+ entry.getKey());
+      }
+ else {
+        child.changeParent(parent);
+      }
+    }
     pstmt=con.prepareStatement(LOAD_NODES_JIDS);
     pstmt.setString(1,service.getServiceID());
     rs=pstmt.executeQuery();

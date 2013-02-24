@@ -5,22 +5,14 @@
     boolean leaf=rs.getInt(2) == 1;
     String parent=decodeNodeID(rs.getString(5));
     JID creator=new JID(rs.getString(22));
-    CollectionNode parentNode=null;
     if (parent != null) {
-      parentNode=(CollectionNode)loadedNodes.get(parent);
-      if (parentNode == null) {
-        parentNode=(CollectionNode)service.getNode(parent);
-        if (parentNode == null) {
-          log.warn("Node not loaded due to missing parent. NodeID: " + nodeID);
-          return;
-        }
-      }
+      parentMappings.put(nodeID,parent);
     }
     if (leaf) {
-      node=new LeafNode(service,parentNode,nodeID,creator);
+      node=new LeafNode(service,null,nodeID,creator);
     }
  else {
-      node=new CollectionNode(service,parentNode,nodeID,creator);
+      node=new CollectionNode(service,null,nodeID,creator);
     }
     node.setCreationDate(new Date(Long.parseLong(rs.getString(3).trim())));
     node.setModificationDate(new Date(Long.parseLong(rs.getString(4).trim())));
