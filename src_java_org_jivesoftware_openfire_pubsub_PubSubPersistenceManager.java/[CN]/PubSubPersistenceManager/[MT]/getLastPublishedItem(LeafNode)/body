@@ -14,6 +14,8 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_LAST_ITEM);
+    pstmt.setFetchSize(1);
+    pstmt.setMaxRows(1);
     pstmt.setString(1,node.getService().getServiceID());
     pstmt.setString(2,encodeNodeID(node.getNodeID()));
     rs=pstmt.executeQuery();
