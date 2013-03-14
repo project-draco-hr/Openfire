@@ -1,0 +1,21 @@
+{
+  if (isXFFEnabled()) {
+    connector.setForwarded(true);
+    String forwardedForHeader=getXFFHeader();
+    if (forwardedForHeader != null) {
+      connector.setForwardedForHeader(forwardedForHeader);
+    }
+    String forwardedServerHeader=getXFFServerHeader();
+    if (forwardedServerHeader != null) {
+      connector.setForwardedServerHeader(forwardedServerHeader);
+    }
+    String forwardedHostHeader=getXFFHostHeader();
+    if (forwardedHostHeader != null) {
+      connector.setForwardedHostHeader(forwardedHostHeader);
+    }
+    String hostName=getXFFHostName();
+    if (hostName != null) {
+      connector.setHostHeader(hostName);
+    }
+  }
+}
