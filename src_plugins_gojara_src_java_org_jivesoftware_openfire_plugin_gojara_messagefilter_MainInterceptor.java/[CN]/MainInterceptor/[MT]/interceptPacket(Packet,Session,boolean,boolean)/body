@@ -1,0 +1,55 @@
+{
+  if (frozen)   return;
+  String from="";
+  String to="";
+  if (!processed || (incoming && processed)) {
+    try {
+      if (packet.getFrom() != null)       from=packet.getFrom().toString();
+      if (packet.getTo() != null)       to=packet.getTo().toString();
+    }
+ catch (    IllegalArgumentException e) {
+      Log.debug("There was an illegal JID while intercepting Message for GoJara. Not Intercepting it! " + e.getMessage());
+      return;
+    }
+  }
+  if (incoming && !processed) {
+    if (packet instanceof IQ) {
+      IQ iqPacket=(IQ)packet;
+      Element query=iqPacket.getChildElement();
+      if (query == null)       return;
+ else       if (query.getNamespaceURI().equals("jabber:iq:roster")) {
+        if (to.isEmpty() && iqPacket.getType().equals(IQ.Type.set))         packetProcessors.get("clientToComponentUpdate").process(packet,"",to,from);
+ else         if (!from.isEmpty() && activeTransports.contains(from))         packetProcessors.get("iqRosterPayload").process(packet,from,to,from);
+      }
+ else       if (query.getNamespaceURI().equals("http://jabber.org/protocol/disco#info") && !to.isEmpty() && activeTransports.contains(to)&& iqPacket.getType().equals(IQ.Type.get)) {
+        packetProcessors.get("sparkIQRegistered").process(packet,to,to,from);
+      }
+ else       if (JiveGlobals.getBooleanProperty("plugin.remoteroster.iqLastFilter",false) && query.getNamespaceURI().equals("jabber:iq:last")) {
+        String to_s=searchJIDforSubdomain(to);
+        if (!to_s.isEmpty() && iqPacket.getType().equals(IQ.Type.get))         throw new PacketRejectedException();
+      }
+    }
+ else     if (!JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
+      if (packet instanceof Presence && activeTransports.contains(from))       packetProcessors.get("handleNonPersistant").process(packet,from,to,from);
+    }
+  }
+ else   if (incoming && processed) {
+    String from_s=searchJIDforSubdomain(from);
+    String to_s=searchJIDforSubdomain(to);
+    String subdomain=from_s.isEmpty() ? to_s : from_s;
+    if (!from.equals(to) && !subdomain.isEmpty())     packetProcessors.get("statisticsProcessor").process(packet,subdomain,to,from);
+  }
+ else   if (!incoming && !processed) {
+    if (packet instanceof IQ) {
+      IQ iqPacket=(IQ)packet;
+      Element query=iqPacket.getChildElement();
+      if (query == null)       return;
+      if (query.getNamespaceURI().equals("http://jabber.org/protocol/disco#items"))       packetProcessors.get("whitelistProcessor").process(packet,"",to,from);
+ else       if (JiveGlobals.getBooleanProperty("plugin.remoteroster.mucFilter",false) && query.getNamespaceURI().equals("http://jabber.org/protocol/disco#info") && !from.isEmpty()&& activeTransports.contains(from))       packetProcessors.get("mucfilterProcessor").process(packet,from,to,from);
+    }
+ else     if (packet instanceof Presence) {
+      String to_s=searchJIDforSubdomain(to);
+      if (!to_s.isEmpty() && !activeTransports.contains(to))       throw new PacketRejectedException();
+    }
+  }
+}

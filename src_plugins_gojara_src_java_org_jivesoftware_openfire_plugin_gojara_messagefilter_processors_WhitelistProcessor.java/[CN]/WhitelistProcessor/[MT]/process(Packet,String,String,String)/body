@@ -1,0 +1,14 @@
+{
+  IQ myPacket=(IQ)packet;
+  if (myPacket.getType().equals(IQ.Type.result) && (from.isEmpty() || from.equals(_server.getServerInfo().getXMPPDomain()))) {
+    Log.debug("Processing packet in Whitelistprocessor for " + to + "Packet: "+ packet.toString());
+    Element root=myPacket.getChildElement();
+    List<Node> nodes=XpathHelper.findNodesInDocument(root.getDocument(),"//discoitems:item");
+    for (    Node node : nodes) {
+      String node_domain=node.valueOf("@jid");
+      if (watchedSubdomains.contains(node_domain)) {
+        if (_permissions.isGatewayLimited(node_domain) && !_permissions.allowedForUser(node_domain,myPacket.getTo()))         root.remove(node);
+      }
+    }
+  }
+}

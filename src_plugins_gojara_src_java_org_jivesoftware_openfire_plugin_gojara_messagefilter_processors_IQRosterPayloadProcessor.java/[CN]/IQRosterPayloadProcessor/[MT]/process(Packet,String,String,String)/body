@@ -1,0 +1,11 @@
+{
+  Log.debug("Processing packet in IQRosterPayloadProcessor for " + subdomain + " : "+ packet.toString());
+  IQ myPacket=(IQ)packet;
+  String username=getUsernameFromJid(to);
+  if (myPacket.getType().equals(IQ.Type.get)) {
+    handleIQget(myPacket,subdomain,username);
+  }
+ else   if (myPacket.getType().equals(IQ.Type.set)) {
+    handleIQset(myPacket,subdomain,username);
+  }
+}

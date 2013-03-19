@@ -1,0 +1,18 @@
+{
+  if (JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
+    Roster roster;
+    try {
+      roster=_rosterManager.getRoster(username);
+      Collection<RosterItem> items=roster.getRosterItems();
+      Log.debug("Sending contacts with subdomain " + subdomain + " from user "+ username+ " to external Component");
+      sendRosterToComponent(myPacket,items,subdomain);
+    }
+ catch (    UserNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+ else {
+    Log.debug("Sending nonpersistant-RemoteRosterResponse to external Component  for User: " + username);
+    sendEmptyRoster(myPacket,subdomain);
+  }
+}

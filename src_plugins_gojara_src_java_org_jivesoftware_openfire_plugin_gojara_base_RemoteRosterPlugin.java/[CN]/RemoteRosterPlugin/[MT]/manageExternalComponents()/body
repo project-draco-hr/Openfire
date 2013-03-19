@@ -1,12 +1,7 @@
 {
-  InternalComponentManager compManager=InternalComponentManager.getInstance();
-  compManager.addListener(new ComponentEventListener(){
+  _componentObserver=new ComponentEventListener(){
     public void componentUnregistered(    JID componentJID){
-      ComponentSession session=_sessionManager.getComponentSession(componentJID.getDomain());
-      if (session != null && _interceptors.containsKey(session.getExternalComponent().getInitialSubdomain())) {
-        String initialSubdomain=session.getExternalComponent().getInitialSubdomain();
-        removeInterceptor(initialSubdomain);
-      }
+      mainInterceptor.removeTransport(componentJID.toString());
     }
     public void componentRegistered(    JID componentJID){
       _waitingForIQResponse.add(componentJID.getDomain());
@@ -17,12 +12,13 @@
         Element packet=iq.getChildElement();
         Document doc=packet.getDocument();
         List<Node> nodes=XpathHelper.findNodesInDocument(doc,"//disco:identity[@category='gateway']");
-        if (nodes.size() > 0 && !_interceptors.containsKey(from)) {
+        if (nodes.size() > 0) {
           updateInterceptors(from);
         }
         _waitingForIQResponse.remove(from);
       }
     }
   }
-);
+;
+  compManager.addListener(_componentObserver);
 }

@@ -1,7 +1,10 @@
 {
-  for (  String key : _interceptors.keySet()) {
-    _interceptors.get(key).stop();
-  }
+  Log.info("Destroying GoJara");
+  mainInterceptor.freeze();
+  iManager.removeInterceptor(mainInterceptor);
   PropertyEventDispatcher.removeListener(_settingsObserver);
+  compManager.removeListener(_componentObserver);
   pluginManager=null;
+  mainInterceptor=null;
+  compManager=null;
 }

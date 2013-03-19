@@ -1,13 +1,9 @@
 {
   boolean allowed=JiveGlobals.getBooleanProperty("plugin.remoteroster.jids." + componentJID,false);
   if (allowed) {
-    if (!_interceptors.containsKey(componentJID)) {
-      createNewPackageIntercetor(componentJID);
-    }
+    mainInterceptor.addTransport(componentJID);
   }
  else {
-    if (_interceptors.containsKey(componentJID)) {
-      removeInterceptor(componentJID);
-    }
+    mainInterceptor.removeTransport(componentJID);
   }
 }

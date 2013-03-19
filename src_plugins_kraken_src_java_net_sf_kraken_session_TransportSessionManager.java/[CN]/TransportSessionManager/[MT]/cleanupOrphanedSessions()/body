@@ -1,8 +1,0 @@
-{
-  SessionManager sessionManager=SessionManager.getInstance();
-  for (  TransportSession<B> session : getSessions()) {
-    if ((session.getDetachTimestamp() == 0 || new Date().getTime() - session.getDetachTimestamp() > detachTimeout) && sessionManager.getSessionCount(session.getJID().getNode()) == 0) {
-      transport.registrationLoggedOut(session);
-    }
-  }
-}

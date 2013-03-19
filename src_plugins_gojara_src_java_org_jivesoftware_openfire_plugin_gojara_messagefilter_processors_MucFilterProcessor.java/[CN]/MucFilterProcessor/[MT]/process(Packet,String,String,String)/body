@@ -1,0 +1,11 @@
+{
+  IQ iqPacket=(IQ)packet;
+  if (iqPacket.getType().equals(IQ.Type.result) && !to.isEmpty()) {
+    Element root=iqPacket.getChildElement();
+    List<Node> nodes=XpathHelper.findNodesInDocument(root.getDocument(),"//disco:feature");
+    for (    Node node : nodes) {
+      String var=node.valueOf("@var");
+      if (var.equals("http://jabber.org/protocol/muc"))       root.remove(node);
+    }
+  }
+}

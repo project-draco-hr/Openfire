@@ -1,0 +1,20 @@
+{
+  Log.info("Created MainInterceptor for GoJara Plugin.");
+  XMPPServer server=XMPPServer.getInstance();
+  RosterManager rosterMananger=server.getRosterManager();
+  AbstractRemoteRosterProcessor iqRegisteredProcessor=new DiscoIQRegisteredProcessor();
+  AbstractRemoteRosterProcessor iqRosterPayloadProcessor=new IQRosterPayloadProcessor(rosterMananger);
+  AbstractRemoteRosterProcessor nonPersistantProcessor=new NonPersistantRosterProcessor(rosterMananger);
+  AbstractRemoteRosterProcessor statisticsProcessor=new StatisticsProcessor();
+  AbstractRemoteRosterProcessor updateToComponentProcessor=new ClientToComponentUpdateProcessor(activeTransports);
+  AbstractRemoteRosterProcessor whitelistProcessor=new WhitelistProcessor(activeTransports);
+  AbstractRemoteRosterProcessor mucfilterProcessor=new MucFilterProcessor();
+  packetProcessors.put("sparkIQRegistered",iqRegisteredProcessor);
+  packetProcessors.put("iqRosterPayload",iqRosterPayloadProcessor);
+  packetProcessors.put("handleNonPersistant",nonPersistantProcessor);
+  packetProcessors.put("statisticsProcessor",statisticsProcessor);
+  packetProcessors.put("clientToComponentUpdate",updateToComponentProcessor);
+  packetProcessors.put("whitelistProcessor",whitelistProcessor);
+  packetProcessors.put("mucfilterProcessor",mucfilterProcessor);
+  frozen=false;
+}
