@@ -1,0 +1,7 @@
+{
+  IQ statusPacket=IQ.createResultIQ(packet);
+  Element agentInfo=statusPacket.setChildElement("agent-info","http://jivesoftware.com/protocol/workgroup");
+  agentInfo.addElement("jid").setText(getAgent().getAgentJID().toBareJID());
+  agentInfo.addElement("name").setText(getAgent().getNickname());
+  WorkgroupManager.getInstance().send(statusPacket);
+}

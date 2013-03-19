@@ -1,0 +1,28 @@
+{
+  if (request == null) {
+    throw new IllegalArgumentException();
+  }
+  totalRequestCount++;
+  if (request.getOffer() == null || !request.getOffer().isCancelled()) {
+    int waitTime=(int)(System.currentTimeMillis() - request.getCreationTime().getTime()) / 1000;
+    if (averageTime == 0) {
+      averageTime=waitTime;
+    }
+    averageTime=(averageTime + waitTime) / 2;
+    totalChatCount++;
+  }
+ else {
+    final int timeout=(int)request.getOffer().getTimeout() / 1000;
+    int waitTime=(int)(System.currentTimeMillis() - request.getCreationTime().getTime()) / 1000;
+    if (waitTime > timeout) {
+      totalDroppedRequests++;
+    }
+  }
+  int index=requests.indexOf(request);
+  requests.remove(request);
+  if (requests.size() > 0 && index < requests.size()) {
+    sendRequestStatus(getRequests());
+  }
+  activeAgents.broadcastQueueStatus(this);
+  request.setRequestQueue(null);
+}

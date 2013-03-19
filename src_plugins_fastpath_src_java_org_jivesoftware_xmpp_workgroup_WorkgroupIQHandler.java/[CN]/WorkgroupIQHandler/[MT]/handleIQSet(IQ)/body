@@ -1,0 +1,202 @@
+{
+  IQ reply;
+  Element iq=packet.getChildElement();
+  JID sender=packet.getFrom();
+  reply=IQ.createResultIQ(packet);
+  reply.setFrom(workgroup.getJID());
+  String queryName=iq.getName();
+  String queryNamespace=iq.getNamespace().toString();
+  if ("join-queue".equals(queryName)) {
+    InterceptorManager interceptorManager=QueueInterceptorManager.getInstance();
+    try {
+      interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,false);
+      UserRequest request=new UserRequest(packet,workgroup);
+      if (!workgroup.queueRequest(request)) {
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.service_unavailable));
+      }
+      interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,true);
+    }
+ catch (    PacketRejectedException e) {
+      workgroup.rejectPacket(packet,e);
+      reply=null;
+    }
+  }
+ else   if ("depart-queue".equals(queryName)) {
+    try {
+      Request request=UserRequest.getRequest(workgroup,sender);
+      InterceptorManager interceptorManager=QueueInterceptorManager.getInstance();
+      try {
+        interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,false);
+        request.cancel(Request.CancelType.DEPART);
+        iq.add(request.getSessionElement());
+        interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,true);
+      }
+ catch (      PacketRejectedException e) {
+        workgroup.rejectPacket(packet,e);
+        reply=null;
+      }
+    }
+ catch (    NotFoundException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      Log.debug("Request not found" + " while departing queue:",e);
+    }
+  }
+ else   if ("offer-accept".equals(queryName)) {
+    try {
+      InterceptorManager interceptorManager=OfferInterceptorManager.getInstance();
+      String id=iq.attributeValue("id");
+      String jid=iq.attributeValue("jid");
+      if (id != null || jid != null) {
+        Request request;
+        if (id != null) {
+          request=Request.getRequest(id);
+        }
+ else {
+          request=UserRequest.getRequest(workgroup,new JID(jid));
+        }
+        Offer offer=request.getOffer();
+        if (offer != null && offer.isOutstanding()) {
+          AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+          if (agentSession == null) {
+            reply.setChildElement(packet.getChildElement().createCopy());
+            reply.setError(new PacketError(PacketError.Condition.item_not_found));
+            Log.debug("Agent not found while accepting offer");
+          }
+ else {
+            try {
+              interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,false);
+              offer.accept(agentSession);
+              interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,true);
+            }
+ catch (            PacketRejectedException e) {
+              workgroup.rejectPacket(packet,e);
+              reply=null;
+            }
+          }
+        }
+ else {
+          reply.setChildElement(packet.getChildElement().createCopy());
+          reply.setError(new PacketError(PacketError.Condition.not_acceptable));
+        }
+      }
+    }
+ catch (    NotFoundException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      Log.debug("Request not found " + "while accepting offer: ",e);
+    }
+catch (    AgentNotFoundException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      Log.debug("Agent not found " + "while accepting offer: ",e);
+    }
+  }
+ else   if ("offer-reject".equals(queryName)) {
+    try {
+      InterceptorManager interceptorManager=OfferInterceptorManager.getInstance();
+      String id=iq.attributeValue("id");
+      String jid=iq.attributeValue("jid");
+      if (id != null || jid != null) {
+        Request request;
+        if (id != null) {
+          request=Request.getRequest(id);
+        }
+ else {
+          request=UserRequest.getRequest(workgroup,new JID(jid));
+        }
+        Offer offer=request.getOffer();
+        if (offer != null) {
+          AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+          if (agentSession == null) {
+            reply.setChildElement(packet.getChildElement().createCopy());
+            reply.setError(new PacketError(PacketError.Condition.item_not_found));
+            Log.debug("Agent not found while accepting offer");
+          }
+ else {
+            try {
+              interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,false);
+              offer.reject(agentSession);
+              interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,true,true);
+            }
+ catch (            PacketRejectedException e) {
+              workgroup.rejectPacket(packet,e);
+              reply=null;
+            }
+          }
+        }
+      }
+    }
+ catch (    NotFoundException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      Log.debug("Request not found " + "while rejecting offer: ",e);
+    }
+catch (    AgentNotFoundException e) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      Log.debug("Agent not found " + "while accepting offer: ",e);
+    }
+  }
+ else   if ("invite".equals(queryName)) {
+    InvitationRequest request=new InvitationRequest(packet,workgroup);
+    workgroup.processInvitation(request,packet);
+    reply=null;
+  }
+ else   if ("transfer".equals(queryName)) {
+    TransferRequest request=new TransferRequest(packet,workgroup);
+    workgroup.processTransfer(request,packet);
+    reply=null;
+  }
+ else   if ("jabber:iq:private".equals(queryNamespace)) {
+    setIQPrivate(packet);
+  }
+ else   if ("agent-info".equals(queryName)) {
+    if (!JiveGlobals.getBooleanProperty("xmpp.live.agent.change-properties",true)) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.service_unavailable));
+    }
+ else {
+      try {
+        AgentSession agentSession=agentManager.getAgentSession(packet.getFrom());
+        if (agentSession == null) {
+          reply=IQ.createResultIQ(packet);
+          reply.setChildElement(packet.getChildElement().createCopy());
+          reply.setError(new PacketError(PacketError.Condition.item_not_found));
+        }
+ else {
+          String allowsToChange=agentSession.getAgent().getProperties().getProperty("change-properties");
+          if (!"false".equals(allowsToChange)) {
+            agentSession.getAgent().updateAgentInfo(packet);
+          }
+ else {
+            reply=IQ.createResultIQ(packet);
+            reply.setChildElement(packet.getChildElement().createCopy());
+            reply.setError(new PacketError(PacketError.Condition.service_unavailable));
+          }
+        }
+      }
+ catch (      AgentNotFoundException e) {
+        reply=IQ.createResultIQ(packet);
+        reply.setChildElement(packet.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      }
+    }
+  }
+ else {
+    for (    WorkgroupProvider provider : providerManager.getWorkgroupProviders()) {
+      if (provider.handleSet(packet)) {
+        provider.executeSet(packet,workgroup);
+        return;
+      }
+    }
+    dropPacket(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.bad_request));
+  }
+  if (reply != null) {
+    workgroup.send(reply);
+  }
+}

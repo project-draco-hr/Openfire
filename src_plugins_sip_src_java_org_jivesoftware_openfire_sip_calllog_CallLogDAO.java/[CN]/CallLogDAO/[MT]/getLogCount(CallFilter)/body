@@ -1,0 +1,42 @@
+{
+  int count=0;
+  String sql="SELECT count(*) FROM ofSipPhoneLog";
+  sql=filter != null && !filter.getSQL().equals("") ? sql + " WHERE " + filter.getSQL() : sql;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(sql);
+    int i=1;
+    for (    String value : filter.getValues()) {
+      pstmt.setString(i++,value);
+    }
+    ResultSet rs=pstmt.executeQuery();
+    if (rs.next()) {
+      count=rs.getInt(1);
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return count;
+}

@@ -1,0 +1,14 @@
+{
+  pluginManager=manager;
+  sessionManager=SessionManager.getInstance();
+  groupManager=GroupManager.getInstance();
+  userManager=UserManager.getInstance();
+  componentManager=ComponentManagerFactory.getComponentManager();
+  try {
+    componentManager.addComponent(serviceName,this);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  PropertyEventDispatcher.addListener(this);
+}

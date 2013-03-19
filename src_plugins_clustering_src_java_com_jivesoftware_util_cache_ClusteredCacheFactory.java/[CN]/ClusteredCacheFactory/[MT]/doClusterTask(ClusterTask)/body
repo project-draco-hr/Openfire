@@ -1,0 +1,8 @@
+{
+  if (taskService != null) {
+    Member current=taskService.getCluster().getLocalMember();
+    Set setMembers=taskService.getInfo().getServiceMembers();
+    setMembers.remove(current);
+    taskService.execute(buildInvocable(task),setMembers,null);
+  }
+}

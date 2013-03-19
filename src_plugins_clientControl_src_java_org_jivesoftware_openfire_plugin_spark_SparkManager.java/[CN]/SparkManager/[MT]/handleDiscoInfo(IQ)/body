@@ -1,0 +1,10 @@
+{
+  IQ replyPacket=IQ.createResultIQ(packet);
+  Element responseElement=replyPacket.setChildElement("query","http://jabber.org/protocol/disco#info");
+  Element identity=responseElement.addElement("identity");
+  identity.addAttribute("category","manager");
+  identity.addAttribute("type","text");
+  identity.addAttribute("name","Client Control Manager");
+  buildFeatureSet(responseElement);
+  sendPacket(replyPacket);
+}

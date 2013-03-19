@@ -1,0 +1,25 @@
+{
+  try {
+    List<Packet> reply=new ArrayList<Packet>();
+    if (packet instanceof IQ) {
+      reply.addAll(processPacket((IQ)packet));
+    }
+ else     if (packet instanceof Presence) {
+      reply.addAll(processPacket((Presence)packet));
+    }
+ else     if (packet instanceof Message) {
+      reply.addAll(processPacket((Message)packet));
+    }
+ else {
+      Log.debug("Received an unhandled packet: " + packet.toString());
+    }
+    if (reply.size() > 0) {
+      for (      Packet p : reply) {
+        this.sendPacket(p);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.warn("Error occured while processing packet:",e);
+  }
+}

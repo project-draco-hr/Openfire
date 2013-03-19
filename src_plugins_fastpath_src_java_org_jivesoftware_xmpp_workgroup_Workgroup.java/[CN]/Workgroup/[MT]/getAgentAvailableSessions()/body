@@ -1,0 +1,11 @@
+{
+  Collection<AgentSession> answer=new HashSet<AgentSession>();
+  for (  RequestQueue queue : queues.values()) {
+    for (    AgentSession session : queue.getAgentSessionList().getAgentSessions()) {
+      if (session.isAvailableToChat()) {
+        answer.add(session);
+      }
+    }
+  }
+  return Collections.unmodifiableCollection(answer);
+}

@@ -1,0 +1,22 @@
+{
+  this.agentSelector=agentSelector;
+  try {
+    for (    String property : getPropertyNames()) {
+      if (property.startsWith("agentSelector")) {
+        deleteProperty(property);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  try {
+    Map<String,String> propertyMap=getPropertiesMap(agentSelector,"agentSelector.");
+    for (    Map.Entry<String,String> entry : propertyMap.entrySet()) {
+      setProperty(entry.getKey(),entry.getValue());
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

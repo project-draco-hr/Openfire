@@ -1,0 +1,7 @@
+{
+  TransportSession<B> session=activeSessions.remove(new JID(jid.toBareJID()));
+  if (session != null) {
+    session.getBuddyManager().sendOfflineForAllAvailablePresences(jid);
+  }
+  getTransport().getSessionRouter().removeSession(getTransport().getType().toString(),jid.toBareJID());
+}

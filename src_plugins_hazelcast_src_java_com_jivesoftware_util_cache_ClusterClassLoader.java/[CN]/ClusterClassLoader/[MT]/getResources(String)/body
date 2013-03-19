@@ -1,0 +1,27 @@
+{
+  Enumeration<URL> answer=null;
+  try {
+    answer=hazelcastClassloader.getResources(name);
+  }
+ catch (  IOException e) {
+  }
+  if (answer == null || !answer.hasMoreElements()) {
+    PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+    for (    Plugin plugin : pluginManager.getPlugins()) {
+      String pluginName=pluginManager.getPluginDirectory(plugin).getName();
+      if ("hazelcast".equals(pluginName) || "admin".equals(pluginName)) {
+        continue;
+      }
+      PluginClassLoader pluginClassloader=pluginManager.getPluginClassloader(plugin);
+      try {
+        answer=pluginClassloader.getResources(name);
+      }
+ catch (      IOException e) {
+      }
+      if (answer != null && answer.hasMoreElements()) {
+        return answer;
+      }
+    }
+  }
+  return answer;
+}

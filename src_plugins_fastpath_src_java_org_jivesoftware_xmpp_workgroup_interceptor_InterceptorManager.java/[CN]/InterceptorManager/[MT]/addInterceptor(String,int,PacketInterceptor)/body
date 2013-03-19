@@ -1,0 +1,22 @@
+{
+  if (interceptor == null) {
+    throw new NullPointerException("Parameter interceptor was null.");
+  }
+  List<PacketInterceptor> interceptors=getLocalInterceptors(workgroup);
+  interceptors=localInterceptors.putIfAbsent(workgroup,new CopyOnWriteArrayList<PacketInterceptor>());
+  if (interceptors == null) {
+    interceptors=localInterceptors.get(workgroup);
+  }
+  if (index < 0 || (index > interceptors.size())) {
+    throw new IndexOutOfBoundsException("Index " + index + " invalid.");
+  }
+  if (interceptors.contains(interceptor)) {
+    int oldIndex=interceptors.indexOf(interceptor);
+    if (oldIndex < index) {
+      index-=1;
+    }
+    interceptors.remove(interceptor);
+  }
+  interceptors.add(index,interceptor);
+  saveInterceptors();
+}

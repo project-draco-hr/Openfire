@@ -1,0 +1,92 @@
+{
+  try {
+    workgroupManager.getAgentManager().getAgent(packet.getFrom());
+    Element iq=packet.getChildElement();
+    IQ reply=IQ.createResultIQ(packet);
+    if (iq.elements().isEmpty()) {
+      reply.setChildElement(iq.createCopy());
+      reply.addExtension(searchForm.createCopy());
+      workgroupManager.send(reply);
+    }
+ else {
+      Date startDate=null;
+      Date endDate=null;
+      Collection<Workgroup> workgroups=WorkgroupManager.getInstance().getWorkgroups();
+      JID agentJID=null;
+      String queryString=null;
+      DataForm submitedForm=(DataForm)packet.getExtension(DataForm.ELEMENT_NAME,DataForm.NAMESPACE);
+      for (      FormField field : submitedForm.getFields()) {
+        if ("date/start".equals(field.getVariable())) {
+          try {
+            startDate=DataForm.parseDate(field.getValues().get(0));
+          }
+ catch (          ParseException e) {
+            Log.debug("Invalid startDate " + field.getValues().get(0),e);
+          }
+        }
+ else         if ("date/end".equals(field.getVariable())) {
+          try {
+            endDate=DataForm.parseDate(field.getValues().get(0));
+          }
+ catch (          ParseException e) {
+            Log.debug("Invalid endDate " + field.getValues().get(0),e);
+          }
+        }
+ else         if ("workgroups".equals(field.getVariable())) {
+          if (!field.getValues().isEmpty()) {
+            workgroups=new ArrayList<Workgroup>();
+            for (            String value : field.getValues()) {
+              try {
+                workgroups.add(WorkgroupManager.getInstance().getWorkgroup(new JID(value)));
+              }
+ catch (              UserNotFoundException e) {
+                Log.debug("Invalid workgroup JID " + value,e);
+              }
+            }
+          }
+ else {
+            workgroups=WorkgroupManager.getInstance().getWorkgroups();
+          }
+        }
+ else         if ("agent".equals(field.getVariable())) {
+          agentJID=new JID(field.getValues().get(0));
+        }
+ else         if ("queryString".equals(field.getVariable())) {
+          queryString=field.getValues().get(0);
+        }
+      }
+      DataForm searchResults=resultForm.createCopy();
+      for (      Workgroup workgroup : workgroups) {
+        ChatSearch search=new ChatSearch(workgroup,startDate,endDate,agentJID,queryString);
+        for (        QueryResult result : search.getResults()) {
+          Map<String,Object> fields=new LinkedHashMap<String,Object>();
+          fields.put("workgroup",result.getWorkgroup().getJID().toBareJID());
+          fields.put("sessionID",result.getSessionID());
+          fields.put("startDate",result.getStartDate());
+          fields.put("agentJIDs",result.getAgentJIDs());
+          fields.put("relevance",result.getRelevance());
+          Map<String,String> metadata=getMetadataMap(result.getSessionID());
+          if (metadata.containsKey("question")) {
+            fields.put("question",metadata.get("question"));
+          }
+          if (metadata.containsKey("email")) {
+            fields.put("email",metadata.get("email"));
+          }
+          if (metadata.containsKey("username")) {
+            fields.put("username",metadata.get("username"));
+          }
+          searchResults.addItemFields(fields);
+        }
+      }
+      reply.setChildElement(iq.getName(),iq.getNamespaceURI());
+      reply.addExtension(searchResults);
+      workgroupManager.send(reply);
+    }
+  }
+ catch (  AgentNotFoundException e) {
+    IQ reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.not_authorized));
+    workgroupManager.send(reply);
+  }
+}

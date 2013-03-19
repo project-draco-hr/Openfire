@@ -1,0 +1,18 @@
+{
+  Group group=null;
+  try {
+    group=GroupManager.getInstance().getGroup(rulegroup);
+  }
+ catch (  GroupNotFoundException e) {
+    e.printStackTrace();
+  }
+  if (group == null) {
+    return false;
+  }
+ else {
+    if (group.isUser(packetToFrom)) {
+      return true;
+    }
+  }
+  return false;
+}

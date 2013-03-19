@@ -1,0 +1,14 @@
+{
+  filter.setPatterns("at");
+  filter.setMask("**");
+  Message message=new Message();
+  message.setBody("At noon the fat cats ate lunch at Rizzos");
+  boolean matched=filter.filter(message);
+  assertTrue(matched);
+  assertEquals("At noon the f** c**s **e lunch ** Rizzos",message.getBody());
+  filter.setPatterns("(?i)\\bat\\b");
+  message.setBody("At noon the fat cats ate lunch at Rizzos");
+  matched=filter.filter(message);
+  assertTrue(matched);
+  assertEquals("** noon the fat cats ate lunch ** Rizzos",message.getBody());
+}

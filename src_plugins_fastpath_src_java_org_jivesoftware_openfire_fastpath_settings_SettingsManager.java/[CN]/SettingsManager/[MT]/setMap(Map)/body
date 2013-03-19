@@ -1,0 +1,21 @@
+{
+  Element element=DocumentHelper.createElement(namespace);
+  final Iterator i=element.elementIterator();
+  while (i.hasNext()) {
+    element.remove((Element)i.next());
+  }
+  final Iterator iter=map.keySet().iterator();
+  while (iter.hasNext()) {
+    String key=(String)iter.next();
+    String value=(String)map.get(key);
+    Element elem=DocumentHelper.createElement("entry");
+    elem.addElement(key).setText(value);
+    element.add(elem);
+  }
+  try {
+    workgroupSettings.add(workgroup.getJID().toBareJID(),element);
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+}

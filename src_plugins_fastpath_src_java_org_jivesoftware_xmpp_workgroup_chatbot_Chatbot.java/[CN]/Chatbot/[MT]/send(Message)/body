@@ -1,0 +1,11 @@
+{
+  InterceptorManager interceptorManager=ChatbotInterceptorManager.getInstance();
+  try {
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,false,false);
+    workgroup.send(packet);
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),packet,false,true);
+  }
+ catch (  PacketRejectedException e) {
+    Log.warn("Packet was not sent " + "due to interceptor REJECTION: " + packet.toXML(),e);
+  }
+}

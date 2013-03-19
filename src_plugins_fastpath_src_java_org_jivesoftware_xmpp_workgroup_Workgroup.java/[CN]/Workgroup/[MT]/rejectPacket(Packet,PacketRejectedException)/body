@@ -1,0 +1,27 @@
+{
+  if (packet instanceof IQ) {
+    IQ reply=new IQ();
+    reply.setChildElement(((IQ)packet).getChildElement().createCopy());
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_allowed);
+    send(reply);
+  }
+ else   if (packet instanceof Presence) {
+    Presence reply=new Presence();
+    reply.setID(packet.getID());
+    reply.setTo(packet.getFrom());
+    reply.setFrom(packet.getTo());
+    reply.setError(PacketError.Condition.not_allowed);
+    send(reply);
+  }
+  if (e.getRejectionMessage() != null && e.getRejectionMessage().trim().length() > 0) {
+    Message notification=new Message();
+    notification.setTo(packet.getFrom());
+    notification.setFrom(packet.getTo());
+    notification.setBody(e.getRejectionMessage());
+    send(notification);
+  }
+  Log.warn("Packet was REJECTED " + "by interceptor: " + packet.toXML(),e);
+}

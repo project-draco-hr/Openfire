@@ -1,0 +1,22 @@
+{
+  final Map<String,List<String>> map=getMetaData();
+  Connection con=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    PreparedStatement pstmt=con.prepareStatement(INSERT_META_DATA);
+    for (    String key : map.keySet()) {
+      List<String> values=map.get(key);
+      pstmt.setString(1,requestID);
+      pstmt.setString(2,key);
+      pstmt.setString(3,encodeMetadataValue(values));
+      pstmt.executeUpdate();
+    }
+    pstmt.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(con);
+  }
+}

@@ -1,0 +1,44 @@
+{
+  final ChatSession session=new ChatSession();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION);
+    pstmt.setString(1,sessionID);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String userID=rs.getString(1);
+      long workgroupID=rs.getLong(2);
+      String transcript=DbConnectionManager.getLargeTextField(rs,3);
+      String startTime=rs.getString(4);
+      String endTime=rs.getString(5);
+      long queueWaitTime=rs.getLong(6);
+      int state=rs.getInt(7);
+      session.setSessionID(sessionID);
+      session.setWorkgroupID(workgroupID);
+      session.setUserID(userID);
+      session.setTranscript(formatTranscript(transcript));
+      if (startTime.trim().length() > 0) {
+        session.setStartTime(Long.parseLong(startTime));
+      }
+      if (endTime.trim().length() > 0) {
+        session.setEndTime(Long.parseLong(endTime));
+      }
+      session.setQueueWaitTime(queueWaitTime);
+      session.setState(state);
+      if (startTime.trim().length() > 0 && endTime.trim().length() > 0) {
+        populateSessionWithMetadata(session);
+        populateSessionWithAgents(session);
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return session;
+}

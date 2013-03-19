@@ -1,0 +1,32 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_RULE);
+    pstmt.setString(1,rule.getPackeType().toString());
+    pstmt.setString(2,rule.getDestination());
+    pstmt.setString(3,rule.getSource());
+    pstmt.setString(4,rule.getClass().getName());
+    if (rule.isDisabled())     pstmt.setBoolean(5,Boolean.TRUE);
+ else     pstmt.setBoolean(5,Boolean.FALSE);
+    if (rule.doLog())     pstmt.setBoolean(6,Boolean.TRUE);
+ else     pstmt.setBoolean(6,Boolean.FALSE);
+    pstmt.setString(7,rule.getDescription());
+    pstmt.setInt(8,order);
+    pstmt.setString(9,rule.getSourceType().toString());
+    pstmt.setString(10,rule.getDestType().toString());
+    pstmt.setInt(11,new Integer(rule.getRuleId()));
+    pstmt.executeUpdate();
+    rules.clear();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+    return false;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+    updateCluster();
+  }
+  return true;
+}

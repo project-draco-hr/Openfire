@@ -1,0 +1,31 @@
+{
+  Set<String> registeredUsers=lookupJIDList(key,C2SCache.getName());
+  if (!registeredUsers.isEmpty()) {
+    for (    String fullJID : new ArrayList<String>(registeredUsers)) {
+      JID offlineJID=new JID(fullJID);
+      try {
+        Presence presence=new Presence(Presence.Type.unavailable);
+        presence.setFrom(offlineJID);
+        XMPPServer.getInstance().getPresenceRouter().route(presence);
+      }
+ catch (      PacketException e) {
+        Log.error(e);
+      }
+    }
+  }
+  Set<String> anonymousUsers=lookupJIDList(key,anonymousC2SCache.getName());
+  if (!anonymousUsers.isEmpty()) {
+    for (    String fullJID : new ArrayList<String>(anonymousUsers)) {
+      JID offlineJID=new JID(fullJID);
+      try {
+        Presence presence=new Presence(Presence.Type.unavailable);
+        presence.setFrom(offlineJID);
+        XMPPServer.getInstance().getPresenceRouter().route(presence);
+      }
+ catch (      PacketException e) {
+        Log.error(e);
+      }
+    }
+  }
+  nodeSessions.remove(key);
+}

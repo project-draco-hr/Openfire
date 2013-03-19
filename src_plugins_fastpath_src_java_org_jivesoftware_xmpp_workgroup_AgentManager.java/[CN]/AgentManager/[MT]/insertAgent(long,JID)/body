@@ -1,0 +1,27 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(INSERT_AGENT);
+    pstmt.setLong(1,agentID);
+    String hostname=ComponentManagerFactory.getComponentManager().getServerName();
+    String agentBareJID=agentJID.toBareJID();
+    if (hostname.equals(agentJID.getDomain())) {
+      agentBareJID=agentJID.getNode();
+    }
+    pstmt.setString(2,agentBareJID);
+    pstmt.setString(3,agentJID.getNode());
+    pstmt.setInt(4,-1);
+    pstmt.setInt(5,-1);
+    pstmt.executeUpdate();
+    return true;
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return false;
+}

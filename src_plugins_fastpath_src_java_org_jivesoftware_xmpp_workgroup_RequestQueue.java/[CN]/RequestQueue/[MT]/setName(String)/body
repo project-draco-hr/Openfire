@@ -1,0 +1,17 @@
+{
+  if (!ModelUtil.hasLength(newName)) {
+    return;
+  }
+  presenceAvailable=false;
+  try {
+    activeAgents.broadcastQueueStatus(this);
+  }
+  finally {
+    presenceAvailable=true;
+  }
+  this.name=newName;
+  JID workgroupJID=workgroup.getJID();
+  address=new JID(workgroupJID.getNode(),workgroupJID.getDomain(),this.name);
+  updateQueue();
+  activeAgents.broadcastQueueStatus(this);
+}

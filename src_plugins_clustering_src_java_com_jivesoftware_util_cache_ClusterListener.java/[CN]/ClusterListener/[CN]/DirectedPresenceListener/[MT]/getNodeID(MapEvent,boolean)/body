@@ -1,0 +1,9 @@
+{
+  Object value=removal ? mapEvent.getOldValue() : mapEvent.getNewValue();
+  Collection<DirectedPresence> directedPresences=(Collection<DirectedPresence>)value;
+  if (directedPresences.isEmpty()) {
+    Log.warn("ClusteringListener - Found empty directed presences for sender: " + mapEvent.getKey());
+    return null;
+  }
+  return directedPresences.iterator().next().getNodeID();
+}

@@ -1,0 +1,12 @@
+{
+  Statistic packetTrafficStatistic=new i18nStatistic(TRAFFIC_KEY,MonitoringConstants.NAME,Statistic.Type.rate){
+    public double sample(){
+      return packetCount.getAndSet(0);
+    }
+    public boolean isPartialSample(){
+      return true;
+    }
+  }
+;
+  statisticsManager.addStatistic(TRAFFIC_KEY,packetTrafficStatistic);
+}

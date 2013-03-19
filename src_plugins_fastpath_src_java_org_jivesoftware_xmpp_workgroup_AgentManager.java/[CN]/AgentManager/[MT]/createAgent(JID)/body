@@ -1,0 +1,14 @@
+{
+  if (!ModelUtil.hasLength((agentJID.getNode()))) {
+    throw new IllegalArgumentException("No anonymous agents allowed");
+  }
+  long agentID=SequenceManager.nextID(FastpathConstants.WORKGROUP_AGENT);
+  if (!insertAgent(agentID,agentJID)) {
+    throw new IllegalArgumentException("Agent could not be created");
+  }
+  Agent agent=new Agent(agentID);
+  agent.setAgentJID(agentJID);
+  agent.setNickname(agentJID.getNode());
+  agents.put(agentJID.toBareJID(),agent);
+  return agent;
+}

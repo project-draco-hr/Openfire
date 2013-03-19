@@ -1,0 +1,16 @@
+{
+  final MacroGroup rootGroup=getMacroGroup(workgroup);
+  if (rootGroup.getTitle().equals(name)) {
+    return rootGroup;
+  }
+  for (  MacroGroup groups : rootGroup.getMacroGroups()) {
+    if (groups.getTitle().equals(name)) {
+      return groups;
+    }
+    MacroGroup foundGroup=getChildGroup(groups,name);
+    if (foundGroup != null) {
+      return foundGroup;
+    }
+  }
+  return null;
+}

@@ -1,0 +1,12 @@
+{
+  Log.debug("MySpaceIM: Received action message packet: " + msgPacket);
+  final ChatStateEventSource chatStateEventSource=getSession().getTransport().getChatStateEventSource();
+  final JID receiver=getSession().getJID();
+  final JID sender=getSession().getTransport().convertIDToJID(msgPacket.getFrom());
+  if (msgPacket.getAction().equals(ActionMessage.ACTION_TYPING)) {
+    chatStateEventSource.isComposing(sender,receiver);
+  }
+ else   if (msgPacket.getAction().equals(ActionMessage.ACTION_STOPTYPING)) {
+    chatStateEventSource.isPaused(sender,receiver);
+  }
+}

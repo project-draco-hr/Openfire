@@ -1,0 +1,10 @@
+{
+  if (mapEvent.getNewValue() == null && ((Collection)mapEvent.getOldValue()).isEmpty()) {
+    return;
+  }
+  byte[] nodeID=getNodeID(mapEvent,true);
+  if (!XMPPServer.getInstance().getNodeID().equals(nodeID)) {
+    String sender=mapEvent.getKey().toString();
+    nodePresences.get(NodeID.getInstance(nodeID)).remove(sender);
+  }
+}

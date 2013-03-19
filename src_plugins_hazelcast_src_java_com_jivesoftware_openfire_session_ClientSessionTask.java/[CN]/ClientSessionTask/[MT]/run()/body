@@ -1,0 +1,30 @@
+{
+  if (getSession() == null || getSession().isClosed()) {
+    logger.error("Session not found for JID: " + address);
+    return;
+  }
+  super.run();
+  ClientSession session=(ClientSession)getSession();
+  if (session instanceof RemoteClientSession) {
+    Cache<String,ClientRoute> usersCache=CacheFactory.createCache(RoutingTableImpl.C2S_CACHE_NAME);
+    ClientRoute route=usersCache.get(address.toString());
+    NodeID nodeID=route.getNodeID();
+    logger.warn("Found remote session instead of local session. JID: " + address + " found in Node: "+ nodeID.toByteArray()+ " and local node is: "+ XMPPServer.getInstance().getNodeID().toByteArray());
+  }
+  if (operation == Operation.isInitialized) {
+    if (session instanceof RemoteClientSession) {
+      result=true;
+    }
+ else {
+      result=session.isInitialized();
+    }
+  }
+ else   if (operation == Operation.incrementConflictCount) {
+    if (session instanceof RemoteClientSession) {
+      result=2;
+    }
+ else {
+      result=session.incrementConflictCount();
+    }
+  }
+}

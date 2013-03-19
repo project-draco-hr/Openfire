@@ -1,0 +1,54 @@
+{
+  searchDir=new File(JiveGlobals.getHomeDirectory() + File.separator + MonitoringConstants.NAME+ File.separator+ "search");
+  if (!searchDir.exists()) {
+    searchDir.mkdirs();
+  }
+  boolean indexCreated=false;
+  try {
+    loadPropertiesFile(searchDir);
+    if (IndexReader.indexExists(searchDir)) {
+      directory=FSDirectory.getDirectory(searchDir,false);
+    }
+ else {
+      directory=FSDirectory.getDirectory(searchDir,true);
+      indexCreated=true;
+    }
+  }
+ catch (  IOException ioe) {
+    Log.error(ioe.getMessage(),ioe);
+  }
+  writerLock=new ReentrantLock(true);
+  try {
+    if (IndexReader.isLocked(directory)) {
+      Log.warn("Archiving search index was locked, probably due to non-clean " + "application shutdown.");
+      IndexReader.unlock(directory);
+    }
+  }
+ catch (  IOException ioe) {
+    Log.error(ioe.getMessage(),ioe);
+  }
+  String modified=indexProperties.getProperty("lastModified");
+  if (modified != null) {
+    try {
+      lastModified=Long.parseLong(modified);
+    }
+ catch (    NumberFormatException nfe) {
+    }
+  }
+  if (lastModified == 0 || indexCreated) {
+    taskEngine.submit(new Runnable(){
+      public void run(){
+        rebuildIndex();
+      }
+    }
+);
+  }
+  indexUpdater=new TimerTask(){
+    @Override public void run(){
+      updateIndex();
+    }
+  }
+;
+  int updateInterval=JiveGlobals.getIntProperty("conversation.search.updateInterval",15);
+  taskEngine.scheduleAtFixedRate(indexUpdater,JiveConstants.MINUTE * 5,JiveConstants.MINUTE * updateInterval);
+}

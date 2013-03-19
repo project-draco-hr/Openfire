@@ -1,0 +1,28 @@
+{
+  List<PacketInterceptor> interceptorList=new ArrayList<PacketInterceptor>();
+  for (  Class newClass : getBuiltInInterceptorClasses()) {
+    try {
+      PacketInterceptor interceptor=(PacketInterceptor)newClass.newInstance();
+      interceptorList.add(interceptor);
+    }
+ catch (    Exception e) {
+    }
+  }
+  List<String> classNames=JiveGlobals.getProperties("interceptor.interceptorClasses." + getPropertySuffix());
+  for (int i=0; i < classNames.size(); i++) {
+    install_interceptor:     try {
+      Class interceptorClass=loadClass(classNames.get(i));
+      for (int j=0; j < interceptorList.size(); j++) {
+        if (interceptorClass.equals(interceptorList.get(j).getClass())) {
+          break install_interceptor;
+        }
+      }
+      PacketInterceptor interceptor=(PacketInterceptor)interceptorClass.newInstance();
+      interceptorList.add(interceptor);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  availableInterceptors.addAll(interceptorList);
+}

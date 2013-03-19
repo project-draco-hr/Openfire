@@ -1,0 +1,16 @@
+{
+  if (incomingForm.element(QName.get("x","jabber:x:data")) != null) {
+    return extractExtendedSearchQuery(incomingForm);
+  }
+  final Hashtable<String,String> searchList=new Hashtable<String,String>();
+  Iterator<Element> iter=incomingForm.elementIterator();
+  while (iter.hasNext()) {
+    Element element=iter.next();
+    String name=element.getName();
+    if (fieldLookup.containsKey(name)) {
+      reverseFieldLookup.put(fieldLookup.get(name),name);
+      searchList.put(fieldLookup.get(name),element.getText());
+    }
+  }
+  return searchList;
+}

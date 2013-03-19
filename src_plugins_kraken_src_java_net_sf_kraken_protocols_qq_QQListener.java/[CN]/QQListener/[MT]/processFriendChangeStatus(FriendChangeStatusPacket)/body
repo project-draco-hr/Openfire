@@ -1,0 +1,20 @@
+{
+  Log.debug("QQ: Processing friend status change event");
+  try {
+    if (getSession().getBuddyManager().isActivated()) {
+      try {
+        QQBuddy qqBuddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(String.valueOf(p.friendQQ)));
+        qqBuddy.setPresenceAndStatus(((QQTransport)getSession().getTransport()).convertQQStatusToXMPP(p.status),null);
+      }
+ catch (      NotFoundException ee) {
+        Log.debug("QQ: Received presense notification for contact we don't care about: " + String.valueOf(p.friendQQ));
+      }
+    }
+ else {
+      getSession().getBuddyManager().storePendingStatus(getSession().getTransport().convertIDToJID(String.valueOf(p.friendQQ)),((QQTransport)getSession().getTransport()).convertQQStatusToXMPP(p.status),null);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("Failed to handle friend status change event: ",ex);
+  }
+}

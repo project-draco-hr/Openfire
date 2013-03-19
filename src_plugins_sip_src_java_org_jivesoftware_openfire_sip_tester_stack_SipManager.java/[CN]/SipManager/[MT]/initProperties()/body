@@ -1,0 +1,56 @@
+{
+  try {
+    stackAddress=getLocalHostAddress();
+    SIPConfig.setIPAddress(stackAddress);
+    SIPConfig.setSystemProperties();
+    if (stackAddress.indexOf(':') != stackAddress.lastIndexOf(':') && stackAddress.charAt(0) != '[') {
+      stackAddress='[' + stackAddress.trim() + ']';
+    }
+    stackName=SIPConfig.getStackName();
+    if (stackName == null) {
+      stackName="SIPark@" + Integer.toString(hashCode());
+    }
+    currentlyUsedURI=SIPConfig.getPublicAddress();
+    if (currentlyUsedURI == null) {
+      currentlyUsedURI=SIPConfig.getUserName() + "@" + stackAddress;
+    }
+    if (!currentlyUsedURI.trim().toLowerCase().startsWith("sip:")) {
+      currentlyUsedURI="sip:" + currentlyUsedURI.trim();
+    }
+    registrarAddress=SIPConfig.getRegistrarAddress();
+    try {
+      registrarPort=SIPConfig.getRegistrarPort();
+    }
+ catch (    NumberFormatException ex) {
+      registrarPort=5060;
+    }
+    registrarTransport=SIPConfig.getRegistrarTransport();
+    if (registrarTransport == null) {
+      registrarTransport=SipManager.DEFAULT_TRANSPORT;
+    }
+    try {
+      registrationsExpiration=SIPConfig.getRegistrationExpiration();
+    }
+ catch (    NumberFormatException ex) {
+      registrationsExpiration=3600;
+    }
+    sipStackPath=SIPConfig.getStackPath();
+    if (sipStackPath == null) {
+      sipStackPath="gov.nist";
+    }
+    transport=SIPConfig.getTransport();
+    if (transport.equals("")) {
+      transport=SipManager.DEFAULT_TRANSPORT;
+    }
+    try {
+      localPort=SIPConfig.getLocalPort();
+    }
+ catch (    NumberFormatException exc) {
+      localPort=5060;
+    }
+    displayName=SIPConfig.getDisplayName();
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

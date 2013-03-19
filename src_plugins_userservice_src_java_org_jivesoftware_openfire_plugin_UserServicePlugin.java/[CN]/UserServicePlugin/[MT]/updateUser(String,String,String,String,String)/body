@@ -1,0 +1,28 @@
+{
+  User user=getUser(username);
+  if (password != null)   user.setPassword(password);
+  if (name != null)   user.setName(name);
+  if (email != null)   user.setEmail(email);
+  if (groupNames != null) {
+    Collection<Group> newGroups=new ArrayList<Group>();
+    StringTokenizer tkn=new StringTokenizer(groupNames,",");
+    while (tkn.hasMoreTokens()) {
+      try {
+        newGroups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
+      }
+ catch (      GroupNotFoundException e) {
+      }
+    }
+    Collection<Group> existingGroups=GroupManager.getInstance().getGroups(user);
+    Collection<Group> groupsToAdd=new ArrayList<Group>(newGroups);
+    groupsToAdd.removeAll(existingGroups);
+    Collection<Group> groupsToDelete=new ArrayList<Group>(existingGroups);
+    groupsToDelete.removeAll(newGroups);
+    for (    Group group : groupsToAdd) {
+      group.getMembers().add(server.createJID(username,null));
+    }
+    for (    Group group : groupsToDelete) {
+      group.getMembers().remove(server.createJID(username,null));
+    }
+  }
+}

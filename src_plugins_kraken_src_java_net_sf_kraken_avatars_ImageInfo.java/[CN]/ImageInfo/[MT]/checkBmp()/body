@@ -1,0 +1,25 @@
+{
+  byte[] a=new byte[44];
+  if (read(a) != a.length) {
+    return false;
+  }
+  width=getIntLittleEndian(a,16);
+  height=getIntLittleEndian(a,20);
+  if (width < 1 || height < 1) {
+    return false;
+  }
+  bitsPerPixel=getShortLittleEndian(a,26);
+  if (bitsPerPixel != 1 && bitsPerPixel != 4 && bitsPerPixel != 8 && bitsPerPixel != 16 && bitsPerPixel != 24 && bitsPerPixel != 32) {
+    return false;
+  }
+  int x=(int)(getIntLittleEndian(a,36) * 0.0254);
+  if (x > 0) {
+    setPhysicalWidthDpi(x);
+  }
+  int y=(int)(getIntLittleEndian(a,40) * 0.0254);
+  if (y > 0) {
+    setPhysicalHeightDpi(y);
+  }
+  format=FORMAT_BMP;
+  return true;
+}

@@ -1,0 +1,53 @@
+{
+  ClassLoader oldLoader=null;
+  state=State.starting;
+  serializationStrategy=ExternalizableUtil.getInstance().getStrategy();
+  ExternalizableUtil.getInstance().setStrategy(new CoherenceExternalizableUtil());
+  XMPPServer.getInstance().setRemoteSessionLocator(new RemoteSessionLocator());
+  XMPPServer.getInstance().getRoutingTable().setRemotePacketRouter(new CoherencePacketRouter());
+  try {
+    oldLoader=Thread.currentThread().getContextClassLoader();
+    int allowedMembers=getMaxClusterNodes();
+    if (allowedMembers > 1) {
+      ClassLoader loader=new ClusterClassLoader();
+      Thread.currentThread().setContextClassLoader(loader);
+      cluster=com.tangosol.net.CacheFactory.ensureCluster();
+      cluster.setContextClassLoader(loader);
+      int memberCount=cluster.getMemberSet().size();
+      if (memberCount > allowedMembers) {
+        com.tangosol.net.CacheFactory.shutdown();
+        cluster=null;
+        Log.error("Error joining clustered cache: your " + "license only allows for " + allowedMembers + " cluster nodes. Using local cache instead.");
+      }
+ else {
+        com.tangosol.net.CacheFactory.getCache("opt-$cacheStats");
+        taskService=(InvocationService)com.tangosol.net.CacheFactory.getService("OpenFire Cluster Service");
+        state=cluster != null ? State.started : State.stopped;
+        Member localMember=cluster.getLocalMember();
+        Member seniorMember=cluster.getOldestMember();
+        XMPPServer.getInstance().setNodeID(NodeID.getInstance(getClusterMemberID()));
+        ClusterManager.fireJoinedCluster(false);
+        clusterListener=new ClusterListener();
+        taskService.addMemberListener(clusterListener);
+        if (isSeniorClusterMember()) {
+          ClusterManager.fireMarkedAsSeniorClusterMember();
+        }
+        Log.info("Joining cluster as node: " + localMember.getUid() + ". Senior Member: "+ (localMember == seniorMember ? "YES" : "NO"));
+      }
+    }
+ else {
+      Log.error("Error joining clustered cache: your " + "license only allows for " + allowedMembers + " cluster nodes. Using local cache instead.");
+    }
+    return cluster != null;
+  }
+ catch (  Exception e) {
+    Log.error("Unable to start clustering - continuing in local mode",e);
+  }
+ finally {
+    if (oldLoader != null) {
+      Thread.currentThread().setContextClassLoader(oldLoader);
+    }
+  }
+  state=State.stopped;
+  return false;
+}

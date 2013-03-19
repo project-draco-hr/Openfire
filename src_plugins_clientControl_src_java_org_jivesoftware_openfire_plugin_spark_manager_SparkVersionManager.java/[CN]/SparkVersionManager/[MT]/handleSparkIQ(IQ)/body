@@ -1,0 +1,55 @@
+{
+  IQ reply;
+  Element iq=packet.getChildElement();
+  String os=iq.element("os").getText();
+  reply=IQ.createResultIQ(packet);
+  if (os == null || (!os.equals("windows") && !os.equals("mac") && !os.equals("linux"))) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.not_acceptable));
+    sendPacket(reply);
+    return;
+  }
+  Element sparkElement=reply.setChildElement("query","jabber:iq:spark");
+  String client=null;
+  if (os.equals("windows")) {
+    client=JiveGlobals.getProperty("spark.windows.client");
+  }
+ else   if (os.equals("mac")) {
+    client=JiveGlobals.getProperty("spark.mac.client");
+  }
+ else   if (os.equals("linux")) {
+    client=JiveGlobals.getProperty("spark.linux.client");
+  }
+  if (client != null) {
+    int index=client.indexOf("_");
+    String versionNumber=client.substring(index + 1);
+    int indexOfPeriod=versionNumber.indexOf(".");
+    versionNumber=versionNumber.substring(0,indexOfPeriod);
+    versionNumber=versionNumber.replaceAll("_",".");
+    sparkElement.addElement("version").setText(versionNumber);
+    File clientFile=new File(JiveGlobals.getHomeDirectory(),"enterprise/spark/" + client);
+    if (!clientFile.exists()) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.item_not_found));
+      sendPacket(reply);
+      return;
+    }
+    long updatedTime=clientFile.lastModified();
+    sparkElement.addElement("updatedTime").setText(Long.toString(updatedTime));
+    String downloadURL=JiveGlobals.getProperty("spark.client.downloadURL");
+    String server=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+    downloadURL=downloadURL.replace("127.0.0.1",server);
+    sparkElement.addElement("downloadURL").setText(downloadURL + "?client=" + client);
+    String displayMessage=JiveGlobals.getProperty("spark.client.displayMessage");
+    if (displayMessage != null && displayMessage.trim().length() > 0) {
+      sparkElement.addElement("displayMessage").setText(displayMessage);
+    }
+  }
+ else {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    sendPacket(reply);
+    return;
+  }
+  sendPacket(reply);
+}

@@ -1,0 +1,19 @@
+{
+  String bareJid=rs.getString("bareJID");
+  String fromJid=rs.getString("fromJID");
+  String toJid=rs.getString("toJID");
+  String room=rs.getString("room");
+  String result=null;
+  if (bareJid != null && fromJid != null && toJid != null) {
+    if (room != null && !room.equals("")) {
+      result=room;
+    }
+ else     if (fromJid.contains(bareJid)) {
+      result=toJid;
+    }
+ else {
+      result=fromJid;
+    }
+  }
+  return result;
+}

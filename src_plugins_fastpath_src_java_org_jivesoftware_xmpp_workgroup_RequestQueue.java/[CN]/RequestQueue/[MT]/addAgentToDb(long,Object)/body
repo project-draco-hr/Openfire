@@ -1,0 +1,25 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ADD_QUEUE_AGENT);
+    if ((Boolean)data) {
+      pstmt.setInt(1,GROUP_TYPE);
+    }
+ else {
+      pstmt.setInt(1,AGENT_TYPE);
+    }
+    pstmt.setLong(2,objectID);
+    pstmt.setLong(3,id);
+    pstmt.executeUpdate();
+    return true;
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return false;
+}

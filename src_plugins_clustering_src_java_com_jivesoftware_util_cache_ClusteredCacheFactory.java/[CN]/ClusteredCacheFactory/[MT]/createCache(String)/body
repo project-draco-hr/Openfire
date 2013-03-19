@@ -1,0 +1,13 @@
+{
+  while (state == State.starting) {
+    try {
+      Thread.sleep(250);
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+  if (state == State.stopped) {
+    throw new IllegalStateException("Cannot create clustered cache when not in a cluster");
+  }
+  return new ClusteredCache(name);
+}

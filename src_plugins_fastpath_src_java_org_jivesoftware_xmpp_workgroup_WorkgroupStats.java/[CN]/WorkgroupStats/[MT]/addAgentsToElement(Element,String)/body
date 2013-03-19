@@ -1,0 +1,30 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION_AGENTS);
+    pstmt.setString(1,sessionID);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String agentJID=rs.getString(2);
+      String joinTime=rs.getString(3);
+      String leftTime=rs.getString(4);
+      final Element agentElement=elem.addElement("agent");
+      agentElement.addElement("agentJID").setText(agentJID);
+      if (ModelUtil.hasLength(joinTime)) {
+        agentElement.addElement("joinTime").setText(UTC_FORMAT.format(new Date(Long.parseLong(joinTime))));
+      }
+      if (ModelUtil.hasLength(leftTime)) {
+        agentElement.addElement("leftTime").setText(UTC_FORMAT.format(new Date(Long.parseLong(leftTime))));
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}

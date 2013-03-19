@@ -1,0 +1,13 @@
+{
+  RequestQueue queue=null;
+  if (backupQueueID > 0) {
+    try {
+      queue=workgroup.getRequestQueue(backupQueueID);
+    }
+ catch (    NotFoundException e) {
+      Log.error("Backup queue with ID " + backupQueueID + " not found",e);
+      queue=null;
+    }
+  }
+  return queue;
+}

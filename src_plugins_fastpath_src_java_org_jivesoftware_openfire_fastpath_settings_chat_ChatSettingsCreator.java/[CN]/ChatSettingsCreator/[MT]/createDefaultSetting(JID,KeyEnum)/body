@@ -1,0 +1,36 @@
+{
+  if (imageMap.containsKey(key)) {
+    String value=imageMap.get(key);
+    InputStream stream=getClass().getResourceAsStream("fastpath/imageMap/" + value);
+    if (stream == null) {
+      stream=getClass().getResourceAsStream("/fastpath/imageMap/" + value);
+    }
+    if (stream == null) {
+      stream=getClass().getResourceAsStream("/fastpath/images/" + value);
+    }
+    if (stream != null) {
+      byte[] bytes;
+      try {
+        bytes=new byte[stream.available()];
+        int read=stream.read(bytes);
+        if (read != bytes.length) {
+          throw new IOException("Failed to read all bytes.");
+        }
+        stream.close();
+        final String encodedFile=StringUtils.encodeBase64(bytes);
+        createChatSetting(workgroupJID,key,ChatSettings.SettingType.image_settings,encodedFile);
+      }
+ catch (      IOException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+ else   if (textMap.containsKey(key)) {
+    String value=textMap.get(key);
+    createChatSetting(workgroupJID,key,ChatSettings.SettingType.text_settings,value);
+  }
+ else   if (botMap.containsKey(key)) {
+    String value=botMap.get(key);
+    createChatSetting(workgroupJID,key,ChatSettings.SettingType.bot_settings,value);
+  }
+}

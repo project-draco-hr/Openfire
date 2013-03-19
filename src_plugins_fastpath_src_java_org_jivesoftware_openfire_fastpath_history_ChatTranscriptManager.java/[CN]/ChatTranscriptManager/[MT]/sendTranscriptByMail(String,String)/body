@@ -1,0 +1,43 @@
+{
+  final ChatSession chatSession=getChatSession(sessionID);
+  final WorkgroupManager workgroupManager=WorkgroupManager.getInstance();
+  Workgroup workgroup=null;
+  for (  Workgroup wgroup : workgroupManager.getWorkgroups()) {
+    if (wgroup.getID() == chatSession.getWorkgroupID()) {
+      workgroup=wgroup;
+      break;
+    }
+  }
+  if (workgroup == null) {
+    return;
+  }
+  DbProperties props=workgroup.getProperties();
+  String context="jive.transcript";
+  String from=props.getProperty(context + ".from");
+  if (from == null) {
+    from=workgroup.getJID().toBareJID();
+  }
+  String fromEmail=props.getProperty(context + ".fromEmail");
+  if (fromEmail == null) {
+    fromEmail=workgroup.getJID().toBareJID();
+  }
+  String subject=props.getProperty(context + ".subject");
+  if (subject == null) {
+    subject="Chat transcript";
+  }
+  String message=props.getProperty(context + ".message");
+  if (message == null) {
+    message="";
+  }
+  if (chatSession != null) {
+    final StringBuilder builder=new StringBuilder();
+    String transcript=chatSession.getTranscript();
+    if (ModelUtil.hasLength(message)) {
+      builder.append(message);
+    }
+    builder.append("<br/>");
+    builder.append("<table>").append(transcript).append("</table>");
+    EmailService emailService=EmailService.getInstance();
+    emailService.sendMessage(null,to,from,fromEmail,subject,null,builder.toString());
+  }
+}

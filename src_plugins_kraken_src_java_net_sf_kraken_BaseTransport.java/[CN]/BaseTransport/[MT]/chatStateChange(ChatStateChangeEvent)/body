@@ -1,0 +1,33 @@
+{
+  if (this.getJID().getDomain().equals(event.sender.getDomain())) {
+switch (event.type) {
+case active:
+      break;
+case composing:
+    sendComposingNotification(event.receiver,event.sender);
+  break;
+case gone:
+sendChatGoneNotification(event.receiver,event.sender);
+break;
+case inactive:
+sendChatInactiveNotification(event.receiver,event.sender);
+break;
+case paused:
+sendComposingPausedNotification(event.receiver,event.sender);
+break;
+default :
+throw new AssertionError(event.type);
+}
+}
+ else if (this.getJID().getDomain().equals(event.receiver.getDomain())) {
+try {
+getSessionManager().getSession(event.sender).sendChatState(event.receiver,event.type);
+}
+ catch (NotFoundException e) {
+Log.debug("A local user that does not have a session with us is " + "sending chat state messages to alegacy user. Event:" + event);
+}
+}
+ else {
+Log.warn("Cannot send chat state event, as nor the sender or recipient " + "appears to be a locally registered (and online) user. Event: " + event);
+}
+}

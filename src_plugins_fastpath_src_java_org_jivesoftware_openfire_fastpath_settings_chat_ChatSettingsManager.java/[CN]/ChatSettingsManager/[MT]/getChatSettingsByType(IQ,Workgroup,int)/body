@@ -1,0 +1,20 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  ChatSettings chatSettings=getChatSettings(workgroup);
+  if (chatSettings == null) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    workgroup.send(reply);
+    return;
+  }
+  Element webSettings=reply.setChildElement("chat-settings","http://jivesoftware.com/protocol/workgroup");
+  for (  ChatSetting setting : chatSettings.getChatSettings()) {
+    if (setting.getType().getType() == type) {
+      Element root=webSettings.addElement("chat-setting");
+      root.addElement("key").setText(setting.getKey().toString());
+      root.addElement("value").setText(setting.getValue());
+      root.addElement("type").setText(Integer.toString(setting.getType().getType()));
+    }
+  }
+  workgroup.send(reply);
+}

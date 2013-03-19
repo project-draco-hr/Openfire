@@ -1,0 +1,101 @@
+{
+  if (grouplist == null) {
+    grouplist=new ArrayList<String>();
+  }
+  if (grouplist.isEmpty()) {
+    Log.debug("No groups provided for the sync of contact " + contact + ". Using default group.");
+    grouplist.add(getDefaultGroup());
+  }
+  Log.debug("Syncing contact = " + contact + ", nickname = "+ nickname+ ", grouplist = "+ grouplist);
+  OSCARBuddy oscarBuddy=null;
+  try {
+    final JID jid=parent.getTransport().convertIDToJID(contact);
+    oscarBuddy=parent.getBuddyManager().getBuddy(jid);
+    Log.debug("Found related oscarbuddy: " + oscarBuddy);
+  }
+ catch (  NotFoundException e) {
+    Log.debug("Didn't find related oscarbuddy. One will be created.");
+  }
+  final List<BuddyItem> freeBuddyItems=new ArrayList<BuddyItem>();
+  if (oscarBuddy != null) {
+    for (    BuddyItem buddy : oscarBuddy.getBuddyItems()) {
+      if (!groups.containsKey(buddy.getGroupId())) {
+        Log.debug("Removing " + buddy + " because of unknown group");
+        freeBuddyItems.add(buddy);
+      }
+ else       if (!grouplist.contains(groups.get(buddy.getGroupId()).getGroupName())) {
+        Log.debug("Removing " + buddy + " because not in list of groups");
+        freeBuddyItems.add(buddy);
+      }
+ else {
+        if (buddy.getAlias() == null || !buddy.getAlias().equals(nickname)) {
+          Log.debug("Updating alias for " + buddy);
+          buddy.setAlias(nickname);
+          request(new PreModCmd());
+          request(new ModifyItemsCmd(buddy.toSsiItem()));
+          request(new PostModCmd());
+          updateHighestId(buddy);
+          oscarBuddy.tieBuddyItem(buddy,true);
+        }
+      }
+    }
+  }
+  for (  String group : grouplist) {
+    Integer groupId=getGroupIdOrCreateNew(group);
+    if (isMemberOfGroup(groupId,contact)) {
+      continue;
+    }
+    Integer newBuddyId=1;
+    if (highestBuddyIdPerGroup.containsKey(groupId)) {
+      newBuddyId=getNextBuddyId(groupId);
+    }
+    if (freeBuddyItems.size() > 0) {
+      request(new PreModCmd());
+      BuddyItem buddy=freeBuddyItems.remove(0);
+      BuddyItem newBuddy=new BuddyItem(buddy);
+      newBuddy.setGroupid(groupId);
+      newBuddy.setId(newBuddyId);
+      newBuddy.setAlias(nickname);
+      request(new DeleteItemsCmd(buddy.toSsiItem()));
+      if (oscarBuddy != null) {
+        oscarBuddy.removeBuddyItem(buddy.getGroupId(),false);
+      }
+      request(new CreateItemsCmd(newBuddy.toSsiItem()));
+      if (oscarBuddy == null) {
+        oscarBuddy=new OSCARBuddy(parent.getBuddyManager(),newBuddy);
+        request(new BuddyAuthRequest(contact,"Automated add request on behalf of user."));
+      }
+ else {
+        oscarBuddy.tieBuddyItem(newBuddy,false);
+      }
+      request(new PostModCmd());
+    }
+ else {
+      final BuddyItem newBuddy=new BuddyItem(contact,groupId,newBuddyId);
+      newBuddy.setAlias(nickname);
+      updateHighestId(newBuddy);
+      if (parent.getTransport().getType().equals(TransportType.icq)) {
+        newBuddy.setAwaitingAuth(true);
+      }
+      request(new PreModCmd());
+      request(new CreateItemsCmd(newBuddy.toSsiItem()));
+      request(new PostModCmd());
+      if (oscarBuddy == null) {
+        oscarBuddy=new OSCARBuddy(parent.getBuddyManager(),newBuddy);
+        request(new BuddyAuthRequest(contact,"Automated add request on behalf of user."));
+      }
+ else {
+        oscarBuddy.tieBuddyItem(newBuddy,true);
+      }
+    }
+  }
+  for (  BuddyItem buddy : freeBuddyItems) {
+    request(new DeleteItemsCmd(buddy.toSsiItem()));
+    if (oscarBuddy != null) {
+      oscarBuddy.removeBuddyItem(buddy.getGroupId(),false);
+    }
+  }
+  if (oscarBuddy != null) {
+    parent.getBuddyManager().storeBuddy(oscarBuddy);
+  }
+}

@@ -1,0 +1,56 @@
+{
+  URI requestURI=sipRequest.getRequestURI();
+  if (requestURI == null) {
+    throw new IllegalArgumentException("Bad message: Null requestURI");
+  }
+  LinkedList<Hop> hops=new LinkedList<Hop>();
+  if (outboundProxy != null) {
+    hops.add(outboundProxy);
+  }
+  ListIterator routes=sipRequest.getHeaders(RouteHeader.NAME);
+  if (routes != null && routes.hasNext()) {
+    while (routes.hasNext()) {
+      RouteHeader route=(RouteHeader)routes.next();
+      SipURI uri=(SipURI)route.getAddress().getURI();
+      int port=uri.getPort();
+      port=(port == -1) ? 5060 : port;
+      String host=uri.getHost();
+      Log.debug("getNextHops",host);
+      String transport=uri.getTransportParam();
+      if (transport == null) {
+        transport="udp";
+      }
+      Hop hop=new SipCommHop(host + ':' + port+ '/'+ transport);
+      hops.add(hop);
+    }
+  }
+ else   if (requestURI instanceof SipURI && ((SipURI)requestURI).getMAddrParam() != null) {
+    SipURI sipURI=((SipURI)requestURI);
+    String maddr=sipURI.getMAddrParam();
+    String transport=sipURI.getTransportParam();
+    if (transport == null) {
+      transport="udp";
+    }
+    int port=5060;
+    Hop hop=new SipCommHop(maddr,port,transport);
+    hops.add(hop);
+  }
+ else   if (requestURI instanceof SipURI) {
+    SipURI sipURI=((SipURI)requestURI);
+    int port=sipURI.getPort();
+    if (port == -1) {
+      port=5060;
+    }
+    String host=sipURI.getHost();
+    String transport=sipURI.getTransportParam();
+    if (transport == null) {
+      transport="UDP";
+    }
+    Hop hop=new SipCommHop(host + ":" + port+ "/"+ transport);
+    hops.add(hop);
+  }
+ else {
+    throw new IllegalArgumentException("Malformed requestURI");
+  }
+  return (hops.size() == 0) ? null : hops.listIterator();
+}

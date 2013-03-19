@@ -1,0 +1,24 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  Map<String,String> map=new HashMap<String,String>();
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_META_DATA);
+    pstmt.setString(1,sessionID);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String name=rs.getString(1);
+      String value=rs.getString(2);
+      map.put(name,value);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return map;
+}

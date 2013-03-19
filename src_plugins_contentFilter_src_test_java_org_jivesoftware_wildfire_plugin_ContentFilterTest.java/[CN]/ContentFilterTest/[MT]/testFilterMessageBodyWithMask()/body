@@ -1,0 +1,10 @@
+{
+  filter.setPatterns("fox,dog");
+  filter.setMask("**");
+  Message message=new Message();
+  message.setBody("the quick brown fox jumped over the lazy dog");
+  boolean matched=filter.filter(message);
+  assertTrue(matched);
+  assertEquals("the quick brown ** jumped over the lazy **",message.getBody());
+  assertNull(message.getSubject());
+}

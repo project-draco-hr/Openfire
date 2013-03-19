@@ -1,0 +1,15 @@
+{
+  TaskEngine.getInstance().submit(new Runnable(){
+    public void run(){
+      try {
+        for (        RequestQueue requestQueue : getRequestQueues()) {
+          requestQueue.getAgentSessionList().broadcastQueueStatus(requestQueue);
+        }
+      }
+ catch (      Exception e) {
+        Log.error("Error broadcasting status of queues",e);
+      }
+    }
+  }
+);
+}

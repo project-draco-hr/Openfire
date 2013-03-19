@@ -1,0 +1,13 @@
+{
+  IQ agentRevoke=new IQ();
+  agentRevoke.setFrom(queue.getWorkgroup().getJID());
+  agentRevoke.setTo(session.getJID());
+  agentRevoke.setType(IQ.Type.set);
+  Element revoke=agentRevoke.setChildElement("offer-revoke","http://jabber.org/protocol/workgroup");
+  revoke.addAttribute("id",requestID);
+  revoke.addAttribute("jid",getUserJID().toString());
+  revoke.addElement("reason").setText("The offer has timed out");
+  revoke.add(getSessionElement());
+  addRevokeContent(revoke);
+  session.sendRevoke(offer,agentRevoke);
+}

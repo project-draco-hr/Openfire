@@ -1,0 +1,29 @@
+{
+  List<Packet> reply=new ArrayList<Packet>();
+  JID from=packet.getFrom();
+  JID to=packet.getTo();
+  if (packet.getType() == IQ.Type.get) {
+    IQ result=IQ.createResultIQ(packet);
+    if (from.getNode() != null) {
+      try {
+        TransportSession<B> session=sessionManager.getSession(from);
+        Element vcard=session.getBuddyManager().getBuddy(to).getVCard();
+        result.setChildElement(vcard);
+      }
+ catch (      NotFoundException e) {
+        Log.debug("Contact not found while retrieving vcard for: " + from);
+        result.setError(Condition.item_not_found);
+      }
+    }
+ else {
+      result.setError(Condition.feature_not_implemented);
+    }
+    reply.add(result);
+  }
+ else   if (packet.getType() == IQ.Type.set) {
+    IQ result=IQ.createResultIQ(packet);
+    result.setError(Condition.forbidden);
+    reply.add(result);
+  }
+  return reply;
+}

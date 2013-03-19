@@ -1,0 +1,19 @@
+{
+  this.queue=queue;
+  agentList=new LinkedList<AgentSession>();
+  properties=new JiveLiveProperties("fpDispatcherProp",queue.getID());
+  try {
+    info=infoProvider.getDispatcherInfo(queue.getWorkgroup(),queue.getID());
+  }
+ catch (  NotFoundException e) {
+    Log.error("Queue ID " + queue.getID(),e);
+  }
+  loadAgentSelector();
+  fillAgentsList();
+  TaskEngine.getInstance().scheduleAtFixedRate(new TimerTask(){
+    @Override public void run(){
+      checkForNewRequests();
+    }
+  }
+,2000,2000);
+}

@@ -1,0 +1,17 @@
+{
+  Statistic[] def=statsViewer.getStatistic(key);
+  if (def == null) {
+    return null;
+  }
+  JFreeChart chart;
+switch (def[0].getStatType()) {
+case count:
+    chart=generateSparklineBarGraph(key,color,def,startTime,endTime,dataPoints);
+  break;
+default :
+chart=generateSparklineAreaChart(key,color,def,startTime,endTime,dataPoints);
+}
+KeypointPNGEncoderAdapter encoder=new KeypointPNGEncoderAdapter();
+encoder.setEncodingAlpha(true);
+return encoder.encode(chart.createBufferedImage(width,height,BufferedImage.BITMASK,null));
+}

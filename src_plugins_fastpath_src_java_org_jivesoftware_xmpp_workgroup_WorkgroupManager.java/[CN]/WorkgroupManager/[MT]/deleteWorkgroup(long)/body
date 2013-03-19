@@ -1,0 +1,16 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_WORKGROUP);
+    pstmt.setLong(1,workgroupID);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

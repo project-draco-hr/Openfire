@@ -1,0 +1,13 @@
+{
+  long startTime=-1;
+  AgentChatSession returnSession=null;
+  Iterator<AgentChatSession> iter=getAgents();
+  while (iter.hasNext()) {
+    AgentChatSession agent=iter.next();
+    if (agent.getStartTime() <= startTime || startTime == -1) {
+      startTime=agent.getStartTime();
+      returnSession=agent;
+    }
+  }
+  return returnSession;
+}

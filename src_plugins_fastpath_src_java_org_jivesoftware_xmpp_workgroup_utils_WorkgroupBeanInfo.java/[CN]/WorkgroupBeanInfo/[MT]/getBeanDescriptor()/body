@@ -1,0 +1,52 @@
+{
+  BeanDescriptor descriptor=new BeanDescriptor(getBeanClass());
+  try {
+    try {
+      String name=bundle.getString("name");
+      if (name != null) {
+        descriptor.setName(name);
+      }
+    }
+ catch (    MissingResourceException ignored) {
+    }
+    try {
+      String displayName=bundle.getString("displayName");
+      if (displayName != null) {
+        descriptor.setDisplayName(displayName);
+      }
+    }
+ catch (    MissingResourceException ignored) {
+    }
+    try {
+      String shortDescription=bundle.getString("shortDescription");
+      if (shortDescription != null) {
+        descriptor.setShortDescription(shortDescription);
+      }
+    }
+ catch (    MissingResourceException ignored) {
+    }
+    try {
+      String description=bundle.getString("description");
+      if (description != null) {
+        descriptor.setValue("description",description);
+      }
+    }
+ catch (    MissingResourceException ignored) {
+    }
+    Enumeration<String> e=bundle.getKeys();
+    while (e.hasMoreElements()) {
+      String key=e.nextElement();
+      try {
+        String value=bundle.getString(key);
+        if (value != null) {
+          descriptor.setValue(key,value);
+        }
+      }
+ catch (      MissingResourceException ignored) {
+      }
+    }
+  }
+ catch (  Exception e) {
+  }
+  return descriptor;
+}

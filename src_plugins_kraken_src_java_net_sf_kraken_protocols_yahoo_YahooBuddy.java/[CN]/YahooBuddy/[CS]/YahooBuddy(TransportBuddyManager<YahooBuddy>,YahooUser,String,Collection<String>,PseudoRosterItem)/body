@@ -1,0 +1,10 @@
+{
+  super(manager,yahooUser.getId(),nickname,groups);
+  this.yahooUser=yahooUser;
+  this.pseudoRosterItem=rosterItem;
+  String custommsg=this.yahooUser.getCustomStatusMessage();
+  if (custommsg != null) {
+    this.verboseStatus=custommsg;
+  }
+  this.setPresenceAndStatus(((YahooTransport)getManager().getSession().getTransport()).convertYahooStatusToXMPP(yahooUser.getStatus(),yahooUser.getCustomStatus()),yahooUser.getCustomStatusMessage());
+}

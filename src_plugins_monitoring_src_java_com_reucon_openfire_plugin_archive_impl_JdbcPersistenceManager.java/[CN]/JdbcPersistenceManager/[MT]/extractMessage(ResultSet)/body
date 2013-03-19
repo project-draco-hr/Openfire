@@ -1,0 +1,16 @@
+{
+  final ArchivedMessage message;
+  Date time=millisToDate(rs.getLong("sentDate"));
+  Direction direction=getDirection(rs);
+  String type=null;
+  String subject=null;
+  String body=rs.getString("body");
+  String bareJid=rs.getString("bareJID");
+  JID withJid=null;
+  if (Direction.from == direction) {
+    withJid=new JID(rs.getString("fromJID"));
+  }
+  message=new ArchivedMessage(time,direction,null,withJid);
+  message.setBody(body);
+  return message;
+}

@@ -1,0 +1,20 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  KrakenPlugin plugin=(KrakenPlugin)pluginManager.getPlugin("kraken");
+  try {
+    Registration reg=new Registration(registrationID);
+    if (!plugin.getTransportInstance(reg.getTransportType().toString()).isEnabled()) {
+      return LocaleUtils.getLocalizedString("gateway.web.registrations.notenabled","kraken");
+    }
+    reg.setUsername(legacyUsername);
+    if (legacyPassword != null) {
+      reg.setPassword(legacyPassword);
+    }
+    reg.setNickname(legacyNickname);
+    return null;
+  }
+ catch (  NotFoundException e) {
+    Log.error("Not found while editing id " + registrationID,e);
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.regnotfound","kraken");
+  }
+}

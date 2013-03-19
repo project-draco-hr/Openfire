@@ -1,0 +1,36 @@
+{
+  if (packet == null) {
+    throw new IllegalArgumentException("Argument 'packet' cannot be null.");
+  }
+  final String xmlns;
+  final Element child=(packet).getChildElement();
+  if (child != null) {
+    xmlns=child.getNamespaceURI();
+  }
+ else {
+    xmlns=null;
+  }
+  if (xmlns == null) {
+    Log.debug("Cannot process this stanza, as it has no namespace:" + packet.toXML());
+    final IQ error=IQ.createResultIQ(packet);
+    error.setError(Condition.bad_request);
+    parent.sendPacket(error);
+    return;
+  }
+  final Element remove=packet.getChildElement().element("remove");
+  if (remove != null) {
+    handleDeregister(packet);
+  }
+ else {
+switch (packet.getType()) {
+case get:
+      getRegistrationForm(packet);
+    break;
+case set:
+  setRegistrationForm(packet);
+break;
+default :
+break;
+}
+}
+}

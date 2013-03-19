@@ -1,0 +1,15 @@
+{
+  List<StunServerAddress> list=new ArrayList<StunServerAddress>();
+  if (addresses.equals("")) {
+    return list;
+  }
+  String servers[]=addresses.split(";");
+  for (  String server : servers) {
+    String address[]=server.split(":");
+    StunServerAddress aux=new StunServerAddress(address[0],address[1]);
+    if (!list.contains(aux)) {
+      list.add(aux);
+    }
+  }
+  return list;
+}

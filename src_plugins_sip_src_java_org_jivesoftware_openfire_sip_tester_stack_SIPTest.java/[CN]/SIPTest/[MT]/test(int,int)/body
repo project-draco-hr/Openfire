@@ -1,0 +1,44 @@
+{
+  for (int i=0; i < tries && (getResult() == null || Result.Timeout.equals(getResult())); i++) {
+    if (sipManager.isStarted())     try {
+      sipManager.stop();
+    }
+ catch (    CommunicationsException e) {
+      e.printStackTrace();
+    }
+    setResult(Result.Trying);
+    SIPConfig.setRegistrarAddress(sipAccount.getServer());
+    SIPConfig.setAuthenticationRealm(sipAccount.getServer());
+    SIPConfig.setDefaultDomain(sipAccount.getServer());
+    try {
+      sipManager.start();
+      sipManager.addCommunicationsListener(this);
+      try {
+        sipManager.startRegisterProcess(sipAccount.getSipUsername(),sipAccount.getAuthUsername(),sipAccount.getPassword());
+      }
+ catch (      CommunicationsException e) {
+        setResult(Result.NetworkError);
+        Log.error(e.getMessage(),e);
+      }
+      try {
+        Thread.sleep(timeout);
+      }
+ catch (      InterruptedException e) {
+        Log.error(e.getMessage(),e);
+      }
+      if (getResult().equals(Result.Trying))       setResult(Result.Timeout);
+    }
+ catch (    CommunicationsException e) {
+      setResult(Result.NetworkError);
+      Log.error(e.getMessage(),e);
+    }
+ finally {
+      try {
+        sipManager.stop();
+      }
+ catch (      CommunicationsException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+}

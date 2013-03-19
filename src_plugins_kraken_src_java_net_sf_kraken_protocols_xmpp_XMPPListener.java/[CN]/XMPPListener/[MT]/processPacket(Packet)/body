@@ -1,0 +1,42 @@
+{
+  if (packet instanceof GoogleMailBoxPacket) {
+    if (JiveGlobals.getBooleanProperty("plugin.gateway.gtalk.mailnotifications",true)) {
+      GoogleMailBoxPacket mbp=(GoogleMailBoxPacket)packet;
+      this.setLastGMailThreadDate(mbp.getResultTime());
+      Integer newMailCount=0;
+      String mailList="";
+      for (      GoogleMailThread mail : mbp.getMailThreads()) {
+        newMailCount++;
+        if (this.getLastGMailThreadId() == null || mail.getThreadId() > this.getLastGMailThreadId()) {
+          this.setLastGMailThreadId(mail.getThreadId());
+        }
+        String senderList="";
+        for (        GoogleMailSender sender : mail.getSenders()) {
+          if (!senderList.equals("")) {
+            senderList+=", ";
+          }
+          String name=sender.getName();
+          if (name != null) {
+            senderList+=name + " <";
+          }
+          senderList+=sender.getAddress();
+          if (name != null) {
+            senderList+=">";
+          }
+        }
+        mailList+="\n   " + senderList + " sent "+ mail.getSubject();
+      }
+      if (newMailCount > 0) {
+        getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.gtalk.mail","kraken",Arrays.asList(newMailCount)) + mailList,Message.Type.headline);
+      }
+    }
+  }
+ else   if (packet instanceof IQ) {
+    Log.debug("XMPP: Got google mail notification");
+    GoogleNewMailExtension gnme=(GoogleNewMailExtension)packet.getExtension(GoogleNewMailExtension.ELEMENT_NAME,GoogleNewMailExtension.NAMESPACE);
+    if (gnme != null) {
+      Log.debug("XMPP: Sending google mail request");
+      getSession().conn.sendPacket(new IQWithPacketExtension(new GoogleMailNotifyExtension()));
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  if (hop == null) {
+    Log.debug("SipCommHop","Null arg: " + hop);
+    throw new IllegalArgumentException("Null arg!");
+  }
+  StringTokenizer stringTokenizer=new StringTokenizer(hop + "/");
+  String hostPort=stringTokenizer.nextToken("/").trim();
+  transport=stringTokenizer.nextToken().trim();
+  if (transport == null) {
+    transport="UDP";
+  }
+ else   if (transport == "") {
+    transport="UDP";
+  }
+  if (transport.compareToIgnoreCase("UDP") != 0 && transport.compareToIgnoreCase("TCP") != 0) {
+    throw new IllegalArgumentException(hop);
+  }
+  String portString=null;
+  if (hostPort.charAt(0) == '[') {
+    int rightSqBrackIndex=hostPort.indexOf(']');
+    if (rightSqBrackIndex == -1) {
+      throw new IllegalArgumentException("Bad IPv6 reference spec");
+    }
+    host=hostPort.substring(0,rightSqBrackIndex + 1);
+    int portColon=hostPort.indexOf(':',rightSqBrackIndex);
+    if (portColon != -1) {
+      try {
+        portString=hostPort.substring(portColon + 1).trim();
+      }
+ catch (      IndexOutOfBoundsException exc) {
+      }
+    }
+  }
+ else   if (hostPort.indexOf(':') != hostPort.lastIndexOf(":")) {
+    host='[' + hostPort + ']';
+  }
+ else {
+    int portColon=hostPort.indexOf(':');
+    if (portColon == -1) {
+      host=hostPort;
+    }
+ else {
+      host=hostPort.substring(0,portColon).trim();
+      try {
+        portString=hostPort.substring(portColon + 1).trim();
+      }
+ catch (      IndexOutOfBoundsException exc) {
+      }
+    }
+  }
+  if (host == null || host.equals("")) {
+    throw new IllegalArgumentException("no host!");
+  }
+  if (portString == null || portString.equals("")) {
+    port=5060;
+  }
+ else {
+    try {
+      port=Integer.parseInt(portString);
+    }
+ catch (    NumberFormatException ex) {
+      throw new IllegalArgumentException("Bad port spec");
+    }
+  }
+}

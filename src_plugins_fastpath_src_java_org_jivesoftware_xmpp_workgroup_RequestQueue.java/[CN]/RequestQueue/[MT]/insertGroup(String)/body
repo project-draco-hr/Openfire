@@ -1,0 +1,19 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ADD_QUEUE_GROUP);
+    pstmt.setLong(1,id);
+    pstmt.setString(2,groupName);
+    pstmt.executeUpdate();
+    return true;
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return false;
+}

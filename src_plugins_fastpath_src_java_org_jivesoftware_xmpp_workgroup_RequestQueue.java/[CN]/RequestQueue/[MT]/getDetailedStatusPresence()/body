@@ -1,0 +1,32 @@
+{
+  Presence queueStatus=new Presence();
+  queueStatus.setFrom(address);
+  if (workgroup.getStatus() == Workgroup.Status.OPEN && presenceAvailable) {
+    queueStatus.setType(null);
+  }
+ else {
+    queueStatus.setType(Presence.Type.unavailable);
+  }
+  Element details=queueStatus.addChildElement("notify-queue-details","http://jabber.org/protocol/workgroup");
+  int i=0;
+  for (  UserRequest request : getRequests()) {
+    Element user=details.addElement("user","http://jabber.org/protocol/workgroup");
+    try {
+      user.addAttribute("jid",request.getUserJID().toString());
+      Element position=user.addElement("position");
+      position.setText(Integer.toString(i));
+      Element time=user.addElement("time");
+      time.setText(Integer.toString(request.getTimeStatus()));
+      Element joinTime=user.addElement("join-time");
+      joinTime.setText(UTC_FORMAT.format(request.getCreationTime()));
+      i++;
+    }
+ catch (    Exception e) {
+      details.remove(user);
+      if (this.equals(request.getRequestQueue())) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+  return queueStatus;
+}

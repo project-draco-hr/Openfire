@@ -1,0 +1,27 @@
+{
+  Connection con;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    try {
+      pstmt=con.prepareStatement(UPDATE_CHAT_SETTING);
+      DbConnectionManager.setLargeTextField(pstmt,1,settings.getValue());
+      pstmt.setString(2,settings.getKey().toString());
+      pstmt.setString(3,settings.getWorkgroupNode());
+      pstmt.executeUpdate();
+    }
+ catch (    Exception ex) {
+      Log.error(ex.getMessage(),ex);
+    }
+ finally {
+      DbConnectionManager.closeConnection(pstmt,con);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+  ChatSettings chatSettings=cachedSettings.get(settings.getWorkgroupNode());
+  if (chatSettings != null) {
+    chatSettings.addChatSetting(settings);
+  }
+}

@@ -1,0 +1,36 @@
+{
+  this.conversationID=SequenceManager.nextID(this);
+  Connection con=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    PreparedStatement pstmt=con.prepareStatement(INSERT_CONVERSATION);
+    pstmt.setLong(1,conversationID);
+    pstmt.setString(2,room == null ? null : room.toString());
+    pstmt.setInt(3,(external ? 1 : 0));
+    pstmt.setLong(4,startDate.getTime());
+    pstmt.setLong(5,lastActivity.getTime());
+    pstmt.executeUpdate();
+    pstmt.close();
+    pstmt=con.prepareStatement(INSERT_PARTICIPANT);
+    for (    Map.Entry<String,UserParticipations> entry : participants.entrySet()) {
+      JID user=new JID(entry.getKey());
+      for (      ConversationParticipation participation : entry.getValue().getParticipations()) {
+        pstmt.setLong(1,conversationID);
+        pstmt.setLong(2,participation.getJoined().getTime());
+        pstmt.setString(3,user.toBareJID());
+        pstmt.setString(4,user.getResource() == null ? "" : user.getResource());
+        pstmt.setString(5,participation.getNickname());
+        pstmt.executeUpdate();
+      }
+    }
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}

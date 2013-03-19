@@ -1,0 +1,57 @@
+{
+  try {
+    StringBuilder sb=new StringBuilder();
+    sb.append(System.currentTimeMillis());
+    sb.append(',');
+    sb.append(DbConnectionManager.getConnectionProvider().toString());
+    sb.append(',');
+    ExecutorThreadModel threadModel=(ExecutorThreadModel)socketAcceptor.getDefaultConfig().getThreadModel();
+    ThreadPoolExecutor executor=(ThreadPoolExecutor)threadModel.getExecutor();
+    sb.append(executor.getCorePoolSize());
+    sb.append(',');
+    sb.append(executor.getActiveCount());
+    sb.append(',');
+    sb.append(executor.getQueue().size());
+    sb.append(',');
+    sb.append(executor.getCompletedTaskCount());
+    sb.append(',');
+    sb.append(SessionManager.getInstance().getConnectionsCount(false));
+    sb.append(',');
+    sb.append(statCollector.getMsgRead());
+    sb.append(',');
+    sb.append(statCollector.getMsgWritten());
+    sb.append(',');
+    sb.append(statCollector.getQueuedEvents());
+    sb.append(',');
+    sb.append(statCollector.getScheduledWrites());
+    content.add(sb.toString());
+    if (content.size() > (60f / frequency * 1000)) {
+      try {
+        File file=new File(JiveGlobals.getHomeDirectory() + File.separator + "logs",JiveGlobals.getProperty("statistic.filename","stats.txt"));
+        if (!file.exists()) {
+          file.createNewFile();
+        }
+        BufferedWriter out=new BufferedWriter(new FileWriter(file,true));
+        if (!headerPrinter) {
+          out.write(new Date().toString());
+          out.write('\n');
+          out.write("Timestamp, DB min, DB max, DB current, DB used, Core Threads, Active Threads, Queue Tasks, Completed Tasks, Sessions, NIO Read, NIO Written, Queued NIO events, Queues NIO writes");
+          out.write('\n');
+          headerPrinter=true;
+        }
+        for (        String line : content) {
+          out.write(line);
+          out.write('\n');
+        }
+        out.close();
+      }
+ catch (      IOException e) {
+        Log.error("Error creating statistics log file",e);
+      }
+      content.clear();
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error collecting and logging server statistics",e);
+  }
+}

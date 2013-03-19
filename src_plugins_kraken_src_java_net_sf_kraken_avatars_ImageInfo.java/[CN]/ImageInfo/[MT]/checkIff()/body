@@ -1,0 +1,38 @@
+{
+  byte[] a=new byte[10];
+  if (read(a,0,10) != 10) {
+    return false;
+  }
+  final byte[] IFF_RM={0x52,0x4d};
+  if (!equals(a,0,IFF_RM,0,2)) {
+    return false;
+  }
+  int type=getIntBigEndian(a,6);
+  if (type != 0x494c424d && type != 0x50424d20) {
+    return false;
+  }
+  do {
+    if (read(a,0,8) != 8) {
+      return false;
+    }
+    int chunkId=getIntBigEndian(a,0);
+    int size=getIntBigEndian(a,4);
+    if ((size & 1) == 1) {
+      size++;
+    }
+    if (chunkId == 0x424d4844) {
+      if (read(a,0,9) != 9) {
+        return false;
+      }
+      format=FORMAT_IFF;
+      width=getShortBigEndian(a,0);
+      height=getShortBigEndian(a,2);
+      bitsPerPixel=a[8] & 0xff;
+      return (width > 0 && height > 0 && bitsPerPixel > 0 && bitsPerPixel < 33);
+    }
+ else {
+      skip(size);
+    }
+  }
+ while (true);
+}

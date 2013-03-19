@@ -1,0 +1,22 @@
+{
+  InterceptorManager interceptorManager=QueueInterceptorManager.getInstance();
+  try {
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,false);
+    if (getRoutingMessage() != null && getRoutingMessage().length() > 0) {
+      sendReply(message,getRoutingMessage());
+    }
+    session.setCurrentStep(3);
+    UserRequest request=new UserRequest(session,workgroup);
+    if (!workgroup.queueRequest(request)) {
+      sendReply(message,getCannotJoinMessage());
+      closeSession(message);
+    }
+ else {
+      session.setRequest(request);
+    }
+    interceptorManager.invokeInterceptors(workgroup.getJID().toBareJID(),message,true,true);
+  }
+ catch (  PacketRejectedException e) {
+    workgroup.rejectPacket(message,e);
+  }
+}

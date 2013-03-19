@@ -1,0 +1,32 @@
+{
+  Message m=new Message();
+  m.setType(type);
+  m.setFrom(from);
+  m.setTo(to);
+  m.setBody(net.sf.kraken.util.StringUtils.removeInvalidXMLCharacters(msg));
+  if (msg.length() == 0) {
+    Log.debug("Dropping empty message packet.");
+    return;
+  }
+  if (type.equals(Message.Type.chat) || type.equals(Message.Type.normal)) {
+    chatStateEventSource.isActive(from,to);
+    m.addChildElement("active",NameSpace.CHATSTATES);
+    if (JiveGlobals.getBooleanProperty("plugin.gateway.globsl.messageeventing",true)) {
+      Element xEvent=m.addChildElement("x","jabber:x:event");
+      xEvent.addElement("composing");
+    }
+  }
+ else   if (type.equals(Message.Type.error)) {
+    m.setError(Condition.undefined_condition);
+  }
+  try {
+    TransportSession session=sessionManager.getSession(to);
+    if (session.getDetachTimestamp() != 0) {
+      session.storePendingPacket(m);
+      return;
+    }
+  }
+ catch (  NotFoundException e) {
+  }
+  sendPacket(m);
+}

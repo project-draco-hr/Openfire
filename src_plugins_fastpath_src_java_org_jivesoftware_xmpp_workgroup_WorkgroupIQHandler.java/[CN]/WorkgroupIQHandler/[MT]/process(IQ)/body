@@ -1,0 +1,34 @@
+{
+  try {
+    IQ.Type type=packet.getType();
+    if (type == IQ.Type.set) {
+      handleIQSet(packet);
+    }
+ else     if (type == IQ.Type.get) {
+      handleIQGet(packet);
+    }
+ else     if (type == IQ.Type.result) {
+      handleIQResult(packet);
+    }
+ else     if (type == IQ.Type.error) {
+      handleIQError(packet);
+    }
+ else {
+      IQ reply=IQ.createResultIQ(packet);
+      if (packet.getChildElement() != null) {
+        reply.setChildElement(packet.getChildElement().createCopy());
+      }
+      reply.setError(new PacketError(PacketError.Condition.bad_request));
+      workgroup.send(reply);
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+    IQ reply=IQ.createResultIQ(packet);
+    if (packet.getChildElement() != null) {
+      reply.setChildElement(packet.getChildElement().createCopy());
+    }
+    reply.setError(new PacketError(PacketError.Condition.internal_server_error));
+    workgroup.send(reply);
+  }
+}

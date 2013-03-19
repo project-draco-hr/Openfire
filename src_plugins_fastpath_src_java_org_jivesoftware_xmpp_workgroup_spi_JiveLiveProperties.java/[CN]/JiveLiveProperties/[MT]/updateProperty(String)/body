@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement("UPDATE " + tableName + " set propValue=? WHERE ownerID=? AND name=?");
+    pstmt.setString(1,properties.get(data));
+    pstmt.setLong(2,id);
+    DbConnectionManager.setLargeTextField(pstmt,3,data);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

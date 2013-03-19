@@ -1,0 +1,48 @@
+{
+  final Iterator<Long> regIterator=registrationIDs.iterator();
+  return new Iterator(){
+    private Registration nextElement=null;
+    public boolean hasNext(){
+      if (nextElement == null) {
+        nextElement=getNextElement();
+        if (nextElement == null) {
+          return false;
+        }
+      }
+      return true;
+    }
+    public Registration next(){
+      Registration element;
+      if (nextElement != null) {
+        element=nextElement;
+        nextElement=null;
+      }
+ else {
+        element=getNextElement();
+        if (element == null) {
+          throw new NoSuchElementException();
+        }
+      }
+      return element;
+    }
+    public void remove(){
+      throw new UnsupportedOperationException();
+    }
+    private Registration getNextElement(){
+      if (!regIterator.hasNext()) {
+        return null;
+      }
+      while (regIterator.hasNext()) {
+        try {
+          long registrationID=regIterator.next();
+          return new Registration(registrationID);
+        }
+ catch (        Exception e) {
+          Log.error(e);
+        }
+      }
+      return null;
+    }
+  }
+;
+}

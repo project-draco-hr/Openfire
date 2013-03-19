@@ -1,0 +1,14 @@
+{
+  List<String> groupList=new ArrayList<String>();
+  final SSIHierarchy ssi=((OSCARSession)this.getManager().getSession()).getSsiHierarchy();
+  for (  BuddyItem buddyItem : buddyItems.values()) {
+    try {
+      final int groupID=buddyItem.getGroupId();
+      final String groupName=ssi.getGroupName(groupID);
+      groupList.add(groupName);
+    }
+ catch (    Exception e) {
+    }
+  }
+  setGroups(groupList);
+}

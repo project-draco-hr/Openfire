@@ -1,0 +1,17 @@
+{
+  userManager.createUser(username,password,name,email);
+  if (groupNames != null) {
+    Collection<Group> groups=new ArrayList<Group>();
+    StringTokenizer tkn=new StringTokenizer(groupNames,",");
+    while (tkn.hasMoreTokens()) {
+      try {
+        groups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
+      }
+ catch (      GroupNotFoundException e) {
+      }
+    }
+    for (    Group group : groups) {
+      group.getMembers().add(server.createJID(username,null));
+    }
+  }
+}

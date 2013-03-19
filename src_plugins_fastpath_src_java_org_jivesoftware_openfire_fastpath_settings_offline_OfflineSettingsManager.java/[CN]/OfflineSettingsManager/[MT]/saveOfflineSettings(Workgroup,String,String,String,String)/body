@@ -1,0 +1,38 @@
+{
+  OfflineSettings offline;
+  try {
+    offline=getOfflineSettings(workgroup);
+    return updateOfflineSettings(workgroup,webPage,email,subject,offlineText);
+  }
+ catch (  OfflineSettingsNotFound osnf) {
+    offline=new OfflineSettings();
+  }
+  offline.setRedirectURL(webPage);
+  offline.setEmailAddress(email);
+  offline.setOfflineText(offlineText);
+  offline.setSubject(subject);
+  String redirectURL=webPage != null ? webPage : "";
+  String emailAddress=email != null ? email : "";
+  subject=subject != null ? subject : "";
+  offlineText=offlineText != null ? offlineText : "";
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(INSERT_OFFLINE_SETTINGS);
+    pstmt.setLong(1,workgroup.getID());
+    pstmt.setString(2,redirectURL);
+    pstmt.setString(3,emailAddress);
+    pstmt.setString(4,subject);
+    DbConnectionManager.setLargeTextField(pstmt,5,offlineText);
+    pstmt.executeUpdate();
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+    return null;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return offline;
+}

@@ -1,0 +1,37 @@
+{
+  final IQ replyPacket;
+  if (iq == null) {
+    throw new IllegalArgumentException("Argument 'iq' cannot be null.");
+  }
+  final IQ.Type type=iq.getType();
+  if (type != IQ.Type.get && type != IQ.Type.set) {
+    throw new IllegalArgumentException("Argument 'iq' must be of type 'get' or 'set'");
+  }
+  final Element childElement=iq.getChildElement();
+  if (childElement == null) {
+    replyPacket=IQ.createResultIQ(iq);
+    replyPacket.setError(new PacketError(Condition.bad_request,org.xmpp.packet.PacketError.Type.modify,"IQ stanzas of type 'get' and 'set' MUST contain one and only one child element (RFC 3920 section 9.2.3)."));
+    return replyPacket;
+  }
+  final String namespace=childElement.getNamespaceURI();
+  if (namespace == null) {
+    replyPacket=IQ.createResultIQ(iq);
+    replyPacket.setError(Condition.feature_not_implemented);
+    return replyPacket;
+  }
+  if (namespace.equals(NAMESPACE_JABBER_IQ_SEARCH)) {
+    replyPacket=handleSearchRequest(iq);
+  }
+ else   if (namespace.equals(IQDiscoInfoHandler.NAMESPACE_DISCO_INFO)) {
+    replyPacket=handleDiscoInfo(iq);
+  }
+ else   if (namespace.equals(IQDiscoItemsHandler.NAMESPACE_DISCO_ITEMS)) {
+    replyPacket=IQ.createResultIQ(iq);
+    replyPacket.setChildElement("query",IQDiscoItemsHandler.NAMESPACE_DISCO_ITEMS);
+  }
+ else {
+    replyPacket=IQ.createResultIQ(iq);
+    replyPacket.setError(Condition.feature_not_implemented);
+  }
+  return replyPacket;
+}

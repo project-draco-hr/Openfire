@@ -1,0 +1,67 @@
+{
+  long timeoutTime=System.currentTimeMillis() + info.getRequestTimeout();
+  final Request request=offer.getRequest();
+  boolean canBeInQueue=request instanceof UserRequest;
+  Map<String,List<String>> map=request.getMetaData();
+  String initialAgent=map.get("agent") == null || map.get("agent").isEmpty() ? null : map.get("agent").get(0);
+  String ignoreAgent=map.get("ignore") == null || map.get("ignore").isEmpty() ? null : map.get("ignore").get(0);
+  Log.debug("RR - Dispatching request: " + request + " in queue: "+ queue.getAddress());
+  if (!agentList.isEmpty()) {
+    for (long timeRemaining=timeoutTime - System.currentTimeMillis(); !offer.isAccepted() && timeRemaining > 0 && !offer.isCancelled(); timeRemaining=timeoutTime - System.currentTimeMillis()) {
+      try {
+        AgentSession session=getBestNextAgent(initialAgent,ignoreAgent,offer);
+        if (session == null && agentList.isEmpty()) {
+          break;
+        }
+ else         if (session == null || offer.isRejector(session)) {
+          initialAgent=null;
+          Thread.sleep(1000);
+        }
+ else {
+          Workgroup workgroup=request.getWorkgroup();
+          if (session.getCurrentChats(workgroup) < session.getMaxChats(workgroup)) {
+            timeRemaining=timeoutTime - System.currentTimeMillis();
+            offer.setTimeout(timeRemaining < info.getOfferTimeout() ? timeRemaining : info.getOfferTimeout());
+            if (!request.sendOffer(session,queue)) {
+              Log.debug("RR - Offer for request: " + offer.getRequest() + " FAILED TO BE SENT to agent: "+ session.getJID());
+              continue;
+            }
+            Log.debug("RR - Offer for request: " + offer.getRequest() + " SENT to agent: "+ session.getJID());
+            offer.waitForResolution();
+            if (offer.isAccepted()) {
+              AgentSession selectedAgent=offer.getAcceptedSessions().get(0);
+              Log.debug("RR - Agent: " + selectedAgent.getJID() + " ACCEPTED request: "+ request);
+              offer.invite(selectedAgent);
+              for (              AgentSession agent : offer.getAcceptedSessions()) {
+                agent.removeOffer(offer);
+              }
+              if (canBeInQueue) {
+                queue.removeRequest((UserRequest)request);
+              }
+            }
+          }
+ else {
+            Log.debug("RR - Selected agent: " + session.getJID() + " has reached max number of chats");
+          }
+        }
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+  if (!offer.isAccepted() && !offer.isCancelled()) {
+    long limit=request.getCreationTime().getTime() + (info.getRequestTimeout() * (getOverflowTimes() + 1));
+    if (limit - System.currentTimeMillis() <= 0 || !canBeInQueue) {
+      Log.debug("RR - Cancelling request that maxed out overflow limit or cannot be queued: " + request);
+      request.cancel(Request.CancelType.AGENT_NOT_FOUND);
+    }
+ else {
+      overflow(offer);
+      if (!offer.isAccepted() && !offer.isCancelled()) {
+        Log.debug("RR - Cancelling request that didn't overflow: " + request);
+        request.cancel(Request.CancelType.AGENT_NOT_FOUND);
+      }
+    }
+  }
+}

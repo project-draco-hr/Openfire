@@ -1,0 +1,11 @@
+{
+  Chat chat=conn.getChatManager().createChat(getTransport().convertJIDToID(jid),listener);
+  try {
+    Message m=new Message();
+    m.setTo(getTransport().convertJIDToID(jid));
+    m.addExtension(new BuzzExtension());
+    chat.sendMessage(m);
+  }
+ catch (  XMPPException e) {
+  }
+}

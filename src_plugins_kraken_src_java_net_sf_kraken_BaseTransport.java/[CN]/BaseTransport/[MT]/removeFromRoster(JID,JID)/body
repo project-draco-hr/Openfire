@@ -1,0 +1,18 @@
+{
+  try {
+    Roster roster=rosterManager.getRoster(userjid.getNode());
+    for (    RosterItem ri : roster.getRosterItems()) {
+      if (ri.getJid().toBareJID().equals(contactjid.toBareJID())) {
+        try {
+          roster.deleteRosterItem(ri.getJid(),false);
+        }
+ catch (        Exception e) {
+          Log.debug("Error removing roster item: " + ri.toString(),e);
+        }
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new UserNotFoundException("Could not find roster for " + userjid.toString());
+  }
+}

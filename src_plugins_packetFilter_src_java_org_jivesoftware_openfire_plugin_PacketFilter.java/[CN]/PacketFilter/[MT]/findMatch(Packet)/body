@@ -1,0 +1,9 @@
+{
+  if (packet.getTo() == null || packet.getFrom() == null)   return null;
+  for (  Rule rule : ruleManager.getRules()) {
+    if (!rule.isDisabled() && typeMatch(rule.getPackeType(),packet) && sourceDestMatch(rule.getDestType(),rule.getDestination(),packet.getTo())&& sourceDestMatch(rule.getSourceType(),rule.getSource(),packet.getFrom())) {
+      return rule;
+    }
+  }
+  return null;
+}

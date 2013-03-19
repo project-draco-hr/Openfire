@@ -1,0 +1,24 @@
+{
+  Iterator<E> result=null;
+  if (startIndex == 0 && numResults == NO_RESULT_LIMIT) {
+    result=rawResults;
+  }
+ else {
+    LinkedList<E> list=new LinkedList<E>();
+    while (rawResults.hasNext() && startIndex-- > 0) {
+      rawResults.next();
+    }
+    if (numResults == NO_RESULT_LIMIT) {
+      while (rawResults.hasNext()) {
+        list.add(rawResults.next());
+      }
+    }
+ else {
+      for (int i=0; rawResults.hasNext() && i < numResults; i++) {
+        list.add(rawResults.next());
+      }
+    }
+    result=list.iterator();
+  }
+  return result;
+}

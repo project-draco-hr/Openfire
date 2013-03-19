@@ -1,0 +1,18 @@
+{
+  StringWriter stringWriter=new StringWriter();
+  XMLWriter writer=null;
+  try {
+    writer=new XMLWriter(stringWriter,OutputFormat.createPrettyPrint());
+    writer.write(exportUsers());
+  }
+ catch (  IOException ioe) {
+    Log.error(ioe.getMessage(),ioe);
+    throw ioe;
+  }
+ finally {
+    if (writer != null) {
+      writer.close();
+    }
+  }
+  return stringWriter.toString();
+}

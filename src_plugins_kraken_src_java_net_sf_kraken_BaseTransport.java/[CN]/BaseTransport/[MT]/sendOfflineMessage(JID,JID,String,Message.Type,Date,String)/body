@@ -1,0 +1,33 @@
+{
+  Message m=new Message();
+  m.setType(type);
+  m.setFrom(from);
+  m.setTo(to);
+  m.setBody(net.sf.kraken.util.StringUtils.removeInvalidXMLCharacters(msg));
+  if (msg.length() == 0) {
+    Log.debug("Dropping empty message packet.");
+    return;
+  }
+  Element delay=m.addChildElement("delay",NameSpace.DELAY);
+  delay.addAttribute("stamp",UTC_FORMAT.format(time));
+  if (reason != null) {
+    delay.addCDATA(reason);
+  }
+  Element offline=m.addChildElement("offline",NameSpace.OFFLINE);
+  offline.addElement("item").addAttribute("node",UTC_FORMAT.format(time));
+  Element x=m.addChildElement("x",NameSpace.X_DELAY);
+  x.addAttribute("stamp",UTC_FORMAT.format(time));
+  if (reason != null) {
+    x.addCDATA(reason);
+  }
+  try {
+    TransportSession session=sessionManager.getSession(to);
+    if (session.getDetachTimestamp() != 0) {
+      session.storePendingPacket(m);
+      return;
+    }
+  }
+ catch (  NotFoundException e) {
+  }
+  sendPacket(m);
+}

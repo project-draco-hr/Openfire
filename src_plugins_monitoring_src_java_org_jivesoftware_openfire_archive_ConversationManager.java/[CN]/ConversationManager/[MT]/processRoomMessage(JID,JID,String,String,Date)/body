@@ -1,0 +1,34 @@
+{
+  String conversationKey=getRoomConversationKey(roomJID);
+synchronized (conversationKey.intern()) {
+    Conversation conversation=conversations.get(conversationKey);
+    if (conversation == null) {
+      Date start=new Date(date.getTime() - 1);
+      conversation=new Conversation(this,roomJID,false,start);
+      conversations.put(conversationKey,conversation);
+      for (      ConversationListener listener : conversationListeners) {
+        listener.conversationCreated(conversation);
+      }
+    }
+ else     if ((date.getTime() - conversation.getLastActivity().getTime() > idleTime) || (date.getTime() - conversation.getStartDate().getTime() > maxTime)) {
+      removeConversation(conversationKey,conversation,conversation.getLastActivity());
+      Date start=new Date(date.getTime() - 1);
+      conversation=new Conversation(this,roomJID,false,start);
+      conversations.put(conversationKey,conversation);
+      for (      ConversationListener listener : conversationListeners) {
+        listener.conversationCreated(conversation);
+      }
+    }
+    conversation.messageReceived(sender,date);
+    if (metadataArchivingEnabled) {
+      conversationQueue.add(conversation);
+    }
+    if (roomArchivingEnabled && (roomsArchived.isEmpty() || roomsArchived.contains(roomJID.getNode()))) {
+      JID jid=new JID(roomJID + "/" + nickname);
+      messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,jid,date,body,false));
+    }
+    for (    ConversationListener listener : conversationListeners) {
+      listener.conversationUpdated(conversation,date);
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  TaskEngine.getInstance().submit(new Runnable(){
+    public void run(){
+      try {
+        Collection<AgentSession> sessions=getAgentSessions();
+        for (        AgentSession session : sessions) {
+          workgroupPresenceHandler.sendPresence(session.getJID());
+        }
+        Set<JID> jids=new HashSet<JID>();
+        for (        AgentSession session : sessions) {
+          jids.addAll(session.getUsersJID(Workgroup.this));
+        }
+        for (        JID jid : jids) {
+          workgroupPresenceHandler.sendPresence(jid);
+        }
+      }
+ catch (      Exception e) {
+        Log.error("Error broadcasting workgroup presence",e);
+      }
+    }
+  }
+);
+}

@@ -1,0 +1,16 @@
+{
+  ChatbotSession session=getSession(receiver,false);
+  if (session != null) {
+    Message packet=new Message();
+    packet.setTo(receiver);
+    packet.setFrom(sender);
+    packet.setThread(session.getMessageThread());
+    if (session.getMessageThread() != null) {
+      packet.setType(Message.Type.chat);
+    }
+    String body=getPositionMessage().replace("${position}",String.valueOf(request.getPosition() + 1));
+    body=body.replace("${waitTime}",String.valueOf(request.getTimeStatus()));
+    packet.setBody(body);
+    send(packet);
+  }
+}

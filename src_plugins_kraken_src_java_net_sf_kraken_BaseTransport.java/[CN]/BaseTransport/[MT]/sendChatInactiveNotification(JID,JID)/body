@@ -1,0 +1,12 @@
+{
+  Message m=new Message();
+  m.setType(Message.Type.chat);
+  m.setTo(to);
+  m.setFrom(from);
+  if (JiveGlobals.getBooleanProperty("plugin.gateway.globsl.messageeventing",true)) {
+    Element xEvent=m.addChildElement("x","jabber:x:event");
+    xEvent.addElement("id");
+  }
+  m.addChildElement("inactive",NameSpace.CHATSTATES);
+  sendPacket(m);
+}

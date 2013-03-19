@@ -1,0 +1,14 @@
+{
+  Log.debug("SameTime: Closed IM session: " + imEvent);
+  Im im=imEvent.getIm();
+  Im currentIm=null;
+  for (int i=0; i < imOpened.size(); i++) {
+    currentIm=imOpened.elementAt(i);
+    if (currentIm.equals(im)) {
+      imOpened.removeElement(im);
+      im.close(0);
+      im.removeImListener(this);
+      break;
+    }
+  }
+}

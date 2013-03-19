@@ -1,0 +1,28 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    Date time=new Date();
+    con=DbConnectionManager.getConnection();
+    if (joining) {
+      pstmt=con.prepareStatement(INSERT_AGENT_SESSION);
+      pstmt.setString(1,sessionID);
+      pstmt.setString(2,agent);
+      pstmt.setString(3,StringUtils.dateToMillis(time));
+      pstmt.setString(4,"");
+    }
+ else {
+      pstmt=con.prepareStatement(UPDATE_AGENT_SESSION);
+      pstmt.setString(1,StringUtils.dateToMillis(time));
+      pstmt.setString(2,sessionID);
+      pstmt.setString(3,agent);
+    }
+    pstmt.executeUpdate();
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

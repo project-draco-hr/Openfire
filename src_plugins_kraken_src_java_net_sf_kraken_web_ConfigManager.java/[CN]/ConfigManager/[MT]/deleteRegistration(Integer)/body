@@ -1,0 +1,21 @@
+{
+  PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
+  KrakenPlugin plugin=(KrakenPlugin)pluginManager.getPlugin("kraken");
+  try {
+    Registration reg=new Registration(registrationID);
+    if (!plugin.getTransportInstance(reg.getTransportType().toString()).isEnabled()) {
+      return LocaleUtils.getLocalizedString("gateway.web.registrations.notenabled","kraken");
+    }
+    final BaseTransport transport=plugin.getTransportInstance(reg.getTransportType().toString()).getTransport();
+    new RegistrationHandler(transport).deleteRegistration(reg.getJID());
+    return null;
+  }
+ catch (  NotFoundException e) {
+    Log.error("Not found while deleting id " + registrationID,e);
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.xmppnotfound","kraken");
+  }
+catch (  UserNotFoundException e) {
+    Log.error("Not found while deleting id " + registrationID,e);
+    return LocaleUtils.getLocalizedString("gateway.web.registrations.regnotfound","kraken");
+  }
+}

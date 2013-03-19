@@ -1,0 +1,28 @@
+{
+  IQ reply;
+  Element iq=packet.getChildElement();
+  String personalMacro=iq.element("personalMacro").getTextTrim();
+  try {
+    Agent agent=workgroup.getAgentManager().getAgent(packet.getFrom());
+    DbProperties props=agent.getProperties();
+    XStream xstream=new XStream();
+    xstream.alias("macro",Macro.class);
+    xstream.alias("macrogroup",MacroGroup.class);
+    MacroGroup group=(MacroGroup)xstream.fromXML(personalMacro);
+    String saveString=xstream.toXML(group);
+    try {
+      props.deleteProperty("personal.macro");
+      props.setProperty("personal.macro",saveString);
+    }
+ catch (    UnauthorizedException e) {
+      Log.error(e.getMessage(),e);
+    }
+    reply=IQ.createResultIQ(packet);
+  }
+ catch (  AgentNotFoundException e) {
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+  }
+  workgroup.send(reply);
+}

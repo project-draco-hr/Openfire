@@ -1,0 +1,20 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_RULE);
+    pstmt.setInt(1,new Integer(ruleId));
+    pstmt.execute();
+    rules.remove(getRuleById(ruleId));
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+    return false;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+    updateCluster();
+  }
+  return true;
+}

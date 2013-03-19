@@ -1,0 +1,14 @@
+{
+  if (!read || processed) {
+    return;
+  }
+  JID jid=packet.getFrom();
+  if (jidBanMap.containsKey(jid.toBareJID()) || domainBanMap.containsKey(jid.getDomain())) {
+    sendNotifications(packet,jid.toString());
+    PacketRejectedException exception=new PacketRejectedException("User '" + packet.getFrom().toBareJID() + "' not allowed to join queue.");
+    if (rejectionMessage != null) {
+      exception.setRejectionMessage(rejectionMessage);
+    }
+    throw exception;
+  }
+}

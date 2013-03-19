@@ -1,0 +1,42 @@
+{
+  MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+  StatsViewer viewer=(StatsViewer)plugin.getModule(StatsViewer.class);
+  Statistic.Type type=viewer.getStatistic(key)[0].getStatType();
+  double[] lows=viewer.getMin(key,timePeriod[0],timePeriod[1],(int)timePeriod[2]);
+  double[] highs=viewer.getMax(key,timePeriod[0],timePeriod[1],(int)timePeriod[2]);
+  String low;
+  NumberFormat format=NumberFormat.getNumberInstance();
+  format.setMaximumFractionDigits(0);
+  if (lows.length > 0) {
+    if (type == Statistic.Type.count) {
+      low=String.valueOf((int)lows[0]);
+    }
+ else {
+      double l=lows[0];
+      if (Double.isNaN(l)) {
+        l=0;
+      }
+      low=format.format(l);
+    }
+  }
+ else {
+    low=String.valueOf(0);
+  }
+  String high;
+  if (highs.length > 0) {
+    if (type == Statistic.Type.count) {
+      high=String.valueOf((int)highs[0]);
+    }
+ else {
+      double h=highs[0];
+      if (Double.isNaN(h)) {
+        h=0;
+      }
+      high=format.format(h);
+    }
+  }
+ else {
+    high=String.valueOf(0);
+  }
+  return new String[]{low,high};
+}

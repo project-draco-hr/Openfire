@@ -1,0 +1,18 @@
+{
+  ClientSession session=((ClientSession)getSession());
+  PrivacyList list=null;
+  if (listName != null) {
+    try {
+      String username=session.getUsername();
+      list=PrivacyListManager.getInstance().getPrivacyList(username,listName);
+    }
+ catch (    UserNotFoundException e) {
+    }
+  }
+  if (activeList) {
+    session.setActiveList(list);
+  }
+ else {
+    session.setDefaultList(list);
+  }
+}

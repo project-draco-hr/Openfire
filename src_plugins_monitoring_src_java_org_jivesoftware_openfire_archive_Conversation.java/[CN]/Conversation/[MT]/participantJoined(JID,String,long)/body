@@ -1,0 +1,30 @@
+{
+  UserParticipations userParticipations=participants.get(user.toString());
+  if (userParticipations == null) {
+    userParticipations=new UserParticipations(true);
+    participants.put(user.toString(),userParticipations);
+  }
+ else {
+    ConversationParticipation lastParticipation=userParticipations.getRecentParticipation();
+    if (lastParticipation != null && lastParticipation.getLeft() == null) {
+      Log.warn("Found user that never left a previous conversation: " + user);
+      lastParticipation.participationEnded(new Date(timestamp));
+      conversationManager.queueParticipantLeft(this,user,lastParticipation);
+    }
+  }
+  ConversationParticipation newParticipation=new ConversationParticipation(new Date(timestamp),nickname);
+  userParticipations.addParticipation(newParticipation);
+  if (conversationManager.isMetadataArchivingEnabled()) {
+    try {
+      if (conversationID == -1) {
+        insertIntoDb();
+      }
+ else {
+        insertIntoDb(user,nickname,timestamp);
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  String sql="DELETE FROM ofSipUser WHERE username = ?";
+  Connection con=null;
+  PreparedStatement psmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    psmt=con.prepareStatement(sql);
+    psmt.setString(1,sipAccount.getUsername());
+    psmt.executeUpdate();
+    psmt.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(psmt,con);
+  }
+}

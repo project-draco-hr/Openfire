@@ -1,0 +1,31 @@
+{
+  String minChats=JiveGlobals.getProperty("xmpp.live.defaults.minchats");
+  String maxChats=JiveGlobals.getProperty("xmpp.live.defaults.maxchats");
+  if (minChats != null && minChats.trim().length() > 0) {
+    defaultMinChats=Integer.parseInt(minChats);
+  }
+  if (maxChats != null && maxChats.trim().length() > 0) {
+    defaultMaxChats=Integer.parseInt(maxChats);
+  }
+  String offerTimeout=JiveGlobals.getProperty("xmpp.live.defaults.offerTimeout");
+  String requestTimeout=JiveGlobals.getProperty("xmpp.live.defaults.requestTimeout");
+  if (offerTimeout != null && offerTimeout.trim().length() > 0) {
+    defaultOfferTimeout=Integer.parseInt(offerTimeout);
+  }
+  if (requestTimeout != null && requestTimeout.trim().length() > 0) {
+    defaultRequestTimeout=Integer.parseInt(requestTimeout);
+  }
+  ChatSettingsManager.getInstance();
+  emailTranscriptEvent=new EmailTranscriptEvent();
+  addGroupManagerListener();
+  commandManager=new AdHocCommandManager();
+  iqDiscoInfoHandler=new IQDiscoInfoHandler(this,commandManager);
+  iqDiscoItemsHandler=new IQDiscoItemsHandler(this,commandManager);
+  presenceCheckTask=new TimerTask(){
+    @Override public void run(){
+      handleOutdatePresence();
+    }
+  }
+;
+  TaskEngine.getInstance().scheduleAtFixedRate(presenceCheckTask,5000,5000);
+}

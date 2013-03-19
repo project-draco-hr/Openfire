@@ -1,0 +1,14 @@
+{
+  final ChatSession chatSession=getChatSession(sessionID);
+  if (chatSession != null) {
+    final StringBuilder builder=new StringBuilder();
+    String transcript=chatSession.getTranscript();
+    if (ModelUtil.hasLength(body)) {
+      builder.append(body);
+    }
+    builder.append("<br/>");
+    builder.append("<table>").append(transcript).append("</table>");
+    EmailService emailService=EmailService.getInstance();
+    emailService.sendMessage(null,to,null,from,subject,null,builder.toString());
+  }
+}

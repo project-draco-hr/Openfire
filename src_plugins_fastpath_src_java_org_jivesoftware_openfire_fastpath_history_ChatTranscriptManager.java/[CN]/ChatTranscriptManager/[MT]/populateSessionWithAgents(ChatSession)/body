@@ -1,0 +1,32 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION_AGENTS);
+    pstmt.setString(1,session.getSessionID());
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String agentJID=rs.getString(1);
+      String joinTime=rs.getString(2);
+      String endTime=rs.getString(3);
+      long start=-1;
+      if (joinTime != null && joinTime.trim().length() > 0) {
+        start=Long.parseLong(joinTime);
+      }
+      long end=-1;
+      if (endTime != null && endTime.trim().length() > 0) {
+        end=Long.parseLong(endTime);
+      }
+      AgentChatSession agentSession=new AgentChatSession(agentJID,start,end);
+      session.addAgent(agentSession);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}

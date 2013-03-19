@@ -1,0 +1,18 @@
+{
+  if (this.workgroup != workgroup) {
+    return;
+  }
+  if (getMaxPendingTranscripts() > 0 && pendingTranscripts.incrementAndGet() == getMaxPendingTranscripts()) {
+    TaskEngine.getInstance().submit(new Runnable(){
+      public void run(){
+        try {
+          updateIndex(true);
+        }
+ catch (        IOException e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
+);
+  }
+}

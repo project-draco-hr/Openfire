@@ -1,0 +1,21 @@
+{
+  if (!isDone()) {
+    return;
+  }
+  simulateCacheInserts(C2SCache);
+  simulateCacheInserts(anonymousC2SCache);
+  simulateCacheInserts(S2SCache);
+  simulateCacheInserts(componentsCache);
+  simulateCacheInserts(sessionInfoCache);
+  simulateCacheInserts(componentSessionsCache);
+  simulateCacheInserts(multiplexerSessionsCache);
+  simulateCacheInserts(incomingServerSessionsCache);
+  simulateCacheInserts(directedPresencesCache);
+  ClusterManager.fireJoinedCluster(false);
+  if (CacheFactory.isSeniorClusterMember()) {
+    seniorClusterMember=true;
+    ClusterManager.fireMarkedAsSeniorClusterMember();
+  }
+  logger.info("Joined cluster as node: " + cluster.getLocalMember().getUuid() + ". Senior Member: "+ (CacheFactory.isSeniorClusterMember() ? "YES" : "NO"));
+  done=false;
+}

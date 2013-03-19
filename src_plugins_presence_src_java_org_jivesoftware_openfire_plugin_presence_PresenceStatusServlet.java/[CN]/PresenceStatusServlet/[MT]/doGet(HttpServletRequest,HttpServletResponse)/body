@@ -1,0 +1,49 @@
+{
+  String sender=request.getParameter("req_jid");
+  String jid=request.getParameter("jid");
+  String type=request.getParameter("type");
+  type=type == null ? "image" : type;
+  try {
+    Presence presence=plugin.getPresence(sender,jid);
+    if ("image".equals(type)) {
+      imageProvider.sendInfo(request,response,presence);
+    }
+ else     if ("xml".equals(type)) {
+      xmlProvider.sendInfo(request,response,presence);
+    }
+ else     if ("text".equals(type)) {
+      textProvider.sendInfo(request,response,presence);
+    }
+ else {
+      Log.warn("The presence servlet received an invalid request of type: " + type);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    if ("image".equals(type)) {
+      imageProvider.sendUserNotFound(request,response);
+    }
+ else     if ("xml".equals(type)) {
+      xmlProvider.sendUserNotFound(request,response);
+    }
+ else     if ("text".equals(type)) {
+      textProvider.sendUserNotFound(request,response);
+    }
+ else {
+      Log.warn("The presence servlet received an invalid request of type: " + type);
+    }
+  }
+catch (  IllegalArgumentException e) {
+    if ("image".equals(type)) {
+      imageProvider.sendUserNotFound(request,response);
+    }
+ else     if ("xml".equals(type)) {
+      xmlProvider.sendUserNotFound(request,response);
+    }
+ else     if ("text".equals(type)) {
+      textProvider.sendUserNotFound(request,response);
+    }
+ else {
+      Log.warn("The presence servlet received an invalid request of type: " + type);
+    }
+  }
+}

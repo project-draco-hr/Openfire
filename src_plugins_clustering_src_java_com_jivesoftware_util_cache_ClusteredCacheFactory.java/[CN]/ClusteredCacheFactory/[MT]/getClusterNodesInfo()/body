@@ -1,0 +1,10 @@
+{
+  if (cluster == null) {
+    return Collections.emptyList();
+  }
+  List<ClusterNodeInfo> nodesInfo=new ArrayList<ClusterNodeInfo>();
+  for (  Object member : cluster.getMemberSet()) {
+    nodesInfo.add(new CoherenceClusterNodeInfo((Member)member));
+  }
+  return nodesInfo;
+}

@@ -1,0 +1,23 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_QUEUE);
+    pstmt.setString(1,name);
+    pstmt.setString(2,description);
+    pstmt.setInt(3,priority);
+    pstmt.setInt(4,maxChats);
+    pstmt.setInt(5,minChats);
+    pstmt.setInt(6,overflowType.ordinal());
+    pstmt.setLong(7,backupQueueID);
+    pstmt.setLong(8,id);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

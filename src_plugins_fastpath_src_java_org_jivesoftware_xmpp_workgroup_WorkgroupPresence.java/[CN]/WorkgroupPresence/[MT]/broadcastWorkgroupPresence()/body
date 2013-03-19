@@ -1,0 +1,18 @@
+{
+  TaskEngine.getInstance().submit(new Runnable(){
+    public void run(){
+      try {
+        for (        String bareJID : presenceSubscribers) {
+          sendPresence(new JID(bareJID));
+        }
+        for (        JID tempSubscriber : listeners) {
+          sendPresence(tempSubscriber);
+        }
+      }
+ catch (      Exception e) {
+        Log.error("Error broadcasting available presence",e);
+      }
+    }
+  }
+);
+}

@@ -1,0 +1,47 @@
+{
+  String sql="SELECT * FROM ofSipPhoneLog";
+  sql=filter != null && !filter.getSQL().equals("") ? sql + " WHERE " + filter.getSQL() : sql;
+  sql+=" ORDER BY datetime DESC";
+  List<CallLog> calls=new ArrayList<CallLog>(numResults);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql);
+    int i=1;
+    for (    String value : filter.getValues()) {
+      pstmt.setString(i++,value);
+    }
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.setFetchSize(rs,startIndex + numResults);
+    DbConnectionManager.scrollResultSet(rs,startIndex);
+    int count=0;
+    while (rs.next() && count < numResults) {
+      calls.add(read(rs));
+      count++;
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return calls;
+}

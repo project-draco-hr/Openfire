@@ -1,0 +1,22 @@
+{
+  String notes=null;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_NOTES);
+    pstmt.setString(1,sessionID);
+    rs=pstmt.executeQuery();
+    if (rs.next()) {
+      notes=DbConnectionManager.getLargeTextField(rs,1);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return notes;
+}

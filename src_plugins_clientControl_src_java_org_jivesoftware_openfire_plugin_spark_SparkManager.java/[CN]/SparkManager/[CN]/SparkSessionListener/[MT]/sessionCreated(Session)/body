@@ -1,0 +1,12 @@
+{
+  String clientsAllowed=JiveGlobals.getProperty("clients.allowed","all");
+  final boolean disconnectIfNoMatch=!"all".equals(clientsAllowed);
+  if (disconnectIfNoMatch) {
+    taskEngine.schedule(new TimerTask(){
+      @Override public void run(){
+        requestSoftwareVersion(session);
+      }
+    }
+,5000);
+  }
+}

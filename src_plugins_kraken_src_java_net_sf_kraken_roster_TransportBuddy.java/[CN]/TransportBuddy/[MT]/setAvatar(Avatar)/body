@@ -1,0 +1,23 @@
+{
+  boolean triggerUpdate=false;
+  if ((avatar != null && this.avatar == null) || (avatar == null && this.avatar != null) || (avatar != null && !this.avatar.getXmppHash().equals(avatar.getXmppHash()))) {
+    triggerUpdate=true;
+  }
+  this.avatar=avatar;
+  this.avatarSet=true;
+  if (triggerUpdate) {
+    Presence p=new Presence();
+    p.setTo(getManager().getSession().getJID());
+    p.setFrom(jid);
+    getManager().getSession().getTransport().setUpPresencePacket(p,presence);
+    if (!verboseStatus.equals("")) {
+      p.setStatus(verboseStatus);
+    }
+    Element vcard=p.addChildElement("x",NameSpace.VCARD_TEMP_X_UPDATE);
+    if (avatar != null) {
+      vcard.addElement("photo").addCDATA(avatar.getXmppHash());
+      vcard.addElement("hash").addCDATA(avatar.getXmppHash());
+    }
+    getManager().sendPacket(p);
+  }
+}

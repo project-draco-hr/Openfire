@@ -1,0 +1,43 @@
+{
+  final ChatSettings chatSettings=new ChatSettings(workgroup);
+  cachedSettings.put(workgroup.getJID().getNode(),chatSettings);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SETTINGS);
+    String workgroupName=workgroup.getJID().getNode();
+    pstmt.setString(1,workgroupName);
+    ResultSet result=pstmt.executeQuery();
+    if (result.next()) {
+      do {
+        int type=result.getInt("type");
+        String label=result.getString("label");
+        String description=result.getString("description");
+        String name=result.getString("name");
+        String value=result.getString("value");
+        String defaultValue=result.getString("defaultValue");
+        ChatSetting setting=new ChatSetting(name);
+        setting.setWorkgroupNode(workgroupName);
+        setting.setType(type);
+        setting.setValue(value);
+        setting.setDefaultValue(defaultValue);
+        setting.setLabel(label);
+        setting.setDescription(description);
+        chatSettings.addChatSetting(setting);
+      }
+ while (result.next());
+    }
+ else {
+      ChatSettingsCreator.getInstance().createDefaultSettings(workgroup.getJID());
+    }
+  }
+ catch (  Exception ex) {
+    cachedSettings.remove(workgroup.getJID().getNode());
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return chatSettings;
+}

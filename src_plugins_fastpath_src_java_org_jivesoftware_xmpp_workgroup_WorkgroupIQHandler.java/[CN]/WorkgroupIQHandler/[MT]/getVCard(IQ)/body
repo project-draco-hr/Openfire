@@ -1,0 +1,9 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  Element vCard=packet.getChildElement().createCopy();
+  reply.setChildElement(vCard);
+  vCard.addElement("FN").setText(workgroup.getDisplayName());
+  vCard.addElement("NICKNAME").setText(workgroup.getDisplayName());
+  vCard.addElement("JABBERID").setText(workgroup.getJID().toString());
+  workgroup.send(reply);
+}

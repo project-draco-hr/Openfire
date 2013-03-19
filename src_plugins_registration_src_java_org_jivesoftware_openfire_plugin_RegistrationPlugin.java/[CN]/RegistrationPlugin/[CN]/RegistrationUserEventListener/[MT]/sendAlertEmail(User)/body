@@ -1,0 +1,13 @@
+{
+  String subject="User Registration";
+  String body=" A new user with the username '" + user.getUsername() + "' just registered.";
+  EmailService emailService=EmailService.getInstance();
+  for (  String toAddress : emailContacts) {
+    try {
+      emailService.sendMessage(null,toAddress,"Openfire","no_reply@" + serverName,subject,body,null);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ADD_ROUTING_RULE);
+    pstmt.setLong(1,workgroup.getID());
+    pstmt.setLong(2,queueID);
+    pstmt.setInt(3,position);
+    pstmt.setString(4,query);
+    pstmt.executeUpdate();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

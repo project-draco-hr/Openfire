@@ -1,0 +1,107 @@
+{
+  final SessionEvent ev=event.getEvent();
+switch (event.getType()) {
+case LOGOFF:
+    connectionClosed(ev);
+  break;
+case Y6_STATUS_UPDATE:
+friendsUpdateReceived((SessionFriendEvent)ev);
+break;
+case MESSAGE:
+messageReceived(ev);
+break;
+case X_OFFLINE:
+offlineMessageReceived(ev);
+break;
+case NEWMAIL:
+newMailReceived((SessionNewMailEvent)ev);
+break;
+case CONTACTNEW:
+break;
+case CONFDECLINE:
+break;
+case CONFINVITE:
+break;
+case CONFLOGON:
+break;
+case CONFLOGOFF:
+break;
+case CONFMSG:
+break;
+case FILETRANSFER:
+fileTransferReceived((SessionFileTransferEvent)ev);
+break;
+case NOTIFY:
+if (ev instanceof SessionNotifyEvent) {
+notifyReceived((SessionNotifyEvent)ev);
+}
+ else {
+}
+break;
+case LIST:
+listReceived((SessionListEvent)ev);
+break;
+case FRIENDADD:
+SessionFriendEvent friendAddEvent=(SessionFriendEvent)ev;
+if (friendAddEvent.isFailure()) {
+}
+ else {
+friendAddedReceived((SessionFriendEvent)ev);
+}
+break;
+case FRIENDREMOVE:
+friendRemovedReceived((SessionFriendEvent)ev);
+break;
+case GOTGROUPRENAME:
+break;
+case CONTACTREJECT:
+contactRejectionReceived((SessionFriendRejectedEvent)ev);
+break;
+case CHATJOIN:
+chatJoinReceived((SessionChatEvent)ev);
+break;
+case CHATEXIT:
+chatExitReceived((SessionChatEvent)ev);
+break;
+case CHATDISCONNECT:
+chatConnectionClosed(ev);
+break;
+case CHATMSG:
+chatMessageReceived((SessionChatEvent)ev);
+break;
+case X_CHATUPDATE:
+chatUserUpdateReceived((SessionChatEvent)ev);
+break;
+case X_ERROR:
+errorPacketReceived((SessionErrorEvent)ev);
+break;
+case X_EXCEPTION:
+inputExceptionThrown((SessionExceptionEvent)ev);
+break;
+case X_BUZZ:
+buzzReceived(ev);
+break;
+case LOGON:
+logonReceived(ev);
+break;
+case X_CHATCAPTCHA:
+break;
+case PICTURE:
+break;
+case Y7_AUTHORIZATION:
+if (ev instanceof SessionAuthorizationEvent) {
+}
+ else if (ev instanceof SessionFriendRejectedEvent) {
+contactRejectionReceived((SessionFriendRejectedEvent)ev);
+}
+ else if (ev instanceof SessionFriendAcceptedEvent) {
+contactAcceptedReceived((SessionFriendAcceptedEvent)ev);
+}
+ else {
+throw new IllegalArgumentException("Don't know how to handle '" + event.getType() + "' event: "+ event);
+}
+break;
+default :
+throw new IllegalArgumentException("Don't know how to handle service type '" + event.getType() + "'");
+}
+}

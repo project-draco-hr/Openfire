@@ -1,0 +1,28 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  String authRequired=workgroup.getProperties().getProperty("authRequired");
+  Element returnPacket=reply.setChildElement("workgroup-properties","http://jivesoftware.com/protocol/workgroup");
+  if (ModelUtil.hasLength(authRequired)) {
+    returnPacket.addElement("authRequired").setText(authRequired);
+  }
+ else {
+    returnPacket.addElement("authRequired").setText("false");
+  }
+  Element iq=packet.getChildElement();
+  Attribute attr=iq.attribute("jid");
+  if (attr != null && ModelUtil.hasLength(iq.attribute("jid").getText())) {
+    String jid=iq.attribute("jid").getText();
+    UserManager userManager=UserManager.getInstance();
+    try {
+      User user=userManager.getUser(new JID(jid).getNode());
+      String email=user.getEmail();
+      String fullName=user.getName();
+      returnPacket.addElement("email").setText(email);
+      returnPacket.addElement("name").setText(fullName);
+    }
+ catch (    UserNotFoundException e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  workgroup.send(reply);
+}

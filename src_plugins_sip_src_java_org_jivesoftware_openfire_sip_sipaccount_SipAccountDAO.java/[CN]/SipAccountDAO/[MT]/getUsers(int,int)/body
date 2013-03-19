@@ -1,0 +1,41 @@
+{
+  String sql="SELECT username, sipusername, sipauthuser, sipdisplayname, sippassword, sipserver, enabled, status, stunserver, stunport, usestun, voicemail, outboundproxy, promptCredentials FROM ofSipUser " + " ORDER BY USERNAME";
+  List<SipAccount> sipAccounts=new ArrayList<SipAccount>(numResults);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql);
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.setFetchSize(rs,startIndex + numResults);
+    DbConnectionManager.scrollResultSet(rs,startIndex);
+    int count=0;
+    while (rs.next() && count < numResults) {
+      sipAccounts.add(read(rs));
+      count++;
+    }
+    rs.close();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    try {
+      if (pstmt != null) {
+        pstmt.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+    try {
+      if (con != null) {
+        con.close();
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return sipAccounts;
+}

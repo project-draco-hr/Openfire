@@ -1,0 +1,11 @@
+{
+  String users=JiveGlobals.getProperty("plugin.email.listener.users");
+  if (users == null || users.trim().length() == 0) {
+    Collection<String> admins=new ArrayList<String>();
+    for (    JID jid : XMPPServer.getInstance().getAdmins()) {
+      admins.add(jid.toString());
+    }
+    return admins;
+  }
+  return StringUtils.stringToCollection(users);
+}

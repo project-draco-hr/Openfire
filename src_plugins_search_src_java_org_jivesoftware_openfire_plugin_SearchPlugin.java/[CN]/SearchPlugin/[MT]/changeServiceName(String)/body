@@ -1,0 +1,21 @@
+{
+  if (serviceName == null) {
+    throw new NullPointerException("Service name cannot be null");
+  }
+  if (this.serviceName.equals(serviceName)) {
+    return;
+  }
+  try {
+    componentManager.removeComponent(this.serviceName);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  try {
+    componentManager.addComponent(serviceName,this);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  this.serviceName=serviceName;
+}

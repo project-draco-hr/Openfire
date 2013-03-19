@@ -1,0 +1,17 @@
+{
+  List<PacketInterceptor> interceptors=localInterceptors.get(workgroup);
+  if (interceptors == null) {
+    if (interceptors == null) {
+synchronized (workgroup.intern()) {
+        try {
+          loadLocalInterceptors(workgroup);
+          interceptors=localInterceptors.get(workgroup);
+        }
+ catch (        UserNotFoundException e) {
+          Log.warn(e.getMessage(),e);
+        }
+      }
+    }
+  }
+  return interceptors;
+}

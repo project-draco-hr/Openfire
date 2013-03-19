@@ -1,0 +1,9 @@
+{
+  final long deadline=System.currentTimeMillis() - getIdleTimeout();
+  for (  ChatbotSession session : sessions.values()) {
+    if (!session.isStartedSupport() && session.getLastActiveDate().getTime() < deadline) {
+      Log.debug("Removing idle chat " + "session for: " + session.getUserJID());
+      removeSession(session.getUserJID());
+    }
+  }
+}

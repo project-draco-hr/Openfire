@@ -1,0 +1,35 @@
+{
+  Workgroup workgroup=null;
+  try {
+    workgroup=WorkgroupManager.getInstance().getWorkgroup(new JID(workgroupName));
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+  int totalWorkgroupChatTime=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(CHAT_TIMES_FOR_WORKGROUPS);
+    pstmt.setLong(1,workgroup.getID());
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String startTimeString=rs.getString(1);
+      String endTimeString=rs.getString(2);
+      if ((startTimeString != null) && (startTimeString.trim().length() > 0) && (endTimeString != null)&& (endTimeString.trim().length() > 0)) {
+        long startLong=Long.parseLong(startTimeString);
+        long endLong=Long.parseLong(endTimeString);
+        totalWorkgroupChatTime+=endLong - startLong;
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return totalWorkgroupChatTime;
+}

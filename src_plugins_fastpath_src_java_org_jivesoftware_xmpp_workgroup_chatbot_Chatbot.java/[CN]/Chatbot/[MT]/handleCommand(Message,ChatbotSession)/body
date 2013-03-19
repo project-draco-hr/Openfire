@@ -1,0 +1,60 @@
+{
+  String command=message.getBody().trim();
+  if (getHelpCommand().equalsIgnoreCase(command)) {
+    sendHelpMessage(message);
+    return true;
+  }
+ else   if (getByeCommand().equalsIgnoreCase(command)) {
+    userDepartQueue(message);
+    return true;
+  }
+  if (session.getCurrentStep() == 1) {
+    if (getRepeatCommand().equalsIgnoreCase(command)) {
+      sendJoinQuestion(message,session);
+      return true;
+    }
+ else     if (getPositionCommand().equalsIgnoreCase(command)) {
+      sendReply(message,getNotInQueueMessage());
+      return true;
+    }
+  }
+ else   if (session.getCurrentStep() == 2) {
+    if (getBackCommand().equalsIgnoreCase(command)) {
+      sendPreviousQuestion(message,session);
+      return true;
+    }
+ else     if (getRepeatCommand().equalsIgnoreCase(command)) {
+      repeatQuestion(message,session);
+      return true;
+    }
+ else     if (getPositionCommand().equalsIgnoreCase(command)) {
+      sendReply(message,getNotInQueueMessage());
+      return true;
+    }
+  }
+ else   if (session.getCurrentStep() == 3) {
+    if (getPositionCommand().equalsIgnoreCase(command)) {
+      try {
+        UserRequest request=UserRequest.getRequest(workgroup,message.getFrom());
+        request.updateQueueStatus(true);
+      }
+ catch (      NotFoundException e) {
+        sendReply(message,getNotInQueueMessage());
+      }
+      return true;
+    }
+  }
+ else   if (session.getCurrentStep() == 6) {
+    if (getRepeatCommand().equalsIgnoreCase(command)) {
+      sendEmailQuestion(message.getFrom(),session);
+      return true;
+    }
+  }
+ else   if (session.getCurrentStep() == 7) {
+    if (getRepeatCommand().equalsIgnoreCase(command)) {
+      sendGetEmailQuestion(message,session);
+      return true;
+    }
+  }
+  return false;
+}

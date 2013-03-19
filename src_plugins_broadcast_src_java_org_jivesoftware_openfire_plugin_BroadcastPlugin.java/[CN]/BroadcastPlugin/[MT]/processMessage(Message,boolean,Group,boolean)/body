@@ -1,0 +1,93 @@
+{
+  if (targetAll) {
+    if (!canProceed) {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setError(PacketError.Condition.not_allowed);
+      error.setTo(message.getFrom());
+      error.setFrom(message.getTo());
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+      return;
+    }
+    if ((messagePrefix != null) && (message.getBody() != null)) {
+      message.setBody(messagePrefix + " " + message.getBody());
+    }
+    if (all2ofline == false) {
+      sessionManager.broadcast(message);
+    }
+ else {
+      Collection<User> users=userManager.getUsers();
+      String xmppdomain="@" + JiveGlobals.getProperty("xmpp.domain");
+      for (      User u : users) {
+        Message newMessage=message.createCopy();
+        newMessage.setTo(u.getUsername() + xmppdomain);
+        try {
+          componentManager.sendPacket(this,newMessage);
+        }
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
+  }
+ else {
+    if (group == null) {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setTo(message.getFrom());
+      error.setFrom(message.getTo());
+      error.setError(PacketError.Condition.not_allowed);
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Address not valid: " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+ else     if (canProceed) {
+      if ((messagePrefix != null) && (message.getBody() != null)) {
+        message.setBody(messagePrefix + " " + message.getBody());
+      }
+      for (      JID userJID : group.getMembers()) {
+        Message newMessage=message.createCopy();
+        newMessage.setTo(userJID);
+        try {
+          componentManager.sendPacket(this,newMessage);
+        }
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
+ else {
+      Message error=new Message();
+      if (message.getID() != null) {
+        error.setID(message.getID());
+      }
+      error.setTo(message.getFrom());
+      error.setFrom(message.getTo());
+      error.setError(PacketError.Condition.not_allowed);
+      error.setSubject("Error sending broadcast message");
+      error.setBody("Not allowed to send a broadcast message to " + message.getTo());
+      try {
+        componentManager.sendPacket(this,error);
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  if (isDone()) {
+    return;
+  }
+  seniorClusterMember=false;
+  List<NodeID> nodeIDs=new ArrayList<NodeID>(nodeSessions.keySet());
+  ClusterManager.fireLeftCluster();
+  if (!XMPPServer.getInstance().isShuttingDown()) {
+    for (    NodeID key : nodeIDs) {
+      cleanupDirectedPresences(key);
+      cleanupPresences(key);
+    }
+    XMPPServer.getInstance().getPresenceUpdateHandler().removedExpiredPresences();
+  }
+  logger.info("Left cluster as node: " + cluster.getLocalMember().getUuid());
+  done=true;
+}

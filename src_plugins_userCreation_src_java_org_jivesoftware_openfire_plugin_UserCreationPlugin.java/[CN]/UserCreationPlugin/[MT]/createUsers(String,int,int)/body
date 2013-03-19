@@ -1,0 +1,15 @@
+{
+  UserManager userManager=XMPPServer.getInstance().getUserManager();
+  System.out.println("Creating users accounts: " + total);
+  int created=0;
+  for (int i=from; i < from + total; i++) {
+    try {
+      String username=userPrefix + i;
+      userManager.createUser(username,username,username,username + "@" + username);
+      created++;
+    }
+ catch (    UserAlreadyExistsException e) {
+    }
+  }
+  System.out.println("Accounts created successfully: " + created);
+}

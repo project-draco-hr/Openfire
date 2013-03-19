@@ -1,0 +1,12 @@
+{
+  String presenceXML="<presence from=\"bob@127.0.0.1/frodo\">" + "<show>away</show>" + "<status>fox</status>"+ "<priority>0</priority>"+ "<x xmlns=\"vcard-temp:x:update\">"+ "<photo>f9a514f112c0bcb988d5aa12bc1a9a6f22de5262</photo>"+ "</x>"+ "<c xmlns=\"http://jabber.org/protocol/caps\" node=\"apple:ichat:caps\" ver=\"392\" ext=\"avavail maudio mvideo avcap audio\"/>"+ "<x xmlns=\"http://jabber.org/protocol/tune\"/>"+ "</presence>";
+  XPPReader packetReader=new XPPReader();
+  Document doc=packetReader.read(new StringReader(presenceXML));
+  Presence p=new Presence(doc.getRootElement());
+  filter.setPatterns("fox,dog,message");
+  filter.setMask("**");
+  String expectedXML=presenceXML.replaceAll("fox",filter.getMask());
+  boolean matched=filter.filter(p);
+  assertTrue(matched);
+  assertEquals(expectedXML,expectedXML,p.toXML());
+}

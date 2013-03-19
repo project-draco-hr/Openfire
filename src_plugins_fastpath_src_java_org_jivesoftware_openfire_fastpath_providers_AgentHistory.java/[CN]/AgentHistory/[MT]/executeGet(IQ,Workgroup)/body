@@ -1,0 +1,68 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  try {
+    if (workgroup.getAgentManager().getAgentSession(packet.getFrom()) == null) {
+      reply=IQ.createResultIQ(packet);
+      reply.setChildElement(packet.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.not_authorized));
+      workgroup.send(reply);
+      return;
+    }
+  }
+ catch (  AgentNotFoundException e) {
+    reply=IQ.createResultIQ(packet);
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.not_authorized));
+    workgroup.send(reply);
+    return;
+  }
+  List<AgentHistoryModel> sessionList=new ArrayList<AgentHistoryModel>();
+  Element chatSessions=reply.setChildElement("chat-sessions","http://jivesoftware.com/protocol/workgroup");
+  Element iq=packet.getChildElement();
+  String agentJID=iq.attributeValue("agentJID");
+  String ms=iq.attributeValue("maxSessions");
+  String date=iq.attributeValue("startDate");
+  long startTime=0;
+  if (date != null) {
+    startTime=Long.parseLong(date);
+  }
+  int maxSessions=Integer.parseInt(ms);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_AGENT_SESSIONS);
+    pstmt.setString(1,agentJID);
+    ResultSet result=pstmt.executeQuery();
+    while (result.next()) {
+      String sessionID=result.getString(1);
+      String joinTime=result.getString(2);
+      String leftTime=result.getString(3);
+      AgentHistoryModel model=new AgentHistoryModel();
+      if (ModelUtil.hasLength(joinTime) && ModelUtil.hasLength(leftTime)) {
+        try {
+          long start=Long.valueOf(joinTime);
+          long end=Long.valueOf(leftTime);
+          long totalTime=end - start;
+          model.setSessionID(sessionID);
+          model.setJoinTime(joinTime);
+          model.setDuration(Long.toString(totalTime));
+          if (start >= startTime) {
+            sessionList.add(model);
+          }
+        }
+ catch (        NumberFormatException e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
+    result.close();
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  buildAndSend(sessionList,chatSessions,reply,workgroup,maxSessions);
+}

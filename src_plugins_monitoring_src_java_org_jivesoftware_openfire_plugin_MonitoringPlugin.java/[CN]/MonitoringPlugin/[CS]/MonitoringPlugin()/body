@@ -1,0 +1,16 @@
+{
+  instance=this;
+  System.setProperty("java.awt.headless","true");
+  picoContainer=new DefaultPicoContainer();
+  picoContainer.registerComponentInstance(TaskEngine.getInstance());
+  picoContainer.registerComponentInstance(JiveProperties.getInstance());
+  picoContainer.registerComponentImplementation(StatsEngine.class);
+  picoContainer.registerComponentImplementation(GraphEngine.class);
+  picoContainer.registerComponentImplementation(StatisticsModule.class);
+  picoContainer.registerComponentImplementation(StatsViewer.class,getStatsViewerImplementation());
+  picoContainer.registerComponentImplementation(ConversationManager.class);
+  picoContainer.registerComponentImplementation(ArchiveInterceptor.class);
+  picoContainer.registerComponentImplementation(GroupConversationInterceptor.class);
+  picoContainer.registerComponentImplementation(ArchiveSearcher.class);
+  picoContainer.registerComponentImplementation(ArchiveIndexer.class);
+}

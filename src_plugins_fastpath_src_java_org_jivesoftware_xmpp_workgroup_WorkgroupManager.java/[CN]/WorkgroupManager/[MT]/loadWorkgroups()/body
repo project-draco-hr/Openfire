@@ -1,0 +1,24 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_WORKGROUPS);
+    rs=pstmt.executeQuery();
+    workgroupLock.writeLock().lock();
+    while (rs.next()) {
+      Workgroup workgroup=new Workgroup(rs.getLong(1),agentManager);
+      workgroups.put(workgroup.getJID().toBareJID(),workgroup);
+      workgroupOpenStatus.put(workgroup.getID(),workgroup.getStatus());
+    }
+  }
+ catch (  SQLException ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    workgroupLock.writeLock().unlock();
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  RoutingManager.getInstance();
+}

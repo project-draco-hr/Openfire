@@ -1,0 +1,12 @@
+{
+  if (getForm() != null && !getForm().getFormElements().isEmpty()) {
+    if (getFilloutFormMessage() != null && getFilloutFormMessage().length() > 0) {
+      sendReply(message,getFilloutFormMessage());
+    }
+    session.setCurrentStep(2);
+    sendQuestion(message,session,0);
+  }
+ else {
+    userJoinQueue(message,session);
+  }
+}

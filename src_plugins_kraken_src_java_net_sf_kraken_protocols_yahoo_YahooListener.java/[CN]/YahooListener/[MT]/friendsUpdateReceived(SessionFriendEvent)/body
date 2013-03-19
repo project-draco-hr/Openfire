@@ -1,0 +1,27 @@
+{
+  YahooUser user=event.getUser();
+  Log.debug("Yahoo: Got status update: " + user);
+  if (getSession().getBuddyManager().isActivated()) {
+    try {
+      YahooBuddy yahooBuddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(user.getId()));
+      yahooBuddy.yahooUser=user;
+      yahooBuddy.setPresenceAndStatus(((YahooTransport)getSession().getTransport()).convertYahooStatusToXMPP(user.getStatus(),user.getCustomStatus()),user.getCustomStatusMessage());
+    }
+ catch (    NotFoundException e) {
+      PseudoRosterItem rosterItem=getSession().getPseudoRoster().getItem(user.getId());
+      String nickname=null;
+      if (rosterItem != null) {
+        nickname=rosterItem.getNickname();
+      }
+      if (nickname == null) {
+        nickname=user.getId();
+      }
+      YahooBuddy yahooBuddy=new YahooBuddy(getSession().getBuddyManager(),user,nickname,user.getGroupIds(),rosterItem);
+      getSession().getBuddyManager().storeBuddy(yahooBuddy);
+      yahooBuddy.setPresenceAndStatus(((YahooTransport)getSession().getTransport()).convertYahooStatusToXMPP(user.getStatus(),user.getCustomStatus()),user.getCustomStatusMessage());
+    }
+  }
+ else {
+    getSession().getBuddyManager().storePendingStatus(getSession().getTransport().convertIDToJID(user.getId()),((YahooTransport)getSession().getTransport()).convertYahooStatusToXMPP(user.getStatus(),user.getCustomStatus()),user.getCustomStatusMessage());
+  }
+}

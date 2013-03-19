@@ -1,0 +1,16 @@
+{
+  if (!(p instanceof IQ)) {
+    return;
+  }
+  final IQ packet=(IQ)p;
+  if (packet.getType().equals(IQ.Type.error) || packet.getType().equals(IQ.Type.result)) {
+    return;
+  }
+  final IQ replyPacket=handleIQRequest(packet);
+  try {
+    componentManager.sendPacket(this,replyPacket);
+  }
+ catch (  ComponentException e) {
+    Log.error(e.getMessage(),e);
+  }
+}

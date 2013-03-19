@@ -1,0 +1,38 @@
+{
+  final UserManager userManager=UserManager.getInstance();
+  try {
+    userManager.getUser(jid.getNode());
+  }
+ catch (  UserNotFoundException e) {
+    return;
+  }
+  if (bookmark.getType() == Bookmark.Type.url) {
+    Element urlBookmarkElement=urlExists(element,bookmark.getValue());
+    if (urlBookmarkElement == null) {
+      urlBookmarkElement=element.addElement("url");
+      urlBookmarkElement.addAttribute("name",bookmark.getName());
+      urlBookmarkElement.addAttribute("url",bookmark.getValue());
+      boolean rss=Boolean.valueOf(bookmark.getProperty("rss"));
+      if (rss) {
+        urlBookmarkElement.addAttribute("rss",Boolean.toString(rss));
+      }
+    }
+    appendSharedElement(urlBookmarkElement);
+  }
+ else {
+    try {
+      Element conferenceElement=conferenceExists(element,bookmark.getValue());
+      if (conferenceElement == null) {
+        conferenceElement=element.addElement("conference");
+        conferenceElement.addAttribute("name",bookmark.getName());
+        boolean autojoin=Boolean.valueOf(bookmark.getProperty("autojoin"));
+        conferenceElement.addAttribute("autojoin",Boolean.toString(autojoin));
+        conferenceElement.addAttribute("jid",bookmark.getValue());
+      }
+      appendSharedElement(conferenceElement);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+}

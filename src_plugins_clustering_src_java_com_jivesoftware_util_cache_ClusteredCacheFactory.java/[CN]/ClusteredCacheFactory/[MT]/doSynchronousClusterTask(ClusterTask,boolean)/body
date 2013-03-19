@@ -1,0 +1,14 @@
+{
+  if (taskService != null) {
+    Member current=taskService.getCluster().getLocalMember();
+    Set setMembers=taskService.getInfo().getServiceMembers();
+    if (!includeLocalMember) {
+      setMembers.remove(current);
+    }
+    Map map=taskService.query(buildInvocable(task),setMembers);
+    return map != null ? (Collection<Object>)map.values() : Collections.emptyList();
+  }
+ else {
+    return Collections.emptyList();
+  }
+}

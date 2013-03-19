@@ -1,0 +1,58 @@
+{
+  if (!enabled || running) {
+    return;
+  }
+  Log.info("Starting transport service: " + type.toString());
+  transport=null;
+  try {
+    transport=(BaseTransport)Class.forName(nameOfClass).newInstance();
+    transport.setup(this.type,this.description,sessionRouter);
+  }
+ catch (  ClassNotFoundException e) {
+    Log.error("Unable to find class: " + nameOfClass);
+    return;
+  }
+catch (  InstantiationException e) {
+    Log.error("Unable to instantiate class: " + nameOfClass);
+    return;
+  }
+catch (  IllegalAccessException e) {
+    Log.error("Unable to access class: " + nameOfClass);
+    return;
+  }
+  SessionManager sessionManager=SessionManager.getInstance();
+  String fullJID=this.subDomain + "." + XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  boolean pause=false;
+  try {
+    for (    Session sess : sessionManager.getIncomingServerSessions(fullJID)) {
+      sess.close();
+      pause=true;
+    }
+  }
+ catch (  Exception ignored) {
+  }
+  try {
+    Session sess=sessionManager.getOutgoingServerSession(fullJID);
+    if (sess != null) {
+      sess.close();
+      pause=true;
+    }
+  }
+ catch (  Exception ignored) {
+  }
+  try {
+    if (pause) {
+      Thread.sleep(1000L);
+    }
+  }
+ catch (  Exception ignored) {
+  }
+  try {
+    componentManager.addComponent(this.subDomain,transport);
+    PropertyEventDispatcher.addListener(this);
+    running=true;
+  }
+ catch (  Exception e) {
+    Log.error("Error while adding component " + this.subDomain + ": ",e);
+  }
+}

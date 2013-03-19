@@ -1,0 +1,12 @@
+{
+  if (searcherReader != null) {
+    try {
+      searcherLock.writeLock().lock();
+      searcherReader.close();
+    }
+  finally {
+      searcherReader=null;
+      searcherLock.writeLock().unlock();
+    }
+  }
+}

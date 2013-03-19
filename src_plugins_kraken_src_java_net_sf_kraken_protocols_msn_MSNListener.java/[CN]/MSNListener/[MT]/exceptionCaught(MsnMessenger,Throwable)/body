@@ -1,0 +1,34 @@
+{
+  Log.debug("MSN: Exception occurred for " + messenger.getOwner().getEmail() + " : "+ throwable);
+  if (throwable instanceof IncorrectPasswordException) {
+    getSession().setLoginStatus(TransportLoginStatus.DISCONNECTED);
+    getSession().setFailureStatus(ConnectionFailureReason.USERNAME_OR_PASSWORD_INCORRECT);
+    getSession().sessionDisconnectedNoReconnect(LocaleUtils.getLocalizedString("gateway.msn.passwordincorrect","kraken"));
+  }
+ else   if (throwable instanceof LoginException) {
+    getSession().setLoginStatus(TransportLoginStatus.DISCONNECTED);
+    getSession().setFailureStatus(ConnectionFailureReason.USERNAME_OR_PASSWORD_INCORRECT);
+    getSession().sessionDisconnectedNoReconnect(LocaleUtils.getLocalizedString("gateway.msn.passwordincorrect","kraken"));
+  }
+ else   if (throwable instanceof MsnProtocolException) {
+    Log.debug("MSN: Protocol exception: " + throwable.toString());
+  }
+ else   if (throwable instanceof MsgNotSendException) {
+    getSession().getTransport().sendMessage(getSession().getJID(),getSession().getTransport().getJID(),LocaleUtils.getLocalizedString("gateway.msn.sendmsgfailed","kraken") + " " + throwable.toString(),Message.Type.error);
+  }
+ else   if (throwable instanceof UnknownMessageException) {
+    Log.debug("MSN: Unknown message: " + throwable.toString());
+  }
+ else   if (throwable instanceof UnsupportedProtocolException) {
+    Log.debug("MSN: Protocol error: " + throwable.toString());
+  }
+ else   if (throwable instanceof IOException) {
+    Log.debug("MSN: IO error: " + throwable.toString());
+    getSession().setLoginStatus(TransportLoginStatus.DISCONNECTED);
+    getSession().setFailureStatus(ConnectionFailureReason.CAN_NOT_CONNECT);
+    getSession().sessionDisconnected(LocaleUtils.getLocalizedString("gateway.msn.disconnect","kraken"));
+  }
+ else {
+    Log.debug("MSN: Unknown error: " + throwable.toString(),throwable);
+  }
+}

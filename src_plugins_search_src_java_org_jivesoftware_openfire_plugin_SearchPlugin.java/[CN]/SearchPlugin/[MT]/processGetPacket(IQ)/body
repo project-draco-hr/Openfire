@@ -1,0 +1,29 @@
+{
+  if (!packet.getType().equals(IQ.Type.get)) {
+    throw new IllegalArgumentException("This method only accepts 'get' typed IQ stanzas as an argument.");
+  }
+  IQ replyPacket=IQ.createResultIQ(packet);
+  Element queryResult=DocumentHelper.createElement(QName.get("query",NAMESPACE_JABBER_IQ_SEARCH));
+  String instructions=LocaleUtils.getLocalizedString("advance.user.search.details","search");
+  queryResult.addElement("instructions").addText(instructions);
+  queryResult.addElement("first");
+  queryResult.addElement("last");
+  queryResult.addElement("nick");
+  queryResult.addElement("email");
+  DataForm searchForm=new DataForm(DataForm.Type.form);
+  searchForm.setTitle(LocaleUtils.getLocalizedString("advance.user.search.title","search"));
+  searchForm.addInstruction(instructions);
+  searchForm.addField("FORM_TYPE",null,FormField.Type.hidden).addValue(NAMESPACE_JABBER_IQ_SEARCH);
+  searchForm.addField("search",LocaleUtils.getLocalizedString("advance.user.search.search","search"),FormField.Type.text_single).setRequired(true);
+  for (  String searchField : getFilteredSearchFields()) {
+    final FormField field=searchForm.addField();
+    field.setVariable(searchField);
+    field.setType(FormField.Type.boolean_type);
+    field.addValue("1");
+    field.setLabel(LocaleUtils.getLocalizedString("advance.user.search." + searchField.toLowerCase(),"search"));
+    field.setRequired(false);
+  }
+  queryResult.add(searchForm.getElement());
+  replyPacket.setChildElement(queryResult);
+  return replyPacket;
+}

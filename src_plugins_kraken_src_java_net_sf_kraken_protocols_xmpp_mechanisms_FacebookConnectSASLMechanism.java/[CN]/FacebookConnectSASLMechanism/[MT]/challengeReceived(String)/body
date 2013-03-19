@@ -1,0 +1,29 @@
+{
+  StringBuilder stanza=new StringBuilder();
+  byte response[]=null;
+  if (challenge != null) {
+    String decodedResponse=new String(Base64.decode(challenge));
+    Map<String,String> parameters=getQueryMap(decodedResponse);
+    String version="1.0";
+    String nonce=parameters.get("nonce");
+    String method=parameters.get("method");
+    Long callId=new GregorianCalendar().getTimeInMillis() / 1000;
+    String sig="api_key=" + apiKey + "call_id="+ callId+ "method="+ method+ "nonce="+ nonce+ "access_token="+ accessToken+ "v="+ version+ appSecret;
+    try {
+      sig=MD5(sig);
+    }
+ catch (    NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
+    String composedResponse="api_key=" + apiKey + "&"+ "call_id="+ callId+ "&"+ "method="+ method+ "&"+ "nonce="+ nonce+ "&"+ "access_token="+ accessToken+ "&"+ "v="+ version+ "&"+ "sig="+ sig;
+    response=composedResponse.getBytes();
+  }
+  String authenticationText="";
+  if (response != null) {
+    authenticationText=Base64.encodeBytes(response,Base64.DONT_BREAK_LINES);
+  }
+  stanza.append("<response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
+  stanza.append(authenticationText);
+  stanza.append("</response>");
+  getSASLAuthentication().send(new Response(authenticationText));
+}

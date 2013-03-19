@@ -1,0 +1,29 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  boolean abortTransaction=false;
+synchronized ("avatar" + jid.toString()) {
+    try {
+      con=DbConnectionManager.getTransactionConnection();
+      pstmt=con.prepareStatement(DELETE_AVATAR);
+      pstmt.setString(1,jid.toString());
+      pstmt.executeUpdate();
+      pstmt=con.prepareStatement(INSERT_AVATAR);
+      pstmt.setString(1,jid.toString());
+      pstmt.setString(2,xmppHash);
+      pstmt.setString(3,legacyIdentifier);
+      pstmt.setLong(4,createDate.getTime());
+      pstmt.setLong(5,lastUpdate.getTime());
+      pstmt.setString(6,mimeType);
+      pstmt.setString(7,imageData);
+      pstmt.executeUpdate();
+    }
+ catch (    SQLException sqle) {
+      abortTransaction=true;
+      throw sqle;
+    }
+ finally {
+      DbConnectionManager.closeTransactionConnection(pstmt,con,abortTransaction);
+    }
+  }
+}

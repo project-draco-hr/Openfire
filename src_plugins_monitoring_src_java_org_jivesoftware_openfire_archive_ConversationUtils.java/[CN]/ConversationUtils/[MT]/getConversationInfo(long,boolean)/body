@@ -1,0 +1,13 @@
+{
+  ConversationInfo info=new ConversationInfo();
+  MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+  ConversationManager conversationmanager=(ConversationManager)plugin.getModule(ConversationManager.class);
+  try {
+    Conversation conversation=conversationmanager.getConversation(conversationID);
+    info=toConversationInfo(conversation,formatParticipants);
+  }
+ catch (  NotFoundException e) {
+    Log.error(e.getMessage(),e);
+  }
+  return info;
+}

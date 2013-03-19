@@ -1,0 +1,8 @@
+{
+  StatusMessage msg=new StatusMessage();
+  msg.setTo(getTransport().convertJIDToID(jid));
+  msg.setFrom(String.valueOf(connection.getUserID()));
+  msg.setStatusCode(((MySpaceIMTransport)getTransport()).convertXMPPStatusToMySpaceIM(presenceType));
+  msg.setStatusMessage(verboseStatus);
+  connection.sendPacket(msg);
+}

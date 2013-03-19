@@ -1,0 +1,74 @@
+{
+  try {
+    IndexSearcher searcher=archiveIndexer.getSearcher();
+    final StandardAnalyzer analyzer=new StandardAnalyzer();
+    Query query=new QueryParser("text",analyzer).parse(search.getQueryString());
+    Sort sort=null;
+    if (search.getSortField() != ArchiveSearch.SortField.relevance) {
+      if (search.getSortField() == ArchiveSearch.SortField.date) {
+        sort=new Sort("date",search.getSortOrder() == ArchiveSearch.SortOrder.descending);
+      }
+    }
+    Filter filter=null;
+    if (search.getDateRangeMin() != null || search.getDateRangeMax() != null) {
+      String min=null;
+      if (search.getDateRangeMin() != null) {
+        min=DateTools.dateToString(search.getDateRangeMin(),DateTools.Resolution.DAY);
+      }
+      String max=null;
+      if (search.getDateRangeMax() != null) {
+        max=DateTools.dateToString(search.getDateRangeMax(),DateTools.Resolution.DAY);
+      }
+      filter=new RangeFilter("date",min,max,min != null,max != null);
+    }
+    Collection<JID> participants=search.getParticipants();
+    if (search.getParticipants().size() < 2 && search.isExternalWildcardMode()) {
+      TermQuery externalQuery=new TermQuery(new Term("external","true"));
+      BooleanQuery booleanQuery=new BooleanQuery();
+      booleanQuery.add(query,BooleanClause.Occur.MUST);
+      booleanQuery.add(externalQuery,BooleanClause.Occur.MUST);
+      query=booleanQuery;
+    }
+    if (!participants.isEmpty()) {
+      if (participants.size() == 1) {
+        String jid=participants.iterator().next().toBareJID();
+        Query participantQuery=new QueryParser("jid",analyzer).parse(jid);
+        BooleanQuery booleanQuery=new BooleanQuery();
+        booleanQuery.add(query,BooleanClause.Occur.MUST);
+        booleanQuery.add(participantQuery,BooleanClause.Occur.MUST);
+        query=booleanQuery;
+      }
+ else {
+        Iterator<JID> iter=participants.iterator();
+        String participant1=iter.next().toBareJID();
+        String participant2=iter.next().toBareJID();
+        BooleanQuery participantQuery=new BooleanQuery();
+        participantQuery.add(new QueryParser("jid",analyzer).parse(participant1),BooleanClause.Occur.MUST);
+        participantQuery.add(new QueryParser("jid",analyzer).parse(participant2),BooleanClause.Occur.MUST);
+        BooleanQuery booleanQuery=new BooleanQuery();
+        booleanQuery.add(query,BooleanClause.Occur.MUST);
+        booleanQuery.add(participantQuery,BooleanClause.Occur.MUST);
+        query=booleanQuery;
+      }
+    }
+    Hits hits=searcher.search(query,filter,sort);
+    int startIndex=search.getStartIndex();
+    int endIndex=startIndex + search.getNumResults() - 1;
+    if (endIndex > hits.length() - 1) {
+    }
+    if (((endIndex - startIndex) + 1) <= 0) {
+      return Collections.emptyList();
+    }
+ else {
+      return new LuceneQueryResults(hits,startIndex,endIndex);
+    }
+  }
+ catch (  ParseException pe) {
+    Log.error(pe.getMessage(),pe);
+    return Collections.emptySet();
+  }
+catch (  IOException ioe) {
+    Log.error(ioe.getMessage(),ioe);
+    return Collections.emptySet();
+  }
+}

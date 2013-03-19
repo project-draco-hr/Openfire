@@ -1,0 +1,37 @@
+{
+  super();
+  this.userJID=packet.getFrom();
+  this.userID=userJID.toBareJID();
+  this.anonymousUser=false;
+  this.workgroup=wg;
+  this.communicationMethod=WorkgroupCompatibleClient.getInstance();
+  Iterator<Element> elementIter=packet.getChildElement().elementIterator();
+  while (elementIter.hasNext()) {
+    Element element=elementIter.next();
+    if ("queue-notifications".equals(element.getName())) {
+      setNotify(true);
+    }
+ else     if ("user".equals(element.getName())) {
+      userID=element.attributeValue("id");
+      if (userID != null && userID.length() > 0) {
+        anonymousUser=!userJID.toString().equals(userID) && !userJID.toBareJID().equals(userID);
+      }
+    }
+ else     if ("metadata".equals(element.getName())) {
+      for (Iterator<Element> i=element.elementIterator(); i.hasNext(); ) {
+        Element item=i.next();
+        if ("value".equals(item.getName())) {
+          String name=item.attributeValue("name");
+          if (name != null) {
+            metaData.put(name,Arrays.asList(item.getTextTrim()));
+          }
+        }
+      }
+    }
+  }
+  DataForm submittedForm=(DataForm)packet.getExtension(DataForm.ELEMENT_NAME,DataForm.NAMESPACE);
+  for (  FormField field : submittedForm.getFields()) {
+    metaData.put(field.getVariable(),field.getValues());
+  }
+  metaData.remove("password");
+}

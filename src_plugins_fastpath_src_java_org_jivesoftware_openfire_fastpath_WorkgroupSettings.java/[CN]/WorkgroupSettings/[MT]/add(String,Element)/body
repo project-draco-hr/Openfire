@@ -1,0 +1,36 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    StringWriter writer=new StringWriter();
+    data.write(writer);
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(LOAD_SETTINGS);
+    pstmt.setString(1,workgroupName);
+    pstmt.setString(2,data.getNamespaceURI());
+    ResultSet rs=pstmt.executeQuery();
+    boolean update=false;
+    if (rs.next()) {
+      update=true;
+    }
+    rs.close();
+    pstmt.close();
+    if (update) {
+      pstmt=con.prepareStatement(UPDATE_SETTINGS);
+    }
+ else {
+      pstmt=con.prepareStatement(INSERT_SETTINGS);
+    }
+    DbConnectionManager.setLargeTextField(pstmt,1,writer.toString());
+    pstmt.setString(2,data.getName());
+    pstmt.setString(3,workgroupName);
+    pstmt.setString(4,data.getNamespaceURI());
+    pstmt.executeUpdate();
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

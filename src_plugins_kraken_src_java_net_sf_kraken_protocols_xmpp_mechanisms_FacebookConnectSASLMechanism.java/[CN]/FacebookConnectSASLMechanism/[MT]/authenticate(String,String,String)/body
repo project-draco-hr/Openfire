@@ -1,0 +1,15 @@
+{
+  if (apiKeyAndAppSecret == null || accessToken == null)   throw new IllegalStateException("Invalid parameters!");
+  String[] keyArray=apiKeyAndAppSecret.split("\\|");
+  if (keyArray == null || keyArray.length != 2)   throw new IllegalStateException("Api key or access token is not present!");
+  this.apiKey=keyArray[0];
+  this.appSecret=keyArray[1];
+  this.accessToken=accessToken;
+  this.authenticationId=accessToken;
+  this.password=accessToken;
+  this.hostname=host;
+  String[] mechanisms={"DIGEST-MD5"};
+  Map<String,String> props=new HashMap<String,String>();
+  sc=Sasl.createSaslClient(mechanisms,null,"xmpp",host,props,this);
+  authenticate();
+}

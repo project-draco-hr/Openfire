@@ -1,0 +1,25 @@
+{
+  char[] chars=queryString.toCharArray();
+  for (int i=0; i < chars.length; i++) {
+    char c=chars[i];
+    if (Character.isUpperCase(c)) {
+      if (c == 'A') {
+        if (i > 0 && i + 3 < chars.length && !Character.isLetterOrDigit(chars[i - 1]) && !Character.isLetterOrDigit(chars[i + 3]) && (chars[i + 1] == 'n' || chars[i + 1] == 'N') && (chars[i + 2] == 'd' || chars[i + 2] == 'D')) {
+          chars[i + 1]=Character.toUpperCase(chars[i + 1]);
+          chars[i + 2]=Character.toUpperCase(chars[i + 2]);
+          i+=2;
+          continue;
+        }
+      }
+ else       if (c == 'O') {
+        if (i > 0 && i + 2 < chars.length && !Character.isLetterOrDigit(chars[i - 1]) && !Character.isLetterOrDigit(chars[i + 2]) && (chars[i + 1] == 'r' || chars[i + 1] == 'R')) {
+          chars[i + 1]=Character.toUpperCase(chars[i + 1]);
+          i++;
+          continue;
+        }
+      }
+      chars[i]=Character.toLowerCase(c);
+    }
+  }
+  return new String(chars);
+}

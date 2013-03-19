@@ -1,0 +1,17 @@
+{
+  this.workgroupSettings=workgroupSettings;
+  this.workgroup=workgroup;
+  this.namespace=namespace;
+  try {
+    final Element element=workgroupSettings.get(workgroup.getJID().toBareJID(),DocumentHelper.createElement(namespace));
+    final List list=element.elements();
+    final Iterator iter=list.iterator();
+    while (iter.hasNext()) {
+      Element el=(Element)iter.next();
+      addToSettings(el);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+}

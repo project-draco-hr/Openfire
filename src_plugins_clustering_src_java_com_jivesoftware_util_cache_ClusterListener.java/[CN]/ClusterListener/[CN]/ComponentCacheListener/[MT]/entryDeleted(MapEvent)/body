@@ -1,0 +1,11 @@
+{
+  Object newValue=mapEvent.getNewValue();
+  if (newValue != null) {
+    for (    NodeID nodeID : (Set<NodeID>)newValue) {
+      if (!XMPPServer.getInstance().getNodeID().equals(nodeID)) {
+        Set<String> sessionJIDS=lookupJIDList(nodeID,componentsCache.getName());
+        sessionJIDS.remove(mapEvent.getKey().toString());
+      }
+    }
+  }
+}

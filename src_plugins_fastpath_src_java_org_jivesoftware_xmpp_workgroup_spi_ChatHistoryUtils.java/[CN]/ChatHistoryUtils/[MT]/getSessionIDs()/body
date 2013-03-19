@@ -1,0 +1,21 @@
+{
+  final List<String> sessionList=new ArrayList<String>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(ALL_SESSIONS);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      sessionList.add(rs.getString(1));
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return sessionList.iterator();
+}

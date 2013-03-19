@@ -1,0 +1,13 @@
+{
+  boolean removed=workgroups.remove(workgroup);
+  if (removed) {
+    for (    RequestQueue requestQueue : workgroup.getRequestQueues()) {
+      requestQueue.getAgentSessionList().removeAgentSession(this);
+    }
+    if (workgroups.isEmpty()) {
+      getAgent().closeSession(getJID());
+    }
+    updateStatus(workgroup);
+    workgroup.agentDeparted(this);
+  }
+}

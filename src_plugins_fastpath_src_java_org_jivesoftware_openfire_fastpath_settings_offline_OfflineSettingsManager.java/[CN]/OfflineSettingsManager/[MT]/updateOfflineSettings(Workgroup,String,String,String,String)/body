@@ -1,0 +1,31 @@
+{
+  final OfflineSettings offline=new OfflineSettings();
+  offline.setRedirectURL(webPage);
+  offline.setEmailAddress(email);
+  offline.setOfflineText(offlineText);
+  offline.setSubject(subject);
+  String redirectURL=webPage != null ? webPage : "";
+  String emailAddress=email != null ? email : "";
+  subject=subject != null ? subject : "";
+  offlineText=offlineText != null ? offlineText : "";
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_OFFLINE_SETTINGS);
+    pstmt.setString(1,redirectURL);
+    pstmt.setString(2,emailAddress);
+    pstmt.setString(3,subject);
+    DbConnectionManager.setLargeTextField(pstmt,4,offlineText);
+    pstmt.setLong(5,workgroup.getID());
+    pstmt.executeUpdate();
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+    return null;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return offline;
+}

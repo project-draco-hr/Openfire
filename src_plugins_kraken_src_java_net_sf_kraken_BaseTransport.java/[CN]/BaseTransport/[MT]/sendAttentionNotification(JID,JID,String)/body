@@ -1,0 +1,12 @@
+{
+  sendBuzzNotification(to,from,message);
+  final Message stanza=new Message();
+  if (message != null && message.trim().length() > 0) {
+    stanza.setBody(message);
+  }
+  stanza.addChildElement("attention",NameSpace.ATTENTIONNS);
+  stanza.setType(Message.Type.headline);
+  stanza.setTo(to);
+  stanza.setFrom(from);
+  sendPacket(stanza);
+}

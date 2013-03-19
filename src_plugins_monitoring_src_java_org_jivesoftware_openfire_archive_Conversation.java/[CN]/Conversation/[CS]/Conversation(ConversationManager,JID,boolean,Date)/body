@@ -1,0 +1,24 @@
+{
+  this.conversationManager=conversationManager;
+  this.participants=new ConcurrentHashMap<String,UserParticipations>();
+  MUCRoom mucRoom=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(room).getChatRoom(room.getNode());
+  if (mucRoom != null) {
+    for (    MUCRole role : mucRoom.getOccupants()) {
+      UserParticipations userParticipations=new UserParticipations(true);
+      userParticipations.addParticipation(new ConversationParticipation(startDate,role.getNickname()));
+      participants.put(role.getUserAddress().toString(),userParticipations);
+    }
+  }
+  this.room=room;
+  this.external=external;
+  this.startDate=startDate;
+  this.lastActivity=startDate;
+  if (conversationManager.isMetadataArchivingEnabled()) {
+    try {
+      insertIntoDb();
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+}

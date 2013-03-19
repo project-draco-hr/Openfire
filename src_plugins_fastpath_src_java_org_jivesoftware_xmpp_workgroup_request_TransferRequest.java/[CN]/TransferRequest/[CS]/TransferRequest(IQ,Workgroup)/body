@@ -1,0 +1,29 @@
+{
+  super();
+  Element iq=packet.getChildElement();
+  this.type=Type.valueOf(iq.attributeValue("type"));
+  Element sessionElement=iq.element("session");
+  sessionID=sessionElement.attributeValue("id");
+  inviter=packet.getFrom();
+  invitee=new JID(iq.elementTextTrim("invitee"));
+  reason=iq.elementTextTrim("reason");
+  this.workgroup=workgroup;
+  String jid=sessionElement.attributeValue("workgroup");
+  try {
+    if (jid == null) {
+      userRequest=workgroup.getUserRequest(sessionID);
+    }
+ else {
+      JID workgroupJID=new JID(jid);
+      this.workgroup=WorkgroupManager.getInstance().getWorkgroup(workgroupJID);
+      userRequest=this.workgroup.getUserRequest(sessionID);
+    }
+    userRequest.addRelatedRequest(this);
+    if (userRequest.getMetaData() != null) {
+      metaData.putAll(userRequest.getMetaData());
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Workgroup not found for transfer: " + jid,e);
+  }
+}

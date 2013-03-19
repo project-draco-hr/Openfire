@@ -1,0 +1,52 @@
+{
+  JiveGlobals.setProperty("plugin.gateway." + transportName + ".registration",overallSetting.toString());
+  JiveGlobals.setProperty("plugin.gateway." + transportName + ".registrationstrict",strict ? "true" : "false");
+  PermissionManager permissionManager=new PermissionManager(TransportType.valueOf(transportName));
+  List<String> errorList=new ArrayList<String>();
+  ArrayList<User> userList=new ArrayList<User>();
+  UserManager userManager=UserManager.getInstance();
+  for (  String username : users) {
+    if (username.matches("\\s*")) {
+      continue;
+    }
+    try {
+      if (username.contains("@")) {
+        JID jid=new JID(username);
+        if (!jid.getDomain().equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
+          throw new UserNotFoundException();
+        }
+        username=username.substring(0,username.indexOf("@"));
+      }
+      User user=userManager.getUser(username);
+      if (user == null || user.getUsername() == null) {
+        throw new UserNotFoundException();
+      }
+      userList.add(user);
+    }
+ catch (    UserNotFoundException e) {
+      Log.warn("User " + username + " not found while adding access rules.");
+      errorList.add(username);
+    }
+  }
+  permissionManager.storeUserList(userList);
+  ArrayList<Group> groupList=new ArrayList<Group>();
+  GroupManager groupManager=GroupManager.getInstance();
+  for (  String grpname : groups) {
+    if (grpname.matches("\\s*")) {
+      continue;
+    }
+    try {
+      Group group=groupManager.getGroup(grpname);
+      if (group == null || group.getName() == null) {
+        throw new GroupNotFoundException();
+      }
+      groupList.add(group);
+    }
+ catch (    GroupNotFoundException e) {
+      Log.warn("Group " + grpname + " not found while adding access rules.");
+      errorList.add("@" + grpname);
+    }
+  }
+  permissionManager.storeGroupList(groupList);
+  return errorList;
+}

@@ -1,0 +1,11 @@
+{
+  InvocationService service=(InvocationService)com.tangosol.net.CacheFactory.getService("OpenFire Cluster Service");
+  service.execute(new AbstractInvocable(){
+    public void run(){
+      com.tangosol.coherence.component.net.Cluster cluster=(com.tangosol.coherence.component.net.Cluster)((SafeCluster)com.tangosol.net.CacheFactory.ensureCluster()).getCluster();
+      cluster.getPublisher().resetStats();
+      cluster.getReceiver().resetStats();
+    }
+  }
+,null,null);
+}

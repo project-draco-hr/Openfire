@@ -1,0 +1,65 @@
+{
+  if (iq.getType() == IQ.Type.error) {
+    return false;
+  }
+  Element childElement=iq.getChildElement();
+  String name=null;
+  String namespace=null;
+  if (childElement != null) {
+    namespace=childElement.getNamespaceURI();
+    name=childElement.getName();
+  }
+  if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
+    IQ reply=iqDiscoInfoHandler.handleIQ(iq);
+    if (reply != null) {
+      send(reply);
+    }
+  }
+ else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
+    IQ reply=iqDiscoItemsHandler.handleIQ(iq);
+    if (reply != null) {
+      send(reply);
+    }
+  }
+ else   if ("jabber:iq:version".equals(namespace)) {
+    IQ reply=IQ.createResultIQ(iq);
+    Element version=reply.setChildElement("query","jabber:iq:version");
+    version.addElement("name").setText("Spark Fastpath");
+    version.addElement("version").setText("3.2");
+    version.addElement("os").setText("Java 5");
+    send(reply);
+  }
+ else   if ("workgroups".equals(name)) {
+    try {
+      getAgentManager().getAgent(iq.getFrom());
+      String agentJID=childElement.attributeValue("jid");
+      try {
+        Agent agent=getAgentManager().getAgent(new JID(agentJID));
+        sendWorkgroups(iq,agent);
+      }
+ catch (      AgentNotFoundException e) {
+        IQ reply=IQ.createResultIQ(iq);
+        reply.setChildElement(iq.getChildElement().createCopy());
+        reply.setError(new PacketError(PacketError.Condition.item_not_found));
+        send(reply);
+      }
+    }
+ catch (    AgentNotFoundException e) {
+      IQ reply=IQ.createResultIQ(iq);
+      reply.setChildElement(iq.getChildElement().createCopy());
+      reply.setError(new PacketError(PacketError.Condition.not_authorized));
+      send(reply);
+    }
+  }
+ else   if ("transcript-search".equals(name)) {
+    iqChatSearchHandler.handleIQ(iq);
+  }
+ else   if ("http://jabber.org/protocol/commands".equals(namespace)) {
+    IQ reply=commandManager.process(iq);
+    send(reply);
+  }
+ else {
+    return false;
+  }
+  return true;
+}

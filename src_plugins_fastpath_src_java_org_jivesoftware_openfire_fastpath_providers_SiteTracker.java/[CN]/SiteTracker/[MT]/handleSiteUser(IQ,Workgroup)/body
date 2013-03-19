@@ -1,0 +1,80 @@
+{
+  IQ reply;
+  Element iq=packet.getChildElement();
+  IQ update=new IQ();
+  Element elem=update.setChildElement("site-user","http://jivesoftware.com/protocol/workgroup");
+  String sessionID=iq.attribute("sessionID").getText();
+  elem.addAttribute("sessionID",sessionID);
+  Element sessionExpired=iq.element("expired");
+  if (sessionExpired != null) {
+    siteUsers.remove(sessionID);
+    elem.addElement("sessionExpired").setText("true");
+    for (    AgentSession session : workgroup.getAgentSessions()) {
+      update.setTo(session.getJID());
+      update.setType(IQ.Type.set);
+      workgroup.send(update);
+    }
+    reply=IQ.createResultIQ(packet);
+    workgroup.send(reply);
+    return;
+  }
+  Element chatting=iq.element("chatting");
+  if (chatting != null) {
+    elem.addElement("chatting").setText("true");
+    for (    AgentSession session : workgroup.getAgentSessions()) {
+      update.setTo(session.getJID());
+      update.setType(IQ.Type.set);
+      workgroup.send(update);
+    }
+    reply=IQ.createResultIQ(packet);
+    workgroup.send(reply);
+    return;
+  }
+  Element leaving=iq.element("leftPage");
+  if (leaving != null) {
+    elem.addElement("leftPage").setText("true");
+    for (    AgentSession session : workgroup.getAgentSessions()) {
+      update.setTo(session.getJID());
+      update.setType(IQ.Type.set);
+      workgroup.send(update);
+    }
+    reply=IQ.createResultIQ(packet);
+    workgroup.send(reply);
+    SiteUser siteUser=siteUsers.get(sessionID);
+    if (siteUser != null) {
+      PageView lastView=siteUser.getLastView();
+      if (lastView != null) {
+        lastView.setEndTime(new Date());
+      }
+    }
+    return;
+  }
+  String url=iq.element("url").getTextTrim();
+  String title=iq.element("title").getTextTrim();
+  String referrer=iq.element("referrer").getTextTrim();
+  String ipAddress=iq.element("ipAddress").getTextTrim();
+  String userID=iq.element("userID").getTextTrim();
+  reply=IQ.createResultIQ(packet);
+  workgroup.send(reply);
+  elem.addElement("url").setText(url);
+  elem.addElement("title").setText(title);
+  elem.addElement("referrer").setText(referrer);
+  elem.addElement("userID").setText(userID);
+  elem.addElement("ipAddress").setText(ipAddress);
+  SiteUser siteUser=siteUsers.get(sessionID);
+  if (siteUser == null) {
+    siteUser=new SiteUser();
+  }
+  PageView pageView=new PageView();
+  pageView.setStartTime(new Date());
+  pageView.setTitle(title);
+  pageView.setUrl(url);
+  siteUser.addView(pageView);
+  siteUser.setJID(reply.getTo());
+  siteUsers.put(sessionID,siteUser);
+  for (  AgentSession session : workgroup.getAgentSessions()) {
+    update.setTo(session.getJID());
+    update.setType(IQ.Type.set);
+    workgroup.send(update);
+  }
+}

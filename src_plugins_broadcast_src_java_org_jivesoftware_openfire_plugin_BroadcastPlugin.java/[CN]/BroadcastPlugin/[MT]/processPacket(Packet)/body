@@ -1,0 +1,40 @@
+{
+  boolean canProceed=false;
+  Group group=null;
+  String toNode=packet.getTo().getNode();
+  boolean targetAll="all".equals(toNode);
+  if (targetAll) {
+    JID address=new JID(packet.getFrom().toBareJID());
+    if (allowedUsers.isEmpty() || allowedUsers.contains(address)) {
+      canProceed=true;
+    }
+  }
+ else {
+    try {
+      if (toNode != null) {
+        group=groupManager.getGroup(toNode);
+        boolean isGroupUser=group.isUser(packet.getFrom()) || group.isUser(new JID(packet.getFrom().toBareJID()));
+        if (disableGroupPermissions || (groupMembersAllowed && isGroupUser) || allowedUsers.contains(new JID(packet.getFrom().toBareJID()))) {
+          canProceed=true;
+        }
+      }
+    }
+ catch (    GroupNotFoundException e) {
+    }
+  }
+  if (packet instanceof Message) {
+    Message message=(Message)packet;
+    processMessage(message,targetAll,group,canProceed);
+  }
+ else   if (packet instanceof Presence) {
+    Presence presence=(Presence)packet;
+    processPresence(canProceed,presence);
+  }
+ else   if (packet instanceof IQ) {
+    IQ iq=(IQ)packet;
+    if (IQ.Type.error == iq.getType() || IQ.Type.result == iq.getType()) {
+      return;
+    }
+    processIQ(iq,targetAll,group,canProceed);
+  }
+}

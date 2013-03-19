@@ -1,0 +1,23 @@
+{
+  for (  Workgroup workgroup : getWorkgroups()) {
+    for (    AgentSession agentSession : workgroup.getAgentSessions()) {
+      final JID agentJID=agentSession.getJID();
+      final PresenceManager presenceManager=XMPPServer.getInstance().getPresenceManager();
+      boolean isOnline=false;
+      for (      Presence presence : presenceManager.getPresences(agentJID.getNode())) {
+        if (presence.getFrom().equals(agentJID)) {
+          isOnline=true;
+        }
+      }
+      if (!isOnline) {
+        for (        Workgroup wgroup : agentSession.getWorkgroups()) {
+          Presence presence=new Presence();
+          presence.setFrom(agentJID);
+          presence.setTo(wgroup.getJID());
+          presence.setType(Presence.Type.unavailable);
+          wgroup.getWorkgroupPresenceHandler().process(presence);
+        }
+      }
+    }
+  }
+}

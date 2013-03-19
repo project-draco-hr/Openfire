@@ -1,0 +1,28 @@
+{
+  boolean validAnswer=false;
+  List<String> answers=Request.decodeMetadataValue(message.getBody().trim());
+  FormElement field=getForm().getFormElementAt(session.getCurrentSubstep());
+  List<String> options=field.getAnswers();
+  if (!options.isEmpty()) {
+    for (    String answer : answers) {
+      validAnswer=false;
+      for (      String option : options) {
+        option=option.replace("\r","");
+        if (option.equalsIgnoreCase(answer)) {
+          validAnswer=true;
+          break;
+        }
+      }
+      if (!validAnswer) {
+        return false;
+      }
+    }
+  }
+ else {
+    validAnswer=true;
+  }
+  if (validAnswer) {
+    session.putAttribute(field.getVariable(),answers);
+  }
+  return validAnswer;
+}

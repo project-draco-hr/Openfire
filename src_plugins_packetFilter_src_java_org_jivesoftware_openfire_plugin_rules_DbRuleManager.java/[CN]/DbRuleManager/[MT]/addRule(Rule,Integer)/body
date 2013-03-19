@@ -1,0 +1,46 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(INSERT_RULE);
+    if (order == null) {
+      order=getLastOrderId() + 1;
+      pstmt.setInt(1,order);
+    }
+ else {
+      pstmt.setInt(1,order);
+    }
+    rule.setOrder(order);
+    pstmt.setString(2,rule.getPackeType().toString());
+    pstmt.setString(3,rule.getDestination());
+    pstmt.setString(4,rule.getSource());
+    pstmt.setString(5,rule.getClass().getName());
+    if (rule.isDisabled()) {
+      pstmt.setBoolean(6,Boolean.TRUE);
+    }
+ else {
+      pstmt.setBoolean(6,Boolean.FALSE);
+    }
+    if (rule.doLog()) {
+      pstmt.setBoolean(7,Boolean.TRUE);
+    }
+ else {
+      pstmt.setBoolean(7,Boolean.FALSE);
+    }
+    pstmt.setString(8,rule.getDescription());
+    pstmt.setString(9,rule.getSourceType().toString());
+    pstmt.setString(10,rule.getDestType().toString());
+    pstmt.execute();
+    rules.clear();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle.getMessage(),sqle);
+    return false;
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+    updateCluster();
+  }
+  return true;
+}

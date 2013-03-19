@@ -1,0 +1,17 @@
+{
+  byte[] a=new byte[24];
+  if (read(a) != a.length) {
+    return false;
+  }
+  final byte[] PSD_MAGIC={0x50,0x53};
+  if (!equals(a,0,PSD_MAGIC,0,2)) {
+    return false;
+  }
+  format=FORMAT_PSD;
+  width=getIntBigEndian(a,16);
+  height=getIntBigEndian(a,12);
+  int channels=getShortBigEndian(a,10);
+  int depth=getShortBigEndian(a,20);
+  bitsPerPixel=channels * depth;
+  return (width > 0 && height > 0 && bitsPerPixel > 0 && bitsPerPixel <= 64);
+}

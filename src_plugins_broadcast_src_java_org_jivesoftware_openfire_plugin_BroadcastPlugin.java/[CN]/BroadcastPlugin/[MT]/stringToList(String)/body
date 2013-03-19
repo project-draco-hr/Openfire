@@ -1,0 +1,16 @@
+{
+  List<JID> values=new ArrayList<JID>();
+  StringTokenizer tokens=new StringTokenizer(str,",");
+  while (tokens.hasMoreTokens()) {
+    String value=tokens.nextToken().trim();
+    if (!value.equals("")) {
+      if (value.contains("@")) {
+        values.add(new JID(value));
+      }
+ else {
+        values.add(XMPPServer.getInstance().createJID(value,null));
+      }
+    }
+  }
+  return values;
+}

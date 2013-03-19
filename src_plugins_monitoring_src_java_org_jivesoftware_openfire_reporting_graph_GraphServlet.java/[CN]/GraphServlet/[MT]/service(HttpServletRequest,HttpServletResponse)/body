@@ -1,0 +1,55 @@
+{
+  String statisticKey=request.getParameter("stat");
+  String timePeriod=request.getParameter("timeperiod");
+  String graphcolor=request.getParameter("color");
+  boolean sparkLines=request.getParameter("sparkline") != null;
+  boolean pdfFormat=request.getParameter("pdf") != null;
+  long[] dateRange=GraphEngine.parseTimePeriod(timePeriod);
+  int width;
+  int height;
+  if (pdfFormat) {
+    width=ParamUtils.getIntParameter(request,"width",495);
+    height=ParamUtils.getIntParameter(request,"height",252);
+    JFreeChart[] charts;
+    Statistic[] stats;
+    if (request.getParameter("pdf").equalsIgnoreCase("all")) {
+      String[] statKeys=statsViewer.getAllHighLevelStatKeys();
+      List<String> statList=Arrays.asList(statKeys);
+      Collections.sort(statList,new Comparator<String>(){
+        public int compare(        String stat1,        String stat2){
+          String statName1=statsViewer.getStatistic(stat1)[0].getName();
+          String statName2=statsViewer.getStatistic(stat2)[0].getName();
+          return statName1.toLowerCase().compareTo(statName2.toLowerCase());
+        }
+      }
+);
+      charts=new JFreeChart[statList.size()];
+      stats=new Statistic[statList.size()];
+      int index=0;
+      for (      String statName : statList) {
+        stats[index]=statsViewer.getStatistic(statName)[0];
+        charts[index]=graphEngine.generateChart(statName,width,height,graphcolor,dateRange[0],dateRange[1],(int)dateRange[2]);
+        index++;
+      }
+    }
+ else {
+      charts=new JFreeChart[]{graphEngine.generateChart(statisticKey,width,height,graphcolor,dateRange[0],dateRange[1],(int)dateRange[2])};
+      stats=new Statistic[]{statsViewer.getStatistic(statisticKey)[0]};
+    }
+    writePDFContent(request,response,charts,stats,dateRange[0],dateRange[1],width,height);
+  }
+ else {
+    byte[] chart;
+    if (sparkLines) {
+      width=ParamUtils.getIntParameter(request,"width",200);
+      height=ParamUtils.getIntParameter(request,"height",50);
+      chart=graphEngine.generateSparklinesGraph(statisticKey,width,height,graphcolor,dateRange[0],dateRange[1],(int)dateRange[2]);
+    }
+ else {
+      width=ParamUtils.getIntParameter(request,"width",590);
+      height=ParamUtils.getIntParameter(request,"height",300);
+      chart=graphEngine.generateGraph(statisticKey,width,height,graphcolor,dateRange[0],dateRange[1],(int)dateRange[2]);
+    }
+    writeImageContent(response,chart,"image/png");
+  }
+}

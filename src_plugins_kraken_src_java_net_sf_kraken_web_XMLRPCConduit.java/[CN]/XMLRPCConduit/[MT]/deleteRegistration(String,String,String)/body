@@ -1,0 +1,24 @@
+{
+  if (!verifyPassword(password)) {
+    return "Authorization failed!";
+  }
+  JID jid;
+  if (user.contains("@")) {
+    jid=new JID(user);
+  }
+ else {
+    jid=new JID(user,XMPPServer.getInstance().getServerInfo().getXMPPDomain(),null);
+  }
+  Collection<Registration> registrations=RegistrationManager.getInstance().getRegistrations(jid,TransportType.valueOf(transportType));
+  if (registrations.isEmpty()) {
+    return "Unable to find registration to delete.";
+  }
+  Registration registration=registrations.iterator().next();
+  String results=configManager.deleteRegistration((int)registration.getRegistrationID());
+  if (results == null) {
+    return "Success";
+  }
+ else {
+    return results;
+  }
+}

@@ -1,0 +1,24 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  OfflineSettingsManager offlineSettingsManager=new OfflineSettingsManager();
+  OfflineSettings settings;
+  try {
+    settings=offlineSettingsManager.getOfflineSettings(workgroup);
+  }
+ catch (  OfflineSettingsNotFound offlineSettingsNotFound) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    workgroup.send(reply);
+    return;
+  }
+  Element offline=reply.setChildElement("offline-settings","http://jivesoftware.com/protocol/workgroup");
+  if (ModelUtil.hasLength(settings.getRedirectURL())) {
+    offline.addElement("redirectPage").setText(settings.getRedirectURL());
+  }
+ else {
+    offline.addElement("emailAddress").setText(settings.getEmailAddress());
+    offline.addElement("offlineText").setText(settings.getOfflineText());
+    offline.addElement("subject").setText(settings.getSubject());
+  }
+  workgroup.send(reply);
+}

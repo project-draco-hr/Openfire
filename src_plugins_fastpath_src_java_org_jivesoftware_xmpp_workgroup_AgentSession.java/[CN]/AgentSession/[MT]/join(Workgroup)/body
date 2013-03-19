@@ -1,0 +1,21 @@
+{
+  boolean added=false;
+  boolean alreadyJoined=workgroups.contains(workgroup);
+  if (!alreadyJoined) {
+    added=workgroups.add(workgroup);
+  }
+  for (  RequestQueue requestQueue : workgroup.getRequestQueues()) {
+    if (requestQueue.isMember(getAgent())) {
+      if (added) {
+        requestQueue.getAgentSessionList().addAgentSession(this);
+      }
+      requestQueue.sendStatus(getJID());
+      requestQueue.sendDetailedStatus(getJID());
+    }
+  }
+  updateStatus(workgroup);
+  if (added) {
+    workgroup.agentJoined(this);
+    chatInfos.put(workgroup,new ConcurrentLinkedQueue<ChatInfo>());
+  }
+}

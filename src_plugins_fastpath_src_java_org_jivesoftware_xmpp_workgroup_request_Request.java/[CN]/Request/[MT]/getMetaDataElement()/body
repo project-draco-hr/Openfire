@@ -1,0 +1,12 @@
+{
+  QName qName=DocumentHelper.createQName("metadata",DocumentHelper.createNamespace("","http://jivesoftware.com/protocol/workgroup"));
+  Element metaDataElement=DocumentHelper.createElement(qName);
+  for (  String name : metaData.keySet()) {
+    List<String> values=metaData.get(name);
+    for (    String value : values) {
+      Element elem=metaDataElement.addElement("value");
+      elem.addAttribute("name",name).setText(value);
+    }
+  }
+  return metaDataElement;
+}

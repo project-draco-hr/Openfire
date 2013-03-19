@@ -1,0 +1,16 @@
+{
+  String ggContact=getTransport().convertJIDToID(contact.getJID());
+  pseudoRoster.removeItem(ggContact);
+  for (  GaduGaduBuddy buddy : getBuddyManager().getBuddies()) {
+    if (buddy.getJID().equals(contact.getJID())) {
+      LocalUser byeUser=buddy.toLocalUser();
+      try {
+        iSession.getPresenceService().removeMonitoredUser(new User(byeUser.getUin()));
+      }
+ catch (      GGException e) {
+        Log.debug("GaduGadu: Error while removing user from being monitored during delete:",e);
+      }
+      break;
+    }
+  }
+}

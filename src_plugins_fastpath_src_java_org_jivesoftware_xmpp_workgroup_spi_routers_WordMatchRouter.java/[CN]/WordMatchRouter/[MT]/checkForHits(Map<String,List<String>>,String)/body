@@ -1,0 +1,38 @@
+{
+  setStemmingEnabled(true);
+  boolean foundMatch=false;
+  try {
+    RAMDirectory dir=new RAMDirectory();
+    IndexWriter writer=new IndexWriter(dir,analyzer,true);
+    BooleanQuery booleanQuery=new BooleanQuery();
+    Document doc=new Document();
+    for (    String key : requestMap.keySet()) {
+      List<String> keyValue=requestMap.get(key);
+      if (keyValue != null) {
+        StringBuilder builder=new StringBuilder();
+        for (        String value : keyValue) {
+          if (ModelUtil.hasLength(value)) {
+            builder.append(value);
+            builder.append(" ");
+          }
+        }
+        doc.add(new Field(key,builder.toString(),Field.Store.YES,Field.Index.TOKENIZED));
+        QueryParser parser=new QueryParser(key,analyzer);
+        Query query=parser.parse(queryString);
+        booleanQuery.add(query,BooleanClause.Occur.MUST);
+      }
+    }
+    writer.addDocument(doc);
+    writer.close();
+    IndexSearcher searcher=new IndexSearcher(dir);
+    Hits hits=searcher.search(booleanQuery);
+    if (hits.length() > 0) {
+      foundMatch=true;
+    }
+    searcher.close();
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+  return foundMatch;
+}

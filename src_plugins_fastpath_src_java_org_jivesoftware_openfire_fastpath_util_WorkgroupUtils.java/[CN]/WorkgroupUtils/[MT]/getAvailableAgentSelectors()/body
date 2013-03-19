@@ -1,0 +1,29 @@
+{
+  List<AgentSelector> answer=new ArrayList<AgentSelector>();
+  for (  Class newClass : getBuiltInAgentSelectorClasses()) {
+    try {
+      AgentSelector algorithm=(AgentSelector)newClass.newInstance();
+      answer.add(algorithm);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  List<String> classNames=JiveGlobals.getProperties("agentSelector.classes");
+  for (  String className : classNames) {
+    install_algorithm:     try {
+      Class algorithmClass=loadClass(className);
+      for (      AgentSelector agentSelector : answer) {
+        if (algorithmClass.equals(agentSelector.getClass())) {
+          break install_algorithm;
+        }
+      }
+      AgentSelector algorithm=(AgentSelector)algorithmClass.newInstance();
+      answer.add(algorithm);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return answer;
+}

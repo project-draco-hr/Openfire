@@ -1,0 +1,53 @@
+{
+  IQ request=getPendingRequest(to,roomjid,NameSpace.DISCO_INFO);
+  if (request != null) {
+    IQ result=IQ.createResultIQ(request);
+    Element response=DocumentHelper.createElement(QName.get("query",NameSpace.DISCO_INFO));
+    response.addElement("identity").addAttribute("category","conference").addAttribute("type","text").addAttribute("name",room.getName());
+    response.addElement("feature").addAttribute("var",NameSpace.MUC);
+    response.addElement("feature").addAttribute("var",NameSpace.DISCO_INFO);
+    response.addElement("feature").addAttribute("var",NameSpace.DISCO_ITEMS);
+    if (room.getPassword_protected()) {
+      response.addElement("feature").addAttribute("var","muc_passwordprotected");
+    }
+    if (room.getHidden()) {
+      response.addElement("feature").addAttribute("var","muc_hidden");
+    }
+    if (room.getTemporary()) {
+      response.addElement("feature").addAttribute("var","muc_temporary");
+    }
+    if (room.getOpen()) {
+      response.addElement("feature").addAttribute("var","muc_open");
+    }
+    if (!room.getModerated()) {
+      response.addElement("feature").addAttribute("var","muc_unmoderated");
+    }
+    if (!room.getAnonymous()) {
+      response.addElement("feature").addAttribute("var","muc_nonanonymous");
+    }
+    Element form=DocumentHelper.createElement(QName.get("x",NameSpace.XDATA));
+    form.addAttribute("type","result");
+    form.addElement("field").addAttribute("var","FORM_TYPE").addAttribute("type","hidden").addElement("value").addCDATA("http://jabber.org/protocol/muc#roominfo");
+    if (room.getContact() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_contactjid").addAttribute("label","Contact Addresses").addElement("value").addCDATA(room.getContact().toString());
+    }
+    if (room.getName() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_description").addAttribute("label","Short Description of Room").addElement("value").addCDATA(room.getName());
+    }
+    if (room.getLanguage() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_lang").addAttribute("label","Natural Language for Room Discussions").addElement("value").addCDATA(room.getLanguage());
+    }
+    if (room.getLog_location() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_logs").addAttribute("label","URL for Archived Discussion Logs").addElement("value").addCDATA(room.getLog_location());
+    }
+    if (room.getOccupant_count() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_occupants").addAttribute("label","Current Number of Occupants in Room").addElement("value").addCDATA(room.getOccupant_count().toString());
+    }
+    if (room.getTopic() != null) {
+      form.addElement("field").addAttribute("var","muc#roominfo_subject").addAttribute("label","Current Subject or Discussion Topic in Room").addElement("value").addCDATA(room.getTopic());
+    }
+    response.add(form);
+    result.setChildElement(response);
+    this.sendPacket(result);
+  }
+}

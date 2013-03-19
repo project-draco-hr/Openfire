@@ -1,0 +1,23 @@
+{
+  WordMatchRouter router=new WordMatchRouter();
+  for (  RoutingRule rule : getRoutingRules(workgroup)) {
+    String query=rule.getQuery();
+    boolean handled=router.checkForHits(request.getMetaData(),query);
+    if (handled) {
+      try {
+        return workgroup.getRequestQueue(rule.getQueueID());
+      }
+ catch (      NotFoundException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+  List<RequestQueue> availableRequestQueues=new ArrayList<RequestQueue>();
+  for (  RequestQueue requestQueue : workgroup.getRequestQueues()) {
+    if (requestQueue != null && requestQueue.isOpened()) {
+      availableRequestQueues.add(requestQueue);
+    }
+  }
+  Collections.sort(availableRequestQueues,queueComparator);
+  return availableRequestQueues.get(0);
+}

@@ -1,0 +1,22 @@
+{
+  Presence sessionPresence=packet.createCopy();
+  Element child=sessionPresence.getChildElement("agent-status","http://jabber.org/protocol/workgroup");
+  sessionPresence.getElement().remove(child);
+  presence=sessionPresence;
+  Element elem=packet.getChildElement("agent-status","http://jabber.org/protocol/workgroup");
+  if (elem != null) {
+    Iterator<Element> metaIter=elem.elementIterator();
+    while (metaIter.hasNext()) {
+      Element agentStatusElement=metaIter.next();
+      if ("max-chats".equals(agentStatusElement.getName())) {
+        String maxChats=agentStatusElement.getText();
+        if (maxChats == null || maxChats.trim().length() == 0) {
+          setMaxChats(-1);
+        }
+ else {
+          setMaxChats(Integer.parseInt(maxChats));
+        }
+      }
+    }
+  }
+}

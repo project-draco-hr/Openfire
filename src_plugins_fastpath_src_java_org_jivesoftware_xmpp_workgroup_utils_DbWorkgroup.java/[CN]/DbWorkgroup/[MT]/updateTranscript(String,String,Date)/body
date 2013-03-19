@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_TRANSCRIPT);
+    DbConnectionManager.setLargeTextField(pstmt,1,transcript);
+    pstmt.setString(2,StringUtils.dateToMillis(endTime));
+    pstmt.setString(3,sessionID);
+    pstmt.executeUpdate();
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

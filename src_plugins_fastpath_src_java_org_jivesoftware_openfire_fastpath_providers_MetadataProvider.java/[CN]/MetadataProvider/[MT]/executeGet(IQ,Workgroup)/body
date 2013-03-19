@@ -1,0 +1,42 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  WorkgroupManager workgroupManager=WorkgroupManager.getInstance();
+  try {
+    workgroupManager.getAgentManager().getAgent(packet.getFrom());
+  }
+ catch (  AgentNotFoundException e) {
+    reply.setChildElement(packet.getChildElement().createCopy());
+    reply.setError(new PacketError(PacketError.Condition.item_not_found));
+    workgroup.send(reply);
+    return;
+  }
+  final Map<String,String> map=new HashMap<String,String>();
+  final List<String> configFiles=JiveGlobals.getProperties("config");
+  for (  String fileName : configFiles) {
+    File file=new File(fileName);
+    if (file.exists()) {
+      Properties props=new Properties();
+      try {
+        props.load(new FileInputStream(file));
+        Enumeration<?> properties=props.propertyNames();
+        while (properties.hasMoreElements()) {
+          String key=(String)properties.nextElement();
+          String value=props.getProperty(key);
+          map.put(key,value);
+        }
+      }
+ catch (      IOException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+  final Element genericSetting=reply.setChildElement("generic-metadata","http://jivesoftware.com/protocol/workgroup");
+  for (  Map.Entry<String,String> entry : map.entrySet()) {
+    String key=entry.getKey();
+    String value=entry.getValue();
+    Element element=genericSetting.addElement("entry");
+    element.addElement("name").setText(key);
+    element.addElement("value").setText(value);
+  }
+  workgroup.send(reply);
+}

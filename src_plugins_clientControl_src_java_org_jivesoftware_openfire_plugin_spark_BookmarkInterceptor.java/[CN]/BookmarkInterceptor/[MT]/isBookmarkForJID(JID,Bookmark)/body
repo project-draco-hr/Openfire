@@ -1,0 +1,22 @@
+{
+  String username=jid.getNode();
+  if (bookmark.getUsers().contains(username)) {
+    return true;
+  }
+  Collection<String> groups=bookmark.getGroups();
+  if (groups != null && !groups.isEmpty()) {
+    GroupManager groupManager=GroupManager.getInstance();
+    for (    String groupName : groups) {
+      try {
+        Group group=groupManager.getGroup(groupName);
+        if (group.isUser(jid.getNode())) {
+          return true;
+        }
+      }
+ catch (      GroupNotFoundException e) {
+        Log.debug(e.getMessage(),e);
+      }
+    }
+  }
+  return false;
+}

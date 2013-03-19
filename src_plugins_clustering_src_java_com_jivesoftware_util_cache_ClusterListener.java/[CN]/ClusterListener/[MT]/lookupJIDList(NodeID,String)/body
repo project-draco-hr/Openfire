@@ -1,0 +1,30 @@
+{
+  Set<String>[] allLists=nodeSessions.get(nodeKey);
+  if (allLists == null) {
+    allLists=insertJIDList(nodeKey);
+  }
+  if (cacheName.equals(C2SCache.getName())) {
+    return allLists[C2S_CACHE_IDX];
+  }
+ else   if (cacheName.equals(anonymousC2SCache.getName())) {
+    return allLists[ANONYMOUS_C2S_CACHE_IDX];
+  }
+ else   if (cacheName.equals(S2SCache.getName())) {
+    return allLists[S2S_CACHE_NAME_IDX];
+  }
+ else   if (cacheName.equals(componentsCache.getName())) {
+    return allLists[COMPONENT_CACHE_IDX];
+  }
+ else   if (cacheName.equals(componentSessionsCache.getName())) {
+    return allLists[COMPONENT_SESSION_CACHE_IDX];
+  }
+ else   if (cacheName.equals(multiplexerSessionsCache.getName())) {
+    return allLists[CM_CACHE_IDX];
+  }
+ else   if (cacheName.equals(incomingServerSessionsCache.getName())) {
+    return allLists[ISS_CACHE_IDX];
+  }
+ else {
+    throw new IllegalArgumentException("Unknown cache name: " + cacheName);
+  }
+}

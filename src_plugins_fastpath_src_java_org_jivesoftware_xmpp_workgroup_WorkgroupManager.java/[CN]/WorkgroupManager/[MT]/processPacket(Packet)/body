@@ -1,0 +1,49 @@
+{
+  try {
+    if (packet instanceof IQ) {
+      if (process((IQ)packet)) {
+        return;
+      }
+    }
+    try {
+      Workgroup workgroup=getWorkgroup(packet.getTo());
+      workgroup.process(packet);
+    }
+ catch (    UserNotFoundException e) {
+      if (packet instanceof Presence) {
+        if (((Presence)packet).getType() == Presence.Type.error) {
+          return;
+        }
+        Presence reply=new Presence();
+        reply.setID(packet.getID());
+        reply.setTo(packet.getFrom());
+        reply.setFrom(packet.getTo());
+        reply.setError(PacketError.Condition.not_authorized);
+        send(reply);
+      }
+ else       if (packet instanceof IQ) {
+        if (((IQ)packet).getType() == IQ.Type.error) {
+          return;
+        }
+        IQ reply=IQ.createResultIQ((IQ)packet);
+        reply.setChildElement(((IQ)packet).getChildElement().createCopy());
+        reply.setError(PacketError.Condition.not_authorized);
+        send(reply);
+      }
+ else {
+        if (((Message)packet).getType() == Message.Type.error) {
+          return;
+        }
+        Message reply=new Message();
+        reply.setID(packet.getID());
+        reply.setTo(packet.getFrom());
+        reply.setFrom(packet.getTo());
+        reply.setError(PacketError.Condition.not_authorized);
+        send(reply);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

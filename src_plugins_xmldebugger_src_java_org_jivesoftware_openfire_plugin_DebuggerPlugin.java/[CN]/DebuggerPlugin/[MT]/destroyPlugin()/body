@@ -1,0 +1,34 @@
+{
+  PropertyEventDispatcher.removeListener(this);
+  ConnectionManagerImpl connManager=(ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager();
+  if (connManager.getSocketAcceptor() != null && connManager.getSocketAcceptor().getFilterChain().contains("rawDebugger")) {
+    connManager.getSocketAcceptor().getFilterChain().remove("rawDebugger");
+  }
+  if (connManager.getSSLSocketAcceptor() != null && connManager.getSSLSocketAcceptor().getFilterChain().contains("rawDebugger")) {
+    connManager.getSSLSocketAcceptor().getFilterChain().remove("rawDebugger");
+  }
+  if (connManager.getComponentAcceptor() != null && connManager.getComponentAcceptor().getFilterChain().contains("rawDebugger")) {
+    connManager.getComponentAcceptor().getFilterChain().remove("rawDebugger");
+  }
+  if (connManager.getMultiplexerSocketAcceptor() != null && connManager.getMultiplexerSocketAcceptor().getFilterChain().contains("rawDebugger")) {
+    connManager.getMultiplexerSocketAcceptor().getFilterChain().remove("rawDebugger");
+  }
+  if (defaultPortFilter != null) {
+    defaultPortFilter.shutdown();
+  }
+  if (oldPortFilter != null) {
+    oldPortFilter.shutdown();
+  }
+  if (componentPortFilter != null) {
+    componentPortFilter.shutdown();
+  }
+  if (multiplexerPortFilter != null) {
+    multiplexerPortFilter.shutdown();
+  }
+  InterceptorManager.getInstance().removeInterceptor(interpretedPrinter);
+  defaultPortFilter=null;
+  oldPortFilter=null;
+  componentPortFilter=null;
+  interpretedPrinter=null;
+  multiplexerPortFilter=null;
+}

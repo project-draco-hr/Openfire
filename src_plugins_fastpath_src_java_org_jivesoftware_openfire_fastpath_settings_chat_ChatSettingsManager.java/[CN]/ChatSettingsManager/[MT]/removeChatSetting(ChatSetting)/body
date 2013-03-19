@@ -1,0 +1,26 @@
+{
+  Connection con;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    try {
+      pstmt=con.prepareStatement(DELETE_SINGLE_CHAT_SETTING);
+      pstmt.setString(1,setting.getKey().toString());
+      pstmt.setString(2,setting.getWorkgroupNode());
+      pstmt.executeUpdate();
+    }
+ catch (    Exception ex) {
+      Log.error(ex.getMessage(),ex);
+    }
+ finally {
+      DbConnectionManager.closeConnection(pstmt,con);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+  ChatSettings chatSettings=cachedSettings.get(setting.getWorkgroupNode());
+  if (chatSettings != null) {
+    chatSettings.removeChatSetting(setting);
+  }
+}

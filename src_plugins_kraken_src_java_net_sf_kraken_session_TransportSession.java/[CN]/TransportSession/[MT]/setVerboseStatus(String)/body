@@ -1,0 +1,16 @@
+{
+  if (newstatus == null) {
+    newstatus="";
+  }
+  if (!verboseStatus.equals(newstatus)) {
+    Presence p=new Presence();
+    p.setTo(getJID());
+    p.setFrom(getTransport().getJID());
+    getTransport().setUpPresencePacket(p,presence);
+    if (!newstatus.equals("")) {
+      p.setStatus(newstatus);
+    }
+    getTransport().sendPacket(p);
+  }
+  verboseStatus=newstatus;
+}

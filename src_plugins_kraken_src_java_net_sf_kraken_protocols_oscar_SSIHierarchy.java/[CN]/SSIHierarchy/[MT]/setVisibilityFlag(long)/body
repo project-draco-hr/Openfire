@@ -1,0 +1,14 @@
+{
+  if (visibility != null) {
+    if ((visibility.getVisFlags() & flag) == 0) {
+      visibility.setVisFlags((visibility.getVisFlags() | flag));
+      request(new ModifyItemsCmd(visibility.toSsiItem()));
+    }
+  }
+ else {
+    final VisibilityItem newItem=new VisibilityItem(getNextBuddyId(SsiItem.GROUP_ROOT),SsiItem.GROUP_ROOT);
+    newItem.setVisFlags(flag);
+    this.visibility=newItem;
+    request(new CreateItemsCmd(newItem.toSsiItem()));
+  }
+}

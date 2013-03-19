@@ -1,0 +1,27 @@
+{
+  WorkgroupManager workgroupManager=WorkgroupManager.getInstance();
+  for (  Workgroup workgroup : workgroupManager.getWorkgroups()) {
+    for (    RequestQueue queue : workgroup.getRequestQueues()) {
+      if (queue.getMembers().contains(agent)) {
+        return;
+      }
+      for (      Group group : queue.getGroups()) {
+        if (group.isUser(agent.getAgentJID())) {
+          return;
+        }
+      }
+    }
+  }
+  try {
+    AgentSession session=agent.getAgentSession();
+    if (session != null) {
+      for (      Workgroup workgroup : session.getWorkgroups()) {
+        session.depart(workgroup);
+      }
+    }
+    deleteAgent(agent.getAgentJID());
+  }
+ catch (  IllegalArgumentException e) {
+    Log.error(e.getMessage(),e);
+  }
+}

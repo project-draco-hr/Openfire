@@ -1,0 +1,20 @@
+{
+  if (caches.size() > 0 && cluster != null) {
+    if (cacheStats == null) {
+      cacheStats=hazelcast.getMap("opt-$cacheStats");
+    }
+    String uid=cluster.getLocalMember().getUuid();
+    Map<String,long[]> stats=new HashMap<String,long[]>();
+    for (    String cacheName : caches.keySet()) {
+      Cache cache=caches.get(cacheName);
+      long[] info=new long[5];
+      info[0]=cache.getCacheSize();
+      info[1]=cache.getMaxCacheSize();
+      info[2]=cache.size();
+      info[3]=cache.getCacheHits();
+      info[4]=cache.getCacheMisses();
+      stats.put(cacheName,info);
+    }
+    cacheStats.put(uid,stats);
+  }
+}

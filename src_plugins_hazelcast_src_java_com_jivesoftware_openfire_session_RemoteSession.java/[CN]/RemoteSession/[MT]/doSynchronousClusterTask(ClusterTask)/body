@@ -1,0 +1,11 @@
+{
+  ClusterNodeInfo info=CacheFactory.getClusterNodeInfo(nodeID);
+  Object result=null;
+  if (info == null && task instanceof RemoteSessionTask) {
+    SessionManager.getInstance().removeSession(null,((RemoteSessionTask)task).getSession().getAddress(),false,false);
+  }
+ else {
+    result=(info == null) ? null : CacheFactory.doSynchronousClusterTask(task,nodeID);
+  }
+  return result;
+}

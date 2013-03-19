@@ -1,0 +1,30 @@
+{
+  StringBuffer buf=new StringBuffer();
+  buf.append("<mail-thread-info");
+  if (threadId != null) {
+    buf.append(" tid=\"").append(threadId).append("\"");
+  }
+  if (numParticipants != null) {
+    buf.append(" participation=\"").append(numParticipants).append("\"");
+  }
+  if (numMessages != null) {
+    buf.append(" messages=\"").append(numMessages).append("\"");
+  }
+  if (date != null) {
+    buf.append(" date=\"").append(date.getTime()).append("\"");
+  }
+  if (url != null) {
+    buf.append(" url=\"").append(url).append("\"");
+  }
+  buf.append(">");
+  buf.append("<senders>");
+  for (  GoogleMailSender sender : senders) {
+    buf.append(sender.toXML());
+  }
+  buf.append("</senders>");
+  buf.append("<labels>").append(StringUtils.join(labels,"|")).append("</labels>");
+  buf.append("<subject>").append(subject).append("</subject>");
+  buf.append("<snippit>").append(snippit).append("</snippit>");
+  buf.append("</mail-thread-info>");
+  return buf.toString();
+}

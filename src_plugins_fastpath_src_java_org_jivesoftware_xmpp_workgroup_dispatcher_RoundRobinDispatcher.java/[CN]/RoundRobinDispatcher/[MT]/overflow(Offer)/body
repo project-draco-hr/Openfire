@@ -1,0 +1,19 @@
+{
+  RequestQueue backup=null;
+  if (RequestQueue.OverflowType.OVERFLOW_BACKUP.equals(queue.getOverflowType())) {
+    backup=queue.getBackupQueue();
+    if (backup != null && !backup.getAgentSessionList().containsAvailableAgents()) {
+      backup=null;
+    }
+  }
+ else   if (RequestQueue.OverflowType.OVERFLOW_RANDOM.equals(queue.getOverflowType())) {
+    backup=getRandomQueue();
+  }
+  if (backup != null) {
+    offer.cancel();
+    UserRequest request=(UserRequest)offer.getRequest();
+    queue.removeRequest(request);
+    Log.debug("RR - Overflowing request: " + request + " to queue: "+ backup.getAddress());
+    backup.addRequest(request);
+  }
+}

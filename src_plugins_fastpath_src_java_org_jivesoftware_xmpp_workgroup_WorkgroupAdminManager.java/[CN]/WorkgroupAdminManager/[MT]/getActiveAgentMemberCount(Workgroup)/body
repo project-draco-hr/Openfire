@@ -1,0 +1,21 @@
+{
+  Map<Agent,Agent> agents=new HashMap<Agent,Agent>();
+  for (  RequestQueue requestQueue : workgroup.getRequestQueues()) {
+    for (    Agent agent : requestQueue.getMembers()) {
+      AgentSession agentSession=agent.getAgentSession();
+      if (agentSession != null && agentSession.isAvailableToChat() && agentSession.getWorkgroups().contains(workgroup)) {
+        agents.put(agent,agent);
+      }
+    }
+    final AgentManager agentManager=workgroup.getAgentManager();
+    for (    Group group : requestQueue.getGroups()) {
+      for (      Agent agent : agentManager.getAgents(group)) {
+        AgentSession agentSession=agent.getAgentSession();
+        if (agentSession != null && agentSession.isAvailableToChat() && agentSession.getWorkgroups().contains(workgroup)) {
+          agents.put(agent,agent);
+        }
+      }
+    }
+  }
+  return agents.size();
+}

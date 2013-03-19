@@ -1,0 +1,14 @@
+{
+  Map<String,Map<Presence.Type,Change>> srTable=stateTable.get(item.getSubStatus());
+  Map<Presence.Type,Change> changeTable=srTable.get(isSending ? "send" : "recv");
+  Change change=changeTable.get(action);
+  if (change.newAsk != null && change.newAsk != item.getAskStatus()) {
+    item.setAskStatus(change.newAsk);
+  }
+  if (change.newSub != null && change.newSub != item.getSubStatus()) {
+    item.setSubStatus(change.newSub);
+  }
+  if (change.newRecv != null && change.newRecv != item.getRecvStatus()) {
+    item.setRecvStatus(change.newRecv);
+  }
+}

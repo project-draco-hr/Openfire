@@ -1,0 +1,20 @@
+{
+  if (getTransport().getType().equals(TransportType.icq)) {
+    request(new SetExtraInfoCmd(((OSCARTransport)getTransport()).convertXMPPStatusToICQ(presenceType)));
+  }
+  if (presenceType != PresenceType.available && presenceType != PresenceType.chat) {
+    String awayMsg=LocaleUtils.getLocalizedString("gateway.oscar.away","kraken");
+    if (verboseStatus != null && verboseStatus.length() > 0) {
+      awayMsg=verboseStatus;
+    }
+    request(new SetInfoCmd(InfoData.forAwayMessage(awayMsg)));
+    if (!getTransport().getType().equals(TransportType.icq)) {
+      presenceType=PresenceType.away;
+    }
+  }
+ else {
+    request(new SetInfoCmd(InfoData.forAwayMessage(InfoData.NOT_AWAY)));
+    request(new SetExtraInfoCmd(new ExtraInfoBlock(ExtraInfoBlock.TYPE_AVAILMSG,ExtraInfoData.getAvailableMessageBlock(verboseStatus == null ? "" : verboseStatus))));
+  }
+  setPresenceAndStatus(presenceType,verboseStatus);
+}

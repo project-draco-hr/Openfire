@@ -1,0 +1,100 @@
+{
+  Request request=null;
+  String myXMPPUsername=this.jid.getNode();
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing request packet of type '"+ requestType+ "'");
+  try {
+    request=messageFactory.createRequest(null);
+    request.setMethod(requestType.toString());
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing request.",e);
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"From\" header...");
+  String mySipUsername=registration.getUsername();
+  try {
+    SipURI fromUri=addressFactory.createSipURI(mySipUsername,sipHost);
+    Address fromNameAddress=addressFactory.createAddress(fromUri);
+    fromNameAddress.setDisplayName(mySipUsername);
+    FromHeader fromHeader=headerFactory.createFromHeader(fromNameAddress,getTag());
+    request.setHeader(fromHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing FromHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"To\" header...");
+  try {
+    if (destUri == null)     destUri=addressFactory.createSipURI(mySipUsername,sipHost);
+    Address toNameAddress=addressFactory.createAddress(destUri);
+    ToHeader toHeader=headerFactory.createToHeader(toNameAddress,toTag);
+    request.setHeader(toHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing ToHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"Via\" header...");
+  try {
+    ViaHeader viaHeader=headerFactory.createViaHeader(InetAddress.getLocalHost().getHostAddress(),sipPort,ListeningPoint.UDP,null);
+    request.setHeader(viaHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing ViaHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"CallId\" header...");
+  CallIdHeader callIdHeader;
+  try {
+    if (callId != null)     callIdHeader=headerFactory.createCallIdHeader(callId);
+ else     callIdHeader=udpSipProvider.getNewCallId();
+    request.setHeader(callIdHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing CallIdHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"CSeq\" header...");
+  try {
+    CSeqHeader cSeqHeader=headerFactory.createCSeqHeader(seqNum,requestType.toString());
+    request.setHeader(cSeqHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing CSeqHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"MaxForwards\" header...");
+  try {
+    MaxForwardsHeader maxForwardsHeader=headerFactory.createMaxForwardsHeader(70);
+    request.setHeader(maxForwardsHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when preparing MaxForwardsHeader.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  setting request URI...");
+  try {
+    if (requestUri == null) {
+      requestUri=(SipURI)destUri.clone();
+      requestUri.setTransportParam(ListeningPoint.UDP);
+    }
+    request.setRequestURI(requestUri);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when setting request URI.",e);
+    return null;
+  }
+  Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Preparing \"Contact\" header...");
+  try {
+    SipURI contactURI=addressFactory.createSipURI(mySipUsername,InetAddress.getLocalHost().getHostAddress());
+    contactURI.setPort(sipPort);
+    Address contactAddress=addressFactory.createAddress(contactURI);
+    contactAddress.setDisplayName(mySipUsername);
+    ContactHeader contactHeader=headerFactory.createContactHeader(contactAddress);
+    request.setHeader(contactHeader);
+  }
+ catch (  Exception e) {
+    Log.debug("SimpleSession(" + myXMPPUsername + ").prepareRequest:  Exception occured when adding ContactHeader.",e);
+    return null;
+  }
+  return request;
+}

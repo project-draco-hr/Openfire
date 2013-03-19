@@ -1,0 +1,34 @@
+{
+  JID from=destroyedSession.getAddress();
+  TransportSession<B> session;
+  try {
+    session=sessionManager.getSession(from);
+    if (session.getLoginStatus().equals(TransportLoginStatus.LOGGING_OUT) || session.getLoginStatus().equals(TransportLoginStatus.LOGGED_OUT)) {
+      return;
+    }
+    String resource=from.getResource();
+    if (session.hasResource(resource)) {
+      if (session.getResourceCount() > 1) {
+        if (session.isHighestPriority(resource)) {
+          Log.debug("A high priority resource (of multiple) has gone offline (NoPres): " + from);
+          session.removeResource(resource);
+          Presence p=new Presence(Presence.Type.probe);
+          p.setTo(session.getJIDWithHighestPriority());
+          p.setFrom(this.getJID());
+          sendPacket(p);
+        }
+ else {
+          Log.debug("A low priority resource (of multiple) has gone offline (NoPres): " + from);
+          session.removeResource(resource);
+        }
+      }
+ else {
+        Log.debug("A final resource has gone offline (NoPres): " + from);
+        this.registrationLoggedOut(session);
+        sessionManager.removeSession(from);
+      }
+    }
+  }
+ catch (  NotFoundException e) {
+  }
+}

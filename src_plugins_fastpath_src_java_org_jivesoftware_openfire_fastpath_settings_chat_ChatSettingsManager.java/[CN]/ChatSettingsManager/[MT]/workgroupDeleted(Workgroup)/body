@@ -1,0 +1,23 @@
+{
+  String workgroupNode=workgroup.getJID().getNode();
+  cachedSettings.remove(workgroupNode);
+  Connection con;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    try {
+      pstmt=con.prepareStatement(DELETE_CHAT_SETTINGS);
+      pstmt.setString(1,workgroupNode);
+      pstmt.executeUpdate();
+    }
+ catch (    Exception ex) {
+      Log.error(ex.getMessage(),ex);
+    }
+ finally {
+      DbConnectionManager.closeConnection(pstmt,con);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+}

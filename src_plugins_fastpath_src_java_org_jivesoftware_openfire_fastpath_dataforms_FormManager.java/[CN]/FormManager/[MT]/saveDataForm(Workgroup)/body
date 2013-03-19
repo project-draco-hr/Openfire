@@ -1,0 +1,72 @@
+{
+  DataForm dataForm=new DataForm(DataForm.Type.form);
+  WorkgroupForm form=getWebForm(workgroup);
+  if (form.getTitle() != null) {
+    dataForm.setTitle(form.getTitle());
+  }
+  if (form.getDescription() != null) {
+    dataForm.addInstruction(form.getDescription());
+  }
+  List<FormElement> elems=new ArrayList<FormElement>();
+  int size=form.getFormElements().size();
+  for (int j=0; j < size; j++) {
+    elems.add(form.getFormElementAt(j));
+  }
+  size=form.getHiddenVars().size();
+  for (int k=0; k < size; k++) {
+    elems.add(form.getHiddenVars().get(k));
+  }
+  size=elems.size();
+  for (int i=0; i < size; i++) {
+    FormElement elem=elems.get(i);
+    FormField field=dataForm.addField();
+    field.setLabel(elem.getLabel());
+    field.setVariable(elem.getVariable());
+    field.setRequired(elem.isRequired());
+    if (elem.getDescription() != null) {
+      field.setDescription(elem.getDescription());
+    }
+    if (elem.getAnswerType() == WorkgroupForm.FormEnum.textarea) {
+      field.setType(FormField.Type.text_multi);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.textfield) {
+      field.setType(FormField.Type.text_single);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.checkbox) {
+      field.setType(FormField.Type.boolean_type);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.radio_button) {
+      field.setType(FormField.Type.list_multi);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.dropdown_box) {
+      field.setType(FormField.Type.list_single);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.hidden) {
+      field.setType(FormField.Type.hidden);
+    }
+ else     if (elem.getAnswerType() == WorkgroupForm.FormEnum.password) {
+      field.setType(FormField.Type.text_private);
+    }
+    if (elem.getAnswers().size() > 0 && elem.getAnswerType() != WorkgroupForm.FormEnum.hidden) {
+      for (      String item : elem.getAnswers()) {
+        field.addOption(item,item);
+      }
+    }
+ else     if (elem.getAnswers().size() > 0) {
+      for (      String item : elem.getAnswers()) {
+        field.addValue(item);
+      }
+    }
+  }
+  XStream xstream=new XStream();
+  String xmlToSave=xstream.toXML(dataForm);
+  DbProperties props=workgroup.getProperties();
+  String context="jive.dataform.wg";
+  try {
+    props.deleteProperty(context);
+    props.setProperty(context,xmlToSave);
+  }
+ catch (  UnauthorizedException e) {
+    Log.error(e.getMessage(),e);
+  }
+}

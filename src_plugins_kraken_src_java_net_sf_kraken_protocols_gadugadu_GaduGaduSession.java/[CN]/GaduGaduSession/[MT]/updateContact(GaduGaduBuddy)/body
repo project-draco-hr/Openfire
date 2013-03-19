@@ -1,0 +1,12 @@
+{
+  String ggContact=getTransport().convertJIDToID(contact.getJID());
+  if (pseudoRoster.hasItem(ggContact)) {
+    PseudoRosterItem rosterItem=pseudoRoster.getItem(ggContact);
+    rosterItem.setNickname(contact.getNickname());
+    rosterItem.setGroups((List<String>)contact.getGroups());
+  }
+ else {
+    PseudoRosterItem rosterItem=pseudoRoster.createItem(ggContact,contact.getNickname(),(List<String>)contact.getGroups());
+    getBuddyManager().storeBuddy(new GaduGaduBuddy(getBuddyManager(),rosterItem));
+  }
+}

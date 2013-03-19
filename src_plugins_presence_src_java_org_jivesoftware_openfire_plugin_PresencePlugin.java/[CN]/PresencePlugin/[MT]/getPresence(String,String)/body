@@ -1,0 +1,44 @@
+{
+  if (jid == null) {
+    throw new UserNotFoundException("Target JID not found in request");
+  }
+  JID targetJID=new JID(jid);
+  if (targetJID.getDomain() == null || XMPPServer.getInstance().isRemote(targetJID)) {
+    throw new UserNotFoundException("Domain does not matches local server domain");
+  }
+  if (!hostname.equals(targetJID.getDomain())) {
+    presenceManager.probePresence(componentJID,targetJID);
+    int count=0;
+    Presence presence=probedPresence.get(jid);
+    while (presence == null) {
+      if (count > 300) {
+        throw new UserNotFoundException("Request for component presence has timed-out.");
+      }
+      try {
+        Thread.sleep(100);
+      }
+ catch (      InterruptedException e) {
+      }
+      presence=probedPresence.get(jid);
+      count++;
+    }
+    probedPresence.remove(jid);
+    return presence;
+  }
+  if (targetJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(targetJID.getNode())) {
+    throw new UserNotFoundException("Username is null");
+  }
+  if (!isPresencePublic()) {
+    if (sender == null) {
+      throw new UserNotFoundException("Sender is null");
+    }
+ else {
+      JID senderJID=new JID(sender);
+      if (!senderJID.getNode().equals(targetJID.getNode()) && !presenceManager.canProbePresence(new JID(sender),targetJID.getNode())) {
+        throw new UserNotFoundException("Sender is not allowed to probe this user");
+      }
+    }
+  }
+  User user=userManager.getUser(targetJID.getNode());
+  return presenceManager.getPresence(user);
+}

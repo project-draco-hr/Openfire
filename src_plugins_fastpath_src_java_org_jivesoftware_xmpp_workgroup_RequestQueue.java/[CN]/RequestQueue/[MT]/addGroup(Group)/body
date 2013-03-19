@@ -1,0 +1,13 @@
+{
+  if (!groups.contains(group.getName())) {
+    boolean added=insertGroup(group.getName());
+    if (added) {
+      groups.add(group.getName());
+      WorkgroupManager workgroupManager=WorkgroupManager.getInstance();
+      AgentManager agentManager=workgroupManager.getAgentManager();
+      for (      Agent agent : agentManager.getAgents(group)) {
+        agent.sendAgentAddedToAllAgents(this);
+      }
+    }
+  }
+}

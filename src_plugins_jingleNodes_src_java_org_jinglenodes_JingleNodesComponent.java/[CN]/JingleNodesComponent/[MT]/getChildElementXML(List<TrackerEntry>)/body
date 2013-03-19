@@ -1,0 +1,16 @@
+{
+  final StringBuilder str=new StringBuilder();
+  str.append("<").append(JingleTrackerIQ.NAME).append(" xmlns='").append(JingleTrackerIQ.NAMESPACE).append("'>");
+  for (  final TrackerEntry entry : entries) {
+    str.append("<").append(entry.getType().toString());
+    str.append(" policy='").append(entry.getPolicy().toString()).append("'");
+    str.append(" address='").append(entry.getJid()).append("'");
+    str.append(" protocol='").append(entry.getProtocol()).append("'");
+    if (entry.isVerified()) {
+      str.append(" verified='").append(entry.isVerified()).append("'");
+    }
+    str.append("/>");
+  }
+  str.append("</").append(JingleTrackerIQ.NAME).append(">");
+  return str.toString();
+}

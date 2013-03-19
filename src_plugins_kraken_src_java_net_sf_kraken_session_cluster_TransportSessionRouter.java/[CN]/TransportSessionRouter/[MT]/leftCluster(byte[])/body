@@ -1,0 +1,28 @@
+{
+  KrakenPlugin plugin=getPlugin();
+  for (  Map.Entry<String,byte[]> entry : sessionLocations.entrySet()) {
+    if (Arrays.equals(entry.getValue(),leavingNodeID)) {
+      Lock l=CacheFactory.getLock(entry.getKey() + "lc",sessionLocations);
+      try {
+        l.lock();
+        String jid=entry.getKey().substring(0,entry.getKey().lastIndexOf("@"));
+        String trType=entry.getKey().substring(entry.getKey().lastIndexOf("@") + 1);
+        Log.debug("Kraken: Node handling session " + jid + " on "+ trType+ " lost, taking over session...");
+        sessionLocations.remove(jid + "@" + trType);
+        TransportInstance trInstance=plugin.getTransportInstance(trType);
+        if (trInstance != null) {
+          BaseTransport<? extends TransportBuddy> transport=trInstance.getTransport();
+          if (transport != null) {
+            Collection<ClientSession> sessions=XMPPServer.getInstance().getSessionManager().getSessions(new JID(jid).getNode());
+            for (            ClientSession session : sessions) {
+              transport.processPacket(session.getPresence());
+            }
+          }
+        }
+      }
+  finally {
+        l.unlock();
+      }
+    }
+  }
+}

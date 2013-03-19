@@ -1,0 +1,7 @@
+{
+  Log.debug(event.toString());
+  Presence p=new Presence(Presence.Type.unsubscribed);
+  p.setTo(getSession().getJID());
+  p.setFrom(getSession().getTransport().convertIDToJID(event.getFrom()));
+  getSession().getTransport().sendPacket(p);
+}

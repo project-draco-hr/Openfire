@@ -1,0 +1,29 @@
+{
+  this.conversationManager=conversationManager;
+  TimerTask sendTask=new TimerTask(){
+    @Override public void run(){
+      List<ConversationEvent> eventsToSend=new ArrayList<ConversationEvent>();
+synchronized (chatEvents) {
+        for (        List<ConversationEvent> list : chatEvents.values()) {
+          if (!ConversationEventsQueue.this.conversationManager.isMessageArchivingEnabled() && list.size() > 2) {
+            eventsToSend.add(list.get(0));
+            eventsToSend.add(list.get(list.size() - 1));
+          }
+ else {
+            eventsToSend.addAll(list);
+          }
+        }
+        chatEvents.clear();
+      }
+synchronized (roomEvents) {
+        for (        List<ConversationEvent> list : roomEvents.values()) {
+          eventsToSend.addAll(list);
+        }
+        roomEvents.clear();
+      }
+      CacheFactory.doClusterTask(new SendConversationEventsTask(eventsToSend),ClusterManager.getSeniorClusterMember().toByteArray());
+    }
+  }
+;
+  taskEngine.scheduleAtFixedRate(sendTask,JiveConstants.SECOND * 3,JiveConstants.SECOND * 3);
+}

@@ -1,0 +1,43 @@
+{
+  boolean hasMessages=false;
+  Document document=new Document();
+  for (Iterator<Element> elements=chat.getTranscript().elementIterator(); elements.hasNext(); ) {
+    Element element=elements.next();
+    if ("message".equals(element.getName())) {
+      String body=element.elementTextTrim("body");
+      String from=element.attributeValue("from");
+      String to=element.attributeValue("to");
+      String fromNickname=new JID(from).getResource();
+      String toNickname=new JID(to).getResource();
+      final StringBuilder builder=new StringBuilder();
+      builder.append(body);
+      builder.append(" ");
+      builder.append(fromNickname);
+      builder.append(" ");
+      builder.append(toNickname);
+      if (body != null) {
+        if (chat.getNotes() != null) {
+          builder.append(" ");
+          builder.append(chat.getNotes());
+        }
+        if (chat.getAgentJIDs() != null) {
+          for (          String jid : chat.getAgentJIDs()) {
+            builder.append(" ");
+            builder.append(jid);
+          }
+        }
+        document.add(new Field("body",builder.toString(),Field.Store.NO,Field.Index.TOKENIZED));
+        hasMessages=true;
+      }
+    }
+  }
+  if (hasMessages) {
+    document.add(new Field("sessionID",String.valueOf(chat.getSessionID()),Field.Store.YES,Field.Index.UN_TOKENIZED));
+    for (    String agentJID : chat.getAgentJIDs()) {
+      document.add(new Field("agentJID",agentJID,Field.Store.YES,Field.Index.UN_TOKENIZED));
+    }
+    long date=chat.getCreationDate().getTime();
+    document.add(new Field("creationDate",DateTools.timeToString(date,DateTools.Resolution.DAY),Field.Store.YES,Field.Index.UN_TOKENIZED));
+    writer.addDocument(document);
+  }
+}

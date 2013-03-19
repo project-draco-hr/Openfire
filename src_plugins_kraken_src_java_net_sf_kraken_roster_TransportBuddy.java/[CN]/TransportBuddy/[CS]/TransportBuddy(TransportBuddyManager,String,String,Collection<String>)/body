@@ -1,0 +1,23 @@
+{
+  this.managerRef=new WeakReference<TransportBuddyManager>(manager);
+  this.jid=manager.getSession().getTransport().convertIDToJID(contactname);
+  this.contactname=manager.getSession().getTransport().convertJIDToID(this.jid);
+  if (nickname != null) {
+    this.nickname=nickname;
+  }
+ else {
+    this.nickname=this.contactname;
+  }
+  if (groups != null && !groups.isEmpty()) {
+    this.groups=groups;
+  }
+  if (JiveGlobals.getBooleanProperty("plugin.gateway." + getManager().getSession().getTransport().getType() + ".avatars",true)) {
+    try {
+      this.avatar=new Avatar(this.jid);
+      this.avatarSet=true;
+    }
+ catch (    NotFoundException e) {
+    }
+  }
+  lastActivityTimestamp=new Date().getTime();
+}

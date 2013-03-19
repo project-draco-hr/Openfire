@@ -1,0 +1,14 @@
+{
+  super.init(servletConfig);
+  plugin=(PresencePlugin)XMPPServer.getInstance().getPluginManager().getPlugin("presence");
+  xmlProvider=new XMLPresenceProvider();
+  imageProvider=new ImagePresenceProvider(this);
+  textProvider=new TextPresenceProvider();
+  available=loadResource("/images/user-green-16x16.gif");
+  away=loadResource("/images/user-yellow-16x16.gif");
+  chat=loadResource("/images/user-green-16x16.gif");
+  dnd=loadResource("/images/user-red-16x16.gif");
+  offline=loadResource("/images/user-clear-16x16.gif");
+  xa=loadResource("/images/user-yellow-16x16.gif");
+  AuthCheckFilter.addExclude("presence/status");
+}

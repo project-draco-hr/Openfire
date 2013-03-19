@@ -1,0 +1,30 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION_METADATA);
+    pstmt.setString(1,model.getSessionID());
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String name=rs.getString(1);
+      String value=rs.getString(2);
+      if (name.equals("username")) {
+        model.setName(value);
+      }
+ else       if (name.equals("email")) {
+        model.setEmail(value);
+      }
+ else       if (name.equals("question")) {
+        model.setQuestion(value);
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error(ex.getMessage(),ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}

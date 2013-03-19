@@ -1,0 +1,15 @@
+{
+  IQ reply=IQ.createResultIQ(packet);
+  ListRequest listRequest=new ListRequest(packet.getChildElement());
+  JID from=packet.getFrom();
+  Element listElement=reply.setChildElement("list",NAMESPACE);
+  Collection<Conversation> conversations=list(from,listRequest);
+  XmppResultSet resultSet=listRequest.getResultSet();
+  for (  Conversation conversation : conversations) {
+    addChatElement(listElement,conversation);
+  }
+  if (resultSet != null) {
+    listElement.add(resultSet.createResultElement());
+  }
+  return reply;
+}

@@ -1,0 +1,10 @@
+{
+  String legacyId=getTransport().convertJIDToID(jid);
+  if (nickname == null || nickname.equals("")) {
+    nickname=legacyId;
+  }
+  if (getTransport().getType().equals(TransportType.icq)) {
+    request(new AuthFutureCmd(legacyId,null));
+  }
+  ssiHierarchy.syncContactGroupsAndNickname(legacyId,nickname,groups);
+}

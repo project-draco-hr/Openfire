@@ -1,0 +1,12 @@
+{
+  for (  final GroupItem g : groups.values()) {
+    if (groupName.equalsIgnoreCase(g.getGroupName())) {
+      return g.getId();
+    }
+  }
+  final int newGroupId=getNextBuddyId(0);
+  final GroupItem newGroup=new GroupItem(groupName,newGroupId);
+  request(new CreateItemsCmd(newGroup.toSsiItem()));
+  gotGroup(newGroup);
+  return newGroupId;
+}

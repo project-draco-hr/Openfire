@@ -1,0 +1,16 @@
+{
+  pluginManager=manager;
+  XMPPServer server=XMPPServer.getInstance();
+  userManager=server.getUserManager();
+  presenceManager=server.getPresenceManager();
+  hostname=server.getServerInfo().getXMPPDomain();
+  probedPresence=new ConcurrentHashMap<String,Presence>();
+  componentJID=new JID(subdomain + "." + hostname);
+  componentManager=ComponentManagerFactory.getComponentManager();
+  try {
+    componentManager.addComponent(subdomain,this);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

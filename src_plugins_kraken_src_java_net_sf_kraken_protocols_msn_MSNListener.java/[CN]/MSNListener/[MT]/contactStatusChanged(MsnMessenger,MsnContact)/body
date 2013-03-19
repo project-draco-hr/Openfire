@@ -1,0 +1,47 @@
+{
+  if (!friend.isInList(MsnList.FL) || friend.getEmail() == null) {
+    return;
+  }
+  if (getSession().getBuddyManager().isActivated()) {
+    try {
+      final MSNBuddy buddy=getSession().getBuddyManager().getBuddy(getSession().getTransport().convertIDToJID(friend.getEmail().toString()));
+      buddy.setPresenceAndStatus(((MSNTransport)getSession().getTransport()).convertMSNStatusToXMPP(friend.getStatus()),friend.getPersonalMessage());
+      buddy.setMsnContact(friend);
+      if (JiveGlobals.getBooleanProperty("plugin.gateway.msn.avatars",true)) {
+        final MsnObject msnAvatar=friend.getAvatar();
+        if (msnAvatar != null && (buddy.getAvatar() == null || !buddy.getAvatar().getLegacyIdentifier().equals(msnAvatar.getSha1c()))) {
+          try {
+            messenger.retrieveDisplayPicture(msnAvatar,new DisplayPictureListener(){
+              public void notifyMsnObjectRetrieval(              MsnMessenger messenger,              DisplayPictureRetrieveWorker worker,              MsnObject msnObject,              ResultStatus result,              byte[] resultBytes,              Object context){
+                Log.debug("MSN: Got avatar retrieval result: " + result);
+                if (result == ResultStatus.GOOD) {
+                  try {
+                    Log.debug("MSN: Found avatar of length " + resultBytes.length);
+                    Avatar avatar=new Avatar(buddy.getJID(),msnAvatar.getSha1c(),resultBytes);
+                    buddy.setAvatar(avatar);
+                  }
+ catch (                  IllegalArgumentException e) {
+                    Log.debug("MSN: Got null avatar, ignoring.");
+                  }
+                }
+              }
+            }
+);
+          }
+ catch (          Exception e) {
+            Log.debug("MSN: Unable to retrieve MSN avatar: ",e);
+          }
+        }
+ else         if (buddy.getAvatar() != null && msnAvatar == null) {
+          buddy.setAvatar(null);
+        }
+      }
+    }
+ catch (    NotFoundException e) {
+      Log.debug("MSN: Received presense notification for contact we don't care about: " + friend.getEmail().toString());
+    }
+  }
+ else {
+    getSession().getBuddyManager().storePendingStatus(getSession().getTransport().convertIDToJID(friend.getEmail().toString()),((MSNTransport)getSession().getTransport()).convertMSNStatusToXMPP(friend.getStatus()),friend.getPersonalMessage());
+  }
+}

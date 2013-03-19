@@ -1,0 +1,22 @@
+{
+  StringBuffer buf=new StringBuffer();
+  buf.append("<mailbox xmlns=\"").append(MAILBOX_NAMESPACE).append("\"");
+  if (resultTime != null) {
+    buf.append(" result-time=\"").append(resultTime.getTime()).append("\"");
+  }
+  if (totalMatched != null) {
+    buf.append(" total-matched=\"").append(totalMatched).append("\"");
+  }
+  if (totalIsEstimate != null && totalIsEstimate) {
+    buf.append(" total-estimate=\"1\"");
+  }
+  if (url != null) {
+    buf.append(" url=\"").append(url).append("\"");
+  }
+  buf.append(">");
+  for (  GoogleMailThread thread : mailThreads) {
+    buf.append(thread.toXML());
+  }
+  buf.append("</mailbox>");
+  return buf.toString();
+}

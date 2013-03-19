@@ -1,0 +1,12 @@
+{
+  String chatXML="<message to=\"doe@127.0.0.1/Adium\" type=\"chat\" id=\"iChat_E8B5ED64\" from=\"bob@127.0.0.1/frodo\">" + "<body>fox</body>" + "<html xmlns=\"http://jabber.org/protocol/xhtml-im\">"+ "<body xmlns=\"http://www.w3.org/1999/xhtml\" style=\"background-color:#E8A630;color:#000000\">fox</body>"+ "</html>"+ "<x xmlns=\"jabber:x:event\">"+ "<composing/>"+ "</x>"+ "</message>";
+  XPPReader packetReader=new XPPReader();
+  Document doc=packetReader.read(new StringReader(chatXML));
+  Message m=new Message(doc.getRootElement());
+  filter.setPatterns("fox,dog,message");
+  filter.setMask("**");
+  String expectedXML=chatXML.replaceAll("fox",filter.getMask());
+  boolean matched=filter.filter(m);
+  assertTrue(matched);
+  assertEquals(expectedXML,expectedXML,m.toXML());
+}

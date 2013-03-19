@@ -1,0 +1,65 @@
+{
+  if (transcript == null || "".equals(transcript)) {
+    return "";
+  }
+  final SimpleDateFormat UTC_FORMAT=new SimpleDateFormat(JiveConstants.XMPP_DELAY_DATETIME_FORMAT);
+  UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+  final SimpleDateFormat formatter=new SimpleDateFormat("h:mm a");
+  Document element=null;
+  try {
+    element=DocumentHelper.parseText(transcript);
+  }
+ catch (  DocumentException e) {
+    Log.error(e.getMessage(),e);
+  }
+  StringBuilder buf=new StringBuilder();
+  String conv1=null;
+  for (Iterator<Element> it=element.getRootElement().elementIterator(); it.hasNext(); ) {
+    Element packet=it.next();
+    String name=packet.getName();
+    String message="";
+    String from="";
+    if ("presence".equals(name)) {
+      String type=packet.attributeValue("type");
+      from=new JID(packet.attributeValue("from")).getResource();
+      if (type == null) {
+        message=from + " has joined the room";
+      }
+ else {
+        message=from + " has left the room";
+      }
+    }
+ else     if ("message".equals(name)) {
+      from=new JID(packet.attributeValue("from")).getResource();
+      message=packet.elementText("body");
+      message=StringUtils.escapeHTMLTags(message);
+      if (conv1 == null) {
+        conv1=from;
+      }
+    }
+    List<Element> el=packet.elements("x");
+    for (    Element ele : el) {
+      if ("jabber:x:delay".equals(ele.getNamespaceURI())) {
+        String stamp=ele.attributeValue("stamp");
+        try {
+          String formattedDate;
+synchronized (UTC_FORMAT) {
+            Date d=UTC_FORMAT.parse(stamp);
+            formattedDate=formatter.format(d);
+          }
+          if ("presence".equals(name)) {
+            buf.append("<tr valign=\"top\"><td class=\"notification-label\" colspan=2 nowrap>[").append(formattedDate).append("] ").append(message).append("</td></tr>");
+          }
+ else {
+            String cssClass=conv1.equals(from) ? "conversation-label1" : "conversation-label2";
+            buf.append("<tr valign=\"top\"><td width=1% class=\"" + cssClass + "\" nowrap>[").append(formattedDate).append("] ").append(from).append(":</td><td class=\"conversation-body\">").append(message).append("</td></tr>");
+          }
+        }
+ catch (        ParseException e) {
+          Log.error(e.getMessage(),e);
+        }
+      }
+    }
+  }
+  return buf.toString();
+}

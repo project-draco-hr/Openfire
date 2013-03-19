@@ -1,0 +1,21 @@
+{
+  try {
+    String context="agentSelector.";
+    String className=getProperty(context + "className");
+    if (className == null) {
+      return;
+    }
+    Class agentSelectorClass=loadClass(className);
+    agentSelector=(AgentSelector)agentSelectorClass.newInstance();
+    Collection<String> props=getChildrenPropertyNames(context + "properties",getPropertyNames());
+    Map<String,String> agentSelectorProps=new HashMap<String,String>();
+    for (    String key : props) {
+      String value=getProperty(key);
+      agentSelectorProps.put(key.substring(key.lastIndexOf(".") + 1),value);
+    }
+    BeanUtils.setProperties(agentSelector,agentSelectorProps);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

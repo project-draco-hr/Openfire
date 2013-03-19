@@ -1,0 +1,10 @@
+{
+  int numDays=Integer.parseInt(JiveGlobals.getProperty("workgroup.search.maxdays","365"));
+  String workgroupDays=workgroup.getProperties().getProperty("search.maxdays");
+  if (workgroupDays != null) {
+    numDays=Integer.parseInt(workgroupDays);
+  }
+  Calendar since=Calendar.getInstance();
+  since.add(Calendar.DATE,numDays * -1);
+  rebuildIndex(since.getTime());
+}

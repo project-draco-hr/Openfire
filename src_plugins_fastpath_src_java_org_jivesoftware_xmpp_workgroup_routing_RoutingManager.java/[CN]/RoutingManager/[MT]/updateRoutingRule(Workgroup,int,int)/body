@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_RULE_POSITION);
+    pstmt.setInt(1,newPosition);
+    pstmt.setLong(2,workgroup.getID());
+    pstmt.setInt(3,position);
+    pstmt.execute();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

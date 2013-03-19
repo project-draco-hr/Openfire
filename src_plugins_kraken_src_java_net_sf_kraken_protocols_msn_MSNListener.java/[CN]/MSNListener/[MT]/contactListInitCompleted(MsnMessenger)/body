@@ -1,0 +1,43 @@
+{
+  for (  MsnGroup msnGroup : messenger.getContactList().getGroups()) {
+    Log.debug("MSN: Got group " + msnGroup);
+    getSession().storeGroup(msnGroup);
+  }
+  for (  MsnContact msnContact : messenger.getContactList().getContacts()) {
+    Log.debug("MSN: Got contact " + msnContact);
+    if (msnContact.isInList(MsnList.FL) && msnContact.getEmail() != null) {
+      final MSNBuddy buddy=new MSNBuddy(getSession().getBuddyManager(),msnContact);
+      getSession().getBuddyManager().storeBuddy(buddy);
+      if (JiveGlobals.getBooleanProperty("plugin.gateway.msn.avatars",true)) {
+        final MsnObject msnAvatar=msnContact.getAvatar();
+        if (msnAvatar != null && (buddy.getAvatar() == null || !buddy.getAvatar().getLegacyIdentifier().equals(msnAvatar.getSha1c()))) {
+          try {
+            messenger.retrieveDisplayPicture(msnAvatar,new DisplayPictureListener(){
+              public void notifyMsnObjectRetrieval(              MsnMessenger messenger,              DisplayPictureRetrieveWorker worker,              MsnObject msnObject,              ResultStatus result,              byte[] resultBytes,              Object context){
+                Log.debug("MSN: Got avatar retrieval result: " + result);
+                if (result == ResultStatus.GOOD) {
+                  try {
+                    Log.debug("MSN: Found avatar of length " + resultBytes.length);
+                    Avatar avatar=new Avatar(buddy.getJID(),msnAvatar.getSha1c(),resultBytes);
+                    buddy.setAvatar(avatar);
+                  }
+ catch (                  IllegalArgumentException e) {
+                    Log.debug("MSN: Got null avatar, ignoring.");
+                  }
+                }
+              }
+            }
+);
+          }
+ catch (          Exception e) {
+            Log.debug("MSN: Unable to retrieve MSN avatar: ",e);
+          }
+        }
+ else         if (buddy.getAvatar() != null && msnAvatar == null) {
+          buddy.setAvatar(null);
+        }
+      }
+    }
+  }
+  getSession().syncUsers();
+}

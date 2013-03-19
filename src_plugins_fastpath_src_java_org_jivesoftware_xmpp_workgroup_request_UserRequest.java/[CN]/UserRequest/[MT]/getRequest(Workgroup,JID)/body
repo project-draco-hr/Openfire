@@ -1,0 +1,13 @@
+{
+  UserRequest request=null;
+  for (  RequestQueue requestQueue : workgroup.getRequestQueues()) {
+    if (request == null) {
+      request=requestQueue.getRequest(address);
+    }
+  }
+  if (request == null) {
+    Log.debug("Request not found for " + address.toString());
+    throw new NotFoundException();
+  }
+  return request;
+}

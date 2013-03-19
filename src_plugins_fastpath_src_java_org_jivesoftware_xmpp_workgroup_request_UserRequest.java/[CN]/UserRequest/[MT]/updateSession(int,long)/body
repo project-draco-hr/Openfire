@@ -1,0 +1,42 @@
+{
+  boolean inserted=false;
+  long queueWaitTime=new Date().getTime() - offerTime;
+  String tempDate=StringUtils.dateToMillis(new Date());
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+synchronized (this) {
+      if (!savedToDB) {
+        pstmt=con.prepareStatement(INSERT_SESSION);
+        pstmt.setString(1,requestID);
+        pstmt.setString(2,getUserID());
+        pstmt.setLong(3,getWorkgroup().getID());
+        pstmt.setInt(4,state);
+        pstmt.setLong(5,queueWaitTime);
+        pstmt.setString(6,tempDate);
+        pstmt.setString(7,tempDate);
+        pstmt.executeUpdate();
+        savedToDB=true;
+        inserted=true;
+      }
+ else {
+        pstmt=con.prepareStatement(UPDATE_SESSION);
+        pstmt.setInt(1,state);
+        pstmt.setLong(2,queueWaitTime);
+        pstmt.setString(3,tempDate);
+        pstmt.setString(4,requestID);
+        pstmt.executeUpdate();
+      }
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("There was an issue handling offer update using sessionID " + requestID,ex);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  if (inserted) {
+    saveMetadata();
+  }
+}
