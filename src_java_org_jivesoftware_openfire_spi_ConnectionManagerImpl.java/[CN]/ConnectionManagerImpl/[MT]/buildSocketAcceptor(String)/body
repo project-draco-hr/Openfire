@@ -20,5 +20,8 @@
     socketSessionConfig.setSoLinger(linger);
   }
   socketSessionConfig.setTcpNoDelay(JiveGlobals.getBooleanProperty("xmpp.socket.tcp-nodelay",socketSessionConfig.isTcpNoDelay()));
+  if (JMXManager.isEnabled()) {
+    configureJMX(socketAcceptor,name);
+  }
   return socketAcceptor;
 }

@@ -1,0 +1,47 @@
+{
+  setContainer(new MBeanContainer(ManagementFactory.getPlatformMBeanServer()));
+  getContainer().addBean(org.eclipse.jetty.util.log.Log.getLog());
+  int jmxPort=JMXManager.getPort();
+  String jmxUrl="/jndi/rmi://localhost:" + jmxPort + "/jmxrmi";
+  Map<String,Object> env=new HashMap<String,Object>();
+  if (JMXManager.isSecure()) {
+    env.put("jmx.remote.authenticator",new JMXAuthenticator(){
+      public Subject authenticate(      Object credentials){
+        if (!(credentials instanceof String[])) {
+          if (credentials == null) {
+            throw new SecurityException("Credentials required");
+          }
+          throw new SecurityException("Credentials should be String[]");
+        }
+        final String[] aCredentials=(String[])credentials;
+        if (aCredentials.length < 2) {
+          throw new SecurityException("Credentials should have at least two elements");
+        }
+        String username=(String)aCredentials[0];
+        String password=(String)aCredentials[1];
+        try {
+          AuthFactory.authenticate(username,password);
+        }
+ catch (        Exception ex) {
+          Log.error("Authentication failed for " + username);
+          throw new SecurityException();
+        }
+        if (AdminManager.getInstance().isUserAdmin(username,true)) {
+          return new Subject(true,Collections.singleton(new JMXPrincipal(username)),Collections.EMPTY_SET,Collections.EMPTY_SET);
+        }
+ else {
+          Log.error("Authorization failed for " + username);
+          throw new SecurityException();
+        }
+      }
+    }
+);
+  }
+  try {
+    jmxServer=new ConnectorServer(new JMXServiceURL("rmi",null,jmxPort,jmxUrl),env,"org.eclipse.jetty.jmx:name=rmiconnectorserver");
+    jmxServer.start();
+  }
+ catch (  Exception e) {
+    Log.error("Failed to start JMX connector",e);
+  }
+}

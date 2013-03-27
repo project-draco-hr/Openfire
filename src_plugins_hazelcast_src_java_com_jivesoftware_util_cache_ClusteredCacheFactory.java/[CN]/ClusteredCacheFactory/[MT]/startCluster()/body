@@ -13,6 +13,10 @@
     try {
       Config config=new ClasspathXmlConfig(HAZELCAST_CONFIG_FILE);
       config.setInstanceName("openfire");
+      if (JMXManager.isEnabled() && HAZELCAST_JMX_ENABLED) {
+        config.setProperty("hazelcast.jmx","true");
+        config.setProperty("hazelcast.jmx.detailed","true");
+      }
       hazelcast=Hazelcast.newHazelcastInstance(config);
       cluster=hazelcast.getCluster();
       state=cluster != null ? State.started : State.stopped;

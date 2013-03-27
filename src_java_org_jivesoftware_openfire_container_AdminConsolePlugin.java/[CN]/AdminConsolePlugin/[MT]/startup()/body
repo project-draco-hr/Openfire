@@ -5,6 +5,11 @@
   adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
   adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
   adminServer=new Server();
+  if (JMXManager.isEnabled()) {
+    JMXManager jmx=JMXManager.getInstance();
+    adminServer.getContainer().addEventListener(jmx.getContainer());
+    adminServer.addBean(jmx.getContainer());
+  }
   final QueuedThreadPool tp=new QueuedThreadPool(254);
   tp.setName("Jetty-QTP-AdminConsole");
   adminServer.setThreadPool(tp);
@@ -14,6 +19,7 @@
     String bindInterface=getBindInterface();
     httpConnector.setHost(bindInterface);
     httpConnector.setPort(adminPort);
+    httpConnector.setStatsOn(JMXManager.isEnabled());
     adminServer.addConnector(httpConnector);
   }
   sslEnabled=false;
@@ -34,6 +40,7 @@
       String bindInterface=getBindInterface();
       httpsConnector.setHost(bindInterface);
       httpsConnector.setPort(adminSecurePort);
+      httpsConnector.setStatsOn(JMXManager.isEnabled());
       adminServer.addConnector(httpsConnector);
       sslEnabled=true;
     }
