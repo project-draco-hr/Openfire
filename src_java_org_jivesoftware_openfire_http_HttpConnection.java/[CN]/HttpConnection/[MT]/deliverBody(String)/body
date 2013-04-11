@@ -10,8 +10,8 @@ synchronized (this) {
   if (body == null) {
     body=CONNECTION_CLOSED;
   }
-  if (continuation != null && continuation.isSuspended()) {
-    continuation.setAttribute("response-body",body);
+  if (isSuspended()) {
+    continuation.setAttribute(RESPONSE_BODY,body);
     continuation.resume();
     session.incrementServerPacketCount();
   }

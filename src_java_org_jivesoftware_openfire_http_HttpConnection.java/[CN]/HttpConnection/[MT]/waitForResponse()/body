@@ -1,13 +1,11 @@
 {
-  if (!Boolean.TRUE.equals(continuation.getAttribute(SUSPENDED))) {
+  if (continuation.isInitial()) {
     continuation.setTimeout(session.getWait() * JiveConstants.SECOND);
     continuation.suspend();
-    continuation.setAttribute(SUSPENDED,Boolean.TRUE);
     continuation.undispatch();
   }
-  if (continuation.isResumed()) {
-    String deliverable=(String)continuation.getAttribute("response-body");
-    this.isDelivered=true;
+ else   if (continuation.isResumed()) {
+    String deliverable=(String)continuation.getAttribute(RESPONSE_BODY);
     if (deliverable == null) {
       throw new HttpBindTimeoutException();
     }
@@ -16,6 +14,5 @@
     }
     return deliverable;
   }
-  this.isDelivered=true;
   throw new HttpBindTimeoutException("Request " + requestId + " exceeded response time from "+ "server of "+ session.getWait()+ " seconds.");
 }
