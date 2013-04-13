@@ -8,7 +8,9 @@
       header.setText(subID);
     }
   }
-  service.sendNotification(this,notification,subscriberJID);
+  if (subscriberJID.getResource() == null || SessionManager.getInstance().getSession(subscriberJID) != null) {
+    service.sendNotification(this,notification,subscriberJID);
+  }
   if (headers != null) {
     notification.getElement().remove(headers);
   }

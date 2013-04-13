@@ -1,14 +1,8 @@
 {
   NodeAffiliate nodeAffiliate=addAffiliation(jid,NodeAffiliate.Affiliation.owner);
-  Collection<NodeSubscription> subscriptions=getSubscriptions(jid);
-  if (subscriptions.isEmpty()) {
-    createSubscription(null,jid,jid,false,null);
-  }
- else {
-    for (    NodeSubscription subscription : getSubscriptions(jid)) {
-      if (subscription.isAuthorizationPending()) {
-        subscription.approved();
-      }
+  for (  NodeSubscription subscription : getSubscriptions(jid)) {
+    if (subscription.isAuthorizationPending()) {
+      subscription.approved();
     }
   }
   return nodeAffiliate;

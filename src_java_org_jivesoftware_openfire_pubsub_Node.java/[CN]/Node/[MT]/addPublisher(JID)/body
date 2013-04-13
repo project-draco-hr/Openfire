@@ -1,15 +1,3 @@
 {
-  NodeAffiliate nodeAffiliate=addAffiliation(jid,NodeAffiliate.Affiliation.publisher);
-  Collection<NodeSubscription> subscriptions=getSubscriptions(jid);
-  if (subscriptions.isEmpty()) {
-    createSubscription(null,jid,jid,false,null);
-  }
- else {
-    for (    NodeSubscription subscription : getSubscriptions(jid)) {
-      if (subscription.isAuthorizationPending()) {
-        subscription.approved();
-      }
-    }
-  }
-  return nodeAffiliate;
+  return addAffiliation(jid,NodeAffiliate.Affiliation.publisher);
 }
