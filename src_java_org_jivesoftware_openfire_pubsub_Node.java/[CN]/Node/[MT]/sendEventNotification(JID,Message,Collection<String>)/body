@@ -8,9 +8,7 @@
       header.setText(subID);
     }
   }
-  String username=subscriberJID.getNode();
-  String resource=subscriberJID.getResource();
-  if (resource == null || SessionManager.getInstance().isActiveRoute(username,resource)) {
+  if (subscriberJID.getResource() == null || SessionManager.getInstance().getSession(subscriberJID) != null) {
     service.sendNotification(this,notification,subscriberJID);
   }
   if (headers != null) {
