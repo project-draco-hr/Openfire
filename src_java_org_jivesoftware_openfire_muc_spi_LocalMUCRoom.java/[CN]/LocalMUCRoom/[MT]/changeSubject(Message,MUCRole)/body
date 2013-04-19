@@ -8,6 +8,9 @@
     packet.setFrom(role.getRoleAddress());
     send(packet);
     MUCEventDispatcher.roomSubjectChanged(getJID(),role.getUserAddress(),subject);
+    if (!"local-only".equals(packet.getID())) {
+      CacheFactory.doClusterTask(new RoomUpdatedEvent(this));
+    }
   }
  else {
     throw new ForbiddenException();
