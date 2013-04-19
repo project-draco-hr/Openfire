@@ -1,0 +1,49 @@
+{
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("loadvcard:" + username);
+  }
+  if (MUTEX.containsKey(username)) {
+    return null;
+  }
+  try {
+    MUTEX.put(username,username);
+    Element vcard=super.loadVCard(username);
+    if (vcard == null) {
+      CrowdUserProvider userProvider=(CrowdUserProvider)UserManager.getUserProvider();
+      try {
+        User user=userProvider.getCrowdUser(username);
+        String str=VCARD_TEMPLATE.replace("@displayname@",user.displayName).replace("@lastname@",user.lastName).replace("@firstname@",user.firstName).replace("@email@",user.email).replace("@nickname@",username);
+        SAXReader xmlReader=new SAXReader();
+        xmlReader.setEncoding("UTF-8");
+        vcard=xmlReader.read(new StringReader(str)).getRootElement();
+      }
+ catch (      UserNotFoundException unfe) {
+        LOG.error("Unable to find user:" + String.valueOf(username) + " for loading its vcard",unfe);
+        return null;
+      }
+catch (      DocumentException de) {
+        LOG.error("vcard parsing error",de);
+        return null;
+      }
+      if (LOG.isDebugEnabled()) {
+        LOG.debug(vcard != null ? vcard.asXML() : "vcard is null");
+      }
+      if (vcard != null) {
+        try {
+          createVCard(username,vcard);
+        }
+ catch (        AlreadyExistsException aee) {
+          LOG.error("Unable to create and store a new vcard for user:" + username + "; one already exists",aee);
+        }
+      }
+    }
+    return vcard;
+  }
+ catch (  RuntimeException re) {
+    LOG.error("Failure occured when loading a vcard for user:" + username,re);
+    throw re;
+  }
+ finally {
+    MUTEX.remove(username);
+  }
+}

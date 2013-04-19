@@ -1,0 +1,21 @@
+{
+  Cache<String,Collection<JID>> groupMembershipCache=CacheFactory.createLocalCache(GROUP_MEMBERSHIP_CACHE_NAME);
+  Collection<JID> members=groupMembershipCache.get(groupName);
+  if (members != null) {
+    return members;
+  }
+  try {
+    List<String> users=manager.getGroupMembers(groupName);
+    Collection<JID> results=new ArrayList<JID>();
+    for (    String username : users) {
+      results.add(server.createJID(JID.escapeNode(username),null));
+    }
+    groupMembershipCache.put(groupName,results);
+    return results;
+  }
+ catch (  RemoteException re) {
+    LOG.error("Failure to get the members of crowd group:" + String.valueOf(groupName),re);
+  }
+  groupMembershipCache.put(groupName,new ArrayList<JID>());
+  return Collections.emptyList();
+}

@@ -1,0 +1,17 @@
+{
+  try {
+    Cache<String,org.jivesoftware.openfire.crowd.jaxb.Group> groupCache=CacheFactory.createLocalCache(GROUP_CACHE_NAME);
+    org.jivesoftware.openfire.crowd.jaxb.Group group=groupCache.get(name);
+    if (group == null) {
+      group=manager.getGroup(name);
+      groupCache.put(name,group);
+    }
+    Collection<JID> members=getGroupMembers(name);
+    Collection<JID> admins=Collections.emptyList();
+    return new Group(name,group.description,members,admins);
+  }
+ catch (  RemoteException re) {
+    LOG.error("Failure to load group:" + String.valueOf(name),re);
+    throw new GroupNotFoundException(re);
+  }
+}

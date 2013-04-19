@@ -1,0 +1,14 @@
+{
+  lock.readLock().lock();
+  try {
+    ArrayList<User> foundUsers=(ArrayList<User>)findUsers(fields,query);
+    Collection<User> results=new ArrayList<User>(foundUsers.size());
+    for (int i=0, j=startIndex; i < numResults && j < foundUsers.size(); ++i, ++j) {
+      results.add(foundUsers.get(j));
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

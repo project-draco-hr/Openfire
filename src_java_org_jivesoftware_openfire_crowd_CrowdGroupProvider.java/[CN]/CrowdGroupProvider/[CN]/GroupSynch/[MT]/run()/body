@@ -1,0 +1,29 @@
+{
+  LOG.info("running synch with crowd...");
+  CrowdManager manager=null;
+  try {
+    manager=CrowdManager.getInstance();
+  }
+ catch (  Exception e) {
+    LOG.error("Failure to load the Crowd manager",e);
+    return;
+  }
+  List<String> allGroups=null;
+  try {
+    allGroups=manager.getAllGroupNames();
+  }
+ catch (  RemoteException re) {
+    LOG.error("Failure to fetch all crowd groups name",re);
+    return;
+  }
+  if (allGroups != null && allGroups.size() > 0) {
+    CrowdGroupProvider.lock.writeLock().lock();
+    try {
+      CrowdGroupProvider.groups=allGroups;
+    }
+  finally {
+      CrowdGroupProvider.lock.writeLock().unlock();
+    }
+  }
+  LOG.info("crowd synch done, returned " + allGroups.size() + " groups");
+}

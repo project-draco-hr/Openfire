@@ -1,0 +1,13 @@
+{
+  lock.readLock().lock();
+  try {
+    Collection<User> results=new ArrayList<User>(numResults);
+    for (int i=0, j=startIndex; i < numResults && j < users.size(); ++i, ++j) {
+      results.add(users.get(j).getOpenfireUser());
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

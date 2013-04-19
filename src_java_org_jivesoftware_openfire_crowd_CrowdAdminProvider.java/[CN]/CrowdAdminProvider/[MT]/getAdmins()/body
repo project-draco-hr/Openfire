@@ -1,0 +1,30 @@
+{
+  List<JID> results=new ArrayList<JID>();
+  GroupProvider provider=GroupManager.getInstance().getProvider();
+  String groups=JiveGlobals.getProperty(JIVE_AUTHORIZED_GROUPS);
+  groups=(groups == null || groups.trim().length() == 0) ? "" : groups;
+  JiveGlobals.setProperty(JIVE_AUTHORIZED_GROUPS,groups);
+  StringTokenizer tokenizer=new StringTokenizer(groups,",");
+  while (tokenizer.hasMoreTokens()) {
+    String groupName=tokenizer.nextToken().trim().toLowerCase();
+    if (groupName != null && groupName.length() > 0) {
+      try {
+        LOG.info("Adding admin users from group: " + groupName);
+        Group group=provider.getGroup(groupName);
+        if (group != null) {
+          results.addAll(group.getMembers());
+        }
+      }
+ catch (      GroupNotFoundException gnfe) {
+        LOG.error("Error when trying to load the members of group:" + String.valueOf(groupName),gnfe);
+      }
+    }
+  }
+  if (results.isEmpty()) {
+    results.add(new JID("admin",XMPPServer.getInstance().getServerInfo().getXMPPDomain(),null,true));
+  }
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("admin users: " + results.toString());
+  }
+  return results;
+}

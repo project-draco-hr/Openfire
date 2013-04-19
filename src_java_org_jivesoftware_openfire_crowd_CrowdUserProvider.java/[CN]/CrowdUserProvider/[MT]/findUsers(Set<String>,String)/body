@@ -1,0 +1,42 @@
+{
+  lock.readLock().lock();
+  try {
+    ArrayList<User> results=new ArrayList<User>();
+    if (query != null && query.trim().length() > 0) {
+      if (query.endsWith("*")) {
+        query=query.substring(0,query.length() - 1);
+      }
+      if (query.startsWith("*")) {
+        query=query.substring(1);
+      }
+      query=query.toLowerCase();
+      if (SEARCH_FIELDS.containsAll(fields)) {
+        if (fields.contains(SEARCH_FIELD_USERNAME)) {
+          for (          org.jivesoftware.openfire.crowd.jaxb.User user : users) {
+            if (user.name.toLowerCase().contains(query)) {
+              results.add(user.getOpenfireUser());
+            }
+          }
+        }
+ else         if (fields.contains(SEARCH_FIELD_NAME)) {
+          for (          org.jivesoftware.openfire.crowd.jaxb.User user : users) {
+            if (user.displayName.toLowerCase().contains(query)) {
+              results.add(user.getOpenfireUser());
+            }
+          }
+        }
+ else {
+          for (          org.jivesoftware.openfire.crowd.jaxb.User user : users) {
+            if (user.email.toLowerCase().contains(query)) {
+              results.add(user.getOpenfireUser());
+            }
+          }
+        }
+      }
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

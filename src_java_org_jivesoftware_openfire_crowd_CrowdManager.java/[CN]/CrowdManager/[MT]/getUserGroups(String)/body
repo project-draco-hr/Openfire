@@ -1,0 +1,41 @@
+{
+  if (LOG.isDebugEnabled())   LOG.debug("fetch all crowd groups for user:" + username);
+  int maxResults=100;
+  int startIndex=0;
+  List<String> results=new ArrayList<String>();
+  StringBuilder request=new StringBuilder("user/group/nested?username=").append(urlEncode(username)).append("&max-results=").append(maxResults).append("&start-index=");
+  try {
+    while (true) {
+      GetMethod get=createGetMethodXmlResponse(crowdServer.resolve(request.toString() + startIndex));
+      Groups groups=null;
+      try {
+        int httpCode=client.executeMethod(get);
+        if (httpCode != 200) {
+          handleHTTPError(get);
+        }
+        groups=JAXB.unmarshal(get.getResponseBodyAsStream(),Groups.class);
+      }
+  finally {
+        get.releaseConnection();
+      }
+      if (groups != null && groups.group != null) {
+        for (        Group group : groups.group) {
+          results.add(group.name);
+        }
+        if (groups.group.size() != maxResults) {
+          break;
+        }
+ else {
+          startIndex+=maxResults;
+        }
+      }
+ else {
+        break;
+      }
+    }
+  }
+ catch (  IOException ioe) {
+    handleError(ioe);
+  }
+  return results;
+}

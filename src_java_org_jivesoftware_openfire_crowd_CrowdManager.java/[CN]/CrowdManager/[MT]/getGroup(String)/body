@@ -1,0 +1,19 @@
+{
+  if (LOG.isDebugEnabled())   LOG.debug("Get group:" + groupName + " from crowd");
+  GetMethod get=createGetMethodXmlResponse(crowdServer.resolve("group?groupname=" + urlEncode(groupName)));
+  Group group=null;
+  try {
+    int httpCode=client.executeMethod(get);
+    if (httpCode != 200) {
+      handleHTTPError(get);
+    }
+    group=JAXB.unmarshal(get.getResponseBodyAsStream(),Group.class);
+  }
+ catch (  IOException ioe) {
+    handleError(ioe);
+  }
+ finally {
+    get.releaseConnection();
+  }
+  return group;
+}

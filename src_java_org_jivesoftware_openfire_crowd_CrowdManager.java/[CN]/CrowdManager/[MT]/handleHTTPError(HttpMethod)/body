@@ -1,0 +1,18 @@
+{
+  int status=method.getStatusCode();
+  String statusText=method.getStatusText();
+  String body=null;
+  try {
+    body=method.getResponseBodyAsString();
+  }
+ catch (  IOException ioe) {
+    LOG.warn("Unable to retreive Crowd http response body",ioe);
+  }
+  StringBuilder strBuf=new StringBuilder();
+  strBuf.append("Crowd returned HTTP error code:").append(status);
+  strBuf.append(" - ").append(statusText);
+  if (StringUtils.isNotBlank(body)) {
+    strBuf.append("\n").append(body);
+  }
+  throw new RemoteException(strBuf.toString());
+}

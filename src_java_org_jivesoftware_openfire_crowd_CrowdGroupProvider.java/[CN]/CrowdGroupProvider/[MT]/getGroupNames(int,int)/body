@@ -1,0 +1,13 @@
+{
+  lock.readLock().lock();
+  try {
+    Collection<String> results=new ArrayList<String>(numResults);
+    for (int i=0, j=startIndex; i < numResults && j < groups.size(); ++i, ++j) {
+      results.add(groups.get(j));
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

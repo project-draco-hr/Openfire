@@ -1,0 +1,38 @@
+{
+  try {
+    CrowdProperties crowdProps=new CrowdProperties();
+    MultiThreadedHttpConnectionManager threadedConnectionManager=new MultiThreadedHttpConnectionManager();
+    HttpClient hc=new HttpClient(threadedConnectionManager);
+    HttpClientParams hcParams=hc.getParams();
+    hcParams.setAuthenticationPreemptive(true);
+    HttpConnectionManagerParams hcConnectionParams=hc.getHttpConnectionManager().getParams();
+    hcConnectionParams.setDefaultMaxConnectionsPerHost(crowdProps.getHttpMaxConnections());
+    hcConnectionParams.setMaxTotalConnections(crowdProps.getHttpMaxConnections());
+    hcConnectionParams.setConnectionTimeout(crowdProps.getHttpConnectionTimeout());
+    hcConnectionParams.setSoTimeout(crowdProps.getHttpSocketTimeout());
+    crowdServer=new URI(crowdProps.getCrowdServerUrl()).resolve("rest/usermanagement/latest/");
+    HttpState httpState=hc.getState();
+    Credentials crowdCreds=new UsernamePasswordCredentials(crowdProps.getApplicationName(),crowdProps.getApplicationPassword());
+    httpState.setCredentials(new AuthScope(crowdServer.getHost(),crowdServer.getPort()),crowdCreds);
+    if (StringUtils.isNotBlank(crowdProps.getHttpProxyHost()) && crowdProps.getHttpProxyPort() > 0) {
+      hc.getHostConfiguration().setProxy(crowdProps.getHttpProxyHost(),crowdProps.getHttpProxyPort());
+      if (StringUtils.isNotBlank(crowdProps.getHttpProxyUsername()) || StringUtils.isNotBlank(crowdProps.getHttpProxyPassword())) {
+        Credentials proxyCreds=new UsernamePasswordCredentials(crowdProps.getHttpProxyUsername(),crowdProps.getHttpProxyPassword());
+        httpState.setProxyCredentials(new AuthScope(crowdProps.getHttpProxyHost(),crowdProps.getHttpProxyPort()),proxyCreds);
+      }
+    }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("HTTP Client config");
+      LOG.debug(crowdServer.toString());
+      LOG.debug("Max connections:" + hcConnectionParams.getMaxTotalConnections());
+      LOG.debug("Socket timeout:" + hcConnectionParams.getSoTimeout());
+      LOG.debug("Connect timeout:" + hcConnectionParams.getConnectionTimeout());
+      LOG.debug("Proxy host:" + crowdProps.getHttpProxyHost() + ":"+ crowdProps.getHttpProxyPort());
+      LOG.debug("Crowd application name:" + crowdProps.getApplicationName());
+    }
+    client=hc;
+  }
+ catch (  Exception e) {
+    LOG.error("Failure to load the Crowd manager",e);
+  }
+}

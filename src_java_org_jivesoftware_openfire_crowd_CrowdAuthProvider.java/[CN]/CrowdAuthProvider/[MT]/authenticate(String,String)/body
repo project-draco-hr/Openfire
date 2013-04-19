@@ -1,0 +1,26 @@
+{
+  if (manager == null) {
+    throw new ConnectionException("Unable to connect to Crowd");
+  }
+  if (username == null || password == null || "".equals(password.trim())) {
+    throw new UnauthorizedException();
+  }
+  if (username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
+      username=username.substring(0,index);
+    }
+ else {
+      throw new UnauthorizedException();
+    }
+  }
+  username=JID.unescapeNode(username);
+  try {
+    manager.authenticate(username,password);
+    LOG.info("authenticated user:" + username);
+  }
+ catch (  RemoteException re) {
+    throw new UnauthorizedException();
+  }
+}

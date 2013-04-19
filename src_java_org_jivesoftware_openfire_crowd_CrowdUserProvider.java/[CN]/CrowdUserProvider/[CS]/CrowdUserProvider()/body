@@ -1,0 +1,7 @@
+{
+  String propertyValue=JiveGlobals.getProperty(JIVE_CROWD_USERS_CACHE_TTL_SECS);
+  int ttl=(propertyValue == null || propertyValue.trim().length() == 0) ? CACHE_TTL : Integer.parseInt(propertyValue);
+  crowdUserSync.scheduleAtFixedRate(new UserSynch(this),0,ttl,TimeUnit.SECONDS);
+  JiveGlobals.setProperty(JIVE_CROWD_USERS_CACHE_TTL_SECS,String.valueOf(ttl));
+  new CrowdGroupProvider();
+}

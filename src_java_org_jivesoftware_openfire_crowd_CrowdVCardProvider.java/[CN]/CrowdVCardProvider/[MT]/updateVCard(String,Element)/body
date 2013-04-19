@@ -1,0 +1,24 @@
+{
+  Element nickNameNode=vCard.element("NICKNAME");
+  Element displayNameNode=vCard.element("FN");
+  Element nameNode=vCard.element("N");
+  Element lastNameNode=nameNode.element("FAMILY");
+  Element firstnameNode=nameNode.element("GIVEN");
+  Element emailNode=vCard.element("EMAIL").element("USERID");
+  CrowdUserProvider userProvider=(CrowdUserProvider)UserManager.getUserProvider();
+  try {
+    User user=userProvider.getCrowdUser(username);
+    nickNameNode.setText(username);
+    displayNameNode.setText(user.displayName);
+    lastNameNode.setText(user.lastName);
+    firstnameNode.setText(user.firstName);
+    emailNode.setText(user.email);
+  }
+ catch (  UserNotFoundException unfe) {
+    LOG.error("Unable to find user:" + String.valueOf(username) + " for updating its vcard",unfe);
+  }
+  if (LOG.isDebugEnabled()) {
+    LOG.debug("updatevcard:" + vCard.asXML());
+  }
+  return super.updateVCard(username,vCard);
+}

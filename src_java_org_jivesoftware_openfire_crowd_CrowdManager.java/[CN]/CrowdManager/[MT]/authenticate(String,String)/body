@@ -1,0 +1,21 @@
+{
+  if (LOG.isDebugEnabled())   LOG.debug("authenticate '" + String.valueOf(username) + "'");
+  PostMethod post=new PostMethod(crowdServer.resolve("authentication?username=" + urlEncode(username)).toString());
+  AuthenticatePost creds=new AuthenticatePost();
+  creds.value=password;
+  try {
+    StringWriter writer=new StringWriter();
+    JAXB.marshal(creds,writer);
+    post.setRequestEntity(new StringRequestEntity(writer.toString(),APPLICATION_XML,"UTF-8"));
+    int httpCode=client.executeMethod(post);
+    if (httpCode != 200) {
+      handleHTTPError(post);
+    }
+  }
+ catch (  IOException ioe) {
+    handleError(ioe);
+  }
+ finally {
+    post.releaseConnection();
+  }
+}

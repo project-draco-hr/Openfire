@@ -1,0 +1,17 @@
+{
+  Cache<JID,Collection<String>> userMembershipCache=CacheFactory.createCache(USER_MEMBERSHIP_CACHE_NAME);
+  Collection<String> groups=userMembershipCache.get(user);
+  if (groups != null) {
+    return groups;
+  }
+  try {
+    groups=manager.getUserGroups(user.getNode());
+    userMembershipCache.put(user,groups);
+    return groups;
+  }
+ catch (  RemoteException re) {
+    LOG.error("Failure to load the groups of user:" + String.valueOf(user),re);
+  }
+  userMembershipCache.put(user,new ArrayList<String>());
+  return Collections.emptyList();
+}

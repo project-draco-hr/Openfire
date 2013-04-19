@@ -1,0 +1,34 @@
+{
+  LOG.info("running synch with crowd...");
+  CrowdManager manager=null;
+  try {
+    manager=CrowdManager.getInstance();
+  }
+ catch (  Exception e) {
+    LOG.error("Failure to load the Crowd manager",e);
+    return;
+  }
+  List<org.jivesoftware.openfire.crowd.jaxb.User> allUsers=null;
+  try {
+    allUsers=manager.getAllUsers();
+  }
+ catch (  RemoteException re) {
+    LOG.error("Failure to fetch all crowd users",re);
+    return;
+  }
+  if (allUsers != null && allUsers.size() > 0) {
+    Map<String,org.jivesoftware.openfire.crowd.jaxb.User> usersMap=new TreeMap<String,org.jivesoftware.openfire.crowd.jaxb.User>();
+    for (    org.jivesoftware.openfire.crowd.jaxb.User user : allUsers) {
+      usersMap.put(user.name,user);
+    }
+    userProvider.lock.writeLock().lock();
+    try {
+      userProvider.users=allUsers;
+      userProvider.usersCache=usersMap;
+    }
+  finally {
+      userProvider.lock.writeLock().unlock();
+    }
+  }
+  LOG.info("crowd synch done, returned " + allUsers.size() + " users");
+}

@@ -1,0 +1,13 @@
+{
+  lock.readLock().lock();
+  try {
+    Collection<User> results=new ArrayList<User>();
+    for (    org.jivesoftware.openfire.crowd.jaxb.User user : usersCache.values()) {
+      results.add(user.getOpenfireUser());
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

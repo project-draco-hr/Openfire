@@ -1,0 +1,14 @@
+{
+  lock.readLock().lock();
+  try {
+    if (usersCache.containsKey(username)) {
+      return usersCache.get(username);
+    }
+ else {
+      throw new UserNotFoundException("User : '" + String.valueOf(username) + "'");
+    }
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

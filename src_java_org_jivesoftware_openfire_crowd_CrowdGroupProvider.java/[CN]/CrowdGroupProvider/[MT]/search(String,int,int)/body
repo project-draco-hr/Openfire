@@ -1,0 +1,14 @@
+{
+  lock.readLock().lock();
+  try {
+    ArrayList<String> foundGroups=(ArrayList<String>)search(query);
+    Collection<String> results=new ArrayList<String>();
+    for (int i=0, j=startIndex; i < numResults && j < foundGroups.size(); ++i, ++j) {
+      results.add(foundGroups.get(j));
+    }
+    return results;
+  }
+  finally {
+    lock.readLock().unlock();
+  }
+}

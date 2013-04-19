@@ -1,0 +1,13 @@
+{
+  String propertyValue=JiveGlobals.getProperty(JIVE_CROWD_GROUPS_CACHE_TTL_SECS);
+  int ttl=(propertyValue == null || propertyValue.trim().length() == 0) ? CACHE_TTL : Integer.parseInt(propertyValue);
+  Cache<String,Collection<JID>> groupMembershipCache=CacheFactory.createLocalCache(GROUP_MEMBERSHIP_CACHE_NAME);
+  groupMembershipCache.setMaxCacheSize(-1);
+  groupMembershipCache.setMaxLifetime(ttl * 1000);
+  Cache<JID,Collection<String>> userMembershipCache=CacheFactory.createLocalCache(USER_MEMBERSHIP_CACHE_NAME);
+  userMembershipCache.setMaxCacheSize(-1);
+  userMembershipCache.setMaxLifetime(ttl * 1000);
+  Cache<String,org.jivesoftware.openfire.crowd.jaxb.Group> groupCache=CacheFactory.createLocalCache(GROUP_CACHE_NAME);
+  userMembershipCache.setMaxCacheSize(-1);
+  userMembershipCache.setMaxLifetime(ttl * 1000);
+}
