@@ -1,4 +1,5 @@
 {
+  username=JID.unescapeNode(username);
   if (LOG.isDebugEnabled())   LOG.debug("authenticate '" + String.valueOf(username) + "'");
   PostMethod post=new PostMethod(crowdServer.resolve("authentication?username=" + urlEncode(username)).toString());
   AuthenticatePost creds=new AuthenticatePost();
@@ -18,4 +19,5 @@
  finally {
     post.releaseConnection();
   }
+  LOG.info("authenticated user:" + username);
 }
