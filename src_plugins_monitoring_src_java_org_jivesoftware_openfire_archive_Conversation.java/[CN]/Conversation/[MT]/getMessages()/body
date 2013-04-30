@@ -16,9 +16,17 @@
     rs=pstmt.executeQuery();
     while (rs.next()) {
       JID fromJID=new JID(rs.getString(1));
-      JID toJID=new JID(rs.getString(2));
-      Date date=new Date(rs.getLong(3));
-      String body=DbConnectionManager.getLargeTextField(rs,4);
+      String fromJIDResource=rs.getString(2);
+      if (fromJIDResource != null && !"".equals(fromJIDResource)) {
+        fromJID=new JID(rs.getString(1) + "/" + fromJIDResource);
+      }
+      JID toJID=new JID(rs.getString(3));
+      String toJIDResource=rs.getString(4);
+      if (toJIDResource != null && !"".equals(toJIDResource)) {
+        toJID=new JID(rs.getString(1) + "/" + toJIDResource);
+      }
+      Date date=new Date(rs.getLong(5));
+      String body=DbConnectionManager.getLargeTextField(rs,6);
       messages.add(new ArchivedMessage(conversationID,fromJID,toJID,date,body,false));
     }
   }
