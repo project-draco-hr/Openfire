@@ -11,7 +11,7 @@
       if (itemID == null) {
         itemID=genIdSeed + sequenceCounter.getAndIncrement();
       }
-      newItem=new PublishedItem(this,publisher,itemID,new Date());
+      newItem=new PublishedItem(this,publisher,itemID,new Date(CacheFactory.getClusterTime()));
       newItem.setPayload(payload);
       newPublishedItems.add(newItem);
       setLastPublishedItem(newItem);
