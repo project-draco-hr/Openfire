@@ -1,0 +1,49 @@
+{
+  if (addItem == null) {
+    return;
+  }
+  LinkedListNode addHead=addItem.previous;
+  PreparedStatement pstmt=null;
+  PublishedItem item=null;
+  try {
+    pstmt=con.prepareStatement(ADD_ITEM);
+    while (addItem != addHead) {
+      item=(PublishedItem)addItem.object;
+      pstmt.setString(1,item.getNode().getService().getServiceID());
+      pstmt.setString(2,encodeNodeID(item.getNodeID()));
+      pstmt.setString(3,item.getID());
+      pstmt.setString(4,item.getPublisher().toString());
+      pstmt.setString(5,StringUtils.dateToMillis(item.getCreationDate()));
+      pstmt.setString(6,item.getPayloadXML());
+      if (batch) {
+        pstmt.addBatch();
+      }
+ else {
+        try {
+          pstmt.execute();
+        }
+ catch (        SQLException se) {
+          String itemKey=item.getItemKey();
+          if (item.getRetryCount() < MAX_ITEM_RETRY) {
+            log.warn("Failed to persist published item (will retry): " + itemKey);
+            savePublishedItem(item,true);
+          }
+ else {
+            log.error("Published item could not be written to database: " + itemKey + "\n"+ item.getPayloadXML(),se);
+          }
+        }
+      }
+      addItem=addItem.next;
+    }
+    if (batch) {
+      pstmt.executeBatch();
+    }
+  }
+ catch (  SQLException se) {
+    log.error("Failed to persist published items as batch; will retry individually",se);
+    throw se;
+  }
+ finally {
+    DbConnectionManager.closeStatement(pstmt);
+  }
+}

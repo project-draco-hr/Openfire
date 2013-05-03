@@ -1,0 +1,46 @@
+{
+  LinkedListNode addItem=addList.getFirst();
+  LinkedListNode delItem=delList.getFirst();
+  if ((addItem == null) && (delItem == null)) {
+    return;
+  }
+  if (log.isDebugEnabled()) {
+    log.debug("Flush " + itemsPending.size() + " pending items to database");
+  }
+  if (addItem != null) {
+    LinkedListNode addHead=addItem.previous;
+    while (addItem != addHead) {
+      delList.addLast(addItem.object);
+      addItem=addItem.next;
+    }
+  }
+  delItem=delList.getFirst();
+  if (delItem != null) {
+    PreparedStatement pstmt=null;
+    try {
+      LinkedListNode delHead=delItem.previous;
+      pstmt=con.prepareStatement(DELETE_ITEM);
+      while (delItem != delHead) {
+        PublishedItem item=(PublishedItem)delItem.object;
+        pstmt.setString(1,item.getNode().getService().getServiceID());
+        pstmt.setString(2,encodeNodeID(item.getNode().getNodeID()));
+        pstmt.setString(3,item.getID());
+        pstmt.addBatch();
+        delItem=delItem.next;
+      }
+      pstmt.executeBatch();
+    }
+ catch (    SQLException ex) {
+      log.error("Failed to delete published item(s) from DB",ex);
+    }
+ finally {
+      DbConnectionManager.closeStatement(pstmt);
+    }
+  }
+  try {
+    writePendingItems(con,addList.getFirst(),true);
+  }
+ catch (  SQLException ex) {
+    writePendingItems(con,addList.getFirst(),false);
+  }
+}

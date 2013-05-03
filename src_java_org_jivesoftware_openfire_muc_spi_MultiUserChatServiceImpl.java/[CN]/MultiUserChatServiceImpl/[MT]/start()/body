@@ -1,10 +1,10 @@
 {
   userTimeoutTask=new UserTimeoutTask();
-  timer.schedule(userTimeoutTask,user_timeout,user_timeout);
+  TaskEngine.getInstance().schedule(userTimeoutTask,user_timeout,user_timeout);
   logConversationTask=new LogConversationTask();
-  timer.schedule(logConversationTask,log_timeout,log_timeout);
+  TaskEngine.getInstance().schedule(logConversationTask,log_timeout,log_timeout);
   cleanupTask=new CleanupTask();
-  timer.schedule(cleanupTask,CLEANUP_FREQUENCY,CLEANUP_FREQUENCY);
+  TaskEngine.getInstance().schedule(cleanupTask,CLEANUP_FREQUENCY,CLEANUP_FREQUENCY);
   XMPPServer.getInstance().getIQDiscoItemsHandler().addServerItemsProvider(this);
   XMPPServer.getInstance().getIQDiscoInfoHandler().setServerNodeInfoProvider(this.getServiceDomain(),this);
   XMPPServer.getInstance().getServerItemsProviders().add(this);

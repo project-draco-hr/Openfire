@@ -1,5 +1,4 @@
 {
-  String persistentNodeQuery="SELECT serviceID, nodeID, maxItems FROM ofPubsubNode WHERE " + "leaf=1 AND persistItems=1 AND maxItems > 0";
   boolean abortTransaction=false;
   Connection con=null;
   PreparedStatement pstmt=null;
@@ -7,7 +6,7 @@
   ResultSet rs=null;
   try {
     con=DbConnectionManager.getTransactionConnection();
-    nodeConfig=con.prepareStatement(persistentNodeQuery);
+    nodeConfig=con.prepareStatement(PERSISTENT_NODES);
     rs=nodeConfig.executeQuery();
     PreparedStatement purgeNode=con.prepareStatement(getPurgeStatement(DbConnectionManager.getDatabaseType()));
     while (rs.next()) {

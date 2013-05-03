@@ -1,17 +1,3 @@
 {
-  String itemKey=item.getItemKey();
-  itemCache.put(itemKey,item);
-  log.debug("Added new (inbound) item to cache");
-synchronized (itemsPending) {
-    LinkedListNode itemToReplace=itemsPending.remove(itemKey);
-    if (itemToReplace != null) {
-      itemToReplace.remove();
-    }
-    itemsToDelete.addLast(item);
-    LinkedListNode listNode=itemsToAdd.addLast(item);
-    itemsPending.put(itemKey,listNode);
-  }
-  if (itemsPending.size() > MAX_ITEMS_FLUSH) {
-    flushPendingItems();
-  }
+  savePublishedItem(item,false);
 }

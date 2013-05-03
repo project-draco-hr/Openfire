@@ -1,12 +1,43 @@
 {
+  if (sendToCluster) {
+    CacheFactory.doSynchronousClusterTask(new FlushTask(),false);
+  }
+  if (itemsToAdd.getFirst() == null && itemsToDelete.getFirst() == null) {
+    return;
+  }
   Connection con=null;
   boolean rollback=false;
+  LinkedList addList=null;
+  LinkedList delList=null;
+synchronized (itemsPending) {
+    addList=itemsToAdd;
+    delList=itemsToDelete;
+    itemsToAdd=new LinkedList();
+    itemsToDelete=new LinkedList();
+    int copied=0;
+    for (    String key : itemsPending.keySet()) {
+      if (!itemCache.containsKey(key)) {
+        itemCache.put(key,(PublishedItem)itemsPending.get(key).object);
+        copied++;
+      }
+    }
+    if (log.isDebugEnabled() && copied > 0) {
+      log.debug("Added " + copied + " pending items to published item cache");
+    }
+    itemsPending.clear();
+  }
   try {
     con=DbConnectionManager.getTransactionConnection();
-    flushPendingItems(sendToCluster,con);
+    writePendingItems(con,addList,delList);
   }
- catch (  Exception e) {
-    log.error("Failed to flush pending items",e);
+ catch (  SQLException se) {
+    log.error("Failed to flush pending items; initiating rollback",se);
+    LinkedListNode node=addList.getLast();
+    while (node != null) {
+      savePublishedItem((PublishedItem)node.object,true);
+      node.remove();
+      node=addList.getLast();
+    }
     rollback=true;
   }
  finally {
