@@ -24,6 +24,7 @@
   finally {
     lock.writeLock().unlock();
   }
+  CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.owner));
   try {
     return changeOccupantAffiliation(jid,MUCRole.Affiliation.owner,MUCRole.Role.moderator);
   }

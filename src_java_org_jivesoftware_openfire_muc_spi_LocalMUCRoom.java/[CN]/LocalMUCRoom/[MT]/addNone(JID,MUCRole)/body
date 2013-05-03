@@ -29,6 +29,7 @@
   finally {
     lock.writeLock().unlock();
   }
+  CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.none));
   try {
     MUCRole.Role newRole;
     if (isMembersOnly() && wasMember) {

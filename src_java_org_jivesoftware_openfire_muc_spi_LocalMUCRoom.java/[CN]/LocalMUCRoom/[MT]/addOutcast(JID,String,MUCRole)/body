@@ -27,6 +27,7 @@
   finally {
     lock.writeLock().unlock();
   }
+  CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.outcast));
   JID actorJID=senderRole.getUserAddress();
   List<Presence> updatedPresences=changeOccupantAffiliation(jid,MUCRole.Affiliation.outcast,MUCRole.Role.none);
   Element frag;

@@ -1,0 +1,30 @@
+{
+  JID bareJID=affiliation.getBareJID();
+switch (affiliation.getAffiliation()) {
+case owner:
+    removeMember(bareJID);
+  removeAdmin(bareJID);
+removeOutcast(bareJID);
+owners.add(bareJID);
+break;
+case admin:
+removeMember(bareJID);
+removeOwner(bareJID);
+removeOutcast(bareJID);
+admins.add(bareJID);
+break;
+case outcast:
+removeMember(bareJID);
+removeAdmin(bareJID);
+removeOwner(bareJID);
+outcasts.add(bareJID);
+break;
+case none:
+default :
+removeMember(bareJID);
+removeAdmin(bareJID);
+removeOwner(bareJID);
+removeOutcast(bareJID);
+break;
+}
+}
