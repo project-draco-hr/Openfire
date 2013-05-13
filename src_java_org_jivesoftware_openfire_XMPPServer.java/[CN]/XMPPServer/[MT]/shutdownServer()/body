@@ -2,20 +2,42 @@
   shuttingDown=true;
   ClusterManager.shutdown();
   for (  XMPPServerListener listener : listeners) {
-    listener.serverStopping();
+    try {
+      listener.serverStopping();
+    }
+ catch (    Exception ex) {
+      Log.error("Exception during listener shutdown",ex);
+    }
   }
   if (modules.isEmpty()) {
     return;
   }
+  Log.info("Shutting down " + modules.size() + " modules ...");
   for (  Module module : modules.values()) {
-    module.stop();
-    module.destroy();
+    try {
+      module.stop();
+      module.destroy();
+    }
+ catch (    Exception ex) {
+      Log.error("Exception during module shutdown",ex);
+    }
   }
+  Log.info("Shutting down plugins ...");
   if (pluginManager != null) {
-    pluginManager.shutdown();
+    try {
+      pluginManager.shutdown();
+    }
+ catch (    Exception ex) {
+      Log.error("Exception during plugin shutdown",ex);
+    }
   }
   modules.clear();
-  DbConnectionManager.destroyConnectionProvider();
+  try {
+    DbConnectionManager.destroyConnectionProvider();
+  }
+ catch (  Exception ex) {
+    Log.error("Exception during DB shutdown",ex);
+  }
   TaskEngine.getInstance().shutdown();
   Log.info("Openfire stopped");
 }

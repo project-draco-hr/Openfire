@@ -14,9 +14,9 @@
   cacheSize+=objectSize;
   DefaultCache.CacheObject<V> cacheObject=new DefaultCache.CacheObject<V>(value,objectSize);
   map.put(key,cacheObject);
-  LinkedListNode lastAccessedNode=lastAccessedList.addFirst(key);
+  LinkedListNode<K> lastAccessedNode=lastAccessedList.addFirst(key);
   cacheObject.lastAccessedListNode=lastAccessedNode;
-  LinkedListNode ageNode=ageList.addFirst(key);
+  LinkedListNode<K> ageNode=ageList.addFirst(key);
   ageNode.timestamp=System.currentTimeMillis();
   cacheObject.ageListNode=ageNode;
   cullCache();

@@ -1,0 +1,23 @@
+{
+  boolean firstPass=(wrapper.getRetryCount() == 0);
+  PublishedItem item=wrapper.get();
+  String itemKey=item.getItemKey();
+  itemCache.put(itemKey,item);
+  log.debug("Added new (inbound) item to cache");
+synchronized (itemsPending) {
+    LinkedListNode<RetryWrapper> itemToReplace=itemsPending.remove(itemKey);
+    if (itemToReplace != null) {
+      itemToReplace.remove();
+    }
+    LinkedListNode<RetryWrapper> listNode=firstPass ? itemsToAdd.addLast(wrapper) : itemsToAdd.addFirst(wrapper);
+    itemsPending.put(itemKey,listNode);
+  }
+  if (firstPass && itemsPending.size() > MAX_ITEMS_FLUSH) {
+    TaskEngine.getInstance().submit(new Runnable(){
+      public void run(){
+        flushPendingItems(false);
+      }
+    }
+);
+  }
+}

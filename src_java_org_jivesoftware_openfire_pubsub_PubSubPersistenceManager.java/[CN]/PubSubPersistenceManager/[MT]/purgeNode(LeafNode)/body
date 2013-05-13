@@ -5,10 +5,10 @@
     con=DbConnectionManager.getTransactionConnection();
     purgeNode(leafNode,con);
 synchronized (itemsPending) {
-      Iterator<Map.Entry<String,LinkedListNode>> pendingIt=itemsPending.entrySet().iterator();
+      Iterator<Map.Entry<String,LinkedListNode<RetryWrapper>>> pendingIt=itemsPending.entrySet().iterator();
       while (pendingIt.hasNext()) {
-        LinkedListNode itemNode=pendingIt.next().getValue();
-        if (((PublishedItem)itemNode.object).getNodeID().equals(leafNode.getNodeID())) {
+        LinkedListNode<RetryWrapper> itemNode=pendingIt.next().getValue();
+        if (itemNode.object.get().getNodeID().equals(leafNode.getNodeID())) {
           itemNode.remove();
           pendingIt.remove();
         }

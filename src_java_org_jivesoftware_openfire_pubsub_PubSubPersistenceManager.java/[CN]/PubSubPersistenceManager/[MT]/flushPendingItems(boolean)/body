@@ -7,17 +7,17 @@
   }
   Connection con=null;
   boolean rollback=false;
-  LinkedList addList=null;
-  LinkedList delList=null;
+  LinkedList<RetryWrapper> addList=null;
+  LinkedList<PublishedItem> delList=null;
 synchronized (itemsPending) {
     addList=itemsToAdd;
     delList=itemsToDelete;
-    itemsToAdd=new LinkedList();
-    itemsToDelete=new LinkedList();
+    itemsToAdd=new LinkedList<RetryWrapper>();
+    itemsToDelete=new LinkedList<PublishedItem>();
     int copied=0;
     for (    String key : itemsPending.keySet()) {
       if (!itemCache.containsKey(key)) {
-        itemCache.put(key,(PublishedItem)itemsPending.get(key).object);
+        itemCache.put(key,(((RetryWrapper)itemsPending.get(key).object)).get());
         copied++;
       }
     }
@@ -32,9 +32,9 @@ synchronized (itemsPending) {
   }
  catch (  SQLException se) {
     log.error("Failed to flush pending items; initiating rollback",se);
-    LinkedListNode node=addList.getLast();
+    LinkedListNode<RetryWrapper> node=addList.getLast();
     while (node != null) {
-      savePublishedItem((PublishedItem)node.object,true);
+      savePublishedItem(node.object);
       node.remove();
       node=addList.getLast();
     }
