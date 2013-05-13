@@ -41,4 +41,24 @@
       maxTime=DEFAULT_MAX_TIME * JiveConstants.MINUTE;
     }
   }
+ else   if (property.equals("conversation.maxRetrievable")) {
+    String value=(String)params.get("value");
+    try {
+      maxRetrievable=Integer.parseInt(value) * JiveConstants.DAY;
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+      maxRetrievable=DEFAULT_MAX_RETRIEVABLE * JiveConstants.DAY;
+    }
+  }
+ else   if (property.equals("conversation.maxAge")) {
+    String value=(String)params.get("value");
+    try {
+      maxAge=Integer.parseInt(value) * JiveConstants.DAY;
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+      maxAge=DEFAULT_MAX_AGE * JiveConstants.DAY;
+    }
+  }
 }

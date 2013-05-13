@@ -13,6 +13,8 @@
   }
   idleTime=JiveGlobals.getIntProperty("conversation.idleTime",DEFAULT_IDLE_TIME) * JiveConstants.MINUTE;
   maxTime=JiveGlobals.getIntProperty("conversation.maxTime",DEFAULT_MAX_TIME) * JiveConstants.MINUTE;
+  maxAge=JiveGlobals.getIntProperty("conversation.maxAge",DEFAULT_MAX_AGE) * JiveConstants.DAY;
+  maxRetrievable=JiveGlobals.getIntProperty("conversation.maxRetrievable",DEFAULT_MAX_RETRIEVABLE) * JiveConstants.DAY;
   propertyListener=new ConversationPropertyListener();
   PropertyEventDispatcher.addListener(propertyListener);
   conversationQueue=new ConcurrentLinkedQueue<Conversation>();
@@ -39,6 +41,12 @@
   }
 ;
   taskEngine.scheduleAtFixedRate(cleanupTask,JiveConstants.MINUTE * 5,JiveConstants.MINUTE * 5);
+  maxAgeTask=new TimerTask(){
+    @Override public void run(){
+    }
+  }
+;
+  taskEngine.scheduleAtFixedRate(maxAgeTask,JiveConstants.MINUTE,JiveConstants.DAY);
   Statistic conversationStat=new Statistic(){
     public String getName(){
       return LocaleUtils.getLocalizedString("stat.conversation.name",MonitoringConstants.NAME);

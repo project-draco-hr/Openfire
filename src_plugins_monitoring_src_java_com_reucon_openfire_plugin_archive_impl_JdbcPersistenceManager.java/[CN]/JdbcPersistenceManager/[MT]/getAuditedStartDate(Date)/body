@@ -1,0 +1,15 @@
+{
+  long maxRetrievable=JiveGlobals.getIntProperty("conversation.maxRetrievable",ConversationManager.DEFAULT_MAX_RETRIEVABLE) * JiveConstants.DAY;
+  Date result=null;
+  if (maxRetrievable > 0) {
+    Date now=new Date();
+    Date maxRetrievableDate=new Date(now.getTime() - maxRetrievable);
+    if (startDate == null) {
+      result=maxRetrievableDate;
+    }
+ else     if (startDate.before(maxRetrievableDate)) {
+      result=maxRetrievableDate;
+    }
+  }
+  return result;
+}
