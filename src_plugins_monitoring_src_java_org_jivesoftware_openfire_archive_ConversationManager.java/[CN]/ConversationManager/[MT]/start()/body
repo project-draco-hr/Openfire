@@ -43,10 +43,51 @@
   taskEngine.scheduleAtFixedRate(cleanupTask,JiveConstants.MINUTE * 5,JiveConstants.MINUTE * 5);
   maxAgeTask=new TimerTask(){
     @Override public void run(){
+      if (maxAge > 0) {
+        Connection con=null;
+        PreparedStatement pstmt1=null;
+        PreparedStatement pstmt2=null;
+        PreparedStatement pstmt3=null;
+        try {
+          con=DbConnectionManager.getConnection();
+          pstmt1=con.prepareStatement(DELETE_CONVERSATION_1);
+          pstmt2=con.prepareStatement(DELETE_CONVERSATION_2);
+          pstmt3=con.prepareStatement(DELETE_CONVERSATION_3);
+          Date now=new Date();
+          Date maxAgeDate=new Date(now.getTime() - maxAge);
+          ArchiveSearch search=new ArchiveSearch();
+          search.setDateRangeMax(maxAgeDate);
+          MonitoringPlugin plugin=(MonitoringPlugin)XMPPServer.getInstance().getPluginManager().getPlugin(MonitoringConstants.NAME);
+          ArchiveSearcher archiveSearcher=(ArchiveSearcher)plugin.getModule(ArchiveSearcher.class);
+          Collection<Conversation> conversations=archiveSearcher.search(search);
+          int conversationDeleted=0;
+          for (          Conversation conversation : conversations) {
+            Log.debug("Deleting: " + conversation.getConversationID() + " with date: "+ conversation.getStartDate()+ " older than: "+ maxAgeDate);
+            pstmt1.setLong(1,conversation.getConversationID());
+            pstmt1.execute();
+            pstmt2.setLong(1,conversation.getConversationID());
+            pstmt2.execute();
+            pstmt3.setLong(1,conversation.getConversationID());
+            pstmt3.execute();
+            conversationDeleted++;
+          }
+          if (conversationDeleted > 0) {
+            Log.info("Deleted " + conversationDeleted + " conversations with date older than: "+ maxAgeDate);
+          }
+        }
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+        }
+ finally {
+          DbConnectionManager.closeConnection(pstmt1,con);
+          DbConnectionManager.closeConnection(pstmt2,con);
+          DbConnectionManager.closeConnection(pstmt3,con);
+        }
+      }
     }
   }
 ;
-  taskEngine.scheduleAtFixedRate(maxAgeTask,JiveConstants.MINUTE,JiveConstants.DAY);
+  taskEngine.scheduleAtFixedRate(maxAgeTask,JiveConstants.MINUTE,JiveConstants.MINUTE);
   Statistic conversationStat=new Statistic(){
     public String getName(){
       return LocaleUtils.getLocalizedString("stat.conversation.name",MonitoringConstants.NAME);
