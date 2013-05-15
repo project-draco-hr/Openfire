@@ -1,8 +1,29 @@
 {
   if (openfired != null) {
     try {
-      openfired.destroy();
-      openfired.waitFor();
+      Writer out=new OutputStreamWriter(new BufferedOutputStream(openfired.getOutputStream()));
+      out.write("exit\n");
+      out.close();
+      final Thread waiting=Thread.currentThread();
+      Thread waiter=new Thread(){
+        public void run(){
+          try {
+            openfired.waitFor();
+            waiting.interrupt();
+          }
+ catch (          InterruptedException ie) {
+          }
+        }
+      }
+;
+      waiter.start();
+      try {
+        Thread.sleep(10000);
+        waiter.interrupt();
+        openfired.destroy();
+      }
+ catch (      InterruptedException ie) {
+      }
       cardLayout.show(cardPanel,"main");
     }
  catch (    Exception e) {
