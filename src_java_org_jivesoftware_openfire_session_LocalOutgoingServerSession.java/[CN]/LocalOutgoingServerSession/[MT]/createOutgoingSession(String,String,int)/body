@@ -1,4 +1,5 @@
 {
+  String localDomainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
   boolean useTLS=JiveGlobals.getBooleanProperty("xmpp.server.tls.enabled",true);
   RemoteServerConfiguration configuration=RemoteServerManager.getConfiguration(hostname);
   if (configuration != null) {
@@ -41,6 +42,7 @@
     openingStream.append(" xmlns:db=\"jabber:server:dialback\"");
     openingStream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
     openingStream.append(" xmlns=\"jabber:server\"");
+    openingStream.append(" from=\"").append(localDomainName).append("\"");
     openingStream.append(" to=\"").append(hostname).append("\"");
     openingStream.append(" version=\"1.0\">");
     connection.deliverRawText(openingStream.toString());
