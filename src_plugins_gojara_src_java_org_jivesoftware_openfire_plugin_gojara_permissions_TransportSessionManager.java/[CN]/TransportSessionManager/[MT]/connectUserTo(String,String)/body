@@ -1,0 +1,11 @@
+{
+  if (transportSessions.get(transport) != null) {
+    long millis=System.currentTimeMillis();
+    Timestamp stamp=new Timestamp(millis);
+    Date date=new Date(stamp.getTime());
+    transportSessions.get(transport).put(user,date);
+    db.insertOrUpdateSession(transport,user,millis);
+    return true;
+  }
+  return false;
+}

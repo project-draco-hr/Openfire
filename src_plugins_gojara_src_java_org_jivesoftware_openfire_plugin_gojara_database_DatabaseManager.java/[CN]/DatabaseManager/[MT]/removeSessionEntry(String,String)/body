@@ -1,0 +1,20 @@
+{
+  int result=0;
+  Log.info("I would now hit the DB and remove " + transport + " "+ user);
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(DELETE_SESSION_ENTRY);
+    pstmt.setString(1,user);
+    pstmt.setString(2,transport);
+    result=pstmt.executeUpdate();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return result;
+}

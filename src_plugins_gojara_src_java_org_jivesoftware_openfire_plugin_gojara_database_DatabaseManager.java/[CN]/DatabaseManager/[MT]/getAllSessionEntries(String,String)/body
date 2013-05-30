@@ -1,0 +1,32 @@
+{
+  String allowedAttr="username transport lastActivity";
+  String allowedOrder="ASC DESC";
+  if ((orderAttr == null || order == null) || (!allowedAttr.contains(orderAttr) || !allowedOrder.contains(order))) {
+    orderAttr="username";
+    order="DESC";
+  }
+  ArrayList<SessionEntry> result=new ArrayList<SessionEntry>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    String sql="SELECT * FROM ofGojaraSessions ORDER BY " + orderAttr + " "+ order+ ";";
+    pstmt=con.prepareStatement(sql);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String user=rs.getString(1);
+      String transport=rs.getString(2);
+      long lastActivity=rs.getLong(3);
+      SessionEntry res=new SessionEntry(user,transport,lastActivity);
+      result.add(res);
+    }
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return result;
+}

@@ -1,4 +1,6 @@
 {
   Log.info("Trying to add " + subDomain + " to Set of watched Transports.");
-  return this.activeTransports.add(subDomain);
+  boolean retval=this.activeTransports.add(subDomain);
+  if (retval)   tSessionManager.addTransport(subDomain);
+  return retval;
 }

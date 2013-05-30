@@ -1,0 +1,26 @@
+{
+  ArrayList<SessionEntry> result=new ArrayList<SessionEntry>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION_ENTRIES_FOR_USERNAME);
+    pstmt.setString(1,username);
+    ResultSet rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String user=rs.getString(1);
+      String transport=rs.getString(2);
+      long lastActivity=rs.getLong(3);
+      SessionEntry res=new SessionEntry(user,transport,lastActivity);
+      result.add(res);
+    }
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return result;
+}

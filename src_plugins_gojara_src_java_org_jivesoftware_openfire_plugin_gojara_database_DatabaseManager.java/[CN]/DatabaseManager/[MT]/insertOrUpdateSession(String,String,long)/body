@@ -1,0 +1,27 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(UPDATE_SESSION_ENTRY);
+    pstmt.setLong(1,time);
+    pstmt.setString(2,user);
+    pstmt.setString(3,transport);
+    if (pstmt.executeUpdate() == 0) {
+      pstmt.close();
+      pstmt=con.prepareStatement(ADD_SESSION_ENTRY);
+      pstmt.setString(1,user);
+      pstmt.setString(2,transport);
+      pstmt.setLong(3,time);
+      pstmt.executeUpdate();
+      Log.info("I have inserted " + user + " with "+ transport+ " at "+ time);
+    }
+ else     Log.info("I have updated " + user + " with "+ transport+ " at "+ time);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+}

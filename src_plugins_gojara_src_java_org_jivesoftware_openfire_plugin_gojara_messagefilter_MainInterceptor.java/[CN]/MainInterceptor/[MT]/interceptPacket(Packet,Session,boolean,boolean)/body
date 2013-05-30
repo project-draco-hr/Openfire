@@ -38,6 +38,24 @@
     String to_s=searchJIDforSubdomain(to);
     String subdomain=from_s.length() == 0 ? to_s : from_s;
     if (!from.equals(to) && subdomain.length() > 0)     packetProcessors.get("statisticsProcessor").process(packet,subdomain,to,from);
+    if (packet instanceof Presence && activeTransports.contains(from)) {
+      Presence presence_packet=(Presence)packet;
+      if (presence_packet.getType() == null) {
+        tSessionManager.connectUserTo(from,packet.getTo().getNode().toString());
+      }
+ else       if (presence_packet.getType() != null && presence_packet.getType().equals(Presence.Type.unavailable)) {
+        tSessionManager.disconnectUserFrom(from,packet.getTo().getNode().toString());
+      }
+    }
+ else     if (packet instanceof IQ && activeTransports.contains(to)) {
+      IQ iqPacket=(IQ)packet;
+      Element query=iqPacket.getChildElement();
+      if (query == null)       return;
+      if (query.getNamespaceURI().equals("jabber:iq:register")) {
+        if (query.nodeCount() > 1)         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+ else         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
+      }
+    }
   }
  else   if (!incoming && !processed) {
     if (packet instanceof IQ) {
