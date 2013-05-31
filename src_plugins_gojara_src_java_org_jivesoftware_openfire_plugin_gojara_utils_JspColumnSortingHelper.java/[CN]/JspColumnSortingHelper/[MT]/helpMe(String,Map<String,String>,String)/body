@@ -1,0 +1,24 @@
+{
+  String image_asc="<img alt=\"sorted ASC\" src=\"/images/sort_ascending.gif\">";
+  String image_desc="<img alt=\"sorted DESC\" src=\"/images/sort_descending.gif\">";
+  String ending="";
+  if (column.equals("username"))   ending="User Name:";
+ else   if (column.equals("transport"))   ending="Resource:";
+ else   if (column.equals("lastActivity"))   ending="Last Login was at:";
+ else   if (column.equals("loginTime"))   ending="Login Time:";
+ else   ending="i dont want to be here";
+  ending+="</a>";
+  String sortinglink="";
+  if (sortParams.containsValue(column)) {
+    if (sortParams.containsValue("ASC")) {
+      sortinglink=image_asc + link_beginning + column+ "&sortorder=DESC\">"+ ending;
+    }
+ else     if (sortParams.containsValue("DESC")) {
+      sortinglink=image_desc + link_beginning + column+ "&sortorder=ASC\">"+ ending;
+    }
+  }
+ else {
+    sortinglink=link_beginning + column + "&sortorder=ASC\">"+ ending;
+  }
+  return sortinglink;
+}
