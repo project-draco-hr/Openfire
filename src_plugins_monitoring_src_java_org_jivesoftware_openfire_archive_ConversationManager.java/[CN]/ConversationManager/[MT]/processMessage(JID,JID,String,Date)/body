@@ -34,7 +34,9 @@ synchronized (conversationKey.intern()) {
       conversationQueue.add(conversation);
     }
     if (messageArchivingEnabled) {
-      messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,receiver,date,body,false));
+      if (body != null) {
+        messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,receiver,date,body,false));
+      }
     }
     for (    ConversationListener listener : conversationListeners) {
       listener.conversationUpdated(conversation,date);

@@ -25,7 +25,9 @@ synchronized (conversationKey.intern()) {
     }
     if (roomArchivingEnabled && (roomsArchived.isEmpty() || roomsArchived.contains(roomJID.getNode()))) {
       JID jid=new JID(roomJID + "/" + nickname);
-      messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,jid,date,body,false));
+      if (body != null) {
+        messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,jid,date,body,false));
+      }
     }
     for (    ConversationListener listener : conversationListeners) {
       listener.conversationUpdated(conversation,date);
