@@ -1,0 +1,32 @@
+{
+  String keyChanged=(String)params.get("propertyKey");
+  String originalValue=(String)params.get("originalValue");
+  Log.debug("Group: " + group.getName() + " params: "+ params+ " originalValue:"+ originalValue);
+  if ("sharedRoster.groupList".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.groupList");
+    if (currentValue != null && !"".equals(currentValue)) {
+      deleteAllAutoCreatedRules(group);
+      Collection<Group> groupList=parseGroups(currentValue);
+      createPassRule(group.getName(),group.getName(),group.getName());
+      for (      Group tmpGroup : groupList) {
+        createPassRule(tmpGroup.getName(),group.getName(),group.getName());
+        createPassRule(group.getName(),tmpGroup.getName(),group.getName());
+      }
+    }
+  }
+ else   if ("sharedRoster.showInRoster".equals(keyChanged)) {
+    String currentValue=group.getProperties().get("sharedRoster.showInRoster");
+    if ("onlyGroup".equals(currentValue)) {
+      deleteAllAutoCreatedRules(group);
+      createPassRule(group.getName(),group.getName(),group.getName());
+    }
+ else     if ("everybody".equals(currentValue)) {
+      deleteAllAutoCreatedRules(group);
+      createPassRule(PacketFilterConstants.ANY_GROUP,group.getName(),group.getName());
+      createPassRule(group.getName(),PacketFilterConstants.ANY_GROUP,group.getName());
+    }
+ else     if ("nobody".equals(currentValue)) {
+      deleteAllAutoCreatedRules(group);
+    }
+  }
+}

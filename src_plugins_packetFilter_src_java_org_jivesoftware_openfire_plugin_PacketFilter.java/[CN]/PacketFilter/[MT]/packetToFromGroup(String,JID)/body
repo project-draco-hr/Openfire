@@ -1,18 +1,23 @@
 {
   Group group=null;
+  boolean result=false;
   try {
     group=GroupManager.getInstance().getGroup(rulegroup);
   }
  catch (  GroupNotFoundException e) {
-    e.printStackTrace();
-  }
-  if (group == null) {
-    return false;
-  }
+    if (PacketFilterConstants.ANY_GROUP.equals(rulegroup)) {
+      if (!GroupManager.getInstance().getGroups(packetToFrom).isEmpty()) {
+        result=true;
+      }
+    }
  else {
-    if (group.isUser(packetToFrom)) {
-      return true;
+      e.printStackTrace();
     }
   }
-  return false;
+  if (group != null) {
+    if (group.isUser(packetToFrom)) {
+      result=true;
+    }
+  }
+  return result;
 }

@@ -1,0 +1,13 @@
+{
+  if (property.equals(PacketFilterConstants.Properties.AUTOCREATE_GROUP_RULES)) {
+    if (Boolean.parseBoolean((String)params.get("value"))) {
+      GroupEventDispatcher.removeListener(groupEvListener);
+      groupEvListener=new RuleGroupEventListener();
+      GroupEventDispatcher.addListener(groupEvListener);
+    }
+ else {
+      GroupEventDispatcher.removeListener(groupEvListener);
+      groupEvListener=null;
+    }
+  }
+}

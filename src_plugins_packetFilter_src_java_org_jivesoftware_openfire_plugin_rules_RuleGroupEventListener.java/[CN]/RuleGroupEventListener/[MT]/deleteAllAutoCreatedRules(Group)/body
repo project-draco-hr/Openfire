@@ -1,0 +1,10 @@
+{
+  for (  Rule rule : rm.getRules()) {
+    if (Rule.SourceDestType.Group == rule.getSourceType() && (group.getName().equals(rule.getSource()) || group.getName().equals(rule.getDestination()))) {
+      if (rule.getDescription().startsWith("Auto created rule for group: " + group.getName())) {
+        rm.deleteRule(Integer.valueOf(rule.getRuleId()));
+        Log.debug("Deleted rule for group: " + group.getName() + " rule: "+ rule);
+      }
+    }
+  }
+}

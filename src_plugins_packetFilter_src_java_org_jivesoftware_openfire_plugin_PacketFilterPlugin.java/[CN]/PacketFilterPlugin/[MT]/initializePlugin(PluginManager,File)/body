@@ -5,4 +5,8 @@
   pf=PacketFilter.getInstance();
   RuleManager ruleManager=new RuleManagerProxy();
   pf.setRuleManager(ruleManager);
+  if (JiveGlobals.getBooleanProperty(PacketFilterConstants.Properties.AUTOCREATE_GROUP_RULES,true)) {
+    groupEvListener=new RuleGroupEventListener();
+    GroupEventDispatcher.addListener(groupEvListener);
+  }
 }
