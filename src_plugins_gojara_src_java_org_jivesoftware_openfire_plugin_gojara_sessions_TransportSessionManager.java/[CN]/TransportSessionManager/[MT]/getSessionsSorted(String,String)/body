@@ -1,0 +1,21 @@
+{
+  ArrayList<GatewaySession> result=new ArrayList<GatewaySession>();
+  for (  String key : transportSessions.keySet()) {
+    for (    String user : transportSessions.get(key).keySet()) {
+      result.add(new GatewaySession(user,key,transportSessions.get(key).get(user)));
+    }
+  }
+  if (sortby.equals("username")) {
+    Collections.sort(result,new SortUserName());
+  }
+ else   if (sortby.equals("transport")) {
+    Collections.sort(result,new SortTransport());
+  }
+ else   if (sortby.equals("loginTime")) {
+    Collections.sort(result,new SortLastActivity());
+  }
+  if (sortorder.equals("DESC")) {
+    Collections.reverse(result);
+  }
+  return result;
+}
