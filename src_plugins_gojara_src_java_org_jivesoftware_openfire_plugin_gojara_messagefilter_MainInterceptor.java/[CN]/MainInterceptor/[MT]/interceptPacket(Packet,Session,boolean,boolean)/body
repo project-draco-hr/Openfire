@@ -34,9 +34,9 @@
     }
   }
  else   if (incoming && processed) {
-    String from_s=searchJIDforSubdomain(from);
-    String to_s=searchJIDforSubdomain(to);
-    String subdomain=from_s.length() == 0 ? to_s : from_s;
+    String from_searched=searchJIDforSubdomain(from);
+    String to_searched=searchJIDforSubdomain(to);
+    String subdomain=from_searched.length() == 0 ? to_searched : from_searched;
     if (!from.equals(to) && subdomain.length() > 0)     packetProcessors.get("statisticsProcessor").process(packet,subdomain,to,from);
     if (packet instanceof Presence && activeTransports.contains(from)) {
       Presence presence_packet=(Presence)packet;
@@ -55,6 +55,9 @@
         if (query.nodeCount() > 1)         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
  else         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
       }
+    }
+ else     if (packet instanceof Message && activeTransports.contains(from) && to.contains("gojaraadmin")) {
+      packetProcessors.get("gojaraAdminProcessor").process(packet,from,to,from);
     }
   }
  else   if (!incoming && !processed) {
