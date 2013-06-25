@@ -3,7 +3,9 @@
   for (  String transport : transportSessions.keySet()) {
     if (transportSessions.get(transport).containsKey(username)) {
       if (userconnections == null)       userconnections=new ArrayList<GatewaySession>();
-      userconnections.add(new GatewaySession(username,transport,transportSessions.get(transport).get(username)));
+      Timestamp stamp=new Timestamp(transportSessions.get(transport).get(username));
+      Date date=new Date(stamp.getTime());
+      userconnections.add(new GatewaySession(username,transport,date));
     }
   }
   return userconnections;

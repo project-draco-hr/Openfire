@@ -2,7 +2,9 @@
   ArrayList<GatewaySession> result=new ArrayList<GatewaySession>();
   for (  String key : transportSessions.keySet()) {
     for (    String user : transportSessions.get(key).keySet()) {
-      result.add(new GatewaySession(user,key,transportSessions.get(key).get(user)));
+      Timestamp stamp=new Timestamp(transportSessions.get(key).get(user));
+      Date date=new Date(stamp.getTime());
+      result.add(new GatewaySession(user,key,date));
     }
   }
   if (sortby.equals("username")) {
