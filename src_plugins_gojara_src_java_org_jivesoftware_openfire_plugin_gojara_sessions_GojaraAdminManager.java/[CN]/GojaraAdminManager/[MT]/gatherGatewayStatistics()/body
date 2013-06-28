@@ -1,0 +1,16 @@
+{
+  if (refreshCooldown == 0) {
+    refreshCooldown=System.currentTimeMillis();
+  }
+ else {
+    if ((System.currentTimeMillis() - refreshCooldown) < 60000)     return;
+  }
+  refreshCooldown=System.currentTimeMillis();
+  for (  String gateway : configuredGateways) {
+    uptime(gateway);
+    messagesFrom(gateway);
+    messagesTo(gateway);
+    usedMemoryOf(gateway);
+    averageMemoryOfUser(gateway);
+  }
+}
