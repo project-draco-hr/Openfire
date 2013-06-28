@@ -1,0 +1,20 @@
+{
+  int result=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(GET_SESSION_COUNT_FOR_TRANSPORT);
+    pstmt.setString(1,transport);
+    ResultSet rs=pstmt.executeQuery();
+    rs.next();
+    result=rs.getInt(1);
+  }
+ catch (  SQLException sqle) {
+    Log.error(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(pstmt,con);
+  }
+  return result;
+}
