@@ -29,8 +29,13 @@
         if (to_s.length() > 0 && iqPacket.getType().equals(IQ.Type.get))         throw new PacketRejectedException();
       }
     }
- else     if (!JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
-      if (packet instanceof Presence && activeTransports.contains(from))       packetProcessors.get("handleNonPersistant").process(packet,from,to,from);
+ else     if (packet instanceof Message && activeTransports.contains(from) && to.contains("gojaraadmin")) {
+      packetProcessors.get("gojaraAdminProcessor").process(packet,from,to,from);
+    }
+ else {
+      if (!JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false)) {
+        if (packet instanceof Presence && activeTransports.contains(from))         packetProcessors.get("handleNonPersistant").process(packet,from,to,from);
+      }
     }
   }
  else   if (incoming && processed) {
@@ -55,9 +60,6 @@
         if (query.nodeCount() > 1)         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
  else         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
       }
-    }
- else     if (packet instanceof Message && activeTransports.contains(from) && to.contains("gojaraadmin")) {
-      packetProcessors.get("gojaraAdminProcessor").process(packet,from,to,from);
     }
   }
  else   if (!incoming && !processed) {

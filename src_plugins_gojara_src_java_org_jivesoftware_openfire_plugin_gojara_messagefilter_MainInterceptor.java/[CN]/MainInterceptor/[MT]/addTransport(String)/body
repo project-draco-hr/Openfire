@@ -1,6 +1,9 @@
 {
   Log.info("Trying to add " + subDomain + " to Set of watched Transports.");
   boolean retval=this.activeTransports.add(subDomain);
-  if (retval)   tSessionManager.addTransport(subDomain);
+  if (retval) {
+    tSessionManager.addTransport(subDomain);
+    gojaraAdminmanager.testAdminConfiguration(subDomain);
+  }
   return retval;
 }

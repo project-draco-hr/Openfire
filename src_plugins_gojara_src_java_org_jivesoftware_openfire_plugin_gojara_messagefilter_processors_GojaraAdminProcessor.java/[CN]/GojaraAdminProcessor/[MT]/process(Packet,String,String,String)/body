@@ -1,15 +1,14 @@
 {
   Message message=(Message)packet;
-  String body=message.getBody();
-  if (body.endsWith("unregistered.") || body.endsWith("registered")) {
-    Log.info("Ignoring Message! " + message.toString());
+  Log.info("Intercepted something: " + message.toString());
+  String command=packet.getID();
+  if (command.equals("online_users")) {
+    handleOnlineUsers(message,subdomain);
   }
- else {
-    String[] content=message.getBody().split("\\r?\\n");
-    for (    String user : content) {
-      JID userjid=new JID(user);
-      transportSessionManager.connectUserTo(subdomain,userjid.getNode());
-    }
-    Log.info("Found online Users!" + message.toString());
+ else   if (command.equals("unregister")) {
+    handleUnregister(message);
+  }
+ else   if (command.equals("config_check")) {
+    handleConfigCheck(subdomain);
   }
 }
