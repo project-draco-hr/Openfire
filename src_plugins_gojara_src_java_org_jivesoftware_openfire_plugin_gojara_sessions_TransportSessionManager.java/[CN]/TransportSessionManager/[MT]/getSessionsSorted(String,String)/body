@@ -1,10 +1,10 @@
 {
-  ArrayList<GatewaySession> result=new ArrayList<GatewaySession>();
-  for (  String key : transportSessions.keySet()) {
-    for (    String user : transportSessions.get(key).keySet()) {
-      Timestamp stamp=new Timestamp(transportSessions.get(key).get(user));
+  ArrayList<GatewaySession> result=new ArrayList<GatewaySession>(getNumberOfActiveSessions());
+  for (  Map.Entry<String,Map<String,Long>> gateway : transportSessions.entrySet()) {
+    for (    Map.Entry<String,Long> entry : gateway.getValue().entrySet()) {
+      Timestamp stamp=new Timestamp(entry.getValue());
       Date date=new Date(stamp.getTime());
-      result.add(new GatewaySession(user,key,date));
+      result.add(new GatewaySession(entry.getKey(),gateway.getKey(),date));
     }
   }
   if (sortby.equals("username")) {
