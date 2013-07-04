@@ -2,6 +2,7 @@
   if (!packet.getType().equals(IQ.Type.set)) {
     throw new IllegalArgumentException("This method only accepts 'set' typed IQ stanzas as an argument.");
   }
+  JID fromJID=packet.getFrom();
   final IQ resultIQ;
   if (!isValidSearchRequest(packet)) {
     resultIQ=IQ.createResultIQ(packet);
@@ -23,6 +24,18 @@
       max=Integer.parseInt(maxElement.getTextTrim());
     }
     final Set<User> searchResults=performSearch(incomingForm,startIndex,max);
+    if (groupOnly) {
+      Collection<Group> groups=GroupManager.getInstance().getGroups(fromJID);
+      Set<User> allSearchResults=new HashSet<User>(searchResults);
+      searchResults.clear();
+      for (      User user : allSearchResults) {
+        for (        Group group : groups) {
+          if (group.isUser(user.getUID())) {
+            searchResults.add(user);
+          }
+        }
+      }
+    }
     final List<User> rsmResults;
     final ResultSet<User> rs=new ResultSetImpl<User>(searchResults);
     try {
@@ -44,6 +57,18 @@
   }
  else {
     final Set<User> searchResults=performSearch(incomingForm);
+    if (groupOnly) {
+      Collection<Group> groups=GroupManager.getInstance().getGroups(fromJID);
+      Set<User> allSearchResults=new HashSet<User>(searchResults);
+      searchResults.clear();
+      for (      User user : allSearchResults) {
+        for (        Group group : groups) {
+          if (group.isUser(user.getUID())) {
+            searchResults.add(user);
+          }
+        }
+      }
+    }
     if (isDataFormQuery) {
       resultIQ=replyDataFormResult(searchResults,packet);
     }

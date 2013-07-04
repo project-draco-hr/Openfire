@@ -1,0 +1,15 @@
+{
+  if (groupOnly) {
+    Collection<Group> groups=GroupManager.getInstance().getGroups(jid);
+    Set<User> allSearchResults=new HashSet<User>(searchResults);
+    searchResults.clear();
+    for (    User user : allSearchResults) {
+      for (      Group group : groups) {
+        if (group.isUser(user.getUID())) {
+          searchResults.add(user);
+        }
+      }
+    }
+  }
+  return searchResults;
+}
