@@ -1,18 +1,13 @@
 {
-  if (transportSessions.containsKey(transport)) {
-    adminManager.unregisterUserFrom(transport,user);
-    int result=db.removeSessionEntry(transport,user);
-    if (result == 0) {
-      return "Did not remove entry for user: " + user + " and transport: "+ transport+ "\n";
-    }
- else     if (result == 1) {
-      return "Successfully removed entry for user: " + user + " and transport: "+ transport+ " \n";
-    }
- else {
-      return "What is happening ???: " + result;
-    }
+  adminManager.unregisterUserFrom(transport,user);
+  int result=db.removeSessionEntry(transport,user);
+  if (result == 0) {
+    return "Did not remove entry for user: " + user + " and transport: "+ transport+ "\n";
+  }
+ else   if (result == 1) {
+    return "Successfully removed entry for user: " + user + " and transport: "+ transport+ " \n";
   }
  else {
-    return "Cannot Unregister user " + user + " from "+ transport+ " when it's inactive.";
+    return "What is happening ???: " + result;
   }
 }
