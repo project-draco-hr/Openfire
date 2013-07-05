@@ -1,12 +1,8 @@
 {
   unconfiguredGateways.add(gateway);
   getGatewayStatisticsMap().put(gateway,new HashMap<String,Integer>());
-  Message message=new Message();
-  message.setFrom(adminUser);
-  message.setTo(gateway);
-  message.setID("config_check");
+  Message message=generateCommand(gateway,"config_check");
   message.setBody("status");
-  message.setType(Type.chat);
   router.route(message);
   Log.info("Checking for admin configuration on " + gateway);
 }
