@@ -1,6 +1,7 @@
 {
   Log.debug("Found online_users command!");
-  if (message.getBody().equals("0"))   return;
+  String body=message.getBody();
+  if (body.equals("0") || body.startsWith("Unknown command."))   return;
   String[] content=message.getBody().split("\\r?\\n");
   for (  String user : content) {
     JID userjid=new JID(user);
