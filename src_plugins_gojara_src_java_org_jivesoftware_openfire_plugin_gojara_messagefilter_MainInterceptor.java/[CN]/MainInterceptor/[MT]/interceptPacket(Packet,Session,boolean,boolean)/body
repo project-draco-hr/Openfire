@@ -56,9 +56,9 @@
       IQ iqPacket=(IQ)packet;
       Element query=iqPacket.getChildElement();
       if (query == null)       return;
-      if (query.getNamespaceURI().equals("jabber:iq:register")) {
-        if (query.nodeCount() > 1)         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
- else         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
+      if (query.getNamespaceURI().equals("jabber:iq:register") && iqPacket.getType().equals(IQ.Type.set)) {
+        if (query.element("remove") != null)         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
+ else         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
       }
     }
   }
