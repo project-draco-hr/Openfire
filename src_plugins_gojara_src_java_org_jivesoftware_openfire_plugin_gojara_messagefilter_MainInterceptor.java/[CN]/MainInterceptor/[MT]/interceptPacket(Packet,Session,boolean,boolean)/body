@@ -58,7 +58,20 @@
       if (query == null)       return;
       if (query.getNamespaceURI().equals("jabber:iq:register") && iqPacket.getType().equals(IQ.Type.set)) {
         if (query.element("remove") != null)         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
- else         tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+ else         if (query.element("x") != null) {
+          String namespace=query.element("x").getNamespaceURI();
+          if (namespace.equals("jabber:iq:gateway:register"))           tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+ else           if (namespace.equals("jabber:x:data")) {
+            @SuppressWarnings("rawtypes") List list=query.element("x").elements("field");
+            for (            Object ele : list) {
+              Element e=(Element)ele;
+              if (e.attributeValue("var").equals("unregister")) {
+                if (e.elementText("value").equals("0"))                 tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+ else                 if (e.elementText("value").equals("1"))                 tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
+              }
+            }
+          }
+        }
       }
     }
   }
