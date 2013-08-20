@@ -1,0 +1,14 @@
+{
+  TimerTask pushPresenceTask=new TimerTask(){
+    @Override public void run(){
+      PacketRouter router=server.getPacketRouter();
+      Packet presence=new Presence();
+      presence.setTo(to);
+      presence.setFrom(from);
+      router.route(presence);
+    }
+  }
+;
+  Timer timer=new Timer();
+  timer.schedule(pushPresenceTask,delay);
+}

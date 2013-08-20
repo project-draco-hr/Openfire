@@ -59,17 +59,12 @@
       if (query.getNamespaceURI().equals("jabber:iq:register") && iqPacket.getType().equals(IQ.Type.set)) {
         if (query.element("remove") != null)         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
  else         if (query.element("x") != null) {
-          String namespace=query.element("x").getNamespaceURI();
-          if (namespace.equals("jabber:iq:gateway:register"))           tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
- else           if (namespace.equals("jabber:x:data")) {
-            @SuppressWarnings("rawtypes") List list=query.element("x").elements("field");
-            for (            Object ele : list) {
-              Element e=(Element)ele;
-              if (e.attributeValue("var").equals("unregister")) {
-                if (e.elementText("value").equals("0"))                 tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
- else                 if (e.elementText("value").equals("1"))                 tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
-              }
-            }
+          Element xElem=query.element("x");
+          String xNamespace=xElem.getNamespaceURI();
+          if (xNamespace.equals("jabber:iq:gateway:register"))           tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+ else           if (xNamespace.equals("jabber:x:data") && xElem.attribute("type").getText().equals("submit")) {
+            tSessionManager.registerUserTo(to,iqPacket.getFrom().getNode().toString());
+            presencePush(packet.getTo(),packet.getFrom(),150);
           }
         }
       }
@@ -82,6 +77,18 @@
       if (query == null)       return;
       if (query.getNamespaceURI().equals("http://jabber.org/protocol/disco#items"))       packetProcessors.get("whitelistProcessor").process(packet,"",to,from);
  else       if (JiveGlobals.getBooleanProperty("plugin.remoteroster.mucFilter",false) && query.getNamespaceURI().equals("http://jabber.org/protocol/disco#info") && from.length() > 0 && activeTransports.contains(from))       packetProcessors.get("mucfilterProcessor").process(packet,from,to,from);
+ else       if (JiveGlobals.getBooleanProperty("plugin.remoteroster.gajimBroadcast",false)) {
+        if (to.contains("Gajim") && query.getNamespaceURI().equals("jabber:iq:roster") && iqPacket.getType().equals(IQ.Type.result)) {
+          List<Node> nodes=XpathHelper.findNodesInDocument(iqPacket.getElement().getDocument(),"//roster:item");
+          for (          Node n : nodes) {
+            String jid=n.valueOf("@jid");
+            if (activeTransports.contains(jid)) {
+              JID pushTo=new JID(jid);
+              presencePush(pushTo,iqPacket.getTo(),3000);
+            }
+          }
+        }
+      }
     }
  else     if (packet instanceof Presence) {
       String to_s=searchJIDforSubdomain(to);
