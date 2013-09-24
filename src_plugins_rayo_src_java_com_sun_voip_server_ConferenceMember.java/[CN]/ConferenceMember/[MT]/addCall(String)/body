@@ -1,0 +1,20 @@
+{
+synchronized (conferenceManager) {
+synchronized (whisperGroups) {
+      WhisperGroup whisperGroup=wgManager.findWhisperGroup(whisperGroupId);
+      if (whisperGroup == null) {
+        Logger.println("Call " + cp + " Whisper group "+ whisperGroupId+ " doesn't exist.  "+ "Automatically creating it with attenuation 0 "+ "and locked");
+        try {
+          whisperGroup=conferenceManager.createWhisperGroup(whisperGroupId,0.0D);
+          whisperGroup.setTransient(true);
+          whisperGroup.setLocked(true);
+        }
+ catch (        ParseException e) {
+          Logger.println("Can't create whisper group " + whisperGroupId + " "+ e.getMessage());
+          throw new ParseException("Can't create whisper group " + whisperGroupId + " "+ e.getMessage(),0);
+        }
+      }
+      addCall(whisperGroup);
+    }
+  }
+}

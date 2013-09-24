@@ -1,0 +1,21 @@
+{
+  if (isSenderReport) {
+    rtcpData=new byte[SENDER_REPORT_LENGTH];
+    rtcpData[0]=(byte)0x81;
+    rtcpData[1]=(byte)200;
+    rtcpData[2]=(byte)0;
+    rtcpData[3]=(byte)SENDER_REPORT_LENGTH;
+  }
+ else {
+    rtcpData=new byte[RECEIVER_REPORT_LENGTH];
+    rtcpData[0]=(byte)0x81;
+    rtcpData[1]=(byte)201;
+    rtcpData[2]=(byte)0;
+    rtcpData[3]=(byte)RECEIVER_REPORT_LENGTH;
+  }
+  rtcpData[4]=(byte)((SSRC >> 24) & 0xff);
+  rtcpData[5]=(byte)((SSRC >> 16) & 0xff);
+  rtcpData[6]=(byte)((SSRC >> 8) & 0xff);
+  rtcpData[7]=(byte)(SSRC & 0xff);
+  packet=new DatagramPacket(rtcpData,rtcpData.length);
+}

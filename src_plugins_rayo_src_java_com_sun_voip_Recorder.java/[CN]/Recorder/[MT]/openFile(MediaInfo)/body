@@ -1,0 +1,30 @@
+{
+  File recordFile=new File(recordPath);
+  try {
+synchronized (this) {
+      if (recordFile.exists()) {
+        recordFile.delete();
+      }
+      recordFile.createNewFile();
+      fo=new FileOutputStream(recordFile);
+      bo=new BufferedOutputStream(fo,BUFFER_SIZE);
+      if (recordRtp == false) {
+        writeAuHeader(mediaInfo);
+      }
+ else {
+        byte[] buf=new byte[16];
+        buf[0]=(byte)0x52;
+        buf[1]=(byte)0x54;
+        buf[2]=(byte)0x50;
+        bo.write(buf,0,buf.length);
+      }
+    }
+  }
+ catch (  IOException e) {
+    fo=null;
+    bo=null;
+    Logger.error("can't create buffered output stream for " + recordPath + " "+ e.getMessage());
+    throw new IOException("can't create buffered output stream for " + recordPath + " "+ e.getMessage());
+  }
+  Logger.println("Recording to " + recordFile.getAbsolutePath() + " recording type is "+ (recordRtp ? "RTP" : "Audio"));
+}

@@ -1,0 +1,84 @@
+{
+  final int portB=portA + 2;
+  addressA=new InetSocketAddress(host,portA);
+  addressB=new InetSocketAddress(host,portB);
+  channelA=SelDatagramChannel.open(null,addressA);
+  channelB=SelDatagramChannel.open(null,addressB);
+  channelA.setDatagramListener(new DatagramListener(){
+    public synchronized void datagramReceived(    final SelDatagramChannel channel,    final ByteBuffer buffer,    final SocketAddress address){
+      lastReceivedA=address;
+      lastReceivedTimeA=System.currentTimeMillis();
+      if (lastReceivedB != null) {
+        try {
+          buffer.flip();
+          if (callHandler != null) {
+            ByteBuffer bb=buffer.asReadOnlyBuffer();
+            byte[] b=new byte[bb.remaining()];
+            bb.get(b,0,b.length);
+            if (decryptMedia(b) == false)             channelB.send(buffer,lastReceivedB);
+          }
+ else {
+            channelB.send(buffer,lastReceivedB);
+          }
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  channelB.setDatagramListener(new DatagramListener(){
+    public synchronized void datagramReceived(    final SelDatagramChannel channel,    final ByteBuffer buffer,    final SocketAddress address){
+      lastReceivedB=address;
+      lastReceivedTimeB=System.currentTimeMillis();
+      if (lastReceivedA != null) {
+        try {
+          buffer.flip();
+          channelA.send(buffer,lastReceivedA);
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  this.portA=portA;
+  this.portB=portB;
+  SocketAddress addressA_=new InetSocketAddress(host,portA + 1);
+  SocketAddress addressB_=new InetSocketAddress(host,portB + 1);
+  channelA_=SelDatagramChannel.open(null,addressA_);
+  channelB_=SelDatagramChannel.open(null,addressB_);
+  channelA_.setDatagramListener(new DatagramListener(){
+    public void datagramReceived(    final SelDatagramChannel channel,    final ByteBuffer buffer,    final SocketAddress address){
+      lastReceivedA_=address;
+      if (lastReceivedB_ != null) {
+        try {
+          buffer.flip();
+          channelB_.send(buffer,lastReceivedB_);
+        }
+ catch (        IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  channelB_.setDatagramListener(new DatagramListener(){
+    public void datagramReceived(    final SelDatagramChannel channel,    final ByteBuffer buffer,    final SocketAddress address){
+      lastReceivedB_=address;
+      if (lastReceivedA_ != null) {
+        try {
+          buffer.flip();
+          channelA_.send(buffer,lastReceivedA_);
+        }
+ catch (        IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+);
+  this.ip=host;
+}

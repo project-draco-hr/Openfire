@@ -1,0 +1,30 @@
+{
+  if (telephoneEventPayload == 0) {
+    String treatment;
+    if (dtmfKeyToSend.equals("*")) {
+      treatment="dtmfStar.au";
+    }
+ else     if (dtmfKeyToSend.equals("#")) {
+      treatment="dtmfPound.au";
+    }
+ else {
+      treatment="dtmf" + dtmfKeyToSend + ".au";
+    }
+    try {
+      TreatmentManager tm=new TreatmentManager(treatment,0,conferenceMediaInfo.getSampleRate(),conferenceMediaInfo.getChannels());
+      callHandler.getMember().addTreatment(tm);
+    }
+ catch (    IOException e) {
+      Logger.println("Unable to play dtmf key " + dtmfKeyToSend + " "+ e.getMessage());
+    }
+    return;
+  }
+  if (dtmfKeyToSend != null) {
+    if (this.dtmfKeyToSend != null) {
+      this.dtmfKeyToSend+=dtmfKeyToSend;
+      return;
+    }
+  }
+  this.dtmfKeyToSend=dtmfKeyToSend;
+  dtmfSendSequence=0;
+}

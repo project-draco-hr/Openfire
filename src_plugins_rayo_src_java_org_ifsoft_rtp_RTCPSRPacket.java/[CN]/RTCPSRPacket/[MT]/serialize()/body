@@ -1,0 +1,18 @@
+{
+  if (getReportBlocks() != null)   super.setFirstByte(new Byte((new Integer(ArrayExtensions.getLength(getReportBlocks()).intValue())).byteValue()));
+  ArrayList list=new ArrayList();
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getSynchronizationSource()));
+  ArrayListExtensions.addRange(list,BitAssistant.getLongBytesNetwork(NetworkTimeProtocol.dateTimeToNTP(getTimestamp())));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getRTPTimestamp()));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getPacketCount()));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getOctetCount()));
+  if (getReportBlocks() != null) {
+    RTCPReportBlock arr$[]=getReportBlocks();
+    int len$=arr$.length;
+    for (int i$=0; i$ < len$; i$++) {
+      RTCPReportBlock block=arr$[i$];
+      ArrayListExtensions.addRange(list,block.getBytes());
+    }
+  }
+  super.setPayload((Byte[])list.toArray(new Byte[0]));
+}

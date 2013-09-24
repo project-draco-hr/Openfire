@@ -1,0 +1,18 @@
+{
+  CallParticipant cp=member.getCallParticipant();
+  if (loneReceiverChannel != null) {
+synchronized (members) {
+      if (members.remove(member.getMemberSender().getSendAddress()) != null) {
+        return;
+      }
+    }
+  }
+synchronized (membersToRegister) {
+    if (selector == null) {
+      return;
+    }
+    membersToUnregister.add(member);
+    Logger.writeFile("ConferenceReceiver adding member to unregister " + member + " size "+ membersToUnregister.size());
+    selector.wakeup();
+  }
+}

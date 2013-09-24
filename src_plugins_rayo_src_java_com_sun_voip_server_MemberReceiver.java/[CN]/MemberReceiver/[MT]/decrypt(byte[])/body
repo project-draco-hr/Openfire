@@ -1,0 +1,14 @@
+{
+  try {
+    decryptCount++;
+    long start=System.currentTimeMillis();
+    byte[] clearText=decryptCipher.doFinal(data,0,data.length);
+    decryptTime+=(System.currentTimeMillis() - start);
+    return clearText;
+  }
+ catch (  Exception e) {
+    Logger.println("Call " + cp + " Decryption failed, length "+ data.length+ ": "+ e.getMessage());
+    callHandler.cancelRequest("Decryption failed: " + e.getMessage());
+    return data;
+  }
+}

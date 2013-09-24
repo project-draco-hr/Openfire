@@ -1,0 +1,34 @@
+{
+  String dtmfKeys=dtmfDecoder.processData(data);
+  if (CallHandler.dtmfSuppression() == true && cp.dtmfSuppression() == true) {
+    if (dtmfDecoder.dtmfDetected()) {
+      if (isAutoMuted == false) {
+        if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("Call " + cp + " dtmf detected, setting automute ");
+        }
+        isAutoMuted=true;
+        flushContributions();
+      }
+    }
+ else {
+      if (isAutoMuted == true) {
+        if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("Call " + cp + " automute now false");
+        }
+      }
+      isAutoMuted=false;
+    }
+  }
+  if (dtmfKeys != null) {
+    processDtmfKeys(dtmfKeys);
+    if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + cp + " processed dtmf packet"+ " with key "+ dtmfKeys+ " dtmfPackets "+ dtmfPackets);
+    }
+    isAutoMuted=false;
+    return true;
+  }
+  if (isAutoMuted) {
+    return true;
+  }
+  return false;
+}

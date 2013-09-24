@@ -1,0 +1,12 @@
+{
+synchronized (callInitiatedLock) {
+    while (csa == null && !done && reasonCallEnded == null) {
+      try {
+        callInitiatedLock.wait();
+      }
+ catch (      InterruptedException e) {
+      }
+    }
+    return csa.getSdp();
+  }
+}

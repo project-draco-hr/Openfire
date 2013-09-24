@@ -1,0 +1,34 @@
+{
+  if (callCancelled) {
+    return false;
+  }
+  if (callIsDead()) {
+    return false;
+  }
+  int last=lastMediaPacketsReceived;
+  lastMediaPacketsReceived=mediaPacketsReceived;
+  if (last != mediaPacketsReceived) {
+    noDataCount=0;
+    return true;
+  }
+  noDataCount++;
+  if (noDataCount != 3) {
+    return true;
+  }
+  if (inSampleRateConverter != null) {
+    inSampleRateConverter.reset();
+  }
+  if (speechDetector != null) {
+    if (speechDetector.reset()) {
+      callHandler.speakingChanged(false);
+    }
+  }
+  if (dtmfDecoder != null) {
+    String dtmfKeys=dtmfDecoder.noDataReceived();
+    if (dtmfKeys != null) {
+      Logger.println("silence.  dtmf " + dtmfKeys);
+      processDtmfKeys(dtmfKeys);
+    }
+  }
+  return true;
+}

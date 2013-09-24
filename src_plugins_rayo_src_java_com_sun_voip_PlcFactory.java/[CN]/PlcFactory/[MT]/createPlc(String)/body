@@ -1,0 +1,18 @@
+{
+  if (s != null) {
+    try {
+      Class plcClass=Class.forName(s);
+      Class[] params=new Class[]{};
+      Constructor constructor=plcClass.getConstructor(params);
+      if (constructor != null) {
+        Object[] args=new Object[]{};
+        return (Plc)constructor.newInstance(args);
+      }
+      Logger.println("constructor not found for: " + s);
+    }
+ catch (    Exception e) {
+      Logger.println("Error loading '" + s + "': "+ e.getMessage());
+    }
+  }
+  return new PlcCompress();
+}

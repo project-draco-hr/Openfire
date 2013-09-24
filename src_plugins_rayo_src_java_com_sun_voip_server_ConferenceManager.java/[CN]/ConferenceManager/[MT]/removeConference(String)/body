@@ -1,0 +1,10 @@
+{
+synchronized (conferenceList) {
+    ConferenceManager conferenceManager=findConferenceManager(conferenceId);
+    if (conferenceManager.getMemberList().size() > 0) {
+      throw new ParseException("can't remove conference:  '" + conferenceId + "' because there are still calls in progress",0);
+    }
+    conferenceManager.setPermanent(false);
+    conferenceManager.end();
+  }
+}

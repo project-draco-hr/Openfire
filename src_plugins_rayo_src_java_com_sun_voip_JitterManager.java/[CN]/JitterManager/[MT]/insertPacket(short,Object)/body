@@ -1,0 +1,43 @@
+{
+  JitterObject jitterObject=new JitterObject(sequence,false,data);
+  if (maxJitterBufferSize > 0 && elapsed > maxJitterBufferSize * RtpPacket.PACKET_PERIOD) {
+    if (packetList.size() > 0) {
+      if (Logger.logLevel >= Logger.LOG_DETAILINFO || Logger.logLevel == -19) {
+        Logger.println(id + ":  clearing jitter buffer, no data in a long time, " + "packetList size "+ packetList.size());
+      }
+      packetList.clear();
+    }
+    plc.reset();
+  }
+  if (maxJitterBufferSize > 0 && packetList.size() >= maxJitterBufferSize) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO || Logger.logLevel == -19) {
+      Logger.println(id + ": JitterBuffer full, clearing " + packetList.size()+ " packets");
+    }
+    packetList.clear();
+    plc.reset();
+  }
+  int silenceCount=0;
+  int size=packetList.size();
+  if (size == 0) {
+    silenceCount=insertSilence(jitterObject);
+  }
+ else   if (size >= minJitterBufferSize) {
+    removeSilence();
+  }
+  short index=(short)(sequence - firstSequence);
+  if (index >= 0) {
+    if (index < packetList.size()) {
+      handleOldPacket(jitterObject,index);
+    }
+ else {
+      handleNewPacket(jitterObject,index);
+    }
+  }
+ else {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO || Logger.logLevel == -19) {
+      Logger.println(id + ":  tossing old packet " + (sequence & 0xffff)+ " index "+ index+ " firstSequence "+ (firstSequence & 0xffff)+ " packetList size "+ packetList.size()+ " elapsed "+ elapsed);
+    }
+    oldTossed++;
+  }
+  return silenceCount;
+}

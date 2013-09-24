@@ -1,0 +1,24 @@
+{
+synchronized (conferenceMonitors) {
+    String conferenceId=callEvent.getConferenceId();
+    String s=callEvent.toString();
+    if (conferenceId == null) {
+      int ix;
+      String search="ConferenceId='";
+      if ((ix=s.indexOf(search)) < 0) {
+        return;
+      }
+      conferenceId=s.substring(search.length());
+      int end;
+      if ((end=conferenceId.indexOf("'")) < 0) {
+        return;
+      }
+      conferenceId=conferenceId.substring(0,end);
+    }
+    for (    ConferenceMonitor m : conferenceMonitors) {
+      if (conferenceId.equals(m.getConferenceId())) {
+        Application.reportCallEventNotification(m.getService(),callEvent,"monitorConferenceStatus");
+      }
+    }
+  }
+}

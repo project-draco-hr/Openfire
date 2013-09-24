@@ -1,0 +1,25 @@
+{
+  int n;
+  if (c == '#') {
+    n=10;
+  }
+ else   if (c == '*') {
+    n=11;
+  }
+ else {
+    try {
+      n=Integer.parseInt(String.valueOf(c));
+    }
+ catch (    NumberFormatException e) {
+      Logger.error("invalid dtmf treatment code '" + c + "'");
+      return;
+    }
+  }
+  if (n < 0 || n > 11) {
+    Logger.error("invalid dtmf treatment code " + c);
+    return;
+  }
+  String s=dtmf[n];
+  addTreatment(s);
+  return;
+}

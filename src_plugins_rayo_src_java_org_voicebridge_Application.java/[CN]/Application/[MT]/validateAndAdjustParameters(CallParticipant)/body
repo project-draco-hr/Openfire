@@ -1,0 +1,84 @@
+{
+  String callId=cp.getCallId();
+  if (callId == null) {
+    cp.setCallId(CallHandler.getNewCallId());
+  }
+ else {
+    if (callId.equals("0")) {
+      reportError("Zero is an invalid callId");
+      return false;
+    }
+    if (cp.migrateCall() == false) {
+      CallHandler callHandler=CallHandler.findCall(callId);
+      if (callHandler != null) {
+        if (callHandler.isCallEnding() == false) {
+          reportError("CallId " + callId + " is already in use");
+          return false;
+        }
+ else {
+          reportError("Reusing callId for ending call " + callId);
+        }
+      }
+    }
+  }
+  handleCallAttendant(cp);
+  cp.setSecondPartyNumber(config.formatPhoneNumber(cp.getSecondPartyNumber(),cp.getPhoneNumberLocation()));
+  if (cp.migrateCall() == false) {
+    if (cp.getProtocol() == null || "SIP".equals(cp.getProtocol())) {
+      cp.setPhoneNumber(config.formatPhoneNumber(cp.getPhoneNumber(),cp.getPhoneNumberLocation()));
+      if (cp.getPhoneNumber() == null) {
+        if (cp.getInputTreatment() == null) {
+          reportError("You must specify a phone number or a soft phone URI");
+          return false;
+        }
+ else {
+          if (cp.getInputTreatment().equals("null")) {
+            cp.setInputTreatment("");
+          }
+          cp.setPhoneNumber(cp.getInputTreatment());
+          cp.setProtocol("NS");
+        }
+      }
+    }
+  }
+  if (cp.getName() == null || cp.getName().equals("")) {
+    cp.setName("Anonymous");
+  }
+  if (cp.migrateCall() == true) {
+    if (cp.getCallId() == null || cp.getSecondPartyNumber() == null) {
+      reportError("You must specify old and new phone numbers to migrate a call");
+      return false;
+    }
+  }
+  if (cp.getConferenceId() == null && cp.getSecondPartyNumber() == null) {
+    reportError("You must specify a conference Id");
+    return false;
+  }
+  if (cp.getDisplayName() == null) {
+    if (cp.getSecondPartyNumber() == null) {
+      cp.setDisplayName(cp.getConferenceId());
+    }
+ else {
+      if (cp.getSecondPartyName() != null) {
+        cp.setDisplayName(cp.getSecondPartyName());
+      }
+ else {
+        cp.setDisplayName(cp.getSecondPartyNumber());
+      }
+    }
+  }
+  if (cp.getConferenceId() != null) {
+    if (cp.getSecondPartyTreatment() != null) {
+      cp.setConferenceJoinTreatment(cp.getSecondPartyTreatment());
+    }
+    if (cp.getSecondPartyCallEndTreatment() != null) {
+      cp.setConferenceLeaveTreatment(cp.getSecondPartyCallEndTreatment());
+    }
+  }
+  if (cp.getSecondPartyNumber() != null) {
+    if (cp.getConferenceId() == null) {
+      cp.setConferenceId(cp.getPhoneNumber());
+    }
+  }
+  return true;
+}

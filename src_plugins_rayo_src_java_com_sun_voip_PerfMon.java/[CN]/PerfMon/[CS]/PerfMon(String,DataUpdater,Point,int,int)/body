@@ -1,0 +1,22 @@
+{
+  super(title);
+  this.title=title;
+  this.updater=updater;
+  this.width=width;
+  this.height=height;
+  if (location != null) {
+    setLocation(location);
+  }
+  addWindowListener(new DWAdapter());
+  setBackground(Color.white);
+  setLayout(new BorderLayout());
+  pmc=new PerfMonCanvas(new PerfObservable(),width);
+  ScrollPane sp=new ScrollPane();
+  sp.add("Center",pmc);
+  add(sp);
+  setSize(width,height);
+  setVisible(true);
+  dispThread=new Thread(this);
+  dispThread.setDaemon(true);
+  dispThread.start();
+}

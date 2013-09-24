@@ -1,0 +1,26 @@
+{
+  Logger.logFileName=logFileName;
+  String s=System.getProperty(LOG_LEVEL,"3");
+  try {
+    logLevel=Integer.parseInt(s);
+  }
+ catch (  Exception e) {
+  }
+  if (logLevel <= LOG_PRODUCTION) {
+    Logger.suppressSystemOut=suppressSystemOut;
+  }
+  try {
+    File logFile=new File(logFileName);
+    if (!logFile.exists()) {
+      logFile.createNewFile();
+    }
+    fw=new FileWriter(logFileName,false);
+    bw=new BufferedWriter(fw,BUFFER_SIZE);
+    forcePrintln("Log file is " + logFileName);
+  }
+ catch (  IOException e) {
+    fw=null;
+    bw=null;
+    println(getDate() + "could not open log file: " + logFileName);
+  }
+}

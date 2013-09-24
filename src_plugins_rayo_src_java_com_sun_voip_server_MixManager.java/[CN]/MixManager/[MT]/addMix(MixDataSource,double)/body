@@ -1,0 +1,29 @@
+{
+  MixDescriptor mixDescriptor=findMixDescriptor(mixDataSource);
+  if (attenuation == 0) {
+    if (mixDescriptor != null) {
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Call " + member + " Remove mix, volume 0 "+ " mixDataSource "+ mixDataSource);
+      }
+      removeMix(mixDescriptor);
+    }
+ else {
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Call " + member + " no need to add "+ mixDataSource+ " volume 0");
+      }
+    }
+    setUseFastMix();
+    return;
+  }
+  if (mixDescriptor == null) {
+    mixDescriptor=new MixDescriptor(mixDataSource,attenuation);
+    mixDescriptors.add(mixDescriptor);
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("created new mix for " + mixDataSource + " "+ attenuation);
+    }
+    setUseFastMix();
+    return;
+  }
+  mixDescriptor.setAttenuation(attenuation);
+  setUseFastMix();
+}

@@ -1,0 +1,27 @@
+{
+  this.sampleRate=sampleRate;
+  this.channels=channels;
+  speexDecoder=new org.xiph.speex.SpeexDecoder();
+  int mode=0;
+  String s=" Narrow Band";
+  if (sampleRate > 8000) {
+    s=" Wide Band";
+    mode++;
+  }
+  if (sampleRate > 16000) {
+    s=" Ultra-Wide Band";
+    mode++;
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Initializing Speex Decoder using " + sampleRate + "/"+ channels);
+  }
+  if (speexDecoder.init(mode,sampleRate,channels,true) == false) {
+    throw new SpeexException("Speex decoder initialization failed!");
+  }
+  try {
+    speexDecoder.setBigEndian(true);
+  }
+ catch (  Exception e) {
+    bigEndian=false;
+  }
+}

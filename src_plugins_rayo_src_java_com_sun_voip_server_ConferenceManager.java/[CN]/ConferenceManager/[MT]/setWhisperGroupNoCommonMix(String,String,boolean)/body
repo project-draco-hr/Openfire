@@ -1,0 +1,21 @@
+{
+synchronized (conferenceList) {
+    ConferenceManager conferenceManager=findConferenceManager(conferenceId);
+synchronized (conferenceManager) {
+      WGManager wgManager=conferenceManager.getWGManager();
+synchronized (wgManager.getWhisperGroups()) {
+        wgManager.setWhisperGroupNoCommonMix(whisperGroupId,noCommonMix);
+        ArrayList memberList=conferenceManager.getMemberList();
+synchronized (memberList) {
+          for (int i=0; i < memberList.size(); i++) {
+            ConferenceMember member=(ConferenceMember)memberList.get(i);
+            if (Logger.logLevel >= Logger.LOG_INFO) {
+              Logger.println("Call " + member + " no common mix");
+            }
+            member.setNoCommonMix(whisperGroupId);
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  if (!dtmfKey.equals("#")) {
+    passCode+=dtmfKey;
+    return;
+  }
+  int intPassCode=0;
+  if (passCode.length() > 0) {
+    try {
+      intPassCode=Integer.parseInt(passCode);
+    }
+ catch (    NumberFormatException e) {
+      playTreatmentToCall(INVALID_PASS_CODE);
+      passCode="";
+      return;
+    }
+  }
+  if (Config.getInstance().isValidConferencePin(meetingCode,passCode)) {
+    try {
+      incomingCallHandler.transferCall(meetingCode);
+      state=IN_MEETING;
+    }
+ catch (    IOException e) {
+      System.err.println("Exception joining meeting! " + meetingCode + " "+ e.getMessage());
+      playTreatmentToCall(INVALID_PASS_CODE);
+      passCode="";
+      state=WAITING_FOR_PASS_CODE;
+    }
+  }
+ else {
+    playTreatmentToCall(INVALID_PASS_CODE);
+    passCode="";
+    state=WAITING_FOR_PASS_CODE;
+  }
+}

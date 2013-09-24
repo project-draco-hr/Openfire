@@ -1,0 +1,25 @@
+{
+  if (receivedBye) {
+    return;
+  }
+  if (sipCallId != null) {
+    sipServerCallback.removeSipListener(sipCallId);
+    removeSipCallId(sipCallId);
+  }
+  if (getState() == CallState.INVITED) {
+    try {
+      Logger.writeFile("SipIncomingCallAgent:  sendCancel:  " + cp);
+      sipUtil.sendCancel(st);
+    }
+ catch (    Exception e) {
+    }
+  }
+ else {
+    try {
+      Logger.writeFile("sendBye:  " + cp);
+      sipUtil.sendBye(st);
+    }
+ catch (    Exception ex) {
+    }
+  }
+}

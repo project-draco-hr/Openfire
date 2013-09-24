@@ -1,0 +1,35 @@
+{
+  if (conferenceManager == null) {
+    return;
+  }
+synchronized (conferenceManager) {
+    if (packetsSent == 0) {
+      return;
+    }
+    Logger.writeFile("Call " + cp + ":  "+ packetsSent+ " packets sent");
+    Logger.writeFile("Call " + cp + ":  "+ comfortPayloadsSent+ " comfort payloads sent");
+    if (packetsSent != 0) {
+      Logger.writeFile("Call " + cp + ":  "+ ((float)totalTimeToGetData / 1000000000. / packetsSent)+ " average seconds to get data to send");
+    }
+    Logger.writeFile("Call " + cp + ":  "+ encryptCount+ " packets encrypted");
+    if (encryptCount != 0) {
+      Logger.writeFile("Call " + cp + ":  "+ (((float)encryptTime / (float)encryptCount) / 1000)+ " milliseconds average per encrypt");
+    }
+    if (speexEncoder != null) {
+      int encodes=speexEncoder.getEncodes();
+      if (encodes > 0) {
+        long encodeTime=speexEncoder.getEncodeTime();
+        int bytesEncoded=speexEncoder.getBytesEncoded();
+        Logger.writeFile("Average Speex Encode time " + (((float)encodeTime / encodes) / 1000000000.) + " seconds");
+        if (bytesEncoded > 0) {
+          Logger.writeFile("Average compression ratio " + ((encodes * speexEncoder.getPcmPacketSize()) / bytesEncoded) + " to 1");
+        }
+      }
+    }
+    if (outSampleRateConverter != null) {
+      outSampleRateConverter.printStatistics();
+    }
+    Logger.writeFile("");
+    Logger.flush();
+  }
+}

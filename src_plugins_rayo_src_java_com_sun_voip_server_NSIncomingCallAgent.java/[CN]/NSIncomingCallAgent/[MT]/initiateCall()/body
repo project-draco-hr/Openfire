@@ -1,0 +1,32 @@
+{
+  setState(CallState.INVITED);
+  CallParticipant cp=callHandler.getCallParticipant();
+  String remoteMediaInfo=cp.getRemoteMediaInfo();
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + cp + ":   NSIncomingCallAgent remoteMediaInfo "+ remoteMediaInfo);
+  }
+  String[] tokens=remoteMediaInfo.split("\\+");
+  String sdp="";
+  for (int i=0; i < tokens.length; i++) {
+    sdp+=tokens[i] + "\r\n";
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + cp + ":  NSIncomingCallAgent Sdp\n"+ sdp);
+  }
+  SdpInfo sdpInfo=null;
+  try {
+    sdpInfo=sipUtil.getSdpInfo(sdp,true);
+    String remoteHost=sdpInfo.getRemoteHost();
+    int remotePort=sdpInfo.getRemotePort();
+    Logger.println("Call " + cp + ":  NSIncomingCallAgent:  remote socket "+ remoteHost+ " "+ remotePort+ " mediaInfo "+ sdpInfo.getMediaInfo());
+    InetSocketAddress isa=new InetSocketAddress(remoteHost,remotePort);
+    setEndpointAddress(isa,sdpInfo.getMediaInfo().getPayload(),sdpInfo.getTransmitMediaInfo().getPayload(),sdpInfo.getTelephoneEventPayload());
+  }
+ catch (  ParseException e) {
+    Logger.println("Call " + cp + ":  NSIncomingCallAgent couldn't parse sdp");
+    cancelRequest("NSIncomingCallAgent couldn't parse sdp");
+    return;
+  }
+  setState(CallState.ANSWERED);
+  setState(CallState.ESTABLISHED);
+}

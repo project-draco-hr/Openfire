@@ -1,0 +1,12 @@
+{
+  Log.info("RayoComponent handleOnOffHookCommand " + flag);
+  final IQ reply=IQ.createResultIQ(iq);
+  RelayChannel channel=plugin.getRelayChannel(iq.getTo().getNode());
+  if (channel != null) {
+    handleOnOffHook(flag,channel,handset);
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

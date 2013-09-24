@@ -1,0 +1,27 @@
+{
+  String s="\n" + cp.toString();
+  if (member != null) {
+    s+="  ConferenceId: " + member.getConferenceManager().getId() + "\n";
+    s+="\tStarted " + member.getTimeStarted() + "\n";
+  }
+ else {
+    s+="\n";
+  }
+  if (csa != null) {
+    s+="\tState = " + csa.getCallState() + "\n";
+  }
+ else {
+    s+="\tNo Call Setup Agent" + "\n";
+  }
+  s+="\tIsDistributedBridge " + cp.isDistributedBridge() + "\n";
+  if (cp.getCallTimeout() == 0) {
+    s+="\tNo timeout\n";
+  }
+ else {
+    s+="\tCall timeout in " + (cp.getCallTimeout() / 1000) + " seconds\n";
+  }
+  if (member != null) {
+    s+=" " + member.getMemberState();
+  }
+  return s;
+}

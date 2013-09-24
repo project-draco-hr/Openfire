@@ -1,0 +1,10 @@
+{
+  try {
+    Mac mac=Mac.getInstance("HmacSHA1");
+    mac.init(new SecretKeySpec(BitAssistant.bytesFromArray(key),"HmacSHA1"));
+    return BitAssistant.bytesToArray(mac.doFinal(BitAssistant.bytesFromArray(buffer)));
+  }
+ catch (  Exception e) {
+    return new Byte[0];
+  }
+}

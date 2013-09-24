@@ -1,0 +1,22 @@
+{
+  InputStream in=BuildDate.class.getResourceAsStream(BUILD_DATE);
+  if (in == null) {
+    return "Can't read " + BUILD_DATE;
+  }
+  in=new BufferedInputStream(in);
+  int bytesAvailable=0;
+  try {
+    bytesAvailable=in.available();
+  }
+ catch (  IOException e) {
+    return e.getMessage();
+  }
+  byte[] buf=new byte[bytesAvailable];
+  try {
+    in.read(buf,0,bytesAvailable);
+  }
+ catch (  IOException e) {
+    return e.getMessage();
+  }
+  return new String(buf).trim();
+}

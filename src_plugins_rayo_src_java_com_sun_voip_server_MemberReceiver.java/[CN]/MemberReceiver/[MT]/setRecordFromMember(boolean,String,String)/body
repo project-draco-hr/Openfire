@@ -1,0 +1,44 @@
+{
+  if (doNotRecord()) {
+    if (enabled) {
+      Logger.println("Call " + cp + " doesn't allow recording.");
+      enabled=false;
+    }
+  }
+  if (recorder != null) {
+    recorder.done();
+    recorder=null;
+  }
+synchronized (recordingLock) {
+    if (enabled == false) {
+      cp.setFromRecordingFile(null);
+      return;
+    }
+    if (recordingType == null) {
+      recordingType="Au";
+    }
+    recordRtp=false;
+    if (recordingType.equalsIgnoreCase("Rtp")) {
+      recordRtp=true;
+    }
+synchronized (recordingLock) {
+      MediaInfo m;
+      try {
+        if (recordingType.equalsIgnoreCase("Rtp")) {
+          m=SdpManager.findMediaInfo(myMediaInfo.getEncoding(),myMediaInfo.getSampleRate(),myMediaInfo.getChannels());
+        }
+ else {
+          m=SdpManager.findMediaInfo(RtpPacket.PCM_ENCODING,conferenceManager.getMediaInfo().getSampleRate(),conferenceManager.getMediaInfo().getChannels());
+        }
+      }
+ catch (      ParseException e) {
+        Logger.println("Can't record rtp to " + recordingFile + " "+ e.getMessage());
+        throw new IOException(e.getMessage());
+      }
+      Logger.println("Recording media " + m);
+      recorder=new Recorder(cp.getRecordDirectory(),recordingFile,recordingType,m);
+      cp.setFromRecordingFile(recordingFile);
+      cp.setFromRecordingType(recordingType);
+    }
+  }
+}

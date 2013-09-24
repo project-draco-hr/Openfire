@@ -1,0 +1,66 @@
+{
+  int p=port;
+  if ((p & 1) != 0) {
+    p++;
+    Logger.println("Port number must be even, using " + p);
+  }
+  while (true) {
+    try {
+      rtpDatagramSocket=new DatagramSocket(p,ia);
+      if ((rtpDatagramSocket.getLocalPort() & 1) != 0) {
+        continue;
+      }
+      try {
+        rtcpDatagramSocket=new DatagramSocket(rtpDatagramSocket.getLocalPort() + 1,ia);
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("RtpSocket:  listening for RTP data at local port " + rtpDatagramSocket.getLocalPort());
+        }
+        break;
+      }
+ catch (      SocketException e) {
+        if (p != 0) {
+          p+=2;
+        }
+      }
+catch (      Exception e) {
+        rtpDatagramSocket.close();
+        Logger.error("RtpSocket:  Unable to create control socket! " + e.getMessage());
+        throw e;
+      }
+    }
+ catch (    SocketException e) {
+      if (p != 0) {
+        p+=2;
+      }
+      continue;
+    }
+catch (    Exception e) {
+      Logger.error("RtpSocket:  Unable to create RTP/RTCP sockets! " + e.getMessage());
+      throw new SocketException("RtpSocket:  Unable to create RTP/RTCP sockets!");
+    }
+  }
+  if (p != port) {
+    System.out.println("RtpSocket:  Desired port " + port + " is in use.  Using "+ p+ " instead.");
+  }
+  try {
+    rtpDatagramSocket.setReceiveBufferSize(MAX_RECEIVE_BUFFER);
+  }
+ catch (  SocketException e) {
+    Logger.error("RtpSocket:  Unable to set receive buffer size! " + e.getMessage());
+    throw e;
+  }
+  try {
+    rtpDatagramSocket.setSendBufferSize(MAX_SEND_BUFFER);
+  }
+ catch (  SocketException e) {
+    Logger.error("RtpSocket:  Unable to set send buffer size! " + e.getMessage());
+    throw e;
+  }
+  try {
+    rtpDatagramSocket.setSoTimeout(0);
+  }
+ catch (  SocketException e) {
+    Logger.error("RtpSocket:  Unable to set socket timeout! " + e.getMessage());
+    throw e;
+  }
+}

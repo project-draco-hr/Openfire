@@ -1,0 +1,10 @@
+{
+synchronized (conferenceManager) {
+    getMemberReceiver().setMuted(oldMember.getCallParticipant().isMuted());
+    copyOldPrivateMixes(oldMember);
+    updateOtherPrivateMixes(oldMember);
+    wgManager.migrate(oldMember,this);
+    WhisperGroup whisperGroup=oldMember.getWhisperGroup();
+    setWhispering(whisperGroup);
+  }
+}

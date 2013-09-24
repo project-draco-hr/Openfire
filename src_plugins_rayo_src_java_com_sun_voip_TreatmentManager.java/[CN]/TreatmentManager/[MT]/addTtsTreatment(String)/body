@@ -1,0 +1,14 @@
+{
+  int[] linearData=null;
+  try {
+    linearData=FreeTTSClient.textToSpeech(treatment);
+  }
+ catch (  IOException e) {
+    Logger.println("Can't convert text to speech '" + treatment + "' "+ e.getMessage());
+    throw new IOException("Can't convert text to speech '" + treatment + "'");
+  }
+  treatment="FreeTTS";
+synchronized (treatments) {
+    treatments.add(new LinearDataAudioSource(linearData,16000,1));
+  }
+}

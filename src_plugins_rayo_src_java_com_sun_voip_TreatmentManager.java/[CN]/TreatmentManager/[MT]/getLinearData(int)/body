@@ -1,0 +1,67 @@
+{
+synchronized (treatments) {
+    audioSource=getAudioSource();
+    if (audioSource == null) {
+      Logger.println("Audio source is null, stopping treatment " + treatment);
+      stopTreatment();
+      return null;
+    }
+  }
+  int[] linearData=null;
+  try {
+    linearData=audioSource.getLinearData(sampleTime);
+  }
+ catch (  IOException e) {
+    Logger.println("Can't read linear data for " + treatment + " "+ e.getMessage());
+  }
+  if (linearData != null) {
+    if (sampleRateConverter != null) {
+      try {
+        linearData=sampleRateConverter.resample(linearData);
+      }
+ catch (      IOException e) {
+        Logger.println("Can't resample treatment! " + e.getMessage());
+        return null;
+      }
+    }
+    return linearData;
+  }
+  try {
+    audioSource.rewind();
+  }
+ catch (  IOException e) {
+    Logger.println("Can't rewind treatment " + treatment + " "+ e.getMessage());
+  }
+  treatmentIndex++;
+synchronized (treatments) {
+    if (treatmentIndex >= treatments.size()) {
+      if (repeatCount != -1) {
+        if (repeatCount == 0) {
+          if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+            Logger.println("done playing treatment " + treatment);
+          }
+          stopTreatment();
+          return null;
+        }
+        repeatCount--;
+      }
+      treatmentIndex=0;
+    }
+  }
+  sampleRateConverter=null;
+  audioSource=getAudioSource();
+  if (audioSource == null) {
+    return null;
+  }
+  try {
+    linearData=audioSource.getLinearData(sampleTime);
+    if (linearData != null && sampleRateConverter != null) {
+      linearData=sampleRateConverter.resample(linearData);
+    }
+    return linearData;
+  }
+ catch (  IOException e) {
+    Logger.println("Can't read linear data for " + treatment + " "+ e.getMessage());
+  }
+  return null;
+}

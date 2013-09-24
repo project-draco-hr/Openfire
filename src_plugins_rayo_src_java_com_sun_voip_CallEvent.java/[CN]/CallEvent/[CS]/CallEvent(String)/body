@@ -1,0 +1,23 @@
+{
+  for (int i=0; i < LAST_EVENT; i++) {
+    int ix;
+    if ((ix=s.indexOf(eventString[i])) < 0) {
+      continue;
+    }
+    event=i;
+    s=s.substring(ix + eventString[i].length() + 1);
+    info=getInfo(s);
+    if ((callId=getValue(s,"CallId=")) == null) {
+      break;
+    }
+    if ((conferenceId=getValue(s,"ConferenceId=")) == null) {
+      break;
+    }
+    if ((callInfo=getValue(s,"CallInfo=")) == null) {
+      break;
+    }
+    return;
+  }
+  event=INFO;
+  info=s;
+}

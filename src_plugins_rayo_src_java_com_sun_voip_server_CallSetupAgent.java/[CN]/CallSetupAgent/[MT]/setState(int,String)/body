@@ -1,0 +1,32 @@
+{
+  callState=new CallState(state);
+  CallEvent callEvent=new CallEvent(CallEvent.STATE_CHANGED);
+  callEvent.setCallState(callState);
+  String s="";
+  if (state == CallState.INVITED || state == CallState.ESTABLISHED) {
+    s+="ConferenceReceiverPort='" + callHandler.getReceiveAddress().getPort() + "'";
+    MediaInfo mediaInfo=callHandler.getConferenceManager().getMediaInfo();
+    s+=" ConferencePayload='" + mediaInfo.getPayload() + "'";
+    s+=" BridgeIPAddress='" + Bridge.getPrivateHost() + "'";
+    s+=" BridgeInfo='" + Bridge.getPrivateHost() + ":"+ Bridge.getPrivateControlPort()+ ":"+ Bridge.getPrivateSipPort()+ ":"+ Bridge.getPublicHost()+ ":"+ Bridge.getPublicControlPort()+ ":"+ Bridge.getPublicSipPort()+ "'";
+  }
+  if (info != null) {
+    s=info + " " + s;
+  }
+  callEvent.setInfo(s);
+  Logger.println("Call " + callHandler + " "+ callState);
+  sendCallEventNotification(callEvent);
+  if (state == CallState.ESTABLISHED) {
+    String treatment=cp.getCallEstablishedTreatment();
+    if (treatment != null) {
+      callEstablishedTreatment=initializeTreatment(treatment,0);
+      if (callEstablishedTreatment != null) {
+        addTreatment(callEstablishedTreatment);
+      }
+    }
+  }
+  if (inviteTimeoutThread == null && state == CallState.INVITED) {
+    inviteTimeoutThread=new Thread(this);
+    inviteTimeoutThread.start();
+  }
+}

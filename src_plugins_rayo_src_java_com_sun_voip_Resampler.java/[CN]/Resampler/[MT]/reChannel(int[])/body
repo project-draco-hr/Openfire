@@ -1,0 +1,17 @@
+{
+  if ((inSamples.length % inChannels) != 0) {
+    Logger.println("length " + inSamples.length + " is not a multiple of the frame size "+ inChannels);
+    throw new IOException("length " + inSamples.length + " is not a multiple of the frame size "+ inChannels);
+  }
+  int[] outSamples;
+  if (inChannels > outChannels) {
+    outSamples=reduceChannels(inSamples);
+  }
+ else   if (inChannels < outChannels) {
+    outSamples=increaseChannels(inSamples);
+  }
+ else {
+    outSamples=inSamples;
+  }
+  return outSamples;
+}

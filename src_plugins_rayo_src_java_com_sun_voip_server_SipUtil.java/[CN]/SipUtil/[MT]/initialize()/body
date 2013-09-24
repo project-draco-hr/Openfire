@@ -1,0 +1,62 @@
+{
+  headerFactory=SipServer.getHeaderFactory();
+  addressFactory=SipServer.getAddressFactory();
+  messageFactory=SipServer.getMessageFactory();
+  sipProvider=SipServer.getSipProvider();
+  ourIpAddress=SipServer.getSipStack().getIPAddress();
+  ourSipPort=sipProvider.getListeningPoint().getPort();
+  ourPublicIpAddress=ourIpAddress;
+  String s=System.getProperty("com.sun.voip.server.PUBLIC_IP_ADDRESS");
+  if (s != null && s.length() > 0) {
+    try {
+      ourPublicIpAddress=InetAddress.getByName(s).getHostAddress();
+    }
+ catch (    UnknownHostException e) {
+      Logger.println("Invalid public IP address, using " + ourIpAddress);
+    }
+  }
+  Logger.println("Bridge public address:    " + ourPublicIpAddress);
+  ourPublicSipPort=ourSipPort;
+  s=System.getProperty("com.sun.voip.server.PUBLIC_SIP_PORT");
+  if (s != null) {
+    try {
+      ourPublicSipPort=Integer.parseInt(s);
+    }
+ catch (    NumberFormatException e) {
+      Logger.println("Invalid public SIP Port, using " + ourSipPort);
+    }
+  }
+  Logger.println("Bridge public SIP port:   " + ourSipPort);
+  supportedMedia.add(new MediaInfo((byte)0,RtpPacket.PCMU_ENCODING,8000,1,false));
+  supportedMedia.add(new MediaInfo((byte)101,RtpPacket.PCM_ENCODING,8000,1,true));
+  supportedMedia.add(new MediaInfo((byte)102,RtpPacket.PCM_ENCODING,8000,2,false));
+  supportedMedia.add(new MediaInfo((byte)103,RtpPacket.PCM_ENCODING,16000,1,false));
+  supportedMedia.add(new MediaInfo((byte)104,RtpPacket.PCM_ENCODING,16000,2,false));
+  supportedMedia.add(new MediaInfo((byte)105,RtpPacket.PCM_ENCODING,32000,1,false));
+  supportedMedia.add(new MediaInfo((byte)106,RtpPacket.PCM_ENCODING,32000,2,false));
+  supportedMedia.add(new MediaInfo((byte)107,RtpPacket.PCM_ENCODING,44100,1,false));
+  supportedMedia.add(new MediaInfo((byte)108,RtpPacket.PCM_ENCODING,44100,2,false));
+  if (false) {
+    supportedMedia.add(new MediaInfo((byte)109,RtpPacket.PCM_ENCODING,48000,1,false));
+    supportedMedia.add(new MediaInfo((byte)110,RtpPacket.PCM_ENCODING,48000,2,false));
+  }
+  supportedMedia.add(new MediaInfo((byte)111,RtpPacket.PCM_ENCODING,48000,2,false));
+  supportedMedia.add(new MediaInfo((byte)112,RtpPacket.PCMU_ENCODING,16000,1,false));
+  supportedMedia.add(new MediaInfo((byte)113,RtpPacket.PCMU_ENCODING,16000,2,false));
+  supportedMedia.add(new MediaInfo((byte)114,RtpPacket.PCMU_ENCODING,32000,1,false));
+  supportedMedia.add(new MediaInfo((byte)115,RtpPacket.PCMU_ENCODING,32000,2,false));
+  if (false) {
+    supportedMedia.add(new MediaInfo((byte)116,RtpPacket.PCMU_ENCODING,44100,1,false));
+    supportedMedia.add(new MediaInfo((byte)117,RtpPacket.PCMU_ENCODING,44100,2,false));
+    supportedMedia.add(new MediaInfo((byte)118,RtpPacket.PCMU_ENCODING,48000,1,false));
+    supportedMedia.add(new MediaInfo((byte)119,RtpPacket.PCMU_ENCODING,48000,2,false));
+  }
+  supportedMedia.add(new MediaInfo((byte)120,RtpPacket.SPEEX_ENCODING,8000,1,false));
+  supportedMedia.add(new MediaInfo((byte)121,RtpPacket.SPEEX_ENCODING,8000,2,false));
+  supportedMedia.add(new MediaInfo((byte)122,RtpPacket.SPEEX_ENCODING,16000,1,false));
+  supportedMedia.add(new MediaInfo((byte)123,RtpPacket.SPEEX_ENCODING,16000,2,false));
+  supportedMedia.add(new MediaInfo((byte)124,RtpPacket.SPEEX_ENCODING,32000,1,false));
+  supportedMedia.add(new MediaInfo((byte)125,RtpPacket.SPEEX_ENCODING,32000,2,false));
+  SdpManager.setSupportedMedia(supportedMedia);
+  initialized=true;
+}

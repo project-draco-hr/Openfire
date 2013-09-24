@@ -1,0 +1,14 @@
+{
+  cp.setPhoneNumber(cp.getSecondPartyNumber());
+  OutgoingCallHandler callHandler=new OutgoingCallHandler(requestHandler,cp);
+synchronized (this) {
+    callHandler.start();
+    if (callHandler.waitForCallToBeEstablished() == false) {
+      return;
+    }
+  }
+  cp.setMigrateCall(false);
+  CallEvent callEvent=new CallEvent(CallEvent.MIGRATED);
+  callEvent.setInfo("migrated to " + cp);
+  callHandler.sendCallEventNotification(callEvent);
+}

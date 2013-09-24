@@ -1,0 +1,22 @@
+{
+  if (count > 0) {
+    Logger.println(id + " average time between ticks " + ((float)(System.currentTimeMillis() - startTime) / (float)count)+ " ms");
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Total calls TickerSleep " + count);
+      Logger.println("OverSlept count " + overSlept);
+      Logger.println("UnderSlept count " + underSlept);
+      Logger.println("Minimum drift " + getMinDrift());
+      Logger.println("Maximum drift " + getMaxDrift());
+      Logger.println("Average drift " + (totalDrift / count));
+      Logger.println("");
+      Logger.println(id + " Sleep time distribution");
+      Logger.println(id + " ms\tCount");
+      for (int i=0; i < sleepDistribution.length; i++) {
+        if (sleepDistribution[i] != 0) {
+          Logger.println(id + " " + i+ "\t\t"+ sleepDistribution[i]);
+        }
+      }
+      Logger.println("");
+    }
+  }
+}

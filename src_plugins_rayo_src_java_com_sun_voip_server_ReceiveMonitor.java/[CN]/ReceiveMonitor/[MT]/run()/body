@@ -1,0 +1,27 @@
+{
+  while (true) {
+    Socket socket;
+    try {
+      socket=serverSocket.accept();
+    }
+ catch (    IOException e) {
+      Logger.println("accept failed:  " + e.getMessage());
+      break;
+    }
+    InetAddress inetAddress=socket.getInetAddress();
+    String host;
+    try {
+      host=inetAddress.getHostName();
+    }
+ catch (    Exception e) {
+      host=inetAddress.toString();
+    }
+    Logger.println("New connection accepted from " + host + ":"+ socket.getPort());
+    try {
+      new Monitor(socket);
+    }
+ catch (    IOException e) {
+      Logger.println("Unable to create Monitor:  " + e.getMessage());
+    }
+  }
+}

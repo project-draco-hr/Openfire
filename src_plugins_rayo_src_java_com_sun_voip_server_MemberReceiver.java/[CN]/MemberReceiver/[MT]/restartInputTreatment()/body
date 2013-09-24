@@ -1,0 +1,28 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + cp + " restartInputTreatment "+ cp.getInputTreatment());
+  }
+  if (whisperGroup == null) {
+    Logger.println("Call " + cp + " restartInputTreatment wg is null!");
+    return;
+  }
+synchronized (this) {
+    if (cp.getInputTreatment() != null && cp.getInputTreatment().length() > 0) {
+      try {
+        MediaInfo conferenceMediaInfo=conferenceManager.getMediaInfo();
+        String absolutePath=cp.getInputTreatment();
+        if (cp.getRecordDirectory() != null) {
+          absolutePath=Recorder.getAbsolutePath(cp.getRecordDirectory(),cp.getInputTreatment());
+        }
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Call " + cp + " new input treatment "+ absolutePath);
+        }
+        new InputTreatment(this,absolutePath,0,conferenceMediaInfo.getSampleRate(),conferenceMediaInfo.getChannels());
+      }
+ catch (      IOException e) {
+        Logger.println(cp + " Unable to restart input treatment " + cp.getInputTreatment()+ ": "+ e.getMessage());
+        callHandler.cancelRequest("unable to restart input treatment " + cp.getInputTreatment() + ": "+ e.getMessage());
+      }
+    }
+  }
+}

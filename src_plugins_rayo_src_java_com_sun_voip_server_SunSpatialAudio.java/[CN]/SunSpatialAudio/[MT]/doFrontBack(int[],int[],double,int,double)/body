@@ -1,0 +1,81 @@
+{
+  int echoDelayLength=(int)Math.round(echoDelay / msPerSample);
+  echoDelayLength*=Math.abs(frontBack);
+  echoDelayLength*=2;
+  if (echoDelayLength <= 0) {
+    return;
+  }
+  int channelOffset;
+  if (delayLength < 0) {
+    channelOffset=1;
+    delayLength=-delayLength;
+  }
+ else {
+    channelOffset=0;
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    if ((count1 % 200) == 0) {
+      Logger.println("adding echo" + " delayLength " + delayLength + " c off "+ channelOffset+ " edl "+ echoDelayLength+ " echoDelay "+ echoDelay+ " msps "+ (Math.round(msPerSample * 1000) / 1000.));
+    }
+  }
+  int[] c=new int[packetLength];
+  System.arraycopy(newContribution,0,c,0,c.length);
+  int inIx=0;
+  int outIx=echoDelayLength;
+  int length=c.length - echoDelayLength;
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    if ((count1 % 200) == 0) {
+      Logger.println("inIx " + inIx + " outIx "+ outIx+ " length "+ length);
+    }
+  }
+  for (int i=0; i < length; i++) {
+    newContribution[outIx]=clip((int)(c[outIx] + (c[inIx] * echoVolume)));
+    inIx++;
+    outIx++;
+  }
+  if (previousContribution == null) {
+    count1++;
+    return;
+  }
+  if (delayLength == 0) {
+    inIx=packetLength - echoDelayLength;
+    outIx=0;
+    length=echoDelayLength;
+    for (int i=0; i < length; i++) {
+      newContribution[outIx]=clip((int)(c[outIx] + (previousContribution[inIx] * echoVolume)));
+      inIx++;
+      outIx++;
+    }
+    count1++;
+    return;
+  }
+  inIx=packetLength - delayLength - echoDelayLength + channelOffset;
+  outIx=channelOffset;
+  length=echoDelayLength;
+  if ((count1 % 200) == 0) {
+    Logger.println("inIx " + inIx + " outIx "+ outIx+ " length "+ length);
+  }
+  for (int i=0; i < length; i+=2) {
+    newContribution[outIx]=clip((int)(c[outIx] + (previousContribution[inIx] * echoVolume * nonDominantChannelVolume)));
+    inIx+=2;
+    outIx+=2;
+  }
+  if (channelOffset == 0) {
+    outIx=1;
+  }
+ else {
+    outIx=0;
+  }
+  inIx=outIx + packetLength - echoDelayLength;
+  length=echoDelayLength - outIx;
+  if ((count1 % 200) == 0) {
+    Logger.println("inIx " + inIx + " outIx "+ outIx+ " length "+ length);
+  }
+  int i=0;
+  for (i=0; i < length; i+=2) {
+    newContribution[outIx]=clip((int)(c[outIx] + (previousContribution[inIx] * echoVolume)));
+    inIx+=2;
+    outIx+=2;
+  }
+  count1++;
+}

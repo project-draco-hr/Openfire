@@ -1,0 +1,90 @@
+{
+  if (haveIncomingConferenceId == false) {
+    cp.setConferenceId(defaultIncomingConferenceId);
+  }
+synchronized (ConferenceManager.getConferenceList()) {
+    conferenceManager=ConferenceManager.getConference(cp.getConferenceId());
+    if (conferenceManager == null) {
+      Logger.error("Couldn't start conference " + cp.getConferenceId());
+      sendCallEventNotification(new CallEvent(CallEvent.CANT_START_CONFERENCE));
+      return;
+    }
+    cp.setDisplayName(cp.getName());
+    cp.setDtmfDetection(true);
+    if (cp.getCallId() == null) {
+      cp.setCallId(getNewCallId());
+    }
+    cp.setCallAnsweredTreatment(incomingCallTreatment);
+    cp.setVoiceDetection(incomingCallVoiceDetection);
+    if (haveIncomingConferenceId == false) {
+      cp.setWhisperGroupId(cp.getCallId());
+      cp.setMuted(true);
+    }
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println(cp.getCallSetupRequest());
+    }
+    try {
+      member=conferenceManager.joinConference(cp);
+      memberSender=member.getMemberSender();
+      memberReceiver=member.getMemberReceiver();
+    }
+ catch (    IOException e) {
+      CallEvent callEvent=new CallEvent(CallEvent.CANT_CREATE_MEMBER);
+      callEvent.setInfo(e.getMessage());
+      sendCallEventNotification(callEvent);
+      return;
+    }
+    Logger.println("Incoming Call " + cp + " joined conference "+ cp.getConferenceId());
+  }
+  addCall(this);
+  String protocol=Bridge.getDefaultProtocol();
+  if (cp.getProtocol() != null) {
+    protocol=cp.getProtocol();
+  }
+  if (protocol.equalsIgnoreCase("NS")) {
+    csa=new NSIncomingCallAgent(this);
+    try {
+      csa.initiateCall();
+    }
+ catch (    IOException e) {
+      Logger.println("initiateCall failed:  " + e.getMessage());
+      CallEvent callEvent=new CallEvent(CallEvent.CANT_CREATE_MEMBER);
+      callEvent.setInfo(e.getMessage());
+      sendCallEventNotification(callEvent);
+      return;
+    }
+  }
+ else   if (protocol.equalsIgnoreCase("SIP")) {
+    csa=new SipIncomingCallAgent(this,requestEvent);
+  }
+ else {
+    Logger.println("H.323 support isn't implemented yet!");
+    sendCallEventNotification(new CallEvent(CallEvent.H323_NOT_IMPLEMENTED));
+    return;
+  }
+  if (haveIncomingConferenceId == false) {
+    new TransferTimer(member);
+  }
+synchronized (stateChangeLock) {
+    if (csa.getState() != CallState.ENDED) {
+      try {
+        Logger.println("Call " + cp + " Waiting for call to end...");
+        stateChangeLock.wait();
+      }
+ catch (      InterruptedException e) {
+      }
+    }
+  }
+  try {
+    Logger.println("Call " + cp + " ended...");
+    conferenceManager.leave(member);
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  Logger.println("Call " + cp + " removed...");
+  removeCall(this);
+  csa=null;
+  cancelRequest("Incoming call ended");
+  done=true;
+}

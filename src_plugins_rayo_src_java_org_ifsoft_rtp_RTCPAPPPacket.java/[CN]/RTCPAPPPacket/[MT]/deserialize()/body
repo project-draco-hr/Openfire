@@ -1,0 +1,6 @@
+{
+  setSubType(super.getFirstByte());
+  setSynchronizationSource(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),Integer.valueOf(0)));
+  setName(BitAssistant.subArray(super.getPayload(),Integer.valueOf(4),Integer.valueOf(4)));
+  if (ArrayExtensions.getLength(super.getPayload()).intValue() > 8)   setData(BitAssistant.subArray(super.getPayload(),Integer.valueOf(8),Integer.valueOf(ArrayExtensions.getLength(super.getPayload()).intValue() - 8)));
+}

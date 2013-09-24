@@ -1,0 +1,17 @@
+{
+  long startTime=System.currentTimeMillis();
+  try {
+    ServerAudioPlayer serverAudioPlayer=new ServerAudioPlayer();
+    voice.setAudioPlayer(serverAudioPlayer);
+    voice.speak(text);
+    int[] linearData=serverAudioPlayer.getLinearData();
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("TTS time for '" + text + "' "+ (System.currentTimeMillis() - startTime));
+    }
+    return linearData;
+  }
+ catch (  Exception ioe) {
+    ioe.printStackTrace();
+  }
+  return null;
+}

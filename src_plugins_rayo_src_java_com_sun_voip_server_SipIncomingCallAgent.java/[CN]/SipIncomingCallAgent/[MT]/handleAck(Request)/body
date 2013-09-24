@@ -1,0 +1,17 @@
+{
+  Logger.writeFile("SipIncomingCallAgent:  Got ack...");
+  Logger.writeFile(request.toString());
+  if (getState() != CallState.ESTABLISHED) {
+    try {
+      processSdp(request);
+    }
+ catch (    ParseException e) {
+      Logger.error("SipIncomingCallAgent:  " + e.getMessage());
+      terminateCall();
+    }
+    ToHeader toHeader=(ToHeader)request.getHeader(ToHeader.NAME);
+    String s="ToAddress='" + toHeader.getAddress().toString() + "'";
+    s+=" IncomingCall='true'";
+    setState(CallState.ESTABLISHED,s);
+  }
+}

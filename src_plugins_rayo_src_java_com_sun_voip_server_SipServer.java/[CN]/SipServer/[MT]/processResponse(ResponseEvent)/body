@@ -1,0 +1,21 @@
+{
+  Response response=responseReceivedEvent.getResponse();
+  if (responseReceivedEvent.getClientTransaction() == null) {
+    Logger.error("SipServer processResponse:  clientTransaction is null! " + responseReceivedEvent.getResponse());
+    return;
+  }
+  try {
+    SipListener sipListener=findSipListener(responseReceivedEvent);
+    if (sipListener != null) {
+      sipListener.processResponse(responseReceivedEvent);
+    }
+ else {
+      if (response.getStatusCode() != Response.OK && response.getStatusCode() != 201) {
+        CallIdHeader callIdHeader=(CallIdHeader)response.getHeader(CallIdHeader.NAME);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Logger.exception("processResponse",e);
+  }
+}

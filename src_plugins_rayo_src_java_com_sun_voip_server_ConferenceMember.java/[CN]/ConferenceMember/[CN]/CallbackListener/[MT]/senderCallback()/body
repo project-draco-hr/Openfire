@@ -1,0 +1,22 @@
+{
+  long start=System.nanoTime();
+  if (startTime == 0) {
+    startTime=start;
+  }
+  int pmCount=ConferenceMember.pmCount;
+  applyPrivateMixes();
+  if (pmCount == ConferenceMember.pmCount) {
+    return;
+  }
+  long now=System.nanoTime();
+  applyTime+=(now - start);
+  double secondsToApply=applyTime / 1000000000.;
+  if (++applyCount == 500 && Logger.logLevel >= Logger.LOG_INFO) {
+    double elapsed=(now - startTime) / 1000000000.;
+    Logger.println("elapsed " + elapsed + " seconds, applied "+ ConferenceMember.pmCount+ " pm's in "+ secondsToApply+ " seconds, avg per pm "+ (secondsToApply / pmCount)+ ", avg time to apply pm's "+ (secondsToApply / applyCount)+ " seconds, replaced "+ replaced);
+    applyCount=0;
+    ConferenceMember.pmCount=0;
+    applyTime=0;
+    replaced=0;
+  }
+}

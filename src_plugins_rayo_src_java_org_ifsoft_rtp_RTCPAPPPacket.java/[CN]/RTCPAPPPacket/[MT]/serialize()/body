@@ -1,0 +1,8 @@
+{
+  super.setFirstByte(getSubType());
+  ArrayList list=new ArrayList();
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getSynchronizationSource()));
+  ArrayListExtensions.addRange(list,getName());
+  if (getData() != null)   ArrayListExtensions.addRange(list,getData());
+  super.setPayload((Byte[])list.toArray(new Byte[0]));
+}

@@ -1,0 +1,63 @@
+{
+  if (channels == 1) {
+    return currentContribution;
+  }
+  if (previousContribution == null && currentContribution == null) {
+    return null;
+  }
+  echoDelay=newEchoDelay;
+  double frontBack=spatialValues[0];
+  if (echoVolume == 0 || echoDelay == 0) {
+    frontBack=0;
+  }
+  double leftRight=spatialValues[1];
+  double volume=spatialValues[3];
+  double delay=MAX_DELAY * leftRight;
+  int delayLength=(int)Math.round(delay / msPerSample) * 2;
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    if ((count++ % 200) == 0) {
+      Logger.println("Delay " + (Math.round(delay * 1000) / 1000.) + " delay length "+ delayLength);
+    }
+  }
+  int[] newContribution;
+  double nonDominantChannelVolume=getAttenuatedVolume(leftRight,volume);
+  if (nonDominantChannelVolume < minVolume) {
+    nonDominantChannelVolume=minVolume;
+  }
+  if (delayLength == 0) {
+    if (volume == 1 && frontBack >= 0) {
+      if (Logger.logLevel == -88) {
+        Util.dump("Current contribution",currentContribution,0,16);
+      }
+      return currentContribution;
+    }
+    newContribution=new int[packetLength];
+    if (Logger.logLevel == -88) {
+      Logger.println("need to make new contribution");
+    }
+    if (currentContribution != null) {
+      int copyLength=Math.min(packetLength,currentContribution.length);
+      System.arraycopy(currentContribution,0,newContribution,0,copyLength);
+    }
+  }
+ else {
+    if (Logger.logLevel == -88) {
+      Logger.println("do leftRight " + delayLength);
+    }
+    newContribution=doLeftRight(previousContribution,currentContribution,delayLength,nonDominantChannelVolume);
+  }
+  if (frontBack < 0) {
+    if (Logger.logLevel == -88) {
+      Logger.println("do frontBack " + echoDelay);
+    }
+    doFrontBack(previousContribution,newContribution,frontBack,delayLength,nonDominantChannelVolume);
+    volume*=getAttenuatedVolume(frontBack,behindVolume);
+  }
+  if (volume == 1) {
+    return newContribution;
+  }
+  if (Logger.logLevel == -78) {
+    Logger.println("Adjust volumes to " + (Math.round(volume * 1000) / 1000.));
+  }
+  return adjustVolumes(newContribution,volume);
+}

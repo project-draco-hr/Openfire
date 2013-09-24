@@ -1,0 +1,51 @@
+{
+  if (mediaPreference == null) {
+    if (mediaInfo != null) {
+      return mediaInfo;
+    }
+    return SdpManager.findMediaInfo(RtpPacket.PCMU_ENCODING,8000,1);
+  }
+  int ix;
+  int encoding=RtpPacket.PCMU_ENCODING;
+  int sampleRate=8000;
+  int channels=1;
+  try {
+    if (mediaPreference.indexOf("PCMU/") == 0) {
+      encoding=RtpPacket.PCMU_ENCODING;
+      mediaPreference=mediaPreference.substring(5);
+    }
+ else     if (mediaPreference.indexOf("PCM/") == 0) {
+      encoding=RtpPacket.PCM_ENCODING;
+      mediaPreference=mediaPreference.substring(4);
+    }
+ else     if (mediaPreference.indexOf("SPEEX/") == 0) {
+      encoding=RtpPacket.SPEEX_ENCODING;
+      mediaPreference=mediaPreference.substring(6);
+    }
+ else     if (mediaPreference.indexOf("PCM") == 0) {
+    }
+ else {
+      Logger.println("Invalid media specification " + mediaPreference);
+    }
+    if ((ix=mediaPreference.indexOf("/")) < 0) {
+      Logger.println("Invalid media specification " + mediaPreference);
+    }
+ else {
+      sampleRate=Integer.parseInt(mediaPreference.substring(0,ix));
+      channels=Integer.parseInt(mediaPreference.substring(ix + 1));
+    }
+  }
+ catch (  IndexOutOfBoundsException e) {
+    Logger.println("Invalid media specification " + mediaPreference);
+  }
+catch (  NumberFormatException e) {
+    Logger.println("Invalid media specification " + mediaPreference);
+  }
+  if (sampleRate == 8000 && channels == 1 && encoding == RtpPacket.PCM_ENCODING) {
+    encoding=RtpPacket.PCMU_ENCODING;
+  }
+  MediaInfo mediaInfo=SdpManager.findMediaInfo(encoding,sampleRate,channels);
+  Logger.println("conference " + conferenceId + " using media settings "+ mediaInfo);
+  conferenceStartTime=System.currentTimeMillis();
+  return mediaInfo;
+}

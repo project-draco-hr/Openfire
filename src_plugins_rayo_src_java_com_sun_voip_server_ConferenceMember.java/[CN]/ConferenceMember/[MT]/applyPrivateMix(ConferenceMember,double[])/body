@@ -1,0 +1,52 @@
+{
+  MixDescriptor md=null;
+synchronized (conferenceManager) {
+synchronized (mixManager) {
+      boolean remove=false;
+      if (whisperGroup == null || whisperGroup.hasCommonMix()) {
+        if (MixDescriptor.isNop(spatialValues,1)) {
+          remove=true;
+        }
+      }
+ else {
+        if (MixDescriptor.isZeroVolume(spatialValues[3])) {
+          remove=true;
+        }
+      }
+      if (remove) {
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("Call " + this + " removing private mix for "+ member);
+        }
+        mixManager.removeMix(member.getMemberReceiver());
+        member.removePrivateMixForMe(this);
+        return;
+      }
+      if (getCallHandler() == null || getCallHandler().isCallEstablished() == false) {
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("skipping " + this);
+        }
+        return;
+      }
+      if (member.getCallHandler() == null || member.getCallHandler().isCallEstablished() == false) {
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("skipping " + member);
+        }
+        return;
+      }
+      md=mixManager.setPrivateMix(member.getMemberReceiver(),spatialValues);
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Call " + this + " private mix for "+ member+ " "+ md);
+      }
+      if (md == null) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println(this + " pm already set for " + member+ " vol "+ spatialValues[3]);
+        }
+        return;
+      }
+      if (member.getWhisperGroup() != null) {
+        adjustPrivateMixDescriptor(this,member,md);
+      }
+      member.setPrivateMixForMe(this);
+    }
+  }
+}

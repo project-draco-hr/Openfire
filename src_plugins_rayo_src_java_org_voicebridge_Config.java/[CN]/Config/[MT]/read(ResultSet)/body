@@ -1,0 +1,29 @@
+{
+  ProxyCredentials sipAccount=new ProxyCredentials();
+  try {
+    String username=rs.getString("username");
+    String sipusername=rs.getString("sipusername");
+    String authusername=rs.getString("sipauthuser");
+    String displayname=rs.getString("sipdisplayname");
+    String password=rs.getString("sippassword");
+    String server=rs.getString("sipserver");
+    String stunServer=rs.getString("stunserver");
+    String stunPort=rs.getString("stunport");
+    String voicemail=rs.getString("voicemail");
+    String outboundproxy=rs.getString("outboundproxy");
+    sipAccount.setName(username);
+    sipAccount.setXmppUserName(username);
+    sipAccount.setUserName(sipusername);
+    sipAccount.setAuthUserName(authusername);
+    sipAccount.setUserDisplay(displayname);
+    sipAccount.setPassword(password.toCharArray());
+    sipAccount.setHost(server);
+    sipAccount.setProxy(outboundproxy);
+    sipAccount.setRealm(server);
+    sipExtensions.put(username,sipAccount);
+  }
+ catch (  SQLException e) {
+    System.out.println("ProxyCredentials " + e);
+  }
+  return sipAccount;
+}

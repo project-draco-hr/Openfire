@@ -1,0 +1,29 @@
+{
+  while (!done) {
+    try {
+      ConferenceMember member=(ConferenceMember)workToDo.remove();
+      try {
+        member.sendData();
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+        Logger.println("Can't send data to " + member + " "+ e.getMessage());
+        member.getCallHandler().cancelRequest("Unexpected Exception");
+      }
+    }
+ catch (    NoSuchElementException e) {
+synchronized (this) {
+        doneSignal.countDown();
+        if (done) {
+          break;
+        }
+        try {
+          wait();
+        }
+ catch (        InterruptedException ie) {
+          break;
+        }
+      }
+    }
+  }
+}

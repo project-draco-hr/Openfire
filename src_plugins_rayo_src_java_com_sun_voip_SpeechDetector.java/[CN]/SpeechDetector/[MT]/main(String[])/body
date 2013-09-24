@@ -1,0 +1,28 @@
+{
+  if (args.length != 1) {
+    Logger.println("Usage:  java SpeechDetector <.au file>");
+    System.exit(1);
+  }
+  TreatmentManager treatmentManager=null;
+  try {
+    treatmentManager=new TreatmentManager(args[0],0);
+  }
+ catch (  IOException e) {
+    System.out.println("Can't get treatment " + e.getMessage());
+    System.exit(1);
+  }
+  MediaInfo mediaInfo=new MediaInfo((byte)0,RtpPacket.PCM_ENCODING,treatmentManager.getSampleRate(),treatmentManager.getChannels(),false);
+  Logger.println("MediaInfo " + mediaInfo);
+  SpeechDetector speechDetector=new SpeechDetector("Test",mediaInfo);
+  byte[] linearData;
+  while ((linearData=treatmentManager.getLinearDataBytes(RtpPacket.PACKET_PERIOD)) != null) {
+    if (speechDetector.processData(linearData) == true) {
+      if (speechDetector.isSpeaking()) {
+        Logger.println("Started speaking...");
+      }
+ else {
+        Logger.println("Stopped speaking...");
+      }
+    }
+  }
+}

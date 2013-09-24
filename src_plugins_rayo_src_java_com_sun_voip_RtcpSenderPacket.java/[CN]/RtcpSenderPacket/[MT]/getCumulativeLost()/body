@@ -1,0 +1,7 @@
+{
+  int cumulativeLost=((((int)rtcpData[33]) << 16) & 0x00ff0000) | ((((int)rtcpData[34]) << 8) & 0x0000ff00) | (rtcpData[35] & 0xff);
+  if ((rtcpData[33] & 0x80) != 0) {
+    cumulativeLost|=0xff000000;
+  }
+  return cumulativeLost;
+}

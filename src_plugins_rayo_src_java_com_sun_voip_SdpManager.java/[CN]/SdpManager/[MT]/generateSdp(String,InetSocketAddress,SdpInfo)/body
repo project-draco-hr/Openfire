@@ -1,0 +1,49 @@
+{
+  MediaInfo mediaInfo=null;
+  if (localMediaPreference != null) {
+    if (remoteSdpInfo.isSupported(localMediaPreference)) {
+      mediaInfo=localMediaPreference;
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Using local media preference:  " + mediaInfo);
+      }
+    }
+  }
+  if (mediaInfo == null && remoteSdpInfo.preferredMediaSpecified()) {
+    MediaInfo remoteMediaPreference=remoteSdpInfo.getMediaInfo();
+    if (remoteMediaPreference.getSampleRate() <= maxSampleRate && remoteMediaPreference.getChannels() <= maxChannels) {
+      try {
+        mediaInfo=findMediaInfo(remoteMediaPreference.getPayload());
+        Logger.println("Using remote media preference:  " + mediaInfo);
+      }
+ catch (      ParseException e) {
+      }
+    }
+  }
+  if (mediaInfo == null) {
+    mediaInfo=remoteSdpInfo.findBestMediaInfo(supportedMedia,localMediaPreference);
+    Logger.println("Using best media " + mediaInfo);
+  }
+  remoteSdpInfo.setMediaInfo(mediaInfo);
+  String payloads="13 " + mediaInfo.getPayload();
+  byte telephoneEventPayload=remoteSdpInfo.getTelephoneEventPayload();
+  String telephoneEvent="";
+  if (useTelephoneEvent == true && telephoneEventPayload != 0) {
+    try {
+      MediaInfo m=findMediaInfo(telephoneEventPayload);
+      payloads+=" " + telephoneEventPayload;
+      telephoneEvent+=generateRtpmap(m) + "\r\n";
+    }
+ catch (    ParseException e) {
+      Logger.println("Failed to add rtpmap for telephone event " + telephoneEventPayload);
+    }
+  }
+  String transmitMap="";
+  if (transmitMediaInfo != null) {
+    transmitMap=generateRtpmap(transmitMediaInfo) + "\r\n";
+  }
+  String sdp="v=0\r\n" + "o=" + name + " 1 1 IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "s=SIP Call\r\n"+ "c=IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "t=0 0 \r\n"+ "m=audio "+ isa.getPort()+ " RTP/AVP "+ payloads+ "\r\n"+ "a=rtpmap:13 CN/8000"+ "\r\n"+ generateRtpmap(mediaInfo)+ "\r\n"+ transmitMap+ telephoneEvent;
+  if (transmitMediaInfo != null) {
+    sdp+="a=transmitPayload:" + transmitMediaInfo.getPayload() + "\r\n";
+  }
+  return sdp;
+}

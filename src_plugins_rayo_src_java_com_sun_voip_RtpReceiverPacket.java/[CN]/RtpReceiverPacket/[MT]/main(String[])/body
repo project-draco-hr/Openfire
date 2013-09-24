@@ -1,0 +1,14 @@
+{
+  RtpReceiverPacket packet=new RtpReceiverPacket("Test",PCM_ENCODING,8000,1);
+  Logger.logLevel=5;
+  short expected=packet.rtpSequenceNumber;
+  while (true) {
+    packet.updateRtpHeader(180);
+    if (packet.rtpSequenceNumber != expected) {
+      Logger.println("expected " + expected + " got "+ packet.rtpSequenceNumber);
+    }
+    expected++;
+    packet.buffer[2]=(byte)((packet.rtpSequenceNumber >> 8) & 0xff);
+    packet.buffer[3]=(byte)(packet.rtpSequenceNumber & 0xff);
+  }
+}

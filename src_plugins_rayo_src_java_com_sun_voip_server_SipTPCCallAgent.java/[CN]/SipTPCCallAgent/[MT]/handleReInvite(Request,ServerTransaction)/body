@@ -1,0 +1,28 @@
+{
+  Logger.println("Call " + cp + " Re-INVITE\n"+ request);
+  if (request.getRawContent() == null) {
+    Logger.error("Call " + cp + " no SDP in INVITE Request!");
+    return;
+  }
+  String sdpBody=new String(request.getRawContent());
+  SdpInfo sdpInfo;
+  try {
+    sdpInfo=sipUtil.getSdpInfo(sdpBody);
+  }
+ catch (  ParseException e) {
+    Logger.error("Call " + cp + " invalid SDP in re-INVITE Request! "+ e.getMessage());
+    return;
+  }
+  MediaInfo mediaInfo=sdpInfo.getMediaInfo();
+  InetSocketAddress isa=new InetSocketAddress(sdpInfo.getRemoteHost(),sdpInfo.getRemotePort());
+  InetSocketAddress rtcpAddress=sdpInfo.getRtcpAddress();
+  setEndpointAddress(isa,mediaInfo.getPayload(),sdpInfo.getTransmitMediaInfo().getPayload(),sdpInfo.getTelephoneEventPayload(),rtcpAddress);
+  isa=callHandler.getReceiveAddress();
+  try {
+    sipUtil.sendOkWithSdp(request,st,isa,sdpInfo);
+  }
+ catch (  Exception e) {
+    Logger.println("Call " + cp + " Failed to send ok with sdp for re-invite "+ e.getMessage());
+    return;
+  }
+}

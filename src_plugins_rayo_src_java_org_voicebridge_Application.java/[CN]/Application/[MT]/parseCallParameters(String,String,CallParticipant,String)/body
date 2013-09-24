@@ -1,0 +1,358 @@
+{
+  if ("makeCall".equalsIgnoreCase(parameter)) {
+    try {
+      makeOutgoingCall(cp,uid);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("migrateCall".equalsIgnoreCase(parameter)) {
+    try {
+      migrateCall(cp);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("cancelCall".equalsIgnoreCase(parameter)) {
+    CallHandler.hangup(cp.getCallId(),"User requested call termination");
+    return;
+  }
+  if ("sendDtmfKey".equalsIgnoreCase(parameter)) {
+    try {
+      CallHandler callHandler=CallHandler.findCall(cp.getCallId());
+      callHandler.dtmfKeys(value);
+    }
+ catch (    NoSuchElementException e) {
+      reportError("Invalid callId specified:  " + value);
+    }
+    return;
+  }
+  if ("conferenceJoinTreatment".equalsIgnoreCase(parameter)) {
+    cp.setConferenceJoinTreatment(value);
+    return;
+  }
+  if ("conferenceLeaveTreatment".equalsIgnoreCase(parameter)) {
+    cp.setConferenceLeaveTreatment(value);
+    return;
+  }
+  if ("callAnsweredTreatment".equalsIgnoreCase(parameter)) {
+    cp.setCallAnsweredTreatment(value);
+    return;
+  }
+  if ("callanswertimeout".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setCallAnswerTimeout(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("callAnswerTimeout " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("calltimeout".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setCallTimeout(getInteger(value) * 1000);
+    }
+ catch (    Exception e) {
+      reportError("callTimeout " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("callendtreatment".equalsIgnoreCase(parameter)) {
+    cp.setCallEndTreatment(value);
+    return;
+  }
+  if ("callestablishedtreatment".equalsIgnoreCase(parameter)) {
+    cp.setCallEstablishedTreatment(value);
+    return;
+  }
+  if ("callid".equalsIgnoreCase(parameter)) {
+    cp.setCallId(value);
+    return;
+  }
+  if ("conferenceid".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      cp.setConferenceId(tokens[0].trim());
+      if (tokens.length > 1) {
+        cp.setMediaPreference(tokens[1]);
+      }
+      if (tokens.length > 2) {
+        cp.setConferenceDisplayName(tokens[2]);
+      }
+    }
+ catch (    Exception e) {
+      reportError("conferenceId " + value + " is invalid");
+    }
+    return;
+  }
+  if ("displayname".equalsIgnoreCase(parameter)) {
+    cp.setDisplayName(value);
+    return;
+  }
+  if ("distributedbridge".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setDistributedBridge(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("donotrecord".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setDoNotRecord(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("dtmfdetection".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setDtmfDetection(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("dtmfsuppression".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setDtmfSuppression(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("forwarddatafrom".equalsIgnoreCase(parameter)) {
+    cp.setForwardingCallId(value);
+    return;
+  }
+  if ("ignoretelephoneevents".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setIgnoreTelephoneEvents(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("inputtreatment".equalsIgnoreCase(parameter)) {
+    cp.setInputTreatment(value);
+    return;
+  }
+  if ("encryptkey".equalsIgnoreCase(parameter)) {
+    cp.setEncryptionKey(value);
+    return;
+  }
+  if ("encryptalgorithm".equalsIgnoreCase(parameter)) {
+    cp.setEncryptionAlgorithm(value);
+    return;
+  }
+  if ("firstConferenceMemberTreatment".equalsIgnoreCase(parameter)) {
+    cp.setFirstConferenceMemberTreatment(value);
+    return;
+  }
+  if ("handlesessionprogress".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setHandleSessionProgress(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("joinconfirmationkey".equalsIgnoreCase(parameter)) {
+    try {
+      MemberReceiver.setJoinConfirmationKey(value);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("joinconfirmationtimeout".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setJoinConfirmationTimeout(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("callAnswerTimeout " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("mediapreference".equalsIgnoreCase(parameter)) {
+    cp.setMediaPreference(value);
+    return;
+  }
+  if ("migrate".equalsIgnoreCase(parameter)) {
+    String callId=getFirstString(value);
+    cp.setCallId(callId);
+    int ix;
+    if ((ix=value.indexOf(":")) < 0) {
+      reportError("secondPartyNumber must be specified:  " + value);
+      return;
+    }
+    String secondPartyNumber=value.substring(ix + 1);
+    if (secondPartyNumber == null) {
+      reportError("secondPartyNumber must be specified:  " + value);
+      return;
+    }
+    try {
+      cp.setSecondPartyNumber(secondPartyNumber);
+      cp.setMigrateCall(true);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("mute".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setMuted(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("mutewhispergroup".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setMuteWhisperGroup(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("muteconference".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setConferenceMuted(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("name".equalsIgnoreCase(parameter)) {
+    cp.setName(value);
+    return;
+  }
+  if ("phonenumber".equalsIgnoreCase(parameter)) {
+    cp.setPhoneNumber(value);
+    return;
+  }
+  if ("phonenumberlocation".equalsIgnoreCase(parameter)) {
+    cp.setPhoneNumberLocation(value);
+  }
+  if ("protocol".equalsIgnoreCase(parameter)) {
+    if (value.equalsIgnoreCase("SIP") == false && value.equalsIgnoreCase("NS") == false && value.equalsIgnoreCase("WebRtc") == false) {
+      reportError("Invalid protocol:  " + value);
+      return;
+    }
+    cp.setProtocol(value);
+    return;
+  }
+  if ("recorder".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setRecorder(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("recorddirectory".equalsIgnoreCase(parameter)) {
+    cp.setRecordDirectory(value);
+    return;
+  }
+  if ("remotecallid".equalsIgnoreCase(parameter)) {
+    cp.setRemoteCallId(value);
+    return;
+  }
+  if ("voiceDetectionWhileMuted".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setVoiceDetectionWhileMuted(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("useConferenceReceiverThread".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setUseConferenceReceiverThread(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("voiceDetection".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setVoiceDetection(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("whisperGroup".equalsIgnoreCase(parameter)) {
+    cp.setWhisperGroupId(value);
+    return;
+  }
+  if ("voipGateway".equalsIgnoreCase(parameter)) {
+    cp.setVoIPGateway(value);
+    return;
+  }
+  if ("secondPartyCallId".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyCallId(value);
+    return;
+  }
+  if ("sipProxy".equalsIgnoreCase(parameter)) {
+    cp.setSipProxy(value);
+    return;
+  }
+  if ("secondPartyCallId".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyCallId(value);
+    return;
+  }
+  if ("secondPartyCallEndTreatment".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyCallEndTreatment(value);
+    return;
+  }
+  if ("secondPartyName".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyName(value);
+    return;
+  }
+  if ("secondPartyNumber".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyNumber(value);
+    return;
+  }
+  if ("secondPartyTreatment".equalsIgnoreCase(parameter)) {
+    cp.setSecondPartyTreatment(value);
+    return;
+  }
+  if ("secondpartyVoiceDetection".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setSecondPartyVoiceDetection(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("secondPartyTimeout".equalsIgnoreCase(parameter)) {
+    try {
+      cp.setSecondPartyTimeout(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("setSecondPartyTimeout " + value + " is not numeric");
+    }
+    return;
+  }
+}

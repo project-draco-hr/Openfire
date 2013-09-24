@@ -1,0 +1,33 @@
+{
+  Response response=messageFactory.createResponse(Response.OK,request);
+  ToHeader to=(ToHeader)response.getHeader(ToHeader.NAME);
+  if (to == null) {
+    Logger.println("something is wrong, no to header...");
+    return;
+  }
+  try {
+    if (to.getTag() == null || to.getTag().trim().length() == 0) {
+      Dialog dialog=st.getDialog();
+      to.setTag(Integer.toString(dialog.hashCode()));
+    }
+  }
+ catch (  ParseException ex) {
+    Logger.println("can't set to tag");
+    return;
+  }
+  Address address=(Address)to.getAddress();
+  SipURI toURI=(SipURI)address.getURI();
+  SipURI contactURI=addressFactory.createSipURI(toURI.getUser(),ourPublicIpAddress);
+  contactURI.setPort(ourPublicSipPort);
+  Address contactAddress=addressFactory.createAddress(contactURI);
+  contactAddress.setDisplayName(to.getName());
+  ContactHeader contactHeader=headerFactory.createContactHeader(contactAddress);
+  response.addHeader(contactHeader);
+  try {
+    st.sendResponse(response);
+  }
+ catch (  InvalidArgumentException e) {
+    Logger.println("SendOk:  " + e.getMessage());
+    throw new SipException("Failed to send response:  " + e.getMessage());
+  }
+}

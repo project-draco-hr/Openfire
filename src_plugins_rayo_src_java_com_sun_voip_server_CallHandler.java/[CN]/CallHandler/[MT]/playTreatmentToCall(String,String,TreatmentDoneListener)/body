@@ -1,0 +1,10 @@
+{
+  CallHandler callHandler=findCall(callId);
+  if (callHandler == null) {
+    throw new NoSuchElementException("Invalid callId specified:  " + callId);
+  }
+  if (callHandler.isCallEstablished() == false) {
+    throw new IOException("Call is not ESTABLISHED:  " + callId);
+  }
+  callHandler.playTreatmentToCall(treatment,treatmentDoneListener);
+}

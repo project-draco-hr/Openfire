@@ -1,0 +1,30 @@
+{
+  if (callEvent.equals(callEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.ESTABLISHED)) {
+    if (incomingCallTreatment != null) {
+      try {
+        playTreatmentToCall(incomingCallTreatment);
+      }
+ catch (      IOException e) {
+        Logger.println("Unable to play incomingCallTreatment " + incomingCallTreatment);
+      }
+    }
+  }
+ else   if (callEvent.equals(CallEvent.DTMF_KEY)) {
+    member.stopTreatment(null);
+    String dtmf=callEvent.getDtmfKey();
+    if (lastDtmfKey.equals("*") && dtmf.equals("*")) {
+      speakDtmf=!speakDtmf;
+    }
+    lastDtmfKey=dtmf;
+    if (speakDtmf == true) {
+      speakDtmf(dtmf);
+    }
+  }
+ else   if (callEvent.equals(callEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.ENDED)) {
+    Logger.println("Call " + cp + " Got ENDED status.");
+synchronized (stateChangeLock) {
+      stateChangeLock.notify();
+    }
+  }
+  Application.incomingCallNotification(callEvent);
+}

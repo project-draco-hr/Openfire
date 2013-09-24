@@ -1,0 +1,34 @@
+{
+  if (initializationDone == false) {
+    return "\tNot Initialized\n";
+  }
+  String s="";
+  s+=memberReceiver.getMemberState();
+  s+=memberSender.getMemberState();
+  s+="\tMediaInfo " + memberReceiver.getMediaInfo() + "\n";
+  s+=wgManager.getWhisperGroups(this);
+synchronized (conferenceManager) {
+synchronized (privateMixesForMe) {
+      if (privateMixesForMe.size() > 0) {
+        s+="\tOthers with Private mixes\n";
+        for (int i=0; i < privateMixesForMe.size(); i++) {
+          ConferenceMember member=(ConferenceMember)privateMixesForMe.get(i);
+          s+="\t    " + member + "\n";
+        }
+      }
+    }
+synchronized (mixManager) {
+      ArrayList mixDescriptors=mixManager.getMixDescriptors();
+      s+="\tMixDescriptors " + mixDescriptors.size() + "\n";
+      for (int i=0; i < mixDescriptors.size(); i++) {
+        MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+        s+="\t    " + md.toAbbreviatedString();
+        if (whisperGroup == md.getMixDataSource()) {
+          s+=" + ";
+        }
+        s+="\n";
+      }
+    }
+  }
+  return s;
+}

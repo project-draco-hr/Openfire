@@ -1,0 +1,31 @@
+{
+  String sql="SELECT username, sipusername, sipauthuser, sipdisplayname, sippassword, sipserver, enabled, status, stunserver, stunport, usestun, voicemail, outboundproxy, promptCredentials FROM ofSipUser WHERE USERNAME = '" + username + "'";
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=DbConnectionManager.createScrollablePreparedStatement(con,sql);
+    ResultSet rs=pstmt.executeQuery();
+    DbConnectionManager.scrollResultSet(rs,0);
+    if (rs.next()) {
+      ProxyCredentials credentials=read(rs);
+      credentials.setName(defaultProxy);
+      try {
+        InetAddress inetAddress=InetAddress.getByName(credentials.getHost());
+        registrars.add(credentials.getHost());
+        registrations.add(credentials);
+        System.out.println(String.format("VoiceBridge adding SIP registration: %s with user %s host %s",credentials.getXmppUserName(),credentials.getUserName(),credentials.getHost()));
+      }
+ catch (      Exception e) {
+        System.out.println(String.format("processDefaultRegistration Bad Address  %s ",credentials.getHost()));
+      }
+    }
+    rs.close();
+    pstmt.close();
+    con.close();
+    sipPlugin=true;
+  }
+ catch (  SQLException e) {
+    System.out.println("processDefaultRegistration " + e);
+  }
+}

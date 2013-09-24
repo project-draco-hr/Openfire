@@ -1,0 +1,46 @@
+{
+  this.conferenceManager=conferenceManager;
+  this.memberAddress=memberAddress;
+  this.telephoneEventPayload=telephoneEventPayload;
+  this.callHandler=callHandler;
+  Logger.writeFile("Call " + cp + " MemberSender initialization started ..."+ cp.getProtocol());
+  conferenceMediaInfo=conferenceManager.getMediaInfo();
+  outSampleRate=conferenceMediaInfo.getSampleRate();
+  outChannels=conferenceMediaInfo.getChannels();
+  try {
+    myMediaInfo=SdpManager.findMediaInfo(mediaPayload);
+  }
+ catch (  ParseException e) {
+    Logger.println("Call " + cp + " Invalid mediaPayload "+ mediaPayload);
+    callHandler.cancelRequest("Invalid mediaPayload " + mediaPayload);
+    return;
+  }
+  int inSampleRate=myMediaInfo.getSampleRate();
+  int inChannels=myMediaInfo.getChannels();
+  if (cp.getInputTreatment() == null || cp.isRecorder() == true) {
+    if (inSampleRate != outSampleRate || inChannels != outChannels) {
+      Logger.println("Call " + cp + " resample data to send from "+ inSampleRate+ "/"+ inChannels+ " to "+ outSampleRate+ "/"+ outChannels);
+      try {
+        outSampleRateConverter=new SampleRateConverter(this.toString(),outSampleRate,outChannels,inSampleRate,inChannels);
+      }
+ catch (      IOException e) {
+        callHandler.cancelRequest(e.getMessage());
+        return;
+      }
+    }
+  }
+  senderPacket=new RtpSenderPacket(myMediaInfo.getEncoding(),inSampleRate,inChannels);
+  if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
+    try {
+      speexEncoder=new SpeexEncoder(inSampleRate,inChannels);
+      Logger.println("Call " + cp + " created SpeexEncoder");
+    }
+ catch (    SpeexException e) {
+      Logger.println("Call " + cp + " Speex initialization for encoding failed:  "+ e.getMessage());
+      callHandler.cancelRequest(e.getMessage());
+      return;
+    }
+  }
+  initializationDone=true;
+  Logger.writeFile("Call " + cp + " MemberSender initialization done...");
+}

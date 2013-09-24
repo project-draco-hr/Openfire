@@ -1,0 +1,46 @@
+{
+  if (dtmfDecoder != null) {
+    if (checkDtmf(data) == true) {
+      if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.writeFile("Call " + cp + " checkDtmf returned true, data length "+ data.length);
+      }
+      return;
+    }
+  }
+  if (isMuted()) {
+    if (speechDetector != null && cp.voiceDetectionWhileMuted() == true) {
+      if (speechDetector.processData(data) == true) {
+        callHandler.speakingChanged(speechDetector.isSpeaking());
+      }
+    }
+    return;
+  }
+  long start=0;
+  if (traceCall || Logger.logLevel == -1) {
+    start=System.nanoTime();
+  }
+synchronized (whisperGroup) {
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " handleMedia lock wait time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+    if (joinConfirmationReceived == false) {
+      return;
+    }
+synchronized (jitterManager) {
+      jitterManager.insertPacket(sequenceNumber,data);
+    }
+    if (deferMixing == false) {
+      if (contributionValid) {
+        forcedToDeferMixing++;
+      }
+ else {
+        saveCurrentContribution();
+      }
+    }
+  }
+  if (speechDetector != null) {
+    if (speechDetector.processData(data) == true) {
+      callHandler.speakingChanged(speechDetector.isSpeaking());
+    }
+  }
+}

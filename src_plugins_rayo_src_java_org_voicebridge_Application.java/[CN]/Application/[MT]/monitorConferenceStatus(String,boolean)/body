@@ -1,0 +1,25 @@
+{
+  if (monitor) {
+synchronized (conferenceMonitors) {
+      loginfo("adding conference monitor for " + conferenceId);
+      conferenceMonitors.add(new ConferenceMonitor(null,conferenceId));
+    }
+  }
+ else {
+synchronized (conferenceMonitors) {
+      ArrayList<ConferenceMonitor> monitorsToRemove=new ArrayList<ConferenceMonitor>();
+      for (      ConferenceMonitor m : conferenceMonitors) {
+        if (null != m.getService()) {
+          continue;
+        }
+        if (conferenceId.equals(m.getConferenceId())) {
+          monitorsToRemove.add(m);
+        }
+      }
+      for (      ConferenceMonitor m : monitorsToRemove) {
+        loginfo("Removing conference monitor for " + conferenceId);
+        conferenceMonitors.remove(m);
+      }
+    }
+  }
+}

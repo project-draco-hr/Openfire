@@ -1,0 +1,27 @@
+{
+  ArrayList<PrivateMix> mixes=new ArrayList();
+synchronized (mixMap) {
+    Set<ConferenceMember> keySet=mixMap.keySet();
+    for (    ConferenceMember memberWithMix : keySet) {
+      HashMap<ConferenceMember,double[]> mixesToApply=mixMap.get(memberWithMix);
+      Set<ConferenceMember> memberSet=mixesToApply.keySet();
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Applying " + memberSet.size() + " private mixes for "+ memberWithMix);
+      }
+      for (      ConferenceMember member : memberSet) {
+        double[] spatialValues=(double[])mixesToApply.get(member);
+        mixes.add(new PrivateMix(memberWithMix,member,spatialValues));
+        pmCount++;
+      }
+    }
+    mixMap.clear();
+  }
+  for (  PrivateMix mix : mixes) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Applying pm for " + mix.memberWithMix + " from "+ mix.member+ " "+ mix.spatialValues[0]+ ":"+ mix.spatialValues[1]+ ":"+ mix.spatialValues[2]+ ":"+ mix.spatialValues[3]);
+    }
+synchronized (mix.member.getConferenceManager()) {
+      mix.memberWithMix.applyPrivateMix(mix.member,mix.spatialValues);
+    }
+  }
+}

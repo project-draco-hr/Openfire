@@ -1,0 +1,32 @@
+{
+  if (Logger.logLevel == -59) {
+    Logger.logLevel=3;
+    Util.dump("encode input:  length " + inData.length,inData,0,16);
+  }
+  long start=CurrentTime.getTime();
+  if (bigEndian == false) {
+    byte[] data=new byte[inData.length];
+    for (int i=0; i < data.length; i+=2) {
+      data[i]=inData[i + 1];
+      data[i + 1]=inData[i];
+    }
+    inData=data;
+  }
+  try {
+    speexEncoder.processData(inData,0,inData.length);
+  }
+ catch (  Exception e) {
+    Logger.println("inData.length " + inData.length + " outData.length "+ outData.length+ " outOffset "+ outOffset);
+    e.printStackTrace();
+    throw new SpeexException("SpeexEncode:  " + e.getMessage());
+  }
+  int encSize=speexEncoder.getProcessedDataByteSize();
+  encodes++;
+  encodeTime+=(CurrentTime.getTime() - start);
+  bytesEncoded+=inData.length;
+  speexEncoder.getProcessedData(outData,outOffset);
+  if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+    Util.dump("encodeData output: " + encSize,outData,0,encSize);
+  }
+  return encSize;
+}

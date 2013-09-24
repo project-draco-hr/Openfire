@@ -1,0 +1,9 @@
+{
+  super.setFirstByte(getFeedbackMessageType());
+  ArrayList list=new ArrayList();
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getPacketSenderSynchronizationSource()));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(getMediaSourceSynchronizationSource()));
+  serializeFCI();
+  ArrayListExtensions.addRange(list,getFCIPayload());
+  super.setPayload((Byte[])list.toArray(new Byte[0]));
+}

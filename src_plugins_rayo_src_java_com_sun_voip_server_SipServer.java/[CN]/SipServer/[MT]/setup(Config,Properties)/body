@@ -1,0 +1,73 @@
+{
+  String localHostAddress=config.getPrivateHost();
+  properties.setProperty("javax.sip.IP_ADDRESS",localHostAddress);
+  setVoIPGateways(config);
+  if (voIPGateways.size() == 0) {
+    Logger.println("There are no VoIP gateways.  You cannot make calls to the phone system.");
+  }
+  sipFactory=SipFactory.getInstance();
+  sipFactory.setPathName("gov.nist");
+  try {
+    sipStack=(SipStack)sipFactory.createSipStack(properties);
+    addressFactory=sipFactory.createAddressFactory();
+    headerFactory=sipFactory.createHeaderFactory();
+    messageFactory=sipFactory.createMessageFactory();
+  }
+ catch (  PeerUnavailableException e) {
+    Logger.exception("could not stsart sip stack.",e);
+    return;
+  }
+catch (  SipException e) {
+    Logger.exception("could not start sip stack.",e);
+    return;
+  }
+  ListeningPoint lp=null;
+  try {
+    String s=System.getProperty("gov.nist.jainsip.stack.enableUDP",String.valueOf(SIP_PORT));
+    int sipPort=Integer.parseInt(s);
+    lp=sipStack.createListeningPoint(sipPort,"tcp");
+    sipProvider=sipStack.createSipProvider(lp);
+    sipProvider.addSipListener(this);
+    lp=sipStack.createListeningPoint(sipPort,"udp");
+    sipAddress=new InetSocketAddress(sipStack.getIPAddress(),sipPort);
+    sipProvider=sipStack.createSipProvider(lp);
+    sipProvider.addSipListener(this);
+    Logger.println("");
+    Logger.println("Bridge private address:   " + properties.getProperty("javax.sip.IP_ADDRESS"));
+    Logger.println("Bridge private SIP port:  " + lp.getPort());
+    defaultSipProxy=config.getDefaultProxy();
+    SipUtil.initialize();
+    for (int i=0; i < voIPGatewayLoginInfo.size(); i++) {
+      try {
+        InetAddress inetAddress=InetAddress.getByName(voIPGateways.get(i));
+        registrations.add(new RegisterProcessing(inetAddress.getHostAddress(),voIPGateways.get(i),voIPGatewayLoginInfo.get(i)));
+      }
+ catch (      Exception e) {
+        System.out.println(String.format("Bad Address  %s ",voIPGateways.get(i)));
+        continue;
+      }
+    }
+  }
+ catch (  NullPointerException e) {
+    Logger.exception("Stack has no ListeningPoints",e);
+    return;
+  }
+catch (  ObjectInUseException e) {
+    Logger.exception("Stack has no ListeningPoints",e);
+    return;
+  }
+catch (  TransportNotSupportedException e) {
+    Logger.exception("TransportNotSupportedException",e);
+    return;
+  }
+catch (  TooManyListenersException e) {
+    Logger.exception("TooManyListenersException",e);
+    return;
+  }
+catch (  InvalidArgumentException e) {
+    Logger.exception("InvalidArgumentException",e);
+    return;
+  }
+  Logger.println("Default SIP Proxy:        " + defaultSipProxy);
+  Logger.println("");
+}

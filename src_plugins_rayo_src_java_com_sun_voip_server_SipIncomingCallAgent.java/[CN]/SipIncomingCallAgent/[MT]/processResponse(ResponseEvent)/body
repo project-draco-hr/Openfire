@@ -1,0 +1,12 @@
+{
+  try {
+    Response response=(Response)responseEvent.getResponse();
+    int statusCode=response.getStatusCode();
+    FromHeader fromHeader=(FromHeader)response.getHeader(FromHeader.NAME);
+    String displayName=fromHeader.getAddress().getDisplayName();
+    Logger.println("SipIncomingCallAgent: Response ignored:  statusCode " + statusCode + " fromHeader "+ displayName+ " "+ response);
+  }
+ catch (  Exception e) {
+    Logger.exception("SipIncomingCallAgent:  processResponse:  ",e);
+  }
+}

@@ -1,0 +1,29 @@
+{
+  if (phoneNumber == null) {
+    if (inputTreatment == null) {
+      return "Anonymous";
+    }
+    if (name != null) {
+      return name + "@" + inputTreatment;
+    }
+    return inputTreatment;
+  }
+  int end=phoneNumber.indexOf("@");
+  if (end >= 0) {
+    if (name == null || name.equals("Anonymous")) {
+      return phoneNumber;
+    }
+    int start=0;
+    if (phoneNumber.indexOf("sip:") == 0) {
+      start=phoneNumber.indexOf(":") + 1;
+    }
+    String s=name.replaceAll(" ","_");
+    if (s.equals(phoneNumber.substring(start,end))) {
+      return phoneNumber;
+    }
+  }
+  if (name == null || name.equals("") || name.equals(phoneNumber)) {
+    return "Anonymous@" + phoneNumber;
+  }
+  return name + "@" + phoneNumber;
+}

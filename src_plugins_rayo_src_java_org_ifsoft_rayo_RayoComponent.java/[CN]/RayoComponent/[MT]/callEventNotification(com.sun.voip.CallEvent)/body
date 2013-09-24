@@ -1,0 +1,49 @@
+{
+  Log.info("RayoComponent callEventNotification " + callEvent);
+  JID from=new JID(callEvent.getInfo());
+  if (from != null) {
+    String myEvent=com.sun.voip.CallEvent.getEventString(callEvent.getEvent());
+    String callState=callEvent.getCallState().toString();
+    Map<String,String> headers=new HashMap<String,String>();
+    headers.put("info",callEvent.getInfo() == null ? "" : callEvent.getInfo());
+    headers.put("callId",callEvent.getCallId() == null ? "" : callEvent.getCallId());
+    headers.put("mixer",callEvent.getConferenceId() == null ? "" : callEvent.getConferenceId());
+    headers.put("callInfo",callEvent.getCallInfo() == null ? "" : callEvent.getCallInfo());
+    Presence presence=new Presence();
+    presence.setFrom("rayo." + getDomain());
+    presence.setTo(from);
+    if ("001 STATE CHANGED".equals(myEvent)) {
+      if ("110 ANSWERED".equals(callState)) {
+        presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+        sendPacket(presence);
+      }
+ else       if ("200 ESTABLISHED".equals(callState)) {
+        presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+        sendPacket(presence);
+      }
+ else       if ("299 ENDED".equals(callState)) {
+        presence.getElement().add(rayoProvider.toXML(new EndEvent(null,EndEvent.Reason.valueOf("HANGUP"),headers)));
+        sendPacket(presence);
+      }
+    }
+ else     if ("250 STARTED SPEAKING".equals(myEvent)) {
+      StartedSpeakingEvent speaker=new StartedSpeakingEvent();
+      speaker.setSpeakerId(headers.get("callId"));
+      presence.getElement().add(rayoProvider.toXML(speaker));
+      sendPacket(presence);
+    }
+ else     if ("259 STOPPED SPEAKING".equals(myEvent)) {
+      StoppedSpeakingEvent speaker=new StoppedSpeakingEvent();
+      speaker.setSpeakerId(headers.get("callId"));
+      presence.getElement().add(rayoProvider.toXML(speaker));
+      sendPacket(presence);
+    }
+ else     if ("269 DTMF".equals(myEvent)) {
+      presence.getElement().add(rayoProvider.toXML(new DtmfEvent(callEvent.getCallId(),callEvent.getDtmfKey())));
+      sendPacket(presence);
+    }
+ else     if ("230 TREATMENT DONE".equals(myEvent)) {
+      Log.info("230 TREATMENT DONE");
+    }
+  }
+}

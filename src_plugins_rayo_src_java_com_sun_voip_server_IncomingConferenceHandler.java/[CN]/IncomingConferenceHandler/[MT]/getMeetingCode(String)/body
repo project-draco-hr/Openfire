@@ -1,0 +1,39 @@
+{
+  if (!dtmfKey.equals("#")) {
+    meetingCode+=dtmfKey;
+    return;
+  }
+  if (meetingCode.length() == 0) {
+    playTreatmentToCall(INVALID_MEETING_CODE + ";" + ENTER_MEETING_CODE);
+    return;
+  }
+  String confRoom=null;
+  if (Config.getInstance().isValidConference(meetingCode)) {
+    confRoom=meetingCode;
+  }
+ else   if (Config.getInstance().isValidConferenceExten(meetingCode)) {
+    confRoom=Config.getInstance().getMeetingCode(meetingCode);
+  }
+  if (confRoom != null) {
+    if (Config.getInstance().getPassCode(confRoom,phoneNo) == null) {
+      try {
+        incomingCallHandler.transferCall(confRoom);
+        state=IN_MEETING;
+      }
+ catch (      IOException e) {
+        System.err.println("Exception joining meeting! " + meetingCode + " "+ e.getMessage());
+      }
+    }
+ else {
+      state=WAITING_FOR_PASS_CODE;
+      playTreatmentToCall(ENTER_REQUIRED_PASS_CODE);
+      return;
+    }
+  }
+ else {
+    playTreatmentToCall(INVALID_MEETING_CODE + ";" + ENTER_MEETING_CODE);
+    meetingCode="";
+    state=WAITING_FOR_MEETING_CODE;
+    return;
+  }
+}

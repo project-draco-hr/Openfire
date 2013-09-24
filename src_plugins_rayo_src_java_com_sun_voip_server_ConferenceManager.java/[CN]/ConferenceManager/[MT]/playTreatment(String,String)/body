@@ -1,0 +1,16 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("playing treatment " + treatment + " to "+ conferenceId);
+  }
+synchronized (conferenceList) {
+    ConferenceManager conferenceManager;
+    conferenceManager=findConferenceManager(conferenceId);
+    try {
+      conferenceManager.addTreatment(treatment);
+    }
+ catch (    IOException e) {
+      throw new ParseException("bad treatment " + " " + e.getMessage(),0);
+    }
+    return;
+  }
+}

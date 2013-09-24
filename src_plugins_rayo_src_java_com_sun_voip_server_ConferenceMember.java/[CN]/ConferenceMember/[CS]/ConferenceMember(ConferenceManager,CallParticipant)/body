@@ -1,0 +1,13 @@
+{
+  this.conferenceManager=conferenceManager;
+  this.cp=cp;
+  initializeChannel();
+  memberSender=new MemberSender(cp,datagramChannel);
+  memberReceiver=new MemberReceiver(this,cp,datagramChannel);
+  memberReceiver.addJoinConfirmationListener(this);
+  wgManager=conferenceManager.getWGManager();
+  whisperGroups=wgManager.getWhisperGroups();
+  mixManager=new MixManager(this,conferenceManager.getMediaInfo().getSamplesPerPacket(),conferenceManager.getMediaInfo().getChannels());
+  timeStarted=Logger.getDate();
+  addMemberDoneListener(this);
+}

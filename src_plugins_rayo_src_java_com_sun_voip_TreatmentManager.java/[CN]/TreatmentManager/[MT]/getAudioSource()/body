@@ -1,0 +1,24 @@
+{
+synchronized (treatments) {
+    if (treatments.size() == 0) {
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Treatments list is empty for " + treatment);
+      }
+      return null;
+    }
+    AudioSource audioSource=treatments.get(treatmentIndex);
+    if (sampleRateConverter != null) {
+      return audioSource;
+    }
+    if (sampleRate != audioSource.getSampleRate() || channels != audioSource.getChannels()) {
+      try {
+        sampleRateConverter=new SampleRateConverter("Treatment",audioSource.getSampleRate(),audioSource.getChannels(),sampleRate,channels);
+      }
+ catch (      IOException e) {
+        Logger.println("Can't resample treatment! " + e.getMessage());
+        return null;
+      }
+    }
+    return audioSource;
+  }
+}

@@ -1,0 +1,41 @@
+{
+  try {
+    try {
+      busyTreatment=new TreatmentManager("busy.au",0);
+    }
+ catch (    IOException e) {
+      Logger.println("Invalid busy treatment:  " + e.getMessage());
+    }
+    Logger.writeFile("Call " + cp + ":   Begin SIP third party call");
+    setState(CallState.INVITED);
+    InetSocketAddress isa=callHandler.getReceiveAddress();
+    if (isa == null) {
+      throw new IOException("can't get receiver socket!");
+    }
+    clientTransaction=sipUtil.sendInvite(cp,isa);
+    if (clientTransaction == null) {
+      Logger.error("Error placing call:  " + cp);
+      setState(CallState.ENDED,"Reason='Error placing call'");
+      throw new IOException("Error placing call:  " + cp);
+    }
+    CallIdHeader callIdHeader=(CallIdHeader)clientTransaction.getRequest().getHeader(CallIdHeader.NAME);
+    sipCallId=callIdHeader.getCallId();
+    sipServerCallback=SipServer.getSipServerCallback();
+    sipServerCallback.addSipListener(sipCallId,this);
+  }
+ catch (  java.text.ParseException e) {
+    Logger.println("Call " + cp + " Error placing call "+ cp+ ":  "+ e.getMessage());
+    setState(CallState.ENDED,"Reason='Error placing call " + cp + " "+ e.getMessage()+ "'");
+    throw new IOException("Error placing call " + cp + " "+ e.getMessage());
+  }
+catch (  InvalidArgumentException e) {
+    Logger.println("Call " + cp + " Error placing call "+ cp+ ":  "+ e.getMessage());
+    setState(CallState.ENDED,"Reason='Error placing call " + cp + " "+ e.getMessage()+ "'");
+    throw new IOException("Error placing call " + cp + " "+ e.getMessage());
+  }
+catch (  SipException e) {
+    Logger.println("Call " + cp + " Error placing call "+ cp+ ":  "+ e.getMessage());
+    setState(CallState.ENDED,"Reason='Error placing call " + cp + " "+ e.getMessage()+ "'");
+    throw new IOException("Error placing call " + cp + " "+ e.getMessage());
+  }
+}

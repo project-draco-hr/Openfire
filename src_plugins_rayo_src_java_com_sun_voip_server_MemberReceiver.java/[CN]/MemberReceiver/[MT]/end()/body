@@ -1,0 +1,42 @@
+{
+  if (done) {
+    return;
+  }
+  done=true;
+  if (speechDetector != null && speechDetector.isSpeaking()) {
+    callHandler.speakingChanged(false);
+  }
+synchronized (recordingLock) {
+    if (recorder != null) {
+      recorder.done();
+      recorder=null;
+    }
+  }
+  readyToReceiveData=false;
+  if (datagramChannelRegistered && datagramChannel != null) {
+    try {
+      datagramChannel.close();
+      if (Logger.logLevel >= Logger.LOG_DETAIL) {
+        Logger.println("Call " + cp + " closed datagramChannel "+ datagramChannel);
+      }
+      datagramChannel=null;
+    }
+ catch (    IOException e) {
+      Logger.println("Call " + cp + " exception closing datagram channel "+ e.getMessage());
+    }
+  }
+ else {
+    Logger.println("Call " + cp + " not closing datagramChannel");
+  }
+  if (joinConfirmationReceived == true) {
+    String leaveTreatment;
+    if ((leaveTreatment=cp.getConferenceLeaveTreatment()) != null) {
+      try {
+        conferenceManager.addTreatment(leaveTreatment);
+      }
+ catch (      IOException e) {
+        Logger.println("Call " + cp + " failed to start leave treatment "+ leaveTreatment);
+      }
+    }
+  }
+}

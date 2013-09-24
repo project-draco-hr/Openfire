@@ -1,0 +1,14 @@
+{
+  if (resampleCount == 0) {
+    return;
+  }
+  double avg=(double)totalTime / resampleCount;
+  long timeUnitsPerSecond=CurrentTime.getTimeUnitsPerSecond();
+  avg=(avg / timeUnitsPerSecond) * 1000;
+  String s="";
+  if (id != null) {
+    s+="Call " + id + ":  ";
+  }
+  Logger.writeFile(s + avg + "ms avg upsample time from "+ inSampleRate+ "/"+ inChannels+ " to "+ outSampleRate+ "/"+ outChannels);
+  lowPassFilter.printStatistics();
+}

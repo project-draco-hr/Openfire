@@ -1,0 +1,16 @@
+{
+  try {
+    selectionKey=datagramChannel.register(selector,SelectionKey.OP_READ);
+  }
+ catch (  ClosedChannelException e) {
+    callHandler.cancelRequest("register failed, channel closed!");
+    throw new IOException("register failed, channel closed!");
+  }
+catch (  Exception e) {
+    Logger.println("register exception! " + e.getMessage());
+    throw new IOException("register exception!  " + e.getMessage());
+  }
+  datagramChannelRegistered=true;
+  selectionKey.attach(this);
+  return selectionKey;
+}

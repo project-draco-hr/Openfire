@@ -1,0 +1,19 @@
+{
+  if (phoneNumber == null || phoneNumber.indexOf("sip:") != 0) {
+    return false;
+  }
+  Address address=null;
+  SipURI sipURI=null;
+  String host=null;
+  String user=null;
+  try {
+    address=addressFactory.createAddress(phoneNumber);
+    sipURI=(SipURI)address.getURI();
+    host=sipURI.getHost();
+    user=sipURI.getUser();
+  }
+ catch (  ParseException e) {
+    return false;
+  }
+  return user != null;
+}

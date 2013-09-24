@@ -1,0 +1,25 @@
+{
+  Log.info("RayoComponent handlePauseCommand " + iq.getFrom());
+  final IQ reply=IQ.createResultIQ(iq);
+  final String entityId=iq.getTo().getNode();
+  final String treatmentId=iq.getTo().getResource();
+  try {
+    CallHandler callHandler=CallHandler.findCall(entityId);
+    try {
+      callHandler.getMember().pauseTreatment(treatmentId,flag);
+    }
+ catch (    Exception e1) {
+      reply.setError(PacketError.Condition.internal_server_error);
+    }
+  }
+ catch (  NoSuchElementException e) {
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(entityId);
+      conferenceManager.getWGManager().pauseConferenceTreatment(treatmentId,flag);
+    }
+ catch (    ParseException e1) {
+      reply.setError(PacketError.Condition.item_not_found);
+    }
+  }
+  return reply;
+}

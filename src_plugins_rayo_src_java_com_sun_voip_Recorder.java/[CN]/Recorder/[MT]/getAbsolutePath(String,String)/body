@@ -1,0 +1,24 @@
+{
+  String osName=System.getProperty("os.name");
+  if (osName.indexOf("Windows") >= 0) {
+    if (recordPath.substring(0,1).equals(fileSeparator) == true || recordPath.charAt(1) == ':') {
+      return recordPath;
+    }
+  }
+ else {
+    if (recordPath.substring(0,1).equals(fileSeparator) == true) {
+      return recordPath;
+    }
+  }
+  if (recordDirectory == null) {
+    recordDirectory=System.getProperty("com.sun.voip.server.Bridge.recordDirectory",defaultRecordDirectory);
+  }
+  String path=recordDirectory + fileSeparator + recordPath;
+  try {
+    checkPermission(path,false);
+  }
+ catch (  ParseException e) {
+    throw new IOException(e.getMessage());
+  }
+  return recordDirectory + fileSeparator + recordPath;
+}

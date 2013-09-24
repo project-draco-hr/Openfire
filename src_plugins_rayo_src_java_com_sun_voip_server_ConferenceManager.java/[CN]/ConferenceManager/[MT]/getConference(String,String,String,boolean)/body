@@ -1,0 +1,30 @@
+{
+  ConferenceManager conferenceManager;
+  try {
+    conferenceManager=findConferenceManager(conferenceId);
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("found existing conference:  '" + conferenceId + "'");
+    }
+    return conferenceManager;
+  }
+ catch (  ParseException e) {
+  }
+  try {
+    conferenceManager=new ConferenceManager(conferenceId,mediaPreference,displayName);
+  }
+ catch (  SocketException e) {
+    Logger.error("Can't create conference " + conferenceId + " "+ e.getMessage());
+    return null;
+  }
+synchronized (conferenceList) {
+    conferenceList.add(conferenceManager);
+  }
+  Logger.println("starting new conference:  '" + conferenceId + "'.  "+ " conferences in progress:  "+ conferenceList.size());
+  conferenceManager.setPermanent(permanent);
+  String id=conferenceManager.getId();
+  if (displayName != null) {
+    id+=":" + mediaPreference + ":"+ displayName;
+  }
+  ConferenceManager.conferenceEventNotification(new ConferenceEvent(ConferenceEvent.CONFERENCE_STARTED,id));
+  return conferenceManager;
+}

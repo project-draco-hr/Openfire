@@ -1,0 +1,42 @@
+{
+  ArrayList privateMixesForMe=oldMember.getPrivateMixesForMe();
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println(oldMember + " private mixes for me " + oldMember.getPrivateMixesForMe().size());
+  }
+  ConferenceMember[] pmArrayForMe=(ConferenceMember[])privateMixesForMe.toArray(new ConferenceMember[0]);
+  for (int i=0; i < pmArrayForMe.length; i++) {
+    ConferenceMember m=pmArrayForMe[i];
+    MixManager mixManager=m.getMixManager();
+synchronized (mixManager) {
+      MixDescriptor[] mixDescriptors=(MixDescriptor[])mixManager.getMixDescriptors().toArray(new MixDescriptor[0]);
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("member with pm " + m + " descriptors before...");
+        mixManager.showDescriptors();
+      }
+      for (int j=0; j < mixDescriptors.length; j++) {
+        MixDescriptor md=mixDescriptors[j];
+        if (md.isPrivateMix() == false) {
+          Logger.println(this + " Skipping md for " + md);
+          continue;
+        }
+        MemberReceiver mr=(MemberReceiver)md.getMixDataSource();
+        if (mr.getMember() != oldMember) {
+          Logger.println(this + " md " + md+ " not an md for old member "+ mr);
+          continue;
+        }
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("setting pm for " + m + " to new member "+ this.getMemberReceiver());
+        }
+        m.removePrivateMix(oldMember);
+synchronized (mixMap) {
+          m.applyPrivateMix(this,md.getSpatialValues());
+        }
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("member with pm " + m + " descriptors after...");
+          mixManager.showDescriptors();
+        }
+        break;
+      }
+    }
+  }
+}

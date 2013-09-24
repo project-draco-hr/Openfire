@@ -1,0 +1,14 @@
+{
+  String treatment=cp.getCallAnsweredTreatment();
+  int repeatCount=0;
+  if (cp.getJoinConfirmationTimeout() != 0) {
+    repeatCount=30;
+  }
+  callAnsweredTreatment=initializeTreatment(treatment,repeatCount);
+  if (callHandler.isFirstMember()) {
+    treatment=cp.getFirstConferenceMemberTreatment();
+    if (treatment != null) {
+      callAnsweredTreatment=initializeTreatment(treatment,repeatCount);
+    }
+  }
+}

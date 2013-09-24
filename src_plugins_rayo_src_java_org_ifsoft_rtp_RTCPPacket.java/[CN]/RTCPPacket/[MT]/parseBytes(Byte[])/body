@@ -1,0 +1,13 @@
+{
+  ArrayList list=new ArrayList();
+  do {
+    RTCPPacket item=parseNext(bytes);
+    if (item == null)     return (RTCPPacket[])list.toArray(new RTCPPacket[0]);
+    list.add(item);
+    Integer offset=Integer.valueOf(4 + ArrayExtensions.getLength(item.getPayload()).intValue());
+    Integer _var0=offset;
+    if (_var0 != null ? _var0.equals(ArrayExtensions.getLength(bytes)) : _var0 == ArrayExtensions.getLength(bytes))     return (RTCPPacket[])list.toArray(new RTCPPacket[0]);
+    bytes=BitAssistant.subArray(bytes,offset);
+  }
+ while (true);
+}

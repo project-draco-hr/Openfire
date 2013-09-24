@@ -1,0 +1,25 @@
+{
+  if (serverName == null) {
+    serverName=System.getProperty("com.sun.voip.server.BRIDGE_SERVER_NAME","escher.east.sun.com");
+  }
+  if (serverPort == 0) {
+    serverPort=Integer.getInteger("com.sun.voip.server.Bridge.PORT",6666).intValue();
+  }
+  InetSocketAddress isa=new InetSocketAddress(serverName,serverPort);
+  if (isa.isUnresolved()) {
+    throw new IOException("BridgeConnector can't resolve hostname " + serverName);
+  }
+  Logger.println("Connecting to remote host " + serverName + ", port "+ serverPort);
+  socket=new Socket();
+  socket.connect(isa,timeout);
+  output=socket.getOutputStream();
+  bufferedReader=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+  start();
+synchronized (this) {
+    try {
+      wait();
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+}

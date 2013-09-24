@@ -1,0 +1,21 @@
+{
+synchronized (recordingLock) {
+    if (audioRecorder == null) {
+      return;
+    }
+    try {
+      if (mediaInfo.getEncoding() != RtpPacket.PCMU_ENCODING) {
+        audioRecorder.write(data,0,length);
+      }
+ else {
+        byte[] ulawData=new byte[data.length];
+        AudioConversion.linearToUlaw(data,ulawData,0);
+        audioRecorder.write(ulawData,0,ulawData.length);
+      }
+    }
+ catch (    IOException e) {
+      Logger.println("Unable to record data " + e.getMessage());
+      audioRecorder=null;
+    }
+  }
+}

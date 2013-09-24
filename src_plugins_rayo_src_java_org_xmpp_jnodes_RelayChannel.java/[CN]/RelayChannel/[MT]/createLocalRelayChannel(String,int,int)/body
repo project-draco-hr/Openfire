@@ -1,0 +1,18 @@
+{
+  int range=maxPort - minPort;
+  IOException be=null;
+  for (int t=0; t < 50; t++) {
+    try {
+      int a=Math.round((int)(Math.random() * range)) + minPort;
+      a=a % 2 == 0 ? a : a + 1;
+      return new RelayChannel(host,a);
+    }
+ catch (    BindException e) {
+      be=e;
+    }
+catch (    IOException e) {
+      be=e;
+    }
+  }
+  throw be;
+}

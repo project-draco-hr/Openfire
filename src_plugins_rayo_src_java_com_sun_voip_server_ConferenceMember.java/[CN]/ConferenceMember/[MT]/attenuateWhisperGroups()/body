@@ -1,0 +1,30 @@
+{
+  if (whisperGroup == null) {
+    return;
+  }
+synchronized (conferenceManager) {
+synchronized (mixManager) {
+      ArrayList mixDescriptors=mixManager.getMixDescriptors();
+      for (int i=0; i < mixDescriptors.size(); i++) {
+        MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+        if (md.getMixDataSource() instanceof WhisperGroup == false) {
+          continue;
+        }
+        WhisperGroup wg=(WhisperGroup)md.getMixDataSource();
+        muteDescriptor(wg,md);
+        if (wg == whisperGroup) {
+          mixManager.setAttenuation(md,1);
+          continue;
+        }
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("Call " + cp + " talking in "+ whisperGroup+ ", attenuating "+ wg+ " to "+ wg.getAttenuation());
+        }
+        if (whisperGroup.getAttenuation() == 0) {
+          mixManager.setAttenuation(md,0);
+          continue;
+        }
+        mixManager.setAttenuation(md,wg.getAttenuation());
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  ConferenceMember member=callHandler.getMember();
+  ConferenceManager conferenceManager=callHandler.getConferenceManager();
+  ConferenceManager newConferenceManager=ConferenceManager.getConference(conferenceId);
+  if (newConferenceManager == null) {
+    throw new NoSuchElementException("Can't create conference " + conferenceId);
+  }
+  CallParticipant cp=callHandler.getCallParticipant();
+  cp.setConferenceId(conferenceId);
+  conferenceManager.transferMember(newConferenceManager,member);
+  callHandler.setConferenceManager(newConferenceManager);
+  try {
+    newConferenceManager.addTreatment("joinCLICK.au");
+  }
+ catch (  IOException e) {
+    Logger.println("Call " + cp + " unable to play joinCLICK.au "+ e.getMessage());
+  }
+  CallEvent event=new CallEvent(CallEvent.CALL_TRANSFERRED);
+  event.setInfo("ConferenceReceiverPort='" + callHandler.getReceiveAddress().getPort() + "'"+ " ConferencePayload='"+ newConferenceManager.getMediaInfo().getPayload()+ "'"+ " BridgeIPAddress='"+ Bridge.getPrivateHost()+ "'");
+  callHandler.sendCallEventNotification(event);
+  Application.notifyConferenceMonitors(event);
+  return newConferenceManager;
+}

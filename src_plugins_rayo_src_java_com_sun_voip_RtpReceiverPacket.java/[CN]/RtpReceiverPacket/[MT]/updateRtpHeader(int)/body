@@ -1,0 +1,51 @@
+{
+  long packetRtpTimestamp=getRtpTimestamp();
+  short packetRtpSequenceNumber=getRtpSequenceNumber();
+  boolean outOfSequence=false;
+  sequenceOffset=0;
+  if (isMarkSet()) {
+    setMark();
+    rtpSequenceNumber=(short)(packetRtpSequenceNumber + 1);
+    rtpTimestamp=packetRtpTimestamp + length;
+  }
+ else {
+    if (packetRtpSequenceNumber == rtpSequenceNumber) {
+      rtpSequenceNumber=++rtpSequenceNumber;
+    }
+ else {
+      outOfSequencePackets++;
+      outOfSequence=true;
+      sequenceOffset=packetRtpSequenceNumber - rtpSequenceNumber;
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.writeFile(id + ":  PACKET OUT OF SEQUENCE!  " + "seq expected 0x"+ Integer.toHexString(rtpSequenceNumber)+ ", got 0x"+ Integer.toHexString(packetRtpSequenceNumber)+ ", total out of seq "+ outOfSequencePackets+ ", payload "+ getRtpPayload()+ ", length "+ getLength());
+      }
+      if ((packetRtpSequenceNumber > 0 && rtpSequenceNumber > 0) || (packetRtpSequenceNumber < 0 && rtpSequenceNumber < 0)) {
+        if (packetRtpSequenceNumber > rtpSequenceNumber) {
+          rtpSequenceNumber=(short)(packetRtpSequenceNumber + 1);
+        }
+      }
+ else {
+        rtpSequenceNumber=(short)(packetRtpSequenceNumber + 1);
+      }
+    }
+    if (rtpTimestamp == packetRtpTimestamp) {
+      rtpTimestamp+=length;
+    }
+ else {
+      if (outOfSequence == false) {
+        wrongRtpTimestamp++;
+        if ((wrongRtpTimestamp % 1000) == 0) {
+          if (Logger.logLevel >= Logger.LOG_INFO) {
+            Logger.writeFile(id + " Bad packet received:  len " + length+ ", ts off by "+ (long)(packetRtpTimestamp - rtpTimestamp)+ ", total wrong ts "+ wrongRtpTimestamp+ ", seq "+ packetRtpSequenceNumber);
+          }
+        }
+      }
+      if (packetRtpTimestamp > rtpTimestamp) {
+        rtpTimestamp=packetRtpTimestamp + length;
+      }
+    }
+  }
+  rtpSequenceNumber&=0xffff;
+  rtpTimestamp&=0xffffffff;
+  previousRtpTimestamp=packetRtpTimestamp;
+}

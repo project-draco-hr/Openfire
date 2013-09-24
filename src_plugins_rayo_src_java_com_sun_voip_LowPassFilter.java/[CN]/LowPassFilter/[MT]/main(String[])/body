@@ -1,0 +1,12 @@
+{
+  LowPassFilter lpf=new LowPassFilter("test",8000,1);
+  debug=true;
+  byte[] buf=new byte[320];
+  for (int i=0; i < buf.length; i+=2) {
+    buf[i]=(byte)(((i / 2) >> 8) & 0xff);
+    buf[i + 1]=(byte)((i / 2) & 0xff);
+  }
+  LowPassFilter.setNAvg(3);
+  LowPassFilter.setLpfVolumeAdjustment(0.0);
+  lpf.lpf(buf);
+}

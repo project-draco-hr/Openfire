@@ -1,0 +1,64 @@
+{
+  try {
+    selector=Selector.open();
+    while (!selector.isOpen()) {
+      Thread.yield();
+    }
+    final Runnable task=new Runnable(){
+      public void run(){
+        while (true) {
+          try {
+            final int n;
+synchronized (obj) {
+            }
+            n=selector.select();
+            if (n == 0) {
+              Thread.sleep(50);
+              Thread.yield();
+              continue;
+            }
+            final Set keys=selector.selectedKeys();
+            for (Iterator i=keys.iterator(); i.hasNext(); ) {
+              final SelectionKey key=(SelectionKey)i.next();
+              i.remove();
+              final DatagramChannel c=(DatagramChannel)key.channel();
+              if (key.isValid() && key.isReadable()) {
+                final SelDatagramChannel sdc=(SelDatagramChannel)key.attachment();
+                if (sdc == null) {
+                  c.receive(ByteBuffer.allocate(0));
+                  continue;
+                }
+                final ByteBuffer b=ByteBuffer.allocateDirect(1450);
+                final SocketAddress clientAddress;
+synchronized (sdc) {
+                  clientAddress=sdc.channel.receive(b);
+                }
+                if (clientAddress != null) {
+                  if (sdc.datagramListener != null) {
+                    executorService.submit(new Runnable(){
+                      public void run(){
+                        sdc.datagramListener.datagramReceived(sdc,b,clientAddress);
+                      }
+                    }
+);
+                  }
+                }
+              }
+            }
+          }
+ catch (          IOException e) {
+            e.printStackTrace();
+          }
+catch (          Throwable t) {
+            t.printStackTrace();
+          }
+        }
+      }
+    }
+;
+    executorService.submit(task);
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+}

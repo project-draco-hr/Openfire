@@ -1,0 +1,18 @@
+{
+  if (suppressStatus == true) {
+    if (callEvent.getInfo() != null && callEvent.getInfo().indexOf("No Answer") >= 0 || callEvent.equals(CallEvent.BUSY_HERE) || callEvent.equals(CallEvent.CALL_ANSWER_TIMEOUT) || callEvent.equals(CallEvent.MIGRATED) || callEvent.equals(CallEvent.MIGRATION_FAILED) || callEvent.equals(CallEvent.JOIN_TIMEOUT)) {
+      return false;
+    }
+    return true;
+  }
+  if (lastGateway == false) {
+    if (callEvent.getInfo().indexOf("gateway error") >= 0) {
+      return true;
+    }
+    return false;
+  }
+  if (onlyOneGateway == false && callEvent.equals(CallEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.INVITED)) {
+    return true;
+  }
+  return false;
+}

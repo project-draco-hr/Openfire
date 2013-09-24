@@ -1,0 +1,105 @@
+{
+  member.getMemberSender().setSendAddress(fromAddress);
+  timeCurrentPacketReceived=System.currentTimeMillis();
+  packetsReceived++;
+  if (packetsReceived == 1) {
+    Logger.println("Call " + cp + " got first packet, length "+ length);
+    packet.setBuffer(receivedData);
+  }
+  if (cp.getInputTreatment() != null) {
+    return;
+  }
+  if (dropPackets != 0) {
+    if ((packetsReceived % dropPackets) == 0) {
+      return;
+    }
+  }
+  if (traceCall || Logger.logLevel == -11) {
+    Logger.writeFile("Call " + cp + " got packet, len "+ length);
+  }
+  long start=0;
+  if (decryptCipher != null) {
+    if (traceCall || Logger.logLevel == -1) {
+      start=System.nanoTime();
+    }
+    receivedData=decrypt(receivedData);
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " decrypt time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+  }
+  recordPacket(receivedData,length);
+  packet.setBuffer(receivedData);
+  packet.setLength(length);
+  byte payload=packet.getRtpPayload();
+  int elapsedTime=(int)(timeCurrentPacketReceived - timePreviousPacketReceived);
+  if (gotComfortPayload || packetsReceived == 1) {
+    packet.setMark();
+    if (gotComfortPayload) {
+      gotComfortPayload=false;
+      if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Call " + cp + "  received packet after comfort payload");
+      }
+    }
+  }
+  if (packet.isMarkSet() == true) {
+    elapsedTime=RtpPacket.PACKET_PERIOD;
+  }
+  totalTime+=elapsedTime;
+synchronized (jitterManager) {
+    jitterManager.insertPacket(packet.getRtpSequenceNumber(),elapsedTime);
+  }
+  int rtpTimestampAdjustment=length - RtpPacket.HEADER_SIZE;
+  if (payload == RtpPacket.COMFORT_PAYLOAD || payload == 19) {
+    receiveComfortPayload(packet,elapsedTime);
+    if (inSampleRateConverter != null) {
+      inSampleRateConverter.reset();
+    }
+    if (speechDetector != null) {
+      if (speechDetector.isSpeaking()) {
+        callHandler.speakingChanged(false);
+      }
+      speechDetector.reset();
+    }
+  }
+ else   if (payload == 18) {
+    Logger.error("Call " + cp + " unexpected payload "+ payload+ " dropping packet ");
+    Util.dump("bad payload 18 data",packet.getData(),0,16);
+  }
+ else   if (payload == myMediaInfo.getPayload()) {
+    if (traceCall || Logger.logLevel == -1) {
+      start=System.nanoTime();
+    }
+    try {
+      rtpTimestampAdjustment=receiveMedia(receivedData,length);
+    }
+ catch (    SpeexException e) {
+      Logger.println("speex decorder failed: " + e.getMessage());
+      e.printStackTrace();
+      callHandler.cancelRequest("Call " + cp + e.getMessage());
+      return;
+    }
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " receiveMedia time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+    int processTime=(int)(System.currentTimeMillis() - timeCurrentPacketReceived);
+    timeToProcessMediaPackets+=processTime;
+    mediaPacketsReceived++;
+  }
+ else   if (payload != 0 && payload == telephoneEventPayload) {
+    if (cp.ignoreTelephoneEvents() == false) {
+      receiveDtmfPayload(packet);
+    }
+  }
+ else {
+    if ((badPayloads % 1000) == 0) {
+      badPayloads++;
+      Logger.error("Call " + cp + " unexpected payload "+ payload+ " length "+ length);
+      Util.dump("unexpected payload",receivedData,0,16);
+    }
+    if (badPayloads >= 1000 && mediaPacketsReceived == 0) {
+      callHandler.cancelRequest("Call " + cp + " bad media payload being sent by call");
+    }
+  }
+  packet.updateRtpHeader(rtpTimestampAdjustment);
+  timePreviousPacketReceived=timeCurrentPacketReceived;
+}

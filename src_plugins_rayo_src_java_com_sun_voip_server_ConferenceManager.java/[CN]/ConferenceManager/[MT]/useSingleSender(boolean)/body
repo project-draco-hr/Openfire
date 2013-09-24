@@ -1,0 +1,29 @@
+{
+  if (ConferenceManager.useSingleSender == useSingleSender) {
+    return;
+  }
+  if (useSingleSender == true) {
+    ConferenceManager.useSingleSender=true;
+    loneConferenceSender=new ConferenceSender(conferenceList);
+    for (int i=0; i < conferenceList.size(); i++) {
+      ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+synchronized (conferenceManager) {
+        conferenceManager.endConferenceSender();
+        conferenceManager.setNewConferenceSender(loneConferenceSender);
+      }
+    }
+  }
+ else {
+synchronized (conferenceList) {
+      ConferenceManager.useSingleSender=false;
+      if (loneConferenceSender != null) {
+        loneConferenceSender.end();
+        loneConferenceSender=null;
+      }
+      for (int i=0; i < conferenceList.size(); i++) {
+        ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+        conferenceManager.setNewConferenceSender();
+      }
+    }
+  }
+}

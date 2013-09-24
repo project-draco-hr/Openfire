@@ -1,0 +1,12 @@
+{
+  try {
+    componentManager.removeComponent(serviceName);
+    bridge.appStop();
+    SessionEventDispatcher.removeListener(this);
+  }
+ catch (  ComponentException e) {
+    Log.error("Could NOT Remove " + serviceName + " Component");
+  }
+  closeAllChannels();
+  executor.shutdownNow();
+}

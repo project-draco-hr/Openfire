@@ -1,0 +1,88 @@
+{
+  dtmfSendSequence++;
+  if (dtmfSendSequence == 1) {
+    Logger.println("Sending dtmf key " + dtmfKeyToSend + " to "+ cp+ " sequence "+ dtmfSendSequence);
+  }
+ else {
+    Logger.writeFile("Sending dtmf key " + dtmfKeyToSend + " to "+ cp+ " sequence "+ dtmfSendSequence);
+  }
+  byte[] data=senderPacket.getData();
+  if (dtmfSendSequence <= 3) {
+    int size=RtpPacket.getDataSize(myMediaInfo.getEncoding(),myMediaInfo.getSampleRate(),myMediaInfo.getChannels());
+    size+=RtpPacket.HEADER_SIZE;
+    int silence=AudioConversion.PCMU_SILENCE;
+    if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
+      silence=AudioConversion.PCM_SILENCE;
+    }
+    for (int i=RtpPacket.HEADER_SIZE; i < size; i++) {
+      data[i]=AudioConversion.PCMU_SILENCE;
+    }
+    senderPacket.setLength(size);
+    senderPacket.setMark();
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending silence with MARK set");
+    return;
+  }
+  senderPacket.setRtpPayload(telephoneEventPayload);
+  senderPacket.setLength(RtpPacket.DATA + 4);
+  data[RtpPacket.DATA + 0]=getTelephoneEvent(dtmfKeyToSend);
+  data[RtpPacket.DATA + 1]=(byte)6;
+  if (dtmfSendSequence <= 6) {
+    senderPacket.setMark();
+    data[RtpPacket.DATA + 2]=(byte)0;
+    data[RtpPacket.DATA + 3]=(byte)0;
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending MARK duration 0");
+    return;
+  }
+  if (dtmfSendSequence == 7) {
+    senderPacket.clearMark();
+    data[RtpPacket.DATA + 2]=(byte)((400 >> 8) & 0xff);
+    data[RtpPacket.DATA + 3]=(byte)(400 & 0xff);
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending duration 400");
+    return;
+  }
+  if (dtmfSendSequence == 8) {
+    senderPacket.clearMark();
+    data[RtpPacket.DATA + 2]=(byte)((800 >> 8) & 0xff);
+    data[RtpPacket.DATA + 3]=(byte)(800 & 0xff);
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending duration 800");
+    return;
+  }
+  if (dtmfSendSequence == 9) {
+    senderPacket.clearMark();
+    data[RtpPacket.DATA + 2]=(byte)((1200 >> 8) & 0xff);
+    data[RtpPacket.DATA + 3]=(byte)(1200 & 0xff);
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending duration 1200");
+    return;
+  }
+  if (dtmfSendSequence <= 12) {
+    senderPacket.clearMark();
+    data[RtpPacket.DATA + 1]|=(byte)0x80;
+    data[RtpPacket.DATA + 2]=(byte)((1304 >> 8) & 0xff);
+    data[RtpPacket.DATA + 3]=(byte)(1304 & 0xff);
+    sendPacket();
+    senderPacket.incrementRtpSequenceNumber();
+    Logger.writeFile("Sending END set duration 1304");
+    return;
+  }
+  Logger.writeFile("Done sending dtmf key...");
+  if (dtmfKeyToSend != null) {
+    if (dtmfKeyToSend.length() == 1) {
+      dtmfKeyToSend=null;
+    }
+ else {
+      dtmfKeyToSend=dtmfKeyToSend.substring(1);
+    }
+  }
+  dtmfSendSequence=0;
+  senderPacket.adjustRtpTimestamp(2400);
+}

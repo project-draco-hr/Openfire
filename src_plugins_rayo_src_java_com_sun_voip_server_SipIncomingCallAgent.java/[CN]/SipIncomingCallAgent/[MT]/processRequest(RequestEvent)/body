@@ -1,0 +1,15 @@
+{
+  Request request=requestEvent.getRequest();
+  if (request.getMethod().equals(Request.ACK)) {
+    handleAck(request);
+  }
+ else   if (request.getMethod().equals(Request.BYE)) {
+    handleBye(requestEvent);
+  }
+ else   if (request.getMethod().equals(Request.CANCEL)) {
+    handleBye(requestEvent);
+  }
+ else {
+    Logger.error("SipIncomingCallAgent:  ignoring request " + request.getMethod());
+  }
+}

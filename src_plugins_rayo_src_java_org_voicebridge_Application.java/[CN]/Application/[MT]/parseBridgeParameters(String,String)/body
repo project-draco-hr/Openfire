@@ -1,0 +1,884 @@
+{
+  if ("nAvg".equalsIgnoreCase(parameter)) {
+    try {
+      LowPassFilter.setNAvg(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("parseBridgeParameters : nAvg " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("lpfv".equalsIgnoreCase(parameter)) {
+    try {
+      LowPassFilter.setLpfVolumeAdjustment(getDouble(value));
+    }
+ catch (    Exception e) {
+      reportError("parseBridgeParameters : lpfv " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("forceGatewayError".equalsIgnoreCase(parameter)) {
+    try {
+      SipTPCCallAgent.forceGatewayError(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("addCallToWhisperGroup".equalsIgnoreCase(parameter)) {
+    String[] tokens=value.split(":");
+    if (tokens.length != 2) {
+      reportError("You must specify both a whisperGroupId and a callId");
+      return;
+    }
+    String whisperGroupId=tokens[0];
+    String callId=tokens[1];
+    CallHandler callHandler=CallHandler.findCall(callId);
+    if (callHandler == null) {
+      reportError("Invalid callId:  " + callId);
+      return;
+    }
+    try {
+      callHandler.getMember().addCall(whisperGroupId);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("allowShortNames".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceManager.setAllowShortNames(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("bridgeLocation".equalsIgnoreCase(parameter)) {
+    Bridge.setBridgeLocation(value);
+    return;
+  }
+  if ("cancelCall".equalsIgnoreCase(parameter)) {
+    CallHandler.hangup(value,"User requested call termination");
+    return;
+  }
+  if ("cancelMigration".equalsIgnoreCase(parameter)) {
+    CallMigrator.hangup(value,"User requested call termination");
+    return;
+  }
+  if ("cnThresh".equalsIgnoreCase(parameter)) {
+    try {
+      CallHandler.setCnThresh(getQualifierString(value),getInteger(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("comfortNoiseType".equalsIgnoreCase(parameter)) {
+    try {
+      MemberSender.setComfortNoiseType(getInteger(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("comfortNoiseLevel".equalsIgnoreCase(parameter)) {
+    try {
+      RtpPacket.setDefaultComfortNoiseLevel((byte)getInteger(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("commonMixDefault".equalsIgnoreCase(parameter)) {
+    try {
+      WhisperGroup.setCommonMixDefault(stringToBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("conferenceInfoShort".equalsIgnoreCase(parameter)) {
+    reportInfo(ConferenceManager.getAbbreviatedConferenceInfo());
+    return;
+  }
+  if ("conferenceInfo".equalsIgnoreCase(parameter)) {
+    reportInfo(ConferenceManager.getDetailedConferenceInfo());
+    return;
+  }
+  if ("createConference".equalsIgnoreCase(parameter)) {
+    String[] tokens=value.split(":");
+    if (tokens.length < 2) {
+      reportError("Missing parameters");
+      return;
+    }
+    String conferenceId=tokens[0];
+    if (tokens[1].indexOf("PCM") != 0 && tokens[1].indexOf("SPEEX") != 0) {
+      reportError("invalid media specification");
+      return;
+    }
+    String mediaPreference=tokens[1];
+    String displayName=null;
+    if (tokens.length > 2) {
+      displayName=tokens[2];
+    }
+    try {
+      ConferenceManager.createConference(conferenceId,mediaPreference,displayName);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("createWhisperGroup".equalsIgnoreCase(parameter)) {
+    String[] tokens=value.split(":");
+    if (tokens.length < 2) {
+      reportError("You must specify both a conferenceId and a whisperGroupId");
+      return;
+    }
+    try {
+      String conferenceId=tokens[0];
+      String whisperGroupId=tokens[1];
+      double attenuation=WhisperGroup.getDefaultAttenuation();
+      if (tokens.length == 3) {
+        attenuation=getDouble(tokens[2]);
+      }
+      ConferenceManager.createWhisperGroup(conferenceId,whisperGroupId,attenuation);
+    }
+ catch (    ParseException e) {
+      reportError("Can't create Whisper group " + tokens[1] + " "+ e.getMessage());
+    }
+    return;
+  }
+  if ("deferMixing".equalsIgnoreCase(parameter)) {
+    try {
+      MemberReceiver.deferMixing(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("destroyWhisperGroup".equalsIgnoreCase(parameter)) {
+    String[] tokens=value.split(":");
+    if (tokens.length != 2) {
+      reportError("You must specify both a conferenceId and a whisperGroupId");
+      return;
+    }
+    try {
+      ConferenceManager.destroyWhisperGroup(tokens[0],tokens[1]);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("callAnswerTimeout".equalsIgnoreCase(parameter)) {
+    try {
+      CallSetupAgent.setDefaultCallAnswerTimeout(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("callAnswerTimeout " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("doNotRecord".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler.setDoNotRecord(callId,booleanValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("dtmfSuppression".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler.setDtmfSuppression(callId,booleanValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("drop".equalsIgnoreCase(parameter)) {
+    try {
+      int integerValue=getInteger(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler.setDropPackets(callId,integerValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("duplicateCallLimit".equalsIgnoreCase(parameter)) {
+    try {
+      CallHandler.setDuplicateCallLimit(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("duplicateCallLimit " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("directConferencing".equalsIgnoreCase(parameter)) {
+    try {
+      IncomingCallHandler.setDirectConferencing(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("distributedConferenceInfo".equalsIgnoreCase(parameter)) {
+    reportInfo(ConferenceManager.getDistributedConferenceInfo());
+    return;
+  }
+  if ("dropDb".equalsIgnoreCase(parameter)) {
+    ConferenceManager.dropDb();
+    return;
+  }
+  if ("enablePSTNCalls".equalsIgnoreCase(parameter)) {
+    try {
+      CallHandler.enablePSTNCalls(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("endConference".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceManager.endConference(value);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("firstRtpPort".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceMember.setFirstRtpPort(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("firstRtpPort " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("setForcePrivateMix".equalsIgnoreCase(parameter)) {
+    try {
+      MixManager.setForcePrivateMix(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("forwardData".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length < 2) {
+        reportError("Missing parameters:  " + value);
+        return;
+      }
+      CallHandler dest=CallHandler.findCall(tokens[0]);
+      if (dest == null) {
+        reportError("Invalid callId:  " + tokens[0]);
+        return;
+      }
+      CallHandler src=CallHandler.findCall(tokens[1]);
+      if (src == null) {
+        reportError("Invalid callId:  " + tokens[1]);
+        return;
+      }
+      src.getMember().getMemberReceiver().addForwardMember(dest.getMember().getMemberSender());
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("forwardDtmfKeys".equalsIgnoreCase(parameter)) {
+    try {
+      MemberReceiver.setForwardDtmfKeys(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("gc".equalsIgnoreCase(parameter)) {
+    System.gc();
+    return;
+  }
+  if ("gcs".equalsIgnoreCase(parameter)) {
+    reportInfo(CallHandler.getCallStateForAllCalls());
+    return;
+  }
+  if ("getCallState".equalsIgnoreCase(parameter)) {
+    String callId=getString(value);
+    CallHandler callHandler=CallHandler.findCall(callId);
+    if (callHandler == null) {
+      reportError("Invalid callId:  " + callId);
+      return;
+    }
+    reportInfo(callHandler.getCallState());
+    return;
+  }
+  if ("getAllAbbreviatedMixDescriptors".equalsIgnoreCase(parameter)) {
+    reportInfo(CallHandler.getAllAbbreviatedMixDescriptors());
+    return;
+  }
+  if ("getAbbreviatedMixDescriptors".equalsIgnoreCase(parameter)) {
+    String callId=getString(value);
+    CallHandler callHandler=CallHandler.findCall(callId);
+    if (callHandler == null) {
+      reportError("Invalid callId:  " + callId);
+      return;
+    }
+    reportInfo(callHandler.getMember().getAbbreviatedMixDescriptors());
+    return;
+  }
+  if ("getAllMixDescriptors".equalsIgnoreCase(parameter)) {
+    reportInfo(CallHandler.getAllMixDescriptors());
+    return;
+  }
+  if ("getMixDescriptors".equalsIgnoreCase(parameter)) {
+    String callId=getString(value);
+    CallHandler callHandler=CallHandler.findCall(callId);
+    if (callHandler == null) {
+      reportError("Invalid callId:  " + callId);
+      return;
+    }
+    reportInfo(callHandler.getMember().getMixDescriptors());
+    return;
+  }
+  if ("getStatistics".equalsIgnoreCase(parameter)) {
+  }
+  if ("getBriefConferenceInfo".equalsIgnoreCase(parameter)) {
+    reportInfo(ConferenceManager.getBriefConferenceInfo());
+    return;
+  }
+  if ("gc".equalsIgnoreCase(parameter)) {
+    System.gc();
+    return;
+  }
+  if ("incomingCallTreatment".equalsIgnoreCase(parameter)) {
+    IncomingCallHandler.setIncomingCallTreatment(value);
+    return;
+  }
+  if ("incomingCallVoiceDetection".equalsIgnoreCase(parameter)) {
+    try {
+      IncomingCallHandler.setIncomingCallVoiceDetection(getBoolean(value));
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("internationalPrefix".equalsIgnoreCase(parameter)) {
+    if (value.equals("\"\"") || value.equals("''")) {
+      value="";
+    }
+    config.setInternationalPrefix(value);
+    return;
+  }
+  if ("internalExtenLength".equalsIgnoreCase(parameter)) {
+    try {
+      config.setInternalExtenLength(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("internalExtenLength " + value + " is not numeric");
+    }
+  }
+  if ("conferenceJoinTreatment".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 2) {
+        reportError("conferenceJoinTreatment requires two inputs");
+        return;
+      }
+      ConferenceManager.setConferenceJoinTreatment(tokens[1],tokens[0]);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("conferenceLeaveTreatment".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 2) {
+        reportError("conferenceLeaveTreatment requires two inputs");
+        return;
+      }
+      ConferenceManager.setConferenceLeaveTreatment(tokens[1],tokens[0]);
+    }
+ catch (    ParseException e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("lastRtpPort".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceMember.setLastRtpPort(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("lastRtpPort " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("loneReceiverPort".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceManager.setLoneReceiverPort(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("loneReceiverPort " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("longDistancePrefix".equalsIgnoreCase(parameter)) {
+    if (value.equals("\"\"") || value.equals("''")) {
+      value="";
+    }
+    config.setLongDistancePrefix(value);
+    return;
+  }
+  if ("migrateToBridge".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 3) {
+        reportError("migrateToBridge requires three inputs");
+        return;
+      }
+      String bridge=tokens[0];
+      String port=tokens[1];
+      String callId=tokens[2];
+      CallHandler callHandler=CallHandler.findCall(callId);
+      if (callHandler == null) {
+        reportError("Invalid callId: " + callId);
+        return;
+      }
+      CallParticipant cp=callHandler.getCallParticipant();
+      if (cp.getInputTreatment() != null) {
+        cp.setPhoneNumber(null);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("senderThreads".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceSender.setSenderThreads(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("senderThreads " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("minJitterBufferSize".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 2) {
+        reportError("minJitterBufferSize requires two inputs");
+        return;
+      }
+      int minJitterBufferSize=getInteger(tokens[0]);
+      CallHandler callHandler=CallHandler.findCall(tokens[1]);
+      if (callHandler == null) {
+        reportError("Invalid callId:  " + tokens[1]);
+        return;
+      }
+      callHandler.getMember().getMemberReceiver().setMinJitterBufferSize(minJitterBufferSize);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("maxJitterBufferSize".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 2) {
+        reportError("maxJitterBufferSize requires two inputs");
+        return;
+      }
+      int minJitterBufferSize=getInteger(tokens[0]);
+      CallHandler callHandler=CallHandler.findCall(tokens[1]);
+      if (callHandler == null) {
+        reportError("Invalid callId:  " + tokens[1]);
+        return;
+      }
+      callHandler.getMember().getMemberReceiver().setMaxJitterBufferSize(minJitterBufferSize);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("monitorCallStatus".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        if (booleanValue == true) {
+          callHandler.addCallEventListener(this);
+        }
+ else {
+          callHandler.removeCallEventListener(this);
+        }
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("monitorConferenceStatus".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String conferenceId=getQualifierString(value);
+      if (conferenceId == null) {
+        reportError("conferenceId id is missing");
+        return;
+      }
+      monitorConferenceStatus(conferenceId,booleanValue);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("monitorIncomingCalls".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      if (monitorIncomingCalls(booleanValue) == false) {
+        reportInfo("There is already an incoming call monitor!");
+        return;
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("monitorOutgoingCalls".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      monitorOutgoingCalls(booleanValue);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("muteCall".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        CallHandler.setMuted(callId,booleanValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("muteWhisperGroup".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        CallHandler.setMuteWhisperGroup(callId,booleanValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("muteConference".equalsIgnoreCase(parameter)) {
+    try {
+      boolean booleanValue=getBoolean(value);
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        CallHandler.setConferenceMuted(callId,booleanValue);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("numberOfCalls".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      if (tokens.length != 1) {
+        reportError("You must specify a conference id");
+        return;
+      }
+      CallEvent event=new CallEvent(CallEvent.NUMBER_OF_CALLS);
+      event.setNumberOfCalls(ConferenceManager.getNumberOfMembers(tokens[0]));
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("outsideLinePrefix".equalsIgnoreCase(parameter)) {
+    if (value.equals("\"\"") || value.equals("''")) {
+      value="";
+    }
+    config.setOutsideLinePrefix(value);
+    return;
+  }
+  if ("receiverPause".equalsIgnoreCase(parameter)) {
+    try {
+      ConferenceReceiver.setReceiverPause(getInteger(value));
+    }
+ catch (    Exception e) {
+      reportError("pause " + value + " is not numeric");
+    }
+    return;
+  }
+  if ("pauseTreatmentToCall".equalsIgnoreCase(parameter)) {
+    try {
+      String[] tokens=value.split(":");
+      CallHandler callHandler=CallHandler.findCall(tokens[0]);
+      if (callHandler == null) {
+        reportError("Invalid callId:  " + tokens[0]);
+        return;
+      }
+      String treatmentId=null;
+      if (tokens.length > 1) {
+        treatmentId=tokens[1];
+      }
+      callHandler.getMember().pauseTreatment(treatmentId,true);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("pauseTreatmentToConference".equalsIgnoreCase(parameter)) {
+    try {
+      String treatment=getTreatment(value);
+      value=value.substring(treatment.length());
+      String conferenceId=getQualifierString(value);
+      if (conferenceId == null) {
+        reportError("conferenceId must be specified:  " + value);
+        return;
+      }
+      ConferenceManager.pauseTreatment(conferenceId,treatment,true);
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("playTreatmentToCall".equalsIgnoreCase(parameter)) {
+    try {
+      String treatment=getTreatment(value);
+      double volume[]=getVolume(value);
+      value=value.substring(treatment.length());
+      String callId=getQualifierString(value);
+      if (callId == null) {
+        reportError("callId must be specified:  " + value);
+        return;
+      }
+      try {
+        CallHandler.playTreatmentToCall(callId,treatment);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+        return;
+      }
+catch (      IOException e) {
+        reportError("Unable to read treatment file " + treatment + " "+ e.getMessage());
+        return;
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("playTreatmentToConference".equalsIgnoreCase(parameter)) {
+    try {
+      String treatment=getTreatment(value);
+      double volume[]=getVolume(value);
+      value=value.substring(treatment.length());
+      String conferenceId=getQualifierString(value);
+      if (conferenceId == null) {
+        reportError("conference Id must be specified:  " + value);
+        return;
+      }
+      try {
+        ConferenceManager.playTreatment(conferenceId,treatment);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid conference Id specified:  " + value);
+        return;
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("playTreatmentToAllConferences".equalsIgnoreCase(parameter)) {
+    try {
+      String treatment=getTreatment(value);
+      double volume[]=getVolume(value);
+      value=value.substring(treatment.length());
+      try {
+        ConferenceManager.playTreatmentToAllConferences(treatment);
+      }
+ catch (      Exception e) {
+        reportError("Error playing treatment :  " + value);
+        return;
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("transferCall".equalsIgnoreCase(parameter)) {
+    try {
+      String callId=getString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        String conferenceId=getQualifierString(value);
+        IncomingCallHandler.transferCall(callId,conferenceId);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+  if ("sendDtmfKey".equalsIgnoreCase(parameter)) {
+    try {
+      String callId=getString(value);
+      if (callId == null) {
+        reportError("Call id is missing");
+        return;
+      }
+      try {
+        CallHandler callHandler=CallHandler.findCall(callId);
+        if (callHandler == null) {
+          reportError("No such callId:  " + callId);
+          return;
+        }
+        String dtmfKey=getQualifierString(value);
+        callHandler.dtmfKeys(dtmfKey);
+      }
+ catch (      NoSuchElementException e) {
+        reportError("Invalid callId specified:  " + value);
+      }
+    }
+ catch (    Exception e) {
+      reportError(e.toString());
+    }
+    return;
+  }
+}

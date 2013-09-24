@@ -1,0 +1,24 @@
+{
+synchronized (incomingCallListeners) {
+    if (monitor == true) {
+      if (incomingCallListeners.contains(this)) {
+        reportError("Client already has an incomingCallListener");
+        return false;
+      }
+      incomingCallListeners.add(this);
+      IncomingCallHandler.setDirectConferencing(false);
+      loginfo("adding incoming call monitor, setting directConferencing to false");
+    }
+ else {
+      if (incomingCallListeners.contains(this) == false) {
+        return false;
+      }
+      incomingCallListeners.remove(this);
+      if (incomingCallListeners.size() == 0) {
+        IncomingCallHandler.setDirectConferencing(true);
+        loginfo("removing last incoming call monitor setting directConferencing to true");
+      }
+    }
+  }
+  return true;
+}

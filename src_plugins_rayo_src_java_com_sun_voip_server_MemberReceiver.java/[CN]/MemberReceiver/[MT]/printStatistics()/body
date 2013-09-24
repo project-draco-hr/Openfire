@@ -1,0 +1,51 @@
+{
+  if (conferenceManager == null) {
+    return;
+  }
+synchronized (conferenceManager) {
+    if (packet == null) {
+      return;
+    }
+    Logger.writeFile("Call " + cp + ":  "+ packetsReceived+ " packets received");
+    Logger.writeFile("Call " + cp + ":  "+ packet.getShortPackets()+ " short packets");
+    Logger.writeFile("Call " + cp + ":  "+ packetsDropped+ " packets dropped");
+    Logger.writeFile("Call " + cp + ":  "+ packet.getOutOfSequencePackets()+ " out of sequence packets");
+    Logger.writeFile("Call " + cp + ":  "+ packet.getWrongRtpTimestamp()+ " incorrect RTP timestamp");
+    Logger.writeFile("Call " + cp + ":  "+ comfortPayloadsReceived+ " comfort payloads received");
+    Logger.writeFile("Call " + cp + ":  Forced to defer mixing "+ forcedToDeferMixing);
+    if (packetsReceived != 0) {
+      Logger.writeFile("Call " + cp + ":  "+ "total time "+ totalTime);
+      Logger.writeFile("Call " + cp + ":  "+ ((float)totalTime / (double)packetsReceived)+ " average milliseconds between receiving packets");
+      Logger.writeFile("Call " + cp + ":  "+ ((float)timeToProcessMediaPackets / (float)mediaPacketsReceived)+ " average milliseconds to process a media packet");
+    }
+    Logger.writeFile("Call " + cp + ":  "+ decryptCount+ " packets decrypted");
+    if (decryptCount != 0) {
+      Logger.writeFile("Call " + cp + ":  "+ (((float)decryptTime / (float)decryptCount) / 1000)+ " microseconds average per decrypt");
+    }
+    if (speexDecoder != null) {
+      int decodes=speexDecoder.getDecodes();
+      long decodeTime=speexDecoder.getDecodeTime();
+      if (decodes > 0) {
+        Logger.writeFile("Call " + cp + ":  "+ "Average Speex decode time "+ (((float)decodeTime / decodes) / 1000000000.)+ " seconds");
+      }
+    }
+    if (inSampleRateConverter != null) {
+      inSampleRateConverter.printStatistics();
+    }
+    if (jitterManager != null) {
+synchronized (jitterManager) {
+        jitterManager.printStatistics();
+      }
+    }
+    Logger.writeFile("");
+    if (dtmfDecoder != null) {
+      dtmfDecoder.printStatistics();
+      Logger.writeFile("");
+    }
+    if (speechDetector != null) {
+      speechDetector.printStatistics();
+      Logger.writeFile("");
+    }
+    Logger.flush();
+  }
+}

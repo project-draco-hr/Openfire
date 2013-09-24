@@ -1,0 +1,13 @@
+{
+  JitterObject jo=(JitterObject)packetList.get(index);
+  if (jo.isMissing) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println(id + ":  got missing packet " + (jo.sequence & 0xffff)+ " firstSequence "+ (firstSequence & 0xffff)+ " index "+ index+ " packetList size "+ packetList.size());
+    }
+  }
+  if (Logger.logLevel >= Logger.LOG_DETAILINFO) {
+    Logger.println(id + ":  inserting " + (jitterObject.sequence & 0xffff)+ " at "+ index+ " size "+ packetList.size()+ " jitterObject:  "+ jitterObject);
+  }
+  checkIndex(jitterObject.sequence,index);
+  packetList.set(index,jitterObject);
+}

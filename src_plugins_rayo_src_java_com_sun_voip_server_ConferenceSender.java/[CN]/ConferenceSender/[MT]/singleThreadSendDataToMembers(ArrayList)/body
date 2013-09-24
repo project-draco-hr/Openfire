@@ -1,0 +1,24 @@
+{
+  for (int i=0; i < memberList.size(); i++) {
+    ConferenceMember member=(ConferenceMember)memberList.get(i);
+    if (!member.getMemberSender().memberIsReadyForSenderData()) {
+      continue;
+    }
+    long start=0;
+    if (Logger.logLevel == -33) {
+      start=System.nanoTime();
+    }
+    try {
+      member.sendData();
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      Logger.println("Can't send data to " + member + " "+ e.getMessage());
+      member.getCallHandler().cancelRequest("Unexpected Exception");
+    }
+    if (Logger.logLevel == -33) {
+      Logger.println("Sender sendDataToOneMember time " + member + " "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+      Logger.logLevel=3;
+    }
+  }
+}

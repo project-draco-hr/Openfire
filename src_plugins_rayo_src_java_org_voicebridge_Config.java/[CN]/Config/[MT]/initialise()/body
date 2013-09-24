@@ -1,0 +1,35 @@
+{
+  conferences=new HashMap<String,Conference>();
+  confExtensions=new HashMap<String,Conference>();
+  sipExtensions=new HashMap<String,ProxyCredentials>();
+  registrations=new ArrayList<ProxyCredentials>();
+  registrars=new ArrayList<String>();
+  MUCEventDispatcher.addListener(this);
+  try {
+    System.out.println(String.format("VoiceBridge read site configuration"));
+    mucManager=XMPPServer.getInstance().getMultiUserChatManager();
+    if (mucManager.getMultiUserChatService("conference") != null) {
+      List<MUCRoom> rooms=mucManager.getMultiUserChatService("conference").getChatRooms();
+      for (      MUCRoom room : rooms) {
+        createConference(room);
+      }
+    }
+    String username=JiveGlobals.getProperty("voicebridge.default.proxy.username",null);
+    if (defaultProxy != null) {
+      if (username != null) {
+        if (JiveGlobals.getBooleanProperty("voicebridge.register.all.users",false)) {
+          processRegistrations();
+        }
+ else {
+          processDefaultRegistration(username);
+        }
+      }
+ else {
+        registerWithDefaultProxy();
+      }
+    }
+  }
+ catch (  Throwable t) {
+    t.printStackTrace();
+  }
+}

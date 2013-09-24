@@ -1,0 +1,14 @@
+{
+  if (memberTreatments.size() == 0) {
+    currentTreatment=null;
+    return;
+  }
+  currentTreatment=(TreatmentManager)memberTreatments.get(0);
+  currentTreatment.addTreatmentDoneListener(this);
+synchronized (mixManager) {
+    mixManager.addMix(currentTreatment,1.0D);
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + cp + " Starting next treatment "+ currentTreatment.getId());
+  }
+}

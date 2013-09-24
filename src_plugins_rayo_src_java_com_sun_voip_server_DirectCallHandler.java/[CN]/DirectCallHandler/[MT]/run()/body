@@ -1,0 +1,54 @@
+{
+  setState(INITIATED);
+  ch1=new DirectOutgoingCallHandler(cp);
+  ch1.sendInvite(null);
+  String sdp=null;
+  try {
+    sdp=ch1.waitForOK();
+  }
+ catch (  Exception ex) {
+    setState(FAILED);
+    return;
+  }
+  CallParticipant cp2=new CallParticipant();
+  cp2.setCallAnswerTimeout(cp.getCallAnswerTimeout());
+  cp2.setCallAnsweredTreatment(cp.getSecondPartyTreatment());
+  cp2.setCallEndTreatment(cp.getSecondPartyCallEndTreatment());
+  cp2.setCallId(cp.getSecondPartyCallId());
+  cp2.setConferenceId(cp.getConferenceId());
+  if (cp.getSecondPartyName() != null) {
+    cp2.setName(cp.getSecondPartyName());
+  }
+ else {
+    cp2.setName(cp.getSecondPartyNumber());
+  }
+  cp2.setDisplayName(cp.getName());
+  if (cp2.getCallId() == null) {
+    cp2.setCallId(CallHandler.getNewCallId());
+  }
+  cp2.setPhoneNumber(cp.getSecondPartyNumber());
+  cp2.setVoiceDetection(cp.getSecondPartyVoiceDetection());
+  ch2=new DirectOutgoingCallHandler(cp2);
+  ch1.setOtherCall(ch2);
+  ch2.setOtherCall(ch1);
+  ch2.sendInvite(sdp);
+  try {
+    sdp=ch2.waitForOK();
+    ch1.sendAck(sdp);
+    ch2.sendAck(null);
+    setState(ESTABLISHED);
+    ch1.waitForTerminate();
+    ch2.waitForTerminate();
+    setState(TERMINATED);
+  }
+ catch (  Exception ex) {
+    setState(FAILED);
+    if (ch1.getState() != ch1.TERMINATED) {
+      ch1.sendBye();
+    }
+    if (ch2.getState() != ch2.TERMINATED) {
+      ch2.sendBye();
+    }
+    return;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  if (whisperGroup == null) {
+    return true;
+  }
+  if (whisperGroup != conferenceWhisperGroup) {
+    if (traceCall) {
+      if (cp.isMuteWhisperGroup()) {
+        Logger.writeFile("Call " + cp + " whispergroup muted");
+      }
+    }
+    return cp.isMuteWhisperGroup();
+  }
+  if (traceCall) {
+    if (isAutoMuted || cp.isMuted() || cp.isConferenceMuted()|| cp.isConferenceSilenced()) {
+      Logger.writeFile("Call " + cp + " isAutoMuted "+ isAutoMuted+ " isMuted "+ cp.isMuted()+ " isConf muted "+ cp.isConferenceMuted()+ " isConf sileneced "+ cp.isConferenceSilenced());
+    }
+  }
+  return isAutoMuted || cp.isMuted() || cp.isConferenceMuted()|| cp.isConferenceSilenced();
+}

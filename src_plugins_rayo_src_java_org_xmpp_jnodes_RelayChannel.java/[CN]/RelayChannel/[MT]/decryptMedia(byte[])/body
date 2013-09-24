@@ -1,0 +1,74 @@
+{
+  Byte data[]=BitAssistant.bytesToArray(b);
+  boolean decoded=false;
+  if (isStunPacket(data) == false && encryptor != null) {
+    RTPPacket packet=null;
+    RTPPacket packet2=null;
+    RTCPPacket packets[]=null;
+    try {
+      packet2=RTPPacket.parseBytes(BitAssistant.bytesToArray(b));
+      if (packet2 != null) {
+        decoded=true;
+        if (packet2.getPayloadType() == 0 && handset.mixer != null) {
+          packet=encryptor.decryptRTP(data);
+          if (packet != null) {
+            lastAudioPacket=packet;
+            byte[] byteBuffer=BitAssistant.bytesFromArray(packet.getPayload());
+            int[] l16Buffer=new int[160];
+            AudioConversion.ulawToLinear(byteBuffer,0,byteBuffer.length,l16Buffer);
+            memberReceiver=callHandler.getMemberReceiver();
+            if (memberReceiver != null) {
+              memberReceiver.handleWebRtcMedia(l16Buffer,packet.getSequenceNumber().shortValue());
+              if (kt2 < 10) {
+                Log.info("ULAW *** " + l16Buffer);
+              }
+              kt2++;
+            }
+          }
+ else           Log.warn("cannot decode packet " + packet2.getPayloadType() + " "+ packet2.getSequenceNumber()+ " "+ packet2.getTimestamp());
+        }
+ else         if (packet2.getPayloadType() == 111 && handset.mixer != null) {
+          packet=encryptor.decryptRTP(data);
+          if (packet != null) {
+            lastAudioPacket=packet;
+            byte[] in=BitAssistant.bytesFromArray(packet.getPayload());
+            int inputOffset=0;
+            int inputLength=in.length;
+            int frameSizeInSamplesPerChannel=Opus.decoder_get_nb_samples(decoder,in,inputOffset,inputLength);
+            if (frameSizeInSamplesPerChannel > 1) {
+              int frameSizeInBytes=outputFrameSize * channels * frameSizeInSamplesPerChannel;
+              byte[] output=new byte[frameSizeInBytes];
+              frameSizeInSamplesPerChannel=Opus.decode(decoder,in,inputOffset,inputLength,output,0,frameSizeInSamplesPerChannel,0);
+              memberReceiver=callHandler.getMemberReceiver();
+              if (memberReceiver != null) {
+                int[] l16Buffer=AudioConversion.bytesToLittleEndianInts(output);
+                placeInStereo(l16Buffer);
+                memberReceiver.handleWebRtcMedia(l16Buffer,packet.getSequenceNumber().shortValue());
+                if (kt2 < 10) {
+                  Log.info("OPUS *** " + l16Buffer);
+                }
+                kt2++;
+              }
+            }
+ else             Log.info("OPUS.decode fail..." + frameSizeInSamplesPerChannel);
+          }
+ else           Log.warn("cannot decode packet " + packet2.getPayloadType() + " "+ packet2.getSequenceNumber()+ " "+ packet2.getTimestamp());
+        }
+ else         if (packet2.getPayloadType() == 100) {
+          decoded=false;
+        }
+ else {
+          if (packet2.getPayloadType() != 13) {
+            byte[] byteBuffer=BitAssistant.bytesFromArray(packet2.getPayload());
+            decoded=false;
+          }
+        }
+      }
+    }
+ catch (    Exception exception) {
+      Log.error("RelayChannel - Could not decrypt data " + exception);
+      exception.printStackTrace();
+    }
+  }
+  return decoded;
+}

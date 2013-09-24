@@ -1,0 +1,24 @@
+{
+  if (callId == null) {
+    return;
+  }
+synchronized (activeCalls) {
+    for (int i=0; i < activeCalls.size(); i++) {
+      CallHandler call=(CallHandler)activeCalls.elementAt(i);
+      CallParticipant cp=call.getCallParticipant();
+      if (match(cp,callId)) {
+        if (Logger.logLevel >= Logger.LOG_DETAIL) {
+          String s="";
+          if (isMuted == false) {
+            s="un";
+          }
+          Logger.println(cp.getCallId() + ":  " + s+ "muted");
+        }
+        MemberReceiver memberReceiver=call.getMemberReceiver();
+        if (memberReceiver != null) {
+          memberReceiver.setMuteWhisperGroup(isMuted);
+        }
+      }
+    }
+  }
+}

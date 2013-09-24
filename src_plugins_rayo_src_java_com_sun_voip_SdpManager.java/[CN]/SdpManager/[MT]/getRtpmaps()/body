@@ -1,0 +1,11 @@
+{
+  String rtpmaps="";
+  for (int i=0; i < supportedMedia.size(); i++) {
+    MediaInfo mediaInfo=(MediaInfo)supportedMedia.elementAt(i);
+    if (mediaInfo.getSampleRate() > maxSampleRate || mediaInfo.getChannels() > maxChannels) {
+      continue;
+    }
+    rtpmaps+=generateRtpmap(mediaInfo) + "\r\n";
+  }
+  return rtpmaps;
+}

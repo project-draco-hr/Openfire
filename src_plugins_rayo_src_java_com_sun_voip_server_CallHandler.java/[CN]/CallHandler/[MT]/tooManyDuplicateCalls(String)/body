@@ -1,0 +1,16 @@
+{
+synchronized (activeCalls) {
+    int n=0;
+    for (int i=0; i < activeCalls.size(); i++) {
+      CallHandler call=(CallHandler)activeCalls.elementAt(i);
+      CallParticipant cp=call.getCallParticipant();
+      if (cp.getPhoneNumber().equals(phoneNumber)) {
+        n++;
+      }
+    }
+    if (n > duplicateCallLimit) {
+      return true;
+    }
+    return false;
+  }
+}

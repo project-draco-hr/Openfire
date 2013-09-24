@@ -1,0 +1,40 @@
+{
+  MixManager mixManager=oldMember.getMixManager();
+synchronized (mixManager) {
+    ArrayList mixDescriptors=mixManager.getMixDescriptors();
+    for (int i=0; i < mixDescriptors.size(); i++) {
+      MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+      if (md.isPrivateMix() == false) {
+        continue;
+      }
+      MemberReceiver mr=(MemberReceiver)md.getMixDataSource();
+      if (mr.getMember() == oldMember) {
+        continue;
+      }
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("pre-migrate member " + oldMember + " has pm for "+ mr);
+        Logger.println("pre-migrate member " + oldMember + " mix descriptors "+ oldMember.getMixDescriptors());
+      }
+synchronized (mixMap) {
+        applyPrivateMix(mr.getMember(),md.getSpatialValues());
+      }
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Call " + cp + " Set private mix for "+ mr+ " to "+ md);
+      }
+    }
+    for (int i=0; i < mixDescriptors.size(); i++) {
+      MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+      if (md.isPrivateMix() == false) {
+        continue;
+      }
+      MemberReceiver mr=(MemberReceiver)md.getMixDataSource();
+      if (mr.getMember() == oldMember) {
+        continue;
+      }
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println(oldMember + " removing pm for " + mr.getMember());
+      }
+      oldMember.removePrivateMix(mr.getMember());
+    }
+  }
+}

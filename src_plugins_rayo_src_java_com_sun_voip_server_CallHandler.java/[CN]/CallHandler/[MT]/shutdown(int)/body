@@ -1,0 +1,44 @@
+{
+  if (delaySeconds == 0) {
+    hangup("0","System shutdown");
+    return;
+  }
+  long start=System.currentTimeMillis();
+  Logger.println("Shutting down in " + delaySeconds + " seconds");
+synchronized (activeCalls) {
+    for (int i=0; i < activeCalls.size(); i++) {
+      CallHandler call=(CallHandler)activeCalls.elementAt(i);
+      String id=call.getCallParticipant().getCallId();
+      try {
+        playTreatmentToCall(id,"joinBELL.au;shutdown.au;tts:" + delaySeconds + ";seconds.au");
+      }
+ catch (      IOException e) {
+        Logger.println("Can't play shutdown treatment to call " + id + " "+ e.getMessage());
+      }
+    }
+    while (System.currentTimeMillis() - start < 60000) {
+      boolean hasTreatments=false;
+      for (int i=0; i < activeCalls.size(); i++) {
+        CallHandler call=(CallHandler)activeCalls.elementAt(i);
+        hasTreatments=call.getMember().hasTreatments();
+        if (hasTreatments) {
+          break;
+        }
+      }
+      if (hasTreatments == false) {
+        break;
+      }
+    }
+  }
+  if (delaySeconds != 0) {
+    int sleepTime=(int)((delaySeconds * 1000) - (System.currentTimeMillis() - start));
+    if (sleepTime > 0) {
+      try {
+        Thread.sleep(sleepTime);
+      }
+ catch (      InterruptedException e) {
+      }
+    }
+  }
+  hangup("0","System shutdown");
+}

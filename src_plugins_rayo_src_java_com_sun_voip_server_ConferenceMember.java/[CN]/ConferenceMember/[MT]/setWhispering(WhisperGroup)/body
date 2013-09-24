@@ -1,0 +1,45 @@
+{
+synchronized (conferenceManager) {
+synchronized (whisperGroups) {
+      if (whisperGroup == null) {
+        whisperGroup=newWhisperGroup;
+        whisperGroup.setWhispering(true,this);
+        memberReceiver.setWhisperGroup(whisperGroup);
+synchronized (mixManager) {
+          if (whisperGroup.hasCommonMix() == true && (cp.getInputTreatment() == null || cp.isRecorder() == true)) {
+            mixManager.addMix(whisperGroup,1.0D);
+          }
+          adjustPrivateMixDescriptors();
+        }
+        return;
+      }
+      if (initialWhisperGroup != null) {
+        String id=initialWhisperGroup.getId();
+        initialWhisperGroup=null;
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Removing initial wg " + id);
+        }
+        removeCall(id);
+      }
+      if (newWhisperGroup == whisperGroup) {
+        Logger.writeFile("Call " + this + " is already whispering to "+ whisperGroup);
+        return;
+      }
+synchronized (whisperGroup) {
+        whisperGroup.setWhispering(false,this);
+        memberReceiver.flushContributions();
+        whisperGroup=newWhisperGroup;
+        memberReceiver.setWhisperGroup(whisperGroup);
+        Logger.println("Call " + cp + " Now whispering in "+ whisperGroup);
+        whisperGroup.setWhispering(true,this);
+synchronized (mixManager) {
+          if (whisperGroup.hasCommonMix() == true && (cp.getInputTreatment() == null || cp.isRecorder() == true)) {
+            mixManager.addMix(whisperGroup,1.0D);
+          }
+          attenuateWhisperGroups();
+          adjustPrivateMixDescriptors();
+        }
+      }
+    }
+  }
+}

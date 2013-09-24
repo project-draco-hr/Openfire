@@ -1,0 +1,66 @@
+{
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println(callEvent.toString());
+  }
+  if (callEvent.equals(CallEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.ESTABLISHED)) {
+    if (callEvent.getInfo() != null) {
+      Logger.println("IncomingConferenceHandler:  " + callEvent.getInfo());
+    }
+    if (Config.getInstance().getMeetingCode(phoneNo) != null) {
+      meetingCode=Config.getInstance().getMeetingCode(phoneNo);
+      if (Config.getInstance().getPassCode(meetingCode,phoneNo) == null) {
+        try {
+          incomingCallHandler.transferCall(Config.getInstance().getMeetingCode(phoneNo));
+          state=IN_MEETING;
+        }
+ catch (        IOException e) {
+          System.err.println("Exception joining meeting! " + meetingCode + " "+ e.getMessage());
+        }
+      }
+ else {
+        state=WAITING_FOR_PASS_CODE;
+        playTreatmentToCall(ENTER_REQUIRED_PASS_CODE);
+        start();
+      }
+    }
+ else {
+      playTreatmentToCall(ENTER_MEETING_CODE);
+      state=WAITING_FOR_MEETING_CODE;
+      start();
+    }
+    return;
+  }
+  if (callEvent.equals(CallEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.ENDED)) {
+    playTreatmentToCall(LEAVE_MEETING);
+    return;
+  }
+  if (callEvent.equals(CallEvent.DTMF_KEY) == false) {
+    return;
+  }
+  String dtmfKey=callEvent.getDtmfKey();
+  if (state == WAITING_FOR_MEETING_CODE) {
+    getMeetingCode(dtmfKey);
+  }
+ else   if (state == WAITING_FOR_PASS_CODE) {
+    getPassCode(dtmfKey);
+  }
+ else {
+    if (lastDtmfKey.equals("*")) {
+      if (dtmfKey.equals("1")) {
+        incomingCallHandler.setMuted(true);
+        playTreatmentToCall(CALL_MUTED);
+      }
+ else       if (dtmfKey.equals("2")) {
+        incomingCallHandler.setMuted(false);
+        playTreatmentToCall(CALL_UNMUTED);
+      }
+ else       if (dtmfKey.equals("9")) {
+        playConferenceId();
+      }
+ else       if (dtmfKey.equals("#")) {
+        playNumberOfCalls();
+      }
+    }
+  }
+  lastDtmfKey=dtmfKey;
+}

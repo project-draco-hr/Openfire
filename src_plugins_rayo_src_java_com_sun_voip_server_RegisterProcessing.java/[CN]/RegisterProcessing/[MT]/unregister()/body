@@ -1,0 +1,36 @@
+{
+  if (!isRegistered) {
+    return;
+  }
+  cancelPendingRegistrations();
+  isRegistered=false;
+  if (this.registerRequest == null) {
+    Logger.println("Couldn't find the initial register request");
+    throw new IOException("Couldn't find the initial register request");
+  }
+  Request unregisterRequest=(Request)registerRequest.clone();
+  try {
+    unregisterRequest.getExpires().setExpires(0);
+    CSeqHeader cSeqHeader=(CSeqHeader)unregisterRequest.getHeader(CSeqHeader.NAME);
+    cSeqHeader.setSequenceNumber(cSeqHeader.getSequenceNumber() + 1);
+  }
+ catch (  InvalidArgumentException e) {
+    Logger.println("Unable to set Expires Header " + e.getMessage());
+    return;
+  }
+  ClientTransaction unregisterTransaction=null;
+  try {
+    unregisterTransaction=sipProvider.getNewClientTransaction(unregisterRequest);
+  }
+ catch (  TransactionUnavailableException e) {
+    throw new IOException("Unable to create a unregister transaction " + e.getMessage());
+  }
+  try {
+    unregisterTransaction.sendRequest();
+  }
+ catch (  SipException e) {
+    Logger.println("Faied to send unregister request " + e.getMessage());
+    return;
+  }
+  Application.registerNotification("Unregistering",proxyCredentials);
+}

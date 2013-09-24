@@ -1,0 +1,67 @@
+{
+  if (this.loneReceiverPort != loneReceiverPort && loneReceiverChannel != null) {
+    close();
+  }
+  this.loneReceiverPort=loneReceiverPort;
+  try {
+    selector=Selector.open();
+  }
+ catch (  IOException e) {
+    Logger.println("Conference receiver failed to open selector " + e.getMessage());
+    return;
+  }
+  if (loneReceiverPort == 0) {
+    return;
+  }
+  Logger.println("Init lone channel using port " + loneReceiverPort);
+  try {
+    loneReceiverChannel=DatagramChannel.open();
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Opened lone receiver channel " + loneReceiverChannel);
+    }
+  }
+ catch (  IOException e) {
+    Logger.println("Conference receiver failed to open DatagramChannel " + " " + e.getMessage());
+    return;
+  }
+  try {
+    loneReceiverChannel.configureBlocking(false);
+  }
+ catch (  IOException e) {
+    Logger.println("Conference receiver failed to configureBlocking to false " + e.getMessage());
+    return;
+  }
+  DatagramSocket socket=loneReceiverChannel.socket();
+  try {
+    socket.setReceiveBufferSize(RtpSocket.MAX_RECEIVE_BUFFER);
+  }
+ catch (  SocketException e) {
+    Logger.println("ConferenceReceiver failed to set receive buffer size " + e.getMessage());
+    return;
+  }
+  try {
+    socket.setSoTimeout(0);
+  }
+ catch (  SocketException e) {
+    Logger.println("ConferenceReceiver failed to set timeout " + e.getMessage());
+    return;
+  }
+  InetSocketAddress bridgeAddress=Bridge.getLocalBridgeAddress();
+  InetSocketAddress isa=new InetSocketAddress(bridgeAddress.getAddress(),loneReceiverPort);
+  try {
+    socket.bind(isa);
+  }
+ catch (  IOException e) {
+    Logger.println("Conference receiver unable to bind to " + loneReceiverPort + " "+ e.getMessage());
+    return;
+  }
+  try {
+    SelectionKey selectionKey=loneReceiverChannel.register(selector,SelectionKey.OP_READ);
+  }
+ catch (  Exception e) {
+    Logger.println("Conference receiver unable to register:  " + e.getMessage());
+    return;
+  }
+  memberCount++;
+  Logger.println("Lone Channel uses port " + loneReceiverPort);
+}

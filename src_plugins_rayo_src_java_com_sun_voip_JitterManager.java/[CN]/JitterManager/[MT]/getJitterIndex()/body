@@ -1,0 +1,18 @@
+{
+  if (maxJitterBufferSize == 0) {
+    return 0;
+  }
+  int jitter=this.jitter;
+  jitter=(jitter + RtpPacket.PACKET_PERIOD - 1) / RtpPacket.PACKET_PERIOD * RtpPacket.PACKET_PERIOD;
+  int packetListIndex=jitter / RtpPacket.PACKET_PERIOD;
+  if (maxJitterBufferSize > 0 && Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+    Logger.println(id + ":  jitter " + jitter+ " index "+ packetListIndex);
+  }
+  if (packetListIndex < minJitterBufferSize) {
+    return minJitterBufferSize;
+  }
+  if (packetListIndex > maxJitterBufferSize / 2) {
+    packetListIndex=maxJitterBufferSize / 2;
+  }
+  return packetListIndex;
+}

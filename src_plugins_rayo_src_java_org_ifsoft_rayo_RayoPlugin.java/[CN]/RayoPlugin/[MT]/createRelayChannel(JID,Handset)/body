@@ -1,0 +1,16 @@
+{
+  RelayChannel rc=null;
+  try {
+    rc=RelayChannel.createLocalRelayChannel(bindAllInterfaces ? "0.0.0.0" : LocalIPResolver.getLocalIP(),30000,50000);
+    final int id=ids.incrementAndGet();
+    final String sId="rayo-handset-" + String.valueOf(id);
+    rc.setAttachment(sId);
+    rc.setFrom(jid,component);
+    rc.setCrypto(handset);
+    channels.put(sId,rc);
+  }
+ catch (  IOException e) {
+    Log.error("Could Not Create Channel.",e);
+  }
+  return rc;
+}

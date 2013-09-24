@@ -1,0 +1,37 @@
+{
+  try {
+    if (lastAudioPacket != null) {
+      RTPPacket newPacket=RTPPacket.parseBytes(BitAssistant.bytesToArray(rtpData));
+      RTPPacket packet=RTPPacket.parseBytes(lastAudioPacket.getBytes());
+      if (handset.codec == null || "OPUS".equals(handset.codec)) {
+        byte[] input=AudioConversion.littleEndianIntsToBytes(in);
+        byte[] output=new byte[Opus.MAX_PACKET];
+        int outLength=Opus.encode(encoder,input,0,frameSizeInSamplesPerChannel,output,0,output.length);
+        byte[] compressedBytes=new byte[outLength];
+        System.arraycopy(output,0,compressedBytes,0,outLength);
+        packet.setPayload(BitAssistant.bytesToArray(compressedBytes));
+        packet.setTimestamp(getNextAudioTimestamp(Long.valueOf(48000)));
+      }
+ else {
+        packet.setPayload(newPacket.getPayload());
+        packet.setTimestamp(getNextAudioTimestamp(Long.valueOf(8000)));
+      }
+      packet.setSequenceNumber(newPacket.getSequenceNumber());
+      Byte pcms[]=encryptor2.encryptRTP(packet);
+      wBuffer.clear();
+      wBuffer.put(BitAssistant.bytesFromArray(pcms));
+      wBuffer.flip();
+      if (getChannelB() != null && lastReceivedB != null) {
+        getChannelB().send(wBuffer,lastReceivedB);
+        kt++;
+        if (kt < 10) {
+          Log.info("+++ " + in);
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error("RelayChannel pushAudio exception " + e);
+    e.printStackTrace();
+  }
+}

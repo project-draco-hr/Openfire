@@ -1,0 +1,16 @@
+{
+  super(encoding,sampleRate,channels);
+  buffer[0]=(byte)0x80;
+  buffer[1]=(byte)MARK_BIT | PCMU_PAYLOAD;
+  buffer[2]=(byte)0;
+  buffer[3]=(byte)1;
+  buffer[4]=(byte)0;
+  buffer[5]=(byte)0;
+  buffer[6]=(byte)0;
+  buffer[7]=(byte)0;
+  long now=System.currentTimeMillis();
+  buffer[8]=(byte)((now >> 24) & 0xff);
+  buffer[9]=(byte)((now >> 16) & 0xff);
+  buffer[10]=(byte)((now >> 8) & 0xff);
+  buffer[11]=(byte)(now & 0xff);
+}

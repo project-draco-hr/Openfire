@@ -1,0 +1,37 @@
+{
+  OutgoingCallHandler callHandler1=new OutgoingCallHandler(callEventListener,cp);
+synchronized (this) {
+    callHandler1.start();
+    if (callHandler1.waitForCallToBeAnswered() == false) {
+      return;
+    }
+  }
+  CallParticipant cp2=new CallParticipant();
+  cp2.setCallAnswerTimeout(cp.getCallAnswerTimeout());
+  cp2.setCallAnsweredTreatment(cp.getSecondPartyTreatment());
+  cp2.setCallEndTreatment(cp.getSecondPartyCallEndTreatment());
+  cp2.setCallId(cp.getSecondPartyCallId());
+  cp2.setConferenceId(cp.getConferenceId());
+  if (cp.getSecondPartyName() != null) {
+    cp2.setName(cp.getSecondPartyName());
+  }
+ else {
+    cp2.setName(cp.getSecondPartyNumber());
+  }
+  cp2.setDisplayName(cp.getName());
+  if (cp2.getCallId() == null) {
+    cp2.setCallId(CallHandler.getNewCallId());
+  }
+  cp2.setPhoneNumber(cp.getSecondPartyNumber());
+  cp2.setVoiceDetection(cp.getSecondPartyVoiceDetection());
+  OutgoingCallHandler callHandler2=new OutgoingCallHandler(callEventListener,cp2);
+synchronized (this) {
+    callHandler1.setOtherCall(callHandler2);
+    callHandler2.setOtherCall(callHandler1);
+    callHandler2.start();
+    if (callHandler2.waitForCallToBeAnswered() == true) {
+      callHandler1.stopCallAnsweredTreatment();
+      callHandler1.stopCallEstablishedTreatment();
+    }
+  }
+}

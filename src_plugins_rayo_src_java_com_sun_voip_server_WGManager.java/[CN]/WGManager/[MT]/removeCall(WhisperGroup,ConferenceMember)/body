@@ -1,0 +1,20 @@
+{
+  whisperGroup.removeCall(member);
+  if (whisperGroup.isTransient()) {
+    String id=whisperGroup.getId();
+    if (whisperGroup.getMembers().size() == 0) {
+      Logger.println("Removing transient whisper group " + id);
+      try {
+        destroyWhisperGroup(whisperGroup.getId());
+      }
+ catch (      ParseException e) {
+        Logger.println("Failed to destroy whisper group " + id + " "+ e.getMessage());
+      }
+    }
+ else {
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println(whisperGroup.getMembers().size() + " members remaining in transient whisper group " + id);
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  if (Logger.logLevel == -55) {
+    for (int i=0; i < memberList.size(); i++) {
+      ConferenceMember m=(ConferenceMember)memberList.get(i);
+      Logger.println("conf " + getName() + ": "+ m);
+    }
+    Logger.println("wt size " + workerThreads.size() + " sender threads "+ senderThreads);
+  }
+  if (workerThreads.size() > 1 && workerThreads.size() != senderThreads) {
+    if (Logger.logLevel == -55) {
+      Logger.println("Stopping sender worker threads " + workerThreads.size());
+    }
+    for (int i=0; i < workerThreads.size(); i++) {
+      ((WorkerThread)workerThreads.get(i)).done();
+    }
+    workerThreads.clear();
+  }
+  if (senderThreads <= 1) {
+    singleThreadSendDataToMembers(memberList);
+    return;
+  }
+  CountDownLatch doneSignal=new CountDownLatch(workerThreads.size());
+  if (workerThreads.size() != senderThreads) {
+    for (int i=0; i < senderThreads; i++) {
+      workerThreads.add(new WorkerThread(i,doneSignal));
+    }
+    Logger.println("Started " + senderThreads + " sender threads");
+  }
+  workToDo.clear();
+  for (int i=0; i < memberList.size(); i++) {
+    ConferenceMember member=(ConferenceMember)memberList.get(i);
+    if (member.getMemberSender().memberIsReadyForSenderData()) {
+      workToDo.add(member);
+    }
+  }
+  for (int i=0; i < workerThreads.size(); i++) {
+    WorkerThread workerThread=(WorkerThread)workerThreads.get(i);
+    workerThread.setLatch(doneSignal);
+synchronized (workerThread) {
+      workerThread.notify();
+    }
+  }
+  if (!done) {
+    try {
+      doneSignal.await();
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+}

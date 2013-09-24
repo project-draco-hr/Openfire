@@ -1,0 +1,14 @@
+{
+  MixManager mixManager=m1.getMixManager();
+synchronized (mixManager) {
+    ArrayList mixDescriptors=mixManager.getMixDescriptors();
+    MixDescriptor md=mixManager.findMixDescriptor(m2.getMemberReceiver());
+    if (md == null) {
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Call " + m1 + " no pm for "+ m2);
+      }
+      return;
+    }
+    adjustPrivateMixDescriptor(m1,m2,md);
+  }
+}

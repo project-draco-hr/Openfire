@@ -1,0 +1,24 @@
+{
+  if (isMember(member) == false) {
+    Logger.println("Call " + member + " is not a member of whisper group "+ id);
+    return;
+  }
+  if (isWhispering) {
+    if (whisperers.contains(member)) {
+      return;
+    }
+    whisperers.add(member);
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Call " + member + " started whispering to "+ id);
+    }
+    return;
+  }
+  if (whisperers.contains(member) == false) {
+    Logger.println("Call " + member + " is not in whisperers!");
+    return;
+  }
+  removeWhisperer(member);
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + member + " stopped whispering to "+ id);
+  }
+}

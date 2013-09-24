@@ -1,0 +1,26 @@
+{
+  String s;
+  if (n < 100) {
+    if (n < 20 || (n < 100 && (n % 10) == 0)) {
+      s=n + ".au";
+    }
+ else {
+      int r=n % 10;
+      s=(n - r) + ".au;" + r+ ".au";
+    }
+  }
+ else   if (n < 1000) {
+    int r=n % 100;
+    int q=n / 100;
+    if (r == 0) {
+      s=(n / 100) + ".au";
+    }
+ else {
+      s=q + ".au;hundred.au;" + getNumberOfCallsAsTreatment(r);
+    }
+  }
+ else {
+    s="tts:" + n;
+  }
+  return s;
+}

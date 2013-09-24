@@ -1,0 +1,54 @@
+{
+synchronized (ConferenceManager.getConferenceList()) {
+    conferenceManager=ConferenceManager.getConference(cp);
+    if (conferenceManager == null) {
+      Logger.error("Couldn't start conference " + cp.getConferenceId());
+      sendCallEventNotification(new CallEvent(CallEvent.CANT_START_CONFERENCE));
+      return;
+    }
+    try {
+      member=conferenceManager.joinConference(cp);
+      memberSender=member.getMemberSender();
+      memberReceiver=member.getMemberReceiver();
+    }
+ catch (    IOException e) {
+      CallEvent callEvent=new CallEvent(CallEvent.CANT_CREATE_MEMBER);
+      callEvent.setInfo(e.getMessage());
+      sendCallEventNotification(callEvent);
+      removeCallEventListener(this);
+      return;
+    }
+  }
+  addCall(this);
+  lastGateway=false;
+  onlyOneGateway=false;
+  ArrayList voIPGateways=SipServer.getVoIPGateways();
+  String gateway=cp.getVoIPGateway();
+  if (gateway != null) {
+    Logger.println("Call " + this + ":  Using gateway specified for the call:  "+ gateway);
+    lastGateway=true;
+    onlyOneGateway=true;
+    placeCall();
+  }
+ else   if (voIPGateways.size() > 0) {
+    if (voIPGateways.size() == 1) {
+      onlyOneGateway=true;
+    }
+    lastGateway=true;
+    placeCall();
+  }
+ else   if (cp.getPhoneNumber() != null && cp.getPhoneNumber().indexOf("sip:") == 0) {
+    placeCall();
+  }
+ else   if (cp.getProtocol() != null && cp.getProtocol().equalsIgnoreCase("WebRtc")) {
+    placeCall();
+  }
+ else {
+    Logger.error("Couldn't place call " + cp);
+    sendCallEventNotification(new CallEvent(CallEvent.CANT_START_CONFERENCE));
+  }
+  conferenceManager.leave(member);
+  removeCall(this);
+  removeCallEventListener(this);
+  done=true;
+}

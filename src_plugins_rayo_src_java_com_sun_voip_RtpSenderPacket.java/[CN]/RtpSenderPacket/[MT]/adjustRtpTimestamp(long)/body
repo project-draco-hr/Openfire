@@ -1,0 +1,6 @@
+{
+  int adjustment=(int)(elapsed * (getDataSize() / RtpPacket.PACKET_PERIOD));
+  adjustment=((adjustment + getDataSize() - 1) / getDataSize()) * getDataSize();
+  buffer[1]|=MARK_BIT;
+  adjustRtpTimestamp(adjustment);
+}

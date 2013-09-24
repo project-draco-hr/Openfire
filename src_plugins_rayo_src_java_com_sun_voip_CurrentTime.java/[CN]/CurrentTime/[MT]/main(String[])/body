@@ -1,0 +1,28 @@
+{
+  long time=CurrentTime.getTime();
+  int n=100000;
+  if (args.length > 0) {
+    try {
+      n=Integer.parseInt(args[0]);
+    }
+ catch (    NumberFormatException e) {
+      System.out.println("invalid count specified.  defaulting to " + n);
+    }
+  }
+  long totalTime=0;
+  long start=CurrentTime.getTime();
+  long s=System.currentTimeMillis();
+  for (int i=0; i < n; i++) {
+    long begin=CurrentTime.getTime();
+    totalTime+=(CurrentTime.getTime() - begin);
+  }
+  try {
+    Thread.sleep(20);
+  }
+ catch (  InterruptedException e) {
+  }
+  System.out.println("Time units:  " + getTimeUnits());
+  System.out.println("Average time to getTime():  " + ((double)totalTime / n / getTimeUnitsPerSecond()));
+  System.out.println("elapsed using getTime() " + CurrentTime.getElapsedSeconds(start));
+  System.out.println("elapsed using currentTimeMillis() " + (System.currentTimeMillis() - s));
+}

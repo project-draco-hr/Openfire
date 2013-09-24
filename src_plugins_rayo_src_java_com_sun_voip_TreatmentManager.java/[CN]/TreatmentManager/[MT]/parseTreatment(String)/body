@@ -1,0 +1,32 @@
+{
+  String treatments[]=treatment.split(";");
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    for (int i=0; i < treatments.length; i++) {
+      Logger.println("treatments:  " + treatments[i]);
+    }
+  }
+  for (int i=0; i < treatments.length; i++) {
+    String currentTreatment=treatments[i];
+    if (currentTreatment.indexOf("dtmf:") == 0) {
+      addDtmfTreatment(currentTreatment.substring(5));
+    }
+ else     if (currentTreatment.indexOf("d:") == 0) {
+      addDtmfTreatment(currentTreatment.substring(2));
+    }
+ else     if (currentTreatment.indexOf("tts:") == 0) {
+      addTtsTreatment(currentTreatment.substring(4));
+    }
+ else     if (currentTreatment.indexOf("t:") == 0) {
+      addTtsTreatment(currentTreatment.substring(2));
+    }
+ else     if (currentTreatment.indexOf("s:") == 0) {
+      addSineWaveTreatment(currentTreatment.substring(2));
+    }
+ else {
+      if (currentTreatment.indexOf("file:") == 0) {
+        currentTreatment=currentTreatment.substring(5);
+      }
+      addFileTreatment(currentTreatment);
+    }
+  }
+}

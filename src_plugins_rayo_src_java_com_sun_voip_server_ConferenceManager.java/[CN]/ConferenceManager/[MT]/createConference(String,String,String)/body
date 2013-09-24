@@ -1,0 +1,29 @@
+{
+synchronized (conferenceList) {
+    ConferenceManager conferenceManager=getConference(conferenceId,mediaPreference,displayName,true);
+    if (conferenceManager.getMemberList().size() == 0) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Conference " + conferenceId + " setting media preference to "+ mediaPreference);
+      }
+      conferenceManager.setPermanent(true);
+      try {
+        conferenceManager.setMediaInfo(mediaPreference);
+      }
+ catch (      ParseException e) {
+        try {
+          removeConference(conferenceId);
+        }
+ catch (        ParseException ee) {
+        }
+        Logger.println(conferenceId + ":  Can't change meeting media setting to " + mediaPreference+ ": "+ e.getMessage());
+        throw new ParseException(conferenceId + ":  Can't change meeting media setting to " + mediaPreference+ ": "+ e.getMessage(),0);
+      }
+    }
+ else {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Conference " + conferenceId + " defer setting media preference to "+ mediaPreference);
+      }
+      conferenceManager.setMediaPreference(mediaPreference);
+    }
+  }
+}

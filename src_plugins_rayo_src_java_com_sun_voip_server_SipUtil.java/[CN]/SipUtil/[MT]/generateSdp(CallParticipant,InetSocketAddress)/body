@@ -1,0 +1,23 @@
+{
+  String sdp=sdpManager.generateSdp("MeetingCentral",isa);
+  String s="a=conferenceId:" + cp.getConferenceId();
+  if (cp.getMediaPreference() != null) {
+    s+=":" + cp.getMediaPreference();
+    if (cp.getConferenceDisplayName() != null) {
+      s+=":" + cp.getConferenceDisplayName();
+    }
+  }
+  sdp+=s + "\r\n";
+  if (cp.getRemoteCallId() != null) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Setting callId in sdp to " + cp.getRemoteCallId());
+    }
+    sdp+="a=callId:" + cp.getRemoteCallId() + "\r\n";
+  }
+  if (cp.isDistributedBridge()) {
+    sdp+="a=userName:DistributedBridge\r\n";
+    sdp+="a=distributedBridge\r\n";
+  }
+  sdp+="a=transmitMediaInfoOk\r\n";
+  return sdp;
+}

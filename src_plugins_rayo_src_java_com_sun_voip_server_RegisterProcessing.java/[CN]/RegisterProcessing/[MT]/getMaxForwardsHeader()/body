@@ -1,0 +1,12 @@
+{
+  if (maxForwardsHeader != null) {
+    return maxForwardsHeader;
+  }
+  try {
+    maxForwardsHeader=headerFactory.createMaxForwardsHeader(MAX_FORWARDS);
+    return maxForwardsHeader;
+  }
+ catch (  InvalidArgumentException e) {
+    throw new IOException("A problem occurred while creating MaxForwardsHeader " + e.getMessage());
+  }
+}

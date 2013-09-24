@@ -1,0 +1,86 @@
+{
+  byte payload;
+  int encoding;
+  int sampleRate;
+  int channels;
+  byte telephoneEventPayload;
+  int start;
+  int finish;
+  finish=rtpmap.indexOf(" ");
+  if (finish < 0) {
+    Logger.println("Invalid rtpmap:  " + rtpmap);
+    throw new ParseException("Invalid rtpmap:  " + rtpmap,0);
+  }
+  try {
+    payload=(byte)Integer.parseInt(rtpmap.substring(9,finish));
+  }
+ catch (  NumberFormatException e) {
+    Logger.println("Invalid payload in rtpmap: " + rtpmap);
+    throw new ParseException("Invalid payload in rtpmap:  " + rtpmap,0);
+  }
+  String s=rtpmap.substring(finish + 1);
+  finish=s.indexOf("telephone-event");
+  if (finish >= 0) {
+    mediaInfo=new MediaInfo(payload,0,8000,1,true);
+    telephoneEventPayload=payload;
+    return;
+  }
+  finish=s.indexOf("CN/");
+  if (finish >= 0) {
+    return;
+  }
+  start=s.indexOf("PCM/");
+  if (start >= 0) {
+    s=s.substring(start + 4);
+    encoding=RtpPacket.PCM_ENCODING;
+  }
+ else {
+    start=s.indexOf("PCMU/");
+    if (start >= 0) {
+      s=s.substring(start + 5);
+      encoding=RtpPacket.PCMU_ENCODING;
+    }
+ else {
+      start=s.indexOf("SPEEX/");
+      if (start < 0) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Ignoring rtpmap entry: " + payload + " "+ s);
+        }
+        return;
+      }
+      s=s.substring(start + 6);
+      encoding=RtpPacket.SPEEX_ENCODING;
+    }
+  }
+  finish=s.indexOf("/");
+  boolean channelsPresent=true;
+  String rate;
+  if (finish < 0) {
+    channelsPresent=false;
+    rate=s.substring(start);
+  }
+ else {
+    rate=s.substring(start,finish);
+  }
+  try {
+    sampleRate=Integer.parseInt(rate);
+  }
+ catch (  NumberFormatException e) {
+    Logger.println("Invalid sample rate in rtpmap: " + rtpmap);
+    throw new ParseException("Invalid sample rate in rtpmap:  " + rtpmap,0);
+  }
+  if (channelsPresent) {
+    s=s.substring(finish + 1);
+    try {
+      channels=Integer.parseInt(s);
+    }
+ catch (    NumberFormatException e) {
+      Logger.println("Invalid channels in rtpmap: " + rtpmap);
+      throw new ParseException("Invalid channels in rtpmap:  " + rtpmap,0);
+    }
+  }
+ else {
+    channels=1;
+  }
+  mediaInfo=new MediaInfo(payload,encoding,sampleRate,channels,false);
+}

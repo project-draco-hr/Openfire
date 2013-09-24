@@ -1,0 +1,21 @@
+{
+  byte dtmfKey=(byte)-1;
+  try {
+    dtmfKey=(byte)Integer.parseInt(dtmfKeyToSend);
+  }
+ catch (  NumberFormatException e) {
+  }
+  if (dtmfKey >= 0 && dtmfKey <= 9) {
+    return dtmfKey;
+  }
+  if (dtmfKeyToSend.equals("*")) {
+    return 10;
+  }
+  if (dtmfKeyToSend.equals("#")) {
+    return 11;
+  }
+  if (dtmfKey >= 12 && dtmfKey <= 15) {
+    return dtmfKey;
+  }
+  return 15;
+}

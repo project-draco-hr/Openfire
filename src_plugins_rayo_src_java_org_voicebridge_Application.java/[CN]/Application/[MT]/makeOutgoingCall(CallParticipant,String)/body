@@ -1,0 +1,22 @@
+{
+  loginfo("VoiceBridge makeOutgoingCall");
+  try {
+    if (validateAndAdjustParameters(cp)) {
+      if (cp.getSecondPartyNumber() == null) {
+        OutgoingCallHandler outgoingCallHandler=new OutgoingCallHandler(this,cp);
+        outgoingCallHandler.start();
+        callObjects.put(uid,outgoingCallHandler);
+        reportInfo("Outgoing call made to " + cp.getPhoneNumber() + " id: "+ cp.getCallId());
+      }
+ else {
+        TwoPartyCallHandler twoPartyCallHandler=new TwoPartyCallHandler(this,cp);
+        twoPartyCallHandler.start();
+        callObjects.put(uid,twoPartyCallHandler);
+        reportInfo("Two party call made to " + cp.getPhoneNumber() + " id: "+ cp.getCallId());
+      }
+    }
+  }
+ catch (  Exception e) {
+    reportError(e.toString());
+  }
+}

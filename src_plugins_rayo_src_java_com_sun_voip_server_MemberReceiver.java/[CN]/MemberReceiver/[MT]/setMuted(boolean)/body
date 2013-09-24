@@ -1,0 +1,15 @@
+{
+  if (traceCall || Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + cp + " mute is now "+ isMuted);
+  }
+  cp.setMuted(isMuted);
+  if (speechDetector == null) {
+    return;
+  }
+  if (isMuted) {
+    if (speechDetector.isSpeaking()) {
+      callHandler.speakingChanged(false);
+    }
+  }
+  speechDetector.reset();
+}

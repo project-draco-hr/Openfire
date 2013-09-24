@@ -1,0 +1,22 @@
+{
+  Log.info("RayoComponent handleJoinCommand " + iq.getFrom());
+  final IQ reply=IQ.createResultIQ(iq);
+  String mixer=null;
+  if (command.getType() == JoinDestinationType.CALL) {
+  }
+ else {
+    mixer=command.getTo();
+  }
+  if (mixer != null) {
+    try {
+      IncomingCallHandler.transferCall(iq.getTo().getNode(),mixer);
+    }
+ catch (    Exception e) {
+      reply.setError(PacketError.Condition.internal_server_error);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.feature_not_implemented);
+  }
+  return reply;
+}

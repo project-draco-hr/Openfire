@@ -1,0 +1,14 @@
+{
+  speechDetectorCalls++;
+  long start=CurrentTime.getTime();
+  int length=(linearData.length / 16) * 16;
+  long sq=0;
+  for (int i=0; i <= length - 16; i+=16) {
+    double avg=(double)((linearData[i + 0] + linearData[i + 2] + linearData[i + 4]+ linearData[i + 6]+ linearData[i + 8]+ linearData[i + 10]+ linearData[i + 12]+ linearData[i + 14]) / 8.);
+    avg/=mediaInfo.getChannels();
+    sum+=(avg * avg);
+    cnt++;
+  }
+  speechDetectorTime+=(CurrentTime.getTime() - start);
+  return (speakingChanged());
+}

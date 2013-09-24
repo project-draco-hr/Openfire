@@ -1,0 +1,10 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("pausing treatment " + treatment + " to "+ conferenceId);
+  }
+synchronized (conferenceList) {
+    ConferenceManager conferenceManager;
+    conferenceManager=findConferenceManager(conferenceId);
+    conferenceManager.getWGManager().pauseConferenceTreatment(treatment,isPaused);
+  }
+}

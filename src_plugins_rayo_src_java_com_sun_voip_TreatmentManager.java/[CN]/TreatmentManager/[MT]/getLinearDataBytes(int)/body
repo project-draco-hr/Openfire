@@ -1,0 +1,19 @@
+{
+  if (isStopped) {
+    return null;
+  }
+  int[] intData=getLinearData(sampleTime);
+  if (intData == null) {
+    return null;
+  }
+  byte[] byteData=new byte[intData.length * 2];
+  try {
+    AudioConversion.intsToBytes(intData,byteData,0);
+  }
+ catch (  Exception e) {
+    Logger.println("getLinearDataBytes, intData len " + intData.length + " byteData len "+ byteData.length);
+    e.printStackTrace();
+    return null;
+  }
+  return byteData;
+}

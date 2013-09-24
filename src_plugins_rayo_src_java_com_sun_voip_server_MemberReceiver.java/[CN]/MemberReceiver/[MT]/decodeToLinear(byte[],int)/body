@@ -1,0 +1,29 @@
+{
+  int[] data=new int[myMediaInfo.getSamplesPerPacket()];
+  long start=0;
+  if (myMediaInfo.getEncoding() == RtpPacket.PCMU_ENCODING) {
+    if (traceCall || Logger.logLevel == -1) {
+      start=System.nanoTime();
+    }
+    AudioConversion.ulawToLinear(receivedData,RtpPacket.HEADER_SIZE,length - RtpPacket.HEADER_SIZE,data);
+    if (length < 172 && Logger.logLevel >= Logger.LOG_DETAIL) {
+      Logger.println("Call " + cp + " received short packet "+ length);
+    }
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " ulawToLinear time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+  }
+ else   if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
+    if (traceCall || Logger.logLevel == -1) {
+      start=System.nanoTime();
+    }
+    data=speexDecoder.decodeToIntArray(receivedData,RtpPacket.HEADER_SIZE,length - RtpPacket.HEADER_SIZE);
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " speex decode time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+  }
+ else {
+    AudioConversion.bytesToInts(receivedData,RtpPacket.HEADER_SIZE,length - RtpPacket.HEADER_SIZE,data);
+  }
+  return data;
+}

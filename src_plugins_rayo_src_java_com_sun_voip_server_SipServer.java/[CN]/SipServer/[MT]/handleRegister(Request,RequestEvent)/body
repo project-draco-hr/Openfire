@@ -1,0 +1,16 @@
+{
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println(request.toString());
+  }
+  Response response=messageFactory.createResponse(Response.OK,request);
+  ServerTransaction serverTransaction=requestEvent.getServerTransaction();
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Response " + response);
+  }
+  if (serverTransaction != null) {
+    serverTransaction.sendResponse(response);
+  }
+ else {
+    sipProvider.sendResponse(response);
+  }
+}

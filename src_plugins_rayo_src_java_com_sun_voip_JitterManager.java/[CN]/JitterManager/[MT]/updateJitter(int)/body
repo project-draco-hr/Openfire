@@ -1,0 +1,36 @@
+{
+  if (elapsed < 0) {
+    if (Logger.logLevel >= Logger.LOG_DETAILINFO) {
+      Logger.println(id + ":  bad elapsed! " + elapsed);
+    }
+    elapsed=0;
+    return;
+  }
+  if (Logger.logLevel == -19) {
+    if (elapsed > this.elapsed + (2 * RtpPacket.PACKET_PERIOD)) {
+      Logger.println(id + ":  long elapsed " + elapsed);
+    }
+  }
+  this.elapsed=elapsed;
+  if (elapsed >= packetArrivalDistribution.length) {
+    elapsed=packetArrivalDistribution.length - 1;
+  }
+  packetArrivalDistribution[elapsed]++;
+  int jitter=elapsed - RtpPacket.PACKET_PERIOD;
+  if (jitter > maxJitter) {
+    maxJitter=jitter;
+  }
+  if (Logger.logLevel == -20) {
+    Logger.println(id + ":  " + "old jitter "+ this.jitter+ " new jitter "+ jitter);
+  }
+  if (jitter > this.jitter) {
+    this.jitter=jitter;
+  }
+ else {
+    int change=this.jitter - jitter;
+    this.jitter=this.jitter - (change / 4);
+    if (this.jitter < 0) {
+      this.jitter=0;
+    }
+  }
+}

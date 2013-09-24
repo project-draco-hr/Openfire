@@ -1,0 +1,39 @@
+{
+  JitterObject jo;
+  while (true) {
+    jo=(JitterObject)packetList.removeFirst();
+    if (Logger.logLevel >= Logger.LOG_DETAILINFO) {
+      Logger.println(id + ":  getting " + (firstSequence & 0xffff)+ " jitterObject:  "+ jo);
+      Logger.println("");
+    }
+    if (jo.sequence != firstSequence) {
+      Logger.println(id + ":  jo seq " + jo.sequence+ " != first seq "+ firstSequence);
+      dumpList();
+    }
+    firstSequence++;
+    if (jo.isMissing) {
+      failedToRecover++;
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println(id + ":  Failed to recover packet " + (jo.sequence & 0xffff));
+      }
+      jo=plc.repair(jo);
+      if (jo != null) {
+        for (int i=0; i < packetList.size(); i++) {
+          JitterObject jitterObject=(JitterObject)packetList.get(i);
+          if (jitterObject.isMissing == false) {
+            break;
+          }
+          jitterObject.data=jo.data;
+        }
+        break;
+      }
+    }
+ else {
+      if (jo.data != null) {
+        plc.addPacket(jo);
+      }
+      break;
+    }
+  }
+  return jo;
+}

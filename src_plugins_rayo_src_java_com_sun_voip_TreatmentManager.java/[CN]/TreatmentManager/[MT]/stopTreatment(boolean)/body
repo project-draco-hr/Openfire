@@ -1,0 +1,30 @@
+{
+  if (isStopped) {
+    return;
+  }
+  isStopped=true;
+  for (  AudioSource audioSource : treatments) {
+    audioSource.done();
+  }
+synchronized (treatments) {
+    treatments.clear();
+  }
+  if (notify == false) {
+    return;
+  }
+  repeatCount=0;
+synchronized (treatmentDoneListeners) {
+    while (treatmentDoneListeners.size() > 0) {
+      TreatmentDoneListener listener=(TreatmentDoneListener)treatmentDoneListeners.remove(0);
+      listener.treatmentDoneNotification(this);
+    }
+  }
+  if (audioSource != null) {
+    try {
+      audioSource.done();
+    }
+ catch (    Exception e) {
+      Logger.println("Exception calling audioSource.done() " + e.getMessage());
+    }
+  }
+}

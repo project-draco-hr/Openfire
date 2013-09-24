@@ -1,0 +1,20 @@
+{
+  if (traceCall || Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + cp + " muteWhisperGroup is now "+ isMuteWhisperGroup);
+  }
+  cp.setMuteWhisperGroup(isMuteWhisperGroup);
+  if (isMuteWhisperGroup) {
+synchronized (whisperGroup) {
+      flushContributions();
+    }
+  }
+  if (speechDetector == null) {
+    return;
+  }
+  if (isMuteWhisperGroup) {
+    if (speechDetector.isSpeaking()) {
+      callHandler.speakingChanged(false);
+    }
+  }
+  speechDetector.reset();
+}

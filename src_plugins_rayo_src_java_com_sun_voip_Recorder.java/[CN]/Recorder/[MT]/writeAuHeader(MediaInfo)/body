@@ -1,0 +1,26 @@
+{
+  auHeader=new byte[24];
+  auHeader[0]='.';
+  auHeader[1]='s';
+  auHeader[2]='n';
+  auHeader[3]='d';
+  auHeader[7]=24;
+  int encoding=mediaInfo.getEncoding();
+  if (encoding == RtpPacket.PCMU_ENCODING) {
+    auHeader[15]=1;
+  }
+ else {
+    auHeader[15]=3;
+  }
+  int sampleRate=mediaInfo.getSampleRate();
+  auHeader[16]=(byte)((sampleRate >> 24) & 0xff);
+  auHeader[17]=(byte)((sampleRate >> 16) & 0xff);
+  auHeader[18]=(byte)((sampleRate >> 8) & 0xff);
+  auHeader[19]=(byte)(sampleRate & 0xff);
+  int channels=mediaInfo.getChannels();
+  auHeader[20]=(byte)((channels >> 24) & 0xff);
+  auHeader[21]=(byte)((channels >> 16) & 0xff);
+  auHeader[22]=(byte)((channels >> 8) & 0xff);
+  auHeader[23]=(byte)(channels & 0xff);
+  bo.write(auHeader,0,auHeader.length);
+}

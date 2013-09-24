@@ -1,0 +1,18 @@
+{
+  try {
+    FromHeader fromHeader=(FromHeader)request.getHeader(FromHeader.NAME);
+    ToHeader toHeader=(ToHeader)request.getHeader(ToHeader.NAME);
+    String from=fromHeader.getAddress().toString();
+    String to=toHeader.getAddress().toString();
+    Response response=messageFactory.createResponse(Response.OK,request);
+    Logger.writeFile("SipServer:  duplicate INVITE from " + from + " to "+ to);
+    Logger.println("RESPONSE " + response);
+    sipProvider.sendResponse(response);
+  }
+ catch (  SipException ex) {
+    java.util.logging.Logger.getLogger(SipServer.class.getName()).log(Level.SEVERE,null,ex);
+  }
+catch (  ParseException ex) {
+    java.util.logging.Logger.getLogger(SipServer.class.getName()).log(Level.SEVERE,null,ex);
+  }
+}

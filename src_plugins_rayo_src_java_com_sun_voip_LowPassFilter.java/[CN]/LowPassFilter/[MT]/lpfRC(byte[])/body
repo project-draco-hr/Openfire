@@ -1,0 +1,12 @@
+{
+  if (x == 0 && y == 0) {
+    return inSamples;
+  }
+  int length=inSamples.length & ~1;
+  int[] ints=new int[length / 2];
+  AudioConversion.bytesToInts(inSamples,0,length,ints);
+  ints=lpfRC(ints);
+  byte[] bytes=new byte[ints.length * 2];
+  AudioConversion.intsToBytes(ints,bytes,0);
+  return bytes;
+}

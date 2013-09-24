@@ -1,0 +1,22 @@
+{
+  if (receivedBye == false) {
+    if (gotOk == false || (getState() == CallState.INVITED && callAnswered == false)) {
+      try {
+        Logger.writeFile("Call " + cp + ":  sendCancel");
+        sipUtil.sendCancel(clientTransaction);
+      }
+ catch (      Exception e) {
+        Logger.println("sendCancel " + e.getMessage());
+      }
+    }
+ else {
+      try {
+        Logger.writeFile("Call " + cp + ":  sendBye");
+        sipUtil.sendBye(clientTransaction);
+      }
+ catch (      Exception e) {
+        Logger.println("Call " + cp + ":  sendBye"+ e.getMessage());
+      }
+    }
+  }
+}

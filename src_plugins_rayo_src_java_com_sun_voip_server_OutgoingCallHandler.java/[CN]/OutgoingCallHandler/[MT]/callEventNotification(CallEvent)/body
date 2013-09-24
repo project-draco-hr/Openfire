@@ -1,0 +1,57 @@
+{
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Notification:  " + callEvent);
+  }
+  if (callEvent.equals(CallEvent.STATE_CHANGED)) {
+    if (callEvent.getCallState().equals(CallState.ANSWERED)) {
+synchronized (waitCallAnswerLock) {
+        waitCallAnswerLock.notify();
+      }
+    }
+ else     if (callEvent.getCallState().equals(CallState.ESTABLISHED)) {
+synchronized (waitCallEstablishedLock) {
+        waitCallEstablishedLock.notify();
+      }
+    }
+ else     if (callEvent.getCallState().equals(CallState.ENDING)) {
+      CallHandler callHandler=CallHandler.findMigratingCall(cp.getCallId());
+      if (callHandler == this) {
+        if (callEvent.getInfo().indexOf("gateway error") >= 0 && lastGateway == false) {
+          return;
+        }
+        callEvent=new CallEvent(CallEvent.MIGRATION_FAILED);
+        callEvent.setInfo("Migration failed: " + getReasonCallEnded());
+        sendCallEventNotification(callEvent);
+      }
+    }
+ else     if (callEvent.getCallState().equals(CallState.ENDED)) {
+      reasonCallEnded=callEvent.getInfo();
+synchronized (waitCallAnswerLock) {
+        waitCallAnswerLock.notify();
+      }
+      if (reasonCallEnded.indexOf("gateway error") >= 0 && lastGateway == false) {
+        CallHandler callHandler=CallHandler.findMigratingCall(cp.getCallId());
+        if (callHandler == this) {
+synchronized (stateChangeLock) {
+            stateChangeLock.notify();
+          }
+          return;
+        }
+      }
+synchronized (waitCallEstablishedLock) {
+        waitCallEstablishedLock.notify();
+      }
+synchronized (stateChangeLock) {
+        stateChangeLock.notify();
+      }
+      if (reasonCallEnded.indexOf("gateway error") >= 0 && lastGateway == false) {
+        return;
+      }
+      cancelRequest(reasonCallEnded);
+    }
+  }
+  if (suppressEvent(cp,callEvent) == false) {
+    Application.outgoingCallNotification(callEvent);
+    if (csl != null)     csl.callEventNotification(callEvent);
+  }
+}

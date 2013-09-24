@@ -1,0 +1,33 @@
+{
+  setState(CallState.INVITED);
+  Request request=requestEvent.getRequest();
+  FromHeader fromHeader=(FromHeader)request.getHeader(FromHeader.NAME);
+  ToHeader toHeader=(ToHeader)request.getHeader(ToHeader.NAME);
+  String from=fromHeader.getAddress().toString();
+  String to=toHeader.getAddress().toString();
+  Logger.println("SipIncomingCallAgent:  Accept call " + from + " to "+ to);
+  Logger.writeFile(request.toString());
+  try {
+    SdpInfo sdpInfo=processSdp(request);
+    st=requestEvent.getServerTransaction();
+    if (st == null) {
+      st=SipServer.getSipProvider().getNewServerTransaction(request);
+    }
+    InetSocketAddress isa=callHandler.getReceiveAddress();
+    if (isa == null) {
+      Logger.println("SipIncomingCallAgent:  can't get receiver socket!");
+      terminateCall();
+      return;
+    }
+    setState(CallState.ANSWERED);
+    if (Logger.logLevel >= Logger.LOG_SIP) {
+      Logger.println("SipIncomingCallAgent:  sending ok");
+    }
+    sipUtil.sendOkWithSdp(request,st,isa,sdpInfo);
+  }
+ catch (  Exception e) {
+    Logger.println("SipIncomingCallAgent:  " + request);
+    e.printStackTrace();
+    terminateCall();
+  }
+}

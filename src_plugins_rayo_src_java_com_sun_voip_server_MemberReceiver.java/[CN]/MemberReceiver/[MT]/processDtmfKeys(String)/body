@@ -1,0 +1,27 @@
+{
+  dtmfPackets++;
+  Logger.println("Call " + cp + " got dtmf key "+ dtmfKeys);
+  if (joinConfirmationReceived == false) {
+    if (!dtmfKeys.equals(joinConfirmationKey)) {
+      Logger.println("Call " + cp + " jc false, dtmfKeys "+ dtmfKeys+ " != "+ joinConfirmationKey);
+      return;
+    }
+    joinConfirmationReceived=true;
+    readyToReceiveData=true;
+    notifyJoinConfirmationListeners();
+    Logger.println("Call " + cp + " join confirmation received");
+    playJoinTreatment();
+  }
+ else {
+    if (forwardDtmfKeys == true) {
+      if (whisperGroup != conferenceWhisperGroup) {
+        Logger.writeFile("Call " + cp + " Forwarding dtmf key "+ dtmfKeys);
+        whisperGroup.forwardDtmf(this,dtmfKeys);
+      }
+    }
+  }
+  if (cp.dtmfDetection() == false) {
+    dtmfDecoder=null;
+  }
+  callHandler.dtmfKeys(dtmfKeys);
+}

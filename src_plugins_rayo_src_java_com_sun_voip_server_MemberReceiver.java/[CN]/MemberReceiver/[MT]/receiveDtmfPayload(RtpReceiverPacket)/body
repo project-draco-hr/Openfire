@@ -1,0 +1,27 @@
+{
+  byte[] data=packet.getData();
+  if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Util.dump("received telephoneEventPayload",data,0,16);
+  }
+  if (packet.isDtmfEndSet()) {
+    if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Util.dump("Dtmf end set, ts " + Long.toHexString(dtmfTimestamp) + " pkt ts "+ Long.toHexString(packet.getRtpTimestamp()),data,0,16);
+    }
+    if (dtmfTimestamp != packet.getRtpTimestamp()) {
+      dtmfTimestamp=packet.getRtpTimestamp();
+      String dtmfKey=String.valueOf((int)data[RtpPacket.DATA]);
+      if (data[RtpPacket.DATA] == 10) {
+        dtmfKey="*";
+      }
+ else       if (data[RtpPacket.DATA] == 11) {
+        dtmfKey="#";
+      }
+      processDtmfKeys(dtmfKey);
+    }
+  }
+ else {
+    if (traceCall || Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Util.dump("Got dtmf key payload key still pressed: ",data,0,16);
+    }
+  }
+}

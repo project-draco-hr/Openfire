@@ -1,0 +1,25 @@
+{
+  SdpInfo remoteSdpInfo=sdpManager.parseSdp(sdpBody);
+  MediaInfo myPreferredMediaInfo=sdpManager.getPreferredMediaInfo();
+  byte payload;
+  Logger.writeFile("My preferred media " + myPreferredMediaInfo);
+  if (isRequest && remoteSdpInfo.isSupported(myPreferredMediaInfo)) {
+    payload=myPreferredMediaInfo.getPayload();
+    remoteSdpInfo.setMediaInfo(myPreferredMediaInfo);
+    Logger.println("My preferred payload being used " + payload);
+  }
+ else {
+    if (isRequest) {
+      Logger.writeFile("My preferred media " + myPreferredMediaInfo + " not supported...");
+    }
+    try {
+      payload=remoteSdpInfo.getMediaInfo().getPayload();
+      remoteSdpInfo.setMediaInfo(sdpManager.findMediaInfo(payload));
+      Logger.writeFile("media setting is " + remoteSdpInfo.getMediaInfo());
+    }
+ catch (    ParseException e) {
+      throw new ParseException("Unsupported media " + remoteSdpInfo.getMediaInfo(),0);
+    }
+  }
+  return remoteSdpInfo;
+}

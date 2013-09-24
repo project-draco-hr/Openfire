@@ -1,0 +1,32 @@
+{
+  Byte key[]={Byte.valueOf((byte)-31),Byte.valueOf((byte)-7),Byte.valueOf((byte)122),Byte.valueOf((byte)13),Byte.valueOf((byte)62),Byte.valueOf((byte)1),Byte.valueOf((byte)-117),Byte.valueOf((byte)-32),Byte.valueOf((byte)-42),Byte.valueOf((byte)79),Byte.valueOf((byte)-93),Byte.valueOf((byte)44),Byte.valueOf((byte)6),Byte.valueOf((byte)-34),Byte.valueOf((byte)65),Byte.valueOf((byte)57)};
+  Byte salt[]={Byte.valueOf((byte)14),Byte.valueOf((byte)-58),Byte.valueOf((byte)117),Byte.valueOf((byte)-83),Byte.valueOf((byte)73),Byte.valueOf((byte)-118),Byte.valueOf((byte)-2),Byte.valueOf((byte)-21),Byte.valueOf((byte)-74),Byte.valueOf((byte)-106),Byte.valueOf((byte)11),Byte.valueOf((byte)58),Byte.valueOf((byte)-85),Byte.valueOf((byte)-26)};
+  AESCounter counter=new AESCounter(key,salt);
+  Byte buffer3[]=counter.generate(_rTPKeyLabel,Integer.valueOf(16));
+  Byte buffer4[]=counter.generate(_rTPAuthLabel,Integer.valueOf(20));
+  Byte buffer5[]=counter.generate(_rTPSaltLabel,Integer.valueOf(14));
+  AESCounter counter2=new AESCounter(buffer3,buffer5);
+  Byte bytes[]={Byte.valueOf((byte)-128),Byte.valueOf((byte)15),Byte.valueOf((byte)18),Byte.valueOf((byte)52),Byte.valueOf((byte)-34),Byte.valueOf((byte)-54),Byte.valueOf((byte)-5),Byte.valueOf((byte)-83),Byte.valueOf((byte)-54),Byte.valueOf((byte)-2),Byte.valueOf((byte)-70),Byte.valueOf((byte)-66),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85),Byte.valueOf((byte)-85)};
+  String hexString=BitAssistant.getHexString(new Byte[]{Byte.valueOf((byte)-128),Byte.valueOf((byte)15),Byte.valueOf((byte)18),Byte.valueOf((byte)52),Byte.valueOf((byte)-34),Byte.valueOf((byte)-54),Byte.valueOf((byte)-5),Byte.valueOf((byte)-83),Byte.valueOf((byte)-54),Byte.valueOf((byte)-2),Byte.valueOf((byte)-70),Byte.valueOf((byte)-66),Byte.valueOf((byte)78),Byte.valueOf((byte)85),Byte.valueOf((byte)-36),Byte.valueOf((byte)76),Byte.valueOf((byte)-25),Byte.valueOf((byte)-103),Byte.valueOf((byte)120),Byte.valueOf((byte)-40),Byte.valueOf((byte)-116),Byte.valueOf((byte)-92),Byte.valueOf((byte)-46),Byte.valueOf((byte)21),Byte.valueOf((byte)-108),Byte.valueOf((byte)-99),Byte.valueOf((byte)36),Byte.valueOf((byte)2),Byte.valueOf((byte)-73),Byte.valueOf((byte)-115),Byte.valueOf((byte)106),Byte.valueOf((byte)-52),Byte.valueOf((byte)-103),Byte.valueOf((byte)-22),Byte.valueOf((byte)23),Byte.valueOf((byte)-101),Byte.valueOf((byte)-115),Byte.valueOf((byte)-69)});
+  RTPPacket packet=RTPPacket.parseBytes(bytes);
+  Byte array[]=packet.getBytes();
+  String str2=BitAssistant.getHexString(bytes);
+  String str3=BitAssistant.getHexString(array);
+  String _var0=str2;
+  if (_var0 != null ? !_var0.equals(str3) : _var0 != str3)   throw new Exception();
+  Integer num=Integer.valueOf(0);
+  packet.setPayload(counter2.encrypt(packet.getPayload(),packet.getSynchronizationSource(),new Long((new Integer(num.intValue() + packet.getSequenceNumber().intValue())).longValue())));
+  Byte buffer9[]=packet.getBytes();
+  String str4=StringExtensions.substring(hexString,0,StringExtensions.getLength(hexString).intValue() - 20);
+  String str5=BitAssistant.getHexString(buffer9);
+  String _var1=str4;
+  if (_var1 != null ? !_var1.equals(str5) : _var1 != str5)   throw new Exception();
+  ArrayList list=ArrayListExtensions.createArray(buffer9);
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(new Long((new Integer(num.intValue())).longValue())));
+  Byte buffer11[]=BitAssistant.subArray(Crypto.getHmacSha1(buffer4,(Byte[])list.toArray(new Byte[0])),Integer.valueOf(0),Integer.valueOf(10));
+  String str6=hexString.substring(StringExtensions.getLength(hexString).intValue() - 20);
+  String str7=BitAssistant.getHexString(buffer11);
+  String _var2=str6;
+  if (_var2 != null ? !_var2.equals(str7) : _var2 != str7)   throw new Exception();
+ else   return;
+}

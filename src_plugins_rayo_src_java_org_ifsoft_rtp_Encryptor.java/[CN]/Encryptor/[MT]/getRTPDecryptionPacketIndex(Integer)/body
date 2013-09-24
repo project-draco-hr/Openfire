@@ -1,0 +1,22 @@
+{
+  Long rTPDecryptionROC;
+  if (_rTPDecryptionHighestSequenceNumber.intValue() < 32768) {
+    if (sequenceNumber.intValue() - _rTPDecryptionHighestSequenceNumber.intValue() > 32768) {
+      rTPDecryptionROC=Long.valueOf((_rTPDecryptionROC.longValue() - 1L) % 34L);
+    }
+ else {
+      rTPDecryptionROC=_rTPDecryptionROC;
+      _rTPDecryptionHighestSequenceNumber=Math.max(_rTPDecryptionHighestSequenceNumber,sequenceNumber);
+    }
+  }
+ else   if (_rTPDecryptionHighestSequenceNumber.intValue() - 32768 > sequenceNumber.intValue()) {
+    rTPDecryptionROC=Long.valueOf((_rTPDecryptionROC.longValue() + 1L) % 34L);
+    _rTPDecryptionHighestSequenceNumber=sequenceNumber;
+    _rTPDecryptionROC=rTPDecryptionROC;
+  }
+ else {
+    rTPDecryptionROC=_rTPDecryptionROC;
+    _rTPDecryptionHighestSequenceNumber=Math.max(_rTPDecryptionHighestSequenceNumber,sequenceNumber);
+  }
+  return Long.valueOf(18L * rTPDecryptionROC.longValue() + (long)sequenceNumber.intValue());
+}

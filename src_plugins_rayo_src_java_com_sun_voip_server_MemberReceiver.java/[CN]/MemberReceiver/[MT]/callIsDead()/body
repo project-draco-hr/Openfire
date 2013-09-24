@@ -1,0 +1,31 @@
+{
+  if (cp.getProtocol() != null && "WebRtc".equals(cp.getProtocol())) {
+    return false;
+  }
+  if (RtpSocket.getRtpTimeout() == 0) {
+    return false;
+  }
+  String phoneNumber=cp.getPhoneNumber();
+  if (phoneNumber != null && phoneNumber.indexOf("6666@") >= 0) {
+    return false;
+  }
+  if (cp.isDistributedBridge() == true || phoneNumber.indexOf("sip:") < 0) {
+    return false;
+  }
+  long rtpElapsed;
+  if (timeCurrentPacketReceived == 0) {
+    rtpElapsed=0;
+  }
+ else {
+    rtpElapsed=(System.currentTimeMillis() - timeCurrentPacketReceived) / 1000;
+  }
+  long rtcpElapsed=rtcpReceiver.secondsSinceLastReport(member.getRtcpAddress());
+  if (rtcpElapsed < RtpSocket.getRtpTimeout() || rtpElapsed < RtpSocket.getRtpTimeout()) {
+    return false;
+  }
+  Logger.println("Call " + cp + " time since last RTCP report "+ rtcpElapsed+ " time since last RTP packet received "+ rtpElapsed);
+  Logger.println("Call " + cp + ":  Timeout, cancelling the call...");
+  callHandler.cancelRequest("call timeout, no keepalive received");
+  callCancelled=true;
+  return true;
+}

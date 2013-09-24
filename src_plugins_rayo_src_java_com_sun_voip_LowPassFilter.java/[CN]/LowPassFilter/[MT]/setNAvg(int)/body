@@ -1,0 +1,11 @@
+{
+  if (nAvg > MAX_NAVG) {
+    nAvg=MAX_NAVG;
+  }
+  LowPassFilter.nAvg=nAvg;
+  Logger.println("nAvg set to " + nAvg);
+  double x=Math.exp(-2 * Math.PI * (nAvg / 500D));
+  a0=1 - x;
+  b1=x;
+  Logger.println("SP:  cutoff = " + (nAvg / 500D) + " a0 "+ a0+ " b1 "+ b1);
+}

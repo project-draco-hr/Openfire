@@ -1,0 +1,24 @@
+{
+synchronized (conferenceManager) {
+synchronized (whisperGroups) {
+      WhisperGroup whisperGroup=wgManager.findWhisperGroup(whisperGroupId);
+      if (whisperGroup == null) {
+        Logger.println("Call " + cp + " invalid whisper group "+ whisperGroupId);
+        throw new ParseException("Call " + cp + " invalid whisper group "+ whisperGroupId,0);
+      }
+      if (whisperGroup.isMember(this) == false) {
+        Logger.println("Call " + cp + " is not a member of whisper group "+ whisperGroupId);
+        throw new ParseException("Call " + cp + " is not a member of whisper group "+ whisperGroupId,0);
+      }
+      if (this.whisperGroup == whisperGroup) {
+        Logger.println("Call " + cp + " already whispering in "+ whisperGroup);
+        return;
+      }
+      if (this.whisperGroup.isLocked()) {
+        Logger.println("Calls in a locked whisper group " + "cannot stop whispering until the call " + "is removed from the wg");
+        throw new ParseException("Calls in a locked whisper group " + "cannot stop whispering until the call " + "is removed from the wg",0);
+      }
+      setWhispering(whisperGroup);
+    }
+  }
+}

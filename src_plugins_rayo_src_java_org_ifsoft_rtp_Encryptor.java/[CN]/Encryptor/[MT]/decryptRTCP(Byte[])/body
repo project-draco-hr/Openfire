@@ -1,0 +1,30 @@
+{
+  EncryptionMode _var0=getEncryptionMode();
+  if (_var0 != null ? _var0.equals(EncryptionMode.Null) : _var0 == EncryptionMode.Null) {
+    Log.info("decryptRTCP no encryption found");
+    return RTCPPacket.parseBytes(encryptedBytes);
+  }
+  if (ArrayExtensions.getLength(encryptedBytes).intValue() < 12 + _rTCPIntegritySize.intValue()) {
+    Log.info("decryptRTCP packet too small");
+    return null;
+  }
+  Byte buffer[]=BitAssistant.subArray(encryptedBytes,Integer.valueOf(0),Integer.valueOf(ArrayExtensions.getLength(encryptedBytes).intValue() - _rTCPIntegritySize.intValue()));
+  Byte buffer2[]=BitAssistant.subArray(encryptedBytes,Integer.valueOf(ArrayExtensions.getLength(encryptedBytes).intValue() - _rTCPIntegritySize.intValue()),_rTCPIntegritySize);
+  Byte buffer4[]=BitAssistant.subArray(Crypto.getHmacSha1(_rTCPDecryptionAuth,buffer),Integer.valueOf(0),_rTCPIntegritySize);
+  if (!BitAssistant.sequencesAreEqual(buffer2,buffer4).booleanValue()) {
+    Log.info("decryptRTCP sequences Are not Equal");
+    return null;
+  }
+  Long ssrc=BitAssistant.toLongFromIntegerNetwork(buffer,Integer.valueOf(4));
+  Byte buffer5[]=BitAssistant.subArray(buffer,Integer.valueOf(ArrayExtensions.getLength(buffer).intValue() - 4));
+  buffer5[0]=new Byte((byte)(buffer5[0].byteValue() & 0x7f));
+  Integer num2=BitAssistant.toIntegerNetwork(buffer5,Integer.valueOf(0));
+  Byte data[]=BitAssistant.subArray(buffer,Integer.valueOf(8),Integer.valueOf(ArrayExtensions.getLength(buffer).intValue() - 12));
+  Byte buffer7[];
+  if (_rTCPDecryption == null)   buffer7=data;
+ else   buffer7=_rTCPDecryption.decrypt(data,ssrc,new Long((new Integer(num2.intValue())).longValue()));
+  ArrayList list=new ArrayList();
+  ArrayListExtensions.addRange(list,BitAssistant.subArray(buffer,Integer.valueOf(0),Integer.valueOf(8)));
+  ArrayListExtensions.addRange(list,buffer7);
+  return RTCPPacket.parseBytes((Byte[])list.toArray(new Byte[0]));
+}

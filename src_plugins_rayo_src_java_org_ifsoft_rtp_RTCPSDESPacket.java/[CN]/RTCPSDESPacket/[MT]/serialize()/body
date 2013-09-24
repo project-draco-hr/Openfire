@@ -1,0 +1,13 @@
+{
+  if (getSourceDescriptionChunks() != null)   super.setFirstByte(new Byte((new Integer(ArrayExtensions.getLength(getSourceDescriptionChunks()).intValue())).byteValue()));
+  ArrayList list=new ArrayList();
+  if (getSourceDescriptionChunks() != null) {
+    RTCPSourceDescriptionChunk arr$[]=getSourceDescriptionChunks();
+    int len$=arr$.length;
+    for (int i$=0; i$ < len$; i$++) {
+      RTCPSourceDescriptionChunk chunk=arr$[i$];
+      ArrayListExtensions.addRange(list,chunk.getBytes());
+    }
+  }
+  super.setPayload((Byte[])list.toArray(new Byte[0]));
+}

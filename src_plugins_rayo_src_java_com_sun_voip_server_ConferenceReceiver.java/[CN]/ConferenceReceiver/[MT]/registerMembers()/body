@@ -1,0 +1,27 @@
+{
+synchronized (membersToRegister) {
+    for (int i=0; i < membersToRegister.size(); i++) {
+      ConferenceMember member=(ConferenceMember)membersToRegister.get(i);
+      Logger.writeFile("ConferenceReceiver registering " + member);
+      try {
+        member.getMemberReceiver().register(selector);
+        memberCount++;
+      }
+ catch (      Exception e) {
+        Logger.println("ConferenceReceiver failed to register member " + member + " "+ e.getMessage());
+        membersToRegister.remove(member);
+        if (member.getCallHandler() != null) {
+          member.getCallHandler().cancelRequest("ConferenceReceiver failed to register member ");
+        }
+      }
+    }
+    membersToRegister.clear();
+    for (int i=0; i < membersToUnregister.size(); i++) {
+      ConferenceMember member=(ConferenceMember)membersToUnregister.get(i);
+      Logger.writeFile("ConferenceReceiver unregistering " + member);
+      member.getMemberReceiver().unregister();
+      memberCount--;
+    }
+    membersToUnregister.clear();
+  }
+}

@@ -1,0 +1,19 @@
+{
+  g.setColor(c);
+  Dimension d=getSize();
+  int height=d.height;
+  Point previousPoint=null;
+  int size=v.size();
+  for (int i=0; i < size; i++) {
+    try {
+      Point point1=previousPoint;
+      Point point2=new Point(i,((Point)v.elementAt(i)).y);
+      if (point1 == null)       point1=point2;
+      previousPoint=point2;
+      g.drawLine(point1.x,height - point1.y,point2.x,height - point2.y);
+    }
+ catch (    NoSuchElementException e) {
+      break;
+    }
+  }
+}

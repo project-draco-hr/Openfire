@@ -1,0 +1,37 @@
+{
+  JarFile jarFile=new JarFile(dirEntry);
+  Manifest manifest=null;
+  try {
+    manifest=jarFile.getManifest();
+  }
+ catch (  IOException e) {
+    Logger.println("can't read manifest in " + jarFile);
+    return false;
+  }
+  if (manifest == null) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("no manifest in " + jarFile);
+    }
+    return false;
+  }
+  String[] classList=null;
+  Attributes attributes=manifest.getMainAttributes();
+  if (attributes == null) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("No attributes in " + dirEntry);
+    }
+    return false;
+  }
+  String attributeValues=attributes.getValue("Bridge-Module-Info");
+  if (attributeValues == null) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("No attribute values in:  " + dirEntry);
+    }
+    return false;
+  }
+  String[] moduleValues=attributeValues.split(",");
+  for (int i=0; i < moduleValues.length; i++) {
+    addModule(moduleValues[i].trim());
+  }
+  return true;
+}

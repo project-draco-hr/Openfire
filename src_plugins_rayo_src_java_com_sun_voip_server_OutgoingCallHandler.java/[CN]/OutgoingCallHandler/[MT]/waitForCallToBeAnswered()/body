@@ -1,0 +1,23 @@
+{
+  String protocol=Bridge.getDefaultProtocol();
+  if (cp.getProtocol() != null) {
+    protocol=cp.getProtocol();
+  }
+  if (protocol.equalsIgnoreCase("WebRtc")) {
+    return true;
+  }
+synchronized (waitCallAnswerLock) {
+    if (done || reasonCallEnded != null) {
+      return false;
+    }
+    try {
+      waitCallAnswerLock.wait();
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+  if (done || reasonCallEnded != null) {
+    return false;
+  }
+  return true;
+}

@@ -1,0 +1,19 @@
+{
+  done=true;
+  if (csa != null) {
+    CallHandler migratingCall=CallHandler.findMigratingCall(cp.getCallId());
+    if (migratingCall == this) {
+      Logger.println("Failed to Migrate:  " + reason);
+    }
+    csa.cancelRequest(reason);
+  }
+synchronized (waitCallAnswerLock) {
+    waitCallAnswerLock.notify();
+  }
+  CallHandler otherCall=this.otherCall;
+  this.otherCall=null;
+  if (otherCall != null) {
+    Logger.println("otherCall is " + otherCall.getCallParticipant());
+    otherCall.cancelRequest("Two party call ended");
+  }
+}

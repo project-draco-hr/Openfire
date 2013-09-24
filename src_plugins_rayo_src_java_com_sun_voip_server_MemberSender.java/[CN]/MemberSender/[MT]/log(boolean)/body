@@ -1,0 +1,36 @@
+{
+  long sendTimeChange;
+  long now=System.currentTimeMillis();
+  if (previousSendTime == 0) {
+    sendTimeChange=RtpPacket.PACKET_PERIOD;
+  }
+ else {
+    sendTimeChange=now - previousSendTime;
+  }
+  previousSendTime=now;
+  String summary="";
+  String flags="";
+  String badTime=" ";
+  String badTimestamp=" ";
+  if (senderPacket.isMarkSet()) {
+    flags="MARK ";
+  }
+ else {
+    if (sendTimeChange < 15) {
+      badTime="-";
+      summary="!";
+    }
+ else     if (sendTimeChange > 25) {
+      badTime="+";
+      summary="!";
+    }
+  }
+  if (senderPacket.getRtpPayload() == RtpPacket.COMFORT_PAYLOAD) {
+    flags+="COMFORT ";
+  }
+  String timestamp=Integer.toHexString((int)(senderPacket.getRtpTimestamp() & 0xffffffff));
+  if (timestamp.length() != 8) {
+    timestamp+="      ";
+  }
+  Logger.writeFile("S " + " " + sendTimeChange + badTime+ "\ta0"+ badTimestamp+ "\t"+ Integer.toHexString(senderPacket.getRtpSequenceNumber() & 0xffff)+ "\t"+ timestamp+ "\t"+ flags+ cp+ " "+ memberAddress);
+}

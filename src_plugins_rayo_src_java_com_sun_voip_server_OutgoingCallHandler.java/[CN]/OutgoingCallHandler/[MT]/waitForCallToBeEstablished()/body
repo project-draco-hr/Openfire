@@ -1,0 +1,19 @@
+{
+  if (cp.getProtocol().equalsIgnoreCase("WebRtc")) {
+    return true;
+  }
+synchronized (waitCallEstablishedLock) {
+    if (done || reasonCallEnded != null) {
+      return false;
+    }
+    try {
+      waitCallEstablishedLock.wait();
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+  if (done || reasonCallEnded != null) {
+    return false;
+  }
+  return true;
+}

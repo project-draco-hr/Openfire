@@ -1,0 +1,15 @@
+{
+  Conference conference=new Conference();
+  conference.id=room.getName();
+  conference.pin=room.getPassword();
+  if (conference.pin != null && conference.pin.length() == 0)   conference.pin=null;
+  conference.exten=room.getDescription();
+  int pos=conference.exten.indexOf(":");
+  if (pos > 0)   conference.exten=conference.exten.substring(0,pos);
+ else   conference.exten=null;
+  if (conference.exten != null && conference.exten.length() > 0) {
+    confExtensions.put(conference.exten,conference);
+  }
+  conferences.put(conference.id,conference);
+  System.out.println(String.format("VoiceBridge create  conference: %s with pin %s extension %s",conference.id,conference.pin,conference.exten));
+}

@@ -1,0 +1,12 @@
+{
+  done=true;
+  printStatistics();
+  this.interrupt();
+synchronized (workerThreads) {
+    workToDo.clear();
+    workerThreads.notifyAll();
+  }
+  for (int i=0; i < workerThreads.size(); i++) {
+    ((WorkerThread)workerThreads.get(i)).done();
+  }
+}

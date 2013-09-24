@@ -1,0 +1,70 @@
+{
+  int[] outData=null;
+  if (mixDescriptors.size() == 0) {
+    return null;
+  }
+  if (useFastMix) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      setUseFastMix();
+      if (useFastMix == false) {
+        Logger.println("Call " + member + " useFastMix should have been false!  "+ "resetting...");
+        Logger.println("Call " + member + " md size "+ mixDescriptors.size());
+        Logger.println(toAbbreviatedString());
+      }
+    }
+    if (useFastMix) {
+      return fastMix();
+    }
+  }
+  outData=new int[conferenceSamplesPerPacket];
+  boolean needToSend=false;
+  for (int i=0; i < mixDescriptors.size(); i++) {
+    MixDescriptor mixDescriptor=(MixDescriptor)mixDescriptors.get(i);
+    if (mixDescriptor.isMuted()) {
+      continue;
+    }
+    MixDataSource mixDataSource=mixDescriptor.getMixDataSource();
+    int[] contribution=mixDataSource.getCurrentContribution();
+    if (mixDescriptor.isPrivateMix() == true) {
+      double[] spatialValues=mixDescriptor.getSpatialValues();
+      if (MixDescriptor.isSpatiallyNeutral(spatialValues) && spatialValues[3] != 0) {
+        if (mixDataSource.contributionIsInCommonMix()) {
+          double[] sv=new double[4];
+          sv[0]=spatialValues[0];
+          sv[1]=spatialValues[1];
+          sv[2]=spatialValues[2];
+          sv[3]=spatialValues[3] - 1;
+          spatialValues=sv;
+          if (Logger.logLevel == -69) {
+            Logger.println("Call " + member + " pm for "+ mixDataSource.toAbbreviatedString()+ " s3 "+ spatialValues[3]);
+          }
+        }
+      }
+ else {
+        if (contribution != null && mixDataSource.contributionIsInCommonMix()) {
+          WhisperGroup.mixData(contribution,outData,false);
+          if (spatialValues[3] == 0) {
+            if (Logger.logLevel == -44) {
+              Logger.println("subtracted out " + mixDescriptor);
+            }
+            continue;
+          }
+        }
+      }
+      contribution=sa.generateSpatialAudio(mixDataSource.getSourceId(),mixDataSource.getPreviousContribution(),contribution,spatialValues);
+    }
+    if (contribution != null) {
+      boolean add=mixDescriptor.getEffectiveVolume() != -1;
+      WhisperGroup.mixData(contribution,outData,add);
+      needToSend=true;
+    }
+  }
+  if (needToSend == false) {
+    return null;
+  }
+  AudioConversion.clip(outData);
+  if (Logger.logLevel == -39) {
+    checkData(outData,false);
+  }
+  return outData;
+}

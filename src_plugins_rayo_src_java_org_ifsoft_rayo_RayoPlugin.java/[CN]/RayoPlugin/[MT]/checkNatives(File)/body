@@ -1,0 +1,56 @@
+{
+  try {
+    String nativeLibsJarPath=pluginDirectory.getAbsolutePath() + File.separator + "lib";
+    Log.info("checkNatives." + nativeLibsJarPath);
+    File nativeLibFolder=new File(nativeLibsJarPath,"native");
+    if (!nativeLibFolder.exists()) {
+      nativeLibFolder.mkdirs();
+      String jarFileSuffix=null;
+      if (OSUtils.IS_LINUX32) {
+        jarFileSuffix="rayo-native-linux-32.jar";
+      }
+ else       if (OSUtils.IS_LINUX64) {
+        jarFileSuffix="rayo-native-linux-64.jar";
+      }
+ else       if (OSUtils.IS_WINDOWS32) {
+        jarFileSuffix="rayo-native-windows-32.jar";
+      }
+ else       if (OSUtils.IS_WINDOWS64) {
+        jarFileSuffix="rayo-native-windows-64.jar";
+      }
+ else       if (OSUtils.IS_MAC) {
+        jarFileSuffix="rayo-native-macosx.jar";
+      }
+      JarFile jar=new JarFile(nativeLibsJarPath + File.separator + jarFileSuffix);
+      Enumeration en=jar.entries();
+      while (en.hasMoreElements()) {
+        try {
+          JarEntry file=(JarEntry)en.nextElement();
+          File f=new File(nativeLibFolder,file.getName());
+          if (file.isDirectory()) {
+            continue;
+          }
+          InputStream is=jar.getInputStream(file);
+          FileOutputStream fos=new FileOutputStream(f);
+          while (is.available() > 0) {
+            fos.write(is.read());
+          }
+          fos.close();
+          is.close();
+        }
+ catch (        Throwable t) {
+        }
+      }
+      Log.info("Native lib folder created and natives extracted");
+    }
+ else     Log.info("Native lib folder already exist.");
+    String newLibPath=nativeLibFolder.getCanonicalPath() + File.pathSeparator + System.getProperty("java.library.path");
+    System.setProperty("java.library.path",newLibPath);
+    Field fieldSysPath=ClassLoader.class.getDeclaredField("sys_paths");
+    fieldSysPath.setAccessible(true);
+    fieldSysPath.set(System.class.getClassLoader(),null);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

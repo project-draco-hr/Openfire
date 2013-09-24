@@ -1,0 +1,25 @@
+{
+synchronized (conferenceManager) {
+synchronized (memberTreatments) {
+      if (treatmentId == null) {
+        memberTreatments.clear();
+        if (currentTreatment != null) {
+          currentTreatment.stopTreatment();
+        }
+        return;
+      }
+      for (int i=0; i < memberTreatments.size(); i++) {
+        TreatmentManager treatmentManager=(TreatmentManager)memberTreatments.get(i);
+        if (treatmentManager.getId().equals(treatmentId)) {
+          if (treatmentManager == currentTreatment) {
+            treatmentManager.stopTreatment();
+          }
+ else {
+            memberTreatments.remove(i);
+          }
+          return;
+        }
+      }
+    }
+  }
+}

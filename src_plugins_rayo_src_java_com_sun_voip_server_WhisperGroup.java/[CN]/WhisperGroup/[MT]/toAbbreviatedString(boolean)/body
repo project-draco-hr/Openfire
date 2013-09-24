@@ -1,0 +1,32 @@
+{
+  String id=this.id;
+  if (id.length() >= 14) {
+    id=id.substring(0,13);
+  }
+  String s=id + ":";
+  s+=(Math.round(attenuation * 1000) / 1000D);
+  if (isTransient) {
+    s+=" Transient";
+  }
+  if (isLocked) {
+    s+=" Locked";
+  }
+  if (noCommonMix) {
+    s+=" NoCommonMix";
+  }
+  if (showMembers == false) {
+    return s;
+  }
+  s+=" ";
+  for (int j=0; j < members.size(); j++) {
+    ConferenceMember member=(ConferenceMember)members.get(j);
+    CallParticipant cp=member.getCallParticipant();
+    id=cp.toConsiseString();
+    s+="'" + id;
+    if (whisperers.contains(member)) {
+      s+="+";
+    }
+    s+="' ";
+  }
+  return s;
+}

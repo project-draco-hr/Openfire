@@ -1,0 +1,14 @@
+{
+synchronized (memberList) {
+    memberList.add(member);
+    totalMembers++;
+    String s="";
+    conferenceReceiver.addMember(member);
+    Logger.println("conferenceManager:  '" + conferenceId + "',"+ " new member "+ member+ s+ " total members:  "+ memberList.size());
+  }
+  ConferenceEvent event=new ConferenceEvent(ConferenceEvent.MEMBER_JOINED,conferenceId);
+  event.setCallId(member.getCallParticipant().getCallId());
+  event.setMemberAddress(member.getMemberSender().getSendAddress());
+  event.setMemberCount(memberList.size());
+  conferenceEventNotification(event);
+}

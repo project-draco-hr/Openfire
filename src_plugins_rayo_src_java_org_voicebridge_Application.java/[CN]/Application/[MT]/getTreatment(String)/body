@@ -1,0 +1,15 @@
+{
+  String v=new String(value);
+  int n;
+  if ((n=v.indexOf(":volume=")) >= 0) {
+    v=v.substring(0,n);
+  }
+  if ((n=v.lastIndexOf(":")) < 0) {
+    return v;
+  }
+  String s=v.substring(0,n);
+  if (s.equalsIgnoreCase("f") || s.equalsIgnoreCase("file") || s.equalsIgnoreCase("d")|| s.equalsIgnoreCase("dtmf")|| s.equalsIgnoreCase("t")|| s.equalsIgnoreCase("tts")) {
+    return v;
+  }
+  return s;
+}

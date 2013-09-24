@@ -1,0 +1,12 @@
+{
+  final SelectionKey k=channel.keyFor(selector);
+  if (k != null) {
+synchronized (obj) {
+      selector.wakeup();
+      k.cancel();
+    }
+  }
+synchronized (this) {
+    channel.close();
+  }
+}

@@ -1,0 +1,46 @@
+{
+  rtcpData=new byte[1500];
+  DatagramPacket packet=new DatagramPacket(rtcpData,rtcpData.length);
+  while (!done) {
+    try {
+      rtcpSocket.receive(packet);
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Got RTCP Packet from " + packet.getSocketAddress());
+      }
+      byte[] data=packet.getData();
+      RtcpPacket rtcpPacket=null;
+      if (isStunBindingRequest(data) == true) {
+        stunServerImpl.processStunRequest(rtcpSocket,packet);
+        continue;
+      }
+      if ((data[1] & 0xff) == 200) {
+        rtcpPacket=new RtcpSenderPacket(packet);
+        ((RtcpSenderPacket)rtcpPacket).printReport();
+      }
+ else       if ((data[1] & 0xff) == 201) {
+        rtcpPacket=new RtcpReceiverPacket(packet);
+        ((RtcpReceiverPacket)rtcpPacket).printReport();
+      }
+ else {
+        Util.dump("unknown RTCP packet",data,0,16);
+      }
+      if (rtcpPacket != null) {
+        timeLastReceived=System.currentTimeMillis();
+        if (timeLastReceivedMap != null) {
+          if (Logger.logLevel >= Logger.LOG_INFO) {
+            Logger.println("Updated map for " + packet.getSocketAddress() + " "+ timeLastReceived);
+          }
+synchronized (timeLastReceivedMap) {
+            timeLastReceivedMap.put(packet.getSocketAddress().toString(),new Long(timeLastReceived));
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      if (!done) {
+        Logger.error("RtcpReceiver:  receive failed! " + e.getMessage());
+        end();
+      }
+    }
+  }
+}

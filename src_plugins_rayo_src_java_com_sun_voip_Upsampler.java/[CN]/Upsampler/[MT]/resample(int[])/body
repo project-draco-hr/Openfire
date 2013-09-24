@@ -1,0 +1,15 @@
+{
+  if (inSampleRate == outSampleRate && inChannels == outChannels) {
+    return inSamples;
+  }
+  resampleCount++;
+  long start=CurrentTime.getTime();
+  int[] outSamples=reChannel(inSamples);
+  if (inSampleRate == outSampleRate) {
+    return outSamples;
+  }
+  outSamples=upsample(outSamples);
+  outSamples=lowPassFilter.lpf(outSamples);
+  totalTime+=(CurrentTime.getTime() - start);
+  return outSamples;
+}

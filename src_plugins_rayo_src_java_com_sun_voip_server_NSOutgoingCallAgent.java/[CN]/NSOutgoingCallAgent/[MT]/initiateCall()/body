@@ -1,0 +1,26 @@
+{
+  InetSocketAddress isa=callHandler.getReceiveAddress();
+  if (isa == null) {
+    throw new IOException("can't get receiver socket!");
+  }
+  setState(CallState.INVITED);
+  TreatmentManager treatmentManager=null;
+  if (cp.getInputTreatment() != null) {
+    if (cp.getInputTreatment().length() > 0) {
+      try {
+        treatmentManager=new TreatmentManager(cp.getInputTreatment(),RtpPacket.PCM_ENCODING,mixerMediaPreference.getSampleRate(),mixerMediaPreference.getChannels());
+        treatmentManager.stopTreatment(false);
+      }
+ catch (      IOException e) {
+        Logger.println("Invalid input treatment:  " + cp.getInputTreatment());
+        throw new IOException("Invalid input treatment:  " + cp.getInputTreatment());
+      }
+    }
+    try {
+      setRemoteMediaInfo(treatmentManager);
+    }
+ catch (    ParseException e) {
+      throw new IOException(e.getMessage());
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  if (bytes == null || ArrayExtensions.getLength(bytes).intValue() < 20)   return false;
+  Byte buffer[]=BitAssistant.subArray(bytes,Integer.valueOf(0),Integer.valueOf(2));
+  Byte method=new Byte((byte)(buffer[1].byteValue() & 0xf));
+  Byte num2=new Byte((byte)(buffer[0].byteValue() & 1));
+  Byte num3=new Byte((byte)(buffer[1].byteValue() & 0x10));
+  Integer count=new Integer(BitAssistant.toShortNetwork(BitAssistant.subArray(bytes,Integer.valueOf(2),Integer.valueOf(2)),Integer.valueOf(0)).shortValue());
+  if (20 + count.intValue() < ArrayExtensions.getLength(bytes).intValue())   return false;
+  Byte buffer3[]=BitAssistant.subArray(bytes,Integer.valueOf(4),Integer.valueOf(4));
+  Byte magicCookie[]=new Byte[]{Byte.valueOf((byte)33),Byte.valueOf((byte)18),Byte.valueOf((byte)-92),Byte.valueOf((byte)66)};
+  for (Integer i=Integer.valueOf(0); i.intValue() < ArrayExtensions.getLength(magicCookie).intValue(); ) {
+    Byte _var0=magicCookie[i.intValue()];
+    if (_var0 != null ? !_var0.equals(buffer3[i.intValue()]) : _var0 != buffer3[i.intValue()])     return false;
+    i=Integer.valueOf(i.intValue() + 1);
+  }
+  return true;
+}

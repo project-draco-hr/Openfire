@@ -1,0 +1,42 @@
+{
+  long start=0;
+  int[] data=decodeToLinear(receivedData,length);
+  if (inputVolume != 1.0) {
+    callHandler.getMember().adjustVolume(data,inputVolume);
+  }
+  int numberOfSamples=data.length;
+  if (myMediaInfo.getEncoding() == RtpPacket.PCMU_ENCODING) {
+    numberOfSamples=length - RtpPacket.HEADER_SIZE;
+  }
+  if (traceCall || Logger.logLevel == -1) {
+    start=System.nanoTime();
+  }
+  if (inSampleRateConverter != null) {
+    if (traceCall || Logger.logLevel == -1) {
+      start=System.nanoTime();
+    }
+    try {
+      data=inSampleRateConverter.resample(data);
+    }
+ catch (    IOException e) {
+      Logger.println("Call " + cp + " can't resample received data "+ e.getMessage());
+      callHandler.cancelRequest("Call " + cp + "can't resample received data "+ e.getMessage());
+      return 0;
+    }
+    if (traceCall || Logger.logLevel == -1) {
+      Logger.println("Call " + cp + " resample time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+    }
+  }
+  if (traceCall || Logger.logLevel == -1) {
+    start=System.nanoTime();
+  }
+  forwardData(data);
+  handleMedia(data,packet.getRtpSequenceNumber());
+  if (traceCall || Logger.logLevel == -1) {
+    Logger.println("Call " + cp + " handleMedia time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+  }
+  if (Logger.logLevel >= Logger.LOG_DEBUG) {
+    log(packet);
+  }
+  return numberOfSamples;
+}

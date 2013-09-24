@@ -1,0 +1,6 @@
+{
+  final String localAddress=JiveGlobals.getProperty(JN_PUB_IP_PROPERTY,LocalIPResolver.getLocalIP());
+  LocalIPResolver.setOverrideIp(localAddress);
+  final InetSocketAddress publicAddress=PublicIPResolver.getPublicAddress("stun.l.google.com",19302);
+  hasPublicIP=publicAddress != null && publicAddress.getAddress().getHostAddress().equals(localAddress);
+}

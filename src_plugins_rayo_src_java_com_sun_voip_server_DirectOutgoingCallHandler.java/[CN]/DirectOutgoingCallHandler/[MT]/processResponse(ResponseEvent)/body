@@ -1,0 +1,17 @@
+{
+  Response resp=responseEvent.getResponse();
+  int status=resp.getStatusCode();
+  if (status == Response.OK && getState() == INVITE_SENT) {
+    sdp=new String(resp.getRawContent());
+synchronized (stateLock) {
+      setState(INVITE_OK);
+      stateLock.notify();
+    }
+  }
+  if (status > 400) {
+synchronized (stateLock) {
+      setState(TERMINATED);
+      stateLock.notifyAll();
+    }
+  }
+}

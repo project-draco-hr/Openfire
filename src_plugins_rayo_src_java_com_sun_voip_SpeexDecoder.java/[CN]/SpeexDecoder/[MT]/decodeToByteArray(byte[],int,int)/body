@@ -1,0 +1,29 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+    Util.dump("decode input:  offset " + offset + " length "+ length,data,0,offset + length);
+  }
+  long start=CurrentTime.getTime();
+  try {
+    speexDecoder.processData(data,offset,length);
+  }
+ catch (  java.io.StreamCorruptedException e) {
+    throw new SpeexException(e.getMessage());
+  }
+  int decodedLength=speexDecoder.getProcessedDataByteSize();
+  if (decodedLength <= 0) {
+    Logger.println("Speex decode data length is " + decodedLength);
+    throw new SpeexException("Decoded length negative");
+  }
+  byte[] byteData=new byte[decodedLength];
+  speexDecoder.getProcessedData(byteData,0);
+  if (bigEndian == false) {
+    for (int i=0; i < byteData.length; i+=2) {
+      byte b=byteData[i];
+      byteData[i]=byteData[i + 1];
+      byteData[i + 1]=b;
+    }
+  }
+  decodes++;
+  decodeTime+=(CurrentTime.getTime() - start);
+  return byteData;
+}

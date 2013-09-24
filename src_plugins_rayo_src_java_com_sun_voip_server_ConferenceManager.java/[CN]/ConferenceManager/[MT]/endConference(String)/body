@@ -1,0 +1,15 @@
+{
+  ConferenceManager conferenceManager;
+synchronized (conferenceList) {
+    conferenceManager=findConferenceManager(conferenceId);
+    ArrayList memberList=conferenceManager.getMemberList();
+synchronized (memberList) {
+      for (int i=0; i < memberList.size(); i++) {
+        ConferenceMember member=(ConferenceMember)memberList.get(i);
+        CallHandler callHandler=member.getCallHandler();
+        callHandler.cancelRequest("Conference forced to end");
+      }
+      conferenceManager.end();
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  int timeout=cp.getCallAnswerTimeout();
+  if (timeout == 0) {
+    timeout=defaultCallAnswerTimeout;
+  }
+  try {
+    Thread.sleep(timeout * 1000);
+  }
+ catch (  InterruptedException e) {
+  }
+  inviteTimeoutThread=null;
+  if (reasonCallTerminated == null && getState() < CallState.ANSWERED) {
+    Logger.println("Call answer time out " + cp);
+    sendCallEventNotification(new CallEvent(CallEvent.CALL_ANSWER_TIMEOUT));
+    cancelRequest("No answer");
+  }
+}

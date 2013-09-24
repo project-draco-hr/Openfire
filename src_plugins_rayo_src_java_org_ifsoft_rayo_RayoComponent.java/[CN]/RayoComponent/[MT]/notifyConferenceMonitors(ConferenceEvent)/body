@@ -1,0 +1,32 @@
+{
+  Log.info("RayoComponent notifyConferenceMonitors " + conferenceEvent.toString());
+  try {
+    if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) || conferenceEvent.equals(ConferenceEvent.MEMBER_JOINED)) {
+      Log.info("RayoComponent notifyConferenceMonitors looking for call " + conferenceEvent.getCallId() + " "+ conferenceEvent.getMemberCount());
+      CallHandler callHandler=CallHandler.findCall(conferenceEvent.getCallId());
+      if (callHandler != null) {
+        Log.info("RayoComponent notifyConferenceMonitors found call handler " + callHandler);
+        CallParticipant callParticipant=callHandler.getCallParticipant();
+        if (callParticipant != null) {
+          Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner());
+          Presence presence=new Presence();
+          presence.setFrom(conferenceEvent.getCallId() + "@rayo." + getDomain());
+          presence.setTo(callParticipant.getCallOwner());
+          if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
+            UnjoinedEvent event=new UnjoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+            presence.getElement().add(rayoProvider.toXML(event));
+          }
+ else {
+            JoinedEvent event=new JoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+            presence.getElement().add(rayoProvider.toXML(event));
+          }
+          sendPacket(presence);
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error("RayoComponent Error in notifyConferenceMonitors " + e);
+    e.printStackTrace();
+  }
+}

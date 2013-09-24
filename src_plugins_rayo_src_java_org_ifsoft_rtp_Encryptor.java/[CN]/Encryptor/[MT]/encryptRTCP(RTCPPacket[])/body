@@ -1,0 +1,34 @@
+{
+  if (packets == null || ArrayExtensions.getLength(packets).intValue() == 0)   throw new Exception("Cannot encrypt a null RTCP packet.");
+  if (!(packets[0] instanceof RTCPSRPacket))   throw new Exception("RTCP transmissions must start with a Sender Report (RTCPSRPacket).");
+  RTCPPacket arr$[]=packets;
+  int len$=arr$.length;
+  for (int i$=0; i$ < len$; i$++) {
+    RTCPPacket packet=arr$[i$];
+    if (packet instanceof RTCPSRPacket) {
+      RTCPSRPacket packet2=(RTCPSRPacket)(RTCPSRPacket)packet;
+      packet2.setPacketCount(_packetCount);
+      packet2.setOctetCount(_octetCount);
+    }
+  }
+  Byte bytes[]=RTCPPacket.getBytes(packets);
+  EncryptionMode _var0=getEncryptionMode();
+  if (_var0 != null ? _var0.equals(EncryptionMode.Null) : _var0 == EncryptionMode.Null)   return bytes;
+  Integer rTCPEncryptionPacketIndex=getRTCPEncryptionPacketIndex();
+  Long ssrc=BitAssistant.toLongFromIntegerNetwork(bytes,Integer.valueOf(4));
+  Byte data[]=BitAssistant.subArray(bytes,Integer.valueOf(8),Integer.valueOf(ArrayExtensions.getLength(bytes).intValue() - 8));
+  Byte buffer3[];
+  if (_rTCPEncryption == null)   buffer3=data;
+ else   buffer3=_rTCPEncryption.encrypt(data,ssrc,new Long((new Integer(rTCPEncryptionPacketIndex.intValue())).longValue()));
+  ArrayList collection=new ArrayList();
+  ArrayListExtensions.addRange(collection,BitAssistant.subArray(bytes,Integer.valueOf(0),Integer.valueOf(8)));
+  ArrayListExtensions.addRange(collection,buffer3);
+  Byte integerBytesNetwork[]=BitAssistant.getIntegerBytesNetwork(rTCPEncryptionPacketIndex);
+  integerBytesNetwork[0]=new Byte((byte)(integerBytesNetwork[0].byteValue() | 0x80));
+  ArrayListExtensions.addRange(collection,integerBytesNetwork);
+  Byte buffer6[]=BitAssistant.subArray(Crypto.getHmacSha1(_rTCPEncryptionAuth,(Byte[])collection.toArray(new Byte[0])),Integer.valueOf(0),_rTCPIntegritySize);
+  ArrayList list2=new ArrayList();
+  ArrayListExtensions.addRange(list2,collection);
+  ArrayListExtensions.addRange(list2,buffer6);
+  return (Byte[])list2.toArray(new Byte[0]);
+}

@@ -1,0 +1,35 @@
+{
+  WhisperGroup whisperGroup=wgManager.findWhisperGroup(whisperGroupId);
+  if (whisperGroup == null) {
+    throw new ParseException("No such whisper group:  " + whisperGroupId,0);
+  }
+  if (this.whisperGroup != whisperGroup) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Not in same wg, this " + this.whisperGroup + " other "+ whisperGroup);
+    }
+    return;
+  }
+  if (cp.getInputTreatment() != null && cp.isRecorder() == false) {
+    return;
+  }
+synchronized (mixManager) {
+    if (whisperGroup.hasCommonMix()) {
+      mixManager.addMix(whisperGroup,1);
+      mixManager.addMix(memberReceiver,-1);
+    }
+ else {
+      mixManager.removeMix(whisperGroup);
+      mixManager.removeMix(memberReceiver);
+    }
+  }
+  double[] spatialValues=new double[4];
+synchronized (conferenceManager) {
+    ArrayList<ConferenceMember> memberList=conferenceManager.getMemberList();
+    for (    ConferenceMember member : memberList) {
+      if (member == this) {
+        continue;
+      }
+      setPrivateMix(member,spatialValues);
+    }
+  }
+}

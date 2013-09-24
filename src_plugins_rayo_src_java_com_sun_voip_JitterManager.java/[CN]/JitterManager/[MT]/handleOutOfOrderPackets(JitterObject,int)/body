@@ -1,0 +1,28 @@
+{
+  short expected=(short)(firstSequence + packetList.size());
+  int missingPackets=(int)(jo.sequence - expected);
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println(id + ":  expected " + (expected & 0xffff)+ " got "+ (jo.sequence & 0xffff)+ ", "+ missingPackets+ " missing packets"+ " inserting at index "+ index+ " first sequence "+ (firstSequence & 0xffff)+ " list size "+ packetList.size()+ " elapsed "+ elapsed);
+  }
+  outOfOrderPackets+=missingPackets;
+  if (missingPackets >= maxJitterBufferSize) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO || Logger.logLevel == -19) {
+      Logger.println(id + ":  resetting jitter buffer.  " + " too many missing packets "+ missingPackets);
+    }
+    packetList.clear();
+    plc.reset();
+    insertSilence(jo);
+    return;
+  }
+  Object data=null;
+  try {
+    JitterObject lastPacket=(JitterObject)packetList.getLast();
+    data=lastPacket.data;
+  }
+ catch (  NoSuchElementException e) {
+  }
+  for (int i=0; i < missingPackets; i++) {
+    JitterObject missing=new JitterObject(expected + i,true,data);
+    packetList.add(missing);
+  }
+}

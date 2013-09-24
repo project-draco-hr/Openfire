@@ -1,0 +1,32 @@
+{
+  int bytesAvailable;
+  if (in == null || (bytesAvailable=in.available()) == 0) {
+    done();
+    return null;
+  }
+  int sampleSize=2;
+  if (encoding == AudioSource.ULAW) {
+    sampleSize=1;
+  }
+  int len=sampleRate * sampleTime * channels* sampleSize / 1000;
+  byte[] data=new byte[len];
+  try {
+    int readSize;
+    readSize=Math.min(len,bytesAvailable);
+    in.read(data,0,readSize);
+    byte b;
+    if (encoding == ULAW) {
+      b=AudioConversion.PCMU_SILENCE;
+    }
+ else {
+      b=AudioConversion.PCM_SILENCE;
+    }
+    for (int i=readSize; i < len; i++) {
+      data[i]=b;
+    }
+  }
+ catch (  IOException e) {
+    throw new IOException("Can't read data!  " + path + " "+ e.getMessage());
+  }
+  return data;
+}

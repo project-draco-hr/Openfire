@@ -1,0 +1,21 @@
+{
+  if (cp.getInputTreatment() != null && cp.getToRecordingFile() == null) {
+    return true;
+  }
+  if (memberReceiver.checkPacketsReceived() == false) {
+    return false;
+  }
+  int timeout=cp.getCallTimeout();
+  if (timeout > 0) {
+    timeout-=RtpPacket.PACKET_PERIOD;
+    if (timeout <= 0) {
+      cp.setCallTimeout(0);
+      callHandler.cancelRequest("Call timeout");
+      return false;
+    }
+    cp.setCallTimeout(timeout);
+  }
+synchronized (mixManager) {
+    return memberSender.sendData(mixManager.mix());
+  }
+}

@@ -1,0 +1,99 @@
+{
+  try {
+    Response response=(Response)responseReceivedEvent.getResponse();
+    ClientTransaction clientTransaction=responseReceivedEvent.getClientTransaction();
+    int statusCode=response.getStatusCode();
+    FromHeader fromHeader=(FromHeader)response.getHeader(FromHeader.NAME);
+    String displayName=fromHeader.getAddress().getDisplayName();
+    if (Logger.logLevel >= Logger.LOG_SIP) {
+      Logger.println("Response:  statusCode " + statusCode + " state "+ getCallState()+ " fromHeader "+ displayName+ " call participant "+ cp.getName());
+    }
+    if (reasonCallTerminated != null) {
+      if (statusCode != Response.OK && statusCode != 487) {
+        if (Logger.logLevel >= Logger.LOG_SIP) {
+          Logger.println("Call " + cp + ":  request cancelled, ignoring response");
+        }
+      }
+      CallIdHeader callIdHeader=(CallIdHeader)response.getHeader("Call-Id");
+      String sipCallId=callIdHeader.getCallId();
+      sipServerCallback.removeSipListener(sipCallId);
+      return;
+    }
+    if (forceGatewayError) {
+      statusCode=500;
+      forceGatewayError=false;
+    }
+    if (statusCode >= 500 && getState() == CallState.INVITED) {
+      Logger.error("Call " + cp + " gateway error:  "+ statusCode+ " "+ response.getReasonPhrase());
+      cancelRequest("gateway error: " + statusCode + " "+ response.getReasonPhrase());
+      return;
+    }
+ else     if (statusCode == Response.PROXY_AUTHENTICATION_REQUIRED || statusCode == Response.UNAUTHORIZED) {
+      if (cp.getProxyCredentials() != null) {
+        try {
+          SipServer.handleChallenge(response,clientTransaction,cp.getProxyCredentials()).sendRequest();
+        }
+ catch (        Exception e) {
+          Logger.println("Proxy authentification failed  " + e);
+        }
+      }
+      return;
+    }
+ else     if (statusCode >= 400) {
+      Logger.println("Call " + cp + " got status code :"+ statusCode);
+      cp.setCallEndTreatment(null);
+      cp.setConferenceJoinTreatment(null);
+      cp.setConferenceLeaveTreatment(null);
+      if (statusCode == Response.BUSY_HERE) {
+        try {
+          if (busyTreatment != null) {
+            addTreatment(busyTreatment);
+          }
+ else {
+            Logger.println("Unable to play busy treatment!!!");
+          }
+        }
+ catch (        Exception e) {
+          Logger.error("can't start busy treatment!" + sdpBody);
+        }
+        CallEvent callEvent=new CallEvent(CallEvent.BUSY_HERE);
+        callEvent.setInfo(response.getReasonPhrase());
+        sendCallEventNotification(callEvent);
+      }
+      cancelRequest(response.getReasonPhrase());
+      return;
+    }
+switch (getState()) {
+case CallState.INVITED:
+      if (rejectCall) {
+        Logger.error("Call " + cp + " gateway error:  "+ statusCode+ " "+ response.getReasonPhrase());
+        cancelRequest("gateway error: " + statusCode + " "+ response.getReasonPhrase());
+        return;
+      }
+    handleCallParticipantInvited(response,clientTransaction);
+  break;
+case CallState.ESTABLISHED:
+if (statusCode == Response.OK) {
+  gotOk=true;
+  Logger.writeFile("Call " + cp + " Got OK, ESTABLISHED");
+  if (ackSent == false) {
+    sipUtil.sendAck(clientTransaction);
+    ackSent=true;
+  }
+}
+break;
+case CallState.ENDED:
+break;
+default :
+Logger.error("Process Response bad state " + getState() + "\n"+ response);
+}
+}
+ catch (SipException e) {
+Logger.exception("Call " + cp + " SIP Stack error ",e);
+cancelRequest("processResponse:  SIP Stack error " + e.getMessage());
+}
+catch (Exception e) {
+Logger.exception("processResponse:  " + cp,e);
+cancelRequest("processResponse:  SIP Stack error " + e.getMessage());
+}
+}

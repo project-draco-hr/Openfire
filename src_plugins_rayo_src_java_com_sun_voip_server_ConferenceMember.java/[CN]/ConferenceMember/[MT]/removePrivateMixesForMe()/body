@@ -1,0 +1,16 @@
+{
+  ArrayList pmToRemove=new ArrayList();
+synchronized (privateMixesForMe) {
+    for (int i=0; i < privateMixesForMe.size(); i++) {
+      ConferenceMember member=(ConferenceMember)privateMixesForMe.get(i);
+      pmToRemove.add(member);
+    }
+  }
+  for (int i=0; i < pmToRemove.size(); i++) {
+    ConferenceMember member=(ConferenceMember)pmToRemove.get(i);
+    member.removePrivateMix(this);
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + member + " removing private mix for "+ this);
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  int size=b.length;
+  char ar[]=new char[((size + 2) / 3) * 4];
+  int a=0;
+  for (int i=0; i < size; ) {
+    byte b0=b[i++].byteValue();
+    byte b1=i >= size ? 0 : b[i++].byteValue();
+    byte b2=i >= size ? 0 : b[i++].byteValue();
+    int mask=63;
+    ar[a++]=ALPHABET[b0 >> 2 & mask];
+    ar[a++]=ALPHABET[(b0 << 4 | (b1 & 0xff) >> 4) & mask];
+    ar[a++]=ALPHABET[(b1 << 2 | (b2 & 0xff) >> 6) & mask];
+    ar[a++]=ALPHABET[b2 & mask];
+  }
+switch (size % 3) {
+case 1:
+    ar[--a]='=';
+case 2:
+  ar[--a]='=';
+default :
+return new String(ar);
+}
+}

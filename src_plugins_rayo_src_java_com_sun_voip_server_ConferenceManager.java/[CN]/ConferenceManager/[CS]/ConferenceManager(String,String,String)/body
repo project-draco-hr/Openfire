@@ -1,0 +1,29 @@
+{
+  this.conferenceId=conferenceId;
+  memberList=new ArrayList();
+  try {
+    setMediaInfo(mediaPreference);
+  }
+ catch (  ParseException e) {
+    Logger.println(conferenceId + ":  Can't set meeting media setting to " + mediaPreference+ ": "+ e.getMessage());
+  }
+  this.displayName=displayName;
+  if (useSingleSender == true) {
+    if (loneConferenceSender == null) {
+      loneConferenceSender=new ConferenceSender(conferenceList);
+    }
+    conferenceSender=loneConferenceSender;
+  }
+ else {
+    conferenceSender=new ConferenceSender(this);
+  }
+  if (loneReceiverPort != 0) {
+    if (loneConferenceReceiver == null) {
+      loneConferenceReceiver=new ConferenceReceiver("Singleton",loneReceiverPort);
+    }
+    conferenceReceiver=loneConferenceReceiver;
+  }
+ else {
+    conferenceReceiver=new ConferenceReceiver(conferenceId,0);
+  }
+}

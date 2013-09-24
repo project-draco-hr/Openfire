@@ -1,0 +1,30 @@
+{
+  this.member=member;
+  this.cp=cp;
+  this.datagramChannel=datagramChannel;
+synchronized (memberNumberLock) {
+    myMemberNumber=memberNumber++;
+  }
+  encryptionKey=cp.getEncryptionKey();
+  encryptionAlgorithm=cp.getEncryptionAlgorithm();
+  if (encryptionKey != null) {
+    try {
+      if (encryptionKey.length() < 8) {
+        encryptionKey+=String.valueOf(System.currentTimeMillis());
+      }
+      if (encryptionKey.length() > 8 && encryptionAlgorithm.equals("DES")) {
+        encryptionKey=encryptionKey.substring(0,8);
+      }
+      byte[] keyBytes=encryptionKey.getBytes();
+      SecretKeySpec secretKey=new SecretKeySpec(keyBytes,encryptionAlgorithm);
+      decryptCipher=Cipher.getInstance(encryptionAlgorithm);
+      decryptCipher.init(Cipher.DECRYPT_MODE,secretKey);
+      Logger.println("Call " + cp + " Voice data will be decrypted "+ "using "+ encryptionAlgorithm);
+    }
+ catch (    Exception e) {
+      Logger.println("Call " + cp + " Crypto initialization failed "+ e.getMessage());
+      throw new IOException(" Crypto initialization failed " + e.getMessage());
+    }
+  }
+  timeStarted=Logger.getDate();
+}

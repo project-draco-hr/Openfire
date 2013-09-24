@@ -1,0 +1,14 @@
+{
+  String s="";
+synchronized (this) {
+    for (int i=0; i < mixDescriptors.size(); i++) {
+      MixDescriptor mixDescriptor=(MixDescriptor)mixDescriptors.get(i);
+      s+="    " + mixDescriptor.toAbbreviatedString();
+      if (member.getWhisperGroup() == mixDescriptor.getMixDataSource()) {
+        s+=" + ";
+      }
+      s+="\n";
+    }
+  }
+  return s;
+}

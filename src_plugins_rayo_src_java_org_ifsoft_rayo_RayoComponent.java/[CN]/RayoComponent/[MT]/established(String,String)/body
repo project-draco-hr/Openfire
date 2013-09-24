@@ -1,0 +1,8 @@
+{
+  Log.info("RayoComponent established " + name + " "+ callId);
+  Presence presence=new Presence();
+  presence.setFrom(callId + "@rayo." + getDomain());
+  presence.setTo(new JID(name));
+  presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,null)));
+  sendPacket(presence);
+}

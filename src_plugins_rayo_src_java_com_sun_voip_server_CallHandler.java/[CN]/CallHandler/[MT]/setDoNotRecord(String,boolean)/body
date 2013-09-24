@@ -1,0 +1,14 @@
+{
+  CallHandler callHandler=findCall(callId);
+  if (callHandler == null) {
+    throw new NoSuchElementException("Invalid callId specified:  " + callId);
+  }
+  if (Logger.logLevel >= Logger.LOG_DETAIL) {
+    String s="";
+    if (doNotRecord == true) {
+      s="NOT";
+    }
+    Logger.println(callHandler + ":  " + s+ " okay to record");
+  }
+  callHandler.getMemberReceiver().setDoNotRecord(doNotRecord);
+}

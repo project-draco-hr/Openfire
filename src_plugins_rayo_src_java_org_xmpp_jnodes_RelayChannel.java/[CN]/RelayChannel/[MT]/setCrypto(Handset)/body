@@ -1,0 +1,36 @@
+{
+  this.handset=handset;
+  Byte localCryptoByte[]=Convert.fromBase64String(handset.localCrypto);
+  Byte remoteCryptoByte[]=Convert.fromBase64String(handset.remoteCrypto);
+  if (ArrayExtensions.getLength(localCryptoByte).intValue() != 30 || ArrayExtensions.getLength(remoteCryptoByte).intValue() != 30)   Log.error("Unexpected key/salt length.");
+ else {
+    localCryptoKey=BitAssistant.subArray(localCryptoByte,Integer.valueOf(0),Integer.valueOf(16));
+    localCryptoSalt=BitAssistant.subArray(localCryptoByte,Integer.valueOf(16),Integer.valueOf(14));
+    remoteCryptoKey=BitAssistant.subArray(remoteCryptoByte,Integer.valueOf(0),Integer.valueOf(16));
+    remoteCryptoSalt=BitAssistant.subArray(remoteCryptoByte,Integer.valueOf(16),Integer.valueOf(14));
+    Log.info("Crypto Suite " + handset.cryptoSuite + " "+ handset.localCrypto+ " "+ handset.remoteCrypto+ " "+ handset.mixer+ " "+ handset.codec+ " "+ handset.stereo);
+    try {
+      encryptor=new Encryptor(SDPCryptoSuite.getEncryptionMode(handset.cryptoSuite),localCryptoKey,localCryptoSalt,remoteCryptoKey,remoteCryptoSalt);
+      encryptor2=new Encryptor(SDPCryptoSuite.getEncryptionMode(handset.cryptoSuite),remoteCryptoKey,remoteCryptoSalt,localCryptoKey,localCryptoSalt);
+      decoder=Opus.decoder_create(sampleRate,channels);
+      encoder=Opus.encoder_create(sampleRate,channels);
+      if (decoder == 0)       Log.error("Opus decoder creation error ");
+      if (encoder == 0)       Log.error("Opus encoder creation error ");
+      String mediaPreference="PCMU/8000/1";
+      if (handset.codec == null || "OPUS".equals(handset.codec))       mediaPreference="PCM/48000/2";
+      if (decoder == 0 || encoder == 0) {
+        mediaPreference="PCMU/8000/1";
+        handset.codec="PCMU";
+        Log.warn("Opus encoder/decoder creation failure, PCMU will be used in default");
+      }
+      ConferenceManager.createConference(handset.mixer,mediaPreference,getAttachment());
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(handset.mixer);
+      if (conferenceManager.getMemberList().size() == 0) {
+        conferenceManager.recordConference(true,handset.mixer + "-" + System.currentTimeMillis()+ ".au","au");
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  long startTime=System.currentTimeMillis();
+  while (state == WAITING_FOR_MEETING_CODE || state == WAITING_FOR_PASS_CODE) {
+    int currentState=state;
+    try {
+      Thread.sleep(timeout);
+      if (state != WAITING_FOR_MEETING_CODE && state != WAITING_FOR_PASS_CODE) {
+        break;
+      }
+      if (currentState == state) {
+        if (System.currentTimeMillis() - startTime >= CallSetupAgent.getDefaultCallAnswerTimeout() * 1000) {
+          playTreatmentToCall(INCOMING_TIMEOUT);
+          try {
+            Thread.sleep(5000);
+          }
+ catch (          InterruptedException e) {
+          }
+          incomingCallHandler.cancelRequest("Incoming call timeout");
+          break;
+        }
+        playTreatmentToCall(lastMessagePlayed);
+      }
+    }
+ catch (    InterruptedException e) {
+      Logger.println("Incoming ConferenceHandler Interrupted!");
+    }
+  }
+}

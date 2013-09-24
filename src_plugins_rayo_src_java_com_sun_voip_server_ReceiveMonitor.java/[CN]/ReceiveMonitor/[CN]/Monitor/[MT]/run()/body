@@ -1,0 +1,52 @@
+{
+  String callId;
+  try {
+    callId=reader.readLine();
+  }
+ catch (  IOException e) {
+    Logger.error("unable to read line from " + socket + e.getMessage());
+    close();
+    return;
+  }
+  if (callId == null) {
+    close();
+    return;
+  }
+  CallHandler callHandler=CallHandler.findCall(callId);
+  if (callHandler == null) {
+    try {
+      Logger.println("Invalid callId:  " + callId);
+      write("Invalid callId:  " + callId);
+    }
+ catch (    IOException e) {
+    }
+    close();
+    return;
+  }
+  MemberReceiver memberReceiver=callHandler.getMember().getMemberReceiver();
+  while (true) {
+    try {
+      Thread.sleep(500);
+    }
+ catch (    InterruptedException ie) {
+    }
+    String s;
+    try {
+      s=memberReceiver.getPerformanceData();
+    }
+ catch (    IOException e) {
+      try {
+        write("CallEnded");
+      }
+ catch (      IOException ee) {
+      }
+      break;
+    }
+    try {
+      write(s);
+    }
+ catch (    IOException e) {
+      break;
+    }
+  }
+}

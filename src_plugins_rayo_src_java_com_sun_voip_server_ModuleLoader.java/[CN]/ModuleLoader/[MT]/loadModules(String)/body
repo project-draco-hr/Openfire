@@ -1,0 +1,39 @@
+{
+  String[] path=modPath.split(System.getProperty("path.separator"));
+  for (int i=0; i < path.length; i++) {
+    Logger.writeFile("Searching for modules in " + path[i]);
+    File f=new File(path[i]);
+    String[] fileList=f.list();
+    if (fileList == null) {
+      Logger.writeFile("module path '" + path[i] + "' "+ "is not a directory.  Ignoring.");
+      continue;
+    }
+    for (int j=0; j < fileList.length; j++) {
+      String dirEntry=fileList[j];
+      if (dirEntry.equals(".") || dirEntry.equals("..")) {
+        continue;
+      }
+      String dir=path[i] + dirEntry + System.getProperty("file.separator");
+      if (new File(dir).isDirectory()) {
+        loadModules(dir);
+        continue;
+      }
+      if (dirEntry.indexOf(".jar") < 0) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Skipping non-jar file " + dirEntry);
+        }
+        continue;
+      }
+      dirEntry=path[i] + dirEntry;
+      Logger.println("Processing jar file " + dirEntry);
+      try {
+        addURL(new File(dirEntry).toURI().toURL());
+        loadBridgeModule(dirEntry);
+      }
+ catch (      IOException e) {
+        Logger.println("Can't read jar file:  " + dirEntry);
+        continue;
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  for (int i=0; i < args.length; i++) {
+    if (args[i].equalsIgnoreCase("-t")) {
+      i++;
+      timePeriod=getIntArg(args,i);
+    }
+ else     if (args[i].equalsIgnoreCase("-d")) {
+      i++;
+      duration=getIntArg(args,i);
+    }
+ else     if (args[i].equalsIgnoreCase("-s")) {
+      i++;
+      statFrequency=getIntArg(args,i);
+    }
+ else     if (args[i].equalsIgnoreCase("-c")) {
+      i++;
+      if (i >= args.length) {
+        usage();
+      }
+      tickerClassName=args[i];
+    }
+ else {
+      usage();
+    }
+  }
+  if (timePeriod == 0) {
+    timePeriod=20;
+  }
+  if (duration == 0) {
+    duration=10;
+  }
+  if (statFrequency == 0) {
+    statFrequency=200;
+  }
+  if (tickerClassName == null) {
+    tickerClassName="com.sun.voip.TickerSleep";
+  }
+  TickerFactory tickerFactory=TickerFactory.getInstance();
+  ticker=tickerFactory.createTicker(tickerClassName,"TickerTest");
+}

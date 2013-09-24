@@ -1,0 +1,16 @@
+{
+  int length=audio.length;
+  float peak=0;
+  for (int n=0; n < length; n++) {
+    float val=Math.abs(audio[n]);
+    if (val > peak) {
+      peak=val;
+    }
+  }
+  float r1=32768 / peak;
+  float ratio=Math.min(r1,5) * .90f;
+  for (int n=0; n < length; n++) {
+    audio[n]*=ratio;
+  }
+  return audio;
+}

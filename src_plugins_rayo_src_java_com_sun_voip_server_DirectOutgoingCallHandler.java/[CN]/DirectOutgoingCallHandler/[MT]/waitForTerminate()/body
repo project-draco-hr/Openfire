@@ -1,0 +1,15 @@
+{
+  while (true) {
+    if (getState() == TERMINATED) {
+      return;
+    }
+synchronized (stateLock) {
+      try {
+        stateLock.wait();
+      }
+ catch (      InterruptedException ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
+}

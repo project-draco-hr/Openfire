@@ -1,0 +1,21 @@
+{
+  MediaInfo best=null;
+  for (int i=0; i < otherSupportedMedia.size(); i++) {
+    MediaInfo m=(MediaInfo)otherSupportedMedia.elementAt(i);
+    if (!isSupported(m)) {
+      continue;
+    }
+    if (otherMediaPreference != null) {
+      if (m.getSampleRate() > otherMediaPreference.getSampleRate() || m.getChannels() > otherMediaPreference.getChannels()) {
+        continue;
+      }
+    }
+    if (best == null || isBetter(m,best)) {
+      best=m;
+    }
+  }
+  if (best == null) {
+    throw new IOException("No supported Media!");
+  }
+  return best;
+}

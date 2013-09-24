@@ -1,0 +1,91 @@
+{
+  this.callHandler=callHandler;
+  if (cp.getProtocol() != null && "WebRtc".equals(cp.getProtocol()) == false) {
+    if (rtcpAddress != null) {
+      this.rtcpAddress=rtcpAddress;
+    }
+ else {
+      rtcpAddress=new InetSocketAddress(memberAddress.getAddress(),memberAddress.getPort());
+    }
+    Logger.writeFile("Call " + cp + " Initializing sender with member address "+ memberAddress);
+    memberSender.initialize(conferenceManager,callHandler,memberAddress,mediaPayload,telephoneEventPayload);
+    memberReceiver.initialize(conferenceManager,callHandler,receivePayload,telephoneEventPayload,rtcpReceiver);
+    if (mediaPayload != receivePayload) {
+      Logger.println("Call " + cp + " send payload "+ mediaPayload+ " receive payload "+ receivePayload);
+    }
+    try {
+      myMediaInfo=SdpManager.findMediaInfo(receivePayload);
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Call " + cp + " media info "+ myMediaInfo+ " telephoneEventPayload "+ telephoneEventPayload);
+      }
+    }
+ catch (    ParseException e) {
+      Logger.println("Call " + cp + " Invalid receivePayload "+ receivePayload);
+      callHandler.cancelRequest("Invalid receive payload " + receivePayload);
+      return;
+    }
+  }
+ else {
+    Logger.writeFile("Call " + cp + " Initializing "+ cp.getPhoneNumber());
+    memberSender.initialize(conferenceManager,callHandler,memberAddress,mediaPayload,telephoneEventPayload);
+    memberReceiver.initialize(conferenceManager,callHandler,receivePayload,telephoneEventPayload,rtcpReceiver);
+  }
+  MixManager oldMixManager=mixManager;
+  mixManager=new MixManager(this,conferenceManager.getMediaInfo().getSamplesPerPacket(),conferenceManager.getMediaInfo().getChannels());
+synchronized (mixManager) {
+    mixManager.addMix(memberReceiver,-1.0D);
+synchronized (oldMixManager) {
+      ArrayList mixDescriptors=oldMixManager.getMixDescriptors();
+      for (int i=0; i < mixDescriptors.size(); i++) {
+        MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+        if (md.isPrivateMix()) {
+          Logger.println("Call " + cp + " restoring private mix: "+ md);
+          mixManager.addMix(md);
+        }
+      }
+    }
+  }
+  conferenceWhisperGroup=wgManager.getConferenceWhisperGroup();
+  if (initializationDone) {
+    addCall(conferenceWhisperGroup);
+    setWhispering(conferenceWhisperGroup);
+    Logger.println("Call " + cp + " Whispering in conference whisper group");
+    return;
+  }
+synchronized (conferenceManager) {
+    String whisperGroupId=null;
+    if ((whisperGroupId=cp.getWhisperGroupId()) != null) {
+      try {
+        addCall(whisperGroupId);
+        setWhispering(whisperGroupId);
+      }
+ catch (      ParseException e) {
+        callHandler.cancelRequest("Invalid whisper group " + whisperGroupId + " "+ e.getMessage());
+        return;
+      }
+    }
+  }
+  if (cp.getJoinConfirmationTimeout() == 0) {
+    addCall(conferenceWhisperGroup);
+    if (whisperGroup == null) {
+      setWhispering(conferenceWhisperGroup);
+    }
+  }
+  if (whisperGroup == null) {
+    try {
+      addCall("initial-" + cp);
+      setWhispering("initial-" + cp);
+      initialWhisperGroup=wgManager.findWhisperGroup("initial-" + cp);
+    }
+ catch (    ParseException e) {
+      callHandler.cancelRequest("Call " + cp + " Can't add call to initial whisper group "+ e.getMessage());
+      return;
+    }
+  }
+  initializationDone=true;
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + cp + " ConferenceMember initialization done...");
+  }
+  conferenceManager.joinDistributedConference(this);
+  joinedDistributedConference=true;
+}

@@ -1,0 +1,14 @@
+{
+  Request request=((RequestEvent)requestEvent).getRequest();
+  FromHeader from=(FromHeader)request.getHeader(FromHeader.NAME);
+  Address address=from.getAddress();
+  SipURI uri=(SipURI)address.getURI();
+  if (uri.toString().indexOf("@") >= 0) {
+    String s=uri.getUser() + "@" + uri.getHost();
+    if (uri.getPort() != -1) {
+      s+=":" + uri.getPort();
+    }
+    return s;
+  }
+  return ((SipURI)address.getURI()).getUser();
+}

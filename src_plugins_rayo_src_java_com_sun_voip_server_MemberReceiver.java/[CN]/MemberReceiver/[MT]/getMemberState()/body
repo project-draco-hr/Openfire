@@ -1,0 +1,38 @@
+{
+  if (initializationDone == false) {
+    return "";
+  }
+  String s="";
+  if (callHandler != null) {
+    s+="\tBridge receive address for data from call " + callHandler.getReceiveAddress() + "\n";
+  }
+  s+="\tJoinConfirmationReceived " + joinConfirmationReceived + "\n";
+  s+="\tTelephone Event Payload " + telephoneEventPayload + "\n";
+  s+="\tIsAutoMuted " + isAutoMuted + "\n";
+  s+="\tIsMuted " + cp.isMuted() + "\n";
+  s+="\tIsConferenceMuted " + cp.isConferenceMuted() + "\n";
+  s+="\tIsConferenceSilenced " + cp.isConferenceSilenced() + "\n";
+  s+="\tReadyToReceiveData " + readyToReceiveData() + "\n";
+  s+="\tInput volume ";
+  s+=inputVolume + " ";
+  s+="\n";
+  s+="\tSeconds since last Rtcp report " + rtcpReceiver.secondsSinceLastReport(member.getRtcpAddress()) + "\n";
+  s+="\tMilliseconds since last packet received " + (System.currentTimeMillis() - timeCurrentPacketReceived + "\n");
+  s+="\tMedia packets received " + mediaPacketsReceived + "\n";
+  s+="\tMin jitter size " + jitterManager.getMinJitterBufferSize() + " packets\n";
+  s+="\tMax jitter size " + jitterManager.getMaxJitterBufferSize() + " packets\n";
+  s+="\tJitter Buffer size " + jitterManager.getJitterBufferSize() + "\n";
+  s+="\tPacketLossConcealment class name " + jitterManager.getPlcClassName() + "\n";
+  s+="\tWhispering in " + whisperGroup.toAbbreviatedString() + "\n";
+  s+="\tComfort Payload Received " + gotComfortPayload + "\n";
+  s+="\tForced to defer mixing " + forcedToDeferMixing + "\n";
+synchronized (forwardMemberList) {
+    if (forwardMemberList.size() > 0) {
+      s+="\tForwarding data to\n";
+      for (      MemberSender memberSender : forwardMemberList) {
+        s+="\t\t" + memberSender + "\n";
+      }
+    }
+  }
+  return s;
+}

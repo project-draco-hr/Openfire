@@ -1,0 +1,17 @@
+{
+  if (packetList.size() == 0) {
+    return;
+  }
+  JitterObject jo=(JitterObject)packetList.get(0);
+  if (jo.isMissing || jo.data != null) {
+    return;
+  }
+  try {
+    getFirstPacket();
+    if (Logger.logLevel == -19) {
+      Logger.println(id + ":  removed silence packet " + "size "+ packetList.size());
+    }
+  }
+ catch (  NoSuchElementException e) {
+  }
+}

@@ -1,0 +1,23 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + callHandler + " treatment done notification, current state "+ callState+ " "+ callHandler);
+  }
+switch (getState()) {
+case CallState.INVITED:
+    if (reasonCallTerminated != null) {
+      break;
+    }
+  setState(CallState.ANSWERED);
+case CallState.ANSWERED:
+MediaInfo mediaInfo=callHandler.getConferenceManager().getMediaInfo();
+setState(CallState.ESTABLISHED,"ConferencePayload='" + mediaInfo.getPayload() + "'"+ " BridgeIPAddress='"+ Bridge.getPrivateHost()+ "'");
+break;
+case CallState.ENDING:
+terminateCall();
+done();
+break;
+default :
+Logger.error("Call " + callHandler + ":  unexpected state "+ callState);
+break;
+}
+}

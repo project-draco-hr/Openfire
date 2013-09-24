@@ -1,0 +1,24 @@
+{
+  int stereo=0;
+  try {
+    stereo=Integer.parseInt(handset.stereo);
+  }
+ catch (  Exception exception) {
+  }
+  if (stereo > 0) {
+    if (stereo > 90)     stereo=90;
+    int pan=stereo - 90;
+    pan=(pan < 0) ? -pan : pan;
+    for (int j=0; j < buffer.length; j+=2) {
+      buffer[j]=(int)(buffer[j] * pan / 90);
+    }
+  }
+ else {
+    if (stereo < -90)     stereo=-90;
+    int pan=stereo + 90;
+    pan=(pan < 0) ? -pan : pan;
+    for (int j=1; j < buffer.length; j+=2) {
+      buffer[j]=(int)(buffer[j] * pan / 90);
+    }
+  }
+}

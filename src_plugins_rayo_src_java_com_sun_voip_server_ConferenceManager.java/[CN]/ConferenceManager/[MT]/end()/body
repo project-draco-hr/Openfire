@@ -1,0 +1,52 @@
+{
+  try {
+    recordConference(false,null,null);
+  }
+ catch (  ParseException e) {
+    Logger.println(conferenceId + ":  Failed to stop recording conference! " + e.getMessage());
+  }
+  Logger.writeFile("ending conf " + conferenceId + ":  permanent "+ permanent+ ", mediaPreference "+ mediaPreference);
+  if (permanent) {
+    conferenceSender.printStatistics();
+    if (mediaPreference != null) {
+      try {
+        setMediaInfo(mediaPreference);
+      }
+ catch (      ParseException e) {
+        Logger.println(conferenceId + ":  Can't change meeting media setting to " + mediaPreference+ ": "+ e.getMessage());
+      }
+      mediaPreference=null;
+    }
+  }
+ else {
+    if (done) {
+      return;
+    }
+    done=true;
+    ConferenceManager.conferenceEventNotification(new ConferenceEvent(ConferenceEvent.CONFERENCE_ENDED,conferenceId));
+synchronized (conferenceList) {
+      conferenceList.remove(this);
+    }
+    if (conferenceReceiver != loneConferenceReceiver) {
+      conferenceReceiver.end();
+    }
+    conferenceSender.printStatistics();
+  }
+  int activeConferences=0;
+synchronized (conferenceList) {
+    for (int i=0; i < conferenceList.size(); i++) {
+      ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+      if (conferenceManager.getMemberList().size() > 0) {
+        activeConferences++;
+      }
+    }
+  }
+  Logger.println("");
+  Logger.println("Conference:  '" + conferenceId + "' has ended.  "+ "conferences still in progress:  "+ activeConferences);
+  Logger.println("");
+  Logger.flush();
+  if (totalMembers == 0) {
+    Logger.println("No conferences in progress, doing a full GC...");
+    System.gc();
+  }
+}

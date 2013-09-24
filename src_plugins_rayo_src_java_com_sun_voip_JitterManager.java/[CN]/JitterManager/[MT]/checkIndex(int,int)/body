@@ -1,0 +1,12 @@
+{
+  if (index >= packetList.size()) {
+    return;
+  }
+  JitterObject jo=(JitterObject)packetList.get(index);
+  if (jo.sequence != sequence) {
+    Logger.println(id + ":  jitterManager overwriting wrong sequence!  index " + index+ ", jo.sequence "+ jo.sequence+ " != "+ "sequence "+ sequence+ ", firstSequence "+ firstSequence+ " jitterObject:  "+ jo);
+  }
+  if (jo.isMissing == false && jo.data != null) {
+    Logger.println(id + ":  jitterManager overwriting valid packet!  index " + index+ " sequence "+ jo.sequence+ " firstSequence "+ firstSequence+ " jitterObject:  "+ jo);
+  }
+}

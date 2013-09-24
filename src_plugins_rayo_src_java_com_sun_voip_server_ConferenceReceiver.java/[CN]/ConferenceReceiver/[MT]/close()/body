@@ -1,0 +1,24 @@
+{
+synchronized (membersToRegister) {
+    if (selector != null) {
+      try {
+        selector.close();
+      }
+ catch (      IOException e) {
+        Logger.println("Conference receiver failed to close selector " + conferenceId + " "+ e.getMessage());
+      }
+      selector=null;
+    }
+  }
+  if (loneReceiverChannel != null) {
+    try {
+      loneReceiverChannel.close();
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Closed lone receiver channel " + loneReceiverChannel);
+      }
+    }
+ catch (    Exception e) {
+      Logger.println("Exception closing lone receiver channel:  " + e.getMessage());
+    }
+  }
+}

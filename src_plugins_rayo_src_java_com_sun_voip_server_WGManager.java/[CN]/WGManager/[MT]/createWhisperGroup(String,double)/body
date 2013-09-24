@@ -1,0 +1,18 @@
+{
+  WhisperGroup whisperGroup;
+synchronized (whisperGroups) {
+    for (int i=0; i < whisperGroups.size(); i++) {
+      whisperGroup=(WhisperGroup)whisperGroups.get(i);
+      if (whisperGroupId.equals(whisperGroup.getId())) {
+        Logger.println("whisper group already exists: " + whisperGroupId);
+        return whisperGroup;
+      }
+    }
+    whisperGroup=new WhisperGroup(whisperGroupId,attenuation,mediaInfo);
+    whisperGroups.add(whisperGroup);
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("New Whisper group " + toString());
+    }
+  }
+  return whisperGroup;
+}

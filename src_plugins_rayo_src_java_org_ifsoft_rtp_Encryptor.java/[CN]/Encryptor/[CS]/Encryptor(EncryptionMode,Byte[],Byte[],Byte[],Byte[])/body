@@ -1,0 +1,50 @@
+{
+  _octetCount=Long.valueOf(0L);
+  _packetCount=Long.valueOf(0L);
+  _rTCPIntegritySize=Integer.valueOf(0);
+  _rTPDecryptionHighestSequenceNumber=Integer.valueOf(0);
+  _rTPDecryptionROC=Long.valueOf(0L);
+  _rTPEncryptionROC=Long.valueOf(0L);
+  _rTPIntegritySize=Integer.valueOf(0);
+  _sRTCPIndex=Integer.valueOf(0);
+  _rTPEncryptionROC=Long.valueOf(0L);
+  _rTPDecryptionROC=Long.valueOf(0L);
+  _rTPDecryptionHighestSequenceNumber=Integer.valueOf(0);
+  _sRTCPIndex=Integer.valueOf(0);
+  _packetCount=Long.valueOf(0L);
+  _octetCount=Long.valueOf(0L);
+  setEncryptionMode(encryptionMode);
+  EncryptionMode _var0=getEncryptionMode();
+  if (_var0 != null ? !_var0.equals(EncryptionMode.Null) : _var0 != EncryptionMode.Null) {
+    AESCounter counter=new AESCounter(localKey,localSalt);
+    AESCounter counter2=new AESCounter(remoteKey,remoteSalt);
+    EncryptionMode _var1=encryptionMode;
+    EncryptionMode _var2=encryptionMode;
+    if ((_var1 != null ? _var1.equals(EncryptionMode.Default) : _var1 == EncryptionMode.Default) || (_var2 != null ? _var2.equals(EncryptionMode.AES128Weak) : _var2 == EncryptionMode.AES128Weak)) {
+      Byte key[]=counter.generate(_rTPKeyLabel,Integer.valueOf(16));
+      Byte salt[]=counter.generate(_rTPSaltLabel,Integer.valueOf(14));
+      _rTPEncryption=new AESCounter(key,salt);
+      Byte buffer3[]=counter.generate(_rTCPKeyLabel,Integer.valueOf(16));
+      Byte buffer4[]=counter.generate(_rTCPSaltLabel,Integer.valueOf(14));
+      _rTCPEncryption=new AESCounter(buffer3,buffer4);
+      Byte buffer5[]=counter2.generate(_rTPKeyLabel,Integer.valueOf(16));
+      Byte buffer6[]=counter2.generate(_rTPSaltLabel,Integer.valueOf(14));
+      _rTPDecryption=new AESCounter(buffer5,buffer6);
+      Byte buffer7[]=counter2.generate(_rTCPKeyLabel,Integer.valueOf(16));
+      Byte buffer8[]=counter2.generate(_rTCPSaltLabel,Integer.valueOf(14));
+      _rTCPDecryption=new AESCounter(buffer7,buffer8);
+    }
+    Byte buffer9[]=counter.generate(_rTPAuthLabel,Integer.valueOf(20));
+    _rTPEncryptionAuth=buffer9;
+    Byte buffer10[]=counter.generate(_rTCPAuthLabel,Integer.valueOf(20));
+    _rTCPEncryptionAuth=buffer10;
+    Byte buffer11[]=counter2.generate(_rTPAuthLabel,Integer.valueOf(20));
+    _rTPDecryptionAuth=buffer11;
+    Byte buffer12[]=counter2.generate(_rTCPAuthLabel,Integer.valueOf(20));
+    _rTCPDecryptionAuth=buffer12;
+    EncryptionMode _var3=getEncryptionMode();
+    if (_var3 == EncryptionMode.Default || _var3 == EncryptionMode.NullStrong)     _rTPIntegritySize=Integer.valueOf(10);
+ else     if (_var3 == EncryptionMode.AES128Weak || _var3 == EncryptionMode.NullWeak)     _rTPIntegritySize=Integer.valueOf(4);
+    _rTCPIntegritySize=Integer.valueOf(10);
+  }
+}

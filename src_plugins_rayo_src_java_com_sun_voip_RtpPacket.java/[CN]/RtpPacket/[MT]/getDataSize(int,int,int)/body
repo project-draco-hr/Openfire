@@ -1,0 +1,21 @@
+{
+  int dataSize;
+  String e;
+  int samplesPerPacket=(sampleRate * channels) / PACKETS_PER_SECOND;
+  if (encoding == PCMU_ENCODING) {
+    dataSize=samplesPerPacket * PCMU_SAMPLE_SIZE;
+    e="ULAW";
+  }
+ else   if (encoding == PCM_ENCODING) {
+    dataSize=samplesPerPacket * PCM_SAMPLE_SIZE;
+    e="PCM";
+  }
+ else {
+    dataSize=samplesPerPacket * PCM_SAMPLE_SIZE;
+    e="SPEEX";
+  }
+  if (Logger.logLevel >= Logger.LOG_DEBUG) {
+    Logger.writeFile("Packet data size is " + dataSize + " for "+ e+ "/"+ sampleRate+ "/"+ channels);
+  }
+  return dataSize;
+}

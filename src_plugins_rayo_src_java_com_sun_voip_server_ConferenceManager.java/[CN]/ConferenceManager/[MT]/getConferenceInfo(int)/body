@@ -1,0 +1,122 @@
+{
+synchronized (conferenceList) {
+    if (conferenceList.size() == 0) {
+      if (format != 0) {
+        return ("\n\n\n\n");
+      }
+      return "";
+    }
+    String s="";
+    for (int i=0; i < conferenceList.size(); i++) {
+      ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+      String id=conferenceManager.getId();
+      String displayName=conferenceManager.getDisplayName();
+      if (format != 1) {
+        if (displayName != null) {
+          id+=" '" + displayName + "'";
+        }
+      }
+ else {
+        if (displayName == null) {
+          if (id.length() >= 14) {
+            id=id.substring(0,13);
+          }
+        }
+ else {
+          id="'" + displayName + "'";
+        }
+      }
+      s+="Conference Id: " + id + " ";
+      s+=conferenceManager.getMediaInfo().toString();
+      s+=" Members=" + conferenceManager.getMemberList().size();
+      if (conferenceManager.isPermanent()) {
+        s+=" persistent";
+      }
+      String recordingFile=conferenceManager.getWGManager().getRecordingFile();
+      if (recordingFile != null) {
+        s+=" Recording to " + recordingFile;
+      }
+      s+="\n";
+      if (format == 0) {
+        continue;
+      }
+      ArrayList memberList=(ArrayList)conferenceManager.getMemberList().clone();
+      for (int n=0; n < memberList.size(); n++) {
+        ConferenceMember member=(ConferenceMember)memberList.get(n);
+        MemberSender memberSender=member.getMemberSender();
+        MemberReceiver memberReceiver=member.getMemberReceiver();
+        String info=" ";
+        MediaInfo transmitMediaInfo=memberSender.getMediaInfo();
+        if (transmitMediaInfo != null) {
+          info+=transmitMediaInfo.toString();
+        }
+        MediaInfo receiveMediaInfo=memberReceiver.getMediaInfo();
+        if (receiveMediaInfo != null) {
+          if (transmitMediaInfo.getEncoding() != receiveMediaInfo.getEncoding() || transmitMediaInfo.getSampleRate() != receiveMediaInfo.getSampleRate() || transmitMediaInfo.getChannels() != receiveMediaInfo.getChannels()) {
+            info+=" Transmit:" + memberReceiver.getMediaInfo();
+          }
+        }
+        CallParticipant cp=member.getCallParticipant();
+        if (cp.isMuted()) {
+          info+=" MUTED";
+        }
+        if (cp.isConferenceMuted()) {
+          info+=" CONFERENCE_MUTED";
+        }
+        if (cp.isConferenceSilenced()) {
+          info+=" MAIN_CONFERENCE_SILENCED";
+        }
+        if (memberReceiver.doNotRecord() == true) {
+          info+=" RECORDED NOT ALLOWED";
+        }
+        if (memberReceiver.getFromRecordingFile() != null) {
+          info+=" Recording from member in " + memberReceiver.getFromRecordingFile();
+        }
+        if (cp.isRecorder()) {
+          String toRecordingFile=memberSender.getCallParticipant().getToRecordingFile();
+          if (toRecordingFile != null) {
+            info+=" Recording to member in " + toRecordingFile;
+          }
+ else {
+            info+=" Recorder";
+          }
+        }
+        if (cp.speexEncode()) {
+          info+=" SpeexEncode";
+        }
+        if (memberSender.getSendAddress() != null) {
+          String gateway="";
+          String address=memberSender.getSendAddress().toString();
+          int ix=address.indexOf("/");
+          if (ix >= 0) {
+            address=address.substring(ix + 1);
+            if ((ix=address.indexOf(":")) >= 0) {
+              address=address.substring(0,ix);
+            }
+          }
+          if (address.equals("10.6.4.192")) {
+            gateway=" Menlo Park Gateway";
+          }
+ else           if (address.equals("129.148.75.22")) {
+            gateway=" Burlington Gateway";
+          }
+ else           if (address.equals("10.1.224.22")) {
+            gateway=" Broomfield Gateway";
+          }
+          info+=gateway;
+        }
+        if (format == 2) {
+          info+=conferenceManager.getWGManager().getWhisperGroupInfo(member);
+        }
+        cp=member.getCallParticipant();
+        id=cp.toString();
+        if (format == 1) {
+          id=cp.toConsiseString();
+        }
+        s+="    " + id + info+ "\n";
+      }
+      s+="\n";
+    }
+    return s + "\n";
+  }
+}

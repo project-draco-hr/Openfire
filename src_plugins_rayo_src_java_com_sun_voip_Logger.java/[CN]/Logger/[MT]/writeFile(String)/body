@@ -1,0 +1,20 @@
+{
+  if (bw != null) {
+    try {
+synchronized (bw) {
+        bw.write(getDate() + msg + "\n");
+      }
+    }
+ catch (    IOException e) {
+      System.out.println(getDate() + "Unable to writeFile! " + e.getMessage());
+      close();
+    }
+    if (writeThru) {
+      flush();
+    }
+  }
+ else {
+    System.out.println(getDate() + msg);
+    System.out.flush();
+  }
+}

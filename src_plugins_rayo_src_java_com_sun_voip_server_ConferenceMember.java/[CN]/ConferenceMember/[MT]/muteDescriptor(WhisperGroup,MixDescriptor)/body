@@ -1,0 +1,23 @@
+{
+  if (cp.isConferenceMuted()) {
+synchronized (mixManager) {
+      mixManager.setMuted(md,true);
+    }
+    return;
+  }
+  if (cp.isConferenceSilenced() == false) {
+synchronized (mixManager) {
+      mixManager.setMuted(md,false);
+    }
+    return;
+  }
+  if (wg != whisperGroup || wg == conferenceWhisperGroup) {
+synchronized (mixManager) {
+      mixManager.setMuted(md,true);
+    }
+    return;
+  }
+synchronized (mixManager) {
+    mixManager.setMuted(md,false);
+  }
+}

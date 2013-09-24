@@ -1,0 +1,62 @@
+{
+  int nFrames=inSamples.length / outChannels;
+  int sampleTime=nFrames * 1000 / inSampleRate;
+  if (sampleTime == 0) {
+    sampleTime=1;
+  }
+  int outLength=(sampleTime * outSampleRate * outChannels / 1000);
+  if ((outLength & 1) != 0) {
+    outLength++;
+  }
+  if (outLength == 0 || Logger.logLevel == -9) {
+    Logger.println("downsample:  inLength " + inSamples.length + " nFrames "+ nFrames+ " sampleTime "+ sampleTime+ " outLength "+ outLength);
+  }
+  int[] outSamples=new int[outLength];
+  double frameIncr=(double)inSampleRate / (double)outSampleRate;
+  int ix;
+  double i=0;
+  int outIx=0;
+  if (Logger.logLevel == -9) {
+    Logger.println("downsample frameIncr " + frameIncr + " nFrames "+ nFrames+ " inLength "+ inSamples.length+ " outLength "+ outLength);
+    Logger.println("inSamples");
+  }
+  while (true) {
+    ix=(int)i * outChannels;
+    if (ix >= inSamples.length - outChannels) {
+      if (Logger.logLevel == -9) {
+        Logger.println("Out of here!  ix " + ix + " outIx "+ outIx);
+      }
+      break;
+    }
+    int s1=inSamples[ix];
+    int s2=inSamples[ix + outChannels];
+    if (Logger.logLevel == -9) {
+      Logger.println("s1 " + s1 + " s2 "+ s2+ " int i "+ (int)i+ " ix "+ ix+ " outIx "+ outIx);
+    }
+    outSamples[outIx]=(int)((s1 + ((s2 - s1) * (i - (int)i))));
+    outIx++;
+    if (outChannels == 2) {
+      ix++;
+      s1=inSamples[ix];
+      s2=inSamples[ix + outChannels];
+      outSamples[outIx]=(int)((s1 + ((s2 - s1) * (i - (int)i))));
+      if (Logger.logLevel == -9) {
+        Logger.println("+s1 " + s1 + " s2 "+ s2+ " int i "+ (int)i+ " ix "+ ix+ " outIx "+ outIx);
+      }
+      outIx++;
+    }
+    if (outIx >= outLength) {
+      if (Logger.logLevel == -9) {
+        Logger.println("Out of here!  outIX " + outIx + " ix "+ ix);
+      }
+      break;
+    }
+    i+=frameIncr;
+  }
+  if (Logger.logLevel == -9) {
+    Logger.logLevel=3;
+    Logger.println("downsample in len " + inSamples.length);
+    Logger.println("downsample out len " + outSamples.length);
+  }
+  return outSamples;
+}

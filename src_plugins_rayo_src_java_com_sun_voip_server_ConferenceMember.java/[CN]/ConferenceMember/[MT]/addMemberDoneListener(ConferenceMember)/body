@@ -1,0 +1,20 @@
+{
+synchronized (memberDoneListeners) {
+    String conferenceId=member.getConferenceManager().getId();
+    ArrayList<ConferenceMember> memberList=memberDoneListeners.get(conferenceId);
+    if (memberList == null) {
+      memberList=new ArrayList<ConferenceMember>();
+      memberDoneListeners.put(conferenceId,memberList);
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Created member done list for " + conferenceId);
+      }
+    }
+    if (memberList.contains(member)) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Member already in done list for " + conferenceId);
+      }
+      return;
+    }
+    memberList.add(member);
+  }
+}

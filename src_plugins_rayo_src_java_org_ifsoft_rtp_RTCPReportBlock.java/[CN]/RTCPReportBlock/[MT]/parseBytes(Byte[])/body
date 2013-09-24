@@ -1,0 +1,24 @@
+{
+  if (ArrayExtensions.getLength(blockBytes).intValue() < 24) {
+    return null;
+  }
+ else {
+    Integer index=Integer.valueOf(0);
+    Long synchronizationSource=BitAssistant.toLongFromIntegerNetwork(blockBytes,Integer.valueOf(0));
+    index=Integer.valueOf(index.intValue() + 4);
+    Short fractionLost=new Short(blockBytes[index.intValue()].byteValue());
+    Byte buffer[]=BitAssistant.subArray(blockBytes,index,Integer.valueOf(4));
+    buffer[0]=Byte.valueOf((byte)0);
+    Integer cumulativeNumberOfPacketsLost=BitAssistant.toIntegerNetwork(buffer,Integer.valueOf(0));
+    index=Integer.valueOf(index.intValue() + 4);
+    Long extendedHighestSequenceNumberReceived=BitAssistant.toLongFromIntegerNetwork(blockBytes,index);
+    index=Integer.valueOf(index.intValue() + 4);
+    Long interarrivalJitter=BitAssistant.toLongFromIntegerNetwork(blockBytes,index);
+    index=Integer.valueOf(index.intValue() + 4);
+    Long lastSR=BitAssistant.toLongFromIntegerNetwork(blockBytes,index);
+    index=Integer.valueOf(index.intValue() + 4);
+    Long delaySinceLastSR=BitAssistant.toLongFromIntegerNetwork(blockBytes,index);
+    index=Integer.valueOf(index.intValue() + 4);
+    return new RTCPReportBlock(synchronizationSource,fractionLost,cumulativeNumberOfPacketsLost,extendedHighestSequenceNumberReceived,interarrivalJitter,lastSR,delaySinceLastSR);
+  }
+}

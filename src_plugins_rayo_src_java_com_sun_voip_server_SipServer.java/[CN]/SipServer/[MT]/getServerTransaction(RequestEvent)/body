@@ -1,0 +1,19 @@
+{
+  Request request=requestEvent.getRequest();
+  ServerTransaction st=null;
+  try {
+    getSipProvider().getNewServerTransaction(request);
+  }
+ catch (  TransactionAlreadyExistsException e) {
+    Logger.println("Server transaction already exists for " + request);
+    st=requestEvent.getServerTransaction();
+    if (st == null) {
+      Logger.println("st still null!");
+    }
+  }
+  if (st == null) {
+    Logger.println("Server transaction not found for " + request);
+    throw new TransactionDoesNotExistException("Server transaction not found for " + request);
+  }
+  return st;
+}

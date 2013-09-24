@@ -1,0 +1,25 @@
+{
+  path=path.replaceAll(Matcher.quoteReplacement("\\"),"/");
+  InputStream in=getClass().getResourceAsStream(path);
+  if (in != null) {
+    in=new BufferedInputStream(in,16 * 1024);
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Successfully opened as stream '" + path + "'");
+    }
+  }
+ else {
+    if (File.separator.equals("\\")) {
+      path=path.replaceAll("/",Matcher.quoteReplacement("\\"));
+    }
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("can't read audio resource, trying as a file: " + path);
+    }
+    try {
+      in=new FileInputStream(path);
+    }
+ catch (    FileNotFoundException e) {
+      throw new IOException("DotAuAudioSource error " + path + ":  "+ e.getMessage());
+    }
+  }
+  return in;
+}

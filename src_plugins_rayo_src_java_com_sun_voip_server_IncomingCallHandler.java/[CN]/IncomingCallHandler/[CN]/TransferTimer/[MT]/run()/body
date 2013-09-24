@@ -1,0 +1,13 @@
+{
+  try {
+    Thread.sleep(TRANSFER_TIMEOUT);
+  }
+ catch (  InterruptedException e) {
+  }
+  if (!done && member != null) {
+    if (member.getCallParticipant().getConferenceId().indexOf(defaultIncomingConferenceId) == 0) {
+      Logger.println("Incoming call " + member + " call transfer timedout");
+      cancelRequest("Incoming call wasn't transferred");
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  CallHandler callHandler=findCall(callId);
+  if (callHandler == null) {
+    throw new NoSuchElementException("Invalid callId specified:  " + callId);
+  }
+  if (fromMember) {
+    callHandler.getMemberReceiver().setRecordFromMember(enabled,recordingFile,recordingType);
+  }
+ else {
+    callHandler.getMemberSender().setRecordToMember(enabled,recordingFile,recordingType);
+  }
+}

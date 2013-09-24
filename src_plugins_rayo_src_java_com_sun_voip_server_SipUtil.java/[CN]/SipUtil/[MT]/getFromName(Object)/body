@@ -1,0 +1,10 @@
+{
+  Request request=((RequestEvent)requestEvent).getRequest();
+  FromHeader from=(FromHeader)request.getHeader(FromHeader.NAME);
+  Address address=(Address)from.getAddress();
+  String name=address.getDisplayName();
+  if (name == null) {
+    name=address.getURI().toString();
+  }
+  return name;
+}

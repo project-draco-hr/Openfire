@@ -1,0 +1,31 @@
+{
+  senderPacket.setComfortPayload();
+  int len=senderPacket.getLength();
+  senderPacket.setComfortNoiseLevel(RtpPacket.comfortNoiseLevel);
+  byte[] data=senderPacket.getData();
+  if (needToEncrypt()) {
+    senderPacket.setLength(RtpPacket.DATA + 1);
+    encrypt(data,senderPacket.getLength());
+  }
+  senderPacket.setSocketAddress(memberAddress);
+  try {
+    datagramChannel.send(ByteBuffer.wrap(senderPacket.getData()),memberAddress);
+  }
+ catch (  IOException e) {
+    if (!done) {
+      Logger.println("Call " + cp + " sendComfortNoisePayload "+ e.getMessage());
+      e.printStackTrace();
+    }
+    return false;
+  }
+  senderPacket.setBuffer(data);
+  senderPacket.updateRtpHeader(len);
+  if (Logger.logLevel >= Logger.LOG_DETAIL) {
+    Logger.println("Call " + cp + " Sent comfort noise payload "+ "with level "+ RtpPacket.comfortNoiseLevel);
+  }
+  if (Logger.logLevel >= Logger.LOG_DEBUG) {
+    log(false);
+  }
+  comfortPayloadsSent++;
+  return true;
+}

@@ -1,0 +1,12 @@
+{
+  Log.info("RayoComponent handleDtmfCommand " + iq.getFrom());
+  final IQ reply=IQ.createResultIQ(iq);
+  try {
+    CallHandler callHandler=CallHandler.findCall(iq.getTo().getNode());
+    callHandler.dtmfKeys(command.getTones());
+  }
+ catch (  NoSuchElementException e) {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

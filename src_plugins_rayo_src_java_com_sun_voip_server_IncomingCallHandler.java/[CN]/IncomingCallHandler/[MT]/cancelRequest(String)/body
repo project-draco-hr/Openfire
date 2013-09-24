@@ -1,0 +1,9 @@
+{
+  super.cancelRequest(s);
+  CallHandler otherCall=this.otherCall;
+  this.otherCall=null;
+  if (otherCall != null) {
+    Logger.println("otherCall is " + otherCall.getCallParticipant());
+    otherCall.cancelRequest("Bridged Call ended");
+  }
+}

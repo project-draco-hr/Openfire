@@ -1,0 +1,36 @@
+{
+  this.sampleRate=sampleRate;
+  this.channels=channels;
+  if (sampleRate > 32000) {
+    throw new SpeexException("Speex cannot be used with sample rate " + sampleRate);
+  }
+  speexEncoder=new org.xiph.speex.SpeexEncoder();
+  int mode=0;
+  String s="Narrow Band";
+  if (sampleRate > 8000) {
+    s="Wide Band";
+    mode++;
+  }
+  if (sampleRate > 16000) {
+    s="Ultra-Wide Band";
+    mode++;
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Initializing Speex encoder using " + sampleRate + "/"+ channels+ " "+ s);
+  }
+  if (speexEncoder.init(mode,0,sampleRate,channels) == false) {
+    throw new SpeexException("Speex encoder initialization failed!");
+  }
+  try {
+    speexEncoder.setBigEndian(true);
+  }
+ catch (  Exception e) {
+    bigEndian=false;
+  }
+  speexEncoder.getEncoder().setVbr(true);
+  pcmPacketSize=2 * channels * speexEncoder.getFrameSize();
+  ;
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("speex frame size " + speexEncoder.getFrameSize() + " pcmPacketSize "+ pcmPacketSize);
+  }
+}

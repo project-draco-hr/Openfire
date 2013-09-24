@@ -1,0 +1,13 @@
+{
+  this.event=event;
+synchronized (this) {
+    notifyAll();
+  }
+  Logger.println(event.toString());
+synchronized (listeners) {
+    for (int i=0; i < listeners.size(); i++) {
+      CallEventListener listener=(CallEventListener)listeners.get(i);
+      listener.callEventNotification(event);
+    }
+  }
+}

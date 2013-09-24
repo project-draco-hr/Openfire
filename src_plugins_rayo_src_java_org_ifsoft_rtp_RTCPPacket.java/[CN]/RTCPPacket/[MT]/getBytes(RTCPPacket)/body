@@ -1,0 +1,21 @@
+{
+  ArrayList list=new ArrayList();
+  try {
+    packet.serialize();
+  }
+ catch (  Exception exception1) {
+    return new Byte[0];
+  }
+  if (packet instanceof RTCPSRPacket)   packet.setPayloadType(_sRPayloadType);
+ else   if (packet instanceof RTCPRRPacket)   packet.setPayloadType(_rRPayloadType);
+ else   if (packet instanceof RTCPSDESPacket)   packet.setPayloadType(_sDESPayloadType);
+ else   if (packet instanceof RTCPBYEPacket)   packet.setPayloadType(_bYEPayloadType);
+ else   if (packet instanceof RTCPAPPPacket)   packet.setPayloadType(_aPPPayloadType);
+ else   if (packet instanceof RTCPRTPPacket)   packet.setPayloadType(_rTPPayloadType);
+ else   if (packet instanceof RTCPPSPacket)   packet.setPayloadType(_pSPayloadType);
+  list.add(new Byte((new Byte((new Integer(0x80 | (packet.getPadding().booleanValue() ? 0x20 : 0) | packet.getFirstByte().byteValue() & 0x1f)).byteValue())).byteValue()));
+  list.add(new Byte(BitAssistant.getShortBytesNetwork(packet.getPayloadType())[1].byteValue()));
+  ArrayListExtensions.addRange(list,BitAssistant.getShortBytesNetwork(new Short((new Integer(ArrayExtensions.getLength(packet.getPayload()).intValue() / 4)).shortValue())));
+  ArrayListExtensions.addRange(list,packet.getPayload());
+  return (Byte[])list.toArray(new Byte[0]);
+}

@@ -1,0 +1,23 @@
+{
+  FBGenericNACK cnack=new FBGenericNACK();
+  cnack.setPacketId(BitAssistant.toIntegerFromShortNetwork(genericNACKBytes,Integer.valueOf(0)));
+  Byte num=genericNACKBytes[2];
+  Byte num2=genericNACKBytes[3];
+  cnack.setLostPacketIdPlus16(Boolean.valueOf((num.byteValue() & 0x80) == 128));
+  cnack.setLostPacketIdPlus15(Boolean.valueOf((num.byteValue() & 0x40) == 64));
+  cnack.setLostPacketIdPlus14(Boolean.valueOf((num.byteValue() & 0x20) == 32));
+  cnack.setLostPacketIdPlus13(Boolean.valueOf((num.byteValue() & 0x10) == 16));
+  cnack.setLostPacketIdPlus12(Boolean.valueOf((num.byteValue() & 8) == 8));
+  cnack.setLostPacketIdPlus11(Boolean.valueOf((num.byteValue() & 4) == 4));
+  cnack.setLostPacketIdPlus10(Boolean.valueOf((num.byteValue() & 2) == 2));
+  cnack.setLostPacketIdPlus9(Boolean.valueOf((num.byteValue() & 1) == 1));
+  cnack.setLostPacketIdPlus8(Boolean.valueOf((num2.byteValue() & 0x80) == 128));
+  cnack.setLostPacketIdPlus7(Boolean.valueOf((num2.byteValue() & 0x40) == 64));
+  cnack.setLostPacketIdPlus6(Boolean.valueOf((num2.byteValue() & 0x20) == 32));
+  cnack.setLostPacketIdPlus5(Boolean.valueOf((num2.byteValue() & 0x10) == 16));
+  cnack.setLostPacketIdPlus4(Boolean.valueOf((num2.byteValue() & 8) == 8));
+  cnack.setLostPacketIdPlus3(Boolean.valueOf((num2.byteValue() & 4) == 4));
+  cnack.setLostPacketIdPlus2(Boolean.valueOf((num2.byteValue() & 2) == 2));
+  cnack.setLostPacketIdPlus1(Boolean.valueOf((num2.byteValue() & 1) == 1));
+  return cnack;
+}

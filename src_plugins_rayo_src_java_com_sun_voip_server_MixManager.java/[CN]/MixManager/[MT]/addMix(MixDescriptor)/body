@@ -1,0 +1,18 @@
+{
+  MixDataSource mixDataSource=mixDescriptor.getMixDataSource();
+  if (mixDataSource instanceof WhisperGroup) {
+    WhisperGroup wg=(WhisperGroup)mixDataSource;
+    if (wg.hasCommonMix() == false) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("No common mix, not adding " + wg);
+      }
+      return;
+    }
+  }
+  MixDescriptor md=findMixDescriptor(mixDataSource);
+  if (md != null) {
+    removeMix(md);
+  }
+  mixDescriptors.add(mixDescriptor);
+  setUseFastMix();
+}

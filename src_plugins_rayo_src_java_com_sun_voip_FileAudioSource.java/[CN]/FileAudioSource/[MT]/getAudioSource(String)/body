@@ -1,0 +1,28 @@
+{
+  int extIdx=path.lastIndexOf(".");
+  if (extIdx == -1) {
+    Logger.error("Unable to determine extension of " + path);
+    return null;
+  }
+  String ext=path.substring(extIdx);
+  Class<? extends FileAudioSource> clazz=types.get(ext);
+  if (clazz == null) {
+    Logger.error("No player for extension " + ext);
+    return null;
+  }
+  try {
+    Constructor<? extends FileAudioSource> c=clazz.getConstructor(String.class);
+    return c.newInstance(path);
+  }
+ catch (  Exception e) {
+    if (e instanceof IOException) {
+      Logger.println("getAudioSource for " + path + " got IOException: "+ e.getMessage());
+    }
+ else {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.exception("Error instantiating class " + clazz,e);
+      }
+    }
+    return null;
+  }
+}

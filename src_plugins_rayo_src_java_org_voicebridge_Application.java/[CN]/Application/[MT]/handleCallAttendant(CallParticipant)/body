@@ -1,0 +1,21 @@
+{
+  String phoneNumber=cp.getPhoneNumber();
+  int ix;
+  if (phoneNumber != null && phoneNumber.indexOf("sip:") < 0 && phoneNumber.indexOf("@") < 0) {
+    if ((ix=phoneNumber.indexOf(">")) > 0) {
+      if (phoneNumber.length() >= ix + 1 + 5) {
+        cp.setCallAnsweredTreatment("dtmf:" + phoneNumber.substring(ix + 1));
+        cp.setPhoneNumber(phoneNumber.substring(0,ix));
+      }
+    }
+  }
+  phoneNumber=cp.getSecondPartyNumber();
+  if (phoneNumber != null && phoneNumber.indexOf("sip:") < 0 && phoneNumber.indexOf("@") < 0) {
+    if ((ix=phoneNumber.indexOf(">")) > 0) {
+      if (phoneNumber.length() >= ix + 1 + 5) {
+        cp.setSecondPartyTreatment("dtmf:" + phoneNumber.substring(ix + 1));
+        cp.setSecondPartyNumber(phoneNumber.substring(0,ix));
+      }
+    }
+  }
+}

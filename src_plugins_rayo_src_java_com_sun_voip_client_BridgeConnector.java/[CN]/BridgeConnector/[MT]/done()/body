@@ -1,0 +1,24 @@
+{
+  if (done) {
+    return;
+  }
+  done=true;
+  if (socket != null) {
+    try {
+      socket.close();
+    }
+ catch (    IOException e) {
+      Logger.println("Close failed for socket " + socket + " "+ e.getMessage());
+    }
+    socket=null;
+  }
+  if (bufferedReader != null) {
+    try {
+      bufferedReader.close();
+    }
+ catch (    IOException e) {
+      Logger.println("Close failed for bufferedReader for socket " + socket + " "+ e.getMessage());
+    }
+    bufferedReader=null;
+  }
+}

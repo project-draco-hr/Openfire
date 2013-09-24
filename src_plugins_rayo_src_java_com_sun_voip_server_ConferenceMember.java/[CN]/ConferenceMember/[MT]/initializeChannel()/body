@@ -1,0 +1,67 @@
+{
+  datagramChannel=conferenceManager.getConferenceReceiver().getChannel(cp);
+  if (datagramChannel != null) {
+synchronized (datagramChannel) {
+      if (loneRtcpReceiver == null) {
+        int rtcpPort=datagramChannel.socket().getLocalPort() + 1;
+        Logger.println("Starting lone RtcpReceiver on port " + rtcpPort);
+        loneRtcpReceiver=new RtcpReceiver(new DatagramSocket(rtcpPort),true);
+      }
+      rtcpReceiver=loneRtcpReceiver;
+    }
+    return;
+  }
+  ArrayList badChannels=new ArrayList();
+  int nextRtpPort=firstRtpPort;
+  try {
+    while (true) {
+      datagramChannel=DatagramChannel.open();
+      if (Logger.logLevel >= Logger.LOG_DETAIL) {
+        Logger.println("Call " + cp + " Opened datagram channel "+ datagramChannel);
+      }
+      datagramChannel.configureBlocking(false);
+      DatagramSocket socket=datagramChannel.socket();
+      socket.setReceiveBufferSize(RtpSocket.MAX_RECEIVE_BUFFER);
+      socket.setSoTimeout(0);
+      InetSocketAddress bridgeAddress=Bridge.getLocalBridgeAddress();
+      InetSocketAddress isa=new InetSocketAddress(bridgeAddress.getAddress(),nextRtpPort);
+      if (nextRtpPort > 0) {
+        nextRtpPort+=2;
+        if (lastRtpPort != 0 && (nextRtpPort + 1) > lastRtpPort) {
+          Logger.println("No more RTP ports available, last is " + lastRtpPort);
+          closeBadChannels(badChannels);
+          throw new IOException("No more RTP ports available, last is " + lastRtpPort);
+        }
+      }
+      try {
+        socket.bind(isa);
+        int localPort=socket.getLocalPort();
+        if ((localPort & 1) != 0) {
+          if (Logger.logLevel >= Logger.LOG_INFO) {
+            Logger.println("Call " + cp + " skipping DatagramSocket with odd port "+ localPort);
+          }
+          badChannels.add(datagramChannel);
+          continue;
+        }
+        Logger.writeFile("Call " + cp + " RTCP Port "+ (localPort + 1));
+        rtcpReceiver=new RtcpReceiver(new DatagramSocket(localPort + 1),false);
+        break;
+      }
+ catch (      SocketException e) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Call " + cp + " skipping DatagramSocket "+ e.getMessage());
+        }
+        badChannels.add(datagramChannel);
+        continue;
+      }
+    }
+  }
+ catch (  Exception e) {
+    closeBadChannels(badChannels);
+    throw new IOException("Call " + cp + " MemberReceiver exception! "+ e.getMessage());
+  }
+  closeBadChannels(badChannels);
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + cp + " port "+ datagramChannel.socket().getLocalPort());
+  }
+}

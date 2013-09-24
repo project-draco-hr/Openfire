@@ -1,0 +1,20 @@
+{
+synchronized (conferenceList) {
+    if (loneConferenceSender != null) {
+      loneConferenceSender.printStatistics();
+    }
+    for (int i=0; i < conferenceList.size(); i++) {
+      ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+      ConferenceSender conferenceSender=conferenceManager.getConferenceSender();
+      if (loneConferenceSender == null) {
+        conferenceSender.printStatistics();
+      }
+      ArrayList memberList=conferenceManager.getMemberList();
+      for (int n=0; n < memberList.size(); n++) {
+        ConferenceMember member=(ConferenceMember)memberList.get(n);
+        member.printStatistics();
+      }
+    }
+  }
+  Logger.flush();
+}

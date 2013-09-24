@@ -1,0 +1,10 @@
+{
+  Response response=messageFactory.createResponse(Response.BUSY_HERE,request);
+  try {
+    serverTransaction.sendResponse(response);
+  }
+ catch (  InvalidArgumentException e) {
+    Logger.println("SendBusy:  " + e.getMessage());
+    throw new SipException("Failed to send response:  " + e.getMessage());
+  }
+}

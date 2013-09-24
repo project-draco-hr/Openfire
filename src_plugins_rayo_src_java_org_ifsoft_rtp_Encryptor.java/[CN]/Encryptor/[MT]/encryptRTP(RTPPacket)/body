@@ -1,0 +1,25 @@
+{
+  if (packet == null)   throw new Exception("Cannot encrypt a null RTP packet.");
+  Long num=Long.valueOf(_packetCount.longValue() + 1L);
+  Long num2=Long.valueOf(_octetCount.longValue() + (long)ArrayExtensions.getLength(packet.getPayload()).intValue());
+  if (num.longValue() >= 0x100000000L)   num=Long.valueOf(num.longValue() - 0x100000000L);
+  if (num2.longValue() >= 0x100000000L)   num2=Long.valueOf(num2.longValue() - 0x100000000L);
+  _packetCount=num;
+  _octetCount=num2;
+  EncryptionMode _var0=getEncryptionMode();
+  if (_var0 != null ? _var0.equals(EncryptionMode.Null) : _var0 == EncryptionMode.Null)   return packet.getBytes();
+  Byte buffer[];
+  if (_rTPEncryption == null)   buffer=packet.getPayload();
+ else   buffer=_rTPEncryption.encrypt(packet.getPayload(),packet.getSynchronizationSource(),getRTPEncryptionPacketIndex(packet.getSequenceNumber()));
+  Byte payload[]=packet.getPayload();
+  packet.setPayload(buffer);
+  Byte bytes[]=packet.getBytes();
+  packet.setPayload(payload);
+  ArrayList list=ArrayListExtensions.createArray(bytes);
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(_rTPEncryptionROC));
+  Byte collection[]=BitAssistant.subArray(Crypto.getHmacSha1(_rTPEncryptionAuth,(Byte[])list.toArray(new Byte[0])),Integer.valueOf(0),_rTPIntegritySize);
+  ArrayList list2=new ArrayList();
+  ArrayListExtensions.addRange(list2,bytes);
+  ArrayListExtensions.addRange(list2,collection);
+  return (Byte[])list2.toArray(new Byte[0]);
+}

@@ -1,0 +1,16 @@
+{
+  Request request=requestReceivedEvent.getRequest();
+  ServerTransaction st=requestReceivedEvent.getServerTransaction();
+  if (request.getMethod().equals(Request.BYE)) {
+    handleBye(request,st);
+  }
+ else   if (request.getMethod().equals(Request.INVITE)) {
+    handleReInvite(request,st);
+  }
+ else   if (request.getMethod().equals(Request.ACK)) {
+    Logger.println("Call " + cp + " got ACK");
+  }
+ else {
+    Logger.writeFile("Call " + cp + " ignoring request "+ request.getMethod());
+  }
+}

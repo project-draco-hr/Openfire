@@ -1,0 +1,15 @@
+{
+  componentManager=ComponentManagerFactory.getComponentManager();
+  component=new RayoComponent(this);
+  try {
+    componentManager.addComponent(serviceName,component);
+    bridge.appStart(pluginDirectory);
+    checkNatives(pluginDirectory);
+    checkRecordingFolder(pluginDirectory);
+    SessionEventDispatcher.addListener(this);
+  }
+ catch (  ComponentException e) {
+    Log.error("Could NOT load " + component.getName());
+  }
+  setup();
+}

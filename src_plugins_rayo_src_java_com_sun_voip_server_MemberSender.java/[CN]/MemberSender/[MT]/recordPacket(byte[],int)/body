@@ -1,0 +1,21 @@
+{
+  if (cp.getToRecordingFile() == null) {
+    return;
+  }
+  if (recordRtp == false) {
+    return;
+  }
+synchronized (recordingLock) {
+    if (recorder == null) {
+      return;
+    }
+    try {
+      recorder.writePacket(data,0,length);
+    }
+ catch (    IOException e) {
+      Logger.println("Unable to record data " + e.getMessage());
+      cp.setToRecordingFile(null);
+      recorder=null;
+    }
+  }
+}

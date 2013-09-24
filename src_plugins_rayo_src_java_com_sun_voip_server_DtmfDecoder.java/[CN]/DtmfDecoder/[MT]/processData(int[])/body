@@ -1,0 +1,28 @@
+{
+  numberOfTimesCalled++;
+  long start=System.currentTimeMillis();
+  if (sampleRateConverter != null) {
+    try {
+      int nSamples=linearData.length;
+      linearData=sampleRateConverter.resample(linearData);
+      if (Logger.logLevel >= Logger.LOG_DETAIL) {
+        Logger.println("Resample for Dtmf:  nSamples " + nSamples + " new nSamples "+ linearData.length);
+      }
+    }
+ catch (    IOException e) {
+      Logger.println("Call " + memberReceiver + " DtmfDecoder:  "+ e.getMessage());
+    }
+  }
+  int keys[]=new int[MAX_KEYS];
+  int nkeys=decoder.decode(keys,AudioConversion.intsToShorts(linearData),0);
+  String dtmfKeys=null;
+  if (nkeys > 0) {
+    char[] charKeys=new char[nkeys];
+    for (int i=0; i < nkeys; i++) {
+      charKeys[i]=char_keys[keys[i]];
+    }
+    dtmfKeys=new String(charKeys);
+  }
+  totalDecodeTime+=(System.currentTimeMillis() - start);
+  return dtmfKeys;
+}

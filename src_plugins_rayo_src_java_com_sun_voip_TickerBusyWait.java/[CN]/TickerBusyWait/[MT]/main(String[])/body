@@ -1,0 +1,14 @@
+{
+  TickerBusyWait tickerBusyWait=new TickerBusyWait("Test");
+  tickerBusyWait.arm(RtpPacket.PACKET_PERIOD,RtpPacket.PACKET_PERIOD);
+  while (true) {
+    try {
+      tickerBusyWait.tick();
+    }
+ catch (    TickerException e) {
+      System.out.println("tick() failed! " + e.getMessage());
+      System.exit(1);
+    }
+    Logger.println(" avg " + tickerBusyWait.getAvg());
+  }
+}

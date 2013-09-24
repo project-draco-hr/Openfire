@@ -1,0 +1,32 @@
+{
+  this.id=id;
+  if (inChannels != 1 && inChannels != 2) {
+    Logger.println("invalid in channels " + inChannels);
+    throw new IOException("invalid in channels " + inChannels);
+  }
+  if (outChannels != 1 && outChannels != 2) {
+    Logger.println("SampleRateConverter:  invalid out channels " + outChannels);
+    throw new IOException("SampleRateConverter:  invalid in channels " + inChannels);
+  }
+  if (inSampleRate <= 0) {
+    Logger.println("SampleRateConverter:  invalid input sample rate " + inSampleRate);
+    throw new IOException("SampleRateConverter:  " + " invalid input sample rate " + inSampleRate);
+  }
+  if (outSampleRate <= 0) {
+    Logger.println("SampleRateConverter:  invalid output sample rate " + outSampleRate);
+    throw new IOException("SampleRateConverter:  " + " invalid output sample rate " + outSampleRate);
+  }
+  this.inSampleRate=inSampleRate;
+  this.inChannels=inChannels;
+  this.outSampleRate=outSampleRate;
+  this.outChannels=outChannels;
+  if (inSampleRate > outSampleRate) {
+    lowPassFilter=new LowPassFilter(id,inSampleRate,inChannels);
+  }
+ else {
+    lowPassFilter=new LowPassFilter(id,outSampleRate,outChannels);
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("New Sample Converter:  from " + inSampleRate + "/"+ inChannels+ " to "+ outSampleRate+ "/"+ outChannels);
+  }
+}

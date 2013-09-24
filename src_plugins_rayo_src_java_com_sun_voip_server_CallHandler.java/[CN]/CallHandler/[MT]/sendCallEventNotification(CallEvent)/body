@@ -1,0 +1,22 @@
+{
+  if (cp.getCallId() != null) {
+    callEvent.setCallId(cp.getCallId());
+  }
+ else {
+    callEvent.setCallId("CallIdNotInitialized");
+  }
+  callEvent.setConferenceId(cp.getConferenceId());
+  callEvent.setCallInfo(cp.getCallOwner());
+  if (csa != null) {
+    callEvent.setCallState(csa.getCallState());
+  }
+ else {
+    callEvent.setCallState(new CallState(CallState.UNINITIALIZED));
+  }
+synchronized (callEventListeners) {
+    for (int i=0; i < callEventListeners.size(); i++) {
+      CallEventListener listener=(CallEventListener)callEventListeners.elementAt(i);
+      listener.callEventNotification(callEvent);
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  for (int i=0; i < supportedMedia.size(); i++) {
+    MediaInfo mediaInfo=(MediaInfo)supportedMedia.elementAt(i);
+    if (mediaInfo.isTelephoneEventPayload()) {
+      continue;
+    }
+    if (mediaInfo.getEncoding() == encoding && mediaInfo.getSampleRate() == sampleRate && mediaInfo.getChannels() == channels) {
+      return mediaInfo;
+    }
+  }
+  throw new ParseException("Unsupported media " + "encoding " + encoding + " sample rate "+ sampleRate+ " channels "+ channels,0);
+}

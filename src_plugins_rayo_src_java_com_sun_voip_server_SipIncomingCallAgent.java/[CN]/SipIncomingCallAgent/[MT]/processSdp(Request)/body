@@ -1,0 +1,20 @@
+{
+  byte[] rawSdp=request.getRawContent();
+  if (rawSdp == null) {
+    return null;
+  }
+  String sdpBody=new String(rawSdp);
+  SdpInfo sdpInfo=sipUtil.getSdpInfo(sdpBody);
+  String remoteHost=sdpInfo.getRemoteHost();
+  int remotePort=sdpInfo.getRemotePort();
+  Logger.println("SipIncomingCallAgent:  remote socket " + remoteHost + " "+ remotePort);
+  try {
+    InetSocketAddress isa=new InetSocketAddress(remoteHost,remotePort);
+    setEndpointAddress(isa,sdpInfo.getMediaInfo().getPayload(),sdpInfo.getTransmitMediaInfo().getPayload(),sdpInfo.getTelephoneEventPayload());
+  }
+ catch (  Exception e) {
+    Logger.println("SipIncomingCallAgent:  can't create isa");
+    throw new ParseException("SipIncomingCallAgent:  can't create isa",0);
+  }
+  return sdpInfo;
+}

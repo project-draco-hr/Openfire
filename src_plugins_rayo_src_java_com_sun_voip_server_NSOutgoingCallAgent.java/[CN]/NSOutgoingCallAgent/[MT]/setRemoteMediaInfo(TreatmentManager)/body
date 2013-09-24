@@ -1,0 +1,37 @@
+{
+  if (getState() != CallState.INVITED) {
+    Logger.println("Call " + cp + ":  NSOutgoingCallAgent:  bad state "+ getState());
+    return;
+  }
+  MediaInfo mediaInfo=mixerMediaPreference;
+  if (treatmentManager != null) {
+    int sampleRate=treatmentManager.getSampleRate();
+    int channels=treatmentManager.getChannels();
+    try {
+      mediaInfo=MediaInfo.findMediaInfo(RtpPacket.PCM_ENCODING,sampleRate,channels);
+    }
+ catch (    IOException e) {
+      Logger.println("Using conference media preference " + mediaInfo + ": "+ e.getMessage());
+    }
+  }
+  InetSocketAddress isa=callHandler.getMember().getMemberReceiver().getReceiveAddress();
+  Logger.println("Call " + cp + ":  NSOutgoingCallAgent:  "+ mediaInfo+ " remote "+ isa);
+  setEndpointAddress(isa,mediaInfo.getPayload(),mediaInfo.getPayload(),(byte)0);
+  if (callAnswered) {
+    Logger.writeFile("Call " + cp + ":  NSOutgoingCallAgent: done remote SDP");
+    return;
+  }
+  callAnswered=true;
+  if (cp.getJoinConfirmationTimeout() == 0) {
+    setState(CallState.ANSWERED);
+  }
+  initializeCallAnsweredTreatment();
+  if (callAnsweredTreatment != null) {
+    startCallAnsweredTreatment();
+  }
+ else {
+    if (cp.getJoinConfirmationTimeout() == 0) {
+      setState(CallState.ESTABLISHED);
+    }
+  }
+}

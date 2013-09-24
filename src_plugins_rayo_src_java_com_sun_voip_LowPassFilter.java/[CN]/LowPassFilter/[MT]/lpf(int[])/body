@@ -1,0 +1,81 @@
+{
+  long start=CurrentTime.getTime();
+  if (nAvg > inSamples.length / channels) {
+    nAvg=inSamples.length / channels;
+  }
+  if (nAvg < 2) {
+    return inSamples;
+  }
+  if (previousSamples == null || previousSamples.length != (nAvg - 1) * channels) {
+    previousSamples=new int[(nAvg - 1) * channels];
+  }
+  int[] outSamples=new int[inSamples.length];
+  int[] p=new int[previousSamples.length];
+  System.arraycopy(inSamples,inSamples.length - p.length,p,0,p.length);
+  if (debug) {
+    Util.dump("previous",previousSamples,0,previousSamples.length);
+    Util.dump("inSamples",inSamples,0,inSamples.length);
+  }
+  double volumeAdjustment=1.0D + (lpfVolumeAdjustment * nAvg);
+  int sum1=0;
+  int sum2=0;
+  int ix=0;
+  for (int i=0; i < nAvg - 1; i++) {
+    sum1+=previousSamples[ix];
+    ix++;
+    if (channels == 2) {
+      sum2+=previousSamples[ix];
+      ix++;
+    }
+  }
+  if (debug) {
+    Logger.println("First sum " + sum1);
+  }
+  ix=0;
+  for (int i=0; i < nAvg - 1; i++) {
+    sum1+=inSamples[ix];
+    if (debug) {
+      Logger.println("Adding ix " + ix + " "+ inSamples[ix]+ " sum1 "+ sum1);
+    }
+    outSamples[ix]=AudioConversion.clip((int)(volumeAdjustment * sum1 / nAvg));
+    sum1-=previousSamples[ix];
+    if (debug) {
+      Logger.println("subtracting previous ix " + ix + " "+ previousSamples[ix]+ " sum1 "+ sum1+ " avg "+ (sum1 / nAvg));
+    }
+    ix++;
+    if (channels == 2) {
+      sum2+=inSamples[ix];
+      outSamples[ix]=AudioConversion.clip((int)(volumeAdjustment * sum2 / nAvg));
+      sum2-=previousSamples[ix];
+      ix++;
+    }
+  }
+  int indexToSubtract=0;
+  while (ix < inSamples.length) {
+    sum1+=inSamples[ix];
+    if (debug) {
+      Logger.println("Adding ix " + ix + " "+ inSamples[ix]+ " sum1 "+ sum1);
+    }
+    outSamples[ix]=AudioConversion.clip((int)(volumeAdjustment * sum1 / nAvg));
+    sum1-=inSamples[indexToSubtract];
+    if (debug) {
+      Logger.println("subtracting ix " + ix + " "+ inSamples[ix]+ " sum1 "+ sum1+ " avg "+ (sum1 / nAvg));
+    }
+    ix++;
+    indexToSubtract++;
+    if (channels == 2) {
+      sum2+=inSamples[ix];
+      outSamples[ix]=AudioConversion.clip((int)(volumeAdjustment * sum2 / nAvg));
+      sum2-=inSamples[indexToSubtract];
+      ix++;
+      indexToSubtract++;
+    }
+  }
+  previousSamples=p;
+  totalLpfTime+=(CurrentTime.getTime() - start);
+  lpfCount++;
+  if (debug) {
+    Util.dump("outSamples",outSamples,0,outSamples.length);
+  }
+  return outSamples;
+}

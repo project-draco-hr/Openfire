@@ -1,0 +1,14 @@
+{
+  if (SipUtil.isSipUri(phoneNumber) == false) {
+    return phoneNumber;
+  }
+  try {
+    Address address=addressFactory.createAddress(phoneNumber);
+    SipURI sipURI=(SipURI)address.getURI();
+    return sipURI.getUser();
+  }
+ catch (  ParseException e) {
+    Logger.println("parse exception:  " + phoneNumber);
+    return phoneNumber;
+  }
+}

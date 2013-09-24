@@ -1,0 +1,11 @@
+{
+  try {
+    senderPacket.setSocketAddress(memberAddress);
+    datagramChannel.send(ByteBuffer.wrap(senderPacket.getData()),memberAddress);
+  }
+ catch (  IOException e) {
+    if (!done) {
+      Logger.error("Call " + cp + " sendPacket:  "+ e.getMessage());
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  ArrayList memberList=new ArrayList();
+  for (int i=0; i < conferenceList.size(); i++) {
+    ConferenceManager conferenceManager=(ConferenceManager)conferenceList.get(i);
+synchronized (conferenceManager) {
+      WGManager wgManager=conferenceManager.getWGManager();
+      if (wgManager == null) {
+        continue;
+      }
+      ArrayList whisperGroups=wgManager.getWhisperGroups();
+synchronized (whisperGroups) {
+        for (int j=0; j < whisperGroups.size(); j++) {
+          WhisperGroup whisperGroup=(WhisperGroup)whisperGroups.get(j);
+          ArrayList ml=whisperGroup.getMembers();
+          for (int k=0; k < ml.size(); k++) {
+            ConferenceMember member=(ConferenceMember)ml.get(k);
+            if (member.getWhisperGroup() == whisperGroup) {
+              try {
+                member.saveCurrentContribution();
+              }
+ catch (              Exception e) {
+                e.printStackTrace();
+                Logger.println("conf " + getName() + ":  "+ " can't save contribution for "+ "member "+ member);
+                member.getCallHandler().cancelRequest("Unexpected Exception");
+                continue;
+              }
+              memberList.add(member);
+            }
+          }
+          try {
+            whisperGroup.saveCurrentContribution();
+          }
+ catch (          Exception e) {
+            e.printStackTrace();
+            Logger.println("conf " + getName() + ":  "+ " can't save contribution for whisper group "+ whisperGroup);
+          }
+        }
+      }
+    }
+  }
+  if (memberList.size() == 0) {
+    return;
+  }
+  sendDataToMembers(memberList);
+  for (int i=0; i < memberList.size(); i++) {
+    ConferenceMember member=(ConferenceMember)memberList.get(i);
+    member.invalidateCurrentContribution();
+  }
+}

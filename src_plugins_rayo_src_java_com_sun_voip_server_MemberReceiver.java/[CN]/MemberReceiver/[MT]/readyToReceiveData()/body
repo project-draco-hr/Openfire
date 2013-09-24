@@ -1,0 +1,14 @@
+{
+  if (initializationDone == false) {
+    return false;
+  }
+  if (joinConfirmationReceived == false) {
+    return true;
+  }
+  if (traceCall) {
+    if (callHandler.isCallEstablished() == false || readyToReceiveData == false) {
+      Logger.writeFile("readyToReceiveData " + readyToReceiveData + " established "+ callHandler.isCallEstablished());
+    }
+  }
+  return callHandler.isCallEstablished() && readyToReceiveData;
+}

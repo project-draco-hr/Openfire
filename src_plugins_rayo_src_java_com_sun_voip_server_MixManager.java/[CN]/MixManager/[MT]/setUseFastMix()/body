@@ -1,0 +1,55 @@
+{
+  useFastMix=false;
+  if (mixDescriptors.size() != 2) {
+    if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+      Logger.println("Call " + member + " Can't use fastMix, must have exactly 2 descriptors");
+    }
+    return;
+  }
+  for (int i=0; i < 2; i++) {
+    MixDescriptor mixDescriptor=(MixDescriptor)mixDescriptors.get(i);
+    if (mixDescriptor.isMuted()) {
+      if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+        Logger.println("Call " + member + " Can't use fastMix, md muted "+ mixDescriptor);
+      }
+      return;
+    }
+    MixDataSource mixDataSource=mixDescriptor.getMixDataSource();
+    if (mixDataSource instanceof MemberReceiver) {
+      if (mixDataSource != member.getMemberReceiver()) {
+        if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+          Logger.println("Call " + member + " Can't use fastMix, have private mix");
+        }
+        return;
+      }
+      if (mixDescriptor.getEffectiveVolume() != -1.0) {
+        if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+          Logger.println("Call " + member + " Can't use fastMix, no mix minus");
+        }
+        return;
+      }
+      continue;
+    }
+ else     if (mixDataSource instanceof WhisperGroup == false) {
+      if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+        Logger.println("Call " + member + " Can't use fastMix, not simple mix");
+      }
+      return;
+    }
+    if (mixDescriptor.isNop() == false) {
+      if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+        Logger.println(" Call " + member + "Can't use fastMix, not spatially neutral");
+      }
+      return;
+    }
+  }
+  MixDescriptor mixDescriptor=(MixDescriptor)mixDescriptors.get(0);
+  if (mixDescriptor.getMixDataSource() instanceof MemberReceiver) {
+    mixDescriptors.add(mixDescriptor);
+    mixDescriptors.remove(0);
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+    Logger.println("Using fastMix");
+  }
+  useFastMix=true;
+}

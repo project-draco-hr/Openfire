@@ -1,0 +1,45 @@
+{
+  String protocol=Bridge.getDefaultProtocol();
+  if (cp.getProtocol() != null) {
+    protocol=cp.getProtocol();
+  }
+  if (protocol.equalsIgnoreCase("SIP")) {
+    csa=new SipTPCCallAgent(this);
+  }
+ else   if (protocol.equalsIgnoreCase("NS")) {
+    csa=new NSOutgoingCallAgent(this);
+  }
+ else   if (protocol.equalsIgnoreCase("WebRtc")) {
+    csa=new WebRtcCallAgent(this);
+  }
+ else {
+    reasonCallEnded=CallEvent.getEventString(CallEvent.H323_NOT_IMPLEMENTED);
+    sendCallEventNotification(new CallEvent(CallEvent.H323_NOT_IMPLEMENTED));
+    Logger.println("Call " + cp + ":  "+ reasonCallEnded);
+    return;
+  }
+  try {
+    csa.initiateCall();
+synchronized (callInitiatedLock) {
+      callInitiatedLock.notifyAll();
+    }
+synchronized (stateChangeLock) {
+      if (reasonCallEnded == null) {
+        try {
+          stateChangeLock.wait();
+        }
+ catch (        InterruptedException e) {
+        }
+      }
+    }
+  }
+ catch (  IOException e) {
+synchronized (callInitiatedLock) {
+      callInitiatedLock.notifyAll();
+    }
+    if (reasonCallEnded == null) {
+      cancelRequest(e.getMessage());
+    }
+    Logger.println("Call " + this + " Exception "+ e.getMessage());
+  }
+}

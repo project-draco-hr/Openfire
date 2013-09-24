@@ -1,0 +1,40 @@
+{
+  long now=System.currentTimeMillis();
+  long rtpTimestampChange=rtpPacket.getRtpTimestamp() - previousRtpTimestamp;
+  previousRtpTimestamp=rtpPacket.getRtpTimestamp();
+  String summary="";
+  String flags="";
+  String badTime=" ";
+  String badTimestamp=" ";
+  if (rtpPacket.isMarkSet()) {
+    flags="MARK ";
+  }
+ else {
+    if (packetsReceived > 1) {
+      if (now - timePreviousPacketReceived < 15) {
+        badTime="-";
+        summary="!";
+      }
+ else       if (now - timePreviousPacketReceived > 25) {
+        badTime="+";
+        summary="!";
+      }
+      if (rtpTimestampChange > myMediaInfo.getSamplesPerPacket()) {
+        badTimestamp=">";
+        summary="!";
+      }
+ else       if (rtpTimestampChange < myMediaInfo.getSamplesPerPacket()) {
+        badTimestamp="<";
+        summary="!";
+      }
+    }
+  }
+  if (rtpPacket.getRtpPayload() == RtpPacket.COMFORT_PAYLOAD) {
+    flags+="COMFORT ";
+  }
+  String timestamp=Integer.toHexString((int)(rtpPacket.getRtpTimestamp() & 0xffffffff));
+  if (timestamp.length() != 8) {
+    timestamp+="       ";
+  }
+  Logger.writeFile("R    " + (now - timePreviousPacketReceived) + badTime+ "\t"+ Integer.toHexString((int)(rtpTimestampChange & 0xffffffff))+ badTimestamp+ "\t"+ Integer.toHexString(rtpPacket.getRtpSequenceNumber())+ "\t"+ timestamp+ "\t"+ flags+ cp+ " R"+ summary);
+}

@@ -1,0 +1,41 @@
+{
+  conferenceReceiver.removeMember(member);
+synchronized (this) {
+synchronized (memberList) {
+      memberList.remove(member);
+      totalMembers--;
+      if (keepMember == false) {
+        member.end();
+      }
+      Logger.println("conferenceManager:  '" + conferenceId + "':  member "+ member.toString()+ " leaving, remaining:  "+ memberList.size());
+    }
+    if (member.joinedDistributedConference()) {
+      ConferenceEvent event=new ConferenceEvent(ConferenceEvent.MEMBER_LEFT,conferenceId);
+      event.setCallId(member.getCallParticipant().getCallId());
+      event.setMemberAddress(member.getMemberSender().getSendAddress());
+      event.setIsDistributedBridge(member.getCallParticipant().isDistributedBridge());
+      ConferenceManager.conferenceEventNotification(event);
+    }
+    ConferenceEvent event=new ConferenceEvent(ConferenceEvent.MEMBER_LEFT,conferenceId);
+    event.setCallId(member.getCallParticipant().getCallId());
+    event.setMemberAddress(member.getMemberSender().getSendAddress());
+    event.setMemberCount(memberList.size());
+    ConferenceManager.conferenceEventNotification(event);
+    boolean endOfDistributedConference=true;
+synchronized (memberList) {
+      for (int i=0; i < memberList.size(); i++) {
+        ConferenceMember m=(ConferenceMember)memberList.get(i);
+        if (m.getCallParticipant().isDistributedBridge() == false) {
+          endOfDistributedConference=false;
+          break;
+        }
+      }
+    }
+    if (endOfDistributedConference) {
+      endAllCalls();
+    }
+    if (memberList.size() == 0) {
+      end();
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  if (event < 0 || event > LAST_EVENT) {
+    return "Invalid Event:  " + event;
+  }
+  String s=eventString[event];
+  if (event == STATE_CHANGED) {
+    s=callState.toString();
+  }
+  if (info != null && info.length() > 0) {
+    s+=" " + info;
+  }
+  if (event == DTMF_KEY) {
+    s+=" DTMFKey='" + dtmfKey + "'";
+  }
+ else   if (event == TREATMENT_DONE) {
+    s+=" Treatment='" + treatmentId + "'";
+  }
+ else   if (event == NUMBER_OF_CALLS) {
+    s+=" NumberOfCalls='" + numberOfCalls + "'";
+  }
+  if (callId != null && callId.length() > 0) {
+    s+=" CallId='" + callId + "'";
+  }
+  if (conferenceId != null && conferenceId.length() > 0) {
+    s+=" ConferenceId='" + conferenceId + "'";
+  }
+  if (callInfo != null && callInfo.length() > 0) {
+    s+=" CallInfo='" + callInfo + "'";
+  }
+  return BridgeVersion.getVersion() + " " + s;
+}

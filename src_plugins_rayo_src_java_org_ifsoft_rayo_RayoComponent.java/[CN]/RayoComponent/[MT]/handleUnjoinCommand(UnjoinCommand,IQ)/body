@@ -1,0 +1,11 @@
+{
+  Log.info("RayoComponent handleUnjoinCommand " + iq.getFrom());
+  final IQ reply=IQ.createResultIQ(iq);
+  try {
+    IncomingCallHandler.transferCall(iq.getTo().getNode(),defaultIncomingConferenceId);
+  }
+ catch (  Exception e) {
+    reply.setError(PacketError.Condition.internal_server_error);
+  }
+  return reply;
+}

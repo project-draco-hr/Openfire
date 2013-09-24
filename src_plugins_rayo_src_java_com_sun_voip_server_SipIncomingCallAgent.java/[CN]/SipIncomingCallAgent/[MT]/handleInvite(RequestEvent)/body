@@ -1,0 +1,25 @@
+{
+  setState(CallState.INVITED);
+  Request request=requestEvent.getRequest();
+  FromHeader fromHeader=(FromHeader)request.getHeader(FromHeader.NAME);
+  ToHeader toHeader=(ToHeader)request.getHeader(ToHeader.NAME);
+  String from=fromHeader.getAddress().toString();
+  String to=toHeader.getAddress().toString();
+  CallIdHeader callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
+  String sipCallId=callIdHeader.getCallId();
+  this.sipCallId=sipCallId;
+  Logger.println("SipIncomingCallAgent:  Got an INVITE from " + from + " to "+ to);
+  Logger.writeFile(request.toString());
+  if (Logger.logLevel >= Logger.LOG_SIP) {
+    Logger.println("SipIncomingCallAgent:  Adding listener for call id " + sipCallId);
+  }
+  try {
+    sipServerCallback.addSipListener(sipCallId,this);
+    answerCall(requestEvent);
+  }
+ catch (  Exception e) {
+    Logger.println("SipIncomingCallAgent:  " + request);
+    e.printStackTrace();
+    terminateCall();
+  }
+}

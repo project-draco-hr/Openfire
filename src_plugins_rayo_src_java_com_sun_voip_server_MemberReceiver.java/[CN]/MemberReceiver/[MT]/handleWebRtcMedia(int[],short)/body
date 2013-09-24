@@ -1,0 +1,12 @@
+{
+  timeCurrentPacketReceived=System.currentTimeMillis();
+  int elapsedTime=(int)(timeCurrentPacketReceived - timePreviousPacketReceived);
+synchronized (jitterManager) {
+    jitterManager.insertPacket(sequenceNumber,elapsedTime);
+  }
+  if (inputVolume != 1.0) {
+    callHandler.getMember().adjustVolume(data,inputVolume);
+  }
+  handleMedia(data,sequenceNumber);
+  timePreviousPacketReceived=timeCurrentPacketReceived;
+}

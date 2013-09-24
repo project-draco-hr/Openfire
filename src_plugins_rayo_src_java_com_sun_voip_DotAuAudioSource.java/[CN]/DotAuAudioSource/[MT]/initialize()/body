@@ -1,0 +1,45 @@
+{
+  done();
+  in=getInputStream(path);
+  int bytesAvailable=0;
+  try {
+    bytesAvailable=in.available();
+  }
+ catch (  IOException ioe) {
+    throw new IOException("available() failed " + path);
+  }
+  if (bytesAvailable < AUDIO_FILE_HEADER_SIZE) {
+    throw new IOException("audiofile " + path + " is too small "+ bytesAvailable);
+  }
+  byte[] audioFileHeader=new byte[AUDIO_FILE_HEADER_SIZE];
+  try {
+    in.read(audioFileHeader,0,AUDIO_FILE_HEADER_SIZE);
+  }
+ catch (  Exception e) {
+    throw new IOException("error reading " + path + " "+ e.getMessage());
+  }
+  encoding=audioFileHeader[15];
+  channels=audioFileHeader[23];
+  if (audioFileHeader[0] != 0x2e || audioFileHeader[1] != 0x73 || audioFileHeader[2] != 0x6e || audioFileHeader[3] != 0x64 || (encoding != ULAW && encoding != LINEAR) || channels > 16) {
+    throw new IOException("bad audio file header " + path);
+  }
+  sampleRate=((((int)audioFileHeader[16]) << 24) & 0xff000000) + ((((int)audioFileHeader[17]) << 16) & 0x00ff0000) + ((((int)audioFileHeader[18]) << 8) & 0x0000ff00)+ (((int)audioFileHeader[19]) & 0xff);
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("AudioFile is " + path + ".  Resource is "+ DotAuAudioSource.class.getResource(path)+ ".  size "+ in.available()+ " encoding "+ encoding+ " channels "+ channels+ " sampleRate "+ sampleRate);
+  }
+  try {
+    bytesAvailable=in.available();
+    int hdr_size=((audioFileHeader[4] << 24) & 0xff0000) | ((audioFileHeader[5] << 16) & 0xff0000) | ((audioFileHeader[6] << 8) & 0xff00)| (audioFileHeader[7] & 0xff);
+    if (hdr_size > AUDIO_FILE_HEADER_SIZE) {
+      int excess_hdr_size=hdr_size - AUDIO_FILE_HEADER_SIZE;
+      byte[] data=new byte[excess_hdr_size];
+      in.read(data,0,excess_hdr_size);
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Reading excess header " + " hdr size " + hdr_size + " excess "+ excess_hdr_size);
+      }
+    }
+  }
+ catch (  Exception e) {
+    throw new IOException("Can't read data!  " + path + " "+ e.getMessage());
+  }
+}

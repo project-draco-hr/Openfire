@@ -1,0 +1,36 @@
+{
+  if (!armed) {
+    throw new TickerException(id + ":  ticker not armed");
+  }
+  long start=System.currentTimeMillis();
+  int drift=getDrift();
+  totalDrift+=drift;
+  if (drift > maxDrift) {
+    maxDrift=drift;
+  }
+  if (drift < minDrift) {
+    minDrift=drift;
+  }
+  count++;
+  if (Logger.logLevel == -99) {
+    Logger.println("drift " + drift);
+    Logger.logLevel=3;
+  }
+  if (drift > sleepTime) {
+    overSlept++;
+    return;
+  }
+ else   if (drift < -sleepTime) {
+    underSlept++;
+  }
+  do {
+    try {
+      Thread.sleep(sleepTime);
+    }
+ catch (    InterruptedException e) {
+    }
+    drift=getDrift();
+  }
+ while (drift < -sleepTime);
+  updateSleepDistribution(start);
+}

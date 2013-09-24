@@ -1,0 +1,25 @@
+{
+  Integer startIndex=Integer.valueOf(0);
+  setSynchronizationSource(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  setTimestamp(NetworkTimeProtocol.nTPToDateTime(BitAssistant.toLongNetwork(super.getPayload(),startIndex)));
+  startIndex=Integer.valueOf(startIndex.intValue() + 8);
+  setRTPTimestamp(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  setPacketCount(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  setOctetCount(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  Byte firstByte=super.getFirstByte();
+  if (startIndex.intValue() < ArrayExtensions.getLength(super.getPayload()).intValue()) {
+    ArrayList list=new ArrayList();
+    for (Integer i=Integer.valueOf(0); i.intValue() < firstByte.byteValue(); ) {
+      RTCPReportBlock item=RTCPReportBlock.parseBytes(BitAssistant.subArray(super.getPayload(),startIndex,Integer.valueOf(24)));
+      if (item != null)       list.add(item);
+      startIndex=Integer.valueOf(startIndex.intValue() + 24);
+      Integer integer=i=Integer.valueOf(i.intValue() + 1);
+      RTCPReportBlock _tmp=item;
+    }
+    setReportBlocks((RTCPReportBlock[])list.toArray(new RTCPReportBlock[0]));
+  }
+}

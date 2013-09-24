@@ -1,0 +1,11 @@
+{
+  if (supportedMedia != null) {
+    for (int i=0; i < supportedMedia.size(); i++) {
+      MediaInfo mediaInfo=(MediaInfo)supportedMedia.elementAt(i);
+      if (mediaInfo.getSampleRate() == sampleRate && mediaInfo.getChannels() == channels && mediaInfo.getEncoding() == encoding) {
+        return mediaInfo;
+      }
+    }
+  }
+  throw new IOException("No Suitable media for " + encoding + "/"+ sampleRate+ "/"+ channels);
+}

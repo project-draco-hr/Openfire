@@ -1,0 +1,8 @@
+{
+  rtpSequenceNumber++;
+  buffer[0]=(byte)0x80;
+  buffer[1]&=~MARK_BIT;
+  buffer[2]=(byte)((rtpSequenceNumber >> 8) & 0xff);
+  buffer[3]=(byte)(rtpSequenceNumber & 0xff);
+  adjustRtpTimestamp(size - HEADER_SIZE);
+}

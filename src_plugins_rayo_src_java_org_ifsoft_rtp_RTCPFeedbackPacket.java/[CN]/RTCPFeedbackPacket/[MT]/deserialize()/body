@@ -1,0 +1,10 @@
+{
+  setFeedbackMessageType(super.getFirstByte());
+  Integer startIndex=Integer.valueOf(0);
+  setPacketSenderSynchronizationSource(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  setMediaSourceSynchronizationSource(BitAssistant.toLongFromIntegerNetwork(super.getPayload(),startIndex));
+  startIndex=Integer.valueOf(startIndex.intValue() + 4);
+  setFCIPayload(BitAssistant.subArray(super.getPayload(),startIndex));
+  deserializeFCI();
+}

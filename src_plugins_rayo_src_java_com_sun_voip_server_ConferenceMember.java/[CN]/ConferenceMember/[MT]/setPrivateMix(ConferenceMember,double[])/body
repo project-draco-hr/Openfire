@@ -1,0 +1,20 @@
+{
+  if (cp.getInputTreatment() != null && cp.isRecorder() == false) {
+    return;
+  }
+synchronized (mixMap) {
+    HashMap<ConferenceMember,double[]> mixesToApply=mixMap.get(this);
+    if (mixesToApply == null) {
+      mixesToApply=new HashMap<ConferenceMember,double[]>();
+      mixMap.put(this,mixesToApply);
+    }
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      if (mixesToApply.get(member) != null) {
+        Logger.println(this + " Replacing mix for " + member);
+      }
+    }
+    if (mixesToApply.put(member,spatialValues) != null) {
+      replaced++;
+    }
+  }
+}

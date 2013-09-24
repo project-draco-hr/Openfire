@@ -1,0 +1,30 @@
+{
+  long start=CurrentTime.getTime();
+  if (previousSamples == null || previousSamples.length != (nAvg - 1) * channels) {
+    previousSamples=new int[(nAvg - 1) * channels];
+  }
+  int[] p=new int[previousSamples.length];
+  System.arraycopy(inSamples,inSamples.length - p.length,p,0,p.length);
+  int[] in=new int[previousSamples.length + inSamples.length];
+  for (int i=0; i < previousSamples.length; i++) {
+    in[i]=previousSamples[i];
+  }
+  for (int i=0; i < inSamples.length; i++) {
+    in[previousSamples.length + i]=inSamples[i];
+  }
+  previousSamples=p;
+  int[] out=new int[in.length + filterKernel.length - 1];
+  for (int i=0; i < in.length; i++) {
+    for (int j=0; j < filterKernel.length; j++) {
+      out[i + j]+=(int)(in[i] * filterKernel[j]);
+    }
+  }
+  int[] outSamples=new int[inSamples.length];
+  System.arraycopy(out,((filterKernel.length - 1) / 2),outSamples,0,inSamples.length);
+  totalLpfTime+=(CurrentTime.getTime() - start);
+  lpfCount++;
+  if (debug) {
+    Util.dump("outSamples",outSamples,0,outSamples.length);
+  }
+  return outSamples;
+}

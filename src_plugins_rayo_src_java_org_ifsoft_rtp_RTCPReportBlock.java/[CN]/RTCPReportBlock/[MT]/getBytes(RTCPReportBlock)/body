@@ -1,0 +1,16 @@
+{
+  if (block == null) {
+    return new Byte[0];
+  }
+ else {
+    ArrayList list=new ArrayList();
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(block.getSynchronizationSource()));
+    list.add(new Byte((new Byte((new Short(block.getFractionLost().shortValue())).byteValue())).byteValue()));
+    ArrayListExtensions.addRange(list,BitAssistant.subArray(BitAssistant.getIntegerBytesNetwork(block.getCumulativeNumberOfPacketsLost()),Integer.valueOf(1)));
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(block.getExtendedHighestSequenceNumberReceived()));
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(block.getInterarrivalJitter()));
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(block.getLastSR()));
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(block.getDelaySinceLastSR()));
+    return (Byte[])list.toArray(new Byte[0]);
+  }
+}

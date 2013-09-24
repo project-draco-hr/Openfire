@@ -1,0 +1,22 @@
+{
+  Logger.println("Running ticker test with " + tickerClassName);
+  long start=System.currentTimeMillis();
+  long elapsed=0;
+  int n=0;
+  ticker.arm(timePeriod,timePeriod);
+  while (elapsed < duration * 1000) {
+    try {
+      ticker.tick();
+    }
+ catch (    TickerException e) {
+      Logger.println("tick() failed! " + e.getMessage());
+      System.exit(1);
+    }
+    elapsed=System.currentTimeMillis() - start;
+    n++;
+    if ((n % statFrequency) == 0) {
+      ticker.printStatistics();
+    }
+  }
+  ticker.disarm();
+}

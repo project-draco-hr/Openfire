@@ -1,0 +1,53 @@
+{
+synchronized (lock) {
+    if (iTreatment != null) {
+      if (iTreatment.getTreatmentManager() != null) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Stopping previous input treatment " + iTreatment.getTreatmentManager().getId());
+        }
+        iTreatment.done();
+      }
+ else {
+        try {
+synchronized (iTreatment) {
+            iTreatment.wait();
+          }
+          if (Logger.logLevel >= Logger.LOG_INFO) {
+            Logger.println("Stopping previous input treatment after waiting " + iTreatment.getTreatmentManager().getId());
+          }
+          iTreatment.done();
+        }
+ catch (        InterruptedException e) {
+        }
+      }
+    }
+    iTreatment=this;
+  }
+  Logger.println("Trying to create treatment manager for " + treatment);
+  try {
+    treatmentManager=new TreatmentManager(treatment,repeatCount,sampleRate,channels);
+  }
+ catch (  IOException e) {
+    Logger.println("MemberReceiver:  Invalid input treatment " + treatment + ":  "+ e.getMessage());
+    callHandler.cancelRequest("Invalid input treatment " + treatment + ":  "+ e.getMessage());
+synchronized (this) {
+      notifyAll();
+    }
+    return;
+  }
+  treatmentManager.addTreatmentDoneListener(treatmentDoneListener);
+  if (whisperGroup != null) {
+synchronized (whisperGroup) {
+      inputTreatment=treatmentManager;
+    }
+  }
+ else {
+    inputTreatment=treatmentManager;
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Created treatment manager for " + treatmentManager.getId());
+  }
+synchronized (this) {
+    notifyAll();
+  }
+}

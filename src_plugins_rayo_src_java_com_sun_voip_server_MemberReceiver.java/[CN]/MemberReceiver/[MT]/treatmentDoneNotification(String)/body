@@ -1,0 +1,14 @@
+{
+synchronized (conferenceManager) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Input Treatment done " + treatment);
+    }
+    if (callHandler == null) {
+      Logger.println("Call " + cp + " treatment done but no call handler.");
+      return;
+    }
+    CallEvent callEvent=new CallEvent(CallEvent.TREATMENT_DONE);
+    callEvent.setTreatmentId(treatment);
+    callHandler.sendCallEventNotification(callEvent);
+  }
+}

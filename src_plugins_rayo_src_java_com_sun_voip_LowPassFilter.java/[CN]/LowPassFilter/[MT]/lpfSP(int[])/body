@@ -1,0 +1,37 @@
+{
+  if (a0 == 0) {
+    return inSamples;
+  }
+  if (Logger.logLevel == -123) {
+    Logger.println("a0 " + a0 + " b1 "+ b1);
+    Logger.logLevel=3;
+  }
+  int[] outSamples=new int[inSamples.length];
+  if (lastOutSamples != null) {
+    outSamples[0]=(int)((a0 * inSamples[0]) + (b1 * lastOutSamples[0]));
+    if (channels == 2) {
+      outSamples[1]=(int)((a0 * inSamples[1]) + (b1 * lastOutSamples[1]));
+    }
+  }
+ else {
+    lastOutSamples=new int[channels];
+    outSamples[0]=inSamples[0];
+    if (channels == 2) {
+      outSamples[1]=inSamples[1];
+    }
+  }
+  int i=channels;
+  while (i < inSamples.length) {
+    outSamples[i]=(int)((a0 * inSamples[i]) + (b1 * outSamples[i - channels]));
+    i++;
+    if (channels == 2) {
+      outSamples[i]=(int)((a0 * inSamples[i]) + (b1 * outSamples[i - channels]));
+      i++;
+    }
+  }
+  lastOutSamples[0]=outSamples[inSamples.length - channels];
+  if (channels == 2) {
+    lastOutSamples[1]=outSamples[inSamples.length - channels + 1];
+  }
+  return outSamples;
+}

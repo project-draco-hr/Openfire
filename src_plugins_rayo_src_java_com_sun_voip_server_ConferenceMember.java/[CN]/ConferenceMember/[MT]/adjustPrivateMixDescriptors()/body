@@ -1,0 +1,21 @@
+{
+synchronized (conferenceManager) {
+synchronized (mixManager) {
+      ArrayList mixDescriptors=mixManager.getMixDescriptors();
+      for (int i=0; i < mixDescriptors.size(); i++) {
+        MixDescriptor md=(MixDescriptor)mixDescriptors.get(i);
+        if (md.isPrivateMix() == false) {
+          continue;
+        }
+        MemberReceiver mr=(MemberReceiver)md.getMixDataSource();
+        adjustPrivateMixDescriptor(this,mr.getMember(),md);
+      }
+synchronized (privateMixesForMe) {
+        for (int i=0; i < privateMixesForMe.size(); i++) {
+          ConferenceMember member=(ConferenceMember)privateMixesForMe.get(i);
+          adjustPrivateMixDescriptor(member,this);
+        }
+      }
+    }
+  }
+}

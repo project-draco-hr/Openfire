@@ -1,0 +1,19 @@
+{
+  String v=new String(value);
+  int n;
+  if ((n=v.indexOf(":volume=")) < 0) {
+    return null;
+  }
+  v=v.substring(n + 8);
+  String[] tokens=v.split(":");
+  double[] volume=new double[tokens.length];
+  for (int i=0; i < volume.length; i++) {
+    try {
+      volume[i]=Double.parseDouble(tokens[i]);
+    }
+ catch (    NumberFormatException e) {
+      throw new ParseException("Invalid floating point value: " + tokens[i],0);
+    }
+  }
+  return volume;
+}

@@ -1,0 +1,23 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println(cp + " got dtmf keys " + dtmfKeys+ " "+ cp.dtmfDetection());
+  }
+  if (isCallEstablished()) {
+    if (cp.dtmfDetection()) {
+      member.stopTreatment(null);
+      CallEvent callEvent=new CallEvent(CallEvent.DTMF_KEY);
+      callEvent.setDtmfKey(dtmfKeys);
+      sendCallEventNotification(callEvent);
+    }
+    if (otherCall != null) {
+      Logger.println("Call " + cp + " forwarding dtmf key "+ dtmfKeys+ " to "+ otherCall);
+      otherCall.getMemberSender().setDtmfKeyToSend(dtmfKeys);
+    }
+  }
+ else {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println(cp + " Call not established, ignoring dtmf");
+    }
+    stopCallAnsweredTreatment();
+  }
+}

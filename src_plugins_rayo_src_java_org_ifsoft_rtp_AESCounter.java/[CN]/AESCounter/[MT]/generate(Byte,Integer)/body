@@ -1,0 +1,22 @@
+{
+  Byte buffer[]=new Byte[16];
+  for (Integer num=Integer.valueOf(0); num.intValue() < ArrayExtensions.getLength(buffer).intValue(); ) {
+    buffer[num.intValue()]=Byte.valueOf((byte)0);
+    Integer integer=num;
+    Integer integer1=num=Integer.valueOf(num.intValue() + 1);
+    Integer _tmp=integer;
+  }
+  buffer[7]=label;
+  Byte counter[]=new Byte[16];
+  for (Integer num=Integer.valueOf(0); num.intValue() < ArrayExtensions.getLength(counter).intValue(); ) {
+    counter[num.intValue()]=new Byte((byte)(_offset[num.intValue()].byteValue() ^ buffer[num.intValue()].byteValue()));
+    Integer integer2=num;
+    Integer integer3=num=Integer.valueOf(num.intValue() + 1);
+    Integer _tmp1=integer2;
+  }
+  Integer num2=Integer.valueOf((length.intValue() / 16) * 16);
+  if (num2.intValue() < length.intValue())   num2=Integer.valueOf(num2.intValue() + 16);
+  Byte array[]=Crypto.generateAESKeystream(_key,num2,counter);
+  if (ArrayExtensions.getLength(array).intValue() == 0)   return array;
+ else   return BitAssistant.subArray(array,Integer.valueOf(0),length);
+}

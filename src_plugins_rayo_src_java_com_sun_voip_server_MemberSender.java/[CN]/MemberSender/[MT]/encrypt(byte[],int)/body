@@ -1,0 +1,13 @@
+{
+  try {
+    encryptCount++;
+    long start=System.currentTimeMillis();
+    byte[] cipherText=encryptCipher.doFinal(data,0,length);
+    encryptTime+=(System.currentTimeMillis() - start);
+    senderPacket.setBuffer(cipherText);
+  }
+ catch (  Exception e) {
+    Logger.println("Call " + cp + " Encryption failed, length "+ data.length+ ": "+ e.getMessage());
+    callHandler.cancelRequest("Encryption failed: " + e.getMessage());
+  }
+}

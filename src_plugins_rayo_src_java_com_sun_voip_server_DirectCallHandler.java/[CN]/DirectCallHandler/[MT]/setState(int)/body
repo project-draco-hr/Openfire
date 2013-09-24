@@ -1,0 +1,22 @@
+{
+synchronized (stateLock) {
+    callState=state;
+    stateLock.notifyAll();
+  }
+  if (listener != null) {
+switch (state) {
+case INITIATED:
+      listener.initiated(cp.getCallOwner(),cp.getCallId());
+    break;
+case ESTABLISHED:
+  listener.established(cp.getCallOwner(),cp.getCallId());
+break;
+case FAILED:
+listener.failed(cp.getCallOwner(),cp.getCallId());
+break;
+case TERMINATED:
+listener.terminated(cp.getCallOwner(),cp.getCallId());
+break;
+}
+}
+}

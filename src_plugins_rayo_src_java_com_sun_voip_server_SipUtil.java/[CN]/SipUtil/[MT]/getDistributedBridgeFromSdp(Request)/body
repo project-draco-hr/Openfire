@@ -1,0 +1,15 @@
+{
+  byte[] rawContent=request.getRawContent();
+  if (rawContent == null) {
+    return false;
+  }
+  String sdpBody=new String(rawContent);
+  SdpInfo sdpInfo;
+  try {
+    sdpInfo=SdpManager.parseSdp(sdpBody);
+  }
+ catch (  ParseException e) {
+    return false;
+  }
+  return sdpInfo.isDistributedBridge();
+}

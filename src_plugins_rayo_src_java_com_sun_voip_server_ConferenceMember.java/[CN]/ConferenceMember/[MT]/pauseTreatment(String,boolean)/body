@@ -1,0 +1,18 @@
+{
+synchronized (conferenceManager) {
+synchronized (memberTreatments) {
+      for (int i=0; i < memberTreatments.size(); i++) {
+        TreatmentManager treatmentManager=(TreatmentManager)memberTreatments.get(i);
+        if (treatmentId == null) {
+          treatmentManager.pause(isPaused);
+        }
+ else {
+          if (treatmentManager.getId().equals(treatmentId)) {
+            treatmentManager.pause(isPaused);
+            return;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  length=length & ~1;
+  int[] ints=new int[length / 2];
+  AudioConversion.bytesToInts(inSamples,offset,length,ints);
+  ints=resample(ints);
+  byte[] bytes=new byte[ints.length * 2];
+  AudioConversion.intsToBytes(ints,bytes,offset);
+  return bytes;
+}

@@ -1,0 +1,29 @@
+{
+  Boolean flag=Boolean.valueOf(packet.getExtensionHeader().intValue() != 0 || packet.getExtension() != null);
+  ArrayList list=new ArrayList();
+  Byte num=packet.getContributingSources() != null ? new Byte((byte)(BitAssistant.getShortBytesFromIntegerNetwork(ArrayExtensions.getLength(packet.getContributingSources()))[1].byteValue() & 0xf)) : new Byte((byte)0);
+  list.add(new Byte((new Byte((new Integer(0x80 | (packet.getPadding().booleanValue() ? 0x20 : 0) | (flag.booleanValue() ? 0x10 : 0)| num.byteValue())).byteValue())).byteValue()));
+  list.add(new Byte((new Byte((new Integer((packet.getMarker().booleanValue() ? 0x80 : 0) | packet.getPayloadType().byteValue() & 0x7f)).byteValue())).byteValue()));
+  ArrayListExtensions.addRange(list,BitAssistant.getShortBytesFromIntegerNetwork(packet.getSequenceNumber()));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(packet.getTimestamp()));
+  ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(packet.getSynchronizationSource()));
+  for (Integer num2=Integer.valueOf(0); num2.intValue() < num.byteValue(); ) {
+    ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(packet.getContributingSources()[num2.intValue()]));
+    Integer integer=num2;
+    Integer integer1=num2=Integer.valueOf(num2.intValue() + 1);
+    Integer _tmp=integer;
+  }
+  if (flag.booleanValue()) {
+    Integer num3=Integer.valueOf(packet.getExtension() != null ? ArrayExtensions.getLength(packet.getExtension()).intValue() : 0);
+    ArrayListExtensions.addRange(list,BitAssistant.getShortBytesFromIntegerNetwork(packet.getExtensionHeader()));
+    ArrayListExtensions.addRange(list,BitAssistant.getShortBytesFromIntegerNetwork(num3));
+    for (Integer num2=Integer.valueOf(0); num2.intValue() < num3.intValue(); ) {
+      ArrayListExtensions.addRange(list,BitAssistant.getIntegerBytesFromLongNetwork(packet.getExtension()[num2.intValue()]));
+      Integer integer2=num2;
+      Integer integer3=num2=Integer.valueOf(num2.intValue() + 1);
+      Integer _tmp1=integer2;
+    }
+  }
+  ArrayListExtensions.addRange(list,packet.getPayload());
+  return (Byte[])list.toArray(new Byte[0]);
+}

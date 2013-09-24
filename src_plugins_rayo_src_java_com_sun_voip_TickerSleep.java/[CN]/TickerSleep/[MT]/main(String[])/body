@@ -1,0 +1,13 @@
+{
+  TickerSleep tickerSleep=new TickerSleep("Test");
+  tickerSleep.arm(RtpPacket.PACKET_PERIOD,RtpPacket.PACKET_PERIOD);
+  while (true) {
+    try {
+      tickerSleep.tick();
+    }
+ catch (    TickerException e) {
+      Logger.println("tick() failed! " + e.getMessage());
+    }
+    Logger.println(" avg " + tickerSleep.getAvg());
+  }
+}

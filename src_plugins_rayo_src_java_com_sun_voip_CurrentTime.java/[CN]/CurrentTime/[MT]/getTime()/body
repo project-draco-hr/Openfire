@@ -1,0 +1,36 @@
+{
+  if (currentTime == null) {
+    try {
+      systemClass=Class.forName("java.lang.System");
+    }
+ catch (    Exception e) {
+      return System.currentTimeMillis();
+    }
+    Method[] methods=systemClass.getMethods();
+    Method currentTimeMillis=null;
+    for (int i=0; i < methods.length; i++) {
+      Method m=methods[i];
+      if (m.getName().equals("currentTimeMillis")) {
+        currentTimeMillis=m;
+        timeUnitsPerSecond=1000;
+      }
+ else       if (m.getName().equals("nanoTime")) {
+        timeUnitsPerSecond=1000000000;
+        currentTime=m;
+      }
+    }
+    if (currentTime == null) {
+      currentTime=currentTimeMillis;
+    }
+    if (currentTime == null) {
+      return System.currentTimeMillis();
+    }
+  }
+  try {
+    Long now=(Long)currentTime.invoke(systemClass,(Object[])null);
+    return now.longValue();
+  }
+ catch (  Exception e) {
+    return System.currentTimeMillis();
+  }
+}

@@ -1,0 +1,65 @@
+{
+  if (readyToReceiveData == false || whisperGroup == null) {
+    previousContribution=null;
+    currentContribution=null;
+    return;
+  }
+synchronized (whisperGroup) {
+    if (contributionValid) {
+      return;
+    }
+    currentContribution=null;
+    contributionValid=true;
+    if (inputTreatment == null) {
+synchronized (jitterManager) {
+        try {
+          JitterObject jo=jitterManager.getFirstPacket();
+          currentContribution=(int[])jo.data;
+        }
+ catch (        NoSuchElementException e) {
+        }
+      }
+    }
+ else {
+      inputTreatment.saveCurrentContribution();
+      currentContribution=inputTreatment.getCurrentContribution();
+      if (currentContribution == null) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Call " + cp + " input treatment returned null");
+        }
+        inputTreatment=null;
+      }
+ else {
+        forwardData(currentContribution);
+        if (inputVolume != 1) {
+          callHandler.getMember().adjustVolume(currentContribution,inputVolume);
+        }
+      }
+      if (speechDetector != null) {
+        if (currentContribution == null) {
+          if (speechDetector.reset() == true) {
+            callHandler.speakingChanged(false);
+          }
+        }
+ else {
+          if (speechDetector.processData(currentContribution) == true) {
+            boolean isSpeaking=speechDetector.isSpeaking();
+            callHandler.speakingChanged(isSpeaking);
+            if (isSpeaking == false) {
+              currentContribution=null;
+            }
+          }
+        }
+      }
+    }
+    if (currentContribution != null) {
+      if (whisperGroup.hasCommonMix()) {
+        whisperGroup.addToLinearDataMix(currentContribution,doNotRecord());
+      }
+      recordAudio(currentContribution,currentContribution.length);
+      if (Logger.logLevel == -89) {
+        Logger.println("Call " + cp + " MemberReceiver contributed");
+      }
+    }
+  }
+}

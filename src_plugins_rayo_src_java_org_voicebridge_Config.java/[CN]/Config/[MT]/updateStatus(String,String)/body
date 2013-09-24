@@ -1,0 +1,21 @@
+{
+  if (sipPlugin) {
+    String sql="UPDATE ofSipUser SET status = ?, enabled = ? WHERE username = ?";
+    Connection con=null;
+    PreparedStatement psmt=null;
+    try {
+      con=DbConnectionManager.getConnection();
+      psmt=con.prepareStatement(sql);
+      psmt.setString(1,status);
+      psmt.setInt(2,1);
+      psmt.setString(3,username);
+      psmt.executeUpdate();
+    }
+ catch (    SQLException e) {
+      System.out.println("updateStatus " + e);
+    }
+ finally {
+      DbConnectionManager.closeConnection(psmt,con);
+    }
+  }
+}

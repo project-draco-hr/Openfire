@@ -1,0 +1,24 @@
+{
+  MixDescriptor conferenceMixDescriptor=(MixDescriptor)mixDescriptors.get(0);
+  int[] conferenceMixContribution=conferenceMixDescriptor.getMixDataSource().getCurrentContribution();
+  if (conferenceMixContribution == null) {
+    return null;
+  }
+  int[] outData=new int[conferenceSamplesPerPacket];
+  MixDescriptor memberMixDescriptor=(MixDescriptor)mixDescriptors.get(1);
+  int[] memberContribution=memberMixDescriptor.getMixDataSource().getCurrentContribution();
+  if (memberContribution == null) {
+    System.arraycopy(conferenceMixContribution,0,outData,0,conferenceMixContribution.length);
+    if (Logger.logLevel == -39) {
+      checkData(outData,useFastMix);
+    }
+    AudioConversion.clip(outData);
+    return outData;
+  }
+  WhisperGroup.mixData(conferenceMixContribution,memberContribution,outData);
+  if (Logger.logLevel == -39) {
+    checkData(outData,useFastMix);
+  }
+  AudioConversion.clip(outData);
+  return outData;
+}

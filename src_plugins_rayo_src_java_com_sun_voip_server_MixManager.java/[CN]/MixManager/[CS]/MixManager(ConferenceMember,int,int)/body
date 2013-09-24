@@ -1,0 +1,11 @@
+{
+  this.member=member;
+  this.conferenceSamplesPerPacket=conferenceSamplesPerPacket;
+  this.channels=channels;
+  int sampleRate=50 * (conferenceSamplesPerPacket / channels);
+  sa=getSpatialAudio();
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Using spatial audio module:  " + sa);
+  }
+  sa.initialize(member.getConferenceManager().getId(),member.getCallParticipant().getCallId(),sampleRate,channels,conferenceSamplesPerPacket / channels);
+}

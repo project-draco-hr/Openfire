@@ -1,0 +1,14 @@
+{
+  CallParticipant cp=member.getCallParticipant();
+  if (loneReceiverChannel != null && cp.getPhoneNumber().indexOf("@") >= 0) {
+    return;
+  }
+synchronized (membersToRegister) {
+    if (selector == null) {
+      return;
+    }
+    membersToRegister.add(member);
+    Logger.writeFile("ConferenceReceiver Adding member to register " + member + " size "+ membersToRegister.size());
+    selector.wakeup();
+  }
+}

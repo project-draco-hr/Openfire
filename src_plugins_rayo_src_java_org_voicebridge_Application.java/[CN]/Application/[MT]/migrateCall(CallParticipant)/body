@@ -1,0 +1,17 @@
+{
+  loginfo("VoiceBridge migrateCall");
+  try {
+    if (validateAndAdjustParameters(cp)) {
+      if (cp.migrateCall()) {
+        new CallMigrator(this,cp).start();
+        reportInfo("Call migrated to " + cp.getSecondPartyNumber() + " id: "+ cp.getCallId());
+      }
+ else {
+        reportError("Call participant is not configured for migration");
+      }
+    }
+  }
+ catch (  Exception e) {
+    reportError(e.toString());
+  }
+}

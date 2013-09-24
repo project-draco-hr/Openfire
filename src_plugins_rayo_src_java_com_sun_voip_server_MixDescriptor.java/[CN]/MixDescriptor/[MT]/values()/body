@@ -1,0 +1,22 @@
+{
+  double frontBack=1;
+  double leftRight=0;
+  double upDown=0;
+  double volume=1;
+  if (spatialValues != null) {
+    frontBack=spatialValues[0];
+    leftRight=spatialValues[1];
+    upDown=spatialValues[2];
+    volume=spatialValues[3];
+  }
+  String s="  attenuation = " + attenuation;
+  s+=", frontBack = " + (Math.round(frontBack * 1000) / 1000.);
+  s+=", leftRight = " + (Math.round(leftRight * 10000) / 10000.);
+  s+=", upDown = " + (Math.round(upDown * 10000) / 10000.);
+  s+=", volume = " + (Math.round(volume * 1000) / 1000.);
+  s+=", effectiveVolume = " + (Math.round(attenuation * volume * 1000) / 1000.);
+  if (isMuted) {
+    s+=", MUTED";
+  }
+  return s;
+}

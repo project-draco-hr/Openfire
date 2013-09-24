@@ -1,0 +1,19 @@
+{
+synchronized (mixMap) {
+synchronized (mixManager) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println(cp + " removing private mix for " + member.getMemberReceiver());
+      }
+      mixManager.removeMix(member.getMemberReceiver());
+    }
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println(member + " removing private mix for " + getMemberReceiver());
+    }
+    member.removePrivateMixForMe(this);
+    HashMap<ConferenceMember,double[]> mixesToApply=mixMap.get(this);
+    if (mixesToApply == null) {
+      return;
+    }
+    mixesToApply.remove(member);
+  }
+}

@@ -1,0 +1,22 @@
+{
+  Request req=requestEvent.getRequest();
+  if (req.getMethod().equals(Request.BYE) && getState() == INVITE_ACK) {
+    setState(TERMINATED);
+    if (otherCall != null) {
+      otherCall.sendBye();
+    }
+    SipServer.getSipServerCallback().removeSipListener(sipCallId);
+  }
+  try {
+    sipUtil.sendOK(req,requestEvent.getServerTransaction());
+  }
+ catch (  TransactionDoesNotExistException ex) {
+    ex.printStackTrace();
+  }
+catch (  ParseException ex) {
+    ex.printStackTrace();
+  }
+catch (  SipException ex) {
+    ex.printStackTrace();
+  }
+}

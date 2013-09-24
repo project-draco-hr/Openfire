@@ -1,0 +1,34 @@
+{
+  Log.info("RayoComponent handleSay " + iq.getFrom());
+  final IQ reply=IQ.createResultIQ(iq);
+  final String entityId=iq.getTo().getNode();
+  final String treatmentId=command.getPrompt().getText();
+  try {
+    CallHandler callHandler=CallHandler.findCall(entityId);
+    try {
+      callHandler.playTreatmentToCall(treatmentId,this);
+      final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+      childElement.addAttribute(URI,(String)"xmpp:" + entityId + "@rayo."+ getDomain()+ "/"+ treatmentId);
+    }
+ catch (    Exception e1) {
+      reply.setError(PacketError.Condition.internal_server_error);
+    }
+  }
+ catch (  NoSuchElementException e) {
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(entityId);
+      try {
+        conferenceManager.addTreatment(treatmentId);
+        final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+        childElement.addAttribute(URI,(String)"xmpp:" + entityId + "@rayo."+ getDomain()+ "/"+ treatmentId);
+      }
+ catch (      Exception e2) {
+        reply.setError(PacketError.Condition.internal_server_error);
+      }
+    }
+ catch (    ParseException e1) {
+      reply.setError(PacketError.Condition.item_not_found);
+    }
+  }
+  return reply;
+}

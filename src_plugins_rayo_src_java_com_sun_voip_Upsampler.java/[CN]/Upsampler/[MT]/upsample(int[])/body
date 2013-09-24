@@ -1,0 +1,54 @@
+{
+  int nSamples=inSamples.length / outChannels;
+  double sampleTime=(nSamples * 1000.0D) / inSampleRate;
+  int outLength=(int)(Math.round((sampleTime * outSampleRate * outChannels / 1000)));
+  if ((outLength & 1) != 0) {
+    outLength++;
+  }
+  int[] outSamples=new int[outLength];
+  double frameIncr=(double)inSampleRate / (double)(outSampleRate);
+  int outIx=0;
+  int[] last=new int[outChannels];
+  last[0]=inSamples[inSamples.length - outChannels];
+  if (outChannels == 2) {
+    last[1]=inSamples[inSamples.length - outChannels + 1];
+  }
+  int ix=0;
+  double i=0;
+  while (true) {
+    int intI=(int)i;
+    ix=intI * outChannels;
+    if (ix >= inSamples.length || outIx + outChannels > outLength) {
+      break;
+    }
+    int s1;
+    if (ix == 0) {
+      s1=lastSample[0];
+    }
+ else {
+      s1=inSamples[ix - outChannels];
+    }
+    int s2=inSamples[ix];
+    int newSample=(int)(s1 + ((s2 - s1) * (i - intI)));
+    outSamples[outIx]=(int)newSample;
+    outIx++;
+    if (outChannels == 2) {
+      if (ix == 0) {
+        s1=lastSample[1];
+      }
+ else {
+        s1=inSamples[ix - outChannels + 1];
+      }
+      s2=inSamples[ix + 1];
+      newSample=(int)(s1 + ((s2 - s1) * (i - intI)));
+      outSamples[outIx]=(int)newSample;
+      outIx++;
+    }
+    if (outIx >= outLength) {
+      break;
+    }
+    i+=frameIncr;
+  }
+  lastSample=last;
+  return outSamples;
+}

@@ -1,0 +1,41 @@
+{
+  if (reasonCallTerminated != null || getState() == CallState.ENDED) {
+    return;
+  }
+  reasonCallTerminated=s;
+  if (inviteTimeoutThread != null) {
+    inviteTimeoutThread.interrupt();
+    inviteTimeoutThread=null;
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Call " + callHandler + ":  cancelling call, "+ s);
+  }
+  if (callAnsweredTreatment != null) {
+    callAnsweredTreatment.stopTreatment();
+  }
+  if (callEstablishedTreatment != null) {
+    callEstablishedTreatment.stopTreatment();
+  }
+  if (getState() == CallState.ESTABLISHED) {
+    String endTreatment=cp.getCallEndTreatment();
+    if (endTreatment != null && cp.isConferenceMuted() == false) {
+      try {
+        MediaInfo mediaInfo=callHandler.getConferenceManager().getMediaInfo();
+        TreatmentManager callEndTreatment=new TreatmentManager(endTreatment,0,mediaInfo.getSampleRate(),mediaInfo.getChannels());
+        setState(CallState.ENDING,"Reason='" + s + "'");
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+          Logger.println("Call " + callHandler + " adding end treatment...");
+        }
+        callEndTreatment.addTreatmentDoneListener(this);
+        callHandler.addTreatment(callEndTreatment);
+        return;
+      }
+ catch (      IOException e) {
+        Logger.error("Call " + callHandler + " "+ e.getMessage());
+      }
+    }
+  }
+  terminateCall();
+  setState(CallState.ENDING,"Reason='" + s + "'");
+  done();
+}

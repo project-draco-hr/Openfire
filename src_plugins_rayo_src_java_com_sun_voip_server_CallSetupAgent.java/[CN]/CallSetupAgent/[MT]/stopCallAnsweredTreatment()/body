@@ -1,0 +1,18 @@
+{
+  if (callAnsweredTreatment != null) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + callHandler + " Stop callAnsweredTreatment player...");
+    }
+    callAnsweredTreatment.stopTreatment();
+    callAnsweredTreatment=null;
+  }
+ else {
+    if (cp.getJoinConfirmationTimeout() != 0) {
+      if (getState() == CallState.INVITED) {
+        setState(CallState.ANSWERED);
+        MediaInfo mediaInfo=callHandler.getConferenceManager().getMediaInfo();
+        setState(CallState.ESTABLISHED,"ConferencePayload='" + mediaInfo.getPayload() + "'"+ " BridgeIPAddress='"+ Bridge.getPrivateHost()+ "'");
+      }
+    }
+  }
+}

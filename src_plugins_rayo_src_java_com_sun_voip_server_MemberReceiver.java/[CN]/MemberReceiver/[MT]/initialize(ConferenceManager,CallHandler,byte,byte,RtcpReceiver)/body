@@ -1,0 +1,117 @@
+{
+  this.conferenceManager=conferenceManager;
+  this.telephoneEventPayload=telephoneEventPayload;
+  this.rtcpReceiver=rtcpReceiver;
+  this.callHandler=callHandler;
+  Logger.writeFile("Call " + cp + " MemberReceiver initialization started..."+ cp.getProtocol());
+  conferenceWhisperGroup=conferenceManager.getWGManager().getConferenceWhisperGroup();
+  MediaInfo conferenceMediaInfo=conferenceManager.getMediaInfo();
+  int outSampleRate=conferenceMediaInfo.getSampleRate();
+  int outChannels=conferenceMediaInfo.getChannels();
+  jitterManager=new JitterManager("Call " + cp.toString());
+  if (cp.voiceDetection()) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + cp + " starting speech Detector...");
+    }
+    speechDetector=new SpeechDetector(this.toString(),conferenceMediaInfo);
+  }
+  if (cp.getProtocol() != null && "WebRtc".equals(cp.getProtocol())) {
+    conferenceManager.getConferenceReceiver().addMember(this);
+    if (cp.getJoinConfirmationTimeout() == 0) {
+      joinConfirmationReceived=true;
+      readyToReceiveData=true;
+      playJoinTreatment();
+    }
+  }
+ else {
+    try {
+      myMediaInfo=SdpManager.findMediaInfo(mediaPayload);
+    }
+ catch (    ParseException e) {
+      Logger.println("Call " + cp + " Invalid mediaPayload "+ mediaPayload);
+      callHandler.cancelRequest("Invalid mediaPayload " + mediaPayload);
+      return;
+    }
+    Logger.println("My media info:  " + myMediaInfo);
+    int inSampleRate=myMediaInfo.getSampleRate();
+    int inChannels=myMediaInfo.getChannels();
+    if (cp.getPhoneNumber().indexOf("@") >= 0) {
+      ConferenceReceiver conferenceReceiver=conferenceManager.getConferenceReceiver();
+      conferenceManager.getConferenceReceiver().addMember(this);
+    }
+    if (cp.getInputTreatment() == null) {
+      if (inSampleRate != outSampleRate || inChannels != outChannels) {
+        try {
+          Logger.println("Call " + cp + " resample received data from "+ inSampleRate+ "/"+ inChannels+ " to "+ outSampleRate+ "/"+ outChannels);
+          inSampleRateConverter=new SampleRateConverter(this.toString(),inSampleRate,inChannels,outSampleRate,outChannels);
+        }
+ catch (        IOException e) {
+          callHandler.cancelRequest(e.getMessage());
+          return;
+        }
+      }
+    }
+    packet=new RtpReceiverPacket(cp.toString(),myMediaInfo.getEncoding(),inSampleRate,inChannels);
+    if (initializationDone) {
+      return;
+    }
+    if (telephoneEventPayload == 0 && (cp.dtmfDetection() || cp.getJoinConfirmationTimeout() != 0)) {
+      if (traceCall || Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Call " + cp + " starting dtmf Detector...");
+      }
+      dtmfDecoder=new DtmfDecoder(this,myMediaInfo);
+    }
+    if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
+      try {
+        speexDecoder=new SpeexDecoder(inSampleRate,inChannels);
+        Logger.println("Call " + cp + " created SpeexDecoder");
+      }
+ catch (      SpeexException e) {
+        Logger.println("Call " + cp + e.getMessage());
+        callHandler.cancelRequest(e.getMessage());
+        return;
+      }
+    }
+    if (cp.getJoinConfirmationTimeout() == 0) {
+      joinConfirmationReceived=true;
+      readyToReceiveData=true;
+      playJoinTreatment();
+    }
+    if (cp.getInputTreatment() != null && cp.getInputTreatment().length() > 0) {
+      String absolutePath=cp.getInputTreatment();
+      try {
+        if (cp.getRecordDirectory() != null) {
+          absolutePath=Recorder.getAbsolutePath(cp.getRecordDirectory(),cp.getInputTreatment());
+        }
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Call " + cp + " New input treatment:  "+ absolutePath);
+        }
+synchronized (this) {
+          new InputTreatment(this,absolutePath,0,conferenceMediaInfo.getSampleRate(),conferenceMediaInfo.getChannels());
+        }
+      }
+ catch (      IOException e) {
+        e.printStackTrace();
+        Logger.println("MemberReceiver:  Invalid input treatment " + absolutePath + ":  "+ e.getMessage());
+        callHandler.cancelRequest("Invalid input treatment " + absolutePath + ":  "+ e.getMessage());
+        return;
+      }
+    }
+    String forwardingCallId=cp.getForwardingCallId();
+    if (forwardingCallId != null) {
+      CallHandler forwardingCall=CallHandler.findCall(forwardingCallId);
+      if (forwardingCall == null) {
+        Logger.println("Invalid forwardingCallId:  " + forwardingCallId);
+        callHandler.cancelRequest("Invalid forwardingCallId:  " + forwardingCallId);
+        return;
+      }
+      ConferenceMember m=forwardingCall.getMember();
+      m.getMemberReceiver().addForwardMember(member.getMemberSender());
+      if (cp.getInputTreatment() != null) {
+        m.setConferenceMuted(true);
+      }
+    }
+  }
+  initializationDone=true;
+  Logger.writeFile("Call " + cp + " MemberReceiver initialization done...");
+}

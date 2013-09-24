@@ -1,0 +1,21 @@
+{
+  connected=true;
+  while (!done) {
+    String s=null;
+    try {
+      s=bufferedReader.readLine();
+    }
+ catch (    IOException e) {
+      if (done == false) {
+        System.err.println("can't read socket! " + socket + " "+ e.getMessage());
+      }
+      break;
+    }
+    if (s == null && done == false) {
+      Logger.println("can't read socket! " + socket);
+      break;
+    }
+    callEventNotification(new CallEvent(s));
+  }
+  connected=false;
+}

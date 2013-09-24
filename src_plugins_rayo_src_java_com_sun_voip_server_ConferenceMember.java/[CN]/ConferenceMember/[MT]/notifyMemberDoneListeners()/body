@@ -1,0 +1,25 @@
+{
+  String conferenceId=conferenceManager.getId();
+  ArrayList<ConferenceMember> membersToNotify=new ArrayList<ConferenceMember>();
+synchronized (memberDoneListeners) {
+    ArrayList<ConferenceMember> memberList=memberDoneListeners.get(conferenceId);
+    if (memberList == null) {
+      return;
+    }
+    for (    ConferenceMember member : memberList) {
+      if (this != member) {
+        membersToNotify.add(member);
+      }
+    }
+    memberList.remove(this);
+    if (memberList.size() == 0) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Removing member done list for " + conferenceId);
+      }
+      memberDoneListeners.remove(conferenceId);
+    }
+  }
+  for (  ConferenceMember member : membersToNotify) {
+    member.memberDoneNotification(this);
+  }
+}

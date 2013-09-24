@@ -1,0 +1,11 @@
+{
+  if (callId.equals("0")) {
+    CallHandler.dtmfSuppression=dtmfSuppression;
+    return;
+  }
+  CallHandler callHandler=findCall(callId);
+  if (callHandler == null) {
+    throw new NoSuchElementException("Invalid callId specified:  " + callId);
+  }
+  callHandler.getCallParticipant().setDtmfSuppression(dtmfSuppression);
+}

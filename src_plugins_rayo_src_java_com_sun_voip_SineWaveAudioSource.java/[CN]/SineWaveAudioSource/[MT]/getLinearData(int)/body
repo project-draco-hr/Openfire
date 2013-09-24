@@ -1,0 +1,17 @@
+{
+  if (timeRemaining <= 0) {
+    return null;
+  }
+  timeRemaining-=sampleTime;
+  int length=sampleRate * sampleTime * channels / 1000;
+  int[] linearData=new int[length];
+  for (int i=0; i < length; i+=(2 * channels)) {
+    int s=(int)(amplitude * volume * Math.sin(sample * twoPI * frequency / sampleRate));
+    linearData[i]=s;
+    if (channels == 2) {
+      linearData[i + 1]=s;
+    }
+    sample++;
+  }
+  return linearData;
+}

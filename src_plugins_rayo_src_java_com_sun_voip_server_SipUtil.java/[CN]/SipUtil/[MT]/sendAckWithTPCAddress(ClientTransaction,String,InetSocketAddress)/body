@@ -1,0 +1,25 @@
+{
+  int start=sdpBody.indexOf("c=IN IP4 ");
+  int finish=sdpBody.indexOf("\r",start);
+  if (Logger.logLevel >= Logger.LOG_SIP) {
+    Logger.println("modifying sdp with IP " + isa.getAddress() + " port "+ isa.getPort());
+  }
+  String newSdp=sdpBody.substring(0,start + 9) + isa.getAddress().getHostAddress() + sdpBody.substring(finish);
+  start=newSdp.indexOf("m=audio ");
+  if (start > -1) {
+    newSdp=newSdp.substring(0,start + 8) + isa.getPort() + newSdp.substring(newSdp.indexOf(" RTP/AVP"));
+    start=newSdp.indexOf("RTP/AVP ");
+    String pcmu="RTP/AVP 0 13 101\r\n" + "a=rtpmap:0 PCMU/8000\r\n";
+    newSdp=newSdp.substring(0,start) + pcmu;
+  }
+  if (Logger.logLevel >= Logger.LOG_SIP) {
+    Logger.println("sdp 1\n" + newSdp);
+  }
+  Dialog dialog=clientTransaction.getDialog();
+  Request ackRequest=dialog.createRequest(Request.ACK);
+  ContentTypeHeader contentTypeHeader=headerFactory.createContentTypeHeader("application","sdp");
+  ackRequest.setContent(newSdp,contentTypeHeader);
+  Logger.writeFile(ackRequest.toString());
+  dialog.sendAck(ackRequest);
+  return;
+}

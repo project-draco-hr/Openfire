@@ -1,0 +1,14 @@
+{
+  for (  Class<?> c : moduleClasses) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("initializeModule " + c.getName());
+    }
+    try {
+      c.newInstance();
+    }
+ catch (    Exception ex) {
+      Logger.exception("Error instantiating " + c,ex);
+      continue;
+    }
+  }
+}

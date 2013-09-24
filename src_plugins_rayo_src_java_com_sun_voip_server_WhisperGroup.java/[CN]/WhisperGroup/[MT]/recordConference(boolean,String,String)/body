@@ -1,0 +1,19 @@
+{
+  if (enabled == false) {
+synchronized (recordingLock) {
+      if (audioRecorder != null) {
+        audioRecorder.done();
+        audioRecorder=null;
+      }
+      this.recordingFile=null;
+    }
+    return;
+  }
+  if (audioRecorder == null) {
+synchronized (recordingLock) {
+      audioRecorder=new Recorder(recordingFile,"au",mediaInfo);
+      Logger.println("starting conference recorder for " + recordingFile + " "+ mediaInfo);
+      this.recordingFile=recordingFile;
+    }
+  }
+}

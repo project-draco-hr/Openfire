@@ -1,0 +1,52 @@
+{
+  try {
+    channelA.close();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  try {
+    channelB.close();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  try {
+    channelA_.close();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  try {
+    channelB_.close();
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+  }
+  if (callHandler != null)   callHandler.cancelRequest("Channel closing..");
+  try {
+    ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(handset.mixer);
+    if (conferenceManager.getMemberList().size() == 0) {
+      conferenceManager.recordConference(false,null,null);
+      conferenceManager.endConference(handset.mixer);
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+  if (decoder != 0) {
+    Opus.decoder_destroy(decoder);
+    decoder=0;
+  }
+  if (encoder != 0) {
+    Opus.encoder_destroy(encoder);
+    encoder=0;
+  }
+  SayCompleteEvent complete=new SayCompleteEvent();
+  complete.setReason(SayCompleteEvent.Reason.valueOf("SUCCESS"));
+  Presence presence=new Presence();
+  presence.setFrom(getAttachment() + "@rayo." + component.getDomain()+ "/"+ this.from.getNode());
+  presence.setTo(this.from);
+  presence.getElement().add(component.getHandsetProvider().toXML(complete));
+  component.sendPacket(presence);
+}

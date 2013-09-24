@@ -1,0 +1,48 @@
+{
+  try {
+    String branchID=challengedTransaction.getBranchId();
+    Request challengedRequest=challengedTransaction.getRequest();
+    Request reoriginatedRequest=(Request)challengedRequest.clone();
+    ListIterator authHeaders=null;
+    if (challenge == null || reoriginatedRequest == null)     throw new NullPointerException("A null argument was passed to handle challenge.");
+    if (challenge.getStatusCode() == Response.UNAUTHORIZED)     authHeaders=challenge.getHeaders(WWWAuthenticateHeader.NAME);
+ else     if (challenge.getStatusCode() == Response.PROXY_AUTHENTICATION_REQUIRED)     authHeaders=challenge.getHeaders(ProxyAuthenticateHeader.NAME);
+    if (authHeaders == null)     throw new SecurityException("Could not find WWWAuthenticate or ProxyAuthenticate headers");
+    reoriginatedRequest.removeHeader(AuthorizationHeader.NAME);
+    reoriginatedRequest.removeHeader(ProxyAuthorizationHeader.NAME);
+    reoriginatedRequest.removeHeader(ViaHeader.NAME);
+    CSeqHeader cSeq=(CSeqHeader)reoriginatedRequest.getHeader((CSeqHeader.NAME));
+    cSeq.setSequenceNumber(cSeq.getSequenceNumber() + 1);
+    reoriginatedRequest.setHeader(cSeq);
+    ClientTransaction retryTran=sipProvider.getNewClientTransaction(reoriginatedRequest);
+    WWWAuthenticateHeader authHeader=null;
+    while (authHeaders.hasNext()) {
+      authHeader=(WWWAuthenticateHeader)authHeaders.next();
+      String realm=authHeader.getRealm();
+      FromHeader from=(FromHeader)reoriginatedRequest.getHeader(FromHeader.NAME);
+      URI uri=from.getAddress().getURI();
+      AuthorizationHeader authorization=getAuthorization(reoriginatedRequest.getMethod(),reoriginatedRequest.getRequestURI().toString(),reoriginatedRequest.getContent() == null ? "" : reoriginatedRequest.getContent().toString(),authHeader,proxyCredentials);
+      reoriginatedRequest.addHeader(authorization);
+      if (uri.isSipURI()) {
+        ((SipURI)uri).setUser(proxyCredentials.getUserName());
+        Address add=from.getAddress();
+        add.setURI(uri);
+        from.setAddress(add);
+        reoriginatedRequest.setHeader(from);
+        if (challengedRequest.getMethod().equals(Request.REGISTER)) {
+          ToHeader to=(ToHeader)reoriginatedRequest.getHeader(ToHeader.NAME);
+          add.setURI(uri);
+          to.setAddress(add);
+          reoriginatedRequest.setHeader(to);
+        }
+        Logger.println("URI: " + uri.toString());
+      }
+    }
+    return retryTran;
+  }
+ catch (  Exception e) {
+    Logger.println("ERRO REG: " + e.toString());
+    e.printStackTrace();
+    return null;
+  }
+}

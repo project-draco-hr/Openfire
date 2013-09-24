@@ -1,0 +1,21 @@
+{
+synchronized (recordingLock) {
+    if (enabled == false) {
+      if (recorder != null) {
+        recorder.done();
+      }
+      cp.setToRecordingFile(null);
+      return;
+    }
+    if (recordingType == null) {
+      recordingType="";
+    }
+    recordRtp=false;
+    if (recordingType.equalsIgnoreCase("Rtp")) {
+      recordRtp=true;
+    }
+    recorder=new Recorder(cp.getRecordDirectory(),recordingFile,recordingType,myMediaInfo);
+    cp.setToRecordingFile(recordingFile);
+    cp.setToRecordingType(recordingType);
+  }
+}

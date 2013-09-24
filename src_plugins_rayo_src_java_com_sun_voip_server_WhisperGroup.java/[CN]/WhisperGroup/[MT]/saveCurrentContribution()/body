@@ -1,0 +1,29 @@
+{
+  currentContribution=linearMixBuffer;
+  linearMixBuffer=null;
+  if (currentTreatment != null) {
+synchronized (conferenceTreatments) {
+      currentTreatment.saveCurrentContribution();
+      int[] treatmentData=currentTreatment.getCurrentContribution();
+      if (treatmentDone) {
+        conferenceTreatments.remove(currentTreatment);
+        startNextTreatment();
+      }
+      if (treatmentData != null) {
+        if (currentContribution == null) {
+          currentContribution=treatmentData;
+        }
+ else {
+          mixData(treatmentData,currentContribution,true);
+        }
+      }
+    }
+  }
+  if (currentContribution != null) {
+    recordAudio(currentContribution,currentContribution.length);
+  }
+  if (doNotRecordMix != null) {
+    mixData(doNotRecordMix,currentContribution,true);
+    doNotRecordMix=null;
+  }
+}

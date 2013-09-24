@@ -1,0 +1,21 @@
+{
+  if (transmitMediaInfo == null || mediaInfo.getPayload() == RtpPacket.PCMU_PAYLOAD) {
+    return mediaInfo;
+  }
+  int transmitSampleRate=transmitMediaInfo.getSampleRate();
+  if (transmitSampleRate > mediaInfo.getSampleRate()) {
+    transmitSampleRate=mediaInfo.getSampleRate();
+  }
+  int transmitChannels=transmitMediaInfo.getChannels();
+  if (transmitChannels > mediaInfo.getChannels()) {
+    transmitChannels=mediaInfo.getChannels();
+  }
+  try {
+    transmitMediaInfo=MediaInfo.findMediaInfo(transmitMediaInfo.getEncoding(),transmitSampleRate,transmitChannels);
+  }
+ catch (  IOException e) {
+    Logger.println(e.getMessage());
+    Logger.println("Using transmit media info " + transmitMediaInfo);
+  }
+  return transmitMediaInfo;
+}

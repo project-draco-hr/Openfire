@@ -1,0 +1,140 @@
+{
+  if (dtmfKeyToSend != null) {
+    if (telephoneEventPayload != 0) {
+      sendDtmfKey();
+      return true;
+    }
+ else {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Call " + cp + " Telephone event payload not supported.  "+ "Can't send "+ dtmfKeyToSend);
+      }
+      dtmfKeyToSend=null;
+    }
+  }
+  long start=System.nanoTime();
+  if (dataToSend == null) {
+    if (Logger.logLevel == -77) {
+      Logger.println("Call " + cp + " no data to send");
+    }
+    if (comfortNoiseType == CN_USE_PAYLOAD) {
+      if (senderPacket.getRtpPayload() != RtpPacket.COMFORT_PAYLOAD) {
+        if (Logger.logLevel == -77) {
+          Logger.println("Call " + cp + " sending comfort payload");
+        }
+        if (getWebRTCParticipant() == null)         sendComfortNoisePayload();
+ else         getWebRTCParticipant().sendComfortNoisePayload();
+      }
+    }
+    mustSetMarkBit=true;
+    return false;
+  }
+  if (senderPacket.getRtpPayload() == RtpPacket.COMFORT_PAYLOAD) {
+    senderPacket.adjustRtpTimestamp();
+  }
+  senderPacket.setRtpPayload(myMediaInfo.getPayload());
+  if (mustSetMarkBit) {
+    if (Logger.logLevel == -77 || Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Setting MARK for " + cp);
+    }
+    if (Logger.logLevel != -77) {
+      if (timePreviousPacketSent != 0) {
+        senderPacket.adjustRtpTimestamp(System.currentTimeMillis() - timePreviousPacketSent);
+      }
+    }
+    senderPacket.setMark();
+    mustSetMarkBit=false;
+  }
+  if (outputVolume != 1.0) {
+    callHandler.getMember().adjustVolume(dataToSend,outputVolume);
+  }
+  dataToSend=normalize(dataToSend);
+  try {
+    if (outSampleRateConverter != null) {
+      dataToSend=outSampleRateConverter.resample(dataToSend);
+    }
+  }
+ catch (  IOException e) {
+    Logger.println("Call " + cp + " can't resample data to send! "+ e.getMessage());
+    callHandler.cancelRequest("Call " + cp + " can't resample data to send! "+ e.getMessage());
+    return false;
+  }
+  byte[] rtpData=senderPacket.getData();
+  if (Logger.logLevel == -37) {
+    boolean silence=true;
+    for (int i=RtpPacket.HEADER_SIZE; i < rtpData.length - RtpPacket.HEADER_SIZE; i++) {
+      if (rtpData[i] != 0) {
+        silence=false;
+        break;
+      }
+    }
+    if (silence) {
+      return false;
+    }
+  }
+  if (myMediaInfo.getEncoding() == RtpPacket.PCMU_ENCODING) {
+    AudioConversion.linearToUlaw(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
+  }
+ else   if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
+    try {
+      if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+        Logger.writeFile("Call " + cp + " speex encoding data ");
+      }
+      int length=speexEncoder.encode(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
+      senderPacket.setLength(length + RtpPacket.HEADER_SIZE);
+    }
+ catch (    SpeexException e) {
+      Logger.println("Call " + this + ":  "+ e.getMessage());
+      return false;
+    }
+  }
+ else {
+    AudioConversion.intsToBytes(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
+  }
+  recordPacket(rtpData,senderPacket.getLength());
+  recordAudio(rtpData,RtpPacket.HEADER_SIZE,senderPacket.getLength() - RtpPacket.HEADER_SIZE);
+  if (needToEncrypt()) {
+    encrypt(rtpData,senderPacket.getLength());
+  }
+  if (Logger.logLevel == -78) {
+    Logger.println("Call " + cp + " sending data from socket "+ datagramChannel.socket().getLocalAddress()+ ":"+ datagramChannel.socket().getLocalPort()+ " to "+ senderPacket.getSocketAddress());
+  }
+  if (getWebRTCParticipant() == null) {
+    if (cp.getInputTreatment() == null) {
+      try {
+        senderPacket.setSocketAddress(memberAddress);
+        datagramChannel.send(ByteBuffer.wrap(senderPacket.getData(),0,senderPacket.getLength()),memberAddress);
+        if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+          Logger.writeFile("Call " + cp + " back from sending data");
+        }
+      }
+ catch (      IOException e) {
+        if (!done) {
+          Logger.error("Call " + cp + " sendData "+ e.getMessage());
+          e.printStackTrace();
+        }
+        return false;
+      }
+    }
+  }
+ else {
+    try {
+      getWebRTCParticipant().pushAudio(rtpData,dataToSend);
+    }
+ catch (    Exception e) {
+      return false;
+    }
+  }
+  senderPacket.setBuffer(rtpData);
+  senderPacket.setLength(rtpData.length);
+  if (Logger.logLevel >= Logger.LOG_DEBUG) {
+    log(true);
+  }
+  timePreviousPacketSent=System.currentTimeMillis();
+  if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+    Logger.println("Call " + cp + " sendLength "+ rtpData.length);
+  }
+  totalTimeToGetData+=(System.nanoTime() - start);
+  packetsSent++;
+  senderPacket.updateRtpHeader(rtpData.length);
+  return true;
+}

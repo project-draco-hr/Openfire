@@ -1,0 +1,17 @@
+{
+  for (int i=0; i < mixDescriptors.size(); i++) {
+    MixDescriptor mixDescriptor=(MixDescriptor)mixDescriptors.get(i);
+    if (mixDescriptor.getMixDataSource() == mixDataSource) {
+      return mixDescriptor;
+    }
+  }
+  if (forcePrivateMix) {
+    double[] volume=new double[4];
+    volume[0]=.5D;
+    volume[1]=.5D;
+    volume[2]=.5D;
+    volume[3]=.5D;
+    return new MixDescriptor(mixDataSource,1.0,volume);
+  }
+  return null;
+}

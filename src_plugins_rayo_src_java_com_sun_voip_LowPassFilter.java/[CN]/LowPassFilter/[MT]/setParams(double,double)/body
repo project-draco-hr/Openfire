@@ -1,0 +1,17 @@
+{
+  LowPassFilter.x=x;
+  LowPassFilter.y=y;
+  if (x == 0 && y == 0) {
+    Logger.println("Disabling Low Pass RC filter");
+    return;
+  }
+  double xx=Math.exp(-2 * Math.PI * (x / 2));
+  a0=1 - xx;
+  b1=xx;
+  Logger.println("SP:  cutoff = " + (x / 2) + " a0 "+ a0+ " b1 "+ b1);
+  int cutoff=(int)(x * 127);
+  int resonance=(int)(y * 127);
+  c=Math.pow(0.5,(128 - cutoff) / 16.0);
+  r=Math.pow(0.5,(resonance + 24) / 16.0);
+  Logger.println("setParams:  x = " + x + " y = "+ y+ " cutoff = "+ cutoff+ " resonance = "+ resonance+ " c = "+ c+ " r = "+ r);
+}

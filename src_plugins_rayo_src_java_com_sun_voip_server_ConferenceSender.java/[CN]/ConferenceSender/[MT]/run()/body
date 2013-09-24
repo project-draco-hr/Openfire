@@ -1,0 +1,67 @@
+{
+  String tickerClassName=System.getProperty("com.sun.voip.TICKER");
+  try {
+    TickerFactory tickerFactory=TickerFactory.getInstance();
+    ticker=tickerFactory.createTicker(tickerClassName,getName());
+  }
+ catch (  TickerException e) {
+    Logger.println(e.getMessage());
+    end();
+    return;
+  }
+  ticker.arm(RtpPacket.PACKET_PERIOD,RtpPacket.PACKET_PERIOD);
+  long sendTime=0;
+  long maxSendTime=0;
+  while (!done) {
+    long startTime=System.nanoTime();
+    for (    SenderCallbackListener listener : senderCallbackList) {
+      try {
+        listener.senderCallback();
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+        Logger.println("Sender callback failed!  " + e.getMessage());
+      }
+    }
+    sendDataToConferences();
+    int elapsed=(int)(System.nanoTime() - startTime);
+    if (elapsed > maxSendTime) {
+      maxSendTime=elapsed;
+    }
+    totalSendTime+=elapsed;
+    sendTime+=elapsed;
+    try {
+      ticker.tick();
+    }
+ catch (    TickerException e) {
+      Logger.println(getName() + " tick() failed! " + e.getMessage());
+      end();
+      break;
+    }
+    if (ConferenceManager.getTotalMembers() == 0) {
+      resetStatistics();
+      sendTime=0;
+      maxSendTime=0;
+      continue;
+    }
+    packetsSent++;
+    if ((packetsSent % 250) == 0) {
+      averageSendTime=sendTime / 1000000000. / 250.;
+      lastMaxSendTime=maxSendTime / 1000000000.;
+      String s=getName() + " time to send a packet to " + ConferenceManager.getTotalMembers()+ " members in last 5 seconds is "+ (sendTime / 1000000000.)+ " seconds, average time "+ averageSendTime+ " seconds "+ ", maxSendTime "+ lastMaxSendTime+ ", members speaking "+ CallHandler.getTotalSpeaking();
+      if (Logger.logLevel >= Logger.LOG_DETAIL) {
+        Logger.println(s);
+      }
+ else {
+        Logger.writeFile(s);
+      }
+      if (packetsSent > 0) {
+        timeBetweenSends=(System.nanoTime() - startTime) / 1000000000. / 250.;
+      }
+      startTime=System.nanoTime();
+      maxSendTime=0;
+      sendTime=0;
+    }
+  }
+  ticker.disarm();
+}

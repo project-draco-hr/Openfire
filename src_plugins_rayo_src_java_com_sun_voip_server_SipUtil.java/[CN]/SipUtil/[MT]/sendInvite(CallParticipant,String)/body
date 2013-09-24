@@ -1,0 +1,196 @@
+{
+  SipURI fromAddress=null;
+  Address fromNameAddress=null;
+  FromHeader fromHeader=null;
+  SipURI toAddress=null;
+  Address toNameAddress=null;
+  ToHeader toHeader=null;
+  SipURI requestURI=null;
+  CallIdHeader callIdHeader=null;
+  CSeqHeader cSeqHeader=null;
+  AllowEventsHeader allowEventsHeader=null;
+  ViaHeader viaHeader=null;
+  ArrayList viaHeaders=null;
+  ContentTypeHeader contentTypeHeader=null;
+  Request invite=null;
+  String obProxy=null;
+  String fromName=cp.getDisplayName();
+  String fromNumber=cp.getDisplayName();
+  String toNumber=cp.getPhoneNumber();
+  int toSipPort=5060;
+  String proxy=cp.getSipProxy();
+  if (proxy == null) {
+    proxy=SipServer.getDefaultSipProxy();
+  }
+  String voipGateway=null;
+  if (toNumber.indexOf("sip:") == 0) {
+    Address address=null;
+    SipURI sipURI=null;
+    String host=null;
+    String user=null;
+    try {
+      address=addressFactory.createAddress(toNumber);
+      sipURI=(SipURI)address.getURI();
+      host=sipURI.getHost();
+      user=sipURI.getUser();
+    }
+ catch (    ParseException e) {
+      Logger.println("parse exception:  " + toNumber + " sipUri "+ sipURI+ " host "+ host+ " user "+ user);
+    }
+    if (Logger.logLevel >= Logger.LOG_SIP) {
+      Logger.println("address: " + address);
+      Logger.println("sipURI: " + sipURI);
+      Logger.println("host: " + host);
+      Logger.println("user: " + user);
+    }
+    if (SipServer.getSendSipUriToProxy() == false && user != null) {
+      InetAddress inetAddress;
+      try {
+        inetAddress=InetAddress.getByName(host);
+        voipGateway=host;
+        int port=sipURI.getPort();
+        if (port > 0) {
+          toSipPort=port;
+        }
+        toNumber=user;
+        Logger.println("Call " + cp + " Sending INVITE directly to "+ inetAddress+ ":"+ toSipPort);
+      }
+ catch (      UnknownHostException e) {
+        voipGateway=proxy;
+        Logger.println("Call " + cp + " Using proxy "+ proxy+ " for "+ toNumber);
+        toNumber=toNumber.substring(4);
+      }
+    }
+ else {
+      voipGateway=proxy;
+      Logger.println("Call " + cp + " Using proxy "+ proxy+ " for "+ toNumber);
+      toNumber=toNumber.substring(4);
+    }
+  }
+ else {
+    voipGateway=proxy;
+    Logger.println("Call " + cp + " Using proxy "+ proxy+ " for "+ toNumber);
+  }
+  if (toNumber.indexOf("@") < 0 && CallHandler.enablePSTNCalls() == false) {
+    throw new SipException("PSTN calls are not allowed:  " + cp);
+  }
+  ArrayList<ProxyCredentials> proxyCredentialList=SipServer.getProxyCredentials();
+  boolean gatewayRequired=false;
+  if (voipGateway == null) {
+    if (proxy == null) {
+      if (proxyCredentialList.size() == 0) {
+        Logger.println("Call " + cp + " no voipGateway is available!");
+        throw new SipException("No voip Gateway! " + cp);
+      }
+ else       gatewayRequired=true;
+    }
+ else {
+      voipGateway=proxy;
+      gatewayRequired=true;
+    }
+  }
+ else {
+    if (voipGateway.equals(proxy))     gatewayRequired=true;
+  }
+  if (gatewayRequired) {
+    if (proxyCredentialList.size() != 0) {
+      int voipIndex=0;
+      for (int i=0; i < proxyCredentialList.size(); i++) {
+        ProxyCredentials proxyCredentials=proxyCredentialList.get(i);
+        if (voipGateway.equals(proxyCredentials.getName())) {
+          voipIndex=i;
+        }
+      }
+      ProxyCredentials proxyCredentials=proxyCredentialList.get(voipIndex);
+      fromName=proxyCredentials.getUserDisplay();
+      voipGateway=proxyCredentials.getHost();
+      obProxy=proxyCredentials.getProxy();
+      fromAddress=addressFactory.createSipURI(proxyCredentials.getUserName(),voipGateway);
+      cp.setProxyCredentials(proxyCredentials);
+      cp.setDisplayName(proxyCredentials.getUserDisplay());
+    }
+    toAddress=addressFactory.createSipURI(toNumber,voipGateway);
+  }
+ else {
+    Logger.println("fromNumber " + fromNumber);
+    if (fromNumber.startsWith("sip:"))     fromAddress=(SipURI)addressFactory.createAddress(fromNumber).getURI();
+ else     fromAddress=addressFactory.createSipURI(fromNumber,ourIpAddress);
+    fromAddress.setPort(ourSipPort);
+    toAddress=addressFactory.createSipURI(toNumber,voipGateway);
+  }
+  Logger.println("from " + fromAddress);
+  Logger.println("to " + toAddress);
+  fromNameAddress=addressFactory.createAddress(fromName,fromAddress);
+  fromHeader=headerFactory.createFromHeader(fromNameAddress,new Integer((int)(Math.random() * 10000)).toString());
+  if (Bridge.getPrivateHost().startsWith("127.") && voipGateway.equals("127.0.0.1") == false) {
+    throw new SipException("The bridge's ip address is " + Bridge.getPrivateHost() + ". It is not possible to initiate a call to "+ voipGateway);
+  }
+  if (Bridge.getPrivateHost().startsWith("127.") == false && voipGateway.startsWith("127.") == true) {
+    throw new SipException("The bridge's ip address must be " + Bridge.getPrivateHost() + " in order to issue a call to "+ voipGateway);
+  }
+  Logger.writeFile("Call " + cp + " voip gateway / proxy "+ voipGateway+ " port "+ toSipPort);
+  toNameAddress=addressFactory.createAddress(toNumber,toAddress);
+  toHeader=headerFactory.createToHeader(toNameAddress,null);
+  int ix=toNumber.indexOf("@");
+  if (ix >= 0) {
+    toNumber=toNumber.substring(0,ix);
+  }
+  requestURI=addressFactory.createSipURI(toNumber,voipGateway);
+  requestURI.setPort(toSipPort);
+  requestURI.setTransportParam(sipProvider.getListeningPoint().getTransport());
+  viaHeader=headerFactory.createViaHeader(ourIpAddress,ourSipPort,"udp",null);
+  viaHeaders=new ArrayList();
+  viaHeaders.add(viaHeader);
+  callIdHeader=sipProvider.getNewCallId();
+  cSeqHeader=headerFactory.createCSeqHeader(1,Request.INVITE);
+  MaxForwardsHeader maxForwards=headerFactory.createMaxForwardsHeader(70);
+  invite=messageFactory.createRequest(requestURI,Request.INVITE,callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwards);
+  if (SdpManager.useTelephoneEvent() == true) {
+    allowEventsHeader=headerFactory.createAllowEventsHeader("telephone-event");
+    invite.addHeader(allowEventsHeader);
+  }
+  SipURI contactURI=null;
+  if (fromNumber.startsWith("sip:"))   contactURI=(SipURI)addressFactory.createAddress(fromNumber).getURI();
+ else   contactURI=addressFactory.createSipURI(fromNumber,ourPublicIpAddress);
+  contactURI.setPort(ourPublicSipPort);
+  Address contactAddress=addressFactory.createAddress(contactURI);
+  contactAddress.setDisplayName(fromName);
+  ContactHeader contactHeader=headerFactory.createContactHeader(contactAddress);
+  invite.addHeader(contactHeader);
+  if (obProxy != null) {
+    try {
+      SipURI routeURI=(SipURI)addressFactory.createURI("sip:" + obProxy + ";lr");
+      RouteHeader routeHeader=headerFactory.createRouteHeader(addressFactory.createAddress(routeURI));
+      invite.addHeader(routeHeader);
+    }
+ catch (    Exception e) {
+      Logger.error("Creating registration route error " + e);
+    }
+  }
+  if (cp.isAutoAnswer()) {
+    Logger.println("Call " + cp + " alert-info added");
+    try {
+      SIPAlertInfo alertInfo=new SIPAlertInfo();
+      alertInfo.setNamePair("info=alert-autoanswer");
+      invite.addHeader(alertInfo);
+    }
+ catch (    Exception e) {
+      Logger.error("Creating alert info error " + e);
+    }
+  }
+  if (sdp != null) {
+    contentTypeHeader=headerFactory.createContentTypeHeader("application","sdp");
+    invite.setContent(sdp,contentTypeHeader);
+  }
+  ClientTransaction clientTransaction;
+  Logger.writeFile("Invite\n" + invite);
+  try {
+    clientTransaction=sipProvider.getNewClientTransaction(invite);
+  }
+ catch (  Exception e) {
+    Logger.println("Call " + cp + " sendInvite failed:  "+ e.getMessage());
+    return null;
+  }
+  clientTransaction.sendRequest();
+  return clientTransaction;
+}

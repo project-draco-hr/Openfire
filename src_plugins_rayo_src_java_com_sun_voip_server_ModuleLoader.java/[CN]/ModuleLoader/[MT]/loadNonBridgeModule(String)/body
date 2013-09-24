@@ -1,0 +1,30 @@
+{
+  JarFile jarFile=new JarFile(dirEntry);
+  Enumeration entries=jarFile.entries();
+  if (entries == null) {
+    Logger.println("No entries in jarFile:  " + dirEntry);
+    return;
+  }
+  while (entries.hasMoreElements()) {
+    JarEntry jarEntry=(JarEntry)entries.nextElement();
+    String className=jarEntry.getName();
+    int ix;
+    if ((ix=className.indexOf(".class")) < 0) {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Skipping non-class entry in jarFile:  " + className);
+      }
+      continue;
+    }
+    className=className.replaceAll(".class","");
+    className=className.replaceAll("/",".");
+    try {
+      if (Logger.logLevel >= Logger.LOG_INFO) {
+        Logger.println("Looking for class '" + className + "'");
+      }
+      loadClass(className);
+    }
+ catch (    ClassNotFoundException e) {
+      Logger.println("ClassNotFoundException:  '" + className + "'");
+    }
+  }
+}

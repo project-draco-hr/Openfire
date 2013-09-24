@@ -1,0 +1,23 @@
+{
+  MixDescriptor mixDescriptor;
+  mixDescriptor=findMixDescriptor(mixDataSource);
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Private mix " + mixDescriptor);
+  }
+  if (mixDescriptor == null) {
+    mixDescriptor=new MixDescriptor(mixDataSource,1.0,spatialValues);
+    mixDescriptors.add(mixDescriptor);
+    Logger.println("Call " + member + " creating new private mix for "+ mixDataSource+ " "+ mixDescriptor+ " vol "+ spatialValues[3]);
+  }
+ else {
+    if (mixDescriptor.equals(mixDataSource,spatialValues)) {
+      return null;
+    }
+    mixDescriptor.setSpatialValues(spatialValues);
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("MixManager:  Setting private mix " + mixDescriptor);
+  }
+  setUseFastMix();
+  return mixDescriptor;
+}

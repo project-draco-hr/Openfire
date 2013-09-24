@@ -1,0 +1,30 @@
+{
+  loginfo("VoiceBridge stopping");
+  Object service=this;
+synchronized (incomingCallListeners) {
+    boolean removeIncomingCallHandler=false;
+    for (    Object theService : incomingCallListeners) {
+      if (theService == service) {
+        removeIncomingCallHandler=true;
+      }
+    }
+    if (removeIncomingCallHandler) {
+      monitorIncomingCalls(false);
+    }
+    monitorOutgoingCalls(false);
+  }
+synchronized (conferenceMonitors) {
+    ArrayList<ConferenceMonitor> monitorsToRemove=new ArrayList<ConferenceMonitor>();
+    for (    ConferenceMonitor m : conferenceMonitors) {
+      if (service == m.getService()) {
+        monitorsToRemove.add(m);
+      }
+    }
+    for (    ConferenceMonitor m : monitorsToRemove) {
+      loginfo("Removing conference monitor for " + m.getConferenceId());
+      conferenceMonitors.remove(m);
+    }
+  }
+  CallHandler.shutdown();
+  config.terminate();
+}

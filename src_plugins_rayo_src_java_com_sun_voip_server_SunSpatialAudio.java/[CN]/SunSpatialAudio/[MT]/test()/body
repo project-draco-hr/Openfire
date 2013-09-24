@@ -1,0 +1,47 @@
+{
+  initialize("Test","Test",44100,2,44100 / 50);
+  echoDelay=.1;
+  double[] spatialValues=new double[4];
+  spatialValues[0]=-1;
+  spatialValues[1]=.5;
+  spatialValues[2]=0;
+  spatialValues[3]=1;
+  int[] p=new int[64];
+  int[] c=new int[64];
+  int[] result;
+  fill(p,1);
+  fill(c,3);
+  result=generateSpatialAudio("Test",p,c,spatialValues);
+  Util.dump("result, p 1, c 3",result,0,result.length);
+  dump(result);
+  if (false) {
+    p=c;
+    c=new int[64];
+    fill(c);
+    Util.dump("c before 2",c,0,c.length);
+    result=generateSpatialAudio("Test",p,c,spatialValues);
+    dump(result);
+    Util.dump("p set, c set",result,0,result.length);
+    c=new int[64];
+    fill(c);
+    Util.dump("c before 3",c,0,c.length);
+    result=generateSpatialAudio("Test",p,c,spatialValues);
+    Util.dump("c null",result,0,result.length);
+    dump(result);
+    c=new int[64];
+    fill(c,4);
+    Util.dump("c echo",c,0,c.length);
+    spatialValues[0]=-1;
+    spatialValues[1]=1;
+    spatialValues[2]=0;
+    spatialValues[3]=1;
+    result=generateSpatialAudio("Test",p,c,spatialValues);
+    Util.dump("after adding echo",result,0,result.length);
+    dump(result);
+    System.out.println("====================");
+    Util.dump("c echo",c,0,c.length);
+    result=generateSpatialAudio("Test",p,c,spatialValues);
+    Util.dump("after adding echo",result,0,result.length);
+    dump(result);
+  }
+}

@@ -1,0 +1,18 @@
+{
+synchronized (conferenceManager) {
+synchronized (whisperGroups) {
+      WhisperGroup whisperGroup=wgManager.findWhisperGroup(whisperGroupId);
+      if (whisperGroup == null) {
+        Logger.println("Whisper group doesn't exist for " + whisperGroupId + "!");
+        return;
+      }
+      if (this.whisperGroup == whisperGroup) {
+        setWhispering(conferenceWhisperGroup);
+      }
+      wgManager.removeCall(whisperGroup,this);
+synchronized (mixManager) {
+        mixManager.removeMix(whisperGroup);
+      }
+    }
+  }
+}

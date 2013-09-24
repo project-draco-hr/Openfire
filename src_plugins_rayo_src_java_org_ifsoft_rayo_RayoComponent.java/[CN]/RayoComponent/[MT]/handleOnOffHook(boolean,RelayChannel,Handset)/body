@@ -1,0 +1,28 @@
+{
+  Log.info("RayoComponent handleOnOffHook " + flag);
+  try {
+    OutgoingCallHandler callHandler=channel.getCallHandler();
+    if (callHandler != null) {
+      callHandler.cancelRequest("Reseting handset to " + (flag ? "on" : "off") + "hook");
+      callHandler=null;
+    }
+    if (!flag) {
+      String mediaPreference="PCMU/8000/1";
+      if (handset.codec == null || "OPUS".equals(handset.codec))       mediaPreference="PCM/48000/2";
+      CallParticipant cp=new CallParticipant();
+      cp.setCallId(channel.getAttachment());
+      cp.setProtocol("WebRtc");
+      cp.setConferenceId(handset.mixer);
+      cp.setMediaPreference(mediaPreference);
+      cp.setRelayChannel(channel);
+      cp.setDisplayName(channel.getAttachment());
+      cp.setVoiceDetection(true);
+      cp.setCallOwner(channel.getFrom().toString());
+      callHandler=new OutgoingCallHandler(this,cp);
+      callHandler.start();
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

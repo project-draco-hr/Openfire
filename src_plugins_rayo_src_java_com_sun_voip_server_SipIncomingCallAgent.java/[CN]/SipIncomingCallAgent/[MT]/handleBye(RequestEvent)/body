@@ -1,0 +1,35 @@
+{
+  Request request=requestEvent.getRequest();
+  Logger.writeFile("SipIncomingCallAgent got BYE or CANCEL");
+  Logger.writeFile(request.toString());
+  try {
+    CallIdHeader callIdHeader=(CallIdHeader)request.getHeader("Call-Id");
+    String sipCallId=callIdHeader.getCallId();
+    if (sipCallId.equals(this.sipCallId)) {
+      receivedBye=true;
+      removeSipCallId(sipCallId);
+      try {
+        Logger.println("Call " + cp + " has hung up.");
+        sipUtil.sendOK(request,requestEvent.getServerTransaction());
+      }
+ catch (      Exception e) {
+      }
+      cancelRequest("hung up");
+      sipServerCallback.removeSipListener(sipCallId);
+    }
+ else {
+      throw new TransactionDoesNotExistException(cp + "BYE request received did not " + "match our callId:  "+ request);
+    }
+  }
+ catch (  TransactionDoesNotExistException e) {
+    Logger.error("Call " + cp + " Transaction not found "+ e.getMessage());
+  }
+catch (  SipException e) {
+    Logger.exception("Call " + cp + " SIP Stack error",e);
+    cancelRequest("handleBye:  SIP Stack error " + e.getMessage());
+  }
+catch (  Exception e) {
+    Logger.exception("Call " + cp + " Unknown error",e);
+    cancelRequest("handleBye:  SIP Stack error " + e.getMessage());
+  }
+}

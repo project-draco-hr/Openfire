@@ -1,0 +1,18 @@
+{
+synchronized (conferenceManager) {
+synchronized (memberTreatments) {
+      memberTreatments.remove(treatmentManager);
+synchronized (mixManager) {
+        mixManager.removeMix(treatmentManager);
+      }
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+        Logger.println("Treatment done " + treatmentManager.getId());
+        Logger.println("treatments left " + memberTreatments.size());
+      }
+      CallEvent callEvent=new CallEvent(CallEvent.TREATMENT_DONE);
+      callEvent.setTreatmentId(treatmentManager.getId());
+      callHandler.sendCallEventNotification(callEvent);
+      startNextTreatment();
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  Logger.init();
+  String s=System.getProperty("com.sun.voip.server.RECEIVE_MONITOR_PORT");
+  int port=RECEIVE_MONITOR_PORT;
+  if (s != null) {
+    try {
+      port=Integer.parseInt(s);
+    }
+ catch (    NumberFormatException e) {
+      Logger.println("Invalid ReceiveMonitor port:  " + e.getMessage() + ".  Defaulting to "+ port);
+    }
+  }
+  serverSocket=new ServerSocket(port);
+  start();
+}

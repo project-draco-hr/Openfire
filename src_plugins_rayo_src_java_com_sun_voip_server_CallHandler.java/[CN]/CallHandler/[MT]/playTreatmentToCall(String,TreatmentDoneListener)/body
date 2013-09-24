@@ -1,0 +1,11 @@
+{
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Playing treatment " + treatment + " to "+ cp.getCallId());
+  }
+  TreatmentManager treatmentManager=new TreatmentManager(treatment,0,conferenceManager.getMediaInfo().getSampleRate(),conferenceManager.getMediaInfo().getChannels());
+  if (treatmentDoneListener != null) {
+    treatmentManager.addTreatmentDoneListener(treatmentDoneListener);
+  }
+  addTreatment(treatmentManager);
+  return treatmentManager;
+}

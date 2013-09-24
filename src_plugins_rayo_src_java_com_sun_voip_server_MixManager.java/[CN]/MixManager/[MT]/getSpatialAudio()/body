@@ -1,0 +1,19 @@
+{
+  String s=System.getProperty("com.sun.voip.server.SPATIAL_AUDIO");
+  if (s != null) {
+    try {
+      Class micClass=Class.forName(s);
+      Class[] params=new Class[]{};
+      Constructor constructor=micClass.getConstructor(params);
+      if (constructor != null) {
+        Object[] args=new Object[]{};
+        return (SpatialAudio)constructor.newInstance(args);
+      }
+      Logger.println("constructor not found for: " + s);
+    }
+ catch (    Exception e) {
+      Logger.println("Error loading '" + s + "': "+ e.getMessage());
+    }
+  }
+  return new SunSpatialAudio();
+}

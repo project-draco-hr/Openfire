@@ -1,0 +1,35 @@
+{
+  if (cp.getCallId().equals(callId)) {
+    return true;
+  }
+  if (ConferenceManager.allowShortNames() == false) {
+    return false;
+  }
+  String name=cp.getName();
+  if (name != null) {
+    if (name.equals(callId)) {
+      return true;
+    }
+    name=name.replaceAll(" ","_");
+    if (name.equals(callId)) {
+      return true;
+    }
+  }
+  String number=cp.getPhoneNumber();
+  if (number == null) {
+    return false;
+  }
+  if (number.equals(callId)) {
+    return true;
+  }
+  if (number.indexOf("sip:") == 0) {
+    int ix=number.indexOf("@");
+    if (ix >= 0) {
+      number=number.substring(4,ix);
+      if (number.equals(callId)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

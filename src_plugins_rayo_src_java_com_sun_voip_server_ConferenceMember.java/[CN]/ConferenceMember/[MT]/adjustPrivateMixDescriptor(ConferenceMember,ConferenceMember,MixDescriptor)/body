@@ -1,0 +1,42 @@
+{
+  if (m1.getWhisperGroup() == null) {
+    return;
+  }
+  if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+    Logger.println("Call " + m1 + " adjustPrivateMixDescriptor:  "+ " md "+ md+ " pm for "+ m2);
+  }
+  if (m2.getWhisperGroup() == null || m2.getWhisperGroup().isMember(m1) == false) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + m1 + " not member of "+ m2.getWhisperGroup()+ ", ev is 0");
+    }
+    mixManager.setAttenuation(md,0);
+    return;
+  }
+  double attenuation;
+  if (m1.getWhisperGroup() == m2.getWhisperGroup()) {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + m1 + " full volume");
+    }
+    attenuation=1.0;
+  }
+ else {
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Call " + m1 + " attenuating to "+ m1.getWhisperGroup().getAttenuation());
+    }
+    attenuation=m1.getWhisperGroup().getAttenuation();
+  }
+  mixManager.setAttenuation(md,attenuation);
+  if (m1.isConferenceMuted()) {
+    mixManager.setMuted(md,true);
+  }
+ else {
+    mixManager.setMuted(md,false);
+    if (m1.isConferenceSilenced()) {
+      MemberReceiver memberReceiver=(MemberReceiver)md.getMixDataSource();
+      if (memberReceiver.getWhisperGroup() == conferenceWhisperGroup) {
+        Logger.println("Call " + cp + " mute pm for member in main conf");
+        mixManager.setMuted(md,true);
+      }
+    }
+  }
+}

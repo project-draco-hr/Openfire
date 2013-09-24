@@ -1,0 +1,69 @@
+{
+  FromHeader fromHeader=(FromHeader)response.getHeader(FromHeader.NAME);
+  String displayName=fromHeader.getAddress().getDisplayName();
+  int statusCode=response.getStatusCode();
+  Logger.println("handleCallParticipantInvited " + cp + " status "+ statusCode+ " "+ response.getReasonPhrase());
+  Logger.println("handleCallParticipantInvited , displayname " + displayName);
+  CallIdHeader callIdHeader=(CallIdHeader)response.getHeader(CallIdHeader.NAME);
+  if (sipCallId.equals(callIdHeader.getCallId()) && displayName.equals(cp.getDisplayName()) && (statusCode == Response.OK || statusCode == Response.SESSION_PROGRESS)&& ((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.INVITE)) {
+    if (statusCode == Response.SESSION_PROGRESS) {
+      if (cp.getHandleSessionProgress() == false) {
+        Logger.writeFile("Call " + cp + " Ignoring SESSION_PROGRESS");
+        return;
+      }
+      Logger.writeFile("Call " + cp + " Treating SESSION_PROGRESS as OK");
+    }
+    if (response.getRawContent() == null) {
+      Logger.error("Call " + cp + " no SDP in OK Response!");
+      cancelRequest("SIP error!  no SDP in OK Response!");
+      return;
+    }
+    this.clientTransaction=clientTransaction;
+    if (statusCode == Response.OK) {
+      gotOk=true;
+      Logger.writeFile("Call " + cp + " Got OK, call answered\n"+ response);
+    }
+    ToHeader toHeader=(ToHeader)response.getHeader(ToHeader.NAME);
+    if (statusCode == Response.OK) {
+      sipUtil.sendAck(clientTransaction);
+      ackSent=true;
+    }
+    if (callAnswered) {
+      Logger.writeFile("Call " + cp + " done processing OK");
+      return;
+    }
+    sdpBody=new String(response.getRawContent());
+    SdpInfo sdpInfo;
+    try {
+      sdpInfo=sipUtil.getSdpInfo(sdpBody,false);
+    }
+ catch (    ParseException e) {
+      Logger.error("Call " + cp + " Invalid SDP in OK Response! "+ e.getMessage());
+      cancelRequest("SIP error!  Invalid SDP in OK Response!");
+      return;
+    }
+    MediaInfo mediaInfo=sdpInfo.getMediaInfo();
+    InetSocketAddress isa=new InetSocketAddress(sdpInfo.getRemoteHost(),sdpInfo.getRemotePort());
+    InetSocketAddress rtcpAddress=sdpInfo.getRtcpAddress();
+    setEndpointAddress(isa,mediaInfo.getPayload(),sdpInfo.getTransmitMediaInfo().getPayload(),sdpInfo.getTelephoneEventPayload(),rtcpAddress);
+    callAnswered=true;
+    if (cp.getJoinConfirmationTimeout() == 0) {
+      setState(CallState.ANSWERED);
+    }
+    initializeCallAnsweredTreatment();
+    if (callAnsweredTreatment != null) {
+      startCallAnsweredTreatment();
+    }
+ else {
+      if (cp.getJoinConfirmationTimeout() == 0) {
+        setState(CallState.ESTABLISHED);
+      }
+    }
+  }
+ else {
+    Logger.writeFile("Call " + cp + " Ignoring response: "+ response.getReasonPhrase());
+    if (Logger.logLevel >= Logger.LOG_SIP) {
+      Logger.println("Call " + cp + " Response: "+ response);
+    }
+  }
+}

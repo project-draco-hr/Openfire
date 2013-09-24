@@ -1,0 +1,42 @@
+{
+  String s=treatment.replaceAll("[\t]","");
+  String[] notes;
+  notes=treatment.split("[\\+]");
+  for (int i=0; i < notes.length; i++) {
+    int frequency;
+    int duration=2000;
+    float volume=1.0F;
+    String[] param=notes[i].split("[\\.]",3);
+    if (param.length < 1) {
+      throw new IOException("missing frequency " + treatment);
+    }
+    try {
+      frequency=Integer.parseInt(param[0]);
+    }
+ catch (    NumberFormatException e) {
+      throw new IOException("invalid duration " + treatment);
+    }
+    if (param.length > 1) {
+      try {
+        duration=Integer.parseInt(param[1]);
+      }
+ catch (      NumberFormatException e) {
+        throw new IOException("invalid duration " + treatment);
+      }
+    }
+    if (param.length > 2) {
+      try {
+        volume=Float.parseFloat(param[2]);
+      }
+ catch (      NumberFormatException e) {
+        throw new IOException("invalid volume " + treatment);
+      }
+    }
+    if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+      Logger.println("Sine treatment:  frequency " + frequency + " duration "+ duration+ " volume "+ volume);
+    }
+synchronized (treatments) {
+      treatments.add(new SineWaveAudioSource(frequency,duration,volume,sampleRate,channels));
+    }
+  }
+}

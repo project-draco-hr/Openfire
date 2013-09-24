@@ -1,0 +1,22 @@
+{
+  ArrayList splits=new ArrayList();
+  if (chars.length > 0) {
+    splits.add(s);
+    Character arr$[]=chars;
+    int len$=arr$.length;
+    for (int i$=0; i$ < len$; i$++) {
+      Character c=arr$[i$];
+      for (int i=0; i < splits.size(); i++) {
+        String subsplit[]=((String)splits.get(i)).split(c.toString());
+        splits.remove(i);
+        int j;
+        for (j=0; j < subsplit.length; j++)         splits.add(i + j,subsplit[j]);
+        i+=j - 1;
+      }
+    }
+  }
+ else {
+    splits.add(s);
+  }
+  return (String[])splits.toArray(new String[0]);
+}

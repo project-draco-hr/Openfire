@@ -1,0 +1,98 @@
+{
+  while (!done) {
+    try {
+      registerMembers();
+      int n;
+      if ((n=selector.select()) <= 0) {
+        if (Logger.logLevel == -1) {
+          Logger.println("select returned " + n + " isOpen "+ selector.isOpen());
+          Logger.println("membersToRegister size " + membersToRegister.size() + " membersToUnregister size "+ membersToUnregister.size());
+          Logger.println("keys size " + selector.keys().size() + " member count "+ memberCount);
+        }
+        continue;
+      }
+      if (Logger.logLevel == -1) {
+        if (memberCount != selector.keys().size()) {
+          Logger.println("memberCount " + memberCount + " not equal to selector key count "+ selector.keys().size());
+        }
+      }
+      Iterator it=selector.selectedKeys().iterator();
+      byte[] data=new byte[RtpPacket.getMaxDataSize()];
+      int dataLength;
+      InetSocketAddress isa;
+      MemberReceiver memberReceiver;
+      while (it.hasNext()) {
+        try {
+          SelectionKey sk=(SelectionKey)it.next();
+          it.remove();
+          DatagramChannel datagramChannel=(DatagramChannel)sk.channel();
+          ByteBuffer byteBuffer=ByteBuffer.wrap(data);
+          isa=(InetSocketAddress)datagramChannel.receive(byteBuffer);
+          dataLength=byteBuffer.position();
+          if (isStunBindingRequest(data) == true) {
+            stunServerImpl.processStunRequest(datagramChannel,isa,data);
+            continue;
+          }
+          memberReceiver=(MemberReceiver)sk.attachment();
+          if (memberReceiver == null) {
+            memberReceiver=findMemberReceiver(isa);
+            if (memberReceiver == null) {
+              if (Logger.logLevel > Logger.LOG_DETAILINFO) {
+                Logger.println("ConferenceReceiver couldn't find " + "member associated with packet! " + isa);
+              }
+              continue;
+            }
+          }
+          if (memberReceiver.readyToReceiveData() == false) {
+            if (memberReceiver.traceCall() || Logger.logLevel == -11) {
+              Logger.println("receiver not ready, conference " + conferenceId + " "+ memberReceiver+ " address "+ memberReceiver.getReceiveAddress());
+            }
+            continue;
+          }
+        }
+ catch (        NullPointerException e) {
+          e.printStackTrace();
+          if (!done) {
+            Logger.println("ConferenceReceiver:  non-fatal NPE.");
+          }
+          System.exit(1);
+          continue;
+        }
+        if (memberReceiver.traceCall()) {
+          Logger.println("Received data for " + memberReceiver);
+        }
+        long start=0;
+        if (memberReceiver.traceCall()) {
+          start=System.nanoTime();
+        }
+        memberReceiver.receive(isa,data,dataLength);
+        if (memberReceiver.traceCall()) {
+          memberReceiver.traceCall(false);
+          Logger.println("Call " + memberReceiver + " receive time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
+        }
+      }
+      if (receiverPause != 0) {
+        if (receiverPause >= 20) {
+          Logger.println("pause Receiving " + receiverPause + "ms");
+        }
+        long start=System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < receiverPause)         ;
+        if (receiverPause >= 20) {
+          receiverPause=0;
+        }
+      }
+    }
+ catch (    IOException e) {
+      if (!done) {
+        Logger.error("ConferenceReceiver:  receive failed! " + e.getMessage());
+        e.printStackTrace();
+      }
+    }
+catch (    Exception e) {
+      if (!done) {
+        Logger.error("ConferenceReceiver:  unexpected exception " + e.getMessage());
+        e.printStackTrace();
+      }
+    }
+  }
+}

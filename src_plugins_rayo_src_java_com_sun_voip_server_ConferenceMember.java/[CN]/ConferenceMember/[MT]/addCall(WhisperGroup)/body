@@ -1,0 +1,36 @@
+{
+synchronized (conferenceManager) {
+synchronized (whisperGroups) {
+      whisperGroup.addCall(this);
+      double attenuation=whisperGroup.getAttenuation();
+      if (this.whisperGroup != null && this.whisperGroup.getAttenuation() == 0) {
+        attenuation=0;
+      }
+synchronized (mixManager) {
+        if (whisperGroup.hasCommonMix() == true && (cp.getInputTreatment() == null || cp.isRecorder() == true)) {
+          mixManager.addMix(whisperGroup,attenuation);
+        }
+ else {
+          mixManager.removeMix(memberReceiver);
+        }
+      }
+      if (whisperGroup.getAttenuation() == 0) {
+        if (Logger.logLevel >= Logger.LOG_INFO) {
+          Logger.println("Call " + cp + " entered 0 attenuation "+ "start whispering now!");
+        }
+        setWhispering(whisperGroup);
+        if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+synchronized (mixManager) {
+            mixManager.showDescriptors();
+          }
+        }
+        return;
+      }
+      if (Logger.logLevel >= Logger.LOG_MOREINFO) {
+synchronized (mixManager) {
+          mixManager.showDescriptors();
+        }
+      }
+    }
+  }
+}

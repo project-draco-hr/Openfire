@@ -1,0 +1,11 @@
+{
+  Dialog dialog=ct.getDialog();
+  Request ackRequest=dialog.createRequest(Request.ACK);
+  if (sdp != null) {
+    ContentTypeHeader contentTypeHeader;
+    contentTypeHeader=headerFactory.createContentTypeHeader("application","sdp");
+    ackRequest.setContent(sdp,contentTypeHeader);
+  }
+  dialog.sendAck(ackRequest);
+  return;
+}

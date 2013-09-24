@@ -1,0 +1,24 @@
+{
+  if (x == 0 && y == 0) {
+    return inSamples;
+  }
+  int[] outSamples=new int[inSamples.length];
+  double v0=0;
+  double v1=0;
+  double v2=0;
+  double v3=0;
+  int i=0;
+  while (i < inSamples.length) {
+    v0=(double)((1 - r * c) * v0 - c * v1 + c * ((double)inSamples[i]));
+    v1=(double)((1 - r * c) * v1 + c * v0);
+    outSamples[i]=(int)(v1);
+    i++;
+    if (channels == 2) {
+      v2=(double)((1 - r * c) * v2 - c * v3 + c * ((double)inSamples[i]));
+      v3=(double)((1 - r * c) * v3 + c * v2);
+      outSamples[i]=(int)(v3);
+      i++;
+    }
+  }
+  return outSamples;
+}

@@ -1,0 +1,22 @@
+{
+  if (done) {
+    return;
+  }
+  done=true;
+  removeCallFromAllWhisperGroups();
+  memberSender.end();
+  memberReceiver.end();
+  if (rtcpReceiver != null && rtcpReceiver != loneRtcpReceiver) {
+    rtcpReceiver.end();
+  }
+  if (migrating == false) {
+    notifyMemberDoneListeners();
+synchronized (conferenceManager) {
+      removeMyPrivateMixes();
+synchronized (privateMixesForMe) {
+        removePrivateMixesForMe();
+      }
+    }
+  }
+  printStatistics();
+}

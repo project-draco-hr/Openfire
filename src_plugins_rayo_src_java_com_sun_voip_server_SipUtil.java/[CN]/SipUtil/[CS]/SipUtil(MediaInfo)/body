@@ -1,0 +1,15 @@
+{
+  if (!initialized) {
+    initialize();
+  }
+  sdpManager=new SdpManager();
+  if (mediaInfo == null) {
+    try {
+      mediaInfo=sdpManager.findMediaInfo(RtpPacket.PCMU_ENCODING,8000,1);
+    }
+ catch (    ParseException e) {
+      Logger.println("SipUtil:  Invalid media info, can't set preference" + e.getMessage());
+    }
+  }
+  sdpManager.setPreferredMediaInfo(mediaInfo);
+}

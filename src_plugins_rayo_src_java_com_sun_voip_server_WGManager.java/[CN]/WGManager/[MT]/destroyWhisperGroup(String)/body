@@ -1,0 +1,21 @@
+{
+synchronized (whisperGroups) {
+    WhisperGroup whisperGroup=findWhisperGroup(id);
+    if (whisperGroup == null) {
+      Logger.println("can't find whisperGroup " + id);
+      throw new ParseException("can't find whisperGroup " + id,0);
+    }
+synchronized (whisperGroup) {
+      ArrayList members=whisperGroup.getMembers();
+      whisperGroup.setTransient(false);
+      while (members.size() > 0) {
+        ConferenceMember member=(ConferenceMember)members.get(0);
+        member.removeCall(id);
+      }
+    }
+    whisperGroups.remove(whisperGroup);
+  }
+  if (Logger.logLevel >= Logger.LOG_INFO) {
+    Logger.println("Whisper group " + id + " destroyed.");
+  }
+}

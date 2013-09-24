@@ -1,0 +1,33 @@
+{
+  if (isDirectory) {
+    File file=new File(recordPath);
+    if (file.exists() == false) {
+      throw new ParseException("Non-existent directory:  " + recordPath,0);
+    }
+    if (file.isDirectory() == false) {
+      throw new ParseException("Not a directory:  " + recordPath,0);
+    }
+    if (file.canWrite() == false) {
+      throw new ParseException("Permission denied.  Can't write " + recordPath,0);
+    }
+    return;
+  }
+  File file=new File(recordPath);
+  try {
+    if (file.exists()) {
+      if (file.isDirectory()) {
+        throw new ParseException("Not a regular file:  " + recordPath + ".",0);
+      }
+    }
+    String directory=defaultRecordDirectory;
+    int i=recordPath.lastIndexOf(fileSeparator);
+    if (i > 0) {
+      directory=recordPath.substring(0,i);
+    }
+    file=File.createTempFile("Record","tmp",new File(directory));
+    file.delete();
+  }
+ catch (  IOException e) {
+    throw new ParseException("Unable to create file " + recordPath + ".  "+ e.getMessage(),0);
+  }
+}

@@ -1,0 +1,14 @@
+{
+  while (badChannels.size() > 0) {
+    DatagramChannel dc=(DatagramChannel)badChannels.remove(0);
+    try {
+      dc.close();
+      if (Logger.logLevel >= Logger.LOG_DETAIL) {
+        Logger.println("Closed datagram channel " + dc);
+      }
+    }
+ catch (    IOException e) {
+      Logger.println("Unable to close channel! " + e.getMessage());
+    }
+  }
+}

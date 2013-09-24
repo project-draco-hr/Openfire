@@ -1,0 +1,22 @@
+{
+  int ix;
+  if ((ix=s.indexOf(key)) < 0) {
+    if (Logger.logLevel >= Logger.LOG_INFO) {
+      Logger.println("Missing " + key + ":  "+ s);
+    }
+    return null;
+  }
+  if (ix > 0) {
+    info=s.substring(0,ix);
+  }
+  if ((ix=s.indexOf("'")) < 0) {
+    Logger.println("Missing quote:  " + s);
+    return null;
+  }
+  s=s.substring(ix + 1);
+  if ((ix=s.indexOf("'")) < 0) {
+    Logger.println("Missing quote:  " + s);
+    return null;
+  }
+  return s.substring(0,ix);
+}

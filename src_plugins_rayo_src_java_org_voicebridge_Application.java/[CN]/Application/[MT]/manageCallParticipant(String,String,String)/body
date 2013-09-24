@@ -1,0 +1,15 @@
+{
+  loginfo("VoiceBridge manageParticipant");
+  if (callPartipants.containsKey(uid) == false) {
+    callPartipants.put(uid,new CallParticipant());
+    reportInfo("Call Participant " + uid + " created");
+  }
+  CallParticipant cp=callPartipants.get(uid);
+  try {
+    parseCallParameters(parameter,value,cp,uid);
+    reportInfo("manageCallParticipant processing " + parameter + " value: "+ value);
+  }
+ catch (  Exception e) {
+    reportError(e.toString());
+  }
+}

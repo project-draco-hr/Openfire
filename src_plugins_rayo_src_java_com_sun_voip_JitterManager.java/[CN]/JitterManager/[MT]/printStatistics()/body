@@ -1,0 +1,16 @@
+{
+  Logger.writeFile(id + ":  " + maxJitter+ " maxJitter milliseconds");
+  Logger.writeFile(id + ":  " + insertedSilence+ " times jitter manager inserted silence");
+  Logger.writeFile(id + ":  " + outOfOrderPackets+ " missing packets");
+  Logger.writeFile(id + ":  " + (outOfOrderPackets - failedToRecover)+ " recovered missing packets");
+  Logger.writeFile(id + ":  " + oldTossed+ " old packets tossed");
+  Logger.writeFile(id + ":  " + packetList.size()+ " packets in jitter buffer");
+  Logger.writeFile(id + "");
+  Logger.writeFile(id + ":  " + "Packet receive distribution");
+  Logger.writeFile(id + ":  " + "ms\tPackets");
+  for (int i=0; i < packetArrivalDistribution.length; i++) {
+    if (packetArrivalDistribution[i] != 0) {
+      Logger.writeFile(id + ":  " + i+ "\t"+ packetArrivalDistribution[i]);
+    }
+  }
+}

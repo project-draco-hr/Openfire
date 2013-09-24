@@ -1,0 +1,15 @@
+{
+  this.memberReceiver=memberReceiver;
+  this.mediaInfo=mediaInfo;
+  decoder=new Decoder();
+  linearData=new int[mediaInfo.getSamplesPerPacket()];
+  decoder.setRate(mediaInfo.getSampleRate());
+  if (mediaInfo.getChannels() != 1) {
+    try {
+      sampleRateConverter=new SampleRateConverter("DtmfDecoder",mediaInfo.getSampleRate(),mediaInfo.getChannels(),mediaInfo.getSampleRate(),1);
+    }
+ catch (    IOException e) {
+      Logger.println("Call " + memberReceiver + " DtmfDecoder:  "+ e.getMessage());
+    }
+  }
+}

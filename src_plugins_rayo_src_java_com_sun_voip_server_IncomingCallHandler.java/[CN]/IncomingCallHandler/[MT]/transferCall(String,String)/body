@@ -1,0 +1,10 @@
+{
+  CallHandler callHandler=CallHandler.findCall(callId);
+  if (callHandler == null) {
+    throw new NoSuchElementException("No such call:  " + callId);
+  }
+  if (callHandler instanceof IncomingCallHandler == false) {
+    throw new NoSuchElementException("Only incoming calls can be transferred:  " + callId);
+  }
+  return ((IncomingCallHandler)callHandler).transferCall(conferenceId);
+}
