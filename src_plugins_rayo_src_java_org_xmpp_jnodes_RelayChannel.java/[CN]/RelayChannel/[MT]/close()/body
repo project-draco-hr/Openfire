@@ -24,16 +24,6 @@
     e.printStackTrace();
   }
   if (callHandler != null)   callHandler.cancelRequest("Channel closing..");
-  try {
-    ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(handset.mixer);
-    if (conferenceManager.getMemberList().size() == 0) {
-      conferenceManager.recordConference(false,null,null);
-      conferenceManager.endConference(handset.mixer);
-    }
-  }
- catch (  Exception e) {
-    e.printStackTrace();
-  }
   if (decoder != 0) {
     Opus.decoder_destroy(decoder);
     decoder=0;

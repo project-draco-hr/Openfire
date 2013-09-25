@@ -23,6 +23,16 @@
           sendPacket(presence);
         }
       }
+      try {
+        ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(conferenceEvent.getConferenceId());
+        if (conferenceManager.getMemberList().size() == 0) {
+          conferenceManager.recordConference(false,null,null);
+          conferenceManager.endConference(conferenceEvent.getConferenceId());
+        }
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
     }
   }
  catch (  Exception e) {

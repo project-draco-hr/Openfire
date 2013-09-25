@@ -9,7 +9,7 @@
       packet2=RTPPacket.parseBytes(BitAssistant.bytesToArray(b));
       if (packet2 != null) {
         decoded=true;
-        if (packet2.getPayloadType() == 0 && handset.mixer != null) {
+        if (packet2.getPayloadType() == 0) {
           packet=encryptor.decryptRTP(data);
           if (packet != null) {
             lastAudioPacket=packet;
@@ -27,7 +27,7 @@
           }
  else           Log.warn("cannot decode packet " + packet2.getPayloadType() + " "+ packet2.getSequenceNumber()+ " "+ packet2.getTimestamp());
         }
- else         if (packet2.getPayloadType() == 111 && handset.mixer != null) {
+ else         if (packet2.getPayloadType() == 111) {
           packet=encryptor.decryptRTP(data);
           if (packet != null) {
             lastAudioPacket=packet;

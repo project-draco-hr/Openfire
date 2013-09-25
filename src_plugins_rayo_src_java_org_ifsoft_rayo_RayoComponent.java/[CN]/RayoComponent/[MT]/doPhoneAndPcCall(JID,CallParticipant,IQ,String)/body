@@ -1,0 +1,18 @@
+{
+  Log.info("RayoComponent doPhoneAndPcCall " + handsetJid + " "+ mixer);
+  RelayChannel channel=plugin.getRelayChannel(handsetJid.getNode());
+  if (channel != null) {
+    try {
+      setMixer(mixer,channel,reply);
+      IncomingCallHandler.transferCall(channel.getAttachment(),mixer);
+    }
+ catch (    Exception e) {
+      reply.setError(PacketError.Condition.internal_server_error);
+    }
+    OutgoingCallHandler outgoingCallHandler=new OutgoingCallHandler(this,cp);
+    outgoingCallHandler.start();
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+}
