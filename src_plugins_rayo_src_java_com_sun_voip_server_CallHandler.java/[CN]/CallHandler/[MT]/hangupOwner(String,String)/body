@@ -1,0 +1,13 @@
+{
+  Vector callsToCancel=new Vector();
+synchronized (activeCalls) {
+    for (int i=0; i < activeCalls.size(); i++) {
+      CallHandler call=(CallHandler)activeCalls.elementAt(i);
+      CallParticipant cp=call.getCallParticipant();
+      if (cp.getCallOwner().equals(ownerId)) {
+        callsToCancel.add(call);
+      }
+    }
+  }
+  cancel(callsToCancel,reason,false);
+}

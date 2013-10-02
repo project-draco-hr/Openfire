@@ -7,11 +7,18 @@
     Collection<Group> newGroups=new ArrayList<Group>();
     StringTokenizer tkn=new StringTokenizer(groupNames,",");
     while (tkn.hasMoreTokens()) {
+      String groupName=tkn.nextToken();
+      Group group=null;
       try {
-        newGroups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
+        group=GroupManager.getInstance().getGroup(groupName);
       }
  catch (      GroupNotFoundException e) {
+        group=GroupManager.getInstance().createGroup(groupName);
+        group.getProperties().put("sharedRoster.showInRoster","onlyGroup");
+        group.getProperties().put("sharedRoster.displayName",groupName);
+        group.getProperties().put("sharedRoster.groupList","");
       }
+      newGroups.add(group);
     }
     Collection<Group> existingGroups=GroupManager.getInstance().getGroups(user);
     Collection<Group> groupsToAdd=new ArrayList<Group>(newGroups);

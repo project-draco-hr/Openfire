@@ -1,15 +1,15 @@
 {
   Log.info("RayoComponent handleHandsetDialCommand " + iq.getFrom());
-  final IQ reply=IQ.createResultIQ(iq);
+  IQ reply=IQ.createResultIQ(iq);
   Map<String,String> headers=command.getHeaders();
   String from=command.getFrom().toString();
   String to=command.getTo().toString();
   boolean toPhone=to.indexOf("sip:") == 0 || to.indexOf("tel:") == 0;
   boolean toXmpp=to.indexOf("xmpp:") == 0;
   String codec=headers.get("caller-id");
-  String mixer="rayo-mixer-" + System.currentTimeMillis();
-  String callerId=headers.get("caller-id");
-  String calledId=headers.get("called-id");
+  String handsetId=headers.get("handset");
+  String mixer=null;
+  String callId=headers.get("call-id");
   String callerName=headers.get("caller-name");
   String calledName=headers.get("called-name");
   JoinCommand join=command.getJoin();
@@ -20,22 +20,27 @@
       mixer=join.getTo();
     }
   }
-  if (callerId == null)   callerId="rayo-caller-" + System.currentTimeMillis();
-  if (calledId == null)   calledId="rayo-called-" + System.currentTimeMillis();
-  CallParticipant cp=new CallParticipant();
-  cp.setVoiceDetection(true);
-  cp.setCallOwner(iq.getFrom().toString());
-  if (toPhone) {
-    cp.setMediaPreference("PCMU/8000/1");
-    cp.setProtocol("SIP");
-    cp.setCallId(calledId);
-    cp.setPhoneNumber(to.substring(4));
-    cp.setName(calledName == null ? cp.getPhoneNumber() : calledName);
-    mixer=mixer == null ? cp.getPhoneNumber() : mixer;
-    cp.setConferenceId(mixer);
-    doPhoneAndPcCall(iq.getFrom(),cp,reply,mixer);
-  }
- else   if (toXmpp) {
+  if (mixer != null) {
+    if (callId == null)     callId="rayo-call-" + System.currentTimeMillis();
+    if (callerName == null)     callerName=iq.getFrom().toString();
+    CallParticipant cp=new CallParticipant();
+    cp.setVoiceDetection(true);
+    cp.setCallOwner(iq.getFrom().toString());
+    if (toPhone) {
+      cp.setMediaPreference("PCMU/8000/1");
+      cp.setProtocol("SIP");
+      cp.setCallId(callId);
+      cp.setDisplayName(callerName);
+      cp.setPhoneNumber(to);
+      cp.setName(calledName == null ? cp.getPhoneNumber() : calledName);
+      cp.setConferenceId(mixer);
+      reply=doPhoneAndPcCall(handsetId,cp,reply);
+    }
+ else     if (toXmpp) {
+    }
+ else {
+      reply.setError(PacketError.Condition.feature_not_implemented);
+    }
   }
  else {
     reply.setError(PacketError.Condition.feature_not_implemented);

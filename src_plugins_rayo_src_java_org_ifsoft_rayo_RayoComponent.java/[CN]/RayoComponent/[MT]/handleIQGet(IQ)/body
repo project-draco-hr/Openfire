@@ -1,73 +1,80 @@
 {
   final Element element=iq.getChildElement();
   final String namespace=element.getNamespaceURI();
-  if ("urn:xmpp:rayo:handset:1".equals(namespace)) {
-    IQ reply=null;
-    Object object=handsetProvider.fromXML(element);
-    if (object instanceof Handset) {
-      reply=handleHandset((Handset)object,iq);
+  try {
+    if ("urn:xmpp:rayo:handset:1".equals(namespace)) {
+      IQ reply=null;
+      Object object=handsetProvider.fromXML(element);
+      if (object instanceof OnHookCommand) {
+        reply=handleOnOffHookCommand((OnHookCommand)object,iq);
+      }
+ else       if (object instanceof OffHookCommand) {
+        reply=handleOnOffHookCommand((OffHookCommand)object,iq);
+      }
+      return reply;
     }
- else     if (object instanceof OnHookCommand) {
-      reply=handleOnOffHookCommand((Handset)object,true,iq);
+    if ("urn:xmpp:tropo:say:1".equals(namespace)) {
+      IQ reply=null;
+      Object object=sayProvider.fromXML(element);
+      if (object instanceof Say) {
+        reply=handleSay((Say)object,iq);
+      }
+ else       if (object instanceof PauseCommand) {
+        reply=handlePauseCommand(true,iq);
+      }
+ else       if (object instanceof ResumeCommand) {
+        reply=handlePauseCommand(false,iq);
+      }
+      return reply;
     }
- else     if (object instanceof OffHookCommand) {
-      reply=handleOnOffHookCommand((Handset)object,false,iq);
+    if ("urn:xmpp:rayo:1".equals(namespace)) {
+      IQ reply=null;
+      Object object=rayoProvider.fromXML(element);
+      if (object instanceof ConnectCommand) {
+      }
+ else       if (object instanceof AcceptCommand) {
+      }
+ else       if (object instanceof HoldCommand) {
+      }
+ else       if (object instanceof UnholdCommand) {
+      }
+ else       if (object instanceof MuteCommand) {
+      }
+ else       if (object instanceof UnmuteCommand) {
+      }
+ else       if (object instanceof JoinCommand) {
+        reply=handleJoinCommand((JoinCommand)object,iq);
+      }
+ else       if (object instanceof UnjoinCommand) {
+        reply=handleUnjoinCommand((UnjoinCommand)object,iq);
+      }
+ else       if (object instanceof AnswerCommand) {
+      }
+ else       if (object instanceof HangupCommand) {
+        reply=handleHangupCommand(iq);
+      }
+ else       if (object instanceof RejectCommand) {
+      }
+ else       if (object instanceof RedirectCommand) {
+      }
+ else       if (object instanceof DialCommand) {
+        reply=handleDialCommand((DialCommand)object,iq);
+      }
+ else       if (object instanceof StopCommand) {
+      }
+ else       if (object instanceof DtmfCommand) {
+        reply=handleDtmfCommand((DtmfCommand)object,iq);
+      }
+ else       if (object instanceof DestroyMixerCommand) {
+      }
+      return reply;
     }
+    return null;
   }
-  if ("urn:xmpp:tropo:say:1".equals(namespace)) {
-    IQ reply=null;
-    Object object=sayProvider.fromXML(element);
-    if (object instanceof Say) {
-      reply=handleSay((Say)object,iq);
-    }
- else     if (object instanceof PauseCommand) {
-      reply=handlePauseCommand(true,iq);
-    }
- else     if (object instanceof ResumeCommand) {
-      reply=handlePauseCommand(false,iq);
-    }
-  }
-  if ("urn:xmpp:rayo:1".equals(namespace)) {
-    IQ reply=null;
-    Object object=rayoProvider.fromXML(element);
-    if (object instanceof ConnectCommand) {
-    }
- else     if (object instanceof AcceptCommand) {
-    }
- else     if (object instanceof HoldCommand) {
-    }
- else     if (object instanceof UnholdCommand) {
-    }
- else     if (object instanceof MuteCommand) {
-    }
- else     if (object instanceof UnmuteCommand) {
-    }
- else     if (object instanceof JoinCommand) {
-      reply=handleJoinCommand((JoinCommand)object,iq);
-    }
- else     if (object instanceof UnjoinCommand) {
-      reply=handleUnjoinCommand((UnjoinCommand)object,iq);
-    }
- else     if (object instanceof AnswerCommand) {
-    }
- else     if (object instanceof HangupCommand) {
-      reply=handleHangupCommand(iq);
-    }
- else     if (object instanceof RejectCommand) {
-    }
- else     if (object instanceof RedirectCommand) {
-    }
- else     if (object instanceof DialCommand) {
-      reply=handleDialCommand((DialCommand)object,iq);
-    }
- else     if (object instanceof StopCommand) {
-    }
- else     if (object instanceof DtmfCommand) {
-      reply=handleDtmfCommand((DtmfCommand)object,iq);
-    }
- else     if (object instanceof DestroyMixerCommand) {
-    }
+ catch (  Exception e) {
+    e.printStackTrace();
+    final IQ reply=IQ.createResultIQ(iq);
+    reply.setError(PacketError.Condition.internal_server_error);
     return reply;
   }
-  return null;
 }

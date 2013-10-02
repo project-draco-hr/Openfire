@@ -1,6 +1,6 @@
 {
   Log.info("RayoComponent handleBridgedDialCommand " + iq.getFrom());
-  final IQ reply=IQ.createResultIQ(iq);
+  IQ reply=IQ.createResultIQ(iq);
   Map<String,String> headers=command.getHeaders();
   String from=command.getFrom().toString();
   String to=command.getTo().toString();
@@ -57,7 +57,6 @@
     if (mixer == null)     mixer=cp.getPhoneNumber();
     cp.setConferenceId(mixer);
     if (toHandset) {
-      doPhoneAndPcCall(new JID(to.substring(8)),cp,reply,mixer);
     }
  else {
     }
@@ -71,7 +70,6 @@
     if (mixer == null)     mixer=cp.getPhoneNumber();
     cp.setConferenceId(mixer);
     if (fromHandset) {
-      doPhoneAndPcCall(new JID(from.substring(8)),cp,reply,mixer);
     }
  else {
     }
