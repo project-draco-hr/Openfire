@@ -2,7 +2,9 @@
   boolean debug=Log.isDebugEnabled();
   if (debug) {
     Log.debug("LdapManager: In LdapManager.checkAuthentication(userDN, password), userDN is: " + userDN + "...");
-    if (!sslEnabled && !startTlsEnabled)     Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
+    if (!sslEnabled && !startTlsEnabled) {
+      Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
+    }
   }
   JiveInitialLdapContext ctx=null;
   try {
@@ -19,10 +21,17 @@
       env.put(Context.SECURITY_CREDENTIALS,password);
     }
  else {
-      if (followReferrals)       Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+      if (followReferrals) {
+        Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+      }
     }
     if (!sslEnabled) {
-      env.put("com.sun.jndi.ldap.connect.timeout","10000");
+      if (connTimeout > 0) {
+        env.put("com.sun.jndi.ldap.connect.timeout",String.valueOf(connTimeout));
+      }
+ else {
+        env.put("com.sun.jndi.ldap.connect.timeout","10000");
+      }
     }
     if (readTimeout > 0) {
       env.put("com.sun.jndi.ldap.read.timeout",String.valueOf(readTimeout));

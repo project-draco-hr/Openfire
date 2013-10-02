@@ -48,6 +48,15 @@
       Log.error(nfe.getMessage(),nfe);
     }
   }
+  String cTimeout=properties.get("ldap.connectionTimeout");
+  if (cTimeout != null) {
+    try {
+      this.connTimeout=Integer.parseInt(cTimeout);
+    }
+ catch (    NumberFormatException nfe) {
+      Log.error(nfe.getMessage(),nfe);
+    }
+  }
   String timeout=properties.get("ldap.readTimeout");
   if (timeout != null) {
     try {

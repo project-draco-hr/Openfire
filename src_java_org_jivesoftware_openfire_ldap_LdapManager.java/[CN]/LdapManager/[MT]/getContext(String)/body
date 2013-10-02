@@ -2,7 +2,9 @@
   boolean debug=Log.isDebugEnabled();
   if (debug) {
     Log.debug("LdapManager: Creating a DirContext in LdapManager.getContext()...");
-    if (!sslEnabled && !startTlsEnabled)     Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
+    if (!sslEnabled && !startTlsEnabled) {
+      Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
+    }
   }
   Hashtable<String,Object> env=new Hashtable<String,Object>();
   env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
@@ -27,7 +29,9 @@
     env.put("com.sun.jndi.ldap.trace.ber",System.err);
   }
   if (connectionPoolEnabled) {
-    if (!startTlsEnabled)     env.put("com.sun.jndi.ldap.connect.pool","true");
+    if (!startTlsEnabled) {
+      env.put("com.sun.jndi.ldap.connect.pool","true");
+    }
  else {
       if (debug) {
         Log.debug("LdapManager: connection pooling was requested but has been disabled because of StartTLS.");
@@ -35,7 +39,9 @@
       env.put("com.sun.jndi.ldap.connect.pool","false");
     }
   }
- else   env.put("com.sun.jndi.ldap.connect.pool","false");
+ else {
+    env.put("com.sun.jndi.ldap.connect.pool","false");
+  }
   if (followReferrals) {
     env.put(Context.REFERRAL,"follow");
   }
@@ -50,7 +56,9 @@
     if (debug) {
       Log.debug("LdapManager: ... StartTlsRequest");
     }
-    if (followReferrals)     Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+    if (followReferrals) {
+      Log.warn("\tConnections to referrals are unencrypted! If you do not want this, please turn off ldap.autoFollowReferrals");
+    }
     StartTlsResponse tls=(StartTlsResponse)context.extendedOperation(new StartTlsRequest());
     try {
       SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
@@ -62,7 +70,9 @@
       if (adminDN != null) {
         context.addToEnvironment(Context.SECURITY_AUTHENTICATION,"simple");
         context.addToEnvironment(Context.SECURITY_PRINCIPAL,adminDN);
-        if (adminPassword != null)         context.addToEnvironment(Context.SECURITY_CREDENTIALS,adminPassword);
+        if (adminPassword != null) {
+          context.addToEnvironment(Context.SECURITY_CREDENTIALS,adminPassword);
+        }
       }
     }
  catch (    java.io.IOException ex) {
