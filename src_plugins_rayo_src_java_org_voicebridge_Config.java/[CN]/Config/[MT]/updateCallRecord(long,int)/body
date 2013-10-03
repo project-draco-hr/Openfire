@@ -1,18 +1,18 @@
 {
   if (sipPlugin) {
-    String sql="UPDATE ofSipUser SET status = ?, enabled = ? WHERE username = ?";
+    Log.info("updateCallRecord " + datetime + " "+ duration);
+    String sql="UPDATE ofSipPhoneLog SET duration = ? WHERE datetime = ?";
     Connection con=null;
     PreparedStatement psmt=null;
     try {
       con=DbConnectionManager.getConnection();
       psmt=con.prepareStatement(sql);
-      psmt.setString(1,status);
-      psmt.setInt(2,1);
-      psmt.setString(3,username);
+      psmt.setInt(1,duration);
+      psmt.setLong(2,datetime);
       psmt.executeUpdate();
     }
  catch (    SQLException e) {
-      Log.info("updateStatus " + e);
+      Log.error(e.getMessage(),e);
     }
  finally {
       DbConnectionManager.closeConnection(psmt,con);

@@ -2,15 +2,9 @@
   Log.info("RayoComponent handleOnOffHookCommand");
   IQ reply=IQ.createResultIQ(iq);
   if (object instanceof OnHookCommand) {
-    String key=iq.getTo().getNode();
-    if (key != null) {
-      RelayChannel channel=plugin.getRelayChannel(iq.getTo().getNode());
-      if (channel != null) {
-        handleOnOffHook(object,channel);
-      }
- else {
-        reply.setError(PacketError.Condition.item_not_found);
-      }
+    RelayChannel channel=plugin.getRelayChannel(JID.escapeNode(iq.getFrom().toString()));
+    if (channel != null) {
+      handleOnOffHook(object,channel);
     }
  else {
       reply.setError(PacketError.Condition.item_not_found);

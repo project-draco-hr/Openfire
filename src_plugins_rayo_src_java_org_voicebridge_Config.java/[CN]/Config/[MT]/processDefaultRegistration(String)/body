@@ -14,18 +14,17 @@
         InetAddress inetAddress=InetAddress.getByName(credentials.getHost());
         registrars.add(credentials.getHost());
         registrations.add(credentials);
-        System.out.println(String.format("VoiceBridge adding SIP registration: %s with user %s host %s",credentials.getXmppUserName(),credentials.getUserName(),credentials.getHost()));
+        Log.info(String.format("VoiceBridge adding SIP registration: %s with user %s host %s",credentials.getXmppUserName(),credentials.getUserName(),credentials.getHost()));
       }
  catch (      Exception e) {
-        System.out.println(String.format("processDefaultRegistration Bad Address  %s ",credentials.getHost()));
+        Log.info(String.format("processDefaultRegistration Bad Address  %s ",credentials.getHost()));
       }
     }
     rs.close();
     pstmt.close();
     con.close();
-    sipPlugin=true;
   }
  catch (  SQLException e) {
-    System.out.println("processDefaultRegistration " + e);
+    Log.info("processDefaultRegistration " + e);
   }
 }

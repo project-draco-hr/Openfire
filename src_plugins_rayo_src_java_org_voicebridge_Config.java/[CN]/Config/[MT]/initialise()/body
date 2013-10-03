@@ -6,7 +6,7 @@
   registrars=new ArrayList<String>();
   MUCEventDispatcher.addListener(this);
   try {
-    System.out.println(String.format("VoiceBridge read site configuration"));
+    Log.info(String.format("VoiceBridge read site configuration"));
     mucManager=XMPPServer.getInstance().getMultiUserChatManager();
     if (mucManager.getMultiUserChatService("conference") != null) {
       List<MUCRoom> rooms=mucManager.getMultiUserChatService("conference").getChatRooms();
@@ -23,6 +23,8 @@
  else {
           processDefaultRegistration(username);
         }
+        Log.info(String.format("VoiceBridge sip plugin assumed available"));
+        sipPlugin=true;
       }
  else {
         registerWithDefaultProxy();

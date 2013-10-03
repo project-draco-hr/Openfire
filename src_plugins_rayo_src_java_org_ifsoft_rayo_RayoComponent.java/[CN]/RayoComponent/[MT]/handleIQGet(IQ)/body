@@ -32,8 +32,6 @@
       Object object=rayoProvider.fromXML(element);
       if (object instanceof ConnectCommand) {
       }
- else       if (object instanceof AcceptCommand) {
-      }
  else       if (object instanceof HoldCommand) {
       }
  else       if (object instanceof UnholdCommand) {
@@ -48,7 +46,11 @@
  else       if (object instanceof UnjoinCommand) {
         reply=handleUnjoinCommand((UnjoinCommand)object,iq);
       }
+ else       if (object instanceof AcceptCommand) {
+        reply=handleAcceptCommand((AcceptCommand)object,iq);
+      }
  else       if (object instanceof AnswerCommand) {
+        reply=handleAnswerCommand((AnswerCommand)object,iq);
       }
  else       if (object instanceof HangupCommand) {
         reply=handleHangupCommand(iq);

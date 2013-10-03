@@ -1,0 +1,15 @@
+{
+  String username=channel.getFrom().getNode();
+  String mixer=channel.getHandset().mixer;
+  ConferenceManager conferenceManager=ConferenceManager.getConference(mixer,channel.getMediaPreference(),username,false);
+  try {
+    cp.setConferenceId(mixer);
+    cp.setStartTimestamp(System.currentTimeMillis());
+    String recording=mixer + "-" + cp.getStartTimestamp()+ ".au";
+    conferenceManager.recordConference(true,recording,"au");
+    Config.createCallRecord(cp.getDisplayName(),recording,cp.getPhoneNumber(),cp.getStartTimestamp(),0,"dialed");
+  }
+ catch (  ParseException e1) {
+    reply.setError(PacketError.Condition.internal_server_error);
+  }
+}

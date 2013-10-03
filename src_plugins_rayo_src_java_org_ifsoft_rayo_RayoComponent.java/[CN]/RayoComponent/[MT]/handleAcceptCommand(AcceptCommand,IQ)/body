@@ -1,0 +1,16 @@
+{
+  Log.info("RayoComponent handleAcceptCommand " + iq.getFrom() + " "+ iq.getTo().getNode());
+  IQ reply=IQ.createResultIQ(iq);
+  Map<String,String> headers=command.getHeaders();
+  try {
+    Presence presence=new Presence();
+    presence.setFrom(iq.getTo());
+    presence.setTo(JID.unescapeNode(iq.getTo().getNode()));
+    presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+    sendPacket(presence);
+  }
+ catch (  Exception e) {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

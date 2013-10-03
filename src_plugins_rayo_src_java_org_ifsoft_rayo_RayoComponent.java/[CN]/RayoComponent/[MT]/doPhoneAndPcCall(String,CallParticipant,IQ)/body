@@ -1,10 +1,9 @@
 {
-  String mixer=cp.getConferenceId();
-  Log.info("RayoComponent doPhoneAndPcCall " + handsetId + " "+ mixer);
+  Log.info("RayoComponent doPhoneAndPcCall " + handsetId);
   RelayChannel channel=plugin.getRelayChannel(handsetId);
   if (channel != null) {
     try {
-      setMixer(mixer,channel,reply);
+      setMixer(channel,reply,cp);
       OutgoingCallHandler outgoingCallHandler=new OutgoingCallHandler(this,cp);
       outgoingCallHandler.start();
       final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
