@@ -27,11 +27,11 @@
       callerName=iq.getFrom().getNode();
       headers.put("caller-name",callerName);
     }
-    if (calledName == null) {
-      calledName=to;
-      headers.put("called-name",calledName);
-    }
     if (toPhone) {
+      if (calledName == null) {
+        calledName=to;
+        headers.put("called-name",calledName);
+      }
       CallParticipant cp=new CallParticipant();
       cp.setVoiceDetection(true);
       cp.setCallOwner(handsetId);
@@ -45,24 +45,38 @@
       reply=doPhoneAndPcCall(JID.escapeNode(handsetId),cp,reply);
     }
  else     if (toXmpp) {
+      headers.put("call-protocol","XMPP");
       String destination=to.substring(5);
-      String mixer=JID.escapeNode(destination);
-      Presence presence=new Presence();
-      presence.setFrom(mixer + "@rayo." + getDomain());
-      presence.setTo(new JID(destination));
-      headers.put("mixer-name",mixer);
-      OfferEvent offer=new OfferEvent(callId);
-      try {
-        offer.setFrom(new URI("xmpp:" + iq.getFrom().toString()));
-        offer.setTo(new URI(to));
+      String source=JID.escapeNode(handsetId);
+      RelayChannel channel=plugin.getRelayChannel(source);
+      if (channel != null) {
+        headers.put("mixer-name",channel.getHandset().mixer);
+        Presence presence=new Presence();
+        presence.setFrom(source + "@rayo." + getDomain());
+        presence.setTo(new JID(destination));
+        OfferEvent offer=new OfferEvent(callId);
+        try {
+          offer.setFrom(new URI("xmpp:" + iq.getFrom().toString()));
+          offer.setTo(new URI(to));
+        }
+ catch (        URISyntaxException e) {
+          reply.setError(PacketError.Condition.feature_not_implemented);
+          return reply;
+        }
+        if (calledName == null) {
+          calledName=presence.getTo().getNode();
+          headers.put("called-name",calledName);
+        }
+        offer.setHeaders(headers);
+        presence.getElement().add(rayoProvider.toXML(offer));
+        sendPacket(presence);
+        final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+        childElement.addAttribute(URI,(String)"xmpp:" + destination);
+        childElement.addAttribute(ID,(String)JID.escapeNode(destination));
       }
- catch (      URISyntaxException e) {
-        reply.setError(PacketError.Condition.feature_not_implemented);
-        return reply;
+ else {
+        reply.setError(PacketError.Condition.item_not_found);
       }
-      offer.setHeaders(headers);
-      presence.getElement().add(rayoProvider.toXML(offer));
-      sendPacket(presence);
     }
  else {
       reply.setError(PacketError.Condition.feature_not_implemented);

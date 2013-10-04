@@ -2,13 +2,19 @@
   Log.info("RayoComponent AnswerCommand " + iq.getFrom() + " "+ iq.getTo().getNode());
   IQ reply=IQ.createResultIQ(iq);
   Map<String,String> headers=command.getHeaders();
+  headers.put("call-protocol","XMPP");
   try {
-    String handsetId=JID.escapeNode(iq.getFrom().toString());
-    Presence presence=new Presence();
-    presence.setFrom(iq.getTo());
-    presence.setTo(JID.unescapeNode(iq.getTo().getNode()));
-    presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-    sendPacket(presence);
+    Presence presence1=new Presence();
+    presence1.setFrom(iq.getTo());
+    presence1.setTo(JID.unescapeNode(iq.getTo().getNode()));
+    presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+    sendPacket(presence1);
+    Presence presence2=new Presence();
+    presence2.setFrom(iq.getTo());
+    presence2.setTo(iq.getFrom());
+    presence2.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+    sendPacket(presence2);
+    String handsetId=iq.getTo().getNode();
     RelayChannel channel=plugin.getRelayChannel(handsetId);
     if (channel != null) {
       Handset handset=channel.getHandset();
@@ -24,14 +30,20 @@
             cp.setHeaders(headers);
             String recording=handset.mixer + "-" + cp.getStartTimestamp()+ ".au";
             conferenceManager.recordConference(true,recording,"au");
-            Config.createCallRecord(username,recording,"xmpp:" + iq.getFrom().toString(),cp.getStartTimestamp(),0,"dialed");
+            String source=(new JID(JID.unescapeNode(iq.getTo().getNode()))).getNode();
+            String destination=iq.getFrom().getNode();
+            Config.createCallRecord(source,recording,destination,cp.getStartTimestamp(),0,"dialed");
+            Config.createCallRecord(destination,recording,source,cp.getStartTimestamp(),0,"received");
           }
  catch (          ParseException e1) {
             reply.setError(PacketError.Condition.internal_server_error);
           }
         }
+ else         reply.setError(PacketError.Condition.item_not_found);
       }
+ else       reply.setError(PacketError.Condition.item_not_found);
     }
+ else     reply.setError(PacketError.Condition.item_not_found);
   }
  catch (  Exception e) {
     reply.setError(PacketError.Condition.item_not_found);

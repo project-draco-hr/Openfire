@@ -14,11 +14,12 @@
           Map<String,String> headers=cp.getHeaders();
           headers.put("call-id",callEvent.getCallId());
           headers.put("mixer-name",callEvent.getConferenceId());
+          headers.put("call-protocol",cp.getProtocol());
           Presence presence=new Presence();
           presence.setFrom(callEvent.getCallId() + "@rayo." + getDomain());
           presence.setTo(from);
           if ("001 STATE CHANGED".equals(myEvent)) {
-            if ("110 ANSWERED".equals(callState)) {
+            if ("100 INVITED".equals(callState)) {
               presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
               sendPacket(presence);
             }

@@ -1,12 +1,25 @@
 {
-  Log.info("RayoComponent handleHangupCommand " + iq.getFrom());
+  String callId=iq.getTo().getNode();
+  Log.info("RayoComponent handleHangupCommand " + iq.getFrom() + " "+ callId);
   IQ reply=IQ.createResultIQ(iq);
-  try {
-    CallHandler callHandler=CallHandler.findCall(iq.getTo().getNode());
+  CallHandler callHandler=CallHandler.findCall(callId);
+  if (callHandler != null) {
+    Log.info("RayoComponent handleHangupCommand found callhandler " + callId);
     CallHandler.hangup(iq.getTo().getNode(),"User requested call termination");
   }
- catch (  NoSuchElementException e) {
+ else {
     reply.setError(PacketError.Condition.item_not_found);
+  }
+  try {
+    JID otherParty=new JID(JID.unescapeNode(callId));
+    Log.info("RayoComponent handleHangupCommand found other party " + otherParty);
+    Presence presence1=new Presence();
+    presence1.setFrom(iq.getTo());
+    presence1.setTo(otherParty);
+    presence1.getElement().add(rayoProvider.toXML(new EndEvent(null,null)));
+    sendPacket(presence1);
+  }
+ catch (  Exception e) {
   }
   return reply;
 }
