@@ -1,0 +1,30 @@
+{
+  Log.info("Incoming SIP, call route to user " + cp.getToPhoneNumber());
+  JID foundUser=findUser(cp.getToPhoneNumber());
+  if (foundUser != null) {
+    String callId="rayo-incoming-" + System.currentTimeMillis();
+    cp.setCallId(callId);
+    cp.setConferenceId(callId);
+    cp.setCallOwner(foundUser.toString());
+    Map<String,String> headers=cp.getHeaders();
+    headers.put("mixer_name",callId);
+    headers.put("call_protocol","SIP");
+    Presence presence=new Presence();
+    presence.setFrom(callId + "@rayo." + getDomain());
+    presence.setTo(foundUser);
+    OfferEvent offer=new OfferEvent(callId);
+    try {
+      offer.setTo(new URI("xmpp:" + foundUser.toString()));
+      offer.setFrom(new URI("sip:" + cp.getPhoneNumber()));
+    }
+ catch (    URISyntaxException e) {
+      Log.error("SIP phone nos not URI " + cp.getPhoneNumber() + " "+ foundUser);
+    }
+    headers.put("called_name",foundUser.getNode());
+    headers.put("caller_name",cp.getName());
+    offer.setHeaders(headers);
+    presence.getElement().add(rayoProvider.toXML(offer));
+    sendPacket(presence);
+  }
+  return foundUser != null;
+}

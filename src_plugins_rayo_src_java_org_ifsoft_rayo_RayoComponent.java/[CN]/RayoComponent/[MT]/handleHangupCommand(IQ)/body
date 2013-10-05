@@ -5,19 +5,21 @@
   CallHandler callHandler=CallHandler.findCall(callId);
   if (callHandler != null) {
     Log.info("RayoComponent handleHangupCommand found callhandler " + callId);
-    CallHandler.hangup(iq.getTo().getNode(),"User requested call termination");
+    CallHandler.hangup(callId,"User requested call termination");
   }
  else {
     reply.setError(PacketError.Condition.item_not_found);
   }
   try {
-    JID otherParty=new JID(JID.unescapeNode(callId));
-    Log.info("RayoComponent handleHangupCommand found other party " + otherParty);
-    Presence presence1=new Presence();
-    presence1.setFrom(iq.getTo());
-    presence1.setTo(otherParty);
-    presence1.getElement().add(rayoProvider.toXML(new EndEvent(null,null)));
-    sendPacket(presence1);
+    JID otherParty=getJID(callId);
+    if (otherParty != null) {
+      Log.info("RayoComponent handleHangupCommand found other party " + otherParty);
+      Presence presence1=new Presence();
+      presence1.setFrom(iq.getTo());
+      presence1.setTo(otherParty);
+      presence1.getElement().add(rayoProvider.toXML(new EndEvent(null,null)));
+      sendPacket(presence1);
+    }
   }
  catch (  Exception e) {
   }

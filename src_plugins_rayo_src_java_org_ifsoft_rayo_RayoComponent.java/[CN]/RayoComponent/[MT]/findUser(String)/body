@@ -1,0 +1,17 @@
+{
+  Collection<ClientSession> sessions=SessionManager.getInstance().getSessions();
+  JID foundUser=null;
+  for (  ClientSession session : sessions) {
+    try {
+      String userId=session.getAddress().getNode();
+      if (username.equals(userId)) {
+        Log.info("Incoming SIP, findUser " + session.getAddress());
+        foundUser=session.getAddress();
+        break;
+      }
+    }
+ catch (    Exception e) {
+    }
+  }
+  return foundUser;
+}

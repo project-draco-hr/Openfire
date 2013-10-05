@@ -1,53 +1,68 @@
 {
-  Log.info("RayoComponent AnswerCommand " + iq.getFrom() + " "+ iq.getTo().getNode());
+  String callId=iq.getTo().getNode();
+  Log.info("RayoComponent AnswerCommand " + iq.getFrom() + " "+ callId);
   IQ reply=IQ.createResultIQ(iq);
+  JID callJID=getJID(callId);
   Map<String,String> headers=command.getHeaders();
-  headers.put("call-protocol","XMPP");
-  try {
-    Presence presence1=new Presence();
-    presence1.setFrom(iq.getTo());
-    presence1.setTo(JID.unescapeNode(iq.getTo().getNode()));
-    presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-    sendPacket(presence1);
-    Presence presence2=new Presence();
-    presence2.setFrom(iq.getTo());
-    presence2.setTo(iq.getFrom());
-    presence2.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-    sendPacket(presence2);
-    String handsetId=iq.getTo().getNode();
-    RelayChannel channel=plugin.getRelayChannel(handsetId);
-    if (channel != null) {
-      Handset handset=channel.getHandset();
-      CallHandler callHandler=channel.getCallHandler();
-      if (callHandler != null) {
-        Log.info("RayoComponent handleAnswerCommand found call handler " + callHandler);
-        CallParticipant cp=callHandler.getCallParticipant();
-        if (cp != null) {
-          String username=iq.getFrom().getNode();
-          ConferenceManager conferenceManager=ConferenceManager.getConference(handset.mixer,channel.getMediaPreference(),username,false);
-          try {
-            cp.setStartTimestamp(System.currentTimeMillis());
-            cp.setHeaders(headers);
-            String recording=handset.mixer + "-" + cp.getStartTimestamp()+ ".au";
-            conferenceManager.recordConference(true,recording,"au");
-            String source=(new JID(JID.unescapeNode(iq.getTo().getNode()))).getNode();
-            String destination=iq.getFrom().getNode();
-            Config.createCallRecord(source,recording,destination,cp.getStartTimestamp(),0,"dialed");
-            Config.createCallRecord(destination,recording,source,cp.getStartTimestamp(),0,"received");
-          }
- catch (          ParseException e1) {
-            reply.setError(PacketError.Condition.internal_server_error);
-          }
-        }
- else         reply.setError(PacketError.Condition.item_not_found);
+  CallHandler callHandler=null;
+  if (callJID != null) {
+    headers.put("call_protocol","XMPP");
+    try {
+      Presence presence1=new Presence();
+      presence1.setFrom(iq.getTo());
+      presence1.setTo(callJID);
+      presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+      sendPacket(presence1);
+      Presence presence2=new Presence();
+      presence2.setFrom(iq.getTo());
+      presence2.setTo(iq.getFrom());
+      presence2.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+      sendPacket(presence2);
+      RelayChannel channel=plugin.getRelayChannel(callId);
+      if (channel != null) {
+        callHandler=channel.getCallHandler();
       }
  else       reply.setError(PacketError.Condition.item_not_found);
     }
+ catch (    Exception e) {
+      reply.setError(PacketError.Condition.item_not_found);
+      e.printStackTrace();
+    }
+  }
+ else {
+    callHandler=CallHandler.findCall(callId);
+    Presence presence=new Presence();
+    presence.setFrom(iq.getTo());
+    presence.setTo(iq.getFrom());
+    presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+    sendPacket(presence);
+  }
+  if (callHandler != null) {
+    Log.info("RayoComponent handleAnswerCommand found call handler " + callHandler);
+    CallParticipant cp=callHandler.getCallParticipant();
+    if (cp != null) {
+      try {
+        cp.setStartTimestamp(System.currentTimeMillis());
+        cp.setHeaders(headers);
+        String recording=cp.getConferenceId() + "-" + cp.getStartTimestamp()+ ".au";
+        ConferenceManager.recordConference(cp.getConferenceId(),true,recording,"au");
+        String destination=iq.getFrom().getNode();
+        String source=cp.getName();
+        if (callJID != null) {
+          source=callJID.getNode();
+          Config.createCallRecord(source,recording,"xmpp:" + iq.getFrom(),cp.getStartTimestamp(),0,"dialed");
+          Config.createCallRecord(destination,recording,"xmpp:" + callJID,cp.getStartTimestamp(),0,"received");
+        }
+ else {
+          Config.createCallRecord(destination,recording,"sip:" + cp.getPhoneNumber(),cp.getStartTimestamp(),0,"received");
+        }
+      }
+ catch (      ParseException e1) {
+        reply.setError(PacketError.Condition.internal_server_error);
+      }
+    }
  else     reply.setError(PacketError.Condition.item_not_found);
   }
- catch (  Exception e) {
-    reply.setError(PacketError.Condition.item_not_found);
-    e.printStackTrace();
-  }
+ else   reply.setError(PacketError.Condition.item_not_found);
   return reply;
 }

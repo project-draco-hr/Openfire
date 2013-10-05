@@ -6,9 +6,9 @@
   String to=command.getTo().toString();
   boolean toPhone=to.indexOf("sip:") == 0 || to.indexOf("tel:") == 0;
   boolean toXmpp=to.indexOf("xmpp:") == 0;
-  String callId=headers.get("call-id");
-  String callerName=headers.get("caller-name");
-  String calledName=headers.get("called-name");
+  String callId=headers.get("call_id");
+  String callerName=headers.get("caller_name");
+  String calledName=headers.get("called_name");
   String handsetId=iq.getFrom().toString();
   JoinCommand join=command.getJoin();
   if (join != null) {
@@ -21,16 +21,16 @@
  else {
     if (callId == null) {
       callId="rayo-call-" + System.currentTimeMillis();
-      headers.put("call-id",callId);
+      headers.put("call_id",callId);
     }
     if (callerName == null) {
       callerName=iq.getFrom().getNode();
-      headers.put("caller-name",callerName);
+      headers.put("caller_name",callerName);
     }
     if (toPhone) {
       if (calledName == null) {
         calledName=to;
-        headers.put("called-name",calledName);
+        headers.put("called_name",calledName);
       }
       CallParticipant cp=new CallParticipant();
       cp.setVoiceDetection(true);
@@ -45,12 +45,13 @@
       reply=doPhoneAndPcCall(JID.escapeNode(handsetId),cp,reply);
     }
  else     if (toXmpp) {
-      headers.put("call-protocol","XMPP");
+      headers.put("call_protocol","XMPP");
       String destination=to.substring(5);
       String source=JID.escapeNode(handsetId);
       RelayChannel channel=plugin.getRelayChannel(source);
       if (channel != null) {
-        headers.put("mixer-name",channel.getHandset().mixer);
+        headers.put("mixer_name",channel.getHandset().mixer);
+        headers.put("codec_name",channel.getHandset().codec);
         Presence presence=new Presence();
         presence.setFrom(source + "@rayo." + getDomain());
         presence.setTo(new JID(destination));
@@ -65,7 +66,7 @@
         }
         if (calledName == null) {
           calledName=presence.getTo().getNode();
-          headers.put("called-name",calledName);
+          headers.put("called_name",calledName);
         }
         offer.setHeaders(headers);
         presence.getElement().add(rayoProvider.toXML(offer));

@@ -1,17 +1,21 @@
 {
-  Log.info("RayoComponent handleAcceptCommand " + iq.getFrom() + " "+ iq.getTo().getNode());
+  String callId=iq.getTo().getNode();
+  Log.info("RayoComponent handleAcceptCommand " + iq.getFrom() + " "+ callId);
   IQ reply=IQ.createResultIQ(iq);
-  Map<String,String> headers=command.getHeaders();
-  headers.put("call-protocol","XMPP");
-  try {
-    Presence presence=new Presence();
-    presence.setFrom(iq.getTo());
-    presence.setTo(JID.unescapeNode(iq.getTo().getNode()));
-    presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
-    sendPacket(presence);
-  }
- catch (  Exception e) {
-    reply.setError(PacketError.Condition.item_not_found);
+  JID callJID=getJID(callId);
+  if (callJID != null) {
+    Map<String,String> headers=command.getHeaders();
+    headers.put("call_protocol","XMPP");
+    try {
+      Presence presence=new Presence();
+      presence.setFrom(iq.getTo());
+      presence.setTo(callJID);
+      presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+      sendPacket(presence);
+    }
+ catch (    Exception e) {
+      reply.setError(PacketError.Condition.item_not_found);
+    }
   }
   return reply;
 }

@@ -1,6 +1,6 @@
 {
   Log.info("RayoComponent callEventNotification " + callEvent);
-  JID from=new JID(callEvent.getCallInfo());
+  JID from=getJID(callEvent.getCallInfo());
   if (from != null) {
     String myEvent=com.sun.voip.CallEvent.getEventString(callEvent.getEvent());
     String callState=callEvent.getCallState().toString();
@@ -12,9 +12,9 @@
         if (cp != null) {
           Log.info("RayoComponent callEventNotification found call paticipant " + cp);
           Map<String,String> headers=cp.getHeaders();
-          headers.put("call-id",callEvent.getCallId());
-          headers.put("mixer-name",callEvent.getConferenceId());
-          headers.put("call-protocol",cp.getProtocol());
+          headers.put("call_id",callEvent.getCallId());
+          headers.put("mixer_name",callEvent.getConferenceId());
+          headers.put("call_protocol",cp.getProtocol());
           Presence presence=new Presence();
           presence.setFrom(callEvent.getCallId() + "@rayo." + getDomain());
           presence.setTo(from);
@@ -30,13 +30,7 @@
  else             if ("299 ENDED".equals(callState)) {
               presence.getElement().add(rayoProvider.toXML(new EndEvent(null,EndEvent.Reason.valueOf("HANGUP"),headers)));
               sendPacket(presence);
-              if (cp.getStartTimestamp() > 0) {
-                cp.setEndTimestamp(System.currentTimeMillis());
-                Config.updateCallRecord(cp.getStartTimestamp(),(int)((cp.getEndTimestamp() - cp.getStartTimestamp()) / 1000));
-                ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(callEvent.getConferenceId());
-                conferenceManager.recordConference(false,null,null);
-                cp.setStartTimestamp(0);
-              }
+              finishCallRecord(cp);
             }
           }
  else           if ("250 STARTED SPEAKING".equals(myEvent)) {

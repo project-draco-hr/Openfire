@@ -17,29 +17,8 @@
     }
  else {
       System.out.println("Incoming SIP, call " + cp);
-      Collection<ClientSession> sessions=SessionManager.getInstance().getSessions();
-      boolean foundUser=false;
-      for (      ClientSession session : sessions) {
-        try {
-          String userId=session.getAddress().getNode();
-          if (cp.getToPhoneNumber().equals(userId)) {
-            System.out.println("Incoming SIP, call route to user " + userId);
-            foundUser=true;
-            break;
-          }
-        }
- catch (        Exception e) {
-        }
-      }
-      if (foundUser) {
-        String sid="incoming-" + String.valueOf(System.currentTimeMillis());
-        cp.setConferenceId(sid);
+      if (RayoComponent.self.routeIncomingSIP(cp)) {
         haveIncomingConferenceId=true;
-        CallEvent callEvent=new CallEvent(CallEvent.STATE_CHANGED);
-        callEvent.setCallState(new CallState(CallState.INCOMING));
-        callEvent.setInfo(cp.getPhoneNumber());
-        callEvent.setCallId(sid);
-        sendCallEventNotification(callEvent);
       }
  else {
         if (Config.getInstance().getConferenceExten().equals(cp.getToPhoneNumber())) {

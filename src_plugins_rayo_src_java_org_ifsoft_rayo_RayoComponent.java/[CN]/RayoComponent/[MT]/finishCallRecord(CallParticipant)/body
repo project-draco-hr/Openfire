@@ -1,0 +1,13 @@
+{
+  if (cp.getStartTimestamp() > 0) {
+    cp.setEndTimestamp(System.currentTimeMillis());
+    Config.updateCallRecord(cp.getStartTimestamp(),(int)((cp.getEndTimestamp() - cp.getStartTimestamp()) / 1000));
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(cp.getConferenceId());
+      conferenceManager.recordConference(false,null,null);
+    }
+ catch (    Exception e) {
+    }
+    cp.setStartTimestamp(0);
+  }
+}
