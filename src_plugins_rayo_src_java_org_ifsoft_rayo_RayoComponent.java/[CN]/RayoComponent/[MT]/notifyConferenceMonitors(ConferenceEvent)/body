@@ -9,19 +9,19 @@
         CallParticipant callParticipant=callHandler.getCallParticipant();
         if (callParticipant != null) {
           Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner());
-          Presence presence=new Presence();
-          presence.setFrom(conferenceEvent.getCallId() + "@rayo." + getDomain());
-          presence.setTo(callParticipant.getCallOwner());
-          if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
-            UnjoinedEvent event=new UnjoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
-            presence.getElement().add(rayoProvider.toXML(event));
-            finishCallRecord(callParticipant);
+          String groupName=ConferenceManager.getDisplayName(conferenceEvent.getConferenceId());
+          if (groupName == null) {
+            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent);
           }
  else {
-            JoinedEvent event=new JoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
-            presence.getElement().add(rayoProvider.toXML(event));
+            Group group=GroupManager.getInstance().getGroup(groupName);
+            for (            JID memberJID : group.getMembers()) {
+              Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
+              for (              ClientSession session : sessions) {
+                routeJoinEvent(memberJID.toString(),callParticipant,conferenceEvent);
+              }
+            }
           }
-          sendPacket(presence);
         }
       }
       try {

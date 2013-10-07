@@ -1,0 +1,21 @@
+{
+  Log.info("routeSIPCall to user " + callee);
+  if (callee != null) {
+    Presence presence=new Presence();
+    presence.setFrom(callId + "@rayo." + getDomain());
+    presence.setTo(callee);
+    OfferEvent offer=new OfferEvent(callId);
+    try {
+      offer.setTo(new URI("xmpp:" + callee.toString()));
+      offer.setFrom(new URI("sip:" + cp.getPhoneNumber()));
+    }
+ catch (    URISyntaxException e) {
+      Log.error("SIP phone nos not URI " + cp.getPhoneNumber() + " "+ callee);
+    }
+    headers.put("called_name",callee.getNode());
+    headers.put("caller_name",cp.getName());
+    offer.setHeaders(headers);
+    presence.getElement().add(rayoProvider.toXML(offer));
+    sendPacket(presence);
+  }
+}

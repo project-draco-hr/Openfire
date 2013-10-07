@@ -46,34 +46,44 @@
     }
  else     if (toXmpp) {
       headers.put("call_protocol","XMPP");
-      String destination=to.substring(5);
-      String source=JID.escapeNode(handsetId);
-      RelayChannel channel=plugin.getRelayChannel(source);
-      if (channel != null) {
-        headers.put("mixer_name",channel.getHandset().mixer);
-        headers.put("codec_name",channel.getHandset().codec);
-        Presence presence=new Presence();
-        presence.setFrom(source + "@rayo." + getDomain());
-        presence.setTo(new JID(destination));
-        OfferEvent offer=new OfferEvent(callId);
-        try {
-          offer.setFrom(new URI("xmpp:" + iq.getFrom().toString()));
-          offer.setTo(new URI(to));
+      JID destination=getJID(to.substring(5));
+      if (destination != null) {
+        String source=JID.escapeNode(handsetId);
+        RelayChannel channel=plugin.getRelayChannel(source);
+        if (channel != null) {
+          headers.put("mixer_name",channel.getHandset().mixer);
+          headers.put("codec_name",channel.getHandset().codec);
+          if (findUser(destination.getNode()) != null) {
+            routeXMPPCall(reply,destination,source,callId,calledName,headers);
+          }
+ else {
+            int count=0;
+            try {
+              Group group=GroupManager.getInstance().getGroup(destination.getNode());
+              for (              JID memberJID : group.getMembers()) {
+                if (iq.getFrom().toBareJID().equals(memberJID.toBareJID()) == false) {
+                  Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
+                  for (                  ClientSession session : sessions) {
+                    routeXMPPCall(reply,session.getAddress(),source,callId,calledName,headers);
+                    count++;
+                  }
+                }
+              }
+              if (count == 0) {
+                reply.setError(PacketError.Condition.item_not_found);
+                return reply;
+              }
+              ConferenceManager.setDisplayName(channel.getHandset().mixer,destination.getNode());
+            }
+ catch (            GroupNotFoundException e) {
+              reply.setError(PacketError.Condition.item_not_found);
+              return reply;
+            }
+          }
         }
- catch (        URISyntaxException e) {
-          reply.setError(PacketError.Condition.feature_not_implemented);
-          return reply;
+ else {
+          reply.setError(PacketError.Condition.item_not_found);
         }
-        if (calledName == null) {
-          calledName=presence.getTo().getNode();
-          headers.put("called_name",calledName);
-        }
-        offer.setHeaders(headers);
-        presence.getElement().add(rayoProvider.toXML(offer));
-        sendPacket(presence);
-        final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
-        childElement.addAttribute(URI,(String)"xmpp:" + destination);
-        childElement.addAttribute(ID,(String)JID.escapeNode(destination));
       }
  else {
         reply.setError(PacketError.Condition.item_not_found);

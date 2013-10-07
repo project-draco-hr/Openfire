@@ -1,0 +1,24 @@
+{
+  Presence presence=new Presence();
+  presence.setFrom(source + "@rayo." + getDomain());
+  presence.setTo(destination);
+  OfferEvent offer=new OfferEvent(callId);
+  try {
+    offer.setFrom(new URI("xmpp:" + JID.unescapeNode(source)));
+    offer.setTo(new URI("xmpp:" + destination));
+  }
+ catch (  URISyntaxException e) {
+    reply.setError(PacketError.Condition.feature_not_implemented);
+    return;
+  }
+  if (calledName == null) {
+    calledName=presence.getTo().getNode();
+    headers.put("called_name",calledName);
+  }
+  offer.setHeaders(headers);
+  presence.getElement().add(rayoProvider.toXML(offer));
+  sendPacket(presence);
+  final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+  childElement.addAttribute(URI,(String)"xmpp:" + destination);
+  childElement.addAttribute(ID,(String)JID.escapeNode(destination.toString()));
+}

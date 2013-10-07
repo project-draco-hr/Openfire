@@ -20,6 +20,10 @@
       cp.setDisplayName(channel.getAttachment());
       cp.setVoiceDetection(true);
       cp.setCallOwner(channel.getFrom().toString());
+      if (handset.group != null && !"".equals(handset.group)) {
+        ConferenceManager.getConference(handset.mixer,channel.getMediaPreference(),handset.group,false);
+        ConferenceManager.setDisplayName(handset.mixer,handset.group);
+      }
       callHandler=new OutgoingCallHandler(this,cp);
       callHandler.start();
       channel.setCallHandler(callHandler);

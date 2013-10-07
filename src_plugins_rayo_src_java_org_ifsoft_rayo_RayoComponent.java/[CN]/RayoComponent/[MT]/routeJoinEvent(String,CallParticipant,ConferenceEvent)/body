@@ -1,0 +1,15 @@
+{
+  Presence presence=new Presence();
+  presence.setFrom(conferenceEvent.getCallId() + "@rayo." + getDomain());
+  presence.setTo(callee);
+  if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
+    UnjoinedEvent event=new UnjoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+    presence.getElement().add(rayoProvider.toXML(event));
+    finishCallRecord(callParticipant);
+  }
+ else {
+    JoinedEvent event=new JoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+    presence.getElement().add(rayoProvider.toXML(event));
+  }
+  sendPacket(presence);
+}
