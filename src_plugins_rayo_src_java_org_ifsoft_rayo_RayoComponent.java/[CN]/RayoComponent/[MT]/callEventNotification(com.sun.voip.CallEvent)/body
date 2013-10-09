@@ -24,13 +24,8 @@
               sendPacket(presence);
             }
  else             if ("200 ESTABLISHED".equals(callState)) {
-              presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-              sendPacket(presence);
             }
  else             if ("299 ENDED".equals(callState)) {
-              presence.getElement().add(rayoProvider.toXML(new EndEvent(null,EndEvent.Reason.valueOf("HANGUP"),headers)));
-              sendPacket(presence);
-              finishCallRecord(cp);
             }
           }
  else           if ("250 STARTED SPEAKING".equals(myEvent)) {

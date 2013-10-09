@@ -3,35 +3,32 @@
   try {
     if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) || conferenceEvent.equals(ConferenceEvent.MEMBER_JOINED)) {
       Log.info("RayoComponent notifyConferenceMonitors looking for call " + conferenceEvent.getCallId() + " "+ conferenceEvent.getMemberCount());
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(conferenceEvent.getConferenceId());
       CallHandler callHandler=CallHandler.findCall(conferenceEvent.getCallId());
       if (callHandler != null) {
         Log.info("RayoComponent notifyConferenceMonitors found call handler " + callHandler);
         CallParticipant callParticipant=callHandler.getCallParticipant();
         if (callParticipant != null) {
-          Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner());
+          int memberCount=conferenceManager.getMemberList().size();
+          Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
           String groupName=ConferenceManager.getDisplayName(conferenceEvent.getConferenceId());
           if (groupName == null) {
-            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent);
+            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName);
           }
  else {
             Group group=GroupManager.getInstance().getGroup(groupName);
             for (            JID memberJID : group.getMembers()) {
               Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
               for (              ClientSession session : sessions) {
-                routeJoinEvent(memberJID.toString(),callParticipant,conferenceEvent);
+                routeJoinEvent(memberJID.toString(),callParticipant,conferenceEvent,memberCount,groupName);
               }
             }
           }
         }
       }
-      try {
-        ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(conferenceEvent.getConferenceId());
-        if (conferenceManager.getMemberList().size() == 0) {
-          conferenceManager.recordConference(false,null,null);
-          conferenceManager.endConference(conferenceEvent.getConferenceId());
-        }
-      }
- catch (      Exception e) {
+      if (conferenceManager.getMemberList().size() == 0) {
+        conferenceManager.recordConference(false,null,null);
+        conferenceManager.endConference(conferenceEvent.getConferenceId());
       }
     }
   }

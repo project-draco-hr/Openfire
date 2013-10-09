@@ -7,17 +7,14 @@
   CallHandler callHandler=null;
   if (callJID != null) {
     headers.put("call_protocol","XMPP");
+    headers.put("call_owner",callJID.toString());
+    headers.put("call_action","join");
     try {
       Presence presence1=new Presence();
       presence1.setFrom(iq.getTo());
       presence1.setTo(callJID);
       presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
       sendPacket(presence1);
-      Presence presence2=new Presence();
-      presence2.setFrom(iq.getTo());
-      presence2.setTo(iq.getFrom());
-      presence2.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-      sendPacket(presence2);
       RelayChannel channel=plugin.getRelayChannel(callId);
       if (channel != null) {
         callHandler=channel.getCallHandler();
@@ -31,11 +28,6 @@
   }
  else {
     callHandler=CallHandler.findCall(callId);
-    Presence presence=new Presence();
-    presence.setFrom(iq.getTo());
-    presence.setTo(iq.getFrom());
-    presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-    sendPacket(presence);
   }
   if (callHandler != null) {
     Log.info("RayoComponent handleAnswerCommand found call handler " + callHandler);
