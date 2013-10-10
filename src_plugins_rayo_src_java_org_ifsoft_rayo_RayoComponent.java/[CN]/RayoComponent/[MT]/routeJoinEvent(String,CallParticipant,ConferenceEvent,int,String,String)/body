@@ -1,11 +1,10 @@
 {
-  Log.info("RayoComponent routeJoinEvent " + callee);
+  Log.info("RayoComponent routeJoinEvent " + callee + " "+ callId+ " "+ groupName);
   Presence presence=new Presence();
-  presence.setFrom(conferenceEvent.getCallId() + "@rayo." + getDomain());
+  presence.setFrom(callId + "@rayo." + getDomain());
   presence.setTo(callee);
   Map<String,String> headers=callParticipant.getHeaders();
   headers.put("call_owner",callParticipant.getCallOwner());
-  headers.put("call_id",conferenceEvent.getCallId());
   headers.put("call_action",conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) ? "leave" : "join");
   headers.put("call_protocol",callParticipant.getProtocol());
   headers.put("mixer_name",conferenceEvent.getConferenceId());

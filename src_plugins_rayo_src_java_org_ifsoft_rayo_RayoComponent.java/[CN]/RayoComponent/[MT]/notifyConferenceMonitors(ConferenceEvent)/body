@@ -4,6 +4,9 @@
     if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) || conferenceEvent.equals(ConferenceEvent.MEMBER_JOINED)) {
       Log.info("RayoComponent notifyConferenceMonitors looking for call " + conferenceEvent.getCallId() + " "+ conferenceEvent.getMemberCount());
       ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(conferenceEvent.getConferenceId());
+      String groupName=conferenceManager.getDisplayName();
+      String callId=conferenceManager.getCallId();
+      if (callId == null)       callId=conferenceEvent.getConferenceId();
       CallHandler callHandler=CallHandler.findCall(conferenceEvent.getCallId());
       if (callHandler != null) {
         Log.info("RayoComponent notifyConferenceMonitors found call handler " + callHandler);
@@ -11,16 +14,15 @@
         if (callParticipant != null) {
           int memberCount=conferenceManager.getMemberList().size();
           Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
-          String groupName=ConferenceManager.getDisplayName(conferenceEvent.getConferenceId());
           if (groupName == null) {
-            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName);
+            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId);
           }
  else {
             Group group=GroupManager.getInstance().getGroup(groupName);
             for (            JID memberJID : group.getMembers()) {
               Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
               for (              ClientSession session : sessions) {
-                routeJoinEvent(memberJID.toString(),callParticipant,conferenceEvent,memberCount,groupName);
+                routeJoinEvent(memberJID.toString(),callParticipant,conferenceEvent,memberCount,groupName,callId);
               }
             }
           }

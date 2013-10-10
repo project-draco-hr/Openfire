@@ -6,7 +6,6 @@
   String to=command.getTo().toString();
   boolean toPhone=to.indexOf("sip:") == 0 || to.indexOf("tel:") == 0;
   boolean toXmpp=to.indexOf("xmpp:") == 0;
-  String callId=headers.get("call_id");
   String callerName=headers.get("caller_name");
   String calledName=headers.get("called_name");
   String handsetId=iq.getFrom().toString();
@@ -19,10 +18,6 @@
     reply.setError(PacketError.Condition.feature_not_implemented);
   }
  else {
-    if (callId == null) {
-      callId="rayo-call-" + System.currentTimeMillis();
-      headers.put("call_id",callId);
-    }
     if (callerName == null) {
       callerName=iq.getFrom().getNode();
       headers.put("caller_name",callerName);
@@ -52,8 +47,9 @@
         if (channel != null) {
           headers.put("mixer_name",channel.getHandset().mixer);
           headers.put("codec_name",channel.getHandset().codec);
+          ConferenceManager.setCallId(channel.getHandset().mixer,source);
           if (findUser(destination.getNode()) != null) {
-            routeXMPPCall(reply,destination,source,callId,calledName,headers);
+            routeXMPPCall(reply,destination,source,calledName,headers);
           }
  else {
             int count=0;
@@ -63,7 +59,7 @@
                 if (iq.getFrom().toBareJID().equals(memberJID.toBareJID()) == false) {
                   Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
                   for (                  ClientSession session : sessions) {
-                    routeXMPPCall(reply,session.getAddress(),source,callId,calledName,headers);
+                    routeXMPPCall(reply,session.getAddress(),source,calledName,headers);
                     count++;
                   }
                 }
