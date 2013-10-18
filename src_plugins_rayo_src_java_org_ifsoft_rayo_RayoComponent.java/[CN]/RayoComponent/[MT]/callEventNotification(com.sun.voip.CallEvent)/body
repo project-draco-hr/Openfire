@@ -19,8 +19,10 @@
           presence.setTo(from);
           if ("001 STATE CHANGED".equals(myEvent)) {
             if ("100 INVITED".equals(callState)) {
-              presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
-              sendPacket(presence);
+              if (cp.isAutoAnswer() == false) {
+                presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+                sendPacket(presence);
+              }
             }
  else             if ("200 ESTABLISHED".equals(callState)) {
             }

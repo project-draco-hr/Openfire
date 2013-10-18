@@ -1,8 +1,8 @@
 {
-  String username=channel.getFrom().getNode();
-  String mixer=channel.getHandset().mixer;
-  ConferenceManager conferenceManager=ConferenceManager.getConference(mixer,channel.getMediaPreference(),username,false);
+  CallParticipant hp=handsetHandler.getCallParticipant();
   try {
+    String mixer=hp.getConferenceId();
+    ConferenceManager conferenceManager=ConferenceManager.getConference(mixer,hp.getMediaPreference(),cp.getName(),false);
     cp.setConferenceId(mixer);
     cp.setCallId(mixer);
     conferenceManager.setCallId(mixer);

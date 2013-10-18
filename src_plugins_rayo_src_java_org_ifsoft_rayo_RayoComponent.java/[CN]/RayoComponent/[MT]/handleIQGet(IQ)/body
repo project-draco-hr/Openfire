@@ -6,10 +6,12 @@
       IQ reply=null;
       Object object=handsetProvider.fromXML(element);
       if (object instanceof OnHookCommand) {
-        reply=handleOnOffHookCommand((OnHookCommand)object,iq);
+        OnHookCommand command=(OnHookCommand)object;
+        reply=handleOnOffHookCommand(command,iq);
       }
  else       if (object instanceof OffHookCommand) {
-        reply=handleOnOffHookCommand((OffHookCommand)object,iq);
+        OffHookCommand command=(OffHookCommand)object;
+        reply=handleOnOffHookCommand(command,iq);
       }
       return reply;
     }
