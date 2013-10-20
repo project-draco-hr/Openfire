@@ -9,6 +9,7 @@
   headers.put("mixer_name",callId);
   headers.put("call_protocol","SIP");
   if (foundUser != null) {
+    cp.setCallOwner(foundUser.toString());
     routeSIPCall(foundUser,cp,callId,headers);
     return true;
   }
@@ -18,7 +19,7 @@
     for (    JID memberJID : group.getMembers()) {
       Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
       for (      ClientSession session : sessions) {
-        routeSIPCall(memberJID,cp,callId,headers);
+        routeSIPCall(session.getAddress(),cp,callId,headers);
       }
     }
     return true;

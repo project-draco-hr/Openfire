@@ -43,11 +43,11 @@
       JID destination=getJID(to.substring(5));
       if (destination != null) {
         String source=JID.escapeNode(handsetId);
-        RelayChannel channel=plugin.getRelayChannel(source);
-        if (channel != null) {
-          headers.put("mixer_name",channel.getHandset().mixer);
-          headers.put("codec_name",channel.getHandset().codec);
-          ConferenceManager.setCallId(channel.getHandset().mixer,source);
+        CallHandler handsetHandler=CallHandler.findCall(source);
+        if (handsetHandler != null) {
+          CallParticipant hp=handsetHandler.getCallParticipant();
+          headers.put("mixer_name",hp.getConferenceId());
+          ConferenceManager.setCallId(hp.getConferenceId(),source);
           if (findUser(destination.getNode()) != null) {
             routeXMPPCall(reply,destination,source,calledName,headers);
           }

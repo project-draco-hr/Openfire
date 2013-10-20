@@ -15,11 +15,7 @@
       presence1.setTo(callJID);
       presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
       sendPacket(presence1);
-      RelayChannel channel=plugin.getRelayChannel(callId);
-      if (channel != null) {
-        callHandler=channel.getCallHandler();
-      }
- else       reply.setError(PacketError.Condition.item_not_found);
+      callHandler=CallHandler.findCall(callId);
     }
  catch (    Exception e) {
       reply.setError(PacketError.Condition.item_not_found);
@@ -31,9 +27,14 @@
   }
   if (callHandler != null) {
     Log.info("RayoComponent handleAnswerCommand found call handler " + callHandler);
-    CallParticipant cp=callHandler.getCallParticipant();
-    if (cp != null) {
+    CallHandler handsetHandler=CallHandler.findCall(JID.escapeNode(iq.getFrom().toString()));
+    if (handsetHandler != null) {
+      Log.info("RayoComponent handleAnswerCommand found handset handler " + handsetHandler);
       try {
+        CallParticipant cp=callHandler.getCallParticipant();
+        CallParticipant hp=handsetHandler.getCallParticipant();
+        hp.setFarParty(cp);
+        cp.setHandset(hp);
         cp.setStartTimestamp(System.currentTimeMillis());
         cp.setHeaders(headers);
         String recording=cp.getConferenceId() + "-" + cp.getStartTimestamp()+ ".au";

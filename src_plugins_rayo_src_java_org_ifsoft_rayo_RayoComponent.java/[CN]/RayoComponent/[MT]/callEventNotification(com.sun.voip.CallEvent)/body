@@ -9,6 +9,7 @@
       if (callHandler != null) {
         Log.info("RayoComponent callEventNotification found call handler " + callHandler);
         CallParticipant cp=callHandler.getCallParticipant();
+        CallParticipant hp=cp.getHandset();
         if (cp != null) {
           Log.info("RayoComponent callEventNotification found call paticipant " + cp);
           Map<String,String> headers=cp.getHeaders();
@@ -30,16 +31,10 @@
             }
           }
  else           if ("250 STARTED SPEAKING".equals(myEvent)) {
-            StartedSpeakingEvent speaker=new StartedSpeakingEvent();
-            speaker.setSpeakerId(callEvent.getCallId());
-            presence.getElement().add(rayoProvider.toXML(speaker));
-            sendPacket(presence);
+            broadcastSpeaking(true,callEvent.getCallId(),callEvent.getConferenceId(),from);
           }
  else           if ("259 STOPPED SPEAKING".equals(myEvent)) {
-            StoppedSpeakingEvent speaker=new StoppedSpeakingEvent();
-            speaker.setSpeakerId(callEvent.getCallId());
-            presence.getElement().add(rayoProvider.toXML(speaker));
-            sendPacket(presence);
+            broadcastSpeaking(false,callEvent.getCallId(),callEvent.getConferenceId(),from);
           }
  else           if ("269 DTMF".equals(myEvent)) {
             presence.getElement().add(rayoProvider.toXML(new DtmfEvent(callEvent.getCallId(),callEvent.getDtmfKey())));
