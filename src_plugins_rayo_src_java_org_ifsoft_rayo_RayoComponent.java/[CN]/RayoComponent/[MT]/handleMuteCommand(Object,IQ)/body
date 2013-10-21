@@ -1,0 +1,44 @@
+{
+  Log.info("RayoComponent handleMuteCommand");
+  boolean muted=object instanceof MuteCommand;
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=JID.escapeNode(iq.getFrom().toString());
+  CallHandler handler=CallHandler.findCall(callId);
+  if (handler != null) {
+    handler.setMuted(muted);
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(handler.getCallParticipant().getConferenceId());
+      ArrayList memberList=conferenceManager.getMemberList();
+synchronized (memberList) {
+        for (int i=0; i < memberList.size(); i++) {
+          ConferenceMember member=(ConferenceMember)memberList.get(i);
+          CallHandler callHandler=member.getCallHandler();
+          CallParticipant cp=callHandler.getCallParticipant();
+          String target=cp.getCallOwner();
+          Log.info("RayoComponent handleMuteCommand route event to " + target);
+          if (target != null) {
+            Presence presence=new Presence();
+            presence.setFrom(callId + "@rayo." + getDomain());
+            presence.setTo(target);
+            if (muted) {
+              MutedEvent event=new MutedEvent();
+              presence.getElement().add(toXML(event));
+            }
+ else {
+              UnmutedEvent event=new UnmutedEvent();
+              presence.getElement().add(toXML(event));
+            }
+            sendPacket(presence);
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

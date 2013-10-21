@@ -6,16 +6,11 @@
   if (callJID != null) {
     Map<String,String> headers=command.getHeaders();
     headers.put("call_protocol","XMPP");
-    try {
-      Presence presence=new Presence();
-      presence.setFrom(iq.getTo());
-      presence.setTo(callJID);
-      presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
-      sendPacket(presence);
-    }
- catch (    Exception e) {
-      reply.setError(PacketError.Condition.item_not_found);
-    }
+    Presence presence=new Presence();
+    presence.setFrom(iq.getTo());
+    presence.setTo(callJID);
+    presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+    sendPacket(presence);
   }
   return reply;
 }

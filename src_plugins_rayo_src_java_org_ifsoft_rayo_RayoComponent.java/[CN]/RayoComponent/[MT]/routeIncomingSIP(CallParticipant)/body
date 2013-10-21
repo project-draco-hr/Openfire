@@ -3,11 +3,15 @@
   JID foundUser=findUser(cp.getToPhoneNumber());
   String callId="rayo-incoming-" + System.currentTimeMillis();
   cp.setCallId(callId);
+  cp.setMediaPreference("PCMU/8000/1");
   cp.setConferenceId(callId);
-  ConferenceManager.setCallId(callId,callId);
+  cp.setConferenceDisplayName(cp.getToPhoneNumber());
+  ConferenceManager conferenceManager=ConferenceManager.getConference(callId,cp.getMediaPreference(),cp.getToPhoneNumber(),false);
+  conferenceManager.setCallId(callId);
   Map<String,String> headers=cp.getHeaders();
   headers.put("mixer_name",callId);
   headers.put("call_protocol","SIP");
+  headers.put("group_name",cp.getToPhoneNumber());
   if (foundUser != null) {
     cp.setCallOwner(foundUser.toString());
     routeSIPCall(foundUser,cp,callId,headers);
@@ -15,7 +19,6 @@
   }
   try {
     Group group=GroupManager.getInstance().getGroup(cp.getToPhoneNumber());
-    headers.put("group_name",cp.getToPhoneNumber());
     for (    JID memberJID : group.getMembers()) {
       Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
       for (      ClientSession session : sessions) {
@@ -25,6 +28,17 @@
     return true;
   }
  catch (  GroupNotFoundException e) {
-    return false;
+    if (XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").hasChatRoom(cp.getToPhoneNumber())) {
+      MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(cp.getToPhoneNumber());
+      if (room != null) {
+        for (        MUCRole role : room.getOccupants()) {
+          routeSIPCall(role.getUserAddress(),cp,callId,headers);
+        }
+      }
+      return true;
+    }
+ else {
+      return false;
+    }
   }
 }

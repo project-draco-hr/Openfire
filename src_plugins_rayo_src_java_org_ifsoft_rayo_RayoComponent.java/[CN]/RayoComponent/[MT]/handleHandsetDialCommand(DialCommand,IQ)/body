@@ -64,14 +64,25 @@
                   }
                 }
               }
-              if (count == 0) {
-                reply.setError(PacketError.Condition.item_not_found);
-                return reply;
-              }
             }
  catch (            GroupNotFoundException e) {
+              if (XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").hasChatRoom(destination.getNode())) {
+                MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(destination.getNode());
+                if (room != null) {
+                  for (                  MUCRole role : room.getOccupants()) {
+                    if (iq.getFrom().toBareJID().equals(role.getUserAddress().toBareJID()) == false) {
+                      routeXMPPCall(reply,role.getUserAddress(),source,calledName,headers);
+                      count++;
+                    }
+                  }
+                }
+              }
+ else {
+                reply.setError(PacketError.Condition.item_not_found);
+              }
+            }
+            if (count == 0) {
               reply.setError(PacketError.Condition.item_not_found);
-              return reply;
             }
           }
         }
