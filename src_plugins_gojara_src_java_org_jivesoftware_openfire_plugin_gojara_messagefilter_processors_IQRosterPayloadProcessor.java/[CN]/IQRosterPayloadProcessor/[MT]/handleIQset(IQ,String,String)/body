@@ -6,7 +6,7 @@
     String jid=n.valueOf("@jid");
     String name=n.valueOf("@name");
     String subvalue=n.valueOf("@subscription");
-    if (jid.equals(subdomain))     throw new PacketRejectedException();
+    if (JiveGlobals.getBooleanProperty("plugin.remoteroster.ignoreSubdomains",true) && jid.equals(subdomain) && subvalue.equals("both"))     throw new PacketRejectedException();
     if (subvalue.equals("both")) {
       try {
         roster=_rosterManager.getRoster(username);
@@ -31,23 +31,15 @@
         roster.updateRosterItem(item);
       }
  catch (      Exception e) {
-        Log.debug("Could not add user to Roster although no entry should exist..." + username,e);
-        e.printStackTrace();
+        Log.info("Could not add user to Roster although no entry should exist..." + username,e);
       }
+      dispatchPacket(response);
     }
  else     if (subvalue.equals("remove")) {
-      try {
-        roster=_rosterManager.getRoster(username);
-        roster.deleteRosterItem(new JID(jid),false);
-        Log.debug("Removed contact " + jid + " from contact list of "+ username);
+      if (JiveGlobals.getBooleanProperty("plugin.remoteroster.persistent",false) && jid.equals(subdomain)) {
+        deleteSubdomainItemsFromRoster(username,subdomain);
       }
- catch (      UserNotFoundException e) {
-        Log.debug("Could not find user while cleaning up the roster in GoJara for user " + username,e);
-        response.setType(IQ.Type.error);
-      }
-catch (      SharedGroupException e) {
-      }
+      throw new PacketRejectedException();
     }
-    dispatchPacket(response);
   }
 }

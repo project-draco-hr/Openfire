@@ -18,7 +18,7 @@
       Element query=iqPacket.getChildElement();
       if (query == null)       return;
  else       if (query.getNamespaceURI().equals("jabber:iq:roster")) {
-        if (to.length() == 0 && iqPacket.getType().equals(IQ.Type.set))         packetProcessors.get("clientToComponentUpdate").process(packet,"",to,from);
+        if (!activeTransports.contains(from) && to.length() == 0 && iqPacket.getType().equals(IQ.Type.set))         packetProcessors.get("clientToComponentUpdate").process(packet,"",to,from);
  else         if (from.length() > 0 && activeTransports.contains(from))         packetProcessors.get("iqRosterPayload").process(packet,from,to,from);
       }
  else       if (query.getNamespaceURI().equals("http://jabber.org/protocol/disco#info") && to.length() > 0 && activeTransports.contains(to) && iqPacket.getType().equals(IQ.Type.get)) {
@@ -57,7 +57,7 @@
       Element query=iqPacket.getChildElement();
       if (query == null)       return;
       if (query.getNamespaceURI().equals("jabber:iq:register") && iqPacket.getType().equals(IQ.Type.set)) {
-        if (query.element("remove") != null)         tSessionManager.removeRegistrationOfUser(to,iqPacket.getFrom().getNode().toString());
+        if (query.element("remove") != null)         tSessionManager.removeRegistrationOfUserFromDB(to,iqPacket.getFrom().getNode().toString());
  else         if (query.element("x") != null) {
           Element xElem=query.element("x");
           String xNamespace=xElem.getNamespaceURI();
@@ -90,7 +90,7 @@
         }
       }
     }
- else     if (packet instanceof Presence) {
+ else     if (JiveGlobals.getBooleanProperty("plugin.remoteroster.blockPresences",true) && packet instanceof Presence) {
       String to_s=searchJIDforSubdomain(to);
       if (to_s.length() > 0 && !activeTransports.contains(to))       throw new PacketRejectedException();
     }

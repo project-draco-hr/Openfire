@@ -3,7 +3,8 @@
   response.setTo(subdomain);
   Element query=new DefaultElement("query");
   for (  RosterItem i : items) {
-    if (i.getJid().toString().contains(subdomain)) {
+    String jid=i.getJid().toString();
+    if (!jid.equals(subdomain) && jid.contains(subdomain)) {
       Log.debug("Roster exchange for external component " + subdomain + ". Sending user "+ i.getJid().toString());
       Element item=new DefaultElement("item",null);
       item.add(new DefaultAttribute("jid",i.getJid().toString()));

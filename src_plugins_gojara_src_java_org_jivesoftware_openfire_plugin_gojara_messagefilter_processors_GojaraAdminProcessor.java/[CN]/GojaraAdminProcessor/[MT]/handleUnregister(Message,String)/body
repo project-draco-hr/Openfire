@@ -1,0 +1,12 @@
+{
+  Log.debug("Found unregister command! ");
+  String body=message.getBody();
+  Pattern p=Pattern.compile("^User '(.+)' unregistered.");
+  Matcher m=p.matcher(body);
+  if (m.matches()) {
+    String user=m.group(1);
+    JID userJid=new JID(user);
+    transportSessionManager.removeRegistrationOfUserFromDB(subdomain,userJid.getNode());
+    Log.debug("unregister command was successfull for user: " + userJid.getNode());
+  }
+}

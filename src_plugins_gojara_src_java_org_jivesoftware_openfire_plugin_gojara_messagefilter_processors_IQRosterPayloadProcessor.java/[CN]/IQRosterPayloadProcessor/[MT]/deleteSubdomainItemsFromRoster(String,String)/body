@@ -1,0 +1,19 @@
+{
+  try {
+    Roster roster=_rosterManager.getRoster(username);
+    Collection<RosterItem> items=roster.getRosterItems();
+    for (    RosterItem item : items) {
+      String itemName=item.getJid().toString();
+      if (itemName.contains(subdomain)) {
+        Log.debug("Removing contact " + item.getJid().toString() + " from contact list because of Unregister.");
+        roster.deleteRosterItem(item.getJid(),false);
+      }
+    }
+  }
+ catch (  UserNotFoundException e) {
+    Log.debug("Couldnt find User!" + e.toString());
+  }
+catch (  SharedGroupException e) {
+    e.printStackTrace();
+  }
+}
