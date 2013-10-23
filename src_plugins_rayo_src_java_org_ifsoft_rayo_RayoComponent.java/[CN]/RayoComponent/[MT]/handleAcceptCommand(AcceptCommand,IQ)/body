@@ -1,16 +1,22 @@
 {
+  Map<String,String> headers=command.getHeaders();
   String callId=iq.getTo().getNode();
-  Log.info("RayoComponent handleAcceptCommand " + iq.getFrom() + " "+ callId);
+  String callerId=headers.get("caller_id");
+  String mixer=headers.get("mixer_name");
+  Log.info("RayoComponent handleAcceptCommand " + callerId + " "+ callId+ " "+ mixer);
   IQ reply=IQ.createResultIQ(iq);
   JID callJID=getJID(callId);
   if (callJID != null) {
-    Map<String,String> headers=command.getHeaders();
-    headers.put("call_protocol","XMPP");
-    Presence presence=new Presence();
-    presence.setFrom(iq.getTo());
-    presence.setTo(callJID);
-    presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
-    sendPacket(presence);
+    if (mixer != null) {
+      headers.put("call_protocol","XMPP");
+      callerId=callerId.substring(5);
+      Presence presence=new Presence();
+      presence.setFrom(iq.getTo());
+      presence.setTo(callerId);
+      presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+      sendPacket(presence);
+    }
+ else     reply.setError(PacketError.Condition.item_not_found);
   }
   return reply;
 }

@@ -1,11 +1,11 @@
 {
   Log.info("RayoComponent handleOnOffHookCommand");
   IQ reply=IQ.createResultIQ(iq);
-  String callId=JID.escapeNode(iq.getFrom().toString());
+  String handsetId=JID.escapeNode(iq.getFrom().toString());
   if (object instanceof OnHookCommand) {
-    CallHandler handler=CallHandler.findCall(callId);
+    CallHandler handler=CallHandler.findCall(handsetId);
     if (handler != null) {
-      handleOnOffHook(callId,object,plugin.getRelayChannel(callId));
+      handleOnOffHook(handsetId,object,plugin.getRelayChannel(handsetId),reply);
     }
  else {
       reply.setError(PacketError.Condition.item_not_found);
@@ -16,25 +16,25 @@
     if (handset.sipuri == null) {
       final RelayChannel channel=plugin.createRelayChannel(iq.getFrom(),handset);
       if (channel != null) {
-        final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+        final Element childElement=reply.setChildElement("ref",RAYO_CORE);
         childElement.addAttribute(HOST,LocalIPResolver.getLocalIP());
         childElement.addAttribute(LOCAL_PORT,Integer.toString(channel.getPortA()));
         childElement.addAttribute(REMOTE_PORT,Integer.toString(channel.getPortB()));
         childElement.addAttribute(ID,channel.getAttachment());
         childElement.addAttribute(URI,"handset:" + channel.getAttachment() + "@rayo."+ getDomain()+ "/"+ iq.getFrom().getNode());
         Log.debug("Created WebRTC handset channel {}:{}, {}:{}, {}:{}",new Object[]{HOST,LocalIPResolver.getLocalIP(),LOCAL_PORT,Integer.toString(channel.getPortA()),REMOTE_PORT,Integer.toString(channel.getPortB())});
-        handleOnOffHook(callId,object,channel);
+        handleOnOffHook(handsetId,object,channel,reply);
       }
  else {
         reply.setError(PacketError.Condition.internal_server_error);
       }
     }
  else {
-      final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
-      childElement.addAttribute(ID,callId);
-      childElement.addAttribute(URI,"handset:" + callId + "@rayo."+ getDomain()+ "/"+ iq.getFrom().getNode());
+      final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+      childElement.addAttribute(ID,handsetId);
+      childElement.addAttribute(URI,"handset:" + handsetId + "@rayo."+ getDomain()+ "/"+ iq.getFrom().getNode());
       Log.info("Created SIP handset channel " + handset.sipuri);
-      handleOnOffHook(callId,object,null);
+      handleOnOffHook(handsetId,object,null,reply);
     }
   }
   return reply;

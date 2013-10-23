@@ -3,15 +3,18 @@
   try {
     hp.setFarParty(cp);
     cp.setHandset(hp);
+    long start=System.currentTimeMillis();
+    cp.setStartTimestamp(start);
+    hp.setStartTimestamp(start);
     String mixer=hp.getConferenceId();
-    ConferenceManager conferenceManager=ConferenceManager.getConference(mixer,hp.getMediaPreference(),cp.getName(),false);
+    ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(mixer);
     cp.setConferenceId(mixer);
     cp.setCallId(mixer);
     conferenceManager.setCallId(mixer);
-    cp.setStartTimestamp(System.currentTimeMillis());
     String recording=mixer + "-" + cp.getStartTimestamp()+ ".au";
     conferenceManager.recordConference(true,recording,"au");
     Config.createCallRecord(cp.getDisplayName(),recording,cp.getPhoneNumber(),cp.getStartTimestamp(),0,"dialed");
+    sendMessage(new JID(cp.getCallOwner()),new JID(cp.getCallId() + "@" + getDomain()),"Call started",recording);
   }
  catch (  ParseException e1) {
     reply.setError(PacketError.Condition.internal_server_error);

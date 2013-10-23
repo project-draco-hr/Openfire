@@ -1,0 +1,11 @@
+{
+  Log.info("RayoComponent sendMessage " + from + " "+ to+ " "+ body+ " "+ fileName);
+  int port=HttpBindManager.getInstance().getHttpBindUnsecurePort();
+  Message packet=new Message();
+  packet.setTo(to);
+  packet.setFrom(from);
+  packet.setType(Message.Type.chat);
+  packet.setThread("http://" + getDomain() + ":"+ port+ "/rayo/recordings/"+ fileName);
+  packet.setBody(body);
+  sendPacket(packet);
+}

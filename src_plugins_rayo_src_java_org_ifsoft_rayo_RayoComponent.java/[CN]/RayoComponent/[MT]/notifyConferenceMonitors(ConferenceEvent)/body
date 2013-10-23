@@ -4,7 +4,7 @@
     if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) || conferenceEvent.equals(ConferenceEvent.MEMBER_JOINED)) {
       Log.info("RayoComponent notifyConferenceMonitors looking for call " + conferenceEvent.getCallId() + " "+ conferenceEvent.getMemberCount());
       ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(conferenceEvent.getConferenceId());
-      String groupName=conferenceManager.getDisplayName();
+      String groupName=conferenceManager.getGroupName();
       String callId=conferenceManager.getCallId();
       if (callId == null)       callId=conferenceEvent.getConferenceId();
       CallHandler farParty=CallHandler.findCall(callId);
@@ -14,9 +14,8 @@
         CallParticipant callParticipant=callHandler.getCallParticipant();
         if (callParticipant != null) {
           ArrayList memberList=conferenceManager.getMemberList();
-          if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
-            CallParticipant hp=callParticipant.getHandset();
-            if (hp != null) {
+          if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) && callId.equals(conferenceEvent.getCallId())) {
+            if (farParty != null && farParty.getCallParticipant().isHeld() == false) {
 synchronized (memberList) {
                 for (int i=0; i < memberList.size(); i++) {
                   CallHandler participant=((ConferenceMember)memberList.get(i)).getCallHandler();

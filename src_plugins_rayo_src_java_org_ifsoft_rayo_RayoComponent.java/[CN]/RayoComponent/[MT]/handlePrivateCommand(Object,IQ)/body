@@ -1,0 +1,44 @@
+{
+  Log.info("RayoComponent handlePrivateCommand");
+  boolean privateCall=object instanceof PrivateCommand;
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=JID.escapeNode(iq.getFrom().toString());
+  CallHandler handler=CallHandler.findCall(callId);
+  if (handler != null) {
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(handler.getCallParticipant().getConferenceId());
+      conferenceManager.setPrivateCall(privateCall);
+      ArrayList memberList=conferenceManager.getMemberList();
+synchronized (memberList) {
+        for (int i=0; i < memberList.size(); i++) {
+          ConferenceMember member=(ConferenceMember)memberList.get(i);
+          CallHandler callHandler=member.getCallHandler();
+          CallParticipant cp=callHandler.getCallParticipant();
+          String target=cp.getCallOwner();
+          Log.info("RayoComponent handlePrivateCommand route event to " + target);
+          if (target != null) {
+            Presence presence=new Presence();
+            presence.setFrom(callId + "@rayo." + getDomain());
+            presence.setTo(target);
+            if (privateCall) {
+              PrivateEvent event=new PrivateEvent();
+              presence.getElement().add(handsetProvider.toXML(event));
+            }
+ else {
+              PublicEvent event=new PublicEvent();
+              presence.getElement().add(handsetProvider.toXML(event));
+            }
+            sendPacket(presence);
+          }
+        }
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

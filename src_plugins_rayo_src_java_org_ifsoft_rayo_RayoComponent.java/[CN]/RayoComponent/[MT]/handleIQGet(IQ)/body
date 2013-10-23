@@ -2,7 +2,7 @@
   final Element element=iq.getChildElement();
   final String namespace=element.getNamespaceURI();
   try {
-    if ("urn:xmpp:rayo:handset:1".equals(namespace)) {
+    if (RAYO_HANDSET.equals(namespace)) {
       IQ reply=null;
       Object object=handsetProvider.fromXML(element);
       if (object instanceof OnHookCommand) {
@@ -13,9 +13,24 @@
         OffHookCommand command=(OffHookCommand)object;
         reply=handleOnOffHookCommand(command,iq);
       }
+ else       if (object instanceof MuteCommand) {
+        reply=handleMuteCommand((MuteCommand)object,iq);
+      }
+ else       if (object instanceof UnmuteCommand) {
+        reply=handleMuteCommand((UnmuteCommand)object,iq);
+      }
+ else       if (object instanceof HoldCommand) {
+        reply=handleHoldCommand((HoldCommand)object,iq);
+      }
+ else       if (object instanceof PrivateCommand) {
+        reply=handlePrivateCommand(object,iq);
+      }
+ else       if (object instanceof PublicCommand) {
+        reply=handlePrivateCommand(object,iq);
+      }
       return reply;
     }
-    if ("urn:xmpp:tropo:say:1".equals(namespace)) {
+    if (RAYO_SAY.equals(namespace)) {
       IQ reply=null;
       Object object=sayProvider.fromXML(element);
       if (object instanceof Say) {
@@ -29,22 +44,10 @@
       }
       return reply;
     }
-    if ("urn:xmpp:rayo:1".equals(namespace)) {
+    if (RAYO_CORE.equals(namespace)) {
       IQ reply=null;
       Object object=rayoProvider.fromXML(element);
-      if (object instanceof ConnectCommand) {
-      }
- else       if (object instanceof HoldCommand) {
-      }
- else       if (object instanceof UnholdCommand) {
-      }
- else       if (object instanceof MuteCommand) {
-        reply=handleMuteCommand((MuteCommand)object,iq);
-      }
- else       if (object instanceof UnmuteCommand) {
-        reply=handleMuteCommand((UnmuteCommand)object,iq);
-      }
- else       if (object instanceof JoinCommand) {
+      if (object instanceof JoinCommand) {
         reply=handleJoinCommand((JoinCommand)object,iq);
       }
  else       if (object instanceof UnjoinCommand) {
@@ -62,6 +65,12 @@
  else       if (object instanceof RejectCommand) {
       }
  else       if (object instanceof RedirectCommand) {
+        RedirectCommand redirect=(RedirectCommand)object;
+        DialCommand dial=new DialCommand();
+        dial.setTo(redirect.getTo());
+        dial.setFrom(new URI("xmpp:" + iq.getFrom()));
+        dial.setHeaders(redirect.getHeaders());
+        reply=handleDialCommand((DialCommand)dial,iq);
       }
  else       if (object instanceof DialCommand) {
         reply=handleDialCommand((DialCommand)object,iq);

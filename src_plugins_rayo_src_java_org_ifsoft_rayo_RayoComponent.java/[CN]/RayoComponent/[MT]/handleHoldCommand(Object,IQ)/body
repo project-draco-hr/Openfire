@@ -1,0 +1,13 @@
+{
+  Log.info("RayoComponent handleHoldCommand");
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=iq.getTo().getNode();
+  CallHandler handler=CallHandler.findCall(callId);
+  if (handler != null) {
+    handler.getCallParticipant().setHeld(true);
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

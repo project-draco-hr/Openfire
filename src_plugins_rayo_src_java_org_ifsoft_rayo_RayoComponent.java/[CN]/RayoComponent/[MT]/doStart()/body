@@ -1,0 +1,18 @@
+{
+  Log.info("RayoComponent initialize " + jid);
+  XMPPServer server=XMPPServer.getInstance();
+  server.getIQDiscoInfoHandler().addServerFeature(RAYO_CORE);
+  rayoProvider=new RayoProvider();
+  rayoProvider.setValidator(new Validator());
+  server.getIQDiscoInfoHandler().addServerFeature(RAYO_SAY);
+  sayProvider=new SayProvider();
+  sayProvider.setValidator(new Validator());
+  server.getIQDiscoInfoHandler().addServerFeature(RAYO_HANDSET);
+  handsetProvider=new HandsetProvider();
+  handsetProvider.setValidator(new Validator());
+  createIQHandlers();
+  Plugin fastpath=server.getPluginManager().getPlugin("fastpath");
+  if (fastpath != null) {
+    Log.info("RayoComponent found Fastpath");
+  }
+}

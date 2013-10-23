@@ -5,7 +5,6 @@
   cp.setCallId(callId);
   cp.setMediaPreference("PCMU/8000/1");
   cp.setConferenceId(callId);
-  cp.setConferenceDisplayName(cp.getToPhoneNumber());
   ConferenceManager conferenceManager=ConferenceManager.getConference(callId,cp.getMediaPreference(),cp.getToPhoneNumber(),false);
   conferenceManager.setCallId(callId);
   Map<String,String> headers=cp.getHeaders();
@@ -19,6 +18,7 @@
   }
   try {
     Group group=GroupManager.getInstance().getGroup(cp.getToPhoneNumber());
+    conferenceManager.setGroupName(cp.getToPhoneNumber());
     for (    JID memberJID : group.getMembers()) {
       Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
       for (      ClientSession session : sessions) {

@@ -1,53 +1,60 @@
 {
-  String callId=iq.getTo().getNode();
-  Log.info("RayoComponent AnswerCommand " + iq.getFrom() + " "+ callId);
-  IQ reply=IQ.createResultIQ(iq);
-  JID callJID=getJID(callId);
   Map<String,String> headers=command.getHeaders();
-  CallHandler callHandler=null;
-  if (callJID != null) {
-    headers.put("call_protocol","XMPP");
-    headers.put("call_owner",callJID.toString());
-    headers.put("call_action","join");
-    try {
-      Presence presence1=new Presence();
-      presence1.setFrom(iq.getTo());
-      presence1.setTo(callJID);
-      presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-      sendPacket(presence1);
-      callHandler=CallHandler.findCall(callId);
-    }
- catch (    Exception e) {
-      reply.setError(PacketError.Condition.item_not_found);
-      e.printStackTrace();
-    }
-  }
- else {
-    callHandler=CallHandler.findCall(callId);
-  }
-  if (callHandler != null) {
-    Log.info("RayoComponent handleAnswerCommand found call handler " + callHandler);
-    CallHandler handsetHandler=CallHandler.findCall(JID.escapeNode(iq.getFrom().toString()));
-    if (handsetHandler != null) {
-      Log.info("RayoComponent handleAnswerCommand found handset handler " + handsetHandler);
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=iq.getTo().getNode();
+  String callerId=headers.get("caller_id");
+  Log.info("RayoComponent AnswerCommand " + callerId + " "+ callId);
+  if (callerId != null) {
+    JID callJID=getJID(callId);
+    CallHandler callHandler=null;
+    CallHandler handsetHandler=null;
+    if (callJID != null) {
+      callerId=callerId.substring(5);
+      headers.put("call_protocol","XMPP");
+      headers.put("call_owner",callerId);
+      headers.put("call_action","join");
       try {
-        CallParticipant cp=callHandler.getCallParticipant();
-        CallParticipant hp=handsetHandler.getCallParticipant();
-        hp.setFarParty(cp);
+        Presence presence1=new Presence();
+        presence1.setFrom(iq.getTo());
+        presence1.setTo(callerId);
+        presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
+        sendPacket(presence1);
+        callHandler=CallHandler.findCall(callId);
+        handsetHandler=CallHandler.findCall(JID.escapeNode(callerId));
+      }
+ catch (      Exception e) {
+        reply.setError(PacketError.Condition.item_not_found);
+        e.printStackTrace();
+      }
+    }
+ else {
+      callHandler=CallHandler.findCall(callId);
+      handsetHandler=CallHandler.findCall(JID.escapeNode(iq.getFrom().toString()));
+    }
+    if (callHandler != null && handsetHandler != null) {
+      CallParticipant cp=callHandler.getCallParticipant();
+      CallParticipant hp=handsetHandler.getCallParticipant();
+      Log.info("RayoComponent handleAnswerCommand found call handlers " + cp.getCallId() + " "+ hp.getCallId());
+      try {
+        long start=System.currentTimeMillis();
+        cp.setStartTimestamp(start);
         cp.setHandset(hp);
-        cp.setStartTimestamp(System.currentTimeMillis());
+        hp.setFarParty(cp);
+        hp.setStartTimestamp(start);
         cp.setHeaders(headers);
         String recording=cp.getConferenceId() + "-" + cp.getStartTimestamp()+ ".au";
         ConferenceManager.recordConference(cp.getConferenceId(),true,recording,"au");
         String destination=iq.getFrom().getNode();
         String source=cp.getName();
         if (callJID != null) {
-          source=callJID.getNode();
+          source=(new JID(callerId)).getNode();
           Config.createCallRecord(source,recording,"xmpp:" + iq.getFrom(),cp.getStartTimestamp(),0,"dialed");
-          Config.createCallRecord(destination,recording,"xmpp:" + callJID,cp.getStartTimestamp(),0,"received");
+          Config.createCallRecord(destination,recording,"xmpp:" + callerId,cp.getStartTimestamp(),0,"received");
+          sendMessage(new JID(callerId),iq.getFrom(),"Call started",recording);
         }
  else {
           Config.createCallRecord(destination,recording,"sip:" + cp.getPhoneNumber(),cp.getStartTimestamp(),0,"received");
+          sendMessage(iq.getFrom(),new JID(cp.getCallId() + "@" + getDomain()),"Call started",recording);
         }
       }
  catch (      ParseException e1) {

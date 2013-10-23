@@ -7,24 +7,26 @@ synchronized (memberList) {
       for (int i=0; i < memberList.size(); i++) {
         ConferenceMember member=(ConferenceMember)memberList.get(i);
         CallHandler callHandler=member.getCallHandler();
-        CallParticipant cp=callHandler.getCallParticipant();
-        String target=cp.getCallOwner();
-        Log.info("RayoComponent broadcastSpeaking checking " + target);
-        if (target != null && callId.equals(cp.getCallId()) == false) {
-          Presence presence=new Presence();
-          presence.setFrom(callId + "@rayo." + getDomain());
-          presence.setTo(target);
-          if (startSpeaking) {
-            StartedSpeakingEvent speaker=new StartedSpeakingEvent();
-            speaker.setSpeakerId(callId);
-            presence.getElement().add(rayoProvider.toXML(speaker));
-          }
+        if (callHandler != null) {
+          CallParticipant cp=callHandler.getCallParticipant();
+          String target=cp.getCallOwner();
+          Log.info("RayoComponent broadcastSpeaking checking " + target);
+          if (target != null && callId.equals(cp.getCallId()) == false) {
+            Presence presence=new Presence();
+            presence.setFrom(callId + "@rayo." + getDomain());
+            presence.setTo(target);
+            if (startSpeaking) {
+              StartedSpeakingEvent speaker=new StartedSpeakingEvent();
+              speaker.setSpeakerId(callId);
+              presence.getElement().add(rayoProvider.toXML(speaker));
+            }
  else {
-            StoppedSpeakingEvent speaker=new StoppedSpeakingEvent();
-            speaker.setSpeakerId(callId);
-            presence.getElement().add(rayoProvider.toXML(speaker));
+              StoppedSpeakingEvent speaker=new StoppedSpeakingEvent();
+              speaker.setSpeakerId(callId);
+              presence.getElement().add(rayoProvider.toXML(speaker));
+            }
+            sendPacket(presence);
           }
-          sendPacket(presence);
         }
       }
     }

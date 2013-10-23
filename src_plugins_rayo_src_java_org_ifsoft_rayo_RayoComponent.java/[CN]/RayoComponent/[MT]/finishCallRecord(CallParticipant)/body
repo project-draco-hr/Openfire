@@ -1,10 +1,29 @@
 {
+  Log.info("RayoComponent finishCallRecord " + cp.getStartTimestamp());
   if (cp.getStartTimestamp() > 0) {
     cp.setEndTimestamp(System.currentTimeMillis());
     Config.updateCallRecord(cp.getStartTimestamp(),(int)((cp.getEndTimestamp() - cp.getStartTimestamp()) / 1000));
     try {
       ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(cp.getConferenceId());
       conferenceManager.recordConference(false,null,null);
+      String target=cp.getCallOwner();
+      JID destination=getJID(conferenceManager.getCallId());
+      if (destination == null) {
+        destination=new JID(conferenceManager.getCallId() + "@" + getDomain());
+      }
+      if (target == null) {
+        if (cp.getHandset() != null) {
+          target=cp.getHandset().getCallOwner();
+        }
+      }
+      if (target != null) {
+        try {
+          sendMessage(new JID(target),destination,"Call ended",null);
+        }
+ catch (        Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
  catch (    Exception e) {
     }
