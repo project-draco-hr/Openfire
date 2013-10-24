@@ -12,37 +12,46 @@
       if (callHandler != null) {
         Log.info("RayoComponent notifyConferenceMonitors found call handler " + callHandler + " "+ farParty);
         CallParticipant callParticipant=callHandler.getCallParticipant();
-        if (callParticipant != null) {
-          ArrayList memberList=conferenceManager.getMemberList();
-          if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) && callId.equals(conferenceEvent.getCallId())) {
-            if (farParty != null && farParty.getCallParticipant().isHeld() == false) {
+        ArrayList memberList=conferenceManager.getMemberList();
+        if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT) && callId.equals(conferenceEvent.getCallId())) {
+          if (farParty != null && farParty.getCallParticipant().isHeld() == false) {
 synchronized (memberList) {
-                for (int i=0; i < memberList.size(); i++) {
-                  CallHandler participant=((ConferenceMember)memberList.get(i)).getCallHandler();
-                  participant.cancelRequest("Far Party has left");
-                }
-              }
-            }
-          }
-          int memberCount=memberList.size();
-          Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
-          if (groupName == null) {
-            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
-          }
- else {
-            Group group=GroupManager.getInstance().getGroup(groupName);
-            for (            JID memberJID : group.getMembers()) {
-              Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
-              for (              ClientSession session : sessions) {
-                routeJoinEvent(session.getAddress().toString(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
+              for (int i=0; i < memberList.size(); i++) {
+                CallHandler participant=((ConferenceMember)memberList.get(i)).getCallHandler();
+                participant.cancelRequest("Far Party has left");
               }
             }
           }
         }
-      }
-      if (conferenceManager.getMemberList().size() == 0) {
-        conferenceManager.recordConference(false,null,null);
-        conferenceManager.endConference(conferenceEvent.getConferenceId());
+        int memberCount=memberList.size();
+        Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
+        if (groupName == null) {
+          routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
+        }
+ else {
+          Group group=GroupManager.getInstance().getGroup(groupName);
+          for (          JID memberJID : group.getMembers()) {
+            Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
+            for (            ClientSession session : sessions) {
+              routeJoinEvent(session.getAddress().toString(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
+            }
+          }
+        }
+        if (memberCount == 0) {
+          conferenceManager.recordConference(false,null,null);
+          conferenceManager.endConference(conferenceEvent.getConferenceId());
+          CallParticipant heldCall=conferenceManager.getHeldCall();
+          if (heldCall != null) {
+            JID target=getJID(heldCall.getCallId());
+            if (target != null) {
+              Presence presence=new Presence();
+              presence.setFrom(callId + "@" + getDomain());
+              presence.setTo(target);
+              presence.getElement().add(rayoProvider.toXML(new EndEvent(null,EndEvent.Reason.valueOf("HANGUP"),callParticipant.getHeaders())));
+              sendPacket(presence);
+            }
+          }
+        }
       }
     }
   }

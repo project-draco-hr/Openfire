@@ -2,7 +2,7 @@
   Log.info("RayoComponent routeJoinEvent " + callee + " "+ callId+ " "+ groupName+ " "+ memberCount+ " "+ farParty);
   if (callee == null)   return;
   Presence presence=new Presence();
-  presence.setFrom(callId + "@rayo." + getDomain());
+  presence.setFrom(callId + "@" + getDomain());
   presence.setTo(callee);
   Map<String,String> headers=callParticipant.getHeaders();
   headers.put("call_owner",callParticipant.getCallOwner());
@@ -50,6 +50,7 @@
             if (fp.isHeld()) {
               Log.info("RayoComponent routeJoinEvent on hold ");
               fp.setHeld(false);
+              ConferenceManager.setHeldCall(conferenceEvent.getConferenceId(),null);
               presence.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
               sendPacket(presence);
             }
@@ -67,19 +68,26 @@
     }
  else     if (memberCount == 1) {
       if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
+        Log.info("RayoComponent routeJoinEvent only one person left");
         if (callId.equals(conferenceEvent.getCallId()) == false) {
           if (farParty != null) {
+            Log.info("RayoComponent routeJoinEvent handset leaving call " + farParty.getCallParticipant());
             CallParticipant fp=farParty.getCallParticipant();
             if (fp.isHeld()) {
+              Log.info("RayoComponent routeJoinEvent call held with " + callParticipant);
               presence.getElement().add(handsetProvider.toXML(new OnHoldEvent()));
               sendPacket(presence);
+              ConferenceManager.setHeldCall(conferenceEvent.getConferenceId(),callParticipant);
             }
           }
         }
  else {
+          Log.info("RayoComponent routeJoinEvent far party leaving call " + callParticipant);
           if (callParticipant.isHeld()) {
+            Log.info("RayoComponent routeJoinEvent call held with " + farParty);
             presence.getElement().add(handsetProvider.toXML(new OnHoldEvent()));
             sendPacket(presence);
+            ConferenceManager.setHeldCall(conferenceEvent.getConferenceId(),farParty.getCallParticipant());
           }
  else {
             finishCallRecord(callParticipant);
@@ -92,6 +100,7 @@
  else {
       presence.getElement().add(rayoProvider.toXML(new EndEvent(null,EndEvent.Reason.valueOf("HANGUP"),headers)));
       sendPacket(presence);
+      finishCallRecord(callParticipant);
     }
   }
 }
