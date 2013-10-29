@@ -1,25 +1,26 @@
 {
-  Log.info("RayoComponent handlePauseCommand " + iq.getFrom());
+  Log.info("RayoComponent handlePauseCommand " + iq.getFrom() + " "+ iq.getTo());
   IQ reply=IQ.createResultIQ(iq);
-  final String entityId=iq.getTo().getNode();
-  final String treatmentId=iq.getTo().getResource();
-  try {
-    CallHandler callHandler=CallHandler.findCall(entityId);
-    try {
+  final JID entityId=getJID(iq.getTo().getNode());
+  if (entityId != null) {
+    final String treatmentId=entityId.getResource();
+    final String callId=entityId.getNode();
+    CallHandler callHandler=CallHandler.findCall(callId);
+    if (callHandler != null) {
       callHandler.getMember().pauseTreatment(treatmentId,flag);
     }
- catch (    Exception e1) {
-      reply.setError(PacketError.Condition.internal_server_error);
+ else {
+      try {
+        ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(callId);
+        conferenceManager.getWGManager().pauseConferenceTreatment(treatmentId,flag);
+      }
+ catch (      ParseException e1) {
+        reply.setError(PacketError.Condition.item_not_found);
+      }
     }
   }
- catch (  NoSuchElementException e) {
-    try {
-      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(entityId);
-      conferenceManager.getWGManager().pauseConferenceTreatment(treatmentId,flag);
-    }
- catch (    ParseException e1) {
-      reply.setError(PacketError.Condition.item_not_found);
-    }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
   }
   return reply;
 }

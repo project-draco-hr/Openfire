@@ -21,7 +21,7 @@
         childElement.addAttribute(LOCAL_PORT,Integer.toString(channel.getPortA()));
         childElement.addAttribute(REMOTE_PORT,Integer.toString(channel.getPortB()));
         childElement.addAttribute(ID,channel.getAttachment());
-        childElement.addAttribute(URI,"handset:" + channel.getAttachment() + "@"+ getDomain()+ "/"+ iq.getFrom().getNode());
+        childElement.addAttribute(URI,"xmpp:" + channel.getAttachment() + "@"+ getDomain()+ "/webrtc");
         Log.debug("Created WebRTC handset channel {}:{}, {}:{}, {}:{}",new Object[]{HOST,LocalIPResolver.getLocalIP(),LOCAL_PORT,Integer.toString(channel.getPortA()),REMOTE_PORT,Integer.toString(channel.getPortB())});
         handleOnOffHook(handsetId,object,channel,reply);
       }
@@ -32,7 +32,7 @@
  else {
       final Element childElement=reply.setChildElement("ref",RAYO_CORE);
       childElement.addAttribute(ID,handsetId);
-      childElement.addAttribute(URI,"handset:" + handsetId + "@"+ getDomain()+ "/"+ iq.getFrom().getNode());
+      childElement.addAttribute(URI,handset.sipuri);
       Log.info("Created SIP handset channel " + handset.sipuri);
       handleOnOffHook(handsetId,object,null,reply);
     }

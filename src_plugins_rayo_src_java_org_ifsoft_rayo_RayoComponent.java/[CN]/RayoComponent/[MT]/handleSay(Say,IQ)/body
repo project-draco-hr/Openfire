@@ -8,10 +8,12 @@
     try {
       callHandler.playTreatmentToCall(treatmentId,this);
       final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+      childElement.addAttribute(ID,treatmentId);
       childElement.addAttribute(URI,(String)"xmpp:" + entityId + "@"+ getDomain()+ "/"+ treatmentId);
     }
  catch (    Exception e1) {
-      reply.setError(PacketError.Condition.internal_server_error);
+      e1.printStackTrace();
+      reply.setError(PacketError.Condition.not_allowed);
     }
   }
  catch (  NoSuchElementException e) {
@@ -20,10 +22,12 @@
       try {
         conferenceManager.addTreatment(treatmentId);
         final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+        childElement.addAttribute(ID,treatmentId);
         childElement.addAttribute(URI,(String)"xmpp:" + entityId + "@"+ getDomain()+ "/"+ treatmentId);
       }
  catch (      Exception e2) {
-        reply.setError(PacketError.Condition.internal_server_error);
+        e2.printStackTrace();
+        reply.setError(PacketError.Condition.not_allowed);
       }
     }
  catch (    ParseException e1) {

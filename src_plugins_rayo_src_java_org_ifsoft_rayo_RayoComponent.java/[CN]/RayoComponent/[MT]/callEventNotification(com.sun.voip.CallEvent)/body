@@ -41,7 +41,11 @@
             sendPacket(presence);
           }
  else           if ("230 TREATMENT DONE".equals(myEvent)) {
-            Log.info("230 TREATMENT DONE");
+            presence.setFrom(callEvent.getCallId() + "@" + getDomain()+ "/"+ callEvent.getTreatmentId());
+            SayCompleteEvent complete=new SayCompleteEvent();
+            complete.setReason(SayCompleteEvent.Reason.valueOf("SUCCESS"));
+            presence.getElement().add(sayProvider.toXML(complete));
+            sendPacket(presence);
           }
         }
       }
