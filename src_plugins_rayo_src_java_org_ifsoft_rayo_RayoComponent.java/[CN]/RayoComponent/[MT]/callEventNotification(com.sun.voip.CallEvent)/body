@@ -21,7 +21,7 @@
           if ("001 STATE CHANGED".equals(myEvent)) {
             if ("100 INVITED".equals(callState)) {
               if (cp.isAutoAnswer() == false) {
-                presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+                setRingingState(presence,ConferenceManager.isTransferCall(callEvent.getConferenceId()),headers);
                 sendPacket(presence);
               }
             }

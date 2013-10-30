@@ -1,0 +1,25 @@
+{
+  Log.info("RayoComponent handleRecord " + iq.getFrom());
+  IQ reply=IQ.createResultIQ(iq);
+  final String callId=JID.escapeNode(iq.getFrom().toString());
+  final String uri=command.getTo().toString();
+  CallHandler callHandler=CallHandler.findCall(callId);
+  if (callHandler != null) {
+    try {
+      final String fileName=uri.substring(5);
+      callHandler.getCallParticipant().setRecordDirectory(System.getProperty("com.sun.voip.server.Bridge.soundsDirectory","."));
+      callHandler.getMemberReceiver().setRecordFromMember(true,fileName,"au");
+      final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+      childElement.addAttribute(ID,fileName);
+      childElement.addAttribute(URI,(String)uri);
+    }
+ catch (    Exception e1) {
+      e1.printStackTrace();
+      reply.setError(PacketError.Condition.not_allowed);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

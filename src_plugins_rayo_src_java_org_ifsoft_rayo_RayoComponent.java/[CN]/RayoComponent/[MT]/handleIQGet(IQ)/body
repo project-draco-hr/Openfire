@@ -31,6 +31,20 @@
       }
       return reply;
     }
+    if (RAYO_RECORD.equals(namespace)) {
+      IQ reply=null;
+      Object object=recordProvider.fromXML(element);
+      if (object instanceof Record) {
+        reply=handleRecord((Record)object,iq);
+      }
+ else       if (object instanceof PauseCommand) {
+        reply=handlePauseRecordCommand(true,iq);
+      }
+ else       if (object instanceof ResumeCommand) {
+        reply=handlePauseRecordCommand(false,iq);
+      }
+      return reply;
+    }
     if (RAYO_SAY.equals(namespace)) {
       IQ reply=null;
       Object object=sayProvider.fromXML(element);
@@ -38,10 +52,10 @@
         reply=handleSay((Say)object,iq);
       }
  else       if (object instanceof PauseCommand) {
-        reply=handlePauseCommand(true,iq);
+        reply=handlePauseSayCommand(true,iq);
       }
  else       if (object instanceof ResumeCommand) {
-        reply=handlePauseCommand(false,iq);
+        reply=handlePauseSayCommand(false,iq);
       }
       return reply;
     }
@@ -71,10 +85,10 @@
         dial.setTo(redirect.getTo());
         dial.setFrom(new URI("xmpp:" + iq.getFrom()));
         dial.setHeaders(redirect.getHeaders());
-        reply=handleDialCommand((DialCommand)dial,iq);
+        reply=handleDialCommand((DialCommand)dial,iq,true);
       }
  else       if (object instanceof DialCommand) {
-        reply=handleDialCommand((DialCommand)object,iq);
+        reply=handleDialCommand((DialCommand)object,iq,false);
       }
  else       if (object instanceof StopCommand) {
       }

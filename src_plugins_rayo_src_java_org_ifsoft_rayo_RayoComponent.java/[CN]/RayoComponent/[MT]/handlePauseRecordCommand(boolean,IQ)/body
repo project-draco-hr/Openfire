@@ -1,0 +1,22 @@
+{
+  Log.info("RayoComponent handlePauseRecordCommand " + iq.getFrom() + " "+ iq.getTo());
+  IQ reply=IQ.createResultIQ(iq);
+  final String callId=JID.escapeNode(iq.getFrom().toString());
+  CallHandler callHandler=CallHandler.findCall(callId);
+  if (callHandler != null) {
+    try {
+      CallParticipant cp=callHandler.getCallParticipant();
+      String fileName=cp.getFromRecordingFile();
+      cp.setRecordDirectory(System.getProperty("com.sun.voip.server.Bridge.soundsDirectory","."));
+      callHandler.getMemberReceiver().setRecordFromMember(flag,fileName,"au");
+    }
+ catch (    Exception e1) {
+      e1.printStackTrace();
+      reply.setError(PacketError.Condition.not_allowed);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

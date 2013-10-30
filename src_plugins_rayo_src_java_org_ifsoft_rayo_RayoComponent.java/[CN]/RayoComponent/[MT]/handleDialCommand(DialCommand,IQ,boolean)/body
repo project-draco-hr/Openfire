@@ -1,0 +1,107 @@
+{
+  Log.info("RayoComponent handleHandsetDialCommand " + iq.getFrom());
+  IQ reply=IQ.createResultIQ(iq);
+  Map<String,String> headers=command.getHeaders();
+  String from=command.getFrom().toString();
+  String to=command.getTo().toString();
+  boolean toPhone=to.indexOf("sip:") == 0 || to.indexOf("tel:") == 0;
+  boolean toXmpp=to.indexOf("xmpp:") == 0;
+  String callerName=headers.get("caller_name");
+  String calledName=headers.get("called_name");
+  String handsetId=iq.getFrom().toString();
+  JoinCommand join=command.getJoin();
+  if (join != null) {
+    if (join.getType() == JoinDestinationType.CALL) {
+    }
+ else {
+    }
+    reply.setError(PacketError.Condition.feature_not_implemented);
+  }
+ else {
+    if (callerName == null) {
+      callerName=iq.getFrom().getNode();
+      headers.put("caller_name",callerName);
+    }
+    if (toPhone) {
+      if (calledName == null) {
+        calledName=to;
+        headers.put("called_name",calledName);
+      }
+      CallParticipant cp=new CallParticipant();
+      cp.setVoiceDetection(true);
+      cp.setCallOwner(handsetId);
+      cp.setMediaPreference("PCMU/8000/1");
+      cp.setProtocol("SIP");
+      cp.setDisplayName(callerName);
+      cp.setPhoneNumber(to);
+      cp.setName(calledName);
+      cp.setHeaders(headers);
+      reply=doPhoneAndPcCall(JID.escapeNode(handsetId),cp,reply,transferCall);
+    }
+ else     if (toXmpp) {
+      headers.put("call_protocol","XMPP");
+      JID destination=getJID(to.substring(5));
+      if (destination != null) {
+        String source=JID.escapeNode(handsetId);
+        CallHandler handsetHandler=CallHandler.findCall(source);
+        if (handsetHandler != null) {
+          CallParticipant hp=handsetHandler.getCallParticipant();
+          headers.put("mixer_name",hp.getConferenceId());
+          try {
+            ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(hp.getConferenceId());
+            conferenceManager.setTransferCall(transferCall);
+          }
+ catch (          Exception e) {
+          }
+          if (findUser(destination.getNode()) != null) {
+            routeXMPPCall(reply,destination,source,calledName,headers,hp.getConferenceId());
+          }
+ else {
+            int count=0;
+            try {
+              Group group=GroupManager.getInstance().getGroup(destination.getNode());
+              for (              JID memberJID : group.getMembers()) {
+                if (iq.getFrom().toBareJID().equals(memberJID.toBareJID()) == false) {
+                  Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
+                  for (                  ClientSession session : sessions) {
+                    routeXMPPCall(reply,session.getAddress(),source,calledName,headers,hp.getConferenceId());
+                    count++;
+                  }
+                }
+              }
+            }
+ catch (            GroupNotFoundException e) {
+              if (XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").hasChatRoom(destination.getNode())) {
+                MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(destination.getNode());
+                if (room != null) {
+                  for (                  MUCRole role : room.getOccupants()) {
+                    if (iq.getFrom().toBareJID().equals(role.getUserAddress().toBareJID()) == false) {
+                      routeXMPPCall(reply,role.getUserAddress(),source,calledName,headers,hp.getConferenceId());
+                      count++;
+                    }
+                  }
+                }
+              }
+ else {
+                reply.setError(PacketError.Condition.item_not_found);
+              }
+            }
+            if (count == 0) {
+              reply.setError(PacketError.Condition.item_not_found);
+            }
+          }
+        }
+ else {
+          reply.setError(PacketError.Condition.item_not_found);
+        }
+      }
+ else {
+        reply.setError(PacketError.Condition.item_not_found);
+      }
+    }
+ else {
+      reply.setError(PacketError.Condition.feature_not_implemented);
+    }
+  }
+  return reply;
+}

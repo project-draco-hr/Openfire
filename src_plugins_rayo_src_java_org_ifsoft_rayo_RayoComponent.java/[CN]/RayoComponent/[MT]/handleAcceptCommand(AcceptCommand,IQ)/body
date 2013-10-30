@@ -13,7 +13,7 @@
       Presence presence=new Presence();
       presence.setFrom(iq.getTo());
       presence.setTo(callerId);
-      presence.getElement().add(rayoProvider.toXML(new RingingEvent(null,headers)));
+      setRingingState(presence,ConferenceManager.isTransferCall(mixer),headers);
       sendPacket(presence);
     }
  else     reply.setError(PacketError.Condition.item_not_found);

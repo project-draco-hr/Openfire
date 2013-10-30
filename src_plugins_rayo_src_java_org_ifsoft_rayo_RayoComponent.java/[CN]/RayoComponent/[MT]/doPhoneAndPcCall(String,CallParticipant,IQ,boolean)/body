@@ -1,0 +1,22 @@
+{
+  Log.info("RayoComponent doPhoneAndPcCall " + handsetId);
+  CallHandler handsetHandler=CallHandler.findCall(handsetId);
+  if (handsetHandler != null) {
+    try {
+      setMixer(handsetHandler,reply,cp,transferCall);
+      OutgoingCallHandler outgoingCallHandler=new OutgoingCallHandler(this,cp);
+      outgoingCallHandler.start();
+      final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+      childElement.addAttribute(URI,(String)"xmpp:" + cp.getCallId() + "@"+ getDomain());
+      childElement.addAttribute(ID,(String)cp.getCallId());
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+      reply.setError(PacketError.Condition.internal_server_error);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

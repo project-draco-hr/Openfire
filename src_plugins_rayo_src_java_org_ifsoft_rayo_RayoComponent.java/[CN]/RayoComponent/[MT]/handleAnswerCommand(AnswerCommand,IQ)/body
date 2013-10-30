@@ -14,13 +14,16 @@
       headers.put("call_owner",callerId);
       headers.put("call_action","join");
       try {
-        Presence presence1=new Presence();
-        presence1.setFrom(iq.getTo());
-        presence1.setTo(callerId);
-        presence1.getElement().add(rayoProvider.toXML(new AnsweredEvent(null,headers)));
-        sendPacket(presence1);
         callHandler=CallHandler.findCall(callId);
         handsetHandler=CallHandler.findCall(JID.escapeNode(callerId));
+        if (handsetHandler != null) {
+          CallParticipant hp=handsetHandler.getCallParticipant();
+          Presence presence1=new Presence();
+          presence1.setFrom(iq.getTo());
+          presence1.setTo(callerId);
+          setAnsweredState(presence1,ConferenceManager.isTransferCall(hp.getConferenceId()),headers);
+          sendPacket(presence1);
+        }
       }
  catch (      Exception e) {
         reply.setError(PacketError.Condition.item_not_found);

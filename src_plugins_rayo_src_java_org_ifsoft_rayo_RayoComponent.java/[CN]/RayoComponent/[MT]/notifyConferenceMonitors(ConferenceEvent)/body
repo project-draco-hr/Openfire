@@ -26,14 +26,14 @@ synchronized (memberList) {
         int memberCount=memberList.size();
         Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
         if (groupName == null) {
-          routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
+          routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty,conferenceManager);
         }
  else {
           Group group=GroupManager.getInstance().getGroup(groupName);
           for (          JID memberJID : group.getMembers()) {
             Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(memberJID.getNode());
             for (            ClientSession session : sessions) {
-              routeJoinEvent(session.getAddress().toString(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty);
+              routeJoinEvent(session.getAddress().toString(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty,conferenceManager);
             }
           }
         }
@@ -51,6 +51,9 @@ synchronized (memberList) {
               sendPacket(presence);
             }
           }
+        }
+ else         if (memberCount == 2) {
+          conferenceManager.setTransferCall(false);
         }
       }
     }
