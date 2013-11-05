@@ -30,7 +30,6 @@
       CallParticipant cp=new CallParticipant();
       cp.setVoiceDetection(true);
       cp.setCallOwner(handsetId);
-      cp.setMediaPreference("PCMU/8000/1");
       cp.setProtocol("SIP");
       cp.setDisplayName(callerName);
       cp.setPhoneNumber(to);
@@ -47,6 +46,7 @@
         if (handsetHandler != null) {
           CallParticipant hp=handsetHandler.getCallParticipant();
           headers.put("mixer_name",hp.getConferenceId());
+          headers.put("codec_name","PCM/48000/2".equals(hp.getMediaPreference()) ? "OPUS" : "PCMU");
           try {
             ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(hp.getConferenceId());
             conferenceManager.setTransferCall(transferCall);

@@ -3,12 +3,10 @@
   if (localMediaPreference != null) {
     if (remoteSdpInfo.isSupported(localMediaPreference)) {
       mediaInfo=localMediaPreference;
-      if (Logger.logLevel >= Logger.LOG_INFO) {
-        Logger.println("Using local media preference:  " + mediaInfo);
-      }
+      Logger.println("Using local media preference:  " + mediaInfo);
     }
   }
-  if (mediaInfo == null && remoteSdpInfo.preferredMediaSpecified()) {
+  if (remoteSdpInfo.preferredMediaSpecified()) {
     MediaInfo remoteMediaPreference=remoteSdpInfo.getMediaInfo();
     if (remoteMediaPreference.getSampleRate() <= maxSampleRate && remoteMediaPreference.getChannels() <= maxChannels) {
       try {

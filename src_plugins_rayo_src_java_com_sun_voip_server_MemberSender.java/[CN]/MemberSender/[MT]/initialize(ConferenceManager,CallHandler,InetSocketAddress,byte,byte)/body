@@ -41,6 +41,19 @@
       return;
     }
   }
+  if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
+    try {
+      opusEncoder=Opus.encoder_create(opusSampleRate,opusChannels);
+      if (opusEncoder == 0) {
+        Logger.println("Call " + cp + " OPUS encoder creation error ");
+        callHandler.cancelRequest("OPUS encoder creation error ");
+        return;
+      }
+    }
+ catch (    Exception e) {
+      e.printStackTrace();
+    }
+  }
   initializationDone=true;
   Logger.writeFile("Call " + cp + " MemberSender initialization done...");
 }

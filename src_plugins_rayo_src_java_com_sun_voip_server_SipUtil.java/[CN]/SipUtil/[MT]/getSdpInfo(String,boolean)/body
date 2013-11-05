@@ -18,7 +18,7 @@
       Logger.writeFile("media setting is " + remoteSdpInfo.getMediaInfo());
     }
  catch (    ParseException e) {
-      throw new ParseException("Unsupported media " + remoteSdpInfo.getMediaInfo(),0);
+      remoteSdpInfo.setMediaInfo(new MediaInfo((byte)0,RtpPacket.PCMU_ENCODING,8000,1,false));
     }
   }
   return remoteSdpInfo;

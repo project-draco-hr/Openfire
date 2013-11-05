@@ -13,6 +13,17 @@
       Logger.println("Call " + cp + " ulawToLinear time "+ ((System.nanoTime() - start) / 1000000000.)+ " seconds");
     }
   }
+ else   if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
+    int inputOffset=RtpPacket.HEADER_SIZE;
+    int inputLength=length - RtpPacket.HEADER_SIZE;
+    int frameSizeInSamplesPerChannel=Opus.decoder_get_nb_samples(opusDecoder,receivedData,inputOffset,inputLength);
+    if (frameSizeInSamplesPerChannel > 1) {
+      int frameSizeInBytes=outputFrameSize * opusChannels * frameSizeInSamplesPerChannel;
+      byte[] output=new byte[frameSizeInBytes];
+      frameSizeInSamplesPerChannel=Opus.decode(opusDecoder,receivedData,inputOffset,inputLength,output,0,frameSizeInSamplesPerChannel,0);
+      data=AudioConversion.bytesToLittleEndianInts(output);
+    }
+  }
  else   if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
     if (traceCall || Logger.logLevel == -1) {
       start=System.nanoTime();

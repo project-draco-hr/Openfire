@@ -72,6 +72,19 @@
         return;
       }
     }
+ else     if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
+      try {
+        opusDecoder=Opus.decoder_create(opusSampleRate,opusChannels);
+        if (opusDecoder == 0) {
+          Logger.println("Call " + cp + " OPUS decoder creation error ");
+          callHandler.cancelRequest("OPUS decoder creation error ");
+          return;
+        }
+      }
+ catch (      Exception e) {
+        e.printStackTrace();
+      }
+    }
     if (cp.getJoinConfirmationTimeout() == 0) {
       joinConfirmationReceived=true;
       readyToReceiveData=true;

@@ -8,7 +8,8 @@
   MixDescriptor memberMixDescriptor=(MixDescriptor)mixDescriptors.get(1);
   int[] memberContribution=memberMixDescriptor.getMixDataSource().getCurrentContribution();
   if (memberContribution == null) {
-    System.arraycopy(conferenceMixContribution,0,outData,0,conferenceMixContribution.length);
+    if (outData.length <= conferenceMixContribution.length)     System.arraycopy(conferenceMixContribution,0,outData,0,outData.length);
+ else     System.arraycopy(conferenceMixContribution,0,outData,0,conferenceMixContribution.length);
     if (Logger.logLevel == -39) {
       checkData(outData,useFastMix);
     }

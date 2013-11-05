@@ -71,6 +71,7 @@
       return false;
     }
   }
+  byte[] opusBytes=null;
   if (myMediaInfo.getEncoding() == RtpPacket.PCMU_ENCODING) {
     AudioConversion.linearToUlaw(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
   }
@@ -86,6 +87,15 @@
       Logger.println("Call " + this + ":  "+ e.getMessage());
       return false;
     }
+  }
+ else   if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
+    byte[] input=AudioConversion.littleEndianIntsToBytes(dataToSend);
+    byte[] output=new byte[Opus.MAX_PACKET];
+    int outLength=Opus.encode(opusEncoder,input,0,frameSizeInSamplesPerChannel,output,0,output.length);
+    opusBytes=new byte[outLength];
+    System.arraycopy(output,0,opusBytes,0,outLength);
+    System.arraycopy(output,0,rtpData,RtpPacket.HEADER_SIZE,outLength);
+    senderPacket.setLength(outLength + RtpPacket.HEADER_SIZE);
   }
  else {
     AudioConversion.intsToBytes(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
@@ -107,7 +117,7 @@
           Logger.writeFile("Call " + cp + " back from sending data");
         }
       }
- catch (      IOException e) {
+ catch (      Exception e) {
         if (!done) {
           Logger.error("Call " + cp + " sendData "+ e.getMessage());
           e.printStackTrace();
@@ -118,7 +128,7 @@
   }
  else {
     try {
-      getWebRTCParticipant().pushAudio(rtpData,dataToSend);
+      getWebRTCParticipant().pushAudio(senderPacket.getData(),opusBytes);
     }
  catch (    Exception e) {
       return false;

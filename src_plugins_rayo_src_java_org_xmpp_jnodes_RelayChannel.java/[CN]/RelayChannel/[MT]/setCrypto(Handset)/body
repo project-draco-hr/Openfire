@@ -13,12 +13,10 @@
       encryptor=new Encryptor(SDPCryptoSuite.getEncryptionMode(handset.cryptoSuite),localCryptoKey,localCryptoSalt,remoteCryptoKey,remoteCryptoSalt);
       encryptor2=new Encryptor(SDPCryptoSuite.getEncryptionMode(handset.cryptoSuite),remoteCryptoKey,remoteCryptoSalt,localCryptoKey,localCryptoSalt);
       decoder=Opus.decoder_create(sampleRate,channels);
-      encoder=Opus.encoder_create(sampleRate,channels);
       if (decoder == 0)       Log.error("Opus decoder creation error ");
-      if (encoder == 0)       Log.error("Opus encoder creation error ");
-      if (decoder == 0 || encoder == 0) {
+      if (decoder == 0) {
         handset.codec="PCMU";
-        Log.warn("Opus encoder/decoder creation failure, PCMU will be used in default");
+        Log.warn("Opus decoder creation failure, PCMU will be used in default");
       }
     }
  catch (    Exception e) {

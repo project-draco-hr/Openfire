@@ -1,11 +1,18 @@
 {
   try {
-    for (int i=0; i < outData.length; i++) {
-      outData[i]=conferenceData[i] - memberData[i];
+    if (outData.length <= memberData.length) {
+      for (int i=0; i < outData.length; i++) {
+        outData[i]=conferenceData[i] - memberData[i];
+      }
+    }
+ else {
+      for (int i=0; i < memberData.length; i++) {
+        outData[i]=conferenceData[i] - memberData[i];
+      }
     }
   }
  catch (  IndexOutOfBoundsException e) {
-    Logger.println("Exception!  conferenceData length " + conferenceData.length + " memberData.length "+ memberData.length+ " outData length "+ outData.length);
+    Logger.println("mixData Exception!  conferenceData length " + conferenceData.length + " memberData.length "+ memberData.length+ " outData length "+ outData.length);
     e.printStackTrace();
   }
 }

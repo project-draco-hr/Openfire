@@ -1,16 +1,15 @@
 {
-  if (Logger.logLevel >= Logger.LOG_INFO) {
-    Logger.println(callEvent.toString());
-  }
+  Logger.println("IncomingConferenceHandler " + callEvent.toString());
   if (callEvent.equals(CallEvent.STATE_CHANGED) && callEvent.getCallState().equals(CallState.ESTABLISHED)) {
     if (callEvent.getInfo() != null) {
       Logger.println("IncomingConferenceHandler:  " + callEvent.getInfo());
     }
     if (Config.getInstance().getMeetingCode(phoneNo) != null) {
       meetingCode=Config.getInstance().getMeetingCode(phoneNo);
+      Logger.println("IncomingConferenceHandler:  meeting code " + meetingCode);
       if (Config.getInstance().getPassCode(meetingCode,phoneNo) == null) {
         try {
-          incomingCallHandler.transferCall(Config.getInstance().getMeetingCode(phoneNo));
+          incomingCallHandler.transferCall(meetingCode);
           state=IN_MEETING;
         }
  catch (        IOException e) {
