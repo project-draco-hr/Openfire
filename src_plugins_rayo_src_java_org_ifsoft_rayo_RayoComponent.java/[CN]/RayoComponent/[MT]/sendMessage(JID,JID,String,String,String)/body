@@ -4,8 +4,8 @@
   Message packet=new Message();
   packet.setTo(to);
   packet.setFrom(from);
-  packet.setType(Message.Type.chat);
-  packet.setThread("http://" + getDomain() + ":"+ port+ "/rayo/recordings/"+ fileName);
+  packet.setType("chat".equals(type) ? Message.Type.chat : Message.Type.groupchat);
+  if (fileName != null)   packet.setThread("http://" + getDomain() + ":"+ port+ "/rayo/recordings/"+ fileName);
   packet.setBody(body);
   sendPacket(packet);
 }

@@ -1,0 +1,13 @@
+{
+  if (XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").hasChatRoom(mixer)) {
+    MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(mixer);
+    if (room != null) {
+      for (      MUCRole role : room.getOccupants()) {
+        if (participant.toBareJID().equals(role.getUserAddress().toBareJID())) {
+          sendMessage(new JID(mixer + "@conference." + getDomain()),participant,message,recording,"groupchat");
+          break;
+        }
+      }
+    }
+  }
+}

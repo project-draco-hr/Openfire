@@ -53,11 +53,11 @@
           source=(new JID(callerId)).getNode();
           Config.createCallRecord(source,recording,"xmpp:" + iq.getFrom(),cp.getStartTimestamp(),0,"dialed");
           Config.createCallRecord(destination,recording,"xmpp:" + callerId,cp.getStartTimestamp(),0,"received");
-          sendMessage(new JID(callerId),iq.getFrom(),"Call started",recording);
+          sendMessage(new JID(callerId),iq.getFrom(),"Call started",recording,"chat");
         }
  else {
           Config.createCallRecord(destination,recording,"sip:" + cp.getPhoneNumber(),cp.getStartTimestamp(),0,"received");
-          sendMessage(iq.getFrom(),new JID(cp.getCallId() + "@" + getDomain()),"Call started",recording);
+          sendMessage(iq.getFrom(),new JID(cp.getCallId() + "@" + getDomain()),"Call started",recording,"chat");
         }
       }
  catch (      ParseException e1) {

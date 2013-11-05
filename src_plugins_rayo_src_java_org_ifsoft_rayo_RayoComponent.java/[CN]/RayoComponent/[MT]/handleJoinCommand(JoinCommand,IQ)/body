@@ -9,10 +9,16 @@
   }
   if (mixer != null) {
     try {
-      IncomingCallHandler.transferCall(iq.getTo().getNode(),mixer);
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(mixer);
+      if (conferenceManager.getMemberList().size() == 1) {
+        String recording=mixer + "-" + System.currentTimeMillis()+ ".au";
+        conferenceManager.recordConference(true,recording,"au");
+        sendMucMessage(mixer,recording,iq.getFrom(),"Started voice recording");
+      }
+      sendMucMessage(mixer,null,iq.getFrom(),"Joined voice conversation");
     }
  catch (    Exception e) {
-      reply.setError(PacketError.Condition.internal_server_error);
+      reply.setError(PacketError.Condition.item_not_found);
     }
   }
  else {

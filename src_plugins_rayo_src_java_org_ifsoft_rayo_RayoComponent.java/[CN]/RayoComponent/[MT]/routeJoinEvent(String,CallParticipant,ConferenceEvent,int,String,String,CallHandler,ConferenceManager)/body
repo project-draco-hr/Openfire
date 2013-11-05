@@ -73,6 +73,7 @@
           if (farParty != null) {
             Log.info("RayoComponent routeJoinEvent handset leaving call " + farParty.getCallParticipant());
             CallParticipant fp=farParty.getCallParticipant();
+            if (callParticipant.isAutoAnswer())             fp.setHeld(true);
             if (fp.isHeld()) {
               Log.info("RayoComponent routeJoinEvent call held with " + callParticipant);
               presence.getElement().add(handsetProvider.toXML(new OnHoldEvent()));

@@ -1,11 +1,27 @@
 {
   Log.info("RayoComponent handleUnjoinCommand " + iq.getFrom());
   IQ reply=IQ.createResultIQ(iq);
-  try {
-    IncomingCallHandler.transferCall(iq.getTo().getNode(),defaultIncomingConferenceId);
+  String mixer=null;
+  if (command.getType() == JoinDestinationType.CALL) {
   }
- catch (  Exception e) {
-    reply.setError(PacketError.Condition.internal_server_error);
+ else {
+    mixer=command.getFrom();
+  }
+  if (mixer != null) {
+    try {
+      ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(mixer);
+      if (conferenceManager.getMemberList().size() == 1) {
+        conferenceManager.recordConference(false,null,null);
+        sendMucMessage(mixer,null,iq.getFrom(),"Stopped voice recording");
+      }
+      sendMucMessage(mixer,null,iq.getFrom(),"Left voice conversation");
+    }
+ catch (    Exception e) {
+      reply.setError(PacketError.Condition.item_not_found);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.feature_not_implemented);
   }
   return reply;
 }
