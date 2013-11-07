@@ -21,7 +21,9 @@
         if (Logger.logLevel == -77) {
           Logger.println("Call " + cp + " sending comfort payload");
         }
-        if (getWebRTCParticipant() == null)         sendComfortNoisePayload();
+        if (getWebRTCParticipant() == null) {
+          if (cp.getRtmfpSendStream() == null)           sendComfortNoisePayload();
+        }
  else         getWebRTCParticipant().sendComfortNoisePayload();
       }
     }
@@ -74,6 +76,7 @@
   byte[] opusBytes=null;
   if (myMediaInfo.getEncoding() == RtpPacket.PCMU_ENCODING) {
     AudioConversion.linearToUlaw(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
+    senderPacket.setLength(rtpData.length);
   }
  else   if (myMediaInfo.getEncoding() == RtpPacket.SPEEX_ENCODING) {
     try {
@@ -109,20 +112,31 @@
     Logger.println("Call " + cp + " sending data from socket "+ datagramChannel.socket().getLocalAddress()+ ":"+ datagramChannel.socket().getLocalPort()+ " to "+ senderPacket.getSocketAddress());
   }
   if (getWebRTCParticipant() == null) {
-    if (cp.getInputTreatment() == null) {
-      try {
-        senderPacket.setSocketAddress(memberAddress);
-        datagramChannel.send(ByteBuffer.wrap(senderPacket.getData(),0,senderPacket.getLength()),memberAddress);
-        if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
-          Logger.writeFile("Call " + cp + " back from sending data");
-        }
+    if (cp.getRtmfpSendStream() != null) {
+      if (RtmfpCallAgent.publishHandlers.containsKey(cp.getRtmfpSendStream())) {
+        int ts=(int)(System.currentTimeMillis() - startTime);
+        byte[] rtmfp=new byte[rtpData.length + 1 - RtpPacket.HEADER_SIZE];
+        rtmfp[0]=(byte)130;
+        System.arraycopy(rtpData,RtpPacket.HEADER_SIZE,rtmfp,1,rtmfp.length - 1);
+        RtmfpCallAgent.publishHandlers.get(cp.getRtmfpSendStream()).B(ts,new AudioPacket(rtmfp,rtmfp.length),0);
       }
- catch (      Exception e) {
-        if (!done) {
-          Logger.error("Call " + cp + " sendData "+ e.getMessage());
-          e.printStackTrace();
+    }
+ else {
+      if (cp.getInputTreatment() == null) {
+        try {
+          senderPacket.setSocketAddress(memberAddress);
+          datagramChannel.send(ByteBuffer.wrap(senderPacket.getData(),0,senderPacket.getLength()),memberAddress);
+          if (Logger.logLevel >= Logger.LOG_MOREDETAIL) {
+            Logger.writeFile("Call " + cp + " back from sending data");
+          }
         }
-        return false;
+ catch (        Exception e) {
+          if (!done) {
+            Logger.error("Call " + cp + " sendData "+ e.getMessage());
+            e.printStackTrace();
+          }
+          return false;
+        }
       }
     }
   }
@@ -135,7 +149,6 @@
     }
   }
   senderPacket.setBuffer(rtpData);
-  senderPacket.setLength(rtpData.length);
   if (Logger.logLevel >= Logger.LOG_DEBUG) {
     log(true);
   }

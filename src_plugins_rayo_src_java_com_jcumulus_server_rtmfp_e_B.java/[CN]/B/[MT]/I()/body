@@ -1,0 +1,65 @@
+{
+  G g=new G();
+  A();
+  if (A.size() == 0) {
+    D.error("AMFReader::readItem called without a AMFReader::readObject or a AMFReader::readArray before");
+    g.A(com.jcumulus.server.rtmfp.e.H.End);
+    return g;
+  }
+  D d=(D)A.getLast();
+  E=d.D;
+  boolean flag=false;
+  if (d.G == 17) {
+    D.error("AMFReader::readItem on a dictionary, used AMFReader::readKey and AMFReader::readValue rather");
+    g.A(com.jcumulus.server.rtmfp.e.H.End);
+    return g;
+  }
+  if (d.F.size() > 0) {
+    g.A((String)d.F.getFirst());
+    d.F.removeFirst();
+  }
+ else   if (d.G == 10) {
+    if (d.A == 0) {
+      flag=true;
+    }
+ else {
+      d.A--;
+      g.A("");
+    }
+  }
+ else   if (!d.E) {
+    if (d.C) {
+      d.C=false;
+      g.A(com.jcumulus.server.rtmfp.e.H.RawObjectContent);
+      return g;
+    }
+    flag=true;
+  }
+ else {
+    String s=J();
+    g.A(s);
+    if (Strings.isNullOrEmpty(s)) {
+      if (d.G == 9) {
+        d.G=10;
+        return I();
+      }
+      flag=true;
+    }
+ else     if (d.G == 0)     ;
+  }
+  if (flag) {
+    if (E == 0 && d.G != 10) {
+      byte byte0=F.L();
+      if (byte0 != 9)       D.error("AMF0 end marker object absent");
+    }
+    K=d.B;
+    A();
+    A.removeLast();
+    g.A(com.jcumulus.server.rtmfp.e.H.End);
+    return g;
+  }
+ else {
+    g.A(G());
+    return g;
+  }
+}

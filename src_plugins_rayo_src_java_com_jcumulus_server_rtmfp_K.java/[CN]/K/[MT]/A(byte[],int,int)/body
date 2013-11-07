@@ -1,0 +1,30 @@
+{
+  if (C == null)   return abyte0;
+  try {
+    byte abyte1[]=new byte[16];
+    IvParameterSpec ivparameterspec=new IvParameterSpec(abyte1);
+    Cipher cipher=Cipher.getInstance("AES/CBC/NoPadding");
+    if (E == Encryption.ENCRYPT)     cipher.init(1,C,ivparameterspec);
+    if (E == Encryption.DECRYPT)     cipher.init(2,C,ivparameterspec);
+    return cipher.doFinal(abyte0,i,j);
+  }
+ catch (  NoSuchAlgorithmException nosuchalgorithmexception) {
+    D.error(nosuchalgorithmexception.getMessage(),nosuchalgorithmexception);
+  }
+catch (  NoSuchPaddingException nosuchpaddingexception) {
+    D.error(nosuchpaddingexception.getMessage(),nosuchpaddingexception);
+  }
+catch (  InvalidKeyException invalidkeyexception) {
+    D.error(invalidkeyexception.getMessage(),invalidkeyexception);
+  }
+catch (  BadPaddingException badpaddingexception) {
+    D.error(badpaddingexception.getMessage(),badpaddingexception);
+  }
+catch (  IllegalBlockSizeException illegalblocksizeexception) {
+    D.error(illegalblocksizeexception.getMessage(),illegalblocksizeexception);
+  }
+catch (  InvalidAlgorithmParameterException invalidalgorithmparameterexception) {
+    D.error(invalidalgorithmparameterexception.getMessage(),invalidalgorithmparameterexception);
+  }
+  return null;
+}

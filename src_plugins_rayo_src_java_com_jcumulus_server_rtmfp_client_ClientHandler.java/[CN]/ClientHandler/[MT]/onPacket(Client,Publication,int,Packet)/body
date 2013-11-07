@@ -1,0 +1,14 @@
+{
+  String streamName=b.C();
+  if (RtmfpCallAgent.playHandlers.containsKey(streamName)) {
+    MemberReceiver memberReceiver=RtmfpCallAgent.playHandlers.get(streamName);
+    if (memberReceiver != null) {
+      if (counter < 20)       log.info("onPacket " + streamName);
+      byte[] stream=a.G();
+      int[] l16Buffer=new int[stream.length - 1];
+      AudioConversion.ulawToLinear(stream,1,stream.length - 1,l16Buffer);
+      l16Buffer=MemberSender.normalize(l16Buffer);
+      memberReceiver.handleWebRtcMedia(l16Buffer,counter++);
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  ChannelBuffer channelbuffer=(ChannelBuffer)messageevent.getMessage();
+  if (channelbuffer.readableBytes() < 16)   Log.debug((new StringBuilder()).append("Incorrect packet received from ").append(messageevent.getRemoteAddress()).toString());
+  byte abyte0[]=channelbuffer.array();
+  AudioPacket packet=new AudioPacket(abyte0,channelbuffer.readableBytes());
+  int i=com.jcumulus.server.rtmfp.N.A(packet);
+  H h=sessions.A(i);
+  if (h == null) {
+    Log.warn((new StringBuilder()).append("Session with id=").append(i).append(" isn't found").toString());
+    return;
+  }
+ else {
+    h.A(messageevent.getChannel(),messageevent.getRemoteAddress());
+    h.A(packet);
+    return;
+  }
+}

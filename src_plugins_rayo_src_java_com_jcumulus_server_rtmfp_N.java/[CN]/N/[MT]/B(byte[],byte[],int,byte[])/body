@@ -1,0 +1,19 @@
+{
+  try {
+    SecretKeySpec secretkeyspec=new SecretKeySpec(abyte1,0,i,"hmacSHA256");
+    Mac mac=Mac.getInstance("hmacSHA256");
+    mac.init(secretkeyspec);
+    byte abyte3[]=mac.doFinal(abyte2);
+    secretkeyspec=new SecretKeySpec(abyte0,"hmacSHA256");
+    mac=Mac.getInstance("hmacSHA256");
+    mac.init(secretkeyspec);
+    return mac.doFinal(abyte3);
+  }
+ catch (  NoSuchAlgorithmException nosuchalgorithmexception) {
+    E.error(nosuchalgorithmexception.getMessage(),nosuchalgorithmexception);
+  }
+catch (  InvalidKeyException invalidkeyexception) {
+    E.error(invalidkeyexception.getMessage(),invalidkeyexception);
+  }
+  return null;
+}

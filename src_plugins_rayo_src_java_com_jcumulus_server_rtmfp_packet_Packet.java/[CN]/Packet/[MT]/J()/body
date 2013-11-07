@@ -1,0 +1,13 @@
+{
+  byte byte0=0;
+  byte byte1=L();
+  int i=0;
+  for (; (byte1 & 0x80) > 0 && byte0 < 3; byte0++) {
+    i<<=7;
+    i|=byte1 & 0x7f;
+    byte1=L();
+  }
+  i<<=byte0 >= 3 ? 8 : 7;
+  i|=byte1;
+  return i;
+}

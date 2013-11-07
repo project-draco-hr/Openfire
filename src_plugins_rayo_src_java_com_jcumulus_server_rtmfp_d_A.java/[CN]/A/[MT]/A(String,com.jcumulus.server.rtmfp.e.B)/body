@@ -1,0 +1,34 @@
+{
+  if ("play".equals(s)) {
+    H();
+    a=b1.E();
+    double d=-2000D;
+    if (b1.B())     d=b1.N().doubleValue();
+    if (I.getStreams().A(K,b,a,O,d))     W=_A.PLAYING;
+  }
+ else   if ("closeStream".equals(s))   H();
+ else   if ("publish".equals(s)) {
+    H();
+    a=b1.E();
+    _.info((new StringBuilder()).append("Create new publication with name - ").append(a).toString());
+    String s1;
+    if (b1.B())     s1=b1.E();
+    try {
+      I.getStreams().A(K,b,a,O);
+      W=_A.PUBLISHING;
+    }
+ catch (    Exception exception) {
+      _.error(exception.getMessage(),exception);
+    }
+  }
+ else   if (W == _A.PUBLISHING) {
+    if (c == null) {
+      c=(Publication)I.getPublications().get(a);
+      if (c == null)       _.error((new StringBuilder()).append("Publication ").append(a).append(" unfound, related for the ").append(s).append(" message").toString());
+    }
+    if (c != null)     c.A(s,b1.M());
+  }
+ else {
+    super.A(s,b1);
+  }
+}

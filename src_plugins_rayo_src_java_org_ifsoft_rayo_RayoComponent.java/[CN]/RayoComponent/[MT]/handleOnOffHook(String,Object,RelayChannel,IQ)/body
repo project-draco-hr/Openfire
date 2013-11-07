@@ -31,9 +31,28 @@
       }
       if (cm.isPrivateCall() == false || cm.getMemberList().size() < 2) {
         if (channel == null) {
-          cp.setPhoneNumber(handset.sipuri);
-          cp.setAutoAnswer(true);
-          cp.setProtocol("SIP");
+          if (handset.sipuri.indexOf("sip:") == 0) {
+            cp.setPhoneNumber(handset.sipuri);
+            cp.setAutoAnswer(true);
+            cp.setProtocol("SIP");
+          }
+ else           if (handset.sipuri.indexOf("rtmfp:") == 0) {
+            String[] tokens=handset.sipuri.split(":");
+            if (tokens.length == 3) {
+              cp.setProtocol("Rtmfp");
+              cp.setRtmfpSendStream(tokens[1]);
+              cp.setRtmfpRecieveStream(tokens[2]);
+              cp.setAutoAnswer(true);
+            }
+ else {
+              reply.setError(PacketError.Condition.not_allowed);
+              return;
+            }
+          }
+ else {
+            reply.setError(PacketError.Condition.not_allowed);
+            return;
+          }
         }
  else {
           cp.setMediaPreference(mediaPreference);

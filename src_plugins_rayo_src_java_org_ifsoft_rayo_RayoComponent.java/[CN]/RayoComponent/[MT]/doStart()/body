@@ -18,4 +18,24 @@
   if (fastpath != null) {
     Log.info("RayoComponent found Fastpath");
   }
+  try {
+    Log.info("Starting jCumulus.....");
+    sessions=new Sessions();
+    ExecutorService executorservice=Executors.newCachedThreadPool();
+    NioDatagramChannelFactory niodatagramchannelfactory=new NioDatagramChannelFactory(executorservice);
+    bootstrap=new ConnectionlessBootstrap(niodatagramchannelfactory);
+    OrderedMemoryAwareThreadPoolExecutor orderedmemoryawarethreadpoolexecutor=new OrderedMemoryAwareThreadPoolExecutor(10,0x100000L,0x40000000L,100L,TimeUnit.MILLISECONDS,Executors.defaultThreadFactory());
+    bootstrap.setPipelineFactory(new ServerPipelineFactory(sessions,orderedmemoryawarethreadpoolexecutor));
+    bootstrap.setOption("reuseAddress",Boolean.valueOf(true));
+    bootstrap.setOption("sendBufferSize",Integer.valueOf(1215));
+    bootstrap.setOption("receiveBufferSize",Integer.valueOf(2048));
+    bootstrap.setOption("receiveBufferSizePredictorFactory",new FixedReceiveBufferSizePredictorFactory(2048));
+    InetSocketAddress inetsocketaddress=new InetSocketAddress(JiveGlobals.getIntProperty("voicebridge.rtmfp.port",1935));
+    Log.info("Listening on " + inetsocketaddress.getPort() + " port");
+    channel=bootstrap.bind(inetsocketaddress);
+  }
+ catch (  Exception e) {
+    Log.error("jCumulus startup failure");
+    e.printStackTrace();
+  }
 }
