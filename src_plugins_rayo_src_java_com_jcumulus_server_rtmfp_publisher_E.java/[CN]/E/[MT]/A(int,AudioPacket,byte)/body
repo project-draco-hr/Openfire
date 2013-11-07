@@ -1,0 +1,79 @@
+{
+  if (i <= J) {
+    F.error((new StringBuilder()).append("Stage ").append(i).append(" not sorted on flow").append(A).toString());
+    return;
+  }
+  if (i > J + 1) {
+    int j=i - J - 1;
+    J=i;
+    if (B != null)     B=null;
+    if ((byte0 != 0) & (M != null)) {
+      A(j + 1);
+      return;
+    }
+    A(j);
+  }
+ else {
+    J=i;
+  }
+  if ((byte0 & H.intValue()) != 0) {
+    if (B != null)     B=null;
+    return;
+  }
+  if ((byte0 & M.intValue()) != 0) {
+    if (B == null) {
+      F.warn("A received message tells to have a 'beforepart' and nevertheless partbuffer is empty, certainly some packets were lost");
+      A(1);
+      B=null;
+      return;
+    }
+    B.A(a);
+    if ((byte0 & C.intValue()) != 0)     return;
+    a=B.A();
+  }
+ else   if ((byte0 & C.intValue()) != 0) {
+    if (B != null) {
+      F.error("A received message tells to have not 'beforepart' and nevertheless partbuffer exists");
+      A(B.B());
+    }
+    B=new com.jcumulus.server.rtmfp.publisher.D(a);
+    return;
+  }
+  byte byte1=B(a);
+  if (byte1 != 0) {
+    O.A(Double.valueOf(0.0D));
+    String s=null;
+    com.jcumulus.server.rtmfp.flow.B b=new com.jcumulus.server.rtmfp.flow.B(a);
+    if (byte1 == 20 || byte1 == 15) {
+      s=b.E();
+      if (byte1 == 20) {
+        O.A(b.N());
+        if (b.G() == com.jcumulus.server.rtmfp.flow.H.Null)         b.P();
+      }
+    }
+    try {
+switch (byte1) {
+case 15:
+case 20:
+        A(s,b);
+      break;
+case 8:
+    C(a);
+  break;
+case 9:
+A(a);
+break;
+default :
+A(byte1,a);
+break;
+}
+}
+ catch (Exception exception) {
+F.error(exception.getMessage(),exception);
+L=(new StringBuilder()).append("flow error, ").append(exception).toString();
+}
+}
+O.A(Double.valueOf(0.0D));
+if (B != null) B=null;
+if ((byte0 & E.intValue()) != 0) E();
+}

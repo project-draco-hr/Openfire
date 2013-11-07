@@ -1,0 +1,80 @@
+{
+  A();
+  C c=new C();
+  H h=G();
+  if (h == com.jcumulus.server.rtmfp.flow.H.Null) {
+    F.D(1);
+    c.A(false);
+    return c;
+  }
+  if (h != com.jcumulus.server.rtmfp.flow.H.Object) {
+    D.error((new StringBuilder()).append("Type ").append(h).append(" is not a AMF Object type").toString());
+    c.A(false);
+    return c;
+  }
+  if (E == 0) {
+    if (C)     I.push(Integer.valueOf(F.H()));
+    if (F() == 16) {
+      F.D(1);
+      c.A(J());
+    }
+ else {
+      F.D(1);
+    }
+    D d=new D(E);
+    A.push(d);
+    if (J != 0)     d.B=J;
+    d.E=true;
+    c.A(true);
+    return c;
+  }
+  F.D(1);
+  int i=F.H();
+  int j=F.J();
+  boolean flag=(j & 1) != 0;
+  j>>=1;
+  if (!flag && j > B.size()) {
+    D.error("AMF3 reference not found");
+    c.A(false);
+    return c;
+  }
+  D d1=new D(E);
+  A.push(d1);
+  if (flag) {
+    if (C)     B.push(Integer.valueOf(i));
+  }
+ else {
+    d1.B=F.H();
+    F.E(((Integer)B.get(j)).intValue());
+    j=F.J() >> 1;
+  }
+  flag=(j & 1) != 0;
+  j>>=1;
+  if (flag) {
+    G.push(Integer.valueOf(i));
+    c.A(J());
+  }
+ else   if (j <= G.size()) {
+    K=F.H();
+    F.E(((Integer)G.get(j)).intValue());
+    j=F.J() >> 2;
+    c.A(J());
+  }
+ else {
+    D.error("AMF3 classDef reference not found");
+    j=2;
+  }
+  if ((j & 1) != 0)   d1.C=true;
+ else   if ((j & 2) != 0)   d1.E=true;
+  j>>=2;
+  if (!d1.C) {
+    d1.F=new LinkedList();
+    for (int k=0; k < j; k++) {
+      String s=J();
+      d1.F.add(s);
+    }
+  }
+  A();
+  c.A(true);
+  return c;
+}

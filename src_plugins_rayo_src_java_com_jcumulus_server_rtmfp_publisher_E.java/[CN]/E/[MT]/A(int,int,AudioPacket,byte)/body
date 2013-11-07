@@ -1,0 +1,50 @@
+{
+  if (G)   return;
+  int k=J + 1;
+  if (i < k) {
+    F.debug((new StringBuilder()).append("Stage ").append(i).append(" on flow ").append(A).append(" has already been received").toString());
+    return;
+  }
+  if (j > i) {
+    F.warn((new StringBuilder()).append("DeltaNAck ").append(j).append(" superior to stage ").append(i).append(" on flow ").append(A).toString());
+    j=i;
+  }
+  if (J < i - j) {
+    Iterator iterator=P.keySet().iterator();
+    do {
+      if (!iterator.hasNext())       break;
+      Integer integer=(Integer)iterator.next();
+      if (integer.intValue() > i)       break;
+      AudioPacket a1=((com.jcumulus.server.rtmfp.publisher.B)P.get(integer)).B();
+      A(integer.intValue(),a1,((com.jcumulus.server.rtmfp.publisher.B)P.get(integer)).A());
+      if (G)       return;
+      iterator.remove();
+    }
+ while (true);
+    k=i;
+  }
+  if (i > k) {
+    com.jcumulus.server.rtmfp.publisher.B b=(com.jcumulus.server.rtmfp.publisher.B)P.get(Integer.valueOf(i));
+    if (b == null) {
+      P.put(Integer.valueOf(i),new com.jcumulus.server.rtmfp.publisher.B(a,byte0));
+      if (P.size() > 100)       F.debug((new StringBuilder()).append("fragmentMap.size()=").append(P.size()).toString());
+    }
+ else {
+      F.debug((new StringBuilder()).append("Stage ").append(i).append(" on flow ").append(A).append(" has already been received").toString());
+    }
+  }
+ else {
+    A(k++,a,byte0);
+    Iterator iterator1=P.keySet().iterator();
+    do {
+      if (!iterator1.hasNext())       break;
+      Integer integer1=(Integer)iterator1.next();
+      if (integer1.intValue() > k)       break;
+      AudioPacket a2=((com.jcumulus.server.rtmfp.publisher.B)P.get(integer1)).B();
+      A(k++,a2,((com.jcumulus.server.rtmfp.publisher.B)P.get(integer1)).A());
+      if (G)       break;
+      iterator1.remove();
+    }
+ while (true);
+  }
+}
