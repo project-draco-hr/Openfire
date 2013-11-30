@@ -7,7 +7,7 @@
   PKCS10CertificationRequest csr=new PKCS10CertificationRequest(signatureAlgorithm,xname,pubKey,null,privKey);
   ByteArrayOutputStream baos=new ByteArrayOutputStream();
   DEROutputStream deros=new DEROutputStream(baos);
-  deros.writeObject(csr.getDERObject());
+  deros.writeObject(csr.toASN1Primitive());
   String sTmp=new String(org.bouncycastle.util.encoders.Base64.encode(baos.toByteArray()));
   sb.append("-----BEGIN NEW CERTIFICATE REQUEST-----\n");
   for (int iCnt=0; iCnt < sTmp.length(); iCnt+=CERT_REQ_LINE_LENGTH) {

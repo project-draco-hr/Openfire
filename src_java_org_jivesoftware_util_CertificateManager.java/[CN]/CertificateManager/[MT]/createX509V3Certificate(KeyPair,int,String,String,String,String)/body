@@ -16,9 +16,9 @@
   certGenerator.setPublicKey(pubKey);
   certGenerator.setSignatureAlgorithm(signAlgoritm);
   boolean critical=subjectDN == null || "".equals(subjectDN.trim());
-  DERSequence othernameSequence=new DERSequence(new ASN1Encodable[]{new DERObjectIdentifier("1.3.6.1.5.5.7.8.5"),new DERTaggedObject(true,0,new DERUTF8String(domain))});
+  ASN1Sequence othernameSequence=new DERSequence(new ASN1Encodable[]{new DERObjectIdentifier("1.3.6.1.5.5.7.8.5"),new DERTaggedObject(true,0,new DERUTF8String(domain))});
   GeneralName othernameGN=new GeneralName(GeneralName.otherName,othernameSequence);
-  GeneralNames subjectAltNames=new GeneralNames(new DERSequence(new ASN1Encodable[]{othernameGN}));
+  GeneralNames subjectAltNames=new GeneralNames(new GeneralName[]{othernameGN});
   certGenerator.addExtension(X509Extensions.SubjectAlternativeName,critical,subjectAltNames);
   X509Certificate cert=certGenerator.generateX509Certificate(privKey,"BC",new SecureRandom());
   cert.checkValidity(new Date());

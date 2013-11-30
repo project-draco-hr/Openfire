@@ -1,0 +1,31 @@
+{
+  PropertyEventDispatcher.addListener(this);
+  System.setProperty("net.java.sip.communicator.SC_HOME_DIR_LOCATION",pluginDirectory.getPath());
+  System.setProperty("net.java.sip.communicator.SC_HOME_DIR_NAME",".");
+  String maxVal=JiveGlobals.getProperty(MAX_PORT_NUMBER_PROPERTY_NAME);
+  String minVal=JiveGlobals.getProperty(MIN_PORT_NUMBER_PROPERTY_NAME);
+  if (maxVal != null)   setIntProperty(DefaultStreamConnector.MAX_PORT_NUMBER_PROPERTY_NAME,maxVal);
+  if (minVal != null)   setIntProperty(DefaultStreamConnector.MIN_PORT_NUMBER_PROPERTY_NAME,minVal);
+  checkNatives();
+  ComponentManager componentManager=ComponentManagerFactory.getComponentManager();
+  String subdomain=ComponentImpl.SUBDOMAIN;
+  Component component=new ComponentImpl();
+  boolean added=false;
+  try {
+    componentManager.addComponent(subdomain,component);
+    added=true;
+  }
+ catch (  ComponentException ce) {
+    ce.printStackTrace(System.err);
+  }
+  if (added) {
+    this.componentManager=componentManager;
+    this.subdomain=subdomain;
+    this.component=component;
+  }
+ else {
+    this.componentManager=null;
+    this.subdomain=null;
+    this.component=null;
+  }
+}

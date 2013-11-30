@@ -10,7 +10,7 @@
       if (type == 0) {
         try {
           ASN1InputStream decoder=new ASN1InputStream((byte[])item.get(1));
-          DERSequence otherNameSeq=(DERSequence)decoder.readObject();
+          ASN1Sequence otherNameSeq=(ASN1Sequence)decoder.readObject();
           DERObjectIdentifier objectId=(DERObjectIdentifier)otherNameSeq.getObjectAt(0);
           Log.debug("Parsing otherName for subject alternative names: " + objectId.toString());
           if (!OTHERNAME_XMPP_OID.equals(objectId.getId())) {
@@ -19,7 +19,7 @@
           }
           try {
             final String identity;
-            DEREncodable o=otherNameSeq.getObjectAt(1);
+            ASN1Encodable o=otherNameSeq.getObjectAt(1);
             if (o instanceof DERTaggedObject) {
               ASN1TaggedObject ato=DERTaggedObject.getInstance(o);
               Log.debug("... processing DERTaggedObject: " + ato.toString());
