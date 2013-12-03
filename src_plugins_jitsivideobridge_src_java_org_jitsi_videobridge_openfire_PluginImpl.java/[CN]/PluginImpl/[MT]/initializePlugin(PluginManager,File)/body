@@ -2,6 +2,16 @@
   PropertyEventDispatcher.addListener(this);
   System.setProperty("net.java.sip.communicator.SC_HOME_DIR_LOCATION",pluginDirectory.getPath());
   System.setProperty("net.java.sip.communicator.SC_HOME_DIR_NAME",".");
+  try {
+    String appName=JiveGlobals.getProperty(VIDEO_CONFERENCE_PROPERTY_NAME,"videobridge");
+    Log.info("Initialize Web App " + appName);
+    ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+    WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/" + appName);
+    context.setWelcomeFiles(new String[]{"index.html"});
+  }
+ catch (  Exception e) {
+    Log.error("Jitsi Videobridge web app initialize error",e);
+  }
   String maxVal=JiveGlobals.getProperty(MAX_PORT_NUMBER_PROPERTY_NAME);
   String minVal=JiveGlobals.getProperty(MIN_PORT_NUMBER_PROPERTY_NAME);
   if (maxVal != null)   setIntProperty(DefaultStreamConnector.MAX_PORT_NUMBER_PROPERTY_NAME,maxVal);
