@@ -4,11 +4,12 @@
   System.setProperty("net.java.sip.communicator.SC_HOME_DIR_NAME",".");
   System.setProperty("org.jitsi.impl.neomedia.transform.srtp.SRTPCryptoContext.checkReplay",JiveGlobals.getProperty(CHECKREPLAY_PROPERTY_NAME,"false"));
   try {
-    String appName=JiveGlobals.getProperty(VIDEO_CONFERENCE_PROPERTY_NAME,"videobridge");
+    String appName=JiveGlobals.getProperty(VIDEO_CONFERENCE_PROPERTY_NAME,"jitmeet");
     Log.info("Initialize Web App " + appName);
     ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
     WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/" + appName);
     context.setWelcomeFiles(new String[]{"index.html"});
+    createIQHandlers();
   }
  catch (  Exception e) {
     Log.error("Jitsi Videobridge web app initialize error",e);

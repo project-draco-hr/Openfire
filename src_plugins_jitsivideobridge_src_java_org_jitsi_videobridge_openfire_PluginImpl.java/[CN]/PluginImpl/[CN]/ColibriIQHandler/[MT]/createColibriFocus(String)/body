@@ -1,0 +1,17 @@
+{
+  Log.info("ColibriIQHandler createColibriFocus " + vBridge);
+  LocalClientSession session;
+  if (sessions.containsKey(vBridge)) {
+    session=sessions.get(vBridge);
+  }
+ else {
+    WSConnection wsConnection=new WSConnection(vBridge,vBridge);
+    session=SessionManager.getInstance().createClientSession(wsConnection,new BasicStreamID(vBridge + "-" + System.currentTimeMillis()));
+    wsConnection.setRouter(new SessionPacketRouter(session));
+    AuthToken authToken=new AuthToken(vBridge,true);
+    session.setAuthToken(authToken,vBridge);
+    sessions.put(vBridge,session);
+    Presence presence=new Presence();
+    wsConnection.getRouter().route(presence);
+  }
+}
