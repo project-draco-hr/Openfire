@@ -8,6 +8,10 @@
       ColibriCommand command=(ColibriCommand)object;
       reply=handleColibriCommand(command,iq);
     }
+ else {
+      reply=IQ.createResultIQ(iq);
+      reply.setError(PacketError.Condition.not_allowed);
+    }
     return reply;
   }
  catch (  Exception e) {

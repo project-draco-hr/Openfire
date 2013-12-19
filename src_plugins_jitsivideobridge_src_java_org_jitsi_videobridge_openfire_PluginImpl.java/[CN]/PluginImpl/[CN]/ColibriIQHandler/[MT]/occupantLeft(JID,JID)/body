@@ -1,0 +1,9 @@
+{
+  MUCRoom mucRoom=mucManager.getMultiUserChatService(roomJID).getChatRoom(roomJID.getNode());
+  Log.info("ColibriIQHandler occupantLeft " + roomJID + " "+ user);
+  String focusAgentName="colibri.focus.agent." + roomJID.getNode();
+  if (sessions.containsKey(focusAgentName)) {
+    FocusAgent focusAgent=sessions.get(focusAgentName);
+    focusAgent.removeColibriChannel(user);
+  }
+}

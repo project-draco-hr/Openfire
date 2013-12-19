@@ -1,0 +1,46 @@
+{
+  Log.info("FocusAgent deliver\n" + packet);
+  IQ iq=(IQ)packet;
+  if (iq.getType() == IQ.Type.result) {
+    Element conference=iq.getChildElement().createCopy();
+    focusId=conference.attributeValue("id");
+    String id=packet.getID();
+    if (ids.containsKey(id)) {
+      Participant participant=ids.remove(id);
+      if (users.containsKey(participant.getUser().toString()))       updateUser(participant,conference);
+ else       addUser(participant,conference);
+      Log.info("FocusAgent response for user " + participant + " "+ focusId+ "\n"+ conference);
+    }
+ else     Log.error("FocusAgent deliver cannot find iq owner " + id + "\n"+ packet);
+    if (firstParticipant != null) {
+      createColibriChannel(firstParticipant);
+      firstParticipant=null;
+    }
+  }
+ else   if (iq.getType() == IQ.Type.error) {
+    focusId=null;
+    count=0;
+    Log.error("Videobrideg error \n" + packet);
+    for (    Participant reciepient : users.values()) {
+      Log.info("routeColibriEvent - E " + reciepient);
+      sendRayoEvent(reciepient,null,false,reciepient);
+    }
+  }
+ else   if (iq.getType() == IQ.Type.set || iq.getType() == IQ.Type.get) {
+    JID user=iq.getFrom();
+    Element root=iq.getChildElement();
+    Element conference=null;
+    if (user.toString().equals("jitsi-videobridge." + domainName)) {
+    }
+ else {
+      conference=root.element("conference").createCopy();
+      IQ reply=IQ.createResultIQ(iq);
+      if (users.containsKey(user.toString()))       answerUser(users.get(user.toString()),conference);
+ else       reply.setError(PacketError.Condition.not_allowed);
+      router.route(reply);
+    }
+  }
+ else {
+    Log.warn("Unexpected Videobrideg message \n" + packet);
+  }
+}

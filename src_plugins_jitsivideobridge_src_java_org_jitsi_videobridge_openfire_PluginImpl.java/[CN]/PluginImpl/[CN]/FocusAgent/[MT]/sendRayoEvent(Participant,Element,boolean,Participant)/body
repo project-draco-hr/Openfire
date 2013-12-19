@@ -1,0 +1,22 @@
+{
+  Presence presence=new Presence();
+  presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+  presence.setTo(reciepient.getUser());
+  if (isAdd) {
+    AddSourceEvent event=new AddSourceEvent();
+    event.setMuc(roomJid);
+    event.setNickname(participant.getNickname());
+    event.setParticipant(participant.getUser());
+    event.setConference(conference);
+    presence.getElement().add(colibriProvider.toXML(event));
+  }
+ else {
+    RemoveSourceEvent event=new RemoveSourceEvent();
+    event.setMuc(roomJid);
+    event.setNickname(participant.getNickname());
+    event.setParticipant(participant.getUser());
+    event.setActive(focusId != null);
+    presence.getElement().add(colibriProvider.toXML(event));
+  }
+  router.route(presence);
+}

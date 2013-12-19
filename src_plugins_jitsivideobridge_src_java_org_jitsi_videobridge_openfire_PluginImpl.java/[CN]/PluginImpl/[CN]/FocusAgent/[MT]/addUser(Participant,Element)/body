@@ -1,0 +1,25 @@
+{
+  users.put(participant.getUser().toString(),participant);
+  Presence presence=new Presence();
+  presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+  presence.setTo(participant.getUser());
+  ColibriOfferEvent event=new ColibriOfferEvent();
+  event.setMuc(roomJid);
+  event.setNickname(participant.getNickname());
+  event.setParticipant(participant.getUser());
+  event.setConference(conference);
+  presence.getElement().add(colibriProvider.toXML(event));
+  router.route(presence);
+  for (Iterator i=conference.elementIterator("content"); i.hasNext(); ) {
+    Element content=(Element)i.next();
+    Element channel=content.element("channel");
+    if ("audio".equals(content.attributeValue("name"))) {
+      participant.audioChannelId=channel.attributeValue("id");
+      channels.put(participant.audioChannelId,participant);
+    }
+ else {
+      participant.videoChannelId=channel.attributeValue("id");
+      channels.put(participant.videoChannelId,participant);
+    }
+  }
+}
