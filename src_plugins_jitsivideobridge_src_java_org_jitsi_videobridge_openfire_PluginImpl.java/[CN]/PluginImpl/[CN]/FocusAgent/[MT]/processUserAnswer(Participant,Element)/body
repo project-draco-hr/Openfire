@@ -1,0 +1,29 @@
+{
+  String nickname=participant.getNickname();
+  IQ iq=new IQ(IQ.Type.set);
+  iq.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+  iq.setTo("jitsi-videobridge." + domainName);
+  String id=nickname + "-" + System.currentTimeMillis();
+  ids.put(id,participant);
+  iq.setID(id);
+  iq.setChildElement(conference.createCopy());
+  router.route(iq);
+  ssrcs.put(participant.getUser().toString(),conference);
+  for (  Participant reciepient : users.values()) {
+    if (participant.getUser().toString().equals(reciepient.getUser().toString()) == false) {
+      Element conf=ssrcs.get(reciepient.getUser().toString());
+      if (conf != null) {
+        Presence presence=new Presence();
+        presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+        presence.setTo(participant.getUser());
+        AddSourceEvent event=new AddSourceEvent();
+        event.setMuc(roomJid);
+        event.setNickname(participant.getNickname());
+        event.setParticipant(participant.getUser());
+        event.setConference(conf);
+        presence.getElement().add(colibriProvider.toXML(event));
+        router.route(presence);
+      }
+    }
+  }
+}
