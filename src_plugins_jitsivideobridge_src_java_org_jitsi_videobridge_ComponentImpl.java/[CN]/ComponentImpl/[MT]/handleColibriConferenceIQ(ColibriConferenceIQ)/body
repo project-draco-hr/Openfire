@@ -1,0 +1,57 @@
+{
+  String id=conferenceIQ.getID();
+  String focus=conferenceIQ.getFrom();
+  Conference conference=(id == null) ? videoBridge.createConference(focus) : videoBridge.getConference(id,focus);
+  ColibriConferenceIQ responseConferenceIQ;
+  if (conference == null) {
+    responseConferenceIQ=null;
+  }
+ else {
+    responseConferenceIQ=new ColibriConferenceIQ();
+    conference.describe(responseConferenceIQ);
+    for (    ColibriConferenceIQ.Content contentIQ : conferenceIQ.getContents()) {
+      Content content=conference.getOrCreateContent(contentIQ.getName());
+      if (content == null) {
+        responseConferenceIQ=null;
+      }
+ else {
+        ColibriConferenceIQ.Content responseContentIQ=new ColibriConferenceIQ.Content(content.getName());
+        responseConferenceIQ.addContent(responseContentIQ);
+        for (        ColibriConferenceIQ.Channel channelIQ : contentIQ.getChannels()) {
+          String channelID=channelIQ.getID();
+          int channelExpire=channelIQ.getExpire();
+          Channel channel;
+          if (channelID == null) {
+            channel=(channelExpire == 0) ? null : content.createChannel();
+          }
+ else {
+            channel=content.getChannel(channelID);
+          }
+          if (channel == null) {
+            responseConferenceIQ=null;
+          }
+ else {
+            if (channelExpire != ColibriConferenceIQ.Channel.EXPIRE_NOT_SPECIFIED) {
+              channel.setExpire(channelExpire);
+              if ((channelExpire == 0) && channel.isExpired())               continue;
+            }
+            Boolean initiator=channelIQ.isInitiator();
+            if (initiator != null)             channel.setInitiator(initiator);
+            channel.setPayloadTypes(channelIQ.getPayloadTypes());
+            channel.setTransport(channelIQ.getTransport());
+            channel.setDirection(channelIQ.getDirection());
+            ColibriConferenceIQ.Channel responseChannelIQ=new ColibriConferenceIQ.Channel();
+            channel.describe(responseChannelIQ);
+            responseContentIQ.addChannel(responseChannelIQ);
+          }
+          if (responseConferenceIQ == null)           break;
+        }
+      }
+      if (responseConferenceIQ == null)       break;
+    }
+  }
+  if (responseConferenceIQ != null) {
+    responseConferenceIQ.setType(org.jivesoftware.smack.packet.IQ.Type.RESULT);
+  }
+  return responseConferenceIQ;
+}

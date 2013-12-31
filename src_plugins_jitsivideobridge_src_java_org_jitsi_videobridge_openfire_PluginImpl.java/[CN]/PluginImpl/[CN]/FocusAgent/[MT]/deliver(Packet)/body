@@ -1,5 +1,5 @@
 {
-  Log.debug("FocusAgent deliver\n" + packet);
+  Log.debug("FocusAgent deliver\n" + packet + " "+ getVideoBridge());
   IQ iq=(IQ)packet;
   if (iq.getType() == IQ.Type.result) {
     Element conference=iq.getChildElement().createCopy();
@@ -7,15 +7,14 @@
     String id=packet.getID();
     if (ids.containsKey(id)) {
       Participant participant=ids.remove(id);
-      if (users.containsKey(participant.getUser().toString()))       updateUser(participant);
+      if (users.containsKey(participant.getUser().toString()))       removeUser(participant);
  else       addUser(participant,conference);
       Log.info("FocusAgent response for user " + participant + " "+ focusId+ "\n"+ conference);
     }
  else     Log.error("FocusAgent deliver cannot find iq owner " + id + "\n"+ packet);
   }
  else   if (iq.getType() == IQ.Type.error) {
-    focusId=null;
-    count=0;
+    closeColibri();
     Log.error("Videobrideg error \n" + packet);
     for (    Participant reciepient : users.values()) {
       sendRayoEvent(reciepient,null,false,reciepient);

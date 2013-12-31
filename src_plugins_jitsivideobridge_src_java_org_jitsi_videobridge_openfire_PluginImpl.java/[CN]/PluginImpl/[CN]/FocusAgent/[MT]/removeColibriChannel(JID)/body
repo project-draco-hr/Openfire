@@ -2,11 +2,29 @@
   String username=user.toString();
   count--;
   if (count < 1) {
-    focusId=null;
+    closeColibri();
   }
   if (users.containsKey(username)) {
-    Participant participant=users.remove(username);
+    Participant participant=users.get(username);
     routeColibriEvent(participant,null,false);
+    for (    Participant reciepient : users.values()) {
+      if (participant.getUser().toString().equals(reciepient.getUser().toString()) == false) {
+        Element conf=ssrcs.get(reciepient.getUser().toString());
+        if (conf != null) {
+          Presence presence=new Presence();
+          presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+          presence.setTo(participant.getUser());
+          RemoveSourceEvent event=new RemoveSourceEvent();
+          event.setMuc(roomJid);
+          event.setNickname(participant.getNickname());
+          event.setParticipant(participant.getUser());
+          event.setConference(conf);
+          presence.getElement().add(colibriProvider.toXML(event));
+          router.route(presence);
+        }
+      }
+    }
+    users.remove(username);
   }
   Log.info("removeColibriChannel " + count);
 }

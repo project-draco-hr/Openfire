@@ -1,0 +1,28 @@
+{
+  Log.info("attachVideobridge Found Jitsi Videobridge, attaching.." + conferenceId);
+  if (XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").hasChatRoom(conferenceId)) {
+    MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(conferenceId);
+    if (room != null) {
+      for (      MUCRole role : room.getOccupants()) {
+        if (participant.toBareJID().equals(role.getUserAddress().toBareJID())) {
+          Log.info("attachVideobridge Found participant " + participant.toBareJID());
+          try {
+            CallParticipant vp=new CallParticipant();
+            vp.setCallId("colibri-" + conferenceId);
+            vp.setCallOwner(participant.toString());
+            vp.setProtocol("Videobridge");
+            vp.setPhoneNumber(participant.getNode());
+            vp.setMediaPreference(mediaPreference);
+            vp.setConferenceId(conferenceId);
+            OutgoingCallHandler videoBridgeHandler=new OutgoingCallHandler(null,vp);
+            videoBridgeHandler.start();
+          }
+ catch (          Exception e) {
+            e.printStackTrace();
+          }
+          break;
+        }
+      }
+    }
+  }
+}
