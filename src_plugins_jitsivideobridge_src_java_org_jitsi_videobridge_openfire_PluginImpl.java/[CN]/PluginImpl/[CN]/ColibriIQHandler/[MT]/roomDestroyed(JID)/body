@@ -1,2 +1,9 @@
 {
+  Log.info("ColibriIQHandler roomDestroyed " + roomJID);
+  String focusAgentName="jitsi.videobridge." + roomJID.getNode();
+  if (sessions.containsKey(focusAgentName)) {
+    FocusAgent focusAgent=sessions.remove(focusAgentName);
+    focusAgent.closeSession();
+    focusAgent=null;
+  }
 }

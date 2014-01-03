@@ -1,7 +1,6 @@
 {
-  MUCRoom mucRoom=mucManager.getMultiUserChatService(roomJID).getChatRoom(roomJID.getNode());
   Log.info("ColibriIQHandler occupantJoined " + roomJID + " "+ user+ " "+ nickname);
-  String focusAgentName="colibri.focus.agent." + roomJID.getNode();
+  String focusAgentName="jitsi.videobridge." + roomJID.getNode();
   FocusAgent focusAgent;
   Participant participant=new Participant(nickname,user);
   if (sessions.containsKey(focusAgentName)) {
@@ -10,7 +9,7 @@
  else {
     focusAgent=new FocusAgent(focusAgentName,roomJID);
     LocalClientSession session=SessionManager.getInstance().createClientSession(focusAgent,new BasicStreamID(focusAgentName + "-" + System.currentTimeMillis()));
-    focusAgent.setRouter(new SessionPacketRouter(session));
+    focusAgent.setRouter(new SessionPacketRouter(session),session);
     AuthToken authToken=new AuthToken(focusAgentName,true);
     session.setAuthToken(authToken,focusAgentName);
     sessions.put(focusAgentName,focusAgent);
