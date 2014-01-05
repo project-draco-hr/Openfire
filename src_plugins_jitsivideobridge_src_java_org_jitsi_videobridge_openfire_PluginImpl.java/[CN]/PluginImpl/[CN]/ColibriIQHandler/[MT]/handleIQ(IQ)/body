@@ -3,10 +3,20 @@
     Log.info("ColibriIQHandler handleIQ \n" + iq.toString());
     final Element element=iq.getChildElement();
     IQ reply=null;
+    JID from=iq.getFrom();
+    String fromId=from.toString();
     Object object=colibriProvider.fromXML(element);
     if (object instanceof ColibriCommand) {
       ColibriCommand command=(ColibriCommand)object;
       reply=handleColibriCommand(command,iq);
+    }
+ else     if (object instanceof RegisterCommand) {
+      registry.put(fromId,from);
+      reply=IQ.createResultIQ(iq);
+    }
+ else     if (object instanceof UnRegisterCommand) {
+      if (registry.containsKey(fromId))       registry.remove(fromId,from);
+      reply=IQ.createResultIQ(iq);
     }
  else {
       reply=IQ.createResultIQ(iq);

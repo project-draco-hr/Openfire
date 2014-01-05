@@ -1,20 +1,22 @@
 {
-  Log.info("ColibriIQHandler occupantJoined " + roomJID + " "+ user+ " "+ nickname);
-  String focusAgentName="jitsi.videobridge." + roomJID.getNode();
-  FocusAgent focusAgent;
-  Participant participant=new Participant(nickname,user);
-  if (sessions.containsKey(focusAgentName)) {
-    focusAgent=sessions.get(focusAgentName);
-  }
+  if (registry.containsKey(user.toString())) {
+    Log.info("ColibriIQHandler occupantJoined " + roomJID + " "+ user+ " "+ nickname);
+    String focusAgentName="jitsi.videobridge." + roomJID.getNode();
+    FocusAgent focusAgent;
+    Participant participant=new Participant(nickname,user);
+    if (sessions.containsKey(focusAgentName)) {
+      focusAgent=sessions.get(focusAgentName);
+    }
  else {
-    focusAgent=new FocusAgent(focusAgentName,roomJID);
-    LocalClientSession session=SessionManager.getInstance().createClientSession(focusAgent,new BasicStreamID(focusAgentName + "-" + System.currentTimeMillis()));
-    focusAgent.setRouter(new SessionPacketRouter(session),session);
-    AuthToken authToken=new AuthToken(focusAgentName,true);
-    session.setAuthToken(authToken,focusAgentName);
-    sessions.put(focusAgentName,focusAgent);
-    Presence presence=new Presence();
-    focusAgent.getRouter().route(presence);
+      focusAgent=new FocusAgent(focusAgentName,roomJID);
+      LocalClientSession session=SessionManager.getInstance().createClientSession(focusAgent,new BasicStreamID(focusAgentName + "-" + System.currentTimeMillis()));
+      focusAgent.setRouter(new SessionPacketRouter(session),session);
+      AuthToken authToken=new AuthToken(focusAgentName,true);
+      session.setAuthToken(authToken,focusAgentName);
+      sessions.put(focusAgentName,focusAgent);
+      Presence presence=new Presence();
+      focusAgent.getRouter().route(presence);
+    }
+    focusAgent.createColibriChannel(participant);
   }
-  focusAgent.createColibriChannel(participant);
 }

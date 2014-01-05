@@ -1,8 +1,10 @@
 {
-  Log.info("ColibriIQHandler occupantLeft " + roomJID + " "+ user);
-  String focusAgentName="jitsi.videobridge." + roomJID.getNode();
-  if (sessions.containsKey(focusAgentName)) {
-    FocusAgent focusAgent=sessions.get(focusAgentName);
-    focusAgent.removeColibriChannel(user);
+  if (registry.containsKey(user.toString())) {
+    Log.info("ColibriIQHandler occupantLeft " + roomJID + " "+ user);
+    String focusAgentName="jitsi.videobridge." + roomJID.getNode();
+    if (sessions.containsKey(focusAgentName)) {
+      FocusAgent focusAgent=sessions.get(focusAgentName);
+      focusAgent.removeColibriChannel(user);
+    }
   }
 }
