@@ -3,7 +3,9 @@
   IQ iq=(IQ)packet;
   if (iq.getType() == IQ.Type.result) {
     Element conference=iq.getChildElement().createCopy();
-    focusId=conference.attributeValue("id");
+    if (focusId == null) {
+      focusId=conference.attributeValue("id");
+    }
     String id=packet.getID();
     if (ids.containsKey(id)) {
       Participant participant=ids.remove(id);
@@ -28,6 +30,13 @@
       conference=root.createCopy();
       String channelId=conference.element("content").element("channel").attributeValue("id");
       if (channels.containsKey(channelId))       broadcastSSRC(channels.get(channelId));
+      if (mediaSink == null) {
+        try {
+        }
+ catch (        Exception e) {
+          Log.error("Error creating recording file",e);
+        }
+      }
     }
  else {
       conference=root.element("conference").createCopy();

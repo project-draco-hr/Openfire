@@ -1,0 +1,14 @@
+{
+  if (CLOCK_ONLY) {
+    buffer.setLength(0);
+  }
+ else {
+    AudioFormat format=(AudioFormat)getFormat();
+    int frameSizeInBytes=format.getChannels() * (((int)format.getSampleRate()) / 50) * (format.getSampleSizeInBits() / 8);
+    byte[] data=AbstractCodec2.validateByteArraySize(buffer,frameSizeInBytes,false);
+    Arrays.fill(data,0,frameSizeInBytes,(byte)0);
+    buffer.setFormat(format);
+    buffer.setLength(frameSizeInBytes);
+    buffer.setOffset(0);
+  }
+}
