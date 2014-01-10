@@ -1,4 +1,6 @@
 {
+  Log.info("addUser " + participant);
+  count++;
   users.put(participant.getUser().toString(),participant);
   Presence presence=new Presence();
   presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
@@ -15,7 +17,6 @@
     Element channel=content.element("channel");
     if ("video".equals(content.attributeValue("name"))) {
       participant.videoChannelId=channel.attributeValue("id");
-      channels.put(participant.videoChannelId,participant);
     }
     if ("audio".equals(content.attributeValue("name"))) {
       participant.audioChannelId=channel.attributeValue("id");

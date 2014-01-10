@@ -1,26 +1,61 @@
 {
+  IQ reply=IQ.createResultIQ(iq);
   try {
     Log.info("ColibriIQHandler handleIQ \n" + iq.toString());
     final Element element=iq.getChildElement();
-    IQ reply=null;
     JID from=iq.getFrom();
     String fromId=from.toString();
     Object object=colibriProvider.fromXML(element);
     if (object instanceof RegisterCommand) {
       registry.put(fromId,from);
-      reply=IQ.createResultIQ(iq);
     }
  else     if (object instanceof UnRegisterCommand) {
       if (registry.containsKey(fromId))       registry.remove(fromId,from);
-      reply=IQ.createResultIQ(iq);
+    }
+ else     if (object instanceof ColibriOfferCommand) {
+      ColibriOfferCommand offer=(ColibriOfferCommand)object;
+      String key=fromId + offer.getMuc().toString();
+      if (pending.containsKey(key)) {
+        Participant participant=pending.get(key);
+        String focusAgentName="jitsi.videobridge." + offer.getMuc().getNode();
+        if (sessions.containsKey(focusAgentName)) {
+          FocusAgent focusAgent=sessions.get(focusAgentName);
+          focusAgent.createColibriChannel(participant);
+        }
+ else {
+          reply.setError(PacketError.Condition.not_allowed);
+        }
+      }
+ else {
+        reply.setError(PacketError.Condition.not_allowed);
+      }
+    }
+ else     if (object instanceof ColibriExpireCommand) {
+      ColibriExpireCommand expire=(ColibriExpireCommand)object;
+      String key=fromId + expire.getMuc().toString();
+      if (pending.containsKey(key)) {
+        Participant participant=pending.get(key);
+        String focusAgentName="jitsi.videobridge." + expire.getMuc().getNode();
+        if (sessions.containsKey(focusAgentName)) {
+          FocusAgent focusAgent=sessions.get(focusAgentName);
+          focusAgent.removeColibriChannel(participant.getUser());
+        }
+ else {
+          reply.setError(PacketError.Condition.not_allowed);
+        }
+      }
+ else {
+        reply.setError(PacketError.Condition.not_allowed);
+      }
     }
  else {
-      reply=IQ.createResultIQ(iq);
       reply.setError(PacketError.Condition.not_allowed);
     }
     return reply;
   }
  catch (  Exception e) {
-    return null;
+    Log.error("ColibriIQHandler handleIQ",e);
+    reply.setError(PacketError.Condition.not_allowed);
+    return reply;
   }
 }

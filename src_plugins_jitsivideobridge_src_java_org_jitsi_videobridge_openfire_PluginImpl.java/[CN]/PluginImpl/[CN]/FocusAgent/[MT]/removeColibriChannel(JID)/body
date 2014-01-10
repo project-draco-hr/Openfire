@@ -1,11 +1,12 @@
 {
   String username=user.toString();
-  count--;
-  if (count < 1) {
-    closeColibri();
-  }
   if (users.containsKey(username)) {
+    count--;
+    if (count < 1) {
+      closeColibri();
+    }
     Participant participant=users.get(username);
+    expireColibriChannel(participant);
     routeColibriEvent(participant,null,false);
     for (    Participant reciepient : users.values()) {
       if (participant.getUser().toString().equals(reciepient.getUser().toString()) == false) {
@@ -25,6 +26,7 @@
       }
     }
     users.remove(username);
+    ssrcs.remove(username);
   }
   Log.info("removeColibriChannel " + count);
 }
