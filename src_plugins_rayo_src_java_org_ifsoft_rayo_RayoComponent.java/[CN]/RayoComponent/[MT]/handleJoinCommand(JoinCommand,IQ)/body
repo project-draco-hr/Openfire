@@ -15,17 +15,17 @@
         if (conferenceManager.getMemberList().size() == 1) {
           String recording=mixer + "-" + System.currentTimeMillis()+ ".au";
           conferenceManager.recordConference(true,recording,"au");
-          sendMucMessage(mixer,recording,iq.getFrom(),"Started voice recording");
+          sendMucMessage(mixer,recording,iq.getFrom(),"started voice recording");
         }
       }
-      sendMucMessage(mixer,null,iq.getFrom(),"Joined voice conversation");
+      sendMucMessage(mixer,null,iq.getFrom(),iq.getFrom().getNode() + " joined voice conversation");
     }
  catch (    ParseException pe) {
       try {
         ConferenceManager conferenceManager=ConferenceManager.getConference(mixer,"PCM/48000/2",mixer,false);
         String recording=mixer + "-" + System.currentTimeMillis()+ ".au";
         conferenceManager.recordConference(true,recording,"au");
-        sendMucMessage(mixer,recording,iq.getFrom(),"Started voice recording");
+        sendMucMessage(mixer,recording,iq.getFrom(),"started voice recording");
         attachVideobridge(mixer,iq.getFrom(),"PCM/48000/2");
       }
  catch (      Exception e) {

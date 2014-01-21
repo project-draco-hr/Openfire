@@ -12,10 +12,10 @@
       ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(mixer);
       if (conferenceManager.getMemberList().size() == 1) {
         conferenceManager.recordConference(false,null,null);
-        sendMucMessage(mixer,null,iq.getFrom(),"Stopped voice recording");
+        sendMucMessage(mixer,null,iq.getFrom(),"stopped voice recording");
         detachVideobridge(mixer);
       }
-      sendMucMessage(mixer,null,iq.getFrom(),"Left voice conversation");
+      sendMucMessage(mixer,null,iq.getFrom(),iq.getFrom().getNode() + " left voice conversation");
     }
  catch (    Exception e) {
       reply.setError(PacketError.Condition.item_not_found);
