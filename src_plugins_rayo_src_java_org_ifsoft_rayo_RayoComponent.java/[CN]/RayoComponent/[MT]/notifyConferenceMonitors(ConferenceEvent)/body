@@ -31,9 +31,31 @@ synchronized (memberList) {
             }
           }
           int memberCount=memberList.size();
-          Log.info("RayoComponent notifyConferenceMonitors found owner " + callParticipant.getCallOwner() + " "+ memberCount);
           if (groupName == null) {
-            routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty,conferenceManager);
+            if (isMixerMuc(conferenceEvent.getConferenceId())) {
+              MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(conferenceEvent.getConferenceId());
+              Log.info("RayoComponent notifyConferenceMonitors routing to room occupants of " + conferenceEvent.getConferenceId());
+              for (              MUCRole role : room.getOccupants()) {
+                String jid=role.getUserAddress().toString();
+                Log.info("RayoComponent notifyConferenceMonitors routing to room occupant " + jid);
+                Presence presence=new Presence();
+                presence.setFrom(conferenceEvent.getCallId() + "@" + getDomain());
+                presence.setTo(jid);
+                if (conferenceEvent.equals(ConferenceEvent.MEMBER_LEFT)) {
+                  UnjoinedEvent event=new UnjoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+                  presence.getElement().add(rayoProvider.toXML(event));
+                }
+ else {
+                  JoinedEvent event=new JoinedEvent(null,conferenceEvent.getConferenceId(),JoinDestinationType.MIXER);
+                  presence.getElement().add(rayoProvider.toXML(event));
+                }
+                sendPacket(presence);
+              }
+            }
+ else {
+              Log.info("RayoComponent notifyConferenceMonitors routing to owner " + callParticipant.getCallOwner() + " "+ memberCount);
+              routeJoinEvent(callParticipant.getCallOwner(),callParticipant,conferenceEvent,memberCount,groupName,callId,farParty,conferenceManager);
+            }
           }
  else {
             Group group=GroupManager.getInstance().getGroup(groupName);

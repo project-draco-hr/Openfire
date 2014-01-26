@@ -1,0 +1,21 @@
+{
+  String roomName=roomJid.getNode();
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(roomName);
+  Log.info("bridgeJoin event to room occupants of " + roomName);
+  for (  MUCRole role : room.getOccupants()) {
+    String jid=role.getUserAddress().toString();
+    Log.info("bridgeJoin event to room occupant " + jid);
+    Presence presence=new Presence();
+    presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+    presence.setTo(jid);
+    if (join) {
+      JoinBridgeEvent event=new JoinBridgeEvent(roomName,participant.getUser(),participant.getNickname());
+      presence.getElement().add(colibriProvider.toXML(event));
+    }
+ else {
+      LeaveBridgeEvent event=new LeaveBridgeEvent(roomName,participant.getUser(),participant.getNickname());
+      presence.getElement().add(colibriProvider.toXML(event));
+    }
+    router.route(presence);
+  }
+}
