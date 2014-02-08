@@ -1,28 +1,7 @@
 {
-  Collection<String> returnvalue=null;
-  try {
-    returnvalue=primaryProvider.getUsernames();
+  List<String> returnvalue=new ArrayList<String>();
+  for (  UserProvider provider : userproviders) {
+    returnvalue.addAll(provider.getUsernames());
   }
-  finally {
-  }
-  if (secondaryProvider != null) {
-    try {
-      returnvalue.addAll(secondaryProvider.getUsernames());
-    }
-  finally {
-    }
-  }
-  if (tertiaryProvider != null) {
-    try {
-      returnvalue.addAll(tertiaryProvider.getUsernames());
-    }
-  finally {
-    }
-  }
-  if (returnvalue != null) {
-    return returnvalue;
-  }
- else {
-    throw new UnsupportedOperationException();
-  }
+  return returnvalue;
 }

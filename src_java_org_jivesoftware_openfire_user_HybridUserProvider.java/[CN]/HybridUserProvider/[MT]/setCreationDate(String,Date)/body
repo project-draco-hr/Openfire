@@ -1,25 +1,24 @@
 {
-  if (primaryProvider != null)   try {
-    primaryProvider.setCreationDate(username,creationDate);
-    return;
-  }
- catch (  Exception e) {
-  }
-  if (secondaryProvider != null) {
+  boolean isUnsupported=false;
+  for (  UserProvider provider : userproviders) {
     try {
-      secondaryProvider.setCreationDate(username,creationDate);
+      provider.setCreationDate(username,creationDate);
       return;
     }
- catch (    Exception e) {
+ catch (    UnsupportedOperationException uoe) {
+      Log.warn("UserProvider.setCreationDate is not supported by this UserProvider: " + provider.getClass().getName());
+      isUnsupported=true;
+    }
+catch (    UserNotFoundException unfe) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("User " + username + " not found by UserProvider "+ provider.getClass().getName());
+      }
     }
   }
-  if (tertiaryProvider != null) {
-    try {
-      tertiaryProvider.setCreationDate(username,creationDate);
-      return;
-    }
- catch (    Exception e) {
-      throw new UserNotFoundException();
-    }
+  if (isUnsupported) {
+    throw new UnsupportedOperationException();
+  }
+ else {
+    throw new UserNotFoundException();
   }
 }

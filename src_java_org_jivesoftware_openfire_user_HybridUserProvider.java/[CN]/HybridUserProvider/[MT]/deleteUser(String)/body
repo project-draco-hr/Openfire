@@ -1,33 +1,13 @@
 {
-  if (!primaryProvider.isReadOnly()) {
-    try {
-      primaryProvider.deleteUser(username);
-      return;
+  boolean isDeleted=false;
+  for (  UserProvider provider : userproviders) {
+    if (provider.isReadOnly()) {
+      continue;
     }
-  finally {
-    }
+    provider.deleteUser(username);
+    isDeleted=true;
   }
- else   if (secondaryProvider != null) {
-    if (!secondaryProvider.isReadOnly()) {
-      try {
-        secondaryProvider.deleteUser(username);
-        return;
-      }
-  finally {
-      }
-    }
-  }
- else   if (tertiaryProvider != null) {
-    if (!tertiaryProvider.isReadOnly()) {
-      try {
-        tertiaryProvider.deleteUser(username);
-        return;
-      }
-  finally {
-      }
-    }
- else {
-      throw new UnsupportedOperationException();
-    }
+  if (!isDeleted) {
+    throw new UnsupportedOperationException();
   }
 }

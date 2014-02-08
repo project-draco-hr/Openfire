@@ -1,28 +1,7 @@
 {
-  Vector<User> returnvalue=null;
-  try {
-    returnvalue=new Vector<User>(primaryProvider.getUsers());
+  List<User> returnvalue=new ArrayList<User>();
+  for (  UserProvider provider : userproviders) {
+    returnvalue.addAll(provider.getUsers());
   }
-  finally {
-  }
-  if (secondaryProvider != null) {
-    try {
-      returnvalue.addAll(secondaryProvider.getUsers());
-    }
-  finally {
-    }
-  }
-  if (tertiaryProvider != null) {
-    try {
-      returnvalue.addAll(tertiaryProvider.getUsers());
-    }
-  finally {
-    }
-  }
-  if (returnvalue != null) {
-    return returnvalue;
-  }
- else {
-    throw new UnsupportedOperationException();
-  }
+  return returnvalue;
 }

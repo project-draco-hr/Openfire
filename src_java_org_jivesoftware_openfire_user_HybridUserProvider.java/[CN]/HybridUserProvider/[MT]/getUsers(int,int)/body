@@ -1,22 +1,17 @@
 {
-  Vector<User> returnresult=new Vector<User>();
-  int numResultsLeft=numResults;
-  int currentStartIndex=startIndex;
+  List<User> userList=new ArrayList<User>();
+  int totalUserCount=0;
   for (  UserProvider provider : userproviders) {
-    if (numResultsLeft == 0) {
-      break;
-    }
-    int pusercount=this.getUserCount(provider);
-    if (pusercount == 0 || currentStartIndex >= pusercount) {
-      currentStartIndex=currentStartIndex - pusercount;
+    int providerStartIndex=Math.max((startIndex - totalUserCount),0);
+    totalUserCount+=provider.getUserCount();
+    if (startIndex >= totalUserCount) {
       continue;
     }
- else {
-      Collection<User> subresult=provider.getUsers(currentStartIndex,numResultsLeft);
-      currentStartIndex=currentStartIndex - subresult.size();
-      numResultsLeft=numResultsLeft - subresult.size();
-      returnresult.addAll(subresult);
+    int providerResultMax=numResults - userList.size();
+    userList.addAll(provider.getUsers(providerStartIndex,providerResultMax));
+    if (userList.size() >= numResults) {
+      break;
     }
   }
-  return returnresult;
+  return userList;
 }

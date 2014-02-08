@@ -1,21 +1,12 @@
 {
-  try {
-    return primaryProvider.loadUser(username);
-  }
- catch (  Exception e) {
-  }
-  if (secondaryProvider != null) {
+  for (  UserProvider provider : userproviders) {
     try {
-      return secondaryProvider.loadUser(username);
+      return provider.loadUser(username);
     }
- catch (    Exception e) {
-    }
-  }
-  if (tertiaryProvider != null) {
-    try {
-      return tertiaryProvider.loadUser(username);
-    }
- catch (    Exception e) {
+ catch (    UserNotFoundException unfe) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("User " + username + " not found by UserProvider "+ provider.getClass().getName());
+      }
     }
   }
   throw new UserNotFoundException();

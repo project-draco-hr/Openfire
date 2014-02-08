@@ -1,28 +1,10 @@
 {
-  Set<String> returnvalue=null;
-  try {
-    returnvalue=primaryProvider.getSearchFields();
+  Set<String> returnvalue=new HashSet<String>();
+  for (  UserProvider provider : userproviders) {
+    returnvalue.addAll(provider.getSearchFields());
   }
-  finally {
-  }
-  if (secondaryProvider != null) {
-    try {
-      returnvalue=secondaryProvider.getSearchFields();
-    }
-  finally {
-    }
-  }
-  if (tertiaryProvider != null) {
-    try {
-      returnvalue=tertiaryProvider.getSearchFields();
-    }
-  finally {
-    }
-  }
-  if (returnvalue != null) {
-    return returnvalue;
-  }
- else {
+  if (returnvalue.size() == 0) {
     throw new UnsupportedOperationException();
   }
+  return returnvalue;
 }

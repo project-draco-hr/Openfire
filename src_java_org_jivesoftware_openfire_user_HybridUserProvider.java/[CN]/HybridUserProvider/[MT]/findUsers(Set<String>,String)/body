@@ -1,28 +1,23 @@
 {
-  Collection<User> returnvalue=null;
-  try {
-    returnvalue=primaryProvider.findUsers(fields,query);
-  }
-  finally {
-  }
-  if (secondaryProvider != null) {
+  List<User> userList=new ArrayList<User>();
+  boolean isUnsupported=false;
+  for (  UserProvider provider : userproviders) {
+    Set<String> validFields=provider.getSearchFields();
+    for (    String field : fields) {
+      if (!validFields.contains(field)) {
+        continue;
+      }
+    }
     try {
-      returnvalue=secondaryProvider.findUsers(fields,query);
+      userList.addAll(provider.findUsers(fields,query));
     }
-  finally {
-    }
-  }
-  if (tertiaryProvider != null) {
-    try {
-      returnvalue=tertiaryProvider.findUsers(fields,query);
-    }
-  finally {
+ catch (    UnsupportedOperationException uoe) {
+      Log.warn("UserProvider.findUsers is not supported by this UserProvider: " + provider.getClass().getName());
+      isUnsupported=true;
     }
   }
-  if (returnvalue != null) {
-    return returnvalue;
-  }
- else {
+  if (isUnsupported && userList.size() == 0) {
     throw new UnsupportedOperationException();
   }
+  return userList;
 }

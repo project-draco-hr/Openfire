@@ -1,34 +1,16 @@
 {
   User returnvalue=null;
-  if (!primaryProvider.isReadOnly()) {
-    try {
-      returnvalue=primaryProvider.createUser(username,password,name,email);
+  for (  UserProvider provider : userproviders) {
+    if (provider.isReadOnly()) {
+      continue;
     }
-  finally {
-    }
-  }
- else   if (secondaryProvider != null) {
-    if (!secondaryProvider.isReadOnly()) {
-      try {
-        returnvalue=secondaryProvider.createUser(username,password,name,email);
-      }
-  finally {
-      }
+    returnvalue=provider.createUser(username,password,name,email);
+    if (returnvalue != null) {
+      break;
     }
   }
- else   if (tertiaryProvider != null) {
-    if (!tertiaryProvider.isReadOnly()) {
-      try {
-        returnvalue=tertiaryProvider.createUser(username,password,name,email);
-      }
-  finally {
-      }
-    }
-  }
-  if (returnvalue != null) {
-    return returnvalue;
-  }
- else {
+  if (returnvalue == null) {
     throw new UnsupportedOperationException();
   }
+  return returnvalue;
 }
