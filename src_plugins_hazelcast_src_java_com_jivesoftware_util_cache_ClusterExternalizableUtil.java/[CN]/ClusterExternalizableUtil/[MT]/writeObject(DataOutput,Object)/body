@@ -1,0 +1,43 @@
+{
+  if (obj == null) {
+    out.writeByte(0);
+  }
+ else   if (obj instanceof Long) {
+    out.writeByte(1);
+    out.writeLong((Long)obj);
+  }
+ else   if (obj instanceof Integer) {
+    out.writeByte(2);
+    out.writeInt((Integer)obj);
+  }
+ else   if (obj instanceof String) {
+    out.writeByte(3);
+    out.writeUTF((String)obj);
+  }
+ else   if (obj instanceof Double) {
+    out.writeByte(4);
+    out.writeDouble((Double)obj);
+  }
+ else   if (obj instanceof Float) {
+    out.writeByte(5);
+    out.writeFloat((Float)obj);
+  }
+ else   if (obj instanceof Boolean) {
+    out.writeByte(6);
+    out.writeBoolean((Boolean)obj);
+  }
+ else   if (obj instanceof Date) {
+    out.writeByte(8);
+    out.writeLong(((Date)obj).getTime());
+  }
+ else {
+    out.writeByte(9);
+    ByteArrayOutputStream bos=new ByteArrayOutputStream();
+    ObjectOutputStream oos=new ObjectOutputStream(bos);
+    oos.writeObject(obj);
+    oos.close();
+    byte[] buf=bos.toByteArray();
+    out.writeInt(buf.length);
+    out.write(buf);
+  }
+}

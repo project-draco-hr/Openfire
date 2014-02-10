@@ -5,11 +5,10 @@
   Member member=getMember(nodeID);
   Object result=null;
   if (member != null) {
-    DistributedTask<Object> distributedTask=new DistributedTask<Object>(new CallableTask<Object>(task),member);
     logger.debug("Executing DistributedTask: " + task.getClass().getName());
-    hazelcast.getExecutorService().execute(distributedTask);
     try {
-      result=distributedTask.get(MAX_CLUSTER_EXECUTION_TIME,TimeUnit.SECONDS);
+      Future<Object> future=hazelcast.getExecutorService(HAZELCAST_EXECUTOR_SERVICE_NAME).submitToMember(new CallableTask<Object>(task),member);
+      result=future.get(MAX_CLUSTER_EXECUTION_TIME,TimeUnit.SECONDS);
       logger.debug("DistributedTask result: " + (result == null ? "null" : result));
     }
  catch (    TimeoutException te) {

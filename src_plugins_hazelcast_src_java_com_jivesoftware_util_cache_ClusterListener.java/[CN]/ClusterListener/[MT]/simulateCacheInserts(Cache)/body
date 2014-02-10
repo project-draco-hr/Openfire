@@ -6,7 +6,7 @@
       if (wrapped instanceof ClusteredCache) {
         ClusteredCache clusteredCache=(ClusteredCache)wrapped;
         for (        Map.Entry entry : (Set<Map.Entry>)cache.entrySet()) {
-          EntryEvent event=new EntryEvent(clusteredCache.map.getName(),cluster.getLocalMember(),EntryEvent.TYPE_ADDED,entry.getKey(),null,entry.getValue());
+          EntryEvent event=new EntryEvent(clusteredCache.map.getName(),cluster.getLocalMember(),EntryEventType.ADDED.getType(),entry.getKey(),null,entry.getValue());
           EntryListener.entryAdded(event);
         }
       }

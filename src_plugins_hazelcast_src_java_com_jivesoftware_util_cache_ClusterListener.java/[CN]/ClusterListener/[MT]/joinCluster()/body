@@ -2,6 +2,16 @@
   if (!isDone()) {
     return;
   }
+  ClusterManager.fireJoinedCluster(false);
+  addEntryListener(C2SCache,new CacheListener(this,C2SCache.getName()));
+  addEntryListener(anonymousC2SCache,new CacheListener(this,anonymousC2SCache.getName()));
+  addEntryListener(S2SCache,new CacheListener(this,S2SCache.getName()));
+  addEntryListener(componentsCache,new ComponentCacheListener());
+  addEntryListener(sessionInfoCache,new CacheListener(this,sessionInfoCache.getName()));
+  addEntryListener(componentSessionsCache,new CacheListener(this,componentSessionsCache.getName()));
+  addEntryListener(multiplexerSessionsCache,new CacheListener(this,multiplexerSessionsCache.getName()));
+  addEntryListener(incomingServerSessionsCache,new CacheListener(this,incomingServerSessionsCache.getName()));
+  addEntryListener(directedPresencesCache,new DirectedPresenceListener());
   simulateCacheInserts(C2SCache);
   simulateCacheInserts(anonymousC2SCache);
   simulateCacheInserts(S2SCache);
@@ -11,7 +21,6 @@
   simulateCacheInserts(multiplexerSessionsCache);
   simulateCacheInserts(incomingServerSessionsCache);
   simulateCacheInserts(directedPresencesCache);
-  ClusterManager.fireJoinedCluster(false);
   if (CacheFactory.isSeniorClusterMember()) {
     seniorClusterMember=true;
     ClusterManager.fireMarkedAsSeniorClusterMember();

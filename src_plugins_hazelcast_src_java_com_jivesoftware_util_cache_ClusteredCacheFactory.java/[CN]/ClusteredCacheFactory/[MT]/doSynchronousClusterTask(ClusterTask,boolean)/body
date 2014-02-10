@@ -1,7 +1,6 @@
 {
-  Collection<Object> result=Collections.emptyList();
   if (cluster == null) {
-    return result;
+    return Collections.emptyList();
   }
   Set<Member> members=new HashSet<Member>();
   Member current=cluster.getLocalMember();
@@ -10,13 +9,17 @@
       members.add(member);
     }
   }
+  Collection<Object> result=new ArrayList<Object>();
   if (members.size() > 0) {
-    MultiTask<Object> multiTask=new MultiTask<Object>(new CallableTask<Object>(task),members);
     try {
       logger.debug("Executing MultiTask: " + task.getClass().getName());
-      hazelcast.getExecutorService().execute(multiTask);
-      result=multiTask.get(MAX_CLUSTER_EXECUTION_TIME,TimeUnit.SECONDS);
-      logger.debug("MultiTask result: " + (result == null ? "null" : result.size()));
+      Map<Member,Future<Object>> futures=hazelcast.getExecutorService(HAZELCAST_EXECUTOR_SERVICE_NAME).submitToMembers(new CallableTask<Object>(task),members);
+      long nanosLeft=TimeUnit.SECONDS.toNanos(MAX_CLUSTER_EXECUTION_TIME);
+      for (      Future<Object> future : futures.values()) {
+        long start=System.nanoTime();
+        result.add(future.get(nanosLeft,TimeUnit.NANOSECONDS));
+        nanosLeft=(System.nanoTime() - start);
+      }
     }
  catch (    TimeoutException te) {
       logger.error("Failed to execute cluster task within " + MAX_CLUSTER_EXECUTION_TIME + " seconds",te);

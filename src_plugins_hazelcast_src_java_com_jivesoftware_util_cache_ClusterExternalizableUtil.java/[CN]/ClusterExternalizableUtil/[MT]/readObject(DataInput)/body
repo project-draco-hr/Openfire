@@ -1,0 +1,45 @@
+{
+  byte type=in.readByte();
+  if (type == 0) {
+    return null;
+  }
+ else   if (type == 1) {
+    return in.readLong();
+  }
+ else   if (type == 2) {
+    return in.readInt();
+  }
+ else   if (type == 3) {
+    return in.readUTF();
+  }
+ else   if (type == 4) {
+    return in.readDouble();
+  }
+ else   if (type == 5) {
+    return in.readFloat();
+  }
+ else   if (type == 6) {
+    return in.readBoolean();
+  }
+ else   if (type == 8) {
+    return new Date(in.readLong());
+  }
+ else   if (type == 9) {
+    int len=in.readInt();
+    byte[] buf=new byte[len];
+    in.readFully(buf);
+    ObjectInputStream oin=newObjectInputStream(new ByteArrayInputStream(buf));
+    try {
+      return oin.readObject();
+    }
+ catch (    ClassNotFoundException e) {
+      throw new IOException(e);
+    }
+ finally {
+      oin.close();
+    }
+  }
+ else {
+    throw new IOException("Unknown object type=" + type);
+  }
+}

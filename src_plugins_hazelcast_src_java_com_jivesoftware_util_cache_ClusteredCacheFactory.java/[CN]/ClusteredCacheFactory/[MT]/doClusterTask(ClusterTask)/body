@@ -11,7 +11,7 @@
   }
   if (members.size() > 0) {
     logger.debug("Executing asynchronous MultiTask: " + task.getClass().getName());
-    hazelcast.getExecutorService().execute(new MultiTask<Object>(new CallableTask<Object>(task),members));
+    hazelcast.getExecutorService(HAZELCAST_EXECUTOR_SERVICE_NAME).submitToMembers(new CallableTask<Object>(task),members);
   }
  else {
     logger.warn("No cluster members selected for cluster task " + task.getClass().getName());
