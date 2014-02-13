@@ -7,7 +7,7 @@
   LocalMUCRole joinRole=null;
   lock.writeLock().lock();
   try {
-    if (isDestroyed || (getMaxUsers() > 0 && getOccupantsCount() >= getMaxUsers())) {
+    if (!canJoinRoom(user)) {
       throw new ServiceUnavailableException();
     }
     final JID bareJID=user.getAddress().asBareJID();
