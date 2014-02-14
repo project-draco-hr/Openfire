@@ -1,0 +1,15 @@
+{
+  Date date=new Date();
+  Calendar calendar=new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+  calendar.setTime(date);
+  long start=System.currentTimeMillis();
+  for (int i=0; i < 1000000; i++) {
+    DatatypeConverter.printDateTime(calendar);
+  }
+  System.out.println(System.currentTimeMillis() - start);
+  start=System.currentTimeMillis();
+  for (int i=0; i < 1000000; i++) {
+    XMPPDateTimeFormat.format(date);
+  }
+  System.out.println(System.currentTimeMillis() - start);
+}

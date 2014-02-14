@@ -1,0 +1,12 @@
+{
+  IQEntityTimeHandler iqEntityTimeHandler=new IQEntityTimeHandler();
+  IQ input=new IQ(IQ.Type.get,"1");
+  IQ result=iqEntityTimeHandler.handleIQ(input);
+  Assert.assertEquals(result.getChildElement().getName(),"time");
+  Assert.assertEquals(result.getChildElement().getNamespace().getText(),"urn:xmpp:time");
+  Assert.assertEquals(result.getChildElement().content().size(),2);
+  Assert.assertTrue(result.getChildElement().content().get(0) instanceof Element);
+  Assert.assertTrue(result.getChildElement().content().get(1) instanceof Element);
+  Assert.assertEquals(((Element)result.getChildElement().content().get(0)).getName(),"tzo");
+  Assert.assertEquals(((Element)result.getChildElement().content().get(1)).getName(),"utc");
+}
