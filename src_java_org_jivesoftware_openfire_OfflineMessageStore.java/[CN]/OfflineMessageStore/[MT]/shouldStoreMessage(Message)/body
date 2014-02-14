@@ -1,0 +1,30 @@
+{
+  if (message.getChildElement("no-store","urn:xmpp:hints") != null) {
+    return false;
+  }
+switch (message.getType()) {
+case chat:
+    Iterator<?> it=message.getElement().elementIterator();
+  while (it.hasNext()) {
+    Object item=it.next();
+    if (item instanceof Element) {
+      Element el=(Element)item;
+      if (!el.getNamespaceURI().equals("http://jabber.org/protocol/chatstates") && !(el.getQName().equals(QName.get("rtt","urn:xmpp:rtt:0")))) {
+        return true;
+      }
+    }
+  }
+return false;
+case groupchat:
+case headline:
+return false;
+case error:
+if (message.getChildElement("amp","http://jabber.org/protocol/amp") == null) {
+return false;
+}
+break;
+default :
+break;
+}
+return true;
+}
