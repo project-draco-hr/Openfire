@@ -1,0 +1,8 @@
+{
+  IQ response=IQ.createResultIQ(packet);
+  Element timeElement=DocumentHelper.createElement(QName.get("time","urn:xmpp:time"));
+  timeElement.addElement("tzo").setText(formatsTimeZone(TimeZone.getDefault()));
+  timeElement.addElement("utc").setText(getUtcDate(new Date()));
+  response.setChildElement(timeElement);
+  return response;
+}
