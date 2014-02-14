@@ -28,7 +28,12 @@
         }
       }
  else       if ("remove".equals(item.attributeValue("action"))) {
-        messageStore.deleteMessage(from.getNode(),creationDate);
+        if (messageStore.getMessage(from.getNode(),creationDate) != null) {
+          messageStore.deleteMessage(from.getNode(),creationDate);
+        }
+ else {
+          reply.setError(PacketError.Condition.item_not_found);
+        }
       }
     }
   }
