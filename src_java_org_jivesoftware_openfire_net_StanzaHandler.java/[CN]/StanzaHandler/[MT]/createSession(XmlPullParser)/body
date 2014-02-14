@@ -3,24 +3,20 @@
     eventType=xpp.next();
   }
   String host=xpp.getAttributeValue("","to");
+  StreamError streamError=null;
   if (validateHost() && isHostUnknown(host)) {
-    StringBuilder sb=new StringBuilder(250);
-    sb.append("<?xml version='1.0' encoding='");
-    sb.append(CHARSET);
-    sb.append("'?>");
-    sb.append("<stream:stream ");
-    sb.append("from=\"").append(serverName).append("\" ");
-    sb.append("id=\"").append(StringUtils.randomString(5)).append("\" ");
-    sb.append("xmlns=\"").append(xpp.getNamespace(null)).append("\" ");
-    sb.append("xmlns:stream=\"").append(xpp.getNamespace("stream")).append("\" ");
-    sb.append("version=\"1.0\">");
-    StreamError error=new StreamError(StreamError.Condition.host_unknown);
-    sb.append(error.toXML());
-    connection.deliverRawText(sb.toString());
-    connection.close();
+    streamError=new StreamError(StreamError.Condition.host_unknown);
     Log.warn("Closing session due to incorrect hostname in stream header. Host: " + host + ". Connection: "+ connection);
   }
+ else   if (!"http://etherx.jabber.org/streams".equals(xpp.getNamespace())) {
+    streamError=new StreamError(StreamError.Condition.invalid_namespace);
+    Log.warn("Closing session due to invalid_namespace in stream header. Namespace: " + xpp.getNamespace() + ". Connection: "+ connection);
+  }
  else   if (!createSession(xpp.getNamespace(null),serverName,xpp,connection)) {
+    streamError=new StreamError(StreamError.Condition.bad_namespace_prefix);
+    Log.warn("Closing session due to bad_namespace_prefix in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
+  }
+  if (streamError != null) {
     StringBuilder sb=new StringBuilder(250);
     sb.append("<?xml version='1.0' encoding='");
     sb.append(CHARSET);
@@ -29,12 +25,10 @@
     sb.append("from=\"").append(serverName).append("\" ");
     sb.append("id=\"").append(StringUtils.randomString(5)).append("\" ");
     sb.append("xmlns=\"").append(xpp.getNamespace(null)).append("\" ");
-    sb.append("xmlns:stream=\"").append(xpp.getNamespace("stream")).append("\" ");
+    sb.append("xmlns:stream=\"http://etherx.jabber.org/streams\" ");
     sb.append("version=\"1.0\">");
-    StreamError error=new StreamError(StreamError.Condition.bad_namespace_prefix);
-    sb.append(error.toXML());
+    sb.append(streamError.toXML());
     connection.deliverRawText(sb.toString());
     connection.close();
-    Log.warn("Closing session due to bad_namespace_prefix in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
   }
 }
