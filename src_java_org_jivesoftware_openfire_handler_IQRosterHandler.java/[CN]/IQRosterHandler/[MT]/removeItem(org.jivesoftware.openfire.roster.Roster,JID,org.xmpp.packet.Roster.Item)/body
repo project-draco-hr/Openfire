@@ -4,7 +4,16 @@
   if (localServer.isLocal(recipient)) {
     try {
       Roster recipientRoster=userManager.getUser(recipient.getNode()).getRoster();
-      recipientRoster.deleteRosterItem(sender,true);
+      RosterItem rosterItem=recipientRoster.getRosterItem(sender);
+      if (rosterItem.getRecvStatus().equals(RosterItem.RECV_SUBSCRIBE)) {
+        recipientRoster.deleteRosterItem(sender,true);
+      }
+ else {
+        rosterItem.setAskStatus(RosterItem.ASK_NONE);
+        rosterItem.setRecvStatus(RosterItem.RECV_NONE);
+        rosterItem.setSubStatus(RosterItem.SUB_NONE);
+        recipientRoster.updateRosterItem(rosterItem);
+      }
     }
  catch (    UserNotFoundException e) {
     }
