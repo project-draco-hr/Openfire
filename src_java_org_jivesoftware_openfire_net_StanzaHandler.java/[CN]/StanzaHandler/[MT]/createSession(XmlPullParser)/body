@@ -13,8 +13,8 @@
     Log.warn("Closing session due to invalid_namespace in stream header. Namespace: " + xpp.getNamespace() + ". Connection: "+ connection);
   }
  else   if (!createSession(xpp.getNamespace(null),serverName,xpp,connection)) {
-    streamError=new StreamError(StreamError.Condition.bad_namespace_prefix);
-    Log.warn("Closing session due to bad_namespace_prefix in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
+    streamError=new StreamError(StreamError.Condition.invalid_namespace);
+    Log.warn("Closing session due to invalid_namespace in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
   }
   if (streamError != null) {
     StringBuilder sb=new StringBuilder(250);
