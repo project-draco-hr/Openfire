@@ -29,7 +29,7 @@
     Connection connection=session.getConnection();
     if (connection.getPeerCertificates().length < 1) {
       Log.debug("SASLAuthentication: EXTERNAL authentication requested, but no certificates found.");
-      authenticationFailed(session);
+      authenticationFailed(session,Failure.NOT_AUTHORIZED);
       return Status.failed;
     }
     for (    Certificate certificate : connection.getPeerCertificates()) {
@@ -68,6 +68,6 @@
  else {
     Log.debug("SASLAuthentication: unknown session type. Cannot perform EXTERNAL authentication");
   }
-  authenticationFailed(session);
+  authenticationFailed(session,Failure.NOT_AUTHORIZED);
   return Status.failed;
 }

@@ -1,7 +1,8 @@
 {
   StringBuilder reply=new StringBuilder(80);
-  reply.append("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
-  reply.append("<not-authorized/></failure>");
+  reply.append("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"><");
+  reply.append(failure.toString());
+  reply.append("/></failure>");
   session.deliverRawText(reply.toString());
   Integer retries=(Integer)session.getSessionData("authRetries");
   if (retries == null) {
