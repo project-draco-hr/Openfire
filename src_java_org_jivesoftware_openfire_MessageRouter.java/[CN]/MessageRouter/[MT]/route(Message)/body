@@ -7,6 +7,9 @@
     InterceptorManager.getInstance().invokeInterceptors(packet,session,true,false);
     if (session == null || session.getStatus() == Session.STATUS_AUTHENTICATED) {
       JID recipientJID=packet.getTo();
+      if (recipientJID == null) {
+        recipientJID=packet.getFrom();
+      }
       if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
         if (packet.getElement().element("addresses") != null) {
           multicastRouter.route(packet);
