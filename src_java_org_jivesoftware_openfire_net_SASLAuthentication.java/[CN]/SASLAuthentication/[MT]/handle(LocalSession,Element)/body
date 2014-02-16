@@ -4,59 +4,63 @@
   if (doc.getNamespace().asXML().equals(SASL_NAMESPACE)) {
     ElementType type=ElementType.valueof(doc.getName());
 switch (type) {
+case ABORT:
+      authenticationFailed(session,Failure.ABORTED);
+    status=Status.failed;
+  break;
 case AUTH:
-      mechanism=doc.attributeValue("mechanism");
-    if (mechanism == null) {
-      authenticationFailed(session,Failure.INVALID_MECHANISM);
-      status=Status.failed;
-      break;
-    }
-  session.setSessionData("SaslMechanism",mechanism);
+mechanism=doc.attributeValue("mechanism");
+if (mechanism == null) {
+authenticationFailed(session,Failure.INVALID_MECHANISM);
+status=Status.failed;
+break;
+}
+session.setSessionData("SaslMechanism",mechanism);
 if (mechanism.equalsIgnoreCase("ANONYMOUS") && mechanisms.contains("ANONYMOUS")) {
-  status=doAnonymousAuthentication(session);
+status=doAnonymousAuthentication(session);
 }
  else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
-  status=doExternalAuthentication(session,doc);
+status=doExternalAuthentication(session,doc);
 }
  else if (mechanisms.contains(mechanism)) {
-  try {
-    Map<String,String> props=new TreeMap<String,String>();
-    props.put(Sasl.QOP,"auth");
-    if (mechanism.equals("GSSAPI")) {
-      props.put(Sasl.SERVER_AUTH,"TRUE");
-    }
-    SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
-    byte[] token=new byte[0];
-    if (doc.getText().length() > 0) {
-      token=StringUtils.decodeBase64(doc.getText().trim());
-      if (token == null) {
-        token=new byte[0];
-      }
-    }
-    if (mechanism.equals("DIGEST-MD5")) {
-      token=new byte[0];
-    }
-    byte[] challenge=ss.evaluateResponse(token);
-    if (ss.isComplete()) {
-      authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
-      status=Status.authenticated;
-    }
- else {
-      sendChallenge(session,challenge);
-      status=Status.needResponse;
-    }
-    session.setSessionData("SaslServer",ss);
-  }
- catch (  SaslException e) {
-    Log.info("User Login Failed. " + e.getMessage());
-    authenticationFailed(session,Failure.NOT_AUTHORIZED);
-    status=Status.failed;
-  }
+try {
+Map<String,String> props=new TreeMap<String,String>();
+props.put(Sasl.QOP,"auth");
+if (mechanism.equals("GSSAPI")) {
+props.put(Sasl.SERVER_AUTH,"TRUE");
+}
+SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
+byte[] token=new byte[0];
+if (doc.getText().length() > 0) {
+token=StringUtils.decodeBase64(doc.getText().trim());
+if (token == null) {
+  token=new byte[0];
+}
+}
+if (mechanism.equals("DIGEST-MD5")) {
+token=new byte[0];
+}
+byte[] challenge=ss.evaluateResponse(token);
+if (ss.isComplete()) {
+authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
+status=Status.authenticated;
 }
  else {
-  Log.warn("Client wants to do a MECH we don't support: '" + mechanism + "'");
-  authenticationFailed(session,Failure.INVALID_MECHANISM);
-  status=Status.failed;
+sendChallenge(session,challenge);
+status=Status.needResponse;
+}
+session.setSessionData("SaslServer",ss);
+}
+ catch (SaslException e) {
+Log.info("User Login Failed. " + e.getMessage());
+authenticationFailed(session,Failure.NOT_AUTHORIZED);
+status=Status.failed;
+}
+}
+ else {
+Log.warn("Client wants to do a MECH we don't support: '" + mechanism + "'");
+authenticationFailed(session,Failure.INVALID_MECHANISM);
+status=Status.failed;
 }
 break;
 case RESPONSE:
@@ -74,23 +78,23 @@ boolean ssComplete=ss.isComplete();
 String response=doc.getTextTrim();
 try {
 if (ssComplete) {
-  authenticationSuccessful(session,ss.getAuthorizationID(),null);
-  status=Status.authenticated;
+authenticationSuccessful(session,ss.getAuthorizationID(),null);
+status=Status.authenticated;
 }
  else {
-  byte[] data=StringUtils.decodeBase64(response);
-  if (data == null) {
-    data=new byte[0];
-  }
-  byte[] challenge=ss.evaluateResponse(data);
-  if (ss.isComplete()) {
-    authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
-    status=Status.authenticated;
-  }
+byte[] data=StringUtils.decodeBase64(response);
+if (data == null) {
+data=new byte[0];
+}
+byte[] challenge=ss.evaluateResponse(data);
+if (ss.isComplete()) {
+authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
+status=Status.authenticated;
+}
  else {
-    sendChallenge(session,challenge);
-    status=Status.needResponse;
-  }
+sendChallenge(session,challenge);
+status=Status.needResponse;
+}
 }
 }
  catch (SaslException e) {
