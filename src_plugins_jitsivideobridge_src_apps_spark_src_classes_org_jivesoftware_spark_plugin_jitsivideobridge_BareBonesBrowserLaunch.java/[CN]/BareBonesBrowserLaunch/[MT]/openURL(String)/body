@@ -1,0 +1,27 @@
+{
+  Log.warning("BareBonesBrowserLaunch.openURL: " + url);
+  String osName=System.getProperty("os.name").toLowerCase();
+  try {
+    if (osName.startsWith("mac os")) {
+      Class.forName("com.apple.eio.FileManager").getDeclaredMethod("openURL",new Class[]{String.class}).invoke(null,new Object[]{url});
+    }
+ else     if (osName.startsWith("windows")) {
+      Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+    }
+ else {
+      String browser=null;
+      for (      String b : browsers) {
+        if (browser == null && Runtime.getRuntime().exec(new String[]{"which",b}).getInputStream().read() != -1) {
+          Runtime.getRuntime().exec(new String[]{browser=b,url});
+        }
+      }
+      if (browser == null) {
+        throw new Exception(Arrays.toString(browsers));
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.warning("BareBonesBrowserLaunch.openURL: error " + e);
+    JOptionPane.showMessageDialog(null,errMsg + "\n" + e.toString());
+  }
+}

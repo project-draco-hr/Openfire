@@ -1,0 +1,27 @@
+{
+  this.room=room;
+  this.url=url;
+  ClassLoader cl=getClass().getClassLoader();
+  ImageIcon jitsivideobridgeIcon=new ImageIcon(cl.getResource("images/jitsi_logo16x16.png"));
+  jitsivideobridgeButton=new RolloverButton(jitsivideobridgeIcon);
+  jitsivideobridgeButton.setToolTipText(GraphicUtils.createToolTip("Jitsi Videobridge"));
+  final String roomId=getNode(room.getRoomname());
+  final String sessionID=roomId + "-" + SparkManager.getConnection().getConnectionID();
+  final String nickname=getNode(org.jivesoftware.smack.util.StringUtils.parseBareAddress(SparkManager.getSessionManager().getJID()));
+  jitsivideobridgeButton.addActionListener(new ActionListener(){
+    public void actionPerformed(    ActionEvent event){
+      String newUrl;
+      if ("groupchat".equals(room.getChatType().toString())) {
+        newUrl=url + "r=" + roomId;
+        sendInvite(room.getRoomname(),newUrl,Message.Type.groupchat);
+      }
+ else {
+        newUrl=url + "r=" + sessionID;
+        sendInvite(room.getRoomname(),newUrl,Message.Type.chat);
+      }
+      BareBonesBrowserLaunch.openURL(newUrl);
+    }
+  }
+);
+  room.getEditorBar().add(jitsivideobridgeButton);
+}
