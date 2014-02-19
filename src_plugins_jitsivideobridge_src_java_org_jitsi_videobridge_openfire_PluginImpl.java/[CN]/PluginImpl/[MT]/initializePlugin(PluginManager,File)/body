@@ -9,6 +9,11 @@
     ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
     WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/" + appName);
     context.setWelcomeFiles(new String[]{"index.html"});
+    String username=JiveGlobals.getProperty(USERNAME_PROPERTY_NAME,null);
+    String password=JiveGlobals.getProperty(PASSWORD_PROPERTY_NAME,"jitsi");
+    if (username != null) {
+      context.setSecurityHandler(basicAuth(username,password,"Private!"));
+    }
     createIQHandlers();
   }
  catch (  Exception e) {
