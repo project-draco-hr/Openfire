@@ -4,14 +4,19 @@
     Log.warn("Certificate already exists for alias: " + alias);
     return false;
   }
-  PasswordFinder passwordFinder=new PasswordFinder(){
-    public char[] getPassword(){
-      return passPhrase != null ? passPhrase.toCharArray() : new char[]{};
-    }
+  PEMParser pemParser=new PEMParser(new InputStreamReader(pkInputStream));
+  Object object=pemParser.readObject();
+  PEMDecryptorProvider decProv=new JcePEMDecryptorProviderBuilder().build(passPhrase.toCharArray());
+  JcaPEMKeyConverter converter=new JcaPEMKeyConverter().setProvider("BC");
+  KeyPair kp;
+  if (object instanceof PEMEncryptedKeyPair) {
+    Log.debug("Encrypted key - we will use provided password");
+    kp=converter.getKeyPair(((PEMEncryptedKeyPair)object).decryptKeyPair(decProv));
   }
-;
-  PEMReader pemReader=new PEMReader(new InputStreamReader(pkInputStream),passwordFinder);
-  KeyPair kp=(KeyPair)pemReader.readObject();
+ else {
+    Log.debug("Unencrypted key - no password needed");
+    kp=converter.getKeyPair((PEMKeyPair)object);
+  }
   PrivateKey privKey=kp.getPrivate();
   List<X509Certificate> certs=new ArrayList<X509Certificate>();
   for (  Certificate cert : CertificateFactory.getInstance("X509").generateCertificates(inputStream)) {
