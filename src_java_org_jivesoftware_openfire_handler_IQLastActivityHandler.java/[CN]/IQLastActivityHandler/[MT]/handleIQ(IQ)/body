@@ -3,8 +3,14 @@
   Element lastActivity=reply.setChildElement("query","jabber:iq:last");
   String sender=packet.getFrom().getNode();
   String username=packet.getTo() == null ? null : packet.getTo().getNode();
-  if (sender == null || username == null) {
+  if (sender == null) {
     reply.setError(PacketError.Condition.forbidden);
+    return reply;
+  }
+  if (username == null) {
+    long uptime=XMPPServer.getInstance().getServerInfo().getLastStarted().getTime();
+    long lastActivityTime=(System.currentTimeMillis() - uptime) / 1000;
+    lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
     return reply;
   }
   try {
