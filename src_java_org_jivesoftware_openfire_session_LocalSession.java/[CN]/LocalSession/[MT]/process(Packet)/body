@@ -11,4 +11,21 @@ catch (    Exception e) {
       Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
     }
   }
+ else {
+    if (packet instanceof Message) {
+      Message message=(Message)packet;
+      Message result=message.createCopy();
+      result.setTo(message.getFrom());
+      result.setError(PacketError.Condition.service_unavailable);
+      XMPPServer.getInstance().getRoutingTable().routePacket(message.getFrom(),result,true);
+    }
+ else     if (packet instanceof IQ) {
+      IQ iq=(IQ)packet;
+      if (iq.getType() == IQ.Type.get || iq.getType() == IQ.Type.set) {
+        IQ result=IQ.createResultIQ(iq);
+        result.setError(PacketError.Condition.service_unavailable);
+        XMPPServer.getInstance().getRoutingTable().routePacket(iq.getFrom(),result,true);
+      }
+    }
+  }
 }
