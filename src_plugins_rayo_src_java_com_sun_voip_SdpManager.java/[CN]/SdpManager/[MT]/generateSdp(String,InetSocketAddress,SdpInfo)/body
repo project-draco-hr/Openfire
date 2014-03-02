@@ -22,7 +22,7 @@
     Logger.println("Using best media " + mediaInfo);
   }
   remoteSdpInfo.setMediaInfo(mediaInfo);
-  String payloads="13 " + mediaInfo.getPayload();
+  String payloads="13 101 " + mediaInfo.getPayload();
   byte telephoneEventPayload=remoteSdpInfo.getTelephoneEventPayload();
   String telephoneEvent="";
   if (useTelephoneEvent == true && telephoneEventPayload != 0) {
@@ -39,7 +39,7 @@
   if (transmitMediaInfo != null) {
     transmitMap=generateRtpmap(transmitMediaInfo) + "\r\n";
   }
-  String sdp="v=0\r\n" + "o=" + name + " 1 1 IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "s=SIP Call\r\n"+ "c=IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "t=0 0 \r\n"+ "m=audio "+ isa.getPort()+ " RTP/AVP "+ payloads+ "\r\n"+ "a=rtpmap:13 CN/8000"+ "\r\n"+ generateRtpmap(mediaInfo)+ "\r\n"+ transmitMap+ telephoneEvent;
+  String sdp="v=0\r\n" + "o=" + name + " 1 1 IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "s=SIP Call\r\n"+ "c=IN IP4 "+ isa.getAddress().getHostAddress()+ "\r\n"+ "t=0 0 \r\n"+ "m=audio "+ isa.getPort()+ " RTP/AVP "+ payloads+ "\r\n"+ "a=rtpmap:13 CN/8000"+ "\r\n"+ "a=rtpmap:101 telephone-event/8000"+ "\r\n"+ "a=fmtp:101 0-16"+ "\r\n"+ generateRtpmap(mediaInfo)+ "\r\n"+ transmitMap+ telephoneEvent;
   if (transmitMediaInfo != null) {
     sdp+="a=transmitPayload:" + transmitMediaInfo.getPayload() + "\r\n";
   }

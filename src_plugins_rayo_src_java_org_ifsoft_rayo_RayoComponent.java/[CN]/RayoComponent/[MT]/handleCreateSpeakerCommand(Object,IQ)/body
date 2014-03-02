@@ -1,0 +1,40 @@
+{
+  Log.info("RayoComponent handleCreateSpeakerCommand");
+  IQ reply=IQ.createResultIQ(iq);
+  CreateSpeakerCommand speaker=(CreateSpeakerCommand)object;
+  try {
+    String speakerId=JID.escapeNode(iq.getFrom().toBareJID() + "/speaker");
+    String label=iq.getFrom().getNode();
+    CallHandler handler=CallHandler.findCall(speakerId);
+    if (handler != null) {
+      final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+      childElement.addAttribute(ID,speakerId);
+      childElement.addAttribute(URI,"xmpp:" + iq.getFrom().toBareJID() + "/speaker");
+      return reply;
+    }
+    String mediaPreference="PCMU/8000/1";
+    if (speaker.codec == null || "OPUS".equals(speaker.codec))     mediaPreference="PCM/48000/2";
+    CallParticipant cp=new CallParticipant();
+    cp.setCallId(speakerId);
+    cp.setConferenceId(speaker.mixer);
+    cp.setDisplayName("rayo-speaker-" + System.currentTimeMillis());
+    cp.setName(cp.getDisplayName());
+    cp.setVoiceDetection(true);
+    cp.setCallOwner(iq.getFrom().toString());
+    cp.setPhoneNumber(speaker.sipuri);
+    cp.setAutoAnswer(true);
+    cp.setProtocol("SIP");
+    cp.setMuted(true);
+    ConferenceManager cm=ConferenceManager.getConference(speaker.mixer,mediaPreference,label,false);
+    OutgoingCallHandler callHandler=new OutgoingCallHandler(this,cp);
+    callHandler.start();
+    final Element childElement=reply.setChildElement("ref",RAYO_CORE);
+    childElement.addAttribute(ID,speakerId);
+    childElement.addAttribute(URI,"xmpp:" + iq.getFrom().toBareJID() + "/speaker");
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    reply.setError(PacketError.Condition.not_allowed);
+  }
+  return reply;
+}

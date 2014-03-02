@@ -1,0 +1,14 @@
+{
+  this.recordPath=getAbsolutePath(recordDirectory,recordPath);
+  this.pcmu=pcmu;
+  this.sampleRate=sampleRate;
+  this.channels=channels;
+  if (recordingType.equalsIgnoreCase("Rtp")) {
+    recordRtp=true;
+  }
+ else   if (recordingType.equalsIgnoreCase("Au") == false) {
+    throw new IOException("Invalid recording type " + recordingType);
+  }
+  openFile();
+  start();
+}

@@ -13,5 +13,8 @@
     Element videoContent=conferenceIq.addElement("content").addAttribute("name","video");
     videoContent.addElement("channel").addAttribute("id",participant.videoChannelId).addAttribute("expire","0");
     router.route(iq);
+    if (participant.mediaStream != null) {
+      participant.removeMediaStream();
+    }
   }
 }

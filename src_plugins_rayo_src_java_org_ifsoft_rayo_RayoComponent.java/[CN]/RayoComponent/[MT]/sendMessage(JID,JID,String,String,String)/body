@@ -5,7 +5,11 @@
   packet.setTo(to);
   packet.setFrom(from);
   packet.setType("chat".equals(type) ? Message.Type.chat : Message.Type.groupchat);
-  if (fileName != null)   packet.setThread("http://" + getDomain() + ":"+ port+ "/rayo/recordings/"+ fileName);
+  if (fileName != null) {
+    String url="http://" + getDomain() + ":"+ port+ "/rayo/recordings/"+ fileName;
+    packet.setThread(url);
+    body=body + " " + url;
+  }
   packet.setBody(body);
   sendPacket(packet);
 }

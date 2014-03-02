@@ -1,0 +1,12 @@
+{
+  int inIx=ulawOffset;
+  int outIx=linearOffset;
+  for (int i=0; i < length; i++) {
+    int s=ulawToLinearTable[ulawData[inIx] + 128];
+    linearData[outIx]=(byte)((s >> 8) & 0xff);
+    outIx++;
+    linearData[outIx]=(byte)(s & 0xff);
+    outIx++;
+    inIx++;
+  }
+}

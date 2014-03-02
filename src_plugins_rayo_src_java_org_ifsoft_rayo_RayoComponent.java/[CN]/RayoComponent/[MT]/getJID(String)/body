@@ -1,10 +1,13 @@
 {
-  jid=JID.unescapeNode(jid);
-  if (jid.indexOf("@") == -1 || jid.indexOf("/") == -1)   return null;
-  try {
-    return new JID(jid);
+  if (jid != null) {
+    jid=JID.unescapeNode(jid);
+    if (jid.indexOf("@") == -1 || jid.indexOf("/") == -1)     return null;
+    try {
+      return new JID(jid);
+    }
+ catch (    Exception e) {
+      return null;
+    }
   }
- catch (  Exception e) {
-    return null;
-  }
+ else   return null;
 }

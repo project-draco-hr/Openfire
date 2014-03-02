@@ -1,0 +1,15 @@
+{
+  String domainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  try {
+    if ("CALL".equals(cp.getDisplayName()) && "Speaker".equals(cp.getProtocol())) {
+      memberSender.setChannel(new SpeakerChannel(cp.getOtherCall().getMemberReceiver()));
+    }
+    setState(CallState.ANSWERED);
+    setEndpointAddress(null,(byte)0,(byte)0,(byte)0);
+    setState(CallState.ESTABLISHED);
+  }
+ catch (  Exception e) {
+    Log.error("Call " + cp + ":  SpeakerCallAgent: initiateCall exception ");
+    e.printStackTrace();
+  }
+}

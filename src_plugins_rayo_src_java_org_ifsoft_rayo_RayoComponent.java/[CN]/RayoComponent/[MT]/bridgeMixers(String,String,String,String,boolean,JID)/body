@@ -1,0 +1,38 @@
+{
+  Log.info("RayoComponent bridgeMixers " + speakerId + " "+ callMixer+ " "+ callId+ " "+ flag);
+  String bridgeSpeakerId="spkr-" + speakerId + callId;
+  String bridgeCallId="call-" + callId + speakerId;
+  CallHandler bridge1=CallHandler.findCall(bridgeSpeakerId);
+  if (bridge1 != null)   bridge1.cancelRequest("Speaker terminated");
+  CallHandler bridge2=CallHandler.findCall(bridgeCallId);
+  if (bridge2 != null)   bridge2.cancelRequest("Speaker terminated");
+  if (flag) {
+synchronized (this) {
+      CallParticipant bp1=new CallParticipant();
+      bp1.setCallId(bridgeSpeakerId);
+      bp1.setConferenceId(spkrMixer);
+      bp1.setPhoneNumber(speakerId);
+      bp1.setDisplayName("SPKR");
+      bp1.setVoiceDetection(false);
+      bp1.setProtocol("Speaker");
+      bridge1=new OutgoingCallHandler(this,bp1);
+      CallParticipant bp2=new CallParticipant();
+      bp2.setCallId(bridgeCallId);
+      bp2.setConferenceId(callMixer);
+      bp2.setPhoneNumber(speakerId);
+      bp2.setDisplayName("CALL");
+      bp2.setVoiceDetection(true);
+      bp2.setCallOwner(from.toString());
+      bp2.setProtocol("Speaker");
+      bp2.setOtherCall(bridge1);
+      bridge2=new OutgoingCallHandler(this,bp2);
+      bridge1.start();
+      try {
+        Thread.sleep(3000);
+      }
+ catch (      Exception e) {
+      }
+      bridge2.start();
+    }
+  }
+}

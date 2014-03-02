@@ -1,0 +1,52 @@
+{
+  if (ArrayExtensions.getLength(bytes).intValue() < 12 || (bytes[0].byteValue() & 0xc0) != 128)   return null;
+  Boolean flag=Boolean.valueOf((bytes[0].byteValue() & 0x20) == 32);
+  Boolean flag2=Boolean.valueOf((bytes[0].byteValue() & 0x10) == 16);
+  Byte num=new Byte((byte)(bytes[0].byteValue() & 0xf));
+  Boolean flag3=Boolean.valueOf((bytes[1].byteValue() & 0x80) == 128);
+  Byte num2=new Byte((byte)(bytes[1].byteValue() & 0x7f));
+  Integer num3=BitAssistant.toIntegerFromShortNetwork(bytes,Integer.valueOf(2));
+  Long num4=BitAssistant.toLongFromIntegerNetwork(bytes,Integer.valueOf(4));
+  Long num5=BitAssistant.toLongFromIntegerNetwork(bytes,Integer.valueOf(8));
+  Integer startIndex=Integer.valueOf(12);
+  Long numArray[]=null;
+  if (num.byteValue() > 0) {
+    numArray=new Long[num.byteValue()];
+    for (Integer num7=Integer.valueOf(0); num7.intValue() < num.byteValue(); ) {
+      numArray[num7.intValue()]=BitAssistant.toLongFromIntegerNetwork(bytes,startIndex);
+      startIndex=Integer.valueOf(startIndex.intValue() + 4);
+      Integer integer=num7;
+      Integer integer1=num7=Integer.valueOf(num7.intValue() + 1);
+      Integer _tmp=integer;
+    }
+  }
+  Integer num8=Integer.valueOf(0);
+  Long numArray2[]=null;
+  if (flag2.booleanValue()) {
+    num8=BitAssistant.toIntegerFromShortNetwork(bytes,startIndex);
+    startIndex=Integer.valueOf(startIndex.intValue() + 2);
+    Integer num9=BitAssistant.toIntegerFromShortNetwork(bytes,startIndex);
+    startIndex=Integer.valueOf(startIndex.intValue() + 2);
+    if (num9.intValue() > 0) {
+      numArray2=new Long[num9.intValue()];
+      for (Integer num7=Integer.valueOf(0); num7.intValue() < num9.intValue(); ) {
+        numArray2[num7.intValue()]=BitAssistant.toLongFromIntegerNetwork(bytes,startIndex);
+        startIndex=Integer.valueOf(startIndex.intValue() + 4);
+        Integer integer2=num7;
+        Integer integer3=num7=Integer.valueOf(num7.intValue() + 1);
+        Integer _tmp1=integer2;
+      }
+    }
+  }
+  RTPPacket packet=new RTPPacket(BitAssistant.subArray(bytes,startIndex));
+  packet.setPayloadType(num2);
+  packet.setPadding(flag);
+  packet.setMarker(flag3);
+  packet.setSequenceNumber(num3);
+  packet.setTimestamp(num4);
+  packet.setSynchronizationSource(num5);
+  packet.setContributingSources(numArray);
+  packet.setExtensionHeader(num8);
+  packet.setExtension(numArray2);
+  return packet;
+}

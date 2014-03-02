@@ -16,6 +16,11 @@
       if (request.getMethod().equals(Request.REGISTER)) {
         handleRegister(request,requestEvent);
       }
+ else       if (request.getMethod().equals(Request.OPTIONS)) {
+        Response res=messageFactory.createResponse(Response.OK,request);
+        sipProvider.sendResponse(res);
+        return;
+      }
  else       if (!request.getMethod().equals(Request.INVITE)) {
         Logger.writeFile("sipListener could not be found for " + sipCallId + " "+ request.getMethod()+ ".  Ignoring");
         return;

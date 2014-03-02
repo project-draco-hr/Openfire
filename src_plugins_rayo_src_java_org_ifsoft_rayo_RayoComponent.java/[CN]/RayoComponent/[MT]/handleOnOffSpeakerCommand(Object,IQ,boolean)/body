@@ -1,0 +1,25 @@
+{
+  Log.info("RayoComponent handleOnOffSpeakerCommand");
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=iq.getTo().getNode();
+  String speakerId=JID.escapeNode(iq.getFrom().toBareJID() + "/speaker");
+  CallHandler callHandler=CallHandler.findCall(callId);
+  CallHandler spkrHandler=CallHandler.findCall(speakerId);
+  if (callHandler != null) {
+    if (spkrHandler != null) {
+      Log.info("RayoComponent handleOnOffSpeakerCommand, found call " + callId);
+      bridgeMixers(spkrHandler,callHandler,flag,iq.getFrom());
+    }
+  }
+ else {
+    ConferenceManager cm=ConferenceManager.getConference(callId,"PCMU/8000/1",callId,false);
+    if (spkrHandler != null) {
+      Log.info("RayoComponent handleOnOffSpeakerCommand, found conference " + callId);
+      CallParticipant sp=spkrHandler.getCallParticipant();
+      String spkrMixer=sp.getConferenceId();
+      String callMixer=callId;
+      bridgeMixers(spkrMixer,speakerId,callMixer,callId,flag,iq.getFrom());
+    }
+  }
+  return reply;
+}

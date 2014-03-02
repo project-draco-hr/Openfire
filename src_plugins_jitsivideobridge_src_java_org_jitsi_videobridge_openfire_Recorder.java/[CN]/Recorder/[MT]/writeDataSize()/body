@@ -1,0 +1,29 @@
+{
+  try {
+synchronized (this) {
+      if (bo != null) {
+        bo.flush();
+        bo.close();
+        fo.flush();
+        fo.close();
+      }
+      if (auHeader != null) {
+        auHeader[8]=(byte)((dataSize >> 24) & 0xff);
+        auHeader[9]=(byte)((dataSize >> 16) & 0xff);
+        auHeader[10]=(byte)((dataSize >> 8) & 0xff);
+        auHeader[11]=(byte)(dataSize & 0xff);
+        try {
+          RandomAccessFile raf=new RandomAccessFile(recordPath,"rw");
+          raf.write(auHeader);
+          raf.close();
+        }
+ catch (        FileNotFoundException e) {
+          Log.error("Unable to write data size to recording " + recordPath + " "+ e.getMessage(),e);
+        }
+      }
+    }
+  }
+ catch (  IOException e) {
+    Log.error("Exception closing recording " + recordPath + " "+ e.getMessage(),e);
+  }
+}

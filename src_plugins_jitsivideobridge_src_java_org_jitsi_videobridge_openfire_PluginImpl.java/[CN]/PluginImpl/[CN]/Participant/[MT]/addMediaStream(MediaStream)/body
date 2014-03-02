@@ -1,0 +1,15 @@
+{
+  boolean recordMedia="true".equals(JiveGlobals.getProperty(RECORD_PROPERTY_NAME,"false"));
+  if (recordMedia) {
+    this.mediaStream=mediaStream;
+    mediaStream.addPropertyChangeListener(streamPropertyChangeListener);
+    String recordingPath=JiveGlobals.getHomeDirectory() + File.separator + "resources"+ File.separator+ "spank"+ File.separator+ "rayo"+ File.separator+ "video_recordings";
+    String fileName="video-" + focusName + "-"+ nickname+ "-"+ System.currentTimeMillis()+ ".rtp";
+    try {
+      recorder=new Recorder(recordingPath,fileName,"rtp",false,0,0);
+    }
+ catch (    Exception e) {
+      Log.error("Error creating video recording " + fileName + " "+ recordingPath,e);
+    }
+  }
+}

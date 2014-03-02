@@ -32,8 +32,43 @@
     Element conference=null;
     if (user.toString().equals("jitsi-videobridge." + domainName)) {
       conference=root.createCopy();
-      if (mediaSink == null) {
+      boolean recordMedia="true".equals(JiveGlobals.getProperty(RECORD_PROPERTY_NAME,"false"));
+      if (recordMedia && recorder == null) {
         try {
+synchronized (this) {
+            Log.info("Creating recorder file " + iq.getTo());
+            String focusJid=XMPPServer.getInstance().createJID(focusName,focusName).toString();
+            Content content=getVideoBridge().getConference(focusId,focusJid).getOrCreateContent("audio");
+            AudioMixerMediaDevice mediaDevice=(AudioMixerMediaDevice)content.getMixer();
+            outDataSource=mediaDevice.createOutputDataSource();
+            outDataSource.connect();
+            BufferTransferHandler transferHandler=new BufferTransferHandler(){
+              private final Buffer buffer=new Buffer();
+              public void transferData(              PushBufferStream stream){
+                try {
+                  stream.read(buffer);
+                  byte[] data=(byte[])buffer.getData();
+                  byte[] ulawData=new byte[data.length / 2];
+                  AudioConversion.linearToUlaw(data,0,ulawData,0);
+                  if (recorder != null)                   recorder.write(ulawData,0,ulawData.length);
+                }
+ catch (                Exception e) {
+                  Log.error("transferData exception",e);
+                }
+              }
+            }
+;
+            AudioMixingPushBufferStream stream=(AudioMixingPushBufferStream)outDataSource.getStreams()[0];
+            stream.setTransferHandler(transferHandler);
+            AudioFormat format=stream.getFormat();
+            String recordingPath=JiveGlobals.getHomeDirectory() + File.separator + "resources"+ File.separator+ "spank"+ File.separator+ "rayo"+ File.separator+ "video_recordings";
+            String fileName="audio-" + focusName + "-"+ System.currentTimeMillis()+ ".au";
+            boolean pcmu=format.getEncoding() == AudioFormat.ULAW;
+            int sampleRate=(int)Math.round(format.getSampleRate());
+            int channels=format.getChannels();
+            recorder=new Recorder(recordingPath,fileName,"au",true,sampleRate,channels);
+            outDataSource.start();
+          }
         }
  catch (        Exception e) {
           Log.error("Error creating recording file",e);

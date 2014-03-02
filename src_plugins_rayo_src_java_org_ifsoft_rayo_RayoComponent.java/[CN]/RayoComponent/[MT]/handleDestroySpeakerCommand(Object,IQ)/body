@@ -1,0 +1,17 @@
+{
+  Log.info("RayoComponent handleDestroySpeakerCommand");
+  IQ reply=IQ.createResultIQ(iq);
+  DestroySpeakerCommand speaker=(DestroySpeakerCommand)object;
+  try {
+    String speakerId=JID.escapeNode(iq.getFrom().toBareJID() + "/speaker");
+    CallHandler handler=CallHandler.findCall(speakerId);
+    if (handler != null) {
+      killSpeaker(handler);
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    reply.setError(PacketError.Condition.not_allowed);
+  }
+  return reply;
+}

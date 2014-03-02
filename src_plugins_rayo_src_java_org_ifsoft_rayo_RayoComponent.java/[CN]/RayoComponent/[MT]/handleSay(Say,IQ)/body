@@ -3,8 +3,8 @@
   IQ reply=IQ.createResultIQ(iq);
   final String entityId=iq.getTo().getNode();
   final String treatmentId=command.getPrompt().getText();
-  try {
-    CallHandler callHandler=CallHandler.findCall(entityId);
+  CallHandler callHandler=CallHandler.findCall(entityId);
+  if (callHandler != null) {
     try {
       callHandler.playTreatmentToCall(treatmentId,this);
       final Element childElement=reply.setChildElement("ref",RAYO_CORE);
@@ -16,7 +16,7 @@
       reply.setError(PacketError.Condition.not_allowed);
     }
   }
- catch (  NoSuchElementException e) {
+ else {
     try {
       ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(entityId);
       try {

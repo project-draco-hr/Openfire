@@ -17,6 +17,8 @@
   String fromName=cp.getDisplayName();
   String fromNumber=cp.getDisplayName();
   String toNumber=cp.getPhoneNumber();
+  String transport="udp";
+  Logger.println("XXX from = " + fromName + " "+ cp);
   int toSipPort=5060;
   String proxy=cp.getSipProxy();
   if (proxy == null) {
@@ -68,6 +70,7 @@
     }
   }
  else {
+    transport=System.getProperty("com.sun.voip.server.PROTOCOL");
     if (toNumber.indexOf("tel:") == 0) {
       toNumber=toNumber.substring(4);
     }
@@ -96,7 +99,9 @@
     if (voipGateway.equals(proxy))     gatewayRequired=true;
   }
   if (gatewayRequired) {
+    Logger.println("XXXX gatewayRequired");
     if (proxyCredentialList.size() != 0) {
+      Logger.println("XXXX gatewayRequired 1");
       int voipIndex=0;
       for (int i=0; i < proxyCredentialList.size(); i++) {
         ProxyCredentials proxyCredentials=proxyCredentialList.get(i);
@@ -105,26 +110,30 @@
         }
       }
       ProxyCredentials proxyCredentials=proxyCredentialList.get(voipIndex);
-      fromName=proxyCredentials.getUserDisplay();
       voipGateway=proxyCredentials.getHost();
       obProxy=proxyCredentials.getProxy();
-      fromAddress=addressFactory.createSipURI(proxyCredentials.getUserName(),voipGateway);
-      cp.setProxyCredentials(proxyCredentials);
-      cp.setDisplayName(proxyCredentials.getUserDisplay());
+      fromAddress=addressFactory.createSipURI(fromName,voipGateway);
     }
+ else {
+      Logger.println("XXXX gatewayRequired 2");
+    }
+    Logger.println("XXXX gatewayRequired 3");
     toAddress=addressFactory.createSipURI(toNumber,voipGateway);
   }
  else {
+    Logger.println("XXXX gatewayRequired 4");
     Logger.println("fromNumber " + fromNumber);
     if (fromNumber.startsWith("sip:"))     fromAddress=(SipURI)addressFactory.createAddress(fromNumber).getURI();
  else     fromAddress=addressFactory.createSipURI(fromNumber,ourIpAddress);
     fromAddress.setPort(ourSipPort);
     toAddress=addressFactory.createSipURI(toNumber,voipGateway);
   }
+  Logger.println("XXXX gatewayRequired 5");
   Logger.println("from " + fromAddress);
   Logger.println("to " + toAddress);
   fromNameAddress=addressFactory.createAddress(fromName,fromAddress);
   fromHeader=headerFactory.createFromHeader(fromNameAddress,new Integer((int)(Math.random() * 10000)).toString());
+  Logger.println("XXXX gatewayRequired 6");
   if (Bridge.getPrivateHost().startsWith("127.") && voipGateway.equals("127.0.0.1") == false) {
     throw new SipException("The bridge's ip address is " + Bridge.getPrivateHost() + ". It is not possible to initiate a call to "+ voipGateway);
   }
@@ -138,16 +147,18 @@
   if (ix >= 0) {
     toNumber=toNumber.substring(0,ix);
   }
+  Logger.println("XXXX gatewayRequired 7");
   requestURI=addressFactory.createSipURI(toNumber,voipGateway);
   requestURI.setPort(toSipPort);
-  requestURI.setTransportParam(sipProvider.getListeningPoint().getTransport());
-  viaHeader=headerFactory.createViaHeader(ourIpAddress,ourSipPort,sipProvider.getListeningPoint().getTransport(),null);
+  requestURI.setTransportParam(sipProvider.getListeningPoint(transport).getTransport());
+  viaHeader=headerFactory.createViaHeader(ourIpAddress,ourSipPort,sipProvider.getListeningPoint(transport).getTransport(),null);
   viaHeaders=new ArrayList();
   viaHeaders.add(viaHeader);
   callIdHeader=sipProvider.getNewCallId();
   cSeqHeader=headerFactory.createCSeqHeader(1,Request.INVITE);
   MaxForwardsHeader maxForwards=headerFactory.createMaxForwardsHeader(70);
   invite=messageFactory.createRequest(requestURI,Request.INVITE,callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwards);
+  Logger.println("XXXX gatewayRequired 10");
   if (SdpManager.useTelephoneEvent() == true) {
     allowEventsHeader=headerFactory.createAllowEventsHeader("telephone-event");
     invite.addHeader(allowEventsHeader);
@@ -155,11 +166,13 @@
   SipURI contactURI=null;
   if (fromNumber.startsWith("sip:"))   contactURI=(SipURI)addressFactory.createAddress(fromNumber).getURI();
  else   contactURI=addressFactory.createSipURI(fromNumber,ourPublicIpAddress);
+  Logger.println("XXXX gatewayRequired 12");
   contactURI.setPort(ourPublicSipPort);
   Address contactAddress=addressFactory.createAddress(contactURI);
   contactAddress.setDisplayName(fromName);
   ContactHeader contactHeader=headerFactory.createContactHeader(contactAddress);
   invite.addHeader(contactHeader);
+  Logger.println("XXXX gatewayRequired 14");
   if (obProxy != null) {
     try {
       SipURI routeURI=(SipURI)addressFactory.createURI("sip:" + obProxy + ";lr");
@@ -170,6 +183,7 @@
       Logger.error("Creating registration route error " + e);
     }
   }
+  Logger.println("XXXX gatewayRequired 16");
   if (cp.isAutoAnswer()) {
     Logger.println("Call " + cp + " alert-info added");
     try {
@@ -181,6 +195,7 @@
       Logger.error("Creating alert info error " + e);
     }
   }
+  Logger.println("XXXX gatewayRequired 18");
   if (sdp != null) {
     contentTypeHeader=headerFactory.createContentTypeHeader("application","sdp");
     invite.setContent(sdp,contentTypeHeader);
@@ -194,6 +209,8 @@
     Logger.println("Call " + cp + " sendInvite failed:  "+ e.getMessage());
     return null;
   }
+  Logger.println("XXXX gatewayRequired 19");
   clientTransaction.sendRequest();
+  Logger.println("XXXX gatewayRequired 20");
   return clientTransaction;
 }

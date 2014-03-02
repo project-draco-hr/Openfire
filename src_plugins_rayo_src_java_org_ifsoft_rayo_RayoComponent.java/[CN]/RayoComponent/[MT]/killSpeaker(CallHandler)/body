@@ -1,0 +1,23 @@
+{
+  Log.info("RayoComponent killSpeaker");
+  try {
+    handler.cancelRequest("Speaker is destroyed");
+    CallParticipant cp=handler.getCallParticipant();
+    String confId=cp.getConferenceId();
+    handler=null;
+    ConferenceManager conferenceManager=ConferenceManager.findConferenceManager(confId);
+    ArrayList memberList=conferenceManager.getMemberList();
+synchronized (memberList) {
+      for (int i=0; i < memberList.size(); i++) {
+        CallHandler participant=((ConferenceMember)memberList.get(i)).getCallHandler();
+        if (participant != null) {
+          participant.cancelRequest("Speaker is destroyed");
+          participant=null;
+        }
+      }
+    }
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+  }
+}

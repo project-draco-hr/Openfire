@@ -11,18 +11,18 @@ synchronized (memberList) {
           CallParticipant cp=callHandler.getCallParticipant();
           String target=cp.getCallOwner();
           Log.info("RayoComponent broadcastSpeaking checking " + target);
-          if (target != null && callId.equals(cp.getCallId()) == false) {
+          if (target != null && target.equals(from.toString()) == false) {
             Presence presence=new Presence();
             presence.setFrom(conferenceId + "@" + getDomain());
             presence.setTo(target);
             if (startSpeaking) {
               StartedSpeakingEvent speaker=new StartedSpeakingEvent();
-              speaker.setSpeakerId(callId);
+              speaker.setSpeakerId(JID.escapeNode(from.toString()));
               presence.getElement().add(rayoProvider.toXML(speaker));
             }
  else {
               StoppedSpeakingEvent speaker=new StoppedSpeakingEvent();
-              speaker.setSpeakerId(callId);
+              speaker.setSpeakerId(JID.escapeNode(from.toString()));
               presence.getElement().add(rayoProvider.toXML(speaker));
             }
             sendPacket(presence);

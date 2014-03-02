@@ -21,10 +21,10 @@
         if (Logger.logLevel == -77) {
           Logger.println("Call " + cp + " sending comfort payload");
         }
-        if (getWebRTCParticipant() == null) {
-          if (cp.getRtmfpSendStream() == null)           sendComfortNoisePayload();
+        if (relayChannel == null) {
+          if (cp.getRtmfpSendStream() == null && "SIP".equals(cp.getProtocol()))           sendComfortNoisePayload();
         }
- else         getWebRTCParticipant().sendComfortNoisePayload();
+ else         relayChannel.sendComfortNoisePayload();
       }
     }
     mustSetMarkBit=true;
@@ -92,13 +92,15 @@
     }
   }
  else   if (myMediaInfo.getEncoding() == RtpPacket.PCM_ENCODING) {
-    byte[] input=AudioConversion.littleEndianIntsToBytes(dataToSend);
-    byte[] output=new byte[Opus.MAX_PACKET];
-    int outLength=Opus.encode(opusEncoder,input,0,frameSizeInSamplesPerChannel,output,0,output.length);
-    opusBytes=new byte[outLength];
-    System.arraycopy(output,0,opusBytes,0,outLength);
-    System.arraycopy(output,0,rtpData,RtpPacket.HEADER_SIZE,outLength);
-    senderPacket.setLength(outLength + RtpPacket.HEADER_SIZE);
+    if (relayChannel != null && relayChannel.encode()) {
+      byte[] input=AudioConversion.littleEndianIntsToBytes(dataToSend);
+      byte[] output=new byte[Opus.MAX_PACKET];
+      int outLength=Opus.encode(opusEncoder,input,0,frameSizeInSamplesPerChannel,output,0,output.length);
+      opusBytes=new byte[outLength];
+      System.arraycopy(output,0,opusBytes,0,outLength);
+      System.arraycopy(output,0,rtpData,RtpPacket.HEADER_SIZE,outLength);
+      senderPacket.setLength(outLength + RtpPacket.HEADER_SIZE);
+    }
   }
  else {
     AudioConversion.intsToBytes(dataToSend,rtpData,RtpPacket.HEADER_SIZE);
@@ -111,7 +113,7 @@
   if (Logger.logLevel == -78) {
     Logger.println("Call " + cp + " sending data from socket "+ datagramChannel.socket().getLocalAddress()+ ":"+ datagramChannel.socket().getLocalPort()+ " to "+ senderPacket.getSocketAddress());
   }
-  if (getWebRTCParticipant() == null) {
+  if (relayChannel == null) {
     if (cp.getRtmfpSendStream() != null) {
       if (RtmfpCallAgent.publishHandlers.containsKey(cp.getRtmfpSendStream())) {
         int ts=(int)(System.currentTimeMillis() - startTime);
@@ -121,7 +123,7 @@
         RtmfpCallAgent.publishHandlers.get(cp.getRtmfpSendStream()).B(ts,new AudioPacket(rtmfp,rtmfp.length),0);
       }
     }
- else {
+ else     if ("SIP".equals(cp.getProtocol())) {
       if (cp.getInputTreatment() == null) {
         try {
           senderPacket.setSocketAddress(memberAddress);
@@ -139,10 +141,14 @@
         }
       }
     }
+ else {
+      return true;
+    }
   }
  else {
     try {
-      getWebRTCParticipant().pushAudio(senderPacket.getData(),opusBytes);
+      if (relayChannel.encode())       relayChannel.pushAudio(senderPacket.getData(),opusBytes);
+ else       relayChannel.pushAudio(dataToSend);
     }
  catch (    Exception e) {
       return false;

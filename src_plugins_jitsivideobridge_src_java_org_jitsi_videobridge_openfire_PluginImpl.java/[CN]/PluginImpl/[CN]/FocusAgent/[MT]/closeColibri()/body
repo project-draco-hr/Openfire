@@ -1,16 +1,16 @@
 {
+  Log.info("FocusAgent - closeColibri ");
   count=0;
   focusId=null;
-  if (mediaStream != null) {
-    mediaStream.stop();
-    mediaStream=null;
-  }
-  if (mediaSink != null) {
+  if (recorder != null) {
     try {
-      mediaSink.stop();
+      recorder.done();
+      outDataSource.disconnect();
+      outDataSource.stop();
     }
  catch (    Exception e) {
     }
-    mediaSink=null;
+    recorder=null;
+    outDataSource=null;
   }
 }

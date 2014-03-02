@@ -1,0 +1,29 @@
+{
+  Log.info("RayoComponent handleOnOffTalkCommand");
+  IQ reply=IQ.createResultIQ(iq);
+  String callId=iq.getTo().getNode();
+  String speakerId=JID.escapeNode(iq.getFrom().toBareJID() + "/speaker");
+  String bridgeCallId="call-" + callId + speakerId;
+  String bridgeSpeakerId="spkr-" + speakerId + callId;
+  CallHandler callHandler=CallHandler.findCall(bridgeCallId);
+  CallHandler callHandler2=CallHandler.findCall(bridgeSpeakerId);
+  if (callHandler != null) {
+    CallHandler spkrHandler=CallHandler.findCall(speakerId);
+    if (spkrHandler != null) {
+      MemberReceiver memberReceiver=spkrHandler.getMemberReceiver();
+      MemberSender memberSender=callHandler.getMemberSender();
+      if (!mute) {
+        memberReceiver.setChannel(new SpeakerChannel(callHandler.getMemberReceiver()));
+      }
+ else {
+        memberReceiver.setChannel(null);
+      }
+      CallParticipant cp=spkrHandler.getCallParticipant();
+      cp.setMuted(mute);
+    }
+  }
+ else {
+    reply.setError(PacketError.Condition.item_not_found);
+  }
+  return reply;
+}

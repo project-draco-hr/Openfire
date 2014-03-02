@@ -29,6 +29,24 @@
  else       if (object instanceof PublicCommand) {
         reply=handlePrivateCommand(object,iq);
       }
+ else       if (object instanceof CreateSpeakerCommand) {
+        reply=handleCreateSpeakerCommand(object,iq);
+      }
+ else       if (object instanceof DestroySpeakerCommand) {
+        reply=handleDestroySpeakerCommand(object,iq);
+      }
+ else       if (object instanceof PutOnSpeakerCommand) {
+        reply=handleOnOffSpeakerCommand(object,iq,true);
+      }
+ else       if (object instanceof TakeOffSpeakerCommand) {
+        reply=handleOnOffSpeakerCommand(object,iq,false);
+      }
+ else       if (object instanceof TalkCommand) {
+        reply=handleOnOffTalkCommand(object,iq,false);
+      }
+ else       if (object instanceof UntalkCommand) {
+        reply=handleOnOffTalkCommand(object,iq,true);
+      }
       return reply;
     }
     if (RAYO_RECORD.equals(namespace)) {
