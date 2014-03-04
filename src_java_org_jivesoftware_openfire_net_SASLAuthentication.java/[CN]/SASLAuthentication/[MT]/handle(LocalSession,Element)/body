@@ -30,6 +30,10 @@ if (mechanism.equals("GSSAPI")) {
 props.put(Sasl.SERVER_AUTH,"TRUE");
 }
 SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
+if (ss == null) {
+authenticationFailed(session,Failure.INVALID_MECHANISM);
+return Status.failed;
+}
 byte[] token=new byte[0];
 if (doc.getText().length() > 0) {
 token=StringUtils.decodeBase64(doc.getText().trim());
