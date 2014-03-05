@@ -95,6 +95,10 @@
   boolean isRoomNew=isLocked() && creationDate.getTime() == lockedTime;
   try {
     Presence joinPresence=joinRole.getPresence().createCopy();
+    if (canAnyoneDiscoverJID()) {
+      Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+      frag.addElement("status").addAttribute("code","100");
+    }
     if (isRoomNew) {
       Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
       frag.addElement("status").addAttribute("code","201");
@@ -105,27 +109,14 @@
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
   if (isRoomNew) {
-    Message message=new Message();
-    message.setType(Message.Type.groupchat);
-    message.setBody(LocaleUtils.getLocalizedString("muc.new"));
-    message.setFrom(role.getRoleAddress());
-    joinRole.send(message);
   }
  else   if (isLocked()) {
-    Message message=new Message();
-    message.setType(Message.Type.groupchat);
-    message.setBody(LocaleUtils.getLocalizedString("muc.locked"));
-    message.setFrom(role.getRoleAddress());
-    joinRole.send(message);
+    Presence presenceItemNotFound=new Presence(Presence.Type.error);
+    presenceItemNotFound.setError(PacketError.Condition.item_not_found);
+    presenceItemNotFound.setFrom(role.getRoleAddress());
+    joinRole.send(presenceItemNotFound);
   }
  else   if (canAnyoneDiscoverJID()) {
-    Message message=new Message();
-    message.setType(Message.Type.groupchat);
-    message.setBody(LocaleUtils.getLocalizedString("muc.warnnonanonymous"));
-    message.setFrom(role.getRoleAddress());
-    Element frag=message.addChildElement("x","http://jabber.org/protocol/muc#user");
-    frag.addElement("status").addAttribute("code","100");
-    joinRole.send(message);
   }
   if (historyRequest == null) {
     Iterator<Message> history=roomHistory.getMessageHistory();
