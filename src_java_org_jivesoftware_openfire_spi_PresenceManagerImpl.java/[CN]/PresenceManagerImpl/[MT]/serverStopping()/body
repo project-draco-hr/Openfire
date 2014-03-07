@@ -1,0 +1,12 @@
+{
+  for (  ClientSession session : XMPPServer.getInstance().getSessionManager().getSessions()) {
+    if (!session.isAnonymousUser()) {
+      try {
+        writeToDatabase(session.getUsername(),null,new Date());
+      }
+ catch (      UserNotFoundException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+}

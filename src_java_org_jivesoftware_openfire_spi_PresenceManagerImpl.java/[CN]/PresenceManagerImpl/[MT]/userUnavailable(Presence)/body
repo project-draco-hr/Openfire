@@ -23,27 +23,6 @@
       return;
     }
     lastActivityCache.put(username,offlinePresenceDate.getTime());
-    deleteOfflinePresenceFromDB(username);
-    Connection con=null;
-    PreparedStatement pstmt=null;
-    try {
-      con=DbConnectionManager.getConnection();
-      pstmt=con.prepareStatement(INSERT_OFFLINE_PRESENCE);
-      pstmt.setString(1,username);
-      if (offlinePresence != null) {
-        DbConnectionManager.setLargeTextField(pstmt,2,offlinePresence);
-      }
- else {
-        pstmt.setNull(2,Types.VARCHAR);
-      }
-      pstmt.setString(3,StringUtils.dateToMillis(offlinePresenceDate));
-      pstmt.execute();
-    }
- catch (    SQLException sqle) {
-      Log.error("Error storing offline presence of user: " + username,sqle);
-    }
- finally {
-      DbConnectionManager.closeConnection(pstmt,con);
-    }
+    writeToDatabase(username,offlinePresence,offlinePresenceDate);
   }
 }
