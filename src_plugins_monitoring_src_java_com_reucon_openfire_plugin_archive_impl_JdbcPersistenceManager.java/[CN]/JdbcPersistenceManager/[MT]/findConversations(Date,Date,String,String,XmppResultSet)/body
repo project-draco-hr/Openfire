@@ -39,14 +39,26 @@
       }
     }
     firstIndex=firstIndex != null ? firstIndex : 0;
-    limitSB.append(" LIMIT ").append(max);
-    limitSB.append(" OFFSET ").append(firstIndex);
+    if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.sqlserver) {
+      limitSB.append(" BETWEEN ").append(firstIndex + 1);
+      limitSB.append(" AND ").append(firstIndex + max);
+    }
+ else {
+      limitSB.append(" LIMIT ").append(max);
+      limitSB.append(" OFFSET ").append(firstIndex);
+    }
     xmppResultSet.setFirstIndex(firstIndex);
   }
   if (whereSB.length() != 0) {
     querySB.append(" WHERE ").append(whereSB);
   }
-  querySB.append(" ORDER BY ").append(CONVERSATION_ID);
+  if (DbConnectionManager.getDatabaseType() == DbConnectionManager.DatabaseType.sqlserver) {
+    querySB.insert(0,"SELECT * FROM (SELECT *, ROW_NUMBER() OVER (ORDER BY " + CONVERSATION_ID + ") AS RowNum FROM ( ");
+    querySB.append(") ofConversation ) t2 WHERE RowNum");
+  }
+ else {
+    querySB.append(" ORDER BY ").append(CONVERSATION_ID);
+  }
   querySB.append(limitSB);
   Connection con=null;
   PreparedStatement pstmt=null;
