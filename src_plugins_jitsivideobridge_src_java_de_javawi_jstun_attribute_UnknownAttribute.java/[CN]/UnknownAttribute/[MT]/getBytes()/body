@@ -1,0 +1,21 @@
+{
+  int length=0;
+  if (unkown.size() % 2 == 1) {
+    length=2 * (unkown.size() + 1) + 4;
+  }
+ else {
+    length=2 * unkown.size() + 4;
+  }
+  byte[] result=new byte[length];
+  System.arraycopy(Utility.integerToTwoBytes(typeToInteger(type)),0,result,0,2);
+  System.arraycopy(Utility.integerToTwoBytes(length - 4),0,result,2,2);
+  Iterator<MessageAttributeType> it=unkown.iterator();
+  while (it.hasNext()) {
+    MessageAttributeType attri=it.next();
+    System.arraycopy(Utility.integerToTwoBytes(typeToInteger(attri)),0,result,4,2);
+  }
+  if (unkown.size() % 2 == 1) {
+    System.arraycopy(Utility.integerToTwoBytes(typeToInteger(unkown.elementAt(1))),0,result,4,2);
+  }
+  return result;
+}

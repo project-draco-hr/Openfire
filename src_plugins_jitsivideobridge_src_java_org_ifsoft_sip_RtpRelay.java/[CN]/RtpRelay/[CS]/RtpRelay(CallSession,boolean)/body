@@ -1,0 +1,13 @@
+{
+  this.video=video;
+  this.cs=cs;
+  jabberSocket=makeDatagramChannel(false);
+  jabberSocketRtcp=makeDatagramChannel(false);
+  sipSocket=makeDatagramChannel(false);
+  sipSocketRtcp=makeDatagramChannel(false);
+  Log.info("[[" + cs.internalCallId + "]] RtpRelay created ["+ jabberSocket.socket().getLocalPort()+ "]["+ sipSocket.socket().getLocalPort()+ "]");
+  if (!video) {
+    (new DtmfGenerator()).start();
+  }
+  start();
+}

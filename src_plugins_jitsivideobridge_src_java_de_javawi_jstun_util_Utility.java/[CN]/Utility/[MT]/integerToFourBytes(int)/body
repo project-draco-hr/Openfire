@@ -1,0 +1,11 @@
+{
+  byte[] result=new byte[4];
+  if ((value > Math.pow(2,63)) || (value < 0)) {
+    throw new UtilityException("Integer value " + value + " is larger than 2^63");
+  }
+  result[0]=(byte)((value >>> 24) & 0xFF);
+  result[1]=(byte)((value >>> 16) & 0xFF);
+  result[2]=(byte)((value >>> 8) & 0xFF);
+  result[3]=(byte)(value & 0xFF);
+  return result;
+}

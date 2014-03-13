@@ -1,0 +1,40 @@
+{
+  Response response=(Response)responseReceivedEvent.getResponse();
+  int statusCode=response.getStatusCode();
+  String method=((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getMethod();
+  Log.debug("Got response " + response);
+  if (statusCode == Response.OK) {
+    isRegistered=true;
+    Log.info("Voice bridge successfully registered with " + registrar + " for "+ proxyCredentials.getXmppUserName());
+    PluginImpl.sipRegisterStatus="Registered ok with " + proxyCredentials.getHost();
+    sipServerCallback.removeSipListener(sipCallId);
+  }
+ else   if (statusCode == Response.UNAUTHORIZED || statusCode == Response.PROXY_AUTHENTICATION_REQUIRED) {
+    if (method.equals(Request.REGISTER)) {
+      CSeqHeader cseq=(CSeqHeader)response.getHeader(CSeqHeader.NAME);
+      if (cseq.getSequenceNumber() < 2) {
+        ClientTransaction regTrans=SipService.handleChallenge(response,responseReceivedEvent.getClientTransaction(),proxyCredentials);
+        if (regTrans != null) {
+          try {
+            regTrans.sendRequest();
+          }
+ catch (          Exception e) {
+            Log.info("Registration failed, cannot send transaction " + e);
+            PluginImpl.sipRegisterStatus="Registration error " + e.toString();
+          }
+        }
+ else {
+          Log.info("Registration failed, cannot create transaction");
+          PluginImpl.sipRegisterStatus="Registration cannot create transaction";
+        }
+      }
+ else {
+        Log.info("Registration failed " + responseReceivedEvent);
+        PluginImpl.sipRegisterStatus="Registration failed";
+      }
+    }
+  }
+ else {
+    Log.info("Unrecognized response:  " + response);
+  }
+}

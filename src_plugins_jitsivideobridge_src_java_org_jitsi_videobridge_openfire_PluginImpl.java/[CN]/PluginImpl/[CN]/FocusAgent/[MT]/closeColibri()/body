@@ -7,6 +7,11 @@
       recorder.done();
       outDataSource.disconnect();
       outDataSource.stop();
+      for (      CallSession callSession : callSessions.values()) {
+        callSession.mediaStream.stop();
+        callSession.mediaStream.close();
+      }
+      callSessions.clear();
     }
  catch (    Exception e) {
     }

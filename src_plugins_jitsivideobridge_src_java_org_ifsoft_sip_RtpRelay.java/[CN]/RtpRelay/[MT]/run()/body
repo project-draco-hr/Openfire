@@ -1,0 +1,123 @@
+{
+  Log.info("[[" + cs.internalCallId + "]] RtpRelay Thread Started");
+  Selector sel=null;
+  try {
+    sel=SelectorProvider.provider().openSelector();
+    sipSocket.configureBlocking(false);
+    sipSocketRtcp.configureBlocking(false);
+    jabberSocket.configureBlocking(false);
+    jabberSocketRtcp.configureBlocking(false);
+    sipSocket.register(sel,SelectionKey.OP_READ);
+    jabberSocket.register(sel,SelectionKey.OP_READ);
+    sipSocketRtcp.register(sel,SelectionKey.OP_READ);
+    jabberSocketRtcp.register(sel,SelectionKey.OP_READ);
+    ByteBuffer inputBuffer=ByteBuffer.allocate(20000);
+    ByteBuffer outputBuffer=ByteBuffer.allocate(20000);
+    byte[] outputBytes=new byte[20000];
+    while (sipSocket.isOpen()) {
+      if (sel.select(1000) >= 0) {
+        Iterator<SelectionKey> itr=sel.selectedKeys().iterator();
+        while (itr.hasNext()) {
+          SelectionKey key=itr.next();
+          itr.remove();
+          if (key.isValid() && key.isReadable()) {
+            DatagramChannel socket=(DatagramChannel)key.channel();
+            inputBuffer.clear();
+            if (!socket.isOpen()) {
+              Log.error("[[" + cs.internalCallId + "]] Socket is not open ... ignoring");
+              continue;
+            }
+            SocketAddress src=socket.receive(inputBuffer);
+            if (src == null) {
+              Log.error("[[" + cs.internalCallId + "]] Src is null ... ignoring");
+              continue;
+            }
+            if ((inputBuffer.get(0) & 0x80) != 0) {
+              DatagramChannel destSocket;
+              SocketAddress destAddr;
+              inputBuffer.flip();
+              if (socket == sipSocket) {
+                if (NAT_ENABLE && !src.equals(sipDest)) {
+                  Log.debug("Nat detected, updating sip rtp destination from " + sipDest + " to "+ src);
+                  sipDest=src;
+                }
+                destSocket=jabberSocket;
+                destAddr=jabberDest;
+                if (this.sipSSRC == null) {
+                  this.sipSSRC=RtpUtil.getSSRC(inputBuffer.array());
+                }
+                if (destSocket != null && destAddr != null) {
+                  destSocket.send(inputBuffer,destAddr);
+                }
+              }
+ else               if (socket == sipSocketRtcp) {
+                destSocket=jabberSocketRtcp;
+                destAddr=jabberDestRtcp;
+                if (NAT_ENABLE && !src.equals(sipDestRtcp)) {
+                  Log.debug("Nat detected, updating sip rtcp destination from " + sipDestRtcp + " to "+ src);
+                  sipDestRtcp=src;
+                }
+                if (destSocket != null && destAddr != null) {
+                  destSocket.send(inputBuffer,destAddr);
+                }
+              }
+ else               if (socket == jabberSocketRtcp) {
+                destSocket=sipSocketRtcp;
+                destAddr=sipDestRtcp;
+                if (destSocket != null && destAddr != null) {
+                  destSocket.send(inputBuffer,destAddr);
+                }
+                if (video && VUP_ENABLE && System.currentTimeMillis() - lastVUpate > VUP_TIMER && (this.cs.sipDialog.getState() != null && this.cs.sipDialog.getState() != DialogState.EARLY)) {
+                  SipService.sendVideoUpdate(this.cs);
+                  lastVUpate=System.currentTimeMillis();
+                }
+              }
+ else {
+                destSocket=sipSocket;
+                destAddr=sipDest;
+                if (this.jabberSSRC == null) {
+                  this.jabberSSRC=RtpUtil.getSSRC(inputBuffer.array());
+                }
+synchronized (destSocket) {
+                  if (destSocket != null && destAddr != null) {
+                    if (!video) {
+                      this.jabberTimestamp=RtpUtil.getTimeStamp(inputBuffer.array());
+                      RtpUtil.setSequenceNumber(inputBuffer.array(),++this.jabberSequence);
+                      if (destSocket.isOpen()) {
+                        destSocket.send(inputBuffer,destAddr);
+                      }
+                    }
+ else {
+                      if (destSocket.isOpen()) {
+                        destSocket.send(inputBuffer,destAddr);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+ else {
+              this.processStun(src,inputBuffer.array(),socket);
+            }
+          }
+        }
+      }
+    }
+  }
+ catch (  IOException e) {
+    Log.error("Error in RTP relay thread!",e);
+  }
+catch (  Exception e) {
+    Log.error("Error in RTP relay thread!",e);
+  }
+ finally {
+    if (sel != null) {
+      try {
+        sel.close();
+      }
+ catch (      IOException e) {
+      }
+    }
+  }
+  Log.info("[[" + cs.internalCallId + "]] RtpRelay Thread Stopped");
+}

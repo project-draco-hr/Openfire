@@ -1,0 +1,12 @@
+{
+  if (FIR_ENABLE) {
+    byte[] buffer=new byte[40];
+    RtpUtil.buildFIR(buffer,firSeq++,sipSSRC,jabberSSRC);
+    try {
+      jabberSocketRtcp.send(ByteBuffer.wrap(buffer),jabberDestRtcp);
+    }
+ catch (    Exception e) {
+      Log.error("Error sending FIR packet!",e);
+    }
+  }
+}

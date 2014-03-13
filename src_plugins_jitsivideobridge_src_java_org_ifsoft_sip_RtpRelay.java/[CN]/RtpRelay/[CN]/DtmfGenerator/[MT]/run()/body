@@ -1,0 +1,57 @@
+{
+  while (sipSocket.isOpen()) {
+    char dtmf;
+    try {
+      dtmf=dtmfQueue.take();
+      if (dtmf == '\0') {
+        Log.debug("[[" + cs.internalCallId + "]] End flag detected in dtmf thread");
+        break;
+      }
+      long ts=0;
+synchronized (sipSocket) {
+        ts=jabberTimestamp;
+      }
+      DtmfEvent de=new DtmfEvent(dtmf,ts,jabberSSRC);
+      Log.debug("[[" + cs.internalCallId + "]] Preparing to send dtmf "+ dtmf);
+synchronized (sipSocket) {
+        ByteBuffer buffer=ByteBuffer.wrap(de.startPacket());
+        RtpUtil.setSequenceNumber(buffer.array(),++jabberSequence);
+        try {
+          sipSocket.send(buffer,sipDest);
+        }
+ catch (        IOException e) {
+          Log.error("Error sending dtmf start packet!",e);
+        }
+      }
+      for (int i=0; i < 5; i++) {
+        Thread.sleep(20);
+synchronized (sipSocket) {
+          ByteBuffer buffer=ByteBuffer.wrap(de.continuationPacket());
+          RtpUtil.setSequenceNumber(buffer.array(),++jabberSequence);
+          try {
+            sipSocket.send(buffer,sipDest);
+          }
+ catch (          IOException e) {
+            Log.error("Error sending dtmf continuation packet!",e);
+          }
+        }
+      }
+      for (int i=0; i < 3; i++) {
+synchronized (sipSocket) {
+          ByteBuffer buffer=ByteBuffer.wrap(de.endPacket());
+          RtpUtil.setSequenceNumber(buffer.array(),++jabberSequence);
+          try {
+            sipSocket.send(buffer,sipDest);
+          }
+ catch (          IOException e) {
+            Log.error("Error sending dtmf end packet!",e);
+          }
+        }
+      }
+      Thread.sleep(40);
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+  Log.debug("[[" + cs.internalCallId + "]] DtmfGenerator shut down");
+}

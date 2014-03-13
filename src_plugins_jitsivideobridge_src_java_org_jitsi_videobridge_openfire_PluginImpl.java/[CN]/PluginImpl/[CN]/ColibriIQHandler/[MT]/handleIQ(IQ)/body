@@ -48,6 +48,28 @@
         reply.setError(PacketError.Condition.not_allowed);
       }
     }
+ else     if (object instanceof UnInviteCommand) {
+      UnInviteCommand uninvite=(UnInviteCommand)object;
+      String focusAgentName="jitsi.videobridge." + uninvite.getMuc().getNode();
+      if (sessions.containsKey(focusAgentName)) {
+        FocusAgent focusAgent=sessions.get(focusAgentName);
+        focusAgent.uninviteNewParticipant(uninvite.getCallId(),reply);
+      }
+ else {
+        reply.setError(PacketError.Condition.not_allowed);
+      }
+    }
+ else     if (object instanceof InviteCommand) {
+      InviteCommand invite=(InviteCommand)object;
+      String focusAgentName="jitsi.videobridge." + invite.getMuc().getNode();
+      if (sessions.containsKey(focusAgentName)) {
+        FocusAgent focusAgent=sessions.get(focusAgentName);
+        focusAgent.inviteNewParticipant(invite.getFrom(),invite.getTo(),reply);
+      }
+ else {
+        reply.setError(PacketError.Condition.not_allowed);
+      }
+    }
  else {
       reply.setError(PacketError.Condition.not_allowed);
     }

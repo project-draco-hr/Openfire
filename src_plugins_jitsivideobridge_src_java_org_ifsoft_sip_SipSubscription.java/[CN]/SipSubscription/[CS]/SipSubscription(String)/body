@@ -1,0 +1,65 @@
+{
+  DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+  try {
+    DocumentBuilder db=dbf.newDocumentBuilder();
+    Document dom=db.parse(file);
+    Element docEle=dom.getDocumentElement();
+    NodeList nl=docEle.getChildNodes();
+    if (nl != null && nl.getLength() > 0) {
+      for (int i=0; i < nl.getLength(); i++) {
+        Node n=nl.item(i);
+        if (n instanceof Element) {
+          Element el=(Element)n;
+          Log.debug("Got a node of " + el.getNodeName() + ":"+ el.getTextContent());
+          if (el.getNodeName().equals("active")) {
+            this.active=Boolean.parseBoolean(el.getTextContent());
+          }
+ else           if (el.getNodeName().equals("remote")) {
+            this.remoteTag=el.getAttribute("tag");
+            this.remoteParty=SipService.addressFactory.createAddress(el.getTextContent());
+          }
+ else           if (el.getNodeName().equals("local")) {
+            this.localTag=el.getAttribute("tag");
+            this.localParty=SipService.addressFactory.createAddress(el.getTextContent());
+          }
+ else           if (el.getNodeName().equals("callid")) {
+            this.callId=el.getTextContent();
+          }
+ else           if (el.getNodeName().equals("cseq")) {
+            this.cseq=Long.parseLong(el.getTextContent());
+          }
+ else           if (el.getNodeName().equals("contact")) {
+            this.contact=el.getTextContent();
+          }
+ else           if (el.getNodeName().equals("routeset")) {
+            this.rl=new LinkedList<Address>();
+            NodeList routeList=el.getElementsByTagName("route");
+            for (int j=0; j < routeList.getLength(); j++) {
+              Element route=(Element)routeList.item(j);
+              Address addr=SipService.addressFactory.createAddress(route.getTextContent());
+              this.rl.add(addr);
+            }
+          }
+ else           if (el.getNodeName().equals("expires")) {
+            this.expires=Long.parseLong(el.getTextContent());
+          }
+        }
+      }
+    }
+  }
+ catch (  ParserConfigurationException e) {
+    Log.error("Error loading subscriptions from file",e);
+  }
+catch (  SAXException e) {
+    Log.error("Error loading subscriptions from file",e);
+  }
+catch (  IOException e) {
+    Log.error("Error loading subscriptions from file",e);
+  }
+catch (  DOMException e) {
+    Log.error("Error loading subscriptions from file",e);
+  }
+catch (  ParseException e) {
+    Log.error("Error loading subscriptions from file",e);
+  }
+}

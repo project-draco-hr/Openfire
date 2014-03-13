@@ -1,0 +1,14 @@
+{
+synchronized (watchers) {
+    List<SipSubscription> subs=watchers.get(user);
+    if (subs == null) {
+      return null;
+    }
+    for (    SipSubscription sub : subs) {
+      if (callId.equals(sub.callId)) {
+        return sub;
+      }
+    }
+  }
+  return null;
+}

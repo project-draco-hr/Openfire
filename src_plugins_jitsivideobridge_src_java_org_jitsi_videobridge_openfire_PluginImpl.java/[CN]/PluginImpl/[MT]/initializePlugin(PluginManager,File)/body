@@ -15,6 +15,19 @@
       context.setSecurityHandler(basicAuth(username,password,"Private!"));
     }
     createIQHandlers();
+    Properties properties=new Properties();
+    String hostName=XMPPServer.getInstance().getServerInfo().getHostname();
+    String logDir=pluginDirectory.getAbsolutePath() + File.separator + ".."+ File.separator+ ".."+ File.separator+ "logs"+ File.separator;
+    String port=JiveGlobals.getProperty(SIP_PORT_PROPERTY_NAME,"5060");
+    properties.setProperty("com.voxbone.kelpie.hostname",hostName);
+    properties.setProperty("com.voxbone.kelpie.ip",hostName);
+    properties.setProperty("com.voxbone.kelpie.sip_port",port);
+    properties.setProperty("javax.sip.IP_ADDRESS",hostName);
+    properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","99");
+    properties.setProperty("gov.nist.javax.sip.SERVER_LOG",logDir + "sip_server.log");
+    properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logDir + "sip_debug.log");
+    new SipService(properties);
+    Log.info("Initialize SIP Stack at " + hostName + ":"+ port);
   }
  catch (  Exception e) {
     Log.error("Jitsi Videobridge web app initialize error",e);
