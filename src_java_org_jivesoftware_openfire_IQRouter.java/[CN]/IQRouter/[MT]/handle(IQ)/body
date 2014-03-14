@@ -66,7 +66,23 @@
       }
     }
  else {
-      routingTable.routePacket(recipientJID,packet,false);
+      ClientSession session=sessionManager.getSession(packet.getFrom());
+      boolean isAcceptable=true;
+      if (session instanceof LocalClientSession) {
+        IQ dummyIQ=packet.createCopy();
+        dummyIQ.setFrom(packet.getTo());
+        dummyIQ.setTo(packet.getFrom());
+        if (!((LocalClientSession)session).canProcess(dummyIQ)) {
+          packet.setTo(session.getAddress());
+          packet.setFrom((JID)null);
+          packet.setError(PacketError.Condition.not_acceptable);
+          session.process(packet);
+          isAcceptable=false;
+        }
+      }
+      if (isAcceptable) {
+        routingTable.routePacket(recipientJID,packet,false);
+      }
     }
   }
  catch (  Exception e) {

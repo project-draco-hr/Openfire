@@ -19,12 +19,27 @@
         }
         return;
       }
-      try {
-        routingTable.routePacket(recipientJID,packet,false);
+      boolean isAcceptable=true;
+      if (session instanceof LocalClientSession) {
+        Message dummyMessage=packet.createCopy();
+        dummyMessage.setFrom(packet.getTo());
+        dummyMessage.setTo(packet.getFrom());
+        if (!((LocalClientSession)session).canProcess(dummyMessage)) {
+          packet.setTo(session.getAddress());
+          packet.setFrom((JID)null);
+          packet.setError(PacketError.Condition.not_acceptable);
+          session.process(packet);
+          isAcceptable=false;
+        }
       }
- catch (      Exception e) {
-        log.error("Failed to route packet: " + packet.toXML(),e);
-        routingFailed(recipientJID,packet);
+      if (isAcceptable) {
+        try {
+          routingTable.routePacket(recipientJID,packet,false);
+        }
+ catch (        Exception e) {
+          log.error("Failed to route packet: " + packet.toXML(),e);
+          routingFailed(recipientJID,packet);
+        }
       }
     }
  else {
