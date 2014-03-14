@@ -1,0 +1,14 @@
+{
+  Presence presence=new Presence();
+  presence.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
+  presence.setTo(owner);
+  if (accepted) {
+    InviteAcceptedEvent event=new InviteAcceptedEvent(callId);
+    presence.getElement().add(colibriProvider.toXML(event));
+  }
+ else {
+    InviteCompletedEvent event=new InviteCompletedEvent(callId);
+    presence.getElement().add(colibriProvider.toXML(event));
+  }
+  router.route(presence);
+}

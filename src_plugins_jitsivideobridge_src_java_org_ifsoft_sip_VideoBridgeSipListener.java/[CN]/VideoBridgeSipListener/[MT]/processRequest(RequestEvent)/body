@@ -172,6 +172,7 @@
         Log.info("[[SIP]] Got in dialog bye");
         CallSession cs=(CallSession)evt.getDialog().getApplicationData();
         if (cs != null) {
+          cs.sendBye();
         }
         Response res=SipService.messageFactory.createResponse(Response.OK,req);
         if (evt.getServerTransaction() == null) {
@@ -197,6 +198,7 @@
         }
         CallSession cs=(CallSession)evt.getDialog().getApplicationData();
         if (cs != null) {
+          cs.sendBye();
         }
         return;
       }
