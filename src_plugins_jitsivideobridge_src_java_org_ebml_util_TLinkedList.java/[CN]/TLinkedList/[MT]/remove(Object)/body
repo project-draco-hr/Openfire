@@ -1,0 +1,37 @@
+{
+  TLinkable link=null;
+  for (link=_head; link != null; link=link.getNext()) {
+    if (o.equals(link)) {
+      break;
+    }
+  }
+  if (link != null) {
+    TLinkable p, n;
+    p=link.getPrevious();
+    n=link.getNext();
+    if (n == null && p == null) {
+      _head=_tail=null;
+    }
+ else     if (n == null) {
+      link.setPrevious(null);
+      p.setNext(null);
+      _tail=p;
+    }
+ else     if (p == null) {
+      link.setNext(null);
+      n.setPrevious(null);
+      _head=n;
+    }
+ else {
+      p.setNext(n);
+      n.setPrevious(p);
+      link.setNext(null);
+      link.setPrevious(null);
+    }
+    _size--;
+    return true;
+  }
+ else {
+    return false;
+  }
+}

@@ -1,0 +1,20 @@
+{
+  int[] LaceSizes=new int[LaceCount + 1];
+  LaceSizes[LaceCount]=(int)this.getSize();
+  int startIndex=index;
+  LaceSizes[0]=(int)EBMLReader.readEBMLCode(data,index);
+  index+=Element.codedSizeLength(LaceSizes[0]);
+  LaceSizes[LaceCount]-=LaceSizes[0];
+  long FirstEBMLSize=LaceSizes[0];
+  long LastEBMLSize=0;
+  for (int l=0; l < LaceCount - 1; l++) {
+    LastEBMLSize=EBMLReader.readSignedEBMLCode(data,index);
+    index+=Element.codedSizeLength(LastEBMLSize);
+    FirstEBMLSize+=LastEBMLSize;
+    LaceSizes[l + 1]=(int)FirstEBMLSize;
+    LaceSizes[LaceCount]-=LaceSizes[l + 1];
+  }
+  HeaderSize=HeaderSize + (int)(index - startIndex);
+  LaceSizes[LaceCount]-=HeaderSize;
+  return LaceSizes;
+}

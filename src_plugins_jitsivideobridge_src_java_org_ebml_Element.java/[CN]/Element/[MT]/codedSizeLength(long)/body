@@ -1,0 +1,21 @@
+{
+  int codedSize=0;
+  if (value < 127) {
+    codedSize=1;
+  }
+ else   if (value < 16383) {
+    codedSize=2;
+  }
+ else   if (value < 2097151) {
+    codedSize=3;
+  }
+ else   if (value < 268435455) {
+    codedSize=4;
+  }
+  if ((MIN_SIZE_LENGTH > 0) && (codedSize <= MIN_SIZE_LENGTH)) {
+    codedSize=MIN_SIZE_LENGTH;
+  }
+ else {
+  }
+  return codedSize;
+}

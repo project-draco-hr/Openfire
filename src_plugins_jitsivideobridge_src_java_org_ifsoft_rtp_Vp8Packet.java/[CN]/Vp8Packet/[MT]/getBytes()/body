@@ -1,0 +1,16 @@
+{
+  ArrayList list=new ArrayList();
+  list.add(new Byte((new Byte((new Integer((getExtendedControlBitsPresent().booleanValue() ? 0x80 : 0) | (getNonReferenceFrame().booleanValue() ? 0x20 : 0) | (getStartOfPartition().booleanValue() ? 0x10 : 0)| getPartitionId().byteValue() & 0xf)).byteValue())).byteValue()));
+  if (getExtendedControlBitsPresent().booleanValue()) {
+    list.add(new Byte((new Byte((new Integer((getPictureIDPresent().booleanValue() ? 0x80 : 0) | (getTemporalLevelZeroIndexPresent().booleanValue() ? 0x40 : 0) | (getTemporalLayerIndexPresent().booleanValue() ? 0x20 : 0)| (getKeyIndexPresent().booleanValue() ? 0x10 : 0))).byteValue())).byteValue()));
+    if (getPictureIDPresent().booleanValue()) {
+      Byte shortBytesNetwork[]=BitAssistant.getShortBytesNetwork(getPictureID());
+      list.add(new Byte((new Byte((new Integer(0x80 | shortBytesNetwork[0].byteValue() & 0x7f)).byteValue())).byteValue()));
+      list.add(new Byte(shortBytesNetwork[1].byteValue()));
+    }
+    if (getTemporalLevelZeroIndexPresent().booleanValue())     list.add(new Byte(getTemporalLevelZeroIndex().byteValue()));
+    if (getTemporalLayerIndexPresent().booleanValue() || getKeyIndexPresent().booleanValue())     list.add(new Byte((new Byte((byte)(getTemporalLayerIndex().byteValue() << 6 & 0xc0 | (getLayerSync().booleanValue() ? 0x20 : 0) | getKeyIndex().byteValue() & 0x1f))).byteValue()));
+  }
+  ArrayListExtensions.addRange(list,getPayload());
+  return (Byte[])list.toArray(new Byte[0]);
+}

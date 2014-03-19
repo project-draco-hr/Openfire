@@ -5,10 +5,18 @@
   this.channels=channels;
   if (recordingType.equalsIgnoreCase("Rtp")) {
     recordRtp=true;
+    openFile();
   }
- else   if (recordingType.equalsIgnoreCase("Au") == false) {
+ else   if (recordingType.equalsIgnoreCase("webm")) {
+    recordWebm=true;
+    openWebmFile();
+  }
+ else   if (recordingType.equalsIgnoreCase("Au")) {
+    recordAu=true;
+    openFile();
+  }
+ else {
     throw new IOException("Invalid recording type " + recordingType);
   }
-  openFile();
   start();
 }

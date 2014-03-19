@@ -1,0 +1,23 @@
+{
+  Element elem=null;
+  elem=type.createElement();
+  if (elem == null) {
+    if (type.type == MatroskaDocType.BLOCK_ELEMENT) {
+      elem=new MatroskaBlock(type.id);
+    }
+ else     if (type.type == MatroskaDocType.SEGMENT_ELEMENT) {
+      elem=new MatroskaSegment(type.id);
+    }
+ else     if (type.type == MatroskaDocType.CLUSTER_ELEMENT) {
+      elem=new MatroskaCluster(type.id);
+    }
+ else     if (type.type == ElementType.UNKNOWN_ELEMENT) {
+      elem=new BinaryElement(type.id);
+    }
+ else {
+      throw new java.lang.RuntimeException("Error: Unknown Element Type");
+    }
+    elem.setElementType(type);
+  }
+  return elem;
+}

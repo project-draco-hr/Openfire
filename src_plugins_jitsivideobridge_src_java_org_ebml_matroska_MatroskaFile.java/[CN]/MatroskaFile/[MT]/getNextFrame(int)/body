@@ -1,0 +1,38 @@
+{
+  if (FrameQueue.isEmpty()) {
+    _fillFrameQueue();
+  }
+  if (FrameQueue.isEmpty()) {
+    return null;
+  }
+  int tryCount=0;
+  MatroskaFileFrame frame=null;
+  try {
+    TLinkedList.IteratorImpl iter=FrameQueue.first();
+    while (frame == null) {
+      if (iter.hasNext()) {
+        frame=(MatroskaFileFrame)iter.next();
+        if (frame.TrackNo == TrackNo) {
+synchronized (FrameQueue) {
+            iter.remove();
+          }
+          return frame;
+        }
+        frame=null;
+      }
+ else {
+        _fillFrameQueue();
+        int index=iter.nextIndex();
+        iter=FrameQueue.listIterator(index);
+        if (++tryCount > CLUSTER_TRACK_SEARCH_COUNT) {
+          return null;
+        }
+      }
+    }
+  }
+ catch (  RuntimeException ex) {
+    ex.printStackTrace();
+    return null;
+  }
+  return frame;
+}

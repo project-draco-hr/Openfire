@@ -1,8 +1,32 @@
 {
   try {
 synchronized (this) {
-      bo.write(d.data,0,d.length);
-      dataSize+=d.length;
+      if (recordWebm) {
+        long duration=0;
+        if (d.keyframe || lastTimecode == 0) {
+          if (lastTimecode > 0) {
+            Log.info("writeData end cluster " + d.data);
+            duration=d.timestamp - lastTimecode;
+            mFW.endCluster();
+          }
+          Log.info("writeData start cluster " + d.timestamp);
+          mFW.startCluster(d.timestamp);
+        }
+        lastTimecode=d.timestamp;
+        MatroskaFileFrame frame=new MatroskaFileFrame();
+        frame.TrackNo=1;
+        frame.Duration=duration;
+        frame.Timecode=d.timestamp;
+        frame.Reference=0;
+        frame.KeyFrame=d.keyframe;
+        frame.Data=d.data;
+        mFW.addFrame(frame);
+        Log.info("writeData video " + d.data);
+      }
+ else {
+        bo.write(d.data,0,d.length);
+        dataSize+=d.length;
+      }
     }
   }
  catch (  IOException e) {

@@ -1,0 +1,18 @@
+{
+  long len=0;
+  byte[] type=getType();
+  len+=type.length;
+  writer.write(type);
+  byte[] size;
+  if (bUnknownSize) {
+    size=new byte[5];
+    size[0]=(byte)(0xFF >>> (size.length - 1));
+    for (int i=1; i < size.length; i++)     size[i]=(byte)0xFF;
+  }
+ else {
+    size=Element.makeEbmlCodedSize(getSize());
+  }
+  len+=size.length;
+  writer.write(size);
+  return len;
+}

@@ -1,0 +1,22 @@
+{
+  try {
+    jFileChooser1.setFileFilter(new org.ebml.matroska.MatroskaFileFilter());
+    int ret=jFileChooser1.showOpenDialog(this);
+    if (ret == JFileChooser.APPROVE_OPTION) {
+      FileInputStream ioF=new FileInputStream(jFileChooser1.getSelectedFile());
+      jTextArea1.append("Scanning file: " + jFileChooser1.getSelectedFile().toString() + "\n");
+      MatroskaFile mF=new MatroskaFile(new InputStreamDataSource(ioF));
+      mF.readFile();
+      jTextArea1.append(mF.getReport());
+      jTextArea1.append("Scan complete.\n");
+    }
+  }
+ catch (  java.io.FileNotFoundException ex) {
+    jTextArea1.append("File Not Found!\n");
+    ex.printStackTrace();
+  }
+catch (  java.lang.RuntimeException ex) {
+    jTextArea1.append("Error: " + ex.toString() + ex.getMessage()+ "\"\n");
+    ex.printStackTrace();
+  }
+}

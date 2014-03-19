@@ -1,0 +1,96 @@
+{
+  Element level3=null;
+  Element level4=null;
+  level2=((MasterElement)level1).readNextChild(reader);
+  while (level2 != null) {
+    if (level2.equals(MatroskaDocType.TrackEntry_Id)) {
+      MatroskaFileTrack track=new MatroskaFileTrack();
+      level3=((MasterElement)level2).readNextChild(reader);
+      while (level3 != null) {
+        if (level3.equals(MatroskaDocType.TrackNumber_Id)) {
+          level3.readData(ioDS);
+          track.TrackNo=(short)((UnsignedIntegerElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackUID_Id)) {
+          level3.readData(ioDS);
+          track.TrackUID=((UnsignedIntegerElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackType_Id)) {
+          level3.readData(ioDS);
+          track.TrackType=(byte)((UnsignedIntegerElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackDefaultDuration_Id)) {
+          level3.readData(ioDS);
+          track.DefaultDuration=((UnsignedIntegerElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackName_Id)) {
+          level3.readData(ioDS);
+          track.Name=((StringElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackLanguage_Id)) {
+          level3.readData(ioDS);
+          track.Language=((StringElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackCodecID_Id)) {
+          level3.readData(ioDS);
+          track.CodecID=((StringElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackCodecPrivate_Id)) {
+          level3.readData(ioDS);
+          track.CodecPrivate=((BinaryElement)level3).getData();
+        }
+ else         if (level3.equals(MatroskaDocType.TrackVideo_Id)) {
+          level4=((MasterElement)level3).readNextChild(reader);
+          while (level4 != null) {
+            if (level4.equals(MatroskaDocType.PixelWidth_Id)) {
+              level4.readData(ioDS);
+              track.Video_PixelWidth=(short)((UnsignedIntegerElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.PixelHeight_Id)) {
+              level4.readData(ioDS);
+              track.Video_PixelHeight=(short)((UnsignedIntegerElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.DisplayWidth_Id)) {
+              level4.readData(ioDS);
+              track.Video_DisplayWidth=(short)((UnsignedIntegerElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.DisplayHeight_Id)) {
+              level4.readData(ioDS);
+              track.Video_DisplayHeight=(short)((UnsignedIntegerElement)level4).getValue();
+            }
+            level4.skipData(ioDS);
+            level4=((MasterElement)level3).readNextChild(reader);
+          }
+        }
+ else         if (level3.equals(MatroskaDocType.TrackAudio_Id)) {
+          level4=((MasterElement)level3).readNextChild(reader);
+          while (level4 != null) {
+            if (level4.equals(MatroskaDocType.SamplingFrequency_Id)) {
+              level4.readData(ioDS);
+              track.Audio_SamplingFrequency=(float)((FloatElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.OutputSamplingFrequency_Id)) {
+              level4.readData(ioDS);
+              track.Audio_OutputSamplingFrequency=(float)((FloatElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.Channels_Id)) {
+              level4.readData(ioDS);
+              track.Audio_Channels=(short)((UnsignedIntegerElement)level4).getValue();
+            }
+ else             if (level4.equals(MatroskaDocType.BitDepth_Id)) {
+              level4.readData(ioDS);
+              track.Audio_BitDepth=(byte)((UnsignedIntegerElement)level4).getValue();
+            }
+            level4.skipData(ioDS);
+            level4=((MasterElement)level3).readNextChild(reader);
+          }
+        }
+        level3.skipData(ioDS);
+        level3=((MasterElement)level2).readNextChild(reader);
+      }
+      TrackList.add(track);
+    }
+    level2.skipData(ioDS);
+    level2=((MasterElement)level1).readNextChild(reader);
+  }
+}

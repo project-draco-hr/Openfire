@@ -1,0 +1,19 @@
+{
+  MasterElement segmentInfoElem=(MasterElement)doc.createElement(MatroskaDocType.SegmentInfo_Id);
+  StringElement writingAppElem=(StringElement)doc.createElement(MatroskaDocType.WritingApp_Id);
+  writingAppElem.setValue("Matroska File Writer v1.0");
+  StringElement muxingAppElem=(StringElement)doc.createElement(MatroskaDocType.MuxingApp_Id);
+  muxingAppElem.setValue("JEBML v1.0");
+  DateElement dateElem=(DateElement)doc.createElement(MatroskaDocType.DateUTC_Id);
+  dateElem.setDate(SegmentDate);
+  UnsignedIntegerElement timecodescaleElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TimecodeScale_Id);
+  timecodescaleElem.setValue(TimecodeScale);
+  FloatElement durationElem=(FloatElement)doc.createElement(MatroskaDocType.Duration_Id);
+  durationElem.setValue(Duration * 1000.0);
+  segmentInfoElem.addChildElement(dateElem);
+  segmentInfoElem.addChildElement(timecodescaleElem);
+  segmentInfoElem.addChildElement(durationElem);
+  segmentInfoElem.addChildElement(writingAppElem);
+  segmentInfoElem.addChildElement(muxingAppElem);
+  segmentInfoElem.writeElement(ioDW);
+}

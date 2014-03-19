@@ -1,0 +1,25 @@
+{
+  MasterElement ebmlHeaderElem=(MasterElement)doc.createElement(MatroskaDocType.EBMLHeader_Id);
+  UnsignedIntegerElement ebml1=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.EBMLVersion_Id);
+  ebml1.setValue(1);
+  UnsignedIntegerElement ebml2=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.EBMLReadVersion_Id);
+  ebml2.setValue(1);
+  UnsignedIntegerElement ebml3=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.EBMLMaxIDLength_Id);
+  ebml3.setValue(4);
+  UnsignedIntegerElement ebml4=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.EBMLMaxSizeLength_Id);
+  ebml4.setValue(8);
+  StringElement docTypeElem=(StringElement)doc.createElement(MatroskaDocType.DocType_Id);
+  docTypeElem.setValue("webm");
+  UnsignedIntegerElement docTypeVersionElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.DocTypeVersion_Id);
+  docTypeVersionElem.setValue(2);
+  UnsignedIntegerElement docTypeReadVersionElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.DocTypeReadVersion_Id);
+  docTypeReadVersionElem.setValue(2);
+  ebmlHeaderElem.addChildElement(ebml1);
+  ebmlHeaderElem.addChildElement(ebml2);
+  ebmlHeaderElem.addChildElement(ebml3);
+  ebmlHeaderElem.addChildElement(ebml4);
+  ebmlHeaderElem.addChildElement(docTypeElem);
+  ebmlHeaderElem.addChildElement(docTypeVersionElem);
+  ebmlHeaderElem.addChildElement(docTypeReadVersionElem);
+  ebmlHeaderElem.writeElement(ioDW);
+}

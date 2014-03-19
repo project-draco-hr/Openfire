@@ -1,0 +1,22 @@
+{
+  try {
+    if (value < Float.MAX_VALUE) {
+      ByteArrayOutputStream bIO=new ByteArrayOutputStream(4);
+      DataOutputStream dIO=new DataOutputStream(bIO);
+      dIO.writeFloat((float)value);
+      setData(bIO.toByteArray());
+    }
+ else     if (value < Double.MAX_VALUE) {
+      ByteArrayOutputStream bIO=new ByteArrayOutputStream(8);
+      DataOutputStream dIO=new DataOutputStream(bIO);
+      dIO.writeDouble(value);
+      setData(bIO.toByteArray());
+    }
+ else {
+      throw new ArithmeticException("80-bit floats are not supported, BTW How did you create such a large float in Java?");
+    }
+  }
+ catch (  IOException ex) {
+    return;
+  }
+}

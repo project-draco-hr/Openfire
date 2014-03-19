@@ -1,0 +1,35 @@
+{
+  Element elem;
+  if (this.type == ElementType.MASTER_ELEMENT) {
+    elem=new MasterElement(this.id);
+  }
+ else   if (this.type == ElementType.BINARY_ELEMENT) {
+    elem=new BinaryElement(this.id);
+  }
+ else   if (this.type == ElementType.STRING_ELEMENT) {
+    elem=new StringElement(this.id);
+  }
+ else   if (this.type == ElementType.ASCII_STRING_ELEMENT) {
+    elem=new StringElement(this.id,"US-ASCII");
+  }
+ else   if (this.type == ElementType.SINTEGER_ELEMENT) {
+    elem=new SignedIntegerElement(this.id);
+  }
+ else   if (this.type == ElementType.UINTEGER_ELEMENT) {
+    elem=new UnsignedIntegerElement(this.id);
+  }
+ else   if (this.type == ElementType.FLOAT_ELEMENT) {
+    elem=new FloatElement(this.id);
+  }
+ else   if (this.type == ElementType.DATE_ELEMENT) {
+    elem=new DateElement(this.id);
+  }
+ else   if (this.type == ElementType.UNKNOWN_ELEMENT) {
+    elem=new BinaryElement(this.id);
+  }
+ else {
+    return null;
+  }
+  elem.setElementType(this);
+  return elem;
+}

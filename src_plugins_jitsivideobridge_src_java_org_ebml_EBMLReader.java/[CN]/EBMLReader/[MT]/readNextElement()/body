@@ -1,0 +1,15 @@
+{
+  byte[] elementType=readEBMLCodeAsBytes(source);
+  if (elementType == null)   return null;
+  byte[] data=getEBMLCodeAsBytes(source);
+  long elementSize=parseEBMLCode(data);
+  if (elementSize == 0)   ;
+  Element elem=null;
+  elem=doc.createElement(elementType);
+  if (elem == null) {
+    return null;
+  }
+  elem.setSize(elementSize);
+  elem.setHeaderSize(data.length);
+  return elem;
+}

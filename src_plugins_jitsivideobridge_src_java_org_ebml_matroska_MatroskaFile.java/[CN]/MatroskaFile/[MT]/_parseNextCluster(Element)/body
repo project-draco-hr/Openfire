@@ -1,0 +1,81 @@
+{
+  Element level2=null;
+  Element level3=null;
+  level2=((MasterElement)level1).readNextChild(reader);
+  while (level2 != null) {
+    if (level2.equals(MatroskaDocType.ClusterTimecode_Id)) {
+      level2.readData(ioDS);
+      ClusterTimecode=((UnsignedIntegerElement)level2).getValue();
+    }
+ else     if (level2.equals(MatroskaDocType.ClusterSimpleBlock_Id)) {
+      MatroskaBlock block=null;
+      long BlockDuration=0;
+      long BlockReference=0;
+      block=(MatroskaBlock)level2;
+      block.readData(ioDS);
+      block.parseBlock();
+      MatroskaFileFrame frame=new MatroskaFileFrame();
+      frame.TrackNo=block.getTrackNo();
+      frame.Timecode=block.getAdjustedBlockTimecode(ClusterTimecode,this.TimecodeScale);
+      frame.Duration=BlockDuration;
+      frame.Reference=BlockReference;
+      frame.Data=block.getFrame(0);
+      frame.KeyFrame=block.isKeyFrame();
+synchronized (FrameQueue) {
+        FrameQueue.addLast(new MatroskaFileFrame(frame));
+      }
+      if (block.getFrameCount() > 1) {
+        for (int f=1; f < block.getFrameCount(); f++) {
+          frame.Data=block.getFrame(f);
+synchronized (FrameQueue) {
+            FrameQueue.addLast(new MatroskaFileFrame(frame));
+          }
+        }
+      }
+      level2.skipData(ioDS);
+    }
+ else     if (level2.equals(MatroskaDocType.ClusterBlockGroup_Id)) {
+      MatroskaBlock block=null;
+      long BlockDuration=0;
+      long BlockReference=0;
+      level3=((MasterElement)level2).readNextChild(reader);
+      while (level3 != null) {
+        if (level3.equals(MatroskaDocType.ClusterBlock_Id)) {
+          block=(MatroskaBlock)level3;
+          block.readData(ioDS);
+          block.parseBlock();
+        }
+ else         if (level3.equals(MatroskaDocType.ClusterBlockDuration_Id)) {
+          level3.readData(ioDS);
+          BlockDuration=((UnsignedIntegerElement)level3).getValue();
+        }
+ else         if (level3.equals(MatroskaDocType.ClusterReferenceBlock_Id)) {
+          level3.readData(ioDS);
+          BlockReference=((SignedIntegerElement)level3).getValue();
+        }
+        level3.skipData(ioDS);
+        level3=((MasterElement)level2).readNextChild(reader);
+      }
+      if (block == null)       throw new java.lang.NullPointerException("BlockGroup element with no child Block!");
+      MatroskaFileFrame frame=new MatroskaFileFrame();
+      frame.TrackNo=block.getTrackNo();
+      frame.Timecode=block.getAdjustedBlockTimecode(ClusterTimecode,this.TimecodeScale);
+      frame.Duration=BlockDuration;
+      frame.Reference=BlockReference;
+      frame.Data=block.getFrame(0);
+synchronized (FrameQueue) {
+        FrameQueue.addLast(new MatroskaFileFrame(frame));
+      }
+      if (block.getFrameCount() > 1) {
+        for (int f=1; f < block.getFrameCount(); f++) {
+          frame.Data=block.getFrame(f);
+synchronized (FrameQueue) {
+            FrameQueue.addLast(new MatroskaFileFrame(frame));
+          }
+        }
+      }
+    }
+    level2.skipData(ioDS);
+    level2=((MasterElement)level1).readNextChild(reader);
+  }
+}

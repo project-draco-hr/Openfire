@@ -1,0 +1,13 @@
+{
+  if (level0 == null)   throw new java.lang.IllegalStateException("Call readFile() before reading frames");
+synchronized (level0) {
+    Element level1=((MasterElement)level0).readNextChild(reader);
+    while (level1 != null) {
+      if (level1.equals(MatroskaDocType.Cluster_Id)) {
+        _parseNextCluster(level1);
+      }
+      level1.skipData(ioDS);
+      level1=((MasterElement)level0).readNextChild(reader);
+    }
+  }
+}

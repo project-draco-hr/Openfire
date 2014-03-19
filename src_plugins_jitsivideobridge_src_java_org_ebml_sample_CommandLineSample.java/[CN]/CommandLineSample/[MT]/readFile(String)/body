@@ -1,0 +1,22 @@
+{
+  System.out.println("Scanning file: " + filename);
+  long startTime=System.currentTimeMillis();
+  FileDataSource iFS=new FileDataSource(filename);
+  MatroskaFile mF=new MatroskaFile(iFS);
+  mF.setScanFirstCluster(true);
+  mF.readFile();
+  System.out.println(mF.getReport());
+  MatroskaFileTrack track=mF.getTrack(1);
+  if (track.CodecID.compareTo("A_MPEG/L3") == 0) {
+    System.out.println("Extracting mp3 track");
+    String outputFilename=filename + ".mp3";
+    FileOutputStream oFS=new FileOutputStream(outputFilename);
+    MatroskaFileFrame frame=mF.getNextFrame();
+    while (frame != null) {
+      oFS.write(frame.Data);
+      frame=mF.getNextFrame();
+    }
+  }
+  long endTime=System.currentTimeMillis();
+  System.out.println("Scan complete. Took: " + ((endTime - startTime) / 1000.0) + " seconds");
+}

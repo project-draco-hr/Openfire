@@ -1,0 +1,65 @@
+{
+  MasterElement tracksElem=(MasterElement)doc.createElement(MatroskaDocType.Tracks_Id);
+  for (int i=0; i < TrackList.size(); i++) {
+    MatroskaFileTrack track=(MatroskaFileTrack)TrackList.get(i);
+    MasterElement trackEntryElem=(MasterElement)doc.createElement(MatroskaDocType.TrackEntry_Id);
+    UnsignedIntegerElement trackNoElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackNumber_Id);
+    trackNoElem.setValue(track.TrackNo);
+    UnsignedIntegerElement trackUIDElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackUID_Id);
+    trackUIDElem.setValue(track.TrackUID);
+    UnsignedIntegerElement trackTypeElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackType_Id);
+    trackTypeElem.setValue(track.TrackType);
+    StringElement trackNameElem=(StringElement)doc.createElement(MatroskaDocType.TrackName_Id);
+    trackNameElem.setValue(track.Name);
+    StringElement trackLangElem=(StringElement)doc.createElement(MatroskaDocType.TrackLanguage_Id);
+    trackLangElem.setValue(track.Language);
+    StringElement trackCodecIDElem=(StringElement)doc.createElement(MatroskaDocType.TrackCodecID_Id);
+    trackCodecIDElem.setValue(track.CodecID);
+    BinaryElement trackCodecPrivateElem=(BinaryElement)doc.createElement(MatroskaDocType.TrackCodecPrivate_Id);
+    trackCodecPrivateElem.setData(track.CodecPrivate);
+    UnsignedIntegerElement trackDefaultDurationElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackDefaultDuration_Id);
+    trackDefaultDurationElem.setValue(track.DefaultDuration);
+    trackEntryElem.addChildElement(trackNoElem);
+    trackEntryElem.addChildElement(trackUIDElem);
+    trackEntryElem.addChildElement(trackTypeElem);
+    trackEntryElem.addChildElement(trackNameElem);
+    trackEntryElem.addChildElement(trackLangElem);
+    trackEntryElem.addChildElement(trackCodecIDElem);
+    trackEntryElem.addChildElement(trackCodecPrivateElem);
+    trackEntryElem.addChildElement(trackDefaultDurationElem);
+    if (track.TrackType == MatroskaDocType.track_video) {
+      MasterElement trackVideoElem=(MasterElement)doc.createElement(MatroskaDocType.TrackVideo_Id);
+      UnsignedIntegerElement trackVideoPixelWidthElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.PixelWidth_Id);
+      trackVideoPixelWidthElem.setValue(track.Video_PixelWidth);
+      UnsignedIntegerElement trackVideoPixelHeightElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.PixelHeight_Id);
+      trackVideoPixelHeightElem.setValue(track.Video_PixelHeight);
+      UnsignedIntegerElement trackVideoDisplayWidthElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.DisplayWidth_Id);
+      trackVideoDisplayWidthElem.setValue(track.Video_DisplayWidth);
+      UnsignedIntegerElement trackVideoDisplayHeightElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.DisplayHeight_Id);
+      trackVideoDisplayHeightElem.setValue(track.Video_DisplayHeight);
+      trackVideoElem.addChildElement(trackVideoPixelWidthElem);
+      trackVideoElem.addChildElement(trackVideoPixelHeightElem);
+      trackVideoElem.addChildElement(trackVideoDisplayWidthElem);
+      trackVideoElem.addChildElement(trackVideoDisplayHeightElem);
+      trackEntryElem.addChildElement(trackVideoElem);
+    }
+ else     if (track.TrackType == MatroskaDocType.track_audio) {
+      MasterElement trackAudioElem=(MasterElement)doc.createElement(MatroskaDocType.TrackVideo_Id);
+      UnsignedIntegerElement trackAudioChannelsElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.Channels_Id);
+      trackAudioChannelsElem.setValue(track.Audio_Channels);
+      UnsignedIntegerElement trackAudioBitDepthElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.BitDepth_Id);
+      trackAudioBitDepthElem.setValue(track.Audio_BitDepth);
+      FloatElement trackAudioSamplingRateElem=(FloatElement)doc.createElement(MatroskaDocType.SamplingFrequency_Id);
+      trackAudioSamplingRateElem.setValue(track.Audio_SamplingFrequency);
+      FloatElement trackAudioOutputSamplingFrequencyElem=(FloatElement)doc.createElement(MatroskaDocType.OutputSamplingFrequency_Id);
+      trackAudioOutputSamplingFrequencyElem.setValue(track.Audio_OutputSamplingFrequency);
+      trackAudioElem.addChildElement(trackAudioChannelsElem);
+      trackAudioElem.addChildElement(trackAudioBitDepthElem);
+      trackAudioElem.addChildElement(trackAudioSamplingRateElem);
+      trackAudioElem.addChildElement(trackAudioOutputSamplingFrequencyElem);
+      trackEntryElem.addChildElement(trackAudioElem);
+    }
+    tracksElem.addChildElement(trackEntryElem);
+  }
+  tracksElem.writeElement(ioDW);
+}

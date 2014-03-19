@@ -1,0 +1,31 @@
+{
+  level2=((MasterElement)level1).readNextChild(reader);
+  while (level2 != null) {
+    if (level2.equals(MatroskaDocType.Title_Id)) {
+      level2.readData(ioDS);
+      SegmentTitle=((StringElement)level2).getValue();
+    }
+ else     if (level2.equals(MatroskaDocType.DateUTC_Id)) {
+      level2.readData(ioDS);
+      SegmentDate=((DateElement)level2).getDate();
+    }
+ else     if (level2.equals(MatroskaDocType.MuxingApp_Id)) {
+      level2.readData(ioDS);
+      MuxingApp=((StringElement)level2).getValue();
+    }
+ else     if (level2.equals(MatroskaDocType.WritingApp_Id)) {
+      level2.readData(ioDS);
+      WritingApp=((StringElement)level2).getValue();
+    }
+ else     if (level2.equals(MatroskaDocType.Duration_Id)) {
+      level2.readData(ioDS);
+      Duration=((FloatElement)level2).getValue();
+    }
+ else     if (level2.equals(MatroskaDocType.TimecodeScale_Id)) {
+      level2.readData(ioDS);
+      TimecodeScale=((UnsignedIntegerElement)level2).getValue();
+    }
+    level2.skipData(ioDS);
+    level2=((MasterElement)level1).readNextChild(reader);
+  }
+}

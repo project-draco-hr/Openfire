@@ -1,0 +1,10 @@
+{
+  TLinkedList.IteratorImpl iter=FrameQueue.listIterator();
+  while (iter.hasNext()) {
+    MatroskaFileFrame frame=(MatroskaFileFrame)iter.next();
+    if (frame.TrackNo == 2 && frame.Data[3] != 0x54) {
+      throw new RuntimeException("Bad MP3 Header! Index: " + iter.nextIndex());
+    }
+  }
+  return false;
+}

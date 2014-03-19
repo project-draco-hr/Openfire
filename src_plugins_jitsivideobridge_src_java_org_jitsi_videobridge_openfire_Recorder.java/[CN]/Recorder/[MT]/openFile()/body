@@ -8,15 +8,15 @@ synchronized (this) {
       recordFile.createNewFile();
       fo=new FileOutputStream(recordFile);
       bo=new BufferedOutputStream(fo,BUFFER_SIZE);
-      if (recordRtp == false) {
-        writeAuHeader();
-      }
- else {
+      if (recordRtp) {
         byte[] buf=new byte[16];
         buf[0]=(byte)0x52;
         buf[1]=(byte)0x54;
         buf[2]=(byte)0x50;
         bo.write(buf,0,buf.length);
+      }
+ else {
+        writeAuHeader();
       }
     }
   }

@@ -1,0 +1,19 @@
+{
+  Integer num=Integer.valueOf(0);
+  Vp8Packet arr[]=packets;
+  int len=arr.length;
+  for (int i=0; i < len; i++) {
+    Vp8Packet packet=arr[i];
+    num=Integer.valueOf(num.intValue() + ArrayExtensions.getLength(packet.getPayload()).intValue());
+  }
+  Integer destinationIndex=Integer.valueOf(0);
+  Byte destinationArray[]=new Byte[num.intValue()];
+  arr=packets;
+  len=arr.length;
+  for (int i=0; i < len; i++) {
+    Vp8Packet packet=arr[i];
+    ArrayExtensions.copy(packet.getPayload(),0,destinationArray,destinationIndex.intValue(),ArrayExtensions.getLength(packet.getPayload()).intValue());
+    destinationIndex=Integer.valueOf(destinationIndex.intValue() + ArrayExtensions.getLength(packet.getPayload()).intValue());
+  }
+  return destinationArray;
+}

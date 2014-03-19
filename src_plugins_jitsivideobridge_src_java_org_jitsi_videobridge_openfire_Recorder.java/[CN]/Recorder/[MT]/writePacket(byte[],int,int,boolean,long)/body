@@ -1,0 +1,25 @@
+{
+  if (recordRtp) {
+    byte[] buf=new byte[dataLength + 4];
+    int timeChange;
+    long now=System.currentTimeMillis();
+    if (lastWriteTime == 0) {
+      timeChange=0;
+    }
+ else {
+      timeChange=(int)(now - lastWriteTime);
+    }
+    lastWriteTime=now;
+    buf[0]=(byte)((buf.length >> 8) & 0xff);
+    buf[1]=(byte)(buf.length & 0xff);
+    buf[2]=(byte)((timeChange >> 8) & 0xff);
+    buf[3]=(byte)(timeChange & 0xff);
+    System.arraycopy(data,offset,buf,4,dataLength);
+    write(buf,0,buf.length,keyframe,timestamp);
+  }
+ else   if (recordWebm) {
+  }
+ else {
+    write(data,offset,dataLength,keyframe,timestamp);
+  }
+}

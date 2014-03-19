@@ -1,0 +1,24 @@
+{
+  java.io.StringWriter s=new java.io.StringWriter();
+  int t;
+  s.write("MatroskaFile report\n");
+  s.write("Infomation Segment \n");
+  s.write("\tSegment Title: " + SegmentTitle + "\n");
+  s.write("\tSegment Date: " + SegmentDate + "\n");
+  s.write("\tMuxing App : " + MuxingApp + "\n");
+  s.write("\tWriting App : " + WritingApp + "\n");
+  s.write("\tDuration : " + Duration / 1000 + "sec \n");
+  s.write("\tTimecodeScale : " + TimecodeScale + "\n");
+  s.write("Track Count: " + TrackList.size() + "\n");
+  for (t=0; t < TrackList.size(); t++) {
+    s.write("\tTrack " + t + "\n");
+    s.write(TrackList.get(t).toString());
+  }
+  s.write("Tag Count: " + TagList.size() + "\n");
+  for (t=0; t < TagList.size(); t++) {
+    s.write("\tTag Entry \n");
+    s.write(TagList.get(t).toString());
+  }
+  s.write("End report\n");
+  return s.getBuffer().toString();
+}
