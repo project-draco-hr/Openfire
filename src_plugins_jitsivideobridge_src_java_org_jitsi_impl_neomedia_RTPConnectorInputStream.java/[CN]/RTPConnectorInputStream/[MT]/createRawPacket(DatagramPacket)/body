@@ -1,0 +1,12 @@
+{
+  RawPacket[] pkts=rawPacketArrayPool.poll();
+  if (pkts == null)   pkts=new RawPacket[1];
+  RawPacket pkt=rawPacketPool.poll();
+  if (pkt == null)   pkt=new RawPacket();
+  pkt.setBuffer(datagramPacket.getData());
+  pkt.setFlags(0);
+  pkt.setLength(datagramPacket.getLength());
+  pkt.setOffset(datagramPacket.getOffset());
+  pkts[0]=pkt;
+  return pkts;
+}

@@ -1,6 +1,6 @@
 {
   Log.info("expireColibriChannel " + participant + " "+ focusId+ " "+ participant.audioChannelId+ " "+ participant.videoChannelId);
-  if (focusId != null && participant.audioChannelId != null && participant.videoChannelId != null) {
+  if (focusId != null) {
     String nickname=participant.getNickname();
     IQ iq=new IQ(IQ.Type.get);
     iq.setFrom(XMPPServer.getInstance().createJID(focusName,focusName));
@@ -8,10 +8,14 @@
     String id="expire-" + nickname + "-"+ System.currentTimeMillis();
     Element conferenceIq=iq.setChildElement("conference","http://jitsi.org/protocol/colibri");
     conferenceIq.addAttribute("id",focusId);
-    Element audioContent=conferenceIq.addElement("content").addAttribute("name","audio");
-    audioContent.addElement("channel").addAttribute("id",participant.audioChannelId).addAttribute("expire","0");
-    Element videoContent=conferenceIq.addElement("content").addAttribute("name","video");
-    videoContent.addElement("channel").addAttribute("id",participant.videoChannelId).addAttribute("expire","0");
+    if (participant.audioChannelId != null) {
+      Element audioContent=conferenceIq.addElement("content").addAttribute("name","audio");
+      audioContent.addElement("channel").addAttribute("id",participant.audioChannelId).addAttribute("expire","0");
+    }
+    if (participant.videoChannelId != null) {
+      Element videoContent=conferenceIq.addElement("content").addAttribute("name","video");
+      videoContent.addElement("channel").addAttribute("id",participant.videoChannelId).addAttribute("expire","0");
+    }
     router.route(iq);
     if (participant.mediaStream != null) {
       participant.removeMediaStream();

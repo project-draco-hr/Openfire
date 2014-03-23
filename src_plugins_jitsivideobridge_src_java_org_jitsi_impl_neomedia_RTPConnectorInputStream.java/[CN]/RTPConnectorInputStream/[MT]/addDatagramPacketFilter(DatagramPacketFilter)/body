@@ -1,0 +1,14 @@
+{
+  if (datagramPacketFilter == null)   throw new NullPointerException("datagramPacketFilter");
+  if (datagramPacketFilters == null) {
+    datagramPacketFilters=new DatagramPacketFilter[]{datagramPacketFilter};
+  }
+ else {
+    final int length=datagramPacketFilters.length;
+    for (int i=0; i < length; i++)     if (datagramPacketFilter.equals(datagramPacketFilters[i]))     return;
+    DatagramPacketFilter[] newDatagramPacketFilters=new DatagramPacketFilter[length + 1];
+    System.arraycopy(datagramPacketFilters,0,newDatagramPacketFilters,0,length);
+    newDatagramPacketFilters[length]=datagramPacketFilter;
+    datagramPacketFilters=newDatagramPacketFilters;
+  }
+}

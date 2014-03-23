@@ -1,0 +1,68 @@
+{
+  DatagramPacket p=new DatagramPacket(buffer,0,PACKET_RECEIVE_BUFFER_LENGTH);
+  while (!closed) {
+    try {
+      if (OSUtils.IS_ANDROID)       p.setLength(PACKET_RECEIVE_BUFFER_LENGTH);
+      receivePacket(p);
+    }
+ catch (    IOException e) {
+      ioError=true;
+      break;
+    }
+    DatagramPacketFilter[] datagramPacketFilters=getDatagramPacketFilters();
+    boolean accept;
+    if (!enabled)     accept=false;
+ else     if (datagramPacketFilters == null)     accept=true;
+ else {
+      accept=true;
+      for (int i=0; i < datagramPacketFilters.length; i++) {
+        try {
+          if (!datagramPacketFilters[i].accept(p)) {
+            accept=false;
+            break;
+          }
+        }
+ catch (        Throwable t) {
+          if (t instanceof ThreadDeath)           throw (ThreadDeath)t;
+        }
+      }
+    }
+    if (accept) {
+      RawPacket pkts[]=createRawPacket(p);
+      for (int i=0; i < pkts.length; i++) {
+        RawPacket pkt=pkts[i];
+        pkts[i]=null;
+        if (pkt != null) {
+          if (pkt.isInvalid()) {
+            poolRawPacket(pkt);
+          }
+ else {
+            RawPacket oldPkt;
+synchronized (pktSyncRoot) {
+              oldPkt=this.pkt;
+              this.pkt=pkt;
+            }
+            if (oldPkt != null) {
+              poolRawPacket(oldPkt);
+            }
+            if (videoRecorder != null)             videoRecorder.recordData(pkt);
+            if ((transferHandler != null) && !closed) {
+              try {
+                transferHandler.transferData(this);
+              }
+ catch (              Throwable t) {
+                if (t instanceof ThreadDeath) {
+                  throw (ThreadDeath)t;
+                }
+ else {
+                  logger.warn("An RTP packet may have not been" + " fully handled.",t);
+                }
+              }
+            }
+          }
+        }
+      }
+      rawPacketArrayPool.offer(pkts);
+    }
+  }
+}

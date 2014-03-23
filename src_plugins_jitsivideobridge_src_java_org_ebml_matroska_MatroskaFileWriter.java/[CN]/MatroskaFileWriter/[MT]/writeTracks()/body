@@ -5,6 +5,8 @@
     MasterElement trackEntryElem=(MasterElement)doc.createElement(MatroskaDocType.TrackEntry_Id);
     UnsignedIntegerElement trackNoElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackNumber_Id);
     trackNoElem.setValue(track.TrackNo);
+    UnsignedIntegerElement trackFlagLacingElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackFlagLacing_Id);
+    trackFlagLacingElem.setValue(0);
     UnsignedIntegerElement trackUIDElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackUID_Id);
     trackUIDElem.setValue(track.TrackUID);
     UnsignedIntegerElement trackTypeElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackType_Id);
@@ -15,18 +17,19 @@
     trackLangElem.setValue(track.Language);
     StringElement trackCodecIDElem=(StringElement)doc.createElement(MatroskaDocType.TrackCodecID_Id);
     trackCodecIDElem.setValue(track.CodecID);
+    StringElement trackCodecName_IdElem=(StringElement)doc.createElement(MatroskaDocType.TrackCodecName_Id);
+    trackCodecName_IdElem.setValue(track.CodecName);
     BinaryElement trackCodecPrivateElem=(BinaryElement)doc.createElement(MatroskaDocType.TrackCodecPrivate_Id);
     trackCodecPrivateElem.setData(track.CodecPrivate);
     UnsignedIntegerElement trackDefaultDurationElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TrackDefaultDuration_Id);
     trackDefaultDurationElem.setValue(track.DefaultDuration);
     trackEntryElem.addChildElement(trackNoElem);
     trackEntryElem.addChildElement(trackUIDElem);
-    trackEntryElem.addChildElement(trackTypeElem);
-    trackEntryElem.addChildElement(trackNameElem);
+    trackEntryElem.addChildElement(trackFlagLacingElem);
     trackEntryElem.addChildElement(trackLangElem);
     trackEntryElem.addChildElement(trackCodecIDElem);
-    trackEntryElem.addChildElement(trackCodecPrivateElem);
-    trackEntryElem.addChildElement(trackDefaultDurationElem);
+    trackEntryElem.addChildElement(trackCodecName_IdElem);
+    trackEntryElem.addChildElement(trackTypeElem);
     if (track.TrackType == MatroskaDocType.track_video) {
       MasterElement trackVideoElem=(MasterElement)doc.createElement(MatroskaDocType.TrackVideo_Id);
       UnsignedIntegerElement trackVideoPixelWidthElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.PixelWidth_Id);
@@ -39,8 +42,6 @@
       trackVideoDisplayHeightElem.setValue(track.Video_DisplayHeight);
       trackVideoElem.addChildElement(trackVideoPixelWidthElem);
       trackVideoElem.addChildElement(trackVideoPixelHeightElem);
-      trackVideoElem.addChildElement(trackVideoDisplayWidthElem);
-      trackVideoElem.addChildElement(trackVideoDisplayHeightElem);
       trackEntryElem.addChildElement(trackVideoElem);
     }
  else     if (track.TrackType == MatroskaDocType.track_audio) {
