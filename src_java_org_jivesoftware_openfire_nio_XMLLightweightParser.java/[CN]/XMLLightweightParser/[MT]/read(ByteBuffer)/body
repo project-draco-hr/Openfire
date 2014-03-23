@@ -1,6 +1,11 @@
 {
+  if (buffer == null) {
+    byteBuffer.position(byteBuffer.limit());
+    return;
+  }
   invalidateBuffer();
   if (buffer.length() > maxBufferSize) {
+    buffer=null;
     throw new Exception("Stopped parsing never ending stanza");
   }
   CharBuffer charBuffer=CharBuffer.allocate(byteBuffer.capacity());
@@ -19,6 +24,7 @@
   for (int i=0; i < readChar; i++) {
     ch=buf[i];
     if (ch < 0x20 && ch != 0x9 && ch != 0xA && ch != 0xD && ch != 0x0) {
+      buffer=null;
       throw new XMLNotWellFormedException("Character is invalid in: " + ch);
     }
     if (isHighSurrogate) {
@@ -26,6 +32,7 @@
         isHighSurrogate=false;
       }
  else {
+        buffer=null;
         throw new Exception("Found high surrogate not followed by low surrogate");
       }
     }
@@ -33,6 +40,7 @@
       isHighSurrogate=true;
     }
  else     if (Character.isLowSurrogate(ch)) {
+      buffer=null;
       throw new Exception("Found low surrogate char without a preceding high surrogate");
     }
     if (status == XMLLightweightParser.TAIL) {
