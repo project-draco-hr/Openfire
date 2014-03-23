@@ -95,19 +95,7 @@
   boolean isRoomNew=isLocked() && creationDate.getTime() == lockedTime;
   try {
     Presence joinPresence=joinRole.getPresence().createCopy();
-    if (canAnyoneDiscoverJID()) {
-      Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-      frag.addElement("status").addAttribute("code","100");
-    }
-    if (joinPresence.getFrom().equals(joinPresence.getTo())) {
-      Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-      frag.addElement("status").addAttribute("code","110");
-    }
-    if (isRoomNew) {
-      Element frag=joinPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-      frag.addElement("status").addAttribute("code","201");
-    }
-    broadcastPresence(joinPresence);
+    broadcastPresence(joinPresence,true);
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);

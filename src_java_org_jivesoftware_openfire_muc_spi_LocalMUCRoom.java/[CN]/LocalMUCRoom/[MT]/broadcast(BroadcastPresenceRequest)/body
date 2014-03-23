@@ -17,6 +17,23 @@
         frag.element("item").addAttribute("jid",null);
       }
     }
-    occupant.send(presence);
+    if (occupant.getPresence().getFrom().equals(presence.getTo())) {
+      Presence selfPresence=presence.createCopy();
+      Element fragSelfPresence=selfPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+      fragSelfPresence.addElement("status","110");
+      if (presenceRequest.isJoinPresence()) {
+        boolean isRoomNew=isLocked() && creationDate.getTime() == lockedTime;
+        if (canAnyoneDiscoverJID()) {
+          fragSelfPresence.addElement("status").addAttribute("code","100");
+        }
+        if (isRoomNew) {
+          fragSelfPresence.addElement("status").addAttribute("code","201");
+        }
+      }
+      occupant.send(selfPresence);
+    }
+ else {
+      occupant.send(presence);
+    }
   }
 }
