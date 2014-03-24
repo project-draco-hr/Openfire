@@ -3,7 +3,7 @@
   if (serverName.equals(jid.getDomain())) {
     routed=routeToLocalDomain(jid,packet,fromServer);
   }
- else   if (jid.getDomain().contains(serverName)) {
+ else   if (jid.getDomain().endsWith(serverName) && hasComponentRoute(jid)) {
     routed=routeToComponent(jid,packet,routed);
   }
  else {
