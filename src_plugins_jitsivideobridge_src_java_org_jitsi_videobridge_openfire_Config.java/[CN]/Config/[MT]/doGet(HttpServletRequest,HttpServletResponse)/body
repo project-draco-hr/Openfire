@@ -1,0 +1,25 @@
+{
+  try {
+    Log.info("Config servlet");
+    String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
+    String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+    boolean websockets=XMPPServer.getInstance().getPluginManager().getPlugin("websockets") != null;
+    writeHeader(response);
+    ServletOutputStream out=response.getOutputStream();
+    out.println("var config = {");
+    out.println("    hosts: {");
+    out.println("        domain: '" + domain + "',");
+    out.println("        muc: 'conference." + domain + "',");
+    out.println("        bridge: 'jitsi-videobridge." + domain + "',");
+    out.println("    },");
+    out.println("    useIPv6: false,");
+    out.println("    useNicks: false,");
+    out.println("    useWebsockets: " + (websockets ? "true" : "false") + ",");
+    out.println("    resolution: '720',");
+    out.println("    bosh: window.location.protocol + '//' + window.location.host + '/http-bind/'");
+    out.println("};	");
+  }
+ catch (  Exception e) {
+    Log.info("Config doGet Error",e);
+  }
+}
