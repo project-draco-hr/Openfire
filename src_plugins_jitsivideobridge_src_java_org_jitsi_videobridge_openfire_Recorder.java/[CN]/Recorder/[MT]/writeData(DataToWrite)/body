@@ -5,9 +5,11 @@ synchronized (this) {
         long duration=0;
         if (d.keyframe || lastTimecode == 0) {
           if (lastTimecode != 0) {
+            Log.info("writeData end cluster " + d.data);
             duration=d.timestamp - lastTimecode;
             mFW.endCluster();
           }
+          Log.info("writeData start cluster " + d.timestamp);
           mFW.startCluster(d.timestamp);
         }
         lastTimecode=d.timestamp;
