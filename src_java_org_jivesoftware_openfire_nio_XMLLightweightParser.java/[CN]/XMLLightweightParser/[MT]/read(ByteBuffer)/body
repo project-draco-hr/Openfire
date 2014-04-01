@@ -6,7 +6,9 @@
   invalidateBuffer();
   if (buffer.length() > maxBufferSize) {
     buffer=null;
-    throw new Exception("Stopped parsing never ending stanza");
+    final ProtocolDecoderException ex=new ProtocolDecoderException("Stopped parsing never ending stanza");
+    ex.setHexdump("(redacted hex dump of never ending stanza)");
+    throw ex;
   }
   CharBuffer charBuffer=CharBuffer.allocate(byteBuffer.capacity());
   encoder.reset();
