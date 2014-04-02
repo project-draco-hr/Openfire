@@ -1,0 +1,16 @@
+{
+  ByteCollection bytes=new ByteCollection();
+  bytes.add((new Integer((packet.getExtendedControlBitsPresent().booleanValue() ? 0x80 : 0) | (packet.getNonReferenceFrame().booleanValue() ? 0x20 : 0) | (packet.getStartOfPartition().booleanValue() ? 0x10 : 0)| packet.getPartitionId() & 0xf)).byteValue());
+  if (packet.getExtendedControlBitsPresent().booleanValue()) {
+    bytes.add((new Integer((packet.getPictureIDPresent().booleanValue() ? 0x80 : 0) | (packet.getTemporalLevelZeroIndexPresent().booleanValue() ? 0x40 : 0) | (packet.getTemporalLayerIndexPresent().booleanValue() ? 0x20 : 0)| (packet.getKeyIndexPresent().booleanValue() ? 0x10 : 0))).byteValue());
+    if (packet.getPictureIDPresent().booleanValue()) {
+      byte shortBytesNetwork[]=BitAssistant.getShortBytesNetwork(packet.getPictureID());
+      bytes.add((new Integer(0x80 | shortBytesNetwork[0] & 0x7f)).byteValue());
+      bytes.add(shortBytesNetwork[1]);
+    }
+    if (packet.getTemporalLevelZeroIndexPresent().booleanValue())     bytes.add(packet.getTemporalLevelZeroIndex());
+    if (packet.getTemporalLayerIndexPresent().booleanValue() || packet.getKeyIndexPresent().booleanValue())     bytes.add((byte)(packet.getTemporalLayerIndex() << 6 & 0xc0 | (packet.getLayerSync().booleanValue() ? 0x20 : 0) | packet.getKeyIndex() & 0x1f));
+  }
+  bytes.addRange(packet.getPayload());
+  return bytes.toArray();
+}

@@ -1,73 +1,27 @@
 {
-  if (snapshot < 1)   Log.info("transferData " + packet.getPayloadLength() + " "+ packet.getHeaderLength()+ " "+ packet.getExtensionLength());
   try {
     if (packet != null) {
       byte[] rtp=packet.getPayload();
-      if (rtp.length < 2)       return;
-      int vp8Length=packet.getPayloadLength();
-      int payloadOffset=0;
-      if (partial == null) {
-        partial=new byte[0];
-      }
-      if (snapshot < 1)       Log.info("expecting X R N S PartID");
-      byte x=rtp[payloadOffset];
-      payloadOffset++;
-      vp8Length--;
-      if ((x & 0x80) != 0) {
-        if (snapshot < 1)         Log.info("found I L T RSV-A");
-        byte ilt=rtp[payloadOffset];
-        payloadOffset++;
-        vp8Length--;
-        if ((ilt & 0x80) != 0) {
-          byte m=rtp[payloadOffset];
-          if (snapshot < 1)           Log.info("found picture ID 1");
-          payloadOffset++;
-          vp8Length--;
-          if ((m & 0x80) != 0) {
-            if (snapshot < 1)             Log.info("found picture ID 2");
-            payloadOffset++;
-            vp8Length--;
-          }
-        }
-        if ((ilt & 0x40) != 0) {
-          if (snapshot < 1)           Log.info("found TL0PICIDX");
-          payloadOffset++;
-          vp8Length--;
-        }
-        if ((ilt & 0x20) != 0 || (ilt & 0x10) != 0) {
-          if (snapshot < 1)           Log.info("found TID RSV-B or keyframe index");
-          payloadOffset++;
-          vp8Length--;
-        }
-      }
-      if ((x & 0x10) != 0 && (x & 0x0f) == 0 && vp8Length >= 3) {
-        if (snapshot < 1)         Log.info("found start of partition " + x);
-        partial=new byte[0];
-        isKeyframe=(rtp[payloadOffset] & 0x1) == 0;
-      }
-      int partialLength=partial.length;
-      partial=Arrays.copyOf(partial,partial.length + vp8Length);
-      System.arraycopy(rtp,payloadOffset,partial,partialLength,vp8Length);
-      int thisseqnum=packet.getSequenceNumber();
-      if (lastseqnum != -1 && thisseqnum != lastseqnum + 1) {
-        if (snapshot < 1)         Log.info("VP8:Received packet out of order, discarding frame.");
-        partial=null;
-        lastseqnum=-1;
-        return;
-      }
-      lastseqnum=thisseqnum;
+      if (!_sequenceNumberingViolated && _lastSequenceNumber.intValue() > -1 && Vp8Packet.getSequenceNumberDelta(packet.getSequenceNumber(),_lastSequenceNumber).intValue() > 1)       _sequenceNumberingViolated=true;
+      _lastSequenceNumber=packet.getSequenceNumber();
+      Vp8Packet packet2=Vp8Packet.parseBytes(rtp);
+      if (packet2 == null)       return;
+      _accumulator.add(packet2);
+      byte encodedFrame[]=null;
       if (packet.isPacketMarked()) {
-        if (recorder != null && partial != null) {
-          byte[] full=Arrays.copyOf(partial,partial.length);
-          if (snapshot < 1)           Log.info("recordData " + " " + packet.getPayloadType() + " "+ full+ " "+ packet.getSequenceNumber()+ " "+ isKeyframe);
+        encodedFrame=Vp8Packet.depacketize(_accumulator.getPackets());
+        boolean isKeyframe=encodedFrame != null && encodedFrame.length > 0 && (encodedFrame[0] & 1) == 0;
+        if (_sequenceNumberingViolated && isKeyframe)         _sequenceNumberingViolated=false;
+        _accumulator.reset();
+        if (recorder != null && encodedFrame != null && _sequenceNumberingViolated == false) {
+          byte[] full=Arrays.copyOf(encodedFrame,encodedFrame.length);
           recorder.write(full,0,full.length,isKeyframe,packet.getTimestamp());
           if (isKeyframe && snapshot < 1) {
+            Log.info("recordData " + " " + packet.getPayloadType() + " "+ full+ " "+ packet.getSequenceNumber()+ " "+ packet.getTimestamp());
             recorder.writeWebPImage(full,0,full.length,packet.getTimestamp());
             snapshot++;
           }
         }
-        partial=null;
-        lastseqnum=-1;
       }
     }
  else {
