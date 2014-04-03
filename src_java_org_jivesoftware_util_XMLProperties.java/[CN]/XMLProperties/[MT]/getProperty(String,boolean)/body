@@ -1,0 +1,32 @@
+{
+  String value=propertyCache.get(name);
+  if (value != null) {
+    return value;
+  }
+  String[] propName=parsePropertyName(name);
+  Element element=document.getRootElement();
+  for (  String aPropName : propName) {
+    element=element.element(aPropName);
+    if (element == null) {
+      return null;
+    }
+  }
+  value=element.getTextTrim();
+  if (ignoreEmpty && "".equals(value)) {
+    return null;
+  }
+ else {
+    if (JiveGlobals.isPropertyEncrypted(name)) {
+      Attribute encrypted=element.attribute(ENCRYPTED_ATTRIBUTE);
+      if (encrypted != null) {
+        value=JiveGlobals.getPropertyEncryptor().decrypt(value);
+      }
+ else {
+        Log.info("Rewriting XML property " + name + " as an encrypted value");
+        setProperty(name,value);
+      }
+    }
+    propertyCache.put(name,value);
+    return value;
+  }
+}

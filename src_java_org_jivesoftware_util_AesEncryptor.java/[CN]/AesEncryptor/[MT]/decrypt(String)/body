@@ -1,0 +1,17 @@
+{
+  if (value == null) {
+    return null;
+  }
+  byte[] bytes=cipher(Base64.decode(value),getKey(),Cipher.DECRYPT_MODE);
+  if (bytes == null) {
+    return null;
+  }
+  String result=null;
+  try {
+    result=new String(bytes,"UTF-8");
+  }
+ catch (  UnsupportedEncodingException uee) {
+    result=new String(bytes);
+  }
+  return result;
+}

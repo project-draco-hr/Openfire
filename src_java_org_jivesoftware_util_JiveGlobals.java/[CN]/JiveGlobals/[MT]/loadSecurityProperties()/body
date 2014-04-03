@@ -1,0 +1,38 @@
+{
+  if (securityProperties == null) {
+    if (home == null && !failedLoading) {
+      failedLoading=true;
+      StringBuilder msg=new StringBuilder();
+      msg.append("Critical Error! The home directory has not been configured, \n");
+      msg.append("which will prevent the application from working correctly.\n\n");
+      System.err.println(msg.toString());
+      try {
+        securityProperties=new XMLProperties();
+      }
+ catch (      IOException ioe) {
+        Log.error("Failed to setup default secuirty properties",ioe);
+      }
+    }
+ else {
+      try {
+        securityProperties=new XMLProperties(home + File.separator + JIVE_SECURITY_FILENAME);
+        setupPropertyEncryption();
+        TaskEngine.getInstance().schedule(new TimerTask(){
+          public void run(){
+            for (            String propertyName : securityProperties.getAllPropertyNames()) {
+              if (!propertyName.startsWith(ENCRYPTED_PROPERTY_NAME_PREFIX)) {
+                setPropertyEncrypted(propertyName,true);
+                securityProperties.migrateProperty(propertyName);
+              }
+            }
+          }
+        }
+,1000);
+      }
+ catch (      IOException ioe) {
+        Log.error(ioe.getMessage(),ioe);
+        failedLoading=true;
+      }
+    }
+  }
+}

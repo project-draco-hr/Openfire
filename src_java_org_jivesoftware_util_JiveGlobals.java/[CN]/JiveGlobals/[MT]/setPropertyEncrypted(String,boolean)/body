@@ -1,0 +1,16 @@
+{
+  if (securityProperties == null) {
+    loadSecurityProperties();
+  }
+  boolean propertyWasChanged;
+  if (isPropertyEncrypted(name)) {
+    propertyWasChanged=securityProperties.removeFromList(ENCRYPTED_PROPERTY_NAMES,name);
+  }
+ else {
+    propertyWasChanged=securityProperties.addToList(ENCRYPTED_PROPERTY_NAMES,name);
+  }
+  if (propertyWasChanged) {
+    resetProperty(name);
+  }
+  return propertyWasChanged;
+}

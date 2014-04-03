@@ -3,7 +3,10 @@
     try {
       clusteredCacheFactoryStrategy=(CacheFactoryStrategy)Class.forName(clusteredCacheFactoryClass,true,getClusteredCacheStrategyClassLoader()).newInstance();
     }
- catch (    Exception e) {
+ catch (    NoClassDefFoundError e) {
+      log.warn("Clustered cache factory strategy " + clusteredCacheFactoryClass + " not found");
+    }
+catch (    Exception e) {
       log.warn("Clustered cache factory strategy " + clusteredCacheFactoryClass + " not found");
     }
   }

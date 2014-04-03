@@ -1,0 +1,16 @@
+{
+  if (getProperty(name) != null) {
+    if (JiveGlobals.getProperty(name) == null) {
+      Log.debug("JiveGlobals: Migrating XML property '" + name + "' into database.");
+      JiveGlobals.setProperty(name,getProperty(name));
+      deleteProperty(name);
+    }
+ else     if (JiveGlobals.getProperty(name).equals(getProperty(name))) {
+      Log.debug("JiveGlobals: Deleting duplicate XML property '" + name + "' that is already in database.");
+      deleteProperty(name);
+    }
+ else     if (!JiveGlobals.getProperty(name).equals(getProperty(name))) {
+      Log.warn("XML Property '" + name + "' differs from what is stored in the database.  Please make property changes in the database instead of the configuration file.");
+    }
+  }
+}

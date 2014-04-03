@@ -1,0 +1,11 @@
+{
+  if (!isInitialized) {
+    try {
+      Security.addProvider(new BouncyCastleProvider());
+      isInitialized=true;
+    }
+ catch (    Throwable t) {
+      log.warn("JCE provider failure; unable to load BC",t);
+    }
+  }
+}

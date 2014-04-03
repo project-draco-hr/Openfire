@@ -1,0 +1,37 @@
+{
+  List<String> result=new ArrayList<String>();
+  String[] propName=parsePropertyName(name);
+  Element element=document.getRootElement();
+  for (int i=0; i < propName.length - 1; i++) {
+    element=element.element(propName[i]);
+    if (element == null) {
+      return result;
+    }
+  }
+  Iterator<Element> iter=element.elementIterator(propName[propName.length - 1]);
+  Element prop;
+  String value;
+  boolean updateEncryption=false;
+  while (iter.hasNext()) {
+    prop=iter.next();
+    value=prop.getTextTrim();
+    if (!"".equals(value)) {
+      if (JiveGlobals.isPropertyEncrypted(name)) {
+        Attribute encrypted=prop.attribute(ENCRYPTED_ATTRIBUTE);
+        if (encrypted != null) {
+          value=JiveGlobals.getPropertyEncryptor().decrypt(value);
+        }
+ else {
+          prop.addAttribute(ENCRYPTED_ATTRIBUTE,"true");
+          updateEncryption=true;
+        }
+      }
+      result.add(value);
+    }
+  }
+  if (updateEncryption) {
+    Log.info("Rewriting values for XML property " + name + " using encryption");
+    saveProperties();
+  }
+  return result;
+}

@@ -9,9 +9,9 @@
   }
   String childName=propName[propName.length - 1];
   List<Element> toRemove=new ArrayList<Element>();
-  Iterator iter=element.elementIterator(childName);
+  Iterator<Element> iter=element.elementIterator(childName);
   while (iter.hasNext()) {
-    toRemove.add((Element)iter.next());
+    toRemove.add(iter.next());
   }
   for (iter=toRemove.iterator(); iter.hasNext(); ) {
     element.remove((Element)iter.next());
@@ -19,9 +19,9 @@
   for (  String value : values) {
     Element childElement=element.addElement(childName);
     if (value.startsWith("<![CDATA[")) {
-      Iterator it=childElement.nodeIterator();
+      Iterator<Node> it=childElement.nodeIterator();
       while (it.hasNext()) {
-        Node node=(Node)it.next();
+        Node node=it.next();
         if (node instanceof CDATA) {
           childElement.remove(node);
           break;
@@ -30,7 +30,12 @@
       childElement.addCDATA(value.substring(9,value.length() - 3));
     }
  else {
-      childElement.setText(StringEscapeUtils.escapeXml(value));
+      String propValue=StringEscapeUtils.escapeXml(value);
+      if (JiveGlobals.isPropertyEncrypted(name)) {
+        propValue=JiveGlobals.getPropertyEncryptor().encrypt(propValue);
+        childElement.addAttribute(ENCRYPTED_ATTRIBUTE,"true");
+      }
+      childElement.setText(propValue);
     }
   }
   saveProperties();

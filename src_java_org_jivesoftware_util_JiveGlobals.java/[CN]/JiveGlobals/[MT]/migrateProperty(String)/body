@@ -2,18 +2,5 @@
   if (isSetupMode()) {
     return;
   }
-  if (getXMLProperty(name) != null) {
-    if (getProperty(name) == null) {
-      Log.debug("JiveGlobals: Migrating XML property '" + name + "' into database.");
-      setProperty(name,getXMLProperty(name));
-      deleteXMLProperty(name);
-    }
- else     if (getProperty(name).equals(getXMLProperty(name))) {
-      Log.debug("JiveGlobals: Deleting duplicate XML property '" + name + "' that is already in database.");
-      deleteXMLProperty(name);
-    }
- else     if (!getProperty(name).equals(getXMLProperty(name))) {
-      Log.warn("Property '" + name + "' as specified in openfire.xml differs from what is stored in the database.  Please make property changes in the database instead of openfire.xml.");
-    }
-  }
+  openfireProperties.migrateProperty(name);
 }

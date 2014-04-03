@@ -29,7 +29,12 @@
     element.addCDATA(value.substring(9,value.length() - 3));
   }
  else {
-    element.setText(value);
+    String propValue=StringEscapeUtils.escapeXml(value);
+    if (JiveGlobals.isPropertyEncrypted(name)) {
+      propValue=JiveGlobals.getPropertyEncryptor().encrypt(propValue);
+      element.addAttribute(ENCRYPTED_ATTRIBUTE,"true");
+    }
+    element.setText(propValue);
   }
   saveProperties();
   Map<String,Object> params=new HashMap<String,Object>();

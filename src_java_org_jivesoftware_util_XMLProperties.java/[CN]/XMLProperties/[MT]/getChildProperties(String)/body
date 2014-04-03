@@ -7,10 +7,17 @@
       return Collections.EMPTY_LIST.iterator();
     }
   }
-  Iterator iter=element.elementIterator(propName[propName.length - 1]);
+  Iterator<Element> iter=element.elementIterator(propName[propName.length - 1]);
   ArrayList<String> props=new ArrayList<String>();
+  Element prop;
+  String value;
   while (iter.hasNext()) {
-    props.add(((Element)iter.next()).getText());
+    prop=iter.next();
+    value=prop.getText();
+    if (JiveGlobals.isPropertyEncrypted(name) && Boolean.parseBoolean(prop.attribute(ENCRYPTED_ATTRIBUTE).getText())) {
+      value=JiveGlobals.getPropertyEncryptor().decrypt(value);
+    }
+    props.add(value);
   }
   return props.iterator();
 }

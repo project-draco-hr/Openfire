@@ -1,0 +1,51 @@
+{
+  Encryptor keyEncryptor=new AesEncryptor();
+  String encryptedKey=securityProperties.getProperty(ENCRYPTION_KEY_CURRENT);
+  if (encryptedKey == null || encryptedKey.isEmpty()) {
+    currentKey=null;
+  }
+ else {
+    currentKey=keyEncryptor.decrypt(encryptedKey);
+  }
+  String newKey=securityProperties.getProperty(ENCRYPTION_KEY_NEW,false);
+  if (newKey != null) {
+    Log.info("Detected new encryption key; updating encrypted properties");
+    String oldKey=securityProperties.getProperty(ENCRYPTION_KEY_OLD);
+    if (oldKey == null) {
+      if (currentKey != null) {
+        Log.warn("Old encryption key was not provided; ignoring new encryption key");
+        return;
+      }
+    }
+ else {
+      if (!oldKey.equals(currentKey)) {
+        Log.warn("Old encryption key does not match current encryption key; ignoring new encryption key");
+        return;
+      }
+    }
+    if (properties == null) {
+      properties=JiveProperties.getInstance();
+    }
+    Map<String,String> openfireProps=new HashMap<String,String>();
+    for (    String xmlProp : openfireProperties.getAllPropertyNames()) {
+      if (isPropertyEncrypted(xmlProp)) {
+        openfireProps.put(xmlProp,openfireProperties.getProperty(xmlProp));
+      }
+    }
+    currentKey=newKey == null || newKey.isEmpty() ? null : newKey;
+    propertyEncryptor=null;
+    for (    String propertyName : securityProperties.getProperties(ENCRYPTED_PROPERTY_NAMES,true)) {
+      Log.info("Updating encrypted value for " + propertyName);
+      if (openfireProps.containsKey(propertyName)) {
+        openfireProperties.setProperty(propertyName,openfireProps.get(propertyName));
+      }
+ else       if (!resetProperty(propertyName)) {
+        Log.warn("Failed to reset encrypted property value for " + propertyName);
+      }
+      ;
+    }
+    securityProperties.deleteProperty(ENCRYPTION_KEY_NEW);
+    securityProperties.deleteProperty(ENCRYPTION_KEY_OLD);
+  }
+  securityProperties.setProperty(ENCRYPTION_KEY_CURRENT,keyEncryptor.encrypt(currentKey));
+}

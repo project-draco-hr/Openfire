@@ -1,10 +1,11 @@
 {
+  Encryptor encryptor=getEncryptor();
   Connection con=null;
   PreparedStatement pstmt=null;
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(UPDATE_PROPERTY);
-    pstmt.setString(1,value);
+    pstmt.setString(1,JiveGlobals.isPropertyEncrypted(name) ? encryptor.encrypt(value) : value);
     pstmt.setString(2,name);
     pstmt.executeUpdate();
   }

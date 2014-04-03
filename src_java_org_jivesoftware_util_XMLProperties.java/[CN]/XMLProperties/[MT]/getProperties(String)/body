@@ -1,21 +1,3 @@
 {
-  String[] propName=parsePropertyName(name);
-  Element element=document.getRootElement();
-  for (int i=0; i < propName.length - 1; i++) {
-    element=element.element(propName[i]);
-    if (element == null) {
-      return new String[]{};
-    }
-  }
-  Iterator iter=element.elementIterator(propName[propName.length - 1]);
-  List<String> props=new ArrayList<String>();
-  String value;
-  while (iter.hasNext()) {
-    value=((Element)iter.next()).getTextTrim();
-    if (!"".equals(value)) {
-      props.add(value);
-    }
-  }
-  String[] childrenNames=new String[props.size()];
-  return props.toArray(childrenNames);
+  return (String[])getProperties(name,false).toArray();
 }

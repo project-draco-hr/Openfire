@@ -1,0 +1,13 @@
+{
+  byte[] result=null;
+  try {
+    Key aesKey=new SecretKeySpec(key,"AES");
+    Cipher aesCipher=Cipher.getInstance(ALGORITHM);
+    aesCipher.init(mode,aesKey,new IvParameterSpec(INIT_PARM));
+    result=aesCipher.doFinal(attribute);
+  }
+ catch (  Exception e) {
+    log.error("AES cipher failed",e);
+  }
+  return result;
+}

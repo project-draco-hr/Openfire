@@ -1,0 +1,20 @@
+{
+  if (name == null || attribute == null) {
+    return null;
+  }
+  String[] propName=parsePropertyName(name);
+  Element element=document.getRootElement();
+  for (  String child : propName) {
+    element=element.element(child);
+    if (element == null) {
+      break;
+    }
+  }
+  String result=null;
+  if (element != null) {
+    Attribute attr=element.attribute(attribute);
+    result=attr.getValue();
+    element.remove(attr);
+  }
+  return result;
+}

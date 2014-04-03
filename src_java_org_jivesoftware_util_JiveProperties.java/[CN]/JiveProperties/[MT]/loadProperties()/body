@@ -1,4 +1,5 @@
 {
+  Encryptor encryptor=getEncryptor();
   Connection con=null;
   PreparedStatement pstmt=null;
   ResultSet rs=null;
@@ -9,7 +10,18 @@
     while (rs.next()) {
       String name=rs.getString(1);
       String value=rs.getString(2);
-      properties.put(name,value);
+      if (JiveGlobals.isPropertyEncrypted(name)) {
+        try {
+          value=encryptor.decrypt(value);
+        }
+ catch (        Exception ex) {
+          Log.error("Failed to load encrypted property value for " + name,ex);
+          value=null;
+        }
+      }
+      if (value != null) {
+        properties.put(name,value);
+      }
     }
   }
  catch (  Exception e) {

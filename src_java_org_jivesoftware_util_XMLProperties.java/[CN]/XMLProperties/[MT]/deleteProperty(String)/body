@@ -9,6 +9,9 @@
     }
   }
   element.remove(element.element(propName[propName.length - 1]));
+  if (element.elements().size() == 0) {
+    element.getParent().remove(element);
+  }
   saveProperties();
   Map<String,Object> params=Collections.emptyMap();
   PropertyEventDispatcher.dispatchEvent(name,PropertyEventDispatcher.EventType.xml_property_deleted,params);

@@ -1,0 +1,15 @@
+{
+  if (securityProperties == null) {
+    loadSecurityProperties();
+  }
+  if (propertyEncryptor == null) {
+    String algorithm=securityProperties.getProperty(ENCRYPTION_ALGORITHM);
+    if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(algorithm)) {
+      propertyEncryptor=new AesEncryptor(currentKey);
+    }
+ else {
+      propertyEncryptor=new Blowfish(currentKey);
+    }
+  }
+  return propertyEncryptor;
+}
