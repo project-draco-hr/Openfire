@@ -1,8 +1,6 @@
 {
   if (connectionManager == null) {
-    return Collections.emptyList();
+    connectionManager=XMPPServer.getInstance().getConnectionManager();
   }
- else {
-    return connectionManager.getPorts();
-  }
+  return (Collection<ServerPort>)(connectionManager == null ? Collections.emptyList() : connectionManager.getPorts());
 }
