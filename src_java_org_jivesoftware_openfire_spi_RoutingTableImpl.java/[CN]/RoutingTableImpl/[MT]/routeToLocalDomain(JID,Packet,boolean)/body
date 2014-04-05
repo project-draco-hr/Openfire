@@ -1,8 +1,11 @@
 {
   boolean routed=false;
+  Element privateElement=packet.getElement().element(QName.get("private","urn:xmpp:carbons:2"));
+  boolean isPrivate=privateElement != null;
+  packet.getElement().remove(privateElement);
   if (jid.getResource() == null) {
     if (packet instanceof Message) {
-      routed=routeToBareJID(jid,(Message)packet);
+      routed=routeToBareJID(jid,(Message)packet,isPrivate);
     }
  else {
       throw new PacketException("Cannot route packet of type IQ or Presence to bare JID: " + packet.toXML());
@@ -20,6 +23,30 @@
       }
  else {
         if (localRoutingTable.isLocalRoute(jid)) {
+          if (packet instanceof Message) {
+            Message message=(Message)packet;
+            if (message.getType() == Message.Type.chat && !isPrivate) {
+              List<JID> routes=getRoutes(jid.asBareJID(),null);
+              for (              JID route : routes) {
+                if (!route.equals(jid)) {
+                  ClientSession clientSession=getClientRoute(route);
+                  if (clientSession.isMessageCarbonsEnabled()) {
+                    Message carbon=new Message();
+                    carbon.setType(message.getType());
+                    carbon.setFrom(route.asBareJID());
+                    carbon.setTo(route);
+                    carbon.addExtension(new Received(new Forwarded(message)));
+                    try {
+                      localRoutingTable.getRoute(route.toString()).process(carbon);
+                    }
+ catch (                    UnauthorizedException e) {
+                      Log.error("Unable to route packet " + packet.toXML(),e);
+                    }
+                  }
+                }
+              }
+            }
+          }
           try {
             localRoutingTable.getRoute(jid.toString()).process(packet);
             routed=true;

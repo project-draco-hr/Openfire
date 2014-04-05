@@ -1,0 +1,25 @@
+{
+  Element enable=packet.getChildElement();
+  if (XMPPServer.getInstance().isLocal(packet.getFrom())) {
+    if (enable.getName().equals("enable")) {
+      ClientSession clientSession=sessionManager.getSession(packet.getFrom());
+      clientSession.setMessageCarbonsEnabled(true);
+      return IQ.createResultIQ(packet);
+    }
+ else     if (enable.getName().equals("disable")) {
+      ClientSession clientSession=sessionManager.getSession(packet.getFrom());
+      clientSession.setMessageCarbonsEnabled(false);
+      return IQ.createResultIQ(packet);
+    }
+ else {
+      IQ error=IQ.createResultIQ(packet);
+      error.setError(PacketError.Condition.bad_request);
+      return error;
+    }
+  }
+ else {
+    IQ error=IQ.createResultIQ(packet);
+    error.setError(PacketError.Condition.forbidden);
+    return error;
+  }
+}

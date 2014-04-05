@@ -6,7 +6,6 @@
       sessions.add(session);
     }
   }
-  sessions=getHighestPrioritySessions(sessions);
   if (sessions.isEmpty()) {
     Log.debug("Unable to route packet. No session is available so store offline. {} ",packet.toXML());
     return false;
@@ -15,6 +14,11 @@
     sessions.get(0).process(packet);
   }
  else {
+    for (    ClientSession session : sessions) {
+      if (shouldSentToResource(session,packet,isPrivate)) {
+        session.process(packet);
+      }
+    }
     if (!JiveGlobals.getBooleanProperty("route.all-resources",false)) {
       Collections.sort(sessions,new Comparator<ClientSession>(){
         public int compare(        ClientSession o1,        ClientSession o2){
@@ -61,11 +65,17 @@
         }
       }
 );
-      targets.get(0).process(packet);
+      ClientSession session=targets.get(0);
+      if (!shouldSentToResource(session,packet,isPrivate)) {
+        session.process(packet);
+      }
     }
  else {
+      sessions=getHighestPrioritySessions(sessions);
       for (      ClientSession session : sessions) {
-        session.process(packet);
+        if (!shouldSentToResource(session,packet,isPrivate)) {
+          session.process(packet);
+        }
       }
     }
   }

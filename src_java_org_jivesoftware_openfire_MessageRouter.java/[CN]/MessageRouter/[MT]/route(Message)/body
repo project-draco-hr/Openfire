@@ -10,7 +10,7 @@
       if (recipientJID == null) {
         recipientJID=packet.getFrom().asBareJID();
       }
-      if (recipientJID != null && recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
+      if (recipientJID.getNode() == null && recipientJID.getResource() == null && serverName.equals(recipientJID.getDomain())) {
         if (packet.getElement().element("addresses") != null) {
           multicastRouter.route(packet);
         }
@@ -33,12 +33,29 @@
         }
       }
       if (isAcceptable) {
+        boolean isPrivate=packet.getElement().element(QName.get("private","urn:xmpp:carbons:2")) != null;
         try {
           routingTable.routePacket(recipientJID,packet,false);
         }
  catch (        Exception e) {
           log.error("Failed to route packet: " + packet.toXML(),e);
           routingFailed(recipientJID,packet);
+        }
+        if (packet.getType() == Message.Type.chat && !isPrivate) {
+          List<JID> routes=routingTable.getRoutes(packet.getFrom().asBareJID(),null);
+          for (          JID route : routes) {
+            if (!route.equals(session.getAddress())) {
+              ClientSession clientSession=sessionManager.getSession(route);
+              if (clientSession != null && clientSession.isMessageCarbonsEnabled()) {
+                Message message=new Message();
+                message.setType(packet.getType());
+                message.setFrom(packet.getFrom().asBareJID());
+                message.setTo(route);
+                message.addExtension(new Sent(new Forwarded(packet)));
+                clientSession.process(message);
+              }
+            }
+          }
         }
       }
     }
