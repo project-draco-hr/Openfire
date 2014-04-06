@@ -40,8 +40,7 @@
     mediaStream.setName("rayo-" + System.currentTimeMillis());
     mediaStream.setSSRCFactory(ssrcFactory);
     mediaStream.setDevice(conference.getOrCreateContent("audio").getMixer());
-    initialLocalSSRC=ssrcFactory.doGenerateSSRC() & 0xFFFFFFFFL;
-    CallSession cs=new CallSession(mediaStream,hostname,reply.getTo(),this,toUri.toString());
+    CallSession cs=new CallSession(mediaStream,hostname,this,toUri.toString());
     callSessions.put(toUri.toString(),cs);
     cs.jabberRemote=to;
     cs.jabberLocal=from;
