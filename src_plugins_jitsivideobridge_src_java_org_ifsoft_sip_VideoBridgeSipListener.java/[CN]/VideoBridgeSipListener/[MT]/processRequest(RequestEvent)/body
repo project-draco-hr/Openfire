@@ -160,13 +160,17 @@
         CallSession cs=PluginImpl.findCreateSession(from,to,dest);
         if (cs != null) {
           Log.info("[[SIP]] created call session : [[" + cs.internalCallId + "]]");
-          cs.parseInvite(req,dialog,trans);
-          dialog.setApplicationData(cs);
           Response res=SipService.messageFactory.createResponse(Response.RINGING,req);
           trans.sendResponse(res);
+          cs.parseInvite(req,dialog,trans);
+          dialog.setApplicationData(cs);
           SipService.acceptCall(cs);
-          return;
         }
+ else {
+          Response res=SipService.messageFactory.createResponse(Response.FORBIDDEN,req);
+          trans.sendResponse(res);
+        }
+        return;
       }
  else {
         Log.info("[[SIP]] Got a re-invite!");

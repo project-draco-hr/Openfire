@@ -1,7 +1,9 @@
 {
   CallSession session=null;
   String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
-  String focusAgentName="jitsi.videobridge." + to;
+  String callerId=to;
+  if (callerId.indexOf("+") == 0)   callerId=callerId.substring(1);
+  String focusAgentName="jitsi.videobridge." + callerId;
   if (sessions.containsKey(focusAgentName)) {
     FocusAgent focus=sessions.get(focusAgentName);
     if (focus.callSessions.containsKey(from)) {
@@ -21,8 +23,6 @@
         mediaStream.setDevice(conference.getOrCreateContent("audio").getMixer());
         session=new CallSession(mediaStream,hostname,focus,from);
         focus.callSessions.put(to,session);
-        session.jabberRemote=to;
-        session.jabberLocal=from;
       }
     }
   }
