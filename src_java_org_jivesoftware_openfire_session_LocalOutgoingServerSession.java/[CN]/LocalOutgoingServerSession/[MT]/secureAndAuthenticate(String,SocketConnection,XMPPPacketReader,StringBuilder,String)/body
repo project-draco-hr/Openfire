@@ -17,7 +17,7 @@
     }
     String id=xpp.getAttributeValue("","id");
     features=reader.parseDocument().getRootElement();
-    if (features != null && (features.element("mechanisms") != null || features.element("dialback") != null)) {
+    if (features != null) {
       String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
       Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
       if (Connection.CompressionPolicy.optional == compressionPolicy) {
@@ -47,7 +47,7 @@
                 eventType=xpp.next();
               }
               features=reader.parseDocument().getRootElement();
-              if (features == null || features.element("mechanisms") == null) {
+              if (features == null) {
                 log.debug("Error, EXTERNAL SASL was not offered.");
                 return null;
               }
