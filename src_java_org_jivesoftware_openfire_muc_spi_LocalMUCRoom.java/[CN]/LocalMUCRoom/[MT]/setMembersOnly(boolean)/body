@@ -1,7 +1,7 @@
 {
   List<Presence> presences=new ArrayList<Presence>();
   if (membersOnly && !this.membersOnly) {
-    for (    MUCRole occupant : occupants.values()) {
+    for (    MUCRole occupant : occupantsByFullJID.values()) {
       if (occupant.getAffiliation().compareTo(MUCRole.Affiliation.member) > 0) {
         try {
           presences.add(kickOccupant(occupant.getRoleAddress(),null,LocaleUtils.getLocalizedString("muc.roomIsNowMembersOnly")));

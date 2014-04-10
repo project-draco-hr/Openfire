@@ -1,10 +1,22 @@
 {
-  if (occupants.containsKey(event.getNickname().toLowerCase())) {
-    return;
-  }
   RemoteMUCRole joinRole=new RemoteMUCRole(mucService,event);
-  occupants.put(event.getNickname().toLowerCase(),joinRole);
   JID bareJID=event.getUserAddress().asBareJID();
+  String nickname=event.getNickname();
+  List<MUCRole> occupants=occupantsByNickname.get(nickname.toLowerCase());
+  if (occupants == null) {
+    occupants=new ArrayList<MUCRole>();
+    occupantsByNickname.put(nickname.toLowerCase(),occupants);
+  }
+ else {
+    if (occupants.size() > 0) {
+      String existingJID=occupants.get(0).getUserAddress().toBareJID();
+      if (!bareJID.equals(existingJID)) {
+        Log.warn(MessageFormat.format("Conflict detected; {0} requested nickname '{1}'; already being used by {2}",bareJID,nickname,existingJID));
+        return;
+      }
+    }
+  }
+  occupants.add(joinRole);
   List<MUCRole> list=occupantsByBareJID.get(bareJID);
   if (list == null) {
     list=new ArrayList<MUCRole>();
@@ -17,7 +29,7 @@
     MUCEventDispatcher.occupantJoined(getRole().getRoleAddress(),event.getUserAddress(),joinRole.getNickname());
   }
   if (event.isSendPresence()) {
-    for (    MUCRole occupant : occupants.values()) {
+    for (    MUCRole occupant : occupantsByFullJID.values()) {
       if (occupant.isLocal()) {
         occupant.send(event.getPresence().createCopy());
       }

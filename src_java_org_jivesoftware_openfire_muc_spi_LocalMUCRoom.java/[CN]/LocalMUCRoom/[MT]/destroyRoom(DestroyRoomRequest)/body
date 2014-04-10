@@ -1,13 +1,11 @@
 {
   JID alternateJID=destroyRequest.getAlternateJID();
   String reason=destroyRequest.getReason();
-  MUCRole leaveRole;
   Collection<MUCRole> removedRoles=new ArrayList<MUCRole>();
   lock.writeLock().lock();
   try {
     boolean hasRemoteOccupants=false;
-    for (    String nickname : occupants.keySet()) {
-      leaveRole=occupants.remove(nickname);
+    for (    MUCRole leaveRole : occupantsByFullJID.values()) {
       if (leaveRole != null) {
         if (leaveRole.isLocal()) {
           removedRoles.add(leaveRole);

@@ -4,8 +4,9 @@
   }
   if (!shouldBroadcastPresence(presence)) {
     try {
-      MUCRole occupant=getOccupant(presence.getFrom().getResource());
-      occupant.send(presence);
+      for (      MUCRole occupant : getOccupantsByNickname(presence.getFrom().getResource())) {
+        occupant.send(presence);
+      }
     }
  catch (    UserNotFoundException e) {
     }

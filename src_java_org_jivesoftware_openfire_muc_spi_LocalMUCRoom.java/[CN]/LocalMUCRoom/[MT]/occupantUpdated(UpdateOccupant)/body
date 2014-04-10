@@ -1,20 +1,22 @@
 {
-  MUCRole occupantRole=occupants.get(update.getNickname().toLowerCase());
-  if (occupantRole != null) {
-    if (!occupantRole.isLocal()) {
-      occupantRole.setPresence(update.getPresence());
-      try {
-        occupantRole.setRole(update.getRole());
-        occupantRole.setAffiliation(update.getAffiliation());
-      }
- catch (      NotAllowedException e) {
-      }
-    }
- else {
-      Log.error("Tried to update local occupant with info of local occupant?. Occupant nickname: " + update.getNickname() + " new role: "+ update.getRole()+ " new affiliation: "+ update.getAffiliation());
-    }
+  List<MUCRole> occupants=occupantsByNickname.get(update.getNickname().toLowerCase());
+  if (occupants == null || occupants.size() == 0) {
+    Log.debug("LocalMUCRoom: Failed to update information of room occupant. Occupant nickname: " + update.getNickname());
   }
  else {
-    Log.debug("LocalMUCRoom: Failed to update information of room occupant. Occupant nickname: " + update.getNickname());
+    for (    MUCRole occupant : occupants) {
+      if (!occupant.isLocal()) {
+        occupant.setPresence(update.getPresence());
+        try {
+          occupant.setRole(update.getRole());
+          occupant.setAffiliation(update.getAffiliation());
+        }
+ catch (        NotAllowedException e) {
+        }
+      }
+ else {
+        Log.error(MessageFormat.format("Ignoring update of local occupant with info from a remote occupant. " + "Occupant nickname: {0} new role: {1} new affiliation: {2}",update.getNickname(),update.getRole(),update.getAffiliation()));
+      }
+    }
   }
 }

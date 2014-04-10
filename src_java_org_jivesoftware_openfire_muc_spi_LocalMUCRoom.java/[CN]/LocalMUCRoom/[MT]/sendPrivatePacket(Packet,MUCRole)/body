@@ -1,15 +1,15 @@
 {
   String resource=packet.getTo().getResource();
-  MUCRole occupant=occupants.get(resource.toLowerCase());
-  if (occupant != null) {
+  List<MUCRole> occupants=occupantsByNickname.get(resource.toLowerCase());
+  if (occupants == null || occupants.size() == 0) {
+    throw new NotFoundException();
+  }
+  for (  MUCRole occupant : occupants) {
     packet.setFrom(senderRole.getRoleAddress());
     occupant.send(packet);
     if (packet instanceof Message) {
       Message message=(Message)packet;
       MUCEventDispatcher.privateMessageRecieved(occupant.getUserAddress(),senderRole.getUserAddress(),message);
     }
-  }
- else {
-    throw new NotFoundException();
   }
 }

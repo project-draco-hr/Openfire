@@ -15,7 +15,7 @@
         throw new ForbiddenException();
       }
     }
-    if (nickname != null && nickname.trim().length() > 0 && members.containsValue(nickname)) {
+    if (nickname != null && nickname.trim().length() > 0 && members.containsValue(nickname.toLowerCase())) {
       if (!nickname.equals(members.get(bareJID))) {
         throw new ConflictException();
       }
@@ -23,7 +23,7 @@
     if (owners.contains(bareJID) && owners.size() == 1) {
       throw new ConflictException();
     }
-    members.put(bareJID,(nickname == null ? "" : nickname));
+    members.put(bareJID,(nickname == null ? "" : nickname.toLowerCase()));
     if (removeOwner(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.owner;
     }

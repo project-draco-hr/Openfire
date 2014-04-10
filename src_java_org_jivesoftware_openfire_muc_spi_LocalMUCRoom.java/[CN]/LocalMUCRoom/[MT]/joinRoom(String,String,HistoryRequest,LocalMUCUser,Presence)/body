@@ -17,19 +17,10 @@
         throw new RoomLockedException();
       }
     }
-    if (occupants.containsKey(nickname.toLowerCase())) {
-      if (occupants.get(nickname.toLowerCase()).getUserAddress().toBareJID().equals(bareJID.toBareJID())) {
-        String reason="Your account signed into this chatroom with the same nickname from another location.";
-        Presence updatedPresence=new Presence(Presence.Type.unavailable);
-        updatedPresence.setFrom(occupants.get(nickname.toLowerCase()).getRoleAddress());
-        updatedPresence.setTo(occupants.get(nickname.toLowerCase()).getUserAddress());
-        Element frag=updatedPresence.addChildElement("x","http://jabber.org/protocol/muc#user");
-        frag.addElement("item").addElement("actor").setText(user.getAddress().toString());
-        frag.element("item").addElement("reason").setText(reason);
-        frag.addElement("status").addAttribute("code","307");
-        router.route(updatedPresence);
-      }
- else {
+    if (occupantsByNickname.containsKey(nickname.toLowerCase())) {
+      List<MUCRole> occupants=occupantsByNickname.get(nickname.toLowerCase());
+      MUCRole occupant=occupants.size() > 0 ? occupants.get(0) : null;
+      if (occupant != null && !occupant.getUserAddress().toBareJID().equals(bareJID.toBareJID())) {
         throw new UserAlreadyExistsException();
       }
     }
@@ -38,14 +29,14 @@
         throw new UnauthorizedException();
       }
     }
-    if (members.containsValue(nickname)) {
-      if (!nickname.equals(members.get(bareJID))) {
+    if (members.containsValue(nickname.toLowerCase())) {
+      if (!nickname.toLowerCase().equals(members.get(bareJID))) {
         throw new ConflictException();
       }
     }
     if (isLoginRestrictedToNickname()) {
       String reservedNickname=members.get(bareJID);
-      if (reservedNickname != null && !nickname.equals(reservedNickname)) {
+      if (reservedNickname != null && !nickname.toLowerCase().equals(reservedNickname)) {
         throw new NotAcceptableException();
       }
     }
@@ -78,7 +69,12 @@
       affiliation=MUCRole.Affiliation.none;
     }
     joinRole=new LocalMUCRole(mucService,this,nickname,role,affiliation,user,presence,router);
-    occupants.put(nickname.toLowerCase(),joinRole);
+    List<MUCRole> occupants=occupantsByNickname.get(nickname.toLowerCase());
+    if (occupants == null) {
+      occupants=new ArrayList<MUCRole>();
+      occupantsByNickname.put(nickname.toLowerCase(),occupants);
+    }
+    occupants.add(joinRole);
     List<MUCRole> list=occupantsByBareJID.get(bareJID);
     if (list == null) {
       list=new ArrayList<MUCRole>();
@@ -100,15 +96,11 @@
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
-  if (isRoomNew) {
-  }
- else   if (isLocked()) {
+  if (isLocked()) {
     Presence presenceItemNotFound=new Presence(Presence.Type.error);
     presenceItemNotFound.setError(PacketError.Condition.item_not_found);
     presenceItemNotFound.setFrom(role.getRoleAddress());
     joinRole.send(presenceItemNotFound);
-  }
- else   if (canAnyoneDiscoverJID()) {
   }
   if (historyRequest == null) {
     Iterator<Message> history=roomHistory.getMessageHistory();

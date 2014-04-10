@@ -1,7 +1,6 @@
 {
-  MUCRole kickedRole;
-  kickedRole=occupants.get(kickPresence.getFrom().getResource().toLowerCase());
-  if (kickedRole != null) {
+  List<MUCRole> occupants=occupantsByNickname.get(kickPresence.getFrom().getResource().toLowerCase());
+  for (  MUCRole kickedRole : occupants) {
     kickPresence=kickPresence.createCopy();
     if (actorJID != null && actorJID.toString().length() > 0) {
       Element frag=kickPresence.getChildElement("x","http://jabber.org/protocol/muc#user");

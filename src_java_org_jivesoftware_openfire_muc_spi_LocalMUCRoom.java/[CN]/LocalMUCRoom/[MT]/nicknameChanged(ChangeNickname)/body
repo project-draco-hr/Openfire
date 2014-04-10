@@ -1,12 +1,14 @@
 {
-  MUCRole occupantRole=occupants.get(changeNickname.getOldNick().toLowerCase());
-  if (occupantRole != null) {
-    occupantRole.setPresence(changeNickname.getPresence());
-    occupantRole.changeNickname(changeNickname.getNewNick());
-    if (changeNickname.isOriginator()) {
-      MUCEventDispatcher.nicknameChanged(getRole().getRoleAddress(),occupantRole.getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+  List<MUCRole> occupants=occupantsByNickname.get(changeNickname.getOldNick().toLowerCase());
+  if (occupants != null && occupants.size() > 0) {
+    for (    MUCRole occupant : occupants) {
+      occupant.setPresence(changeNickname.getPresence());
+      occupant.changeNickname(changeNickname.getNewNick());
     }
-    occupants.put(changeNickname.getNewNick().toLowerCase(),occupantRole);
-    occupants.remove(changeNickname.getOldNick().toLowerCase());
+    if (changeNickname.isOriginator()) {
+      MUCEventDispatcher.nicknameChanged(getRole().getRoleAddress(),occupants.get(0).getUserAddress(),changeNickname.getOldNick(),changeNickname.getNewNick());
+    }
+    occupantsByNickname.put(changeNickname.getNewNick().toLowerCase(),occupants);
+    occupantsByNickname.remove(changeNickname.getOldNick().toLowerCase());
   }
 }

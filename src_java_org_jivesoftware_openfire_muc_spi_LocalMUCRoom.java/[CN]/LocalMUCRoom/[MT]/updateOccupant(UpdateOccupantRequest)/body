@@ -1,15 +1,20 @@
 {
-  MUCRole occupantRole=occupants.get(updateRequest.getNickname().toLowerCase());
-  if (occupantRole != null) {
-    if (updateRequest.isAffiliationChanged()) {
-      occupantRole.setAffiliation(updateRequest.getAffiliation());
-    }
-    occupantRole.setRole(updateRequest.getRole());
-    CacheFactory.doClusterTask(new UpdateOccupant(this,occupantRole));
-    return occupantRole.getPresence();
+  Presence result=null;
+  List<MUCRole> occupants=occupantsByNickname.get(updateRequest.getNickname().toLowerCase());
+  if (occupants == null || occupants.size() == 0) {
+    Log.debug("Failed to update information of local room occupant; nickname: " + updateRequest.getNickname());
   }
  else {
-    Log.debug("LocalMUCRoom: Failed to update information of local room occupant. Occupant nickname: " + updateRequest.getNickname());
+    for (    MUCRole occupant : occupants) {
+      if (updateRequest.isAffiliationChanged()) {
+        occupant.setAffiliation(updateRequest.getAffiliation());
+      }
+      occupant.setRole(updateRequest.getRole());
+      CacheFactory.doClusterTask(new UpdateOccupant(this,occupant));
+      if (result == null) {
+        result=occupant.getPresence();
+      }
+    }
   }
-  return null;
+  return result;
 }

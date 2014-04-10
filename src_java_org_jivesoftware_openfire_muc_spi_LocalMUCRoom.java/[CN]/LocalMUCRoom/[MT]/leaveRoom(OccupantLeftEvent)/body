@@ -6,14 +6,14 @@
   lock.writeLock().lock();
   try {
     removeOccupantRole(leaveRole,event.isOriginator());
-    if (occupants.isEmpty() && !isPersistent()) {
+    if (occupantsByFullJID.isEmpty() && !isPersistent()) {
       endTime=System.currentTimeMillis();
       if (event.isOriginator()) {
         mucService.removeChatRoom(name);
         MUCEventDispatcher.roomDestroyed(getRole().getRoleAddress());
       }
     }
-    if (occupants.isEmpty()) {
+    if (occupantsByFullJID.isEmpty()) {
       setEmptyDate(new Date());
     }
   }

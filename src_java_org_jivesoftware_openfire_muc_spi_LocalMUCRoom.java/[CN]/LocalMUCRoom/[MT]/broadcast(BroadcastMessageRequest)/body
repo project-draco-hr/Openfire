@@ -1,7 +1,7 @@
 {
   Message message=messageRequest.getMessage();
   roomHistory.addMessage(message);
-  for (  MUCRole occupant : occupants.values()) {
+  for (  MUCRole occupant : occupantsByFullJID.values()) {
     if (occupant.isLocal() && !occupant.isVoiceOnly()) {
       occupant.send(message);
     }
@@ -10,7 +10,8 @@
     MUCRole senderRole=null;
     JID senderAddress;
     if (message.getFrom() != null && message.getFrom().getResource() != null) {
-      senderRole=occupants.get(message.getFrom().getResource().toLowerCase());
+      List<MUCRole> occupants=occupantsByNickname.get(message.getFrom().getResource().toLowerCase());
+      senderRole=occupants == null ? null : occupants.get(0);
     }
     if (senderRole == null) {
       senderAddress=getRole().getRoleAddress();

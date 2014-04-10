@@ -1,8 +1,15 @@
 {
-  occupants.remove(leaveRole.getNickname().toLowerCase());
   JID userAddress=leaveRole.getUserAddress();
   leaveRole.destroy();
   JID bareJID=userAddress.asBareJID();
+  String nickname=leaveRole.getNickname();
+  List<MUCRole> occupants=occupantsByNickname.get(nickname.toLowerCase());
+  if (occupants != null) {
+    occupants.remove(leaveRole);
+    if (occupants.isEmpty()) {
+      occupantsByNickname.remove(nickname.toLowerCase());
+    }
+  }
   List<MUCRole> list=occupantsByBareJID.get(bareJID);
   if (list != null) {
     list.remove(leaveRole);

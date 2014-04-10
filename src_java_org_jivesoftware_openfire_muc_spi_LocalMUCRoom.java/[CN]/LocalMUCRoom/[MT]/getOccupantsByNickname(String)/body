@@ -2,9 +2,9 @@
   if (nickname == null) {
     throw new UserNotFoundException();
   }
-  List<MUCRole> roles=getOccupantsByNickname(nickname);
+  List<MUCRole> roles=occupantsByNickname.get(nickname.toLowerCase());
   if (roles != null && roles.size() > 0) {
-    return roles.get(0);
+    return roles;
   }
   throw new UserNotFoundException();
 }

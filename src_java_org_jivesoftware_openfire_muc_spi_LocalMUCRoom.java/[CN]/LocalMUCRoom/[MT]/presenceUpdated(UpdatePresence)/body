@@ -1,9 +1,11 @@
 {
-  MUCRole occupantRole=occupants.get(updatePresence.getNickname().toLowerCase());
-  if (occupantRole != null) {
-    occupantRole.setPresence(updatePresence.getPresence());
+  List<MUCRole> occupants=occupantsByNickname.get(updatePresence.getNickname().toLowerCase());
+  if (occupants == null || occupants.size() == 0) {
+    Log.debug("LocalMUCRoom: Failed to update presence of room occupant. Occupant nickname: " + updatePresence.getNickname());
   }
  else {
-    Log.debug("LocalMUCRoom: Failed to update presence of room occupant. Occupant nickname: " + updatePresence.getNickname());
+    for (    MUCRole occupant : occupants) {
+      occupant.setPresence(updatePresence.getPresence());
+    }
   }
 }
