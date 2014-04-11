@@ -21,7 +21,9 @@
       leaveRole.send(presence);
     }
  else {
-      broadcastPresence(presence,false);
+      if (getOccupantsByNickname(leaveRole.getNickname()).size() <= 1) {
+        broadcastPresence(presence,false);
+      }
     }
   }
  catch (  Exception e) {
