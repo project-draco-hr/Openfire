@@ -9,10 +9,10 @@
   UnsignedIntegerElement timecodescaleElem=(UnsignedIntegerElement)doc.createElement(MatroskaDocType.TimecodeScale_Id);
   timecodescaleElem.setValue(TimecodeScale);
   FloatElement durationElem=(FloatElement)doc.createElement(MatroskaDocType.Duration_Id);
-  durationElem.setValue(Duration * 1000.0);
+  durationElem.setValue(0);
   segmentInfoElem.addChildElement(timecodescaleElem);
   segmentInfoElem.addChildElement(muxingAppElem);
   segmentInfoElem.addChildElement(writingAppElem);
   segmentInfoElem.addChildElement(durationElem);
-  segmentInfoElem.writeElement(ioDW);
+  segmentElem.addChildElement(segmentInfoElem);
 }

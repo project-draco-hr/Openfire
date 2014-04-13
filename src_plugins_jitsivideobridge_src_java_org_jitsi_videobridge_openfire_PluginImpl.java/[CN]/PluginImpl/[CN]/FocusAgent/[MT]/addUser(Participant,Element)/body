@@ -22,12 +22,20 @@
       if (vbContent != null) {
         Channel videoChannel=vbContent.getChannel(participant.videoChannelId);
         if (videoChannel != null) {
-          participant.addMediaStream(videoChannel.getMediaStream());
+          participant.setVideoStream(videoChannel.getMediaStream());
         }
       }
     }
     if ("audio".equals(content.attributeValue("name"))) {
       participant.audioChannelId=channel.attributeValue("id");
+      String focusJid=XMPPServer.getInstance().createJID(focusName,focusName).toString();
+      Content vbContent=getVideoBridge().getConference(focusId,focusJid).getOrCreateContent("audio");
+      if (vbContent != null) {
+        Channel audioChannel=vbContent.getChannel(participant.audioChannelId);
+        if (audioChannel != null) {
+          participant.setAudioStream(audioChannel.getMediaStream());
+        }
+      }
     }
   }
 }

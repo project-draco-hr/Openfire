@@ -26,6 +26,8 @@ synchronized (pktSyncRoot) {
  else {
           System.arraycopy(pkt.getBuffer(),pkt.getOffset(),data,offset,pktLength);
           if (buffer != null)           buffer.setFlags(pkt.getFlags());
+          if (videoRecorder != null)           videoRecorder.recordData(pkt);
+          if (audioScanner != null)           audioScanner.scanData(pkt);
         }
       }
     }
