@@ -2,20 +2,16 @@
   try {
 synchronized (this) {
       if (recordWebm) {
-        Log.info("writeData " + d.timestamp);
-        long duration=0;
-        duration=d.timestamp - lastTimecode;
-        mFW.startCluster(d.timestamp);
-        MatroskaFileFrame frame=new MatroskaFileFrame();
-        frame.TrackNo=1;
-        frame.Duration=duration;
-        frame.Timecode=d.timestamp;
-        frame.Reference=0;
-        frame.KeyFrame=d.keyframe;
-        frame.Data=d.data;
-        mFW.addFrame(frame);
-        mFW.endCluster();
-        lastTimecode=d.timestamp;
+        if (muxerSegment != null) {
+          if (d.isVideo) {
+            if (!muxerSegment.addFrame(d.data,newVideoTrackNumber,timestamp,d.keyframe)) {
+              Log.error("Could not add video frame." + recordPath);
+            }
+            timestamp=timestamp + (1000000000 / 15);
+          }
+ else {
+          }
+        }
       }
  else {
         bo.write(d.data,0,d.length);

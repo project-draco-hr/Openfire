@@ -1,8 +1,16 @@
 {
+  Log.info("writeDataSize");
   try {
 synchronized (this) {
       if (recordWebm) {
-        iFW.close();
+        if (muxerSegment != null) {
+          if (!muxerSegment.finalizeSegment()) {
+            Log.error("Finalization of segment failed." + recordPath);
+          }
+          if (mkvWriter != null) {
+            mkvWriter.close();
+          }
+        }
       }
  else {
         if (bo != null) {

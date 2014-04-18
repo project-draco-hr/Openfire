@@ -19,7 +19,7 @@ synchronized (_accumulator) {
           _accumulator.reset();
           if (recorder != null && encodedFrame != null && _sequenceNumberingViolated == false) {
             byte[] full=Arrays.copyOf(encodedFrame,encodedFrame.length);
-            recorder.write(full,0,full.length,isKeyframe,timestamp);
+            recorder.write(full,0,full.length,isKeyframe,timestamp,true);
             if (isKeyframe && snapshot < 1) {
               Log.info("recordData " + full + " "+ sequenceNumber+ " "+ timestamp);
               recorder.writeWebPImage(full,0,full.length,timestamp);

@@ -5,16 +5,12 @@
     final boolean isMarked=packet.isPacketMarked();
     final long timestamp=packet.getTimestamp();
     final byte payloadType=packet.getPayloadType();
-    executorService.execute(new Runnable(){
-      public void run(){
-        try {
-        }
- catch (        Exception e) {
-          Log.error("Error scanning audio",e);
-        }
-      }
+    try {
+      recorder.write(rtp,0,rtp.length,true,timestamp,false);
     }
-);
+ catch (    Exception e) {
+      Log.error("Error scanning audio",e);
+    }
   }
  else {
     Log.error("scan audio cannot parse packet data " + packet);

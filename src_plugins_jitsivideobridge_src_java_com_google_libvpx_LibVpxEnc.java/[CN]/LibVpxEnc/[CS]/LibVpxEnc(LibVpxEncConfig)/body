@@ -1,0 +1,12 @@
+{
+  vpxCodecIface=vpxCodecAllocCodec();
+  if (vpxCodecIface == 0) {
+    throw new LibVpxException("Can not allocate JNI codec object");
+  }
+  vpxCodecEncInit(vpxCodecIface,cfg.handle());
+  if (isError()) {
+    String errorMsg=vpxCodecErrorDetail(vpxCodecIface);
+    vpxCodecFreeCodec(vpxCodecIface);
+    throw new LibVpxException(errorMsg);
+  }
+}

@@ -1,21 +1,26 @@
 {
-  iFW=new FileDataWriter(recordPath);
-  mFW=new MatroskaFileWriter(iFW);
-  mFW.writeEBMLHeader();
-  mFW.writeSegmentHeader();
-  mFW.writeSegmentInfo();
-  MatroskaFileTrack track=new MatroskaFileTrack();
-  track.TrackNo=(short)1;
-  track.TrackUID=(long)1;
-  track.TrackType=MatroskaDocType.track_video;
-  track.Name="VP8";
-  track.CodecName="VP8";
-  track.Language="und";
-  track.CodecID="V_VP8";
-  track.DefaultDuration=0;
-  track.Video_PixelWidth=640;
-  track.Video_PixelHeight=480;
-  track.CodecPrivate=new byte[0];
-  mFW.TrackList.add(track);
-  mFW.writeTracks();
+  Log.info("openWebmFile");
+  try {
+    mkvWriter=new MkvWriter();
+    if (!mkvWriter.open(recordPath)) {
+      Log.error("WebM Output name is invalid or error while opening." + recordPath);
+      return;
+    }
+    muxerSegment=new Segment();
+    if (!muxerSegment.init(mkvWriter)) {
+      Log.error("Could not initialize muxer segment." + recordPath);
+      return;
+    }
+    muxerSegmentInfo=muxerSegment.getSegmentInfo();
+    muxerSegmentInfo.setDuration(60 * 1000);
+    muxerSegmentInfo.setWritingApp("Jitsi Videobridge");
+    newVideoTrackNumber=muxerSegment.addVideoTrack(640,480,0);
+    if (newVideoTrackNumber == 0) {
+      Log.error("Could not add video track." + recordPath);
+    }
+    timestamp=0;
+  }
+ catch (  Exception e) {
+    Log.error("openWebmFile failure " + recordPath,e);
+  }
 }

@@ -1,0 +1,14 @@
+{
+  encCfgObj=vpxCodecEncAllocCfg();
+  if (encCfgObj == 0) {
+    throw new LibVpxException("Can not allocate JNI encoder configure object");
+  }
+  int res=vpxCodecEncConfigDefault(encCfgObj,0);
+  if (res != 0) {
+    vpxCodecEncFreeCfg(encCfgObj);
+    throw new LibVpxException(errToString(res));
+  }
+  setWidth(width);
+  setHeight(height);
+  setTimebase(1,1000);
+}

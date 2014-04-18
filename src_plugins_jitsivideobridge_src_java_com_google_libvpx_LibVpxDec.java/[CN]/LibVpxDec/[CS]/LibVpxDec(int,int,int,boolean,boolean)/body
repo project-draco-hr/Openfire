@@ -1,0 +1,16 @@
+{
+  decCfgObj=vpxCodecDecAllocCfg();
+  vpxCodecIface=vpxCodecAllocCodec();
+  if (width > 0) {
+    vpxCodecDecSetWidth(decCfgObj,width);
+  }
+  if (height > 0) {
+    vpxCodecDecSetHeight(decCfgObj,height);
+  }
+  if (threads > 0) {
+    vpxCodecDecSetThreads(decCfgObj,threads);
+  }
+  if (!vpxCodecDecInit(vpxCodecIface,decCfgObj,postProcEnabled,errorConcealmentEnabled)) {
+    throw new LibVpxException(vpxCodecError(vpxCodecIface));
+  }
+}
