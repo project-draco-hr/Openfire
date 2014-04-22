@@ -51,18 +51,24 @@
     room.setRegistrationEnabled(rs.getInt(21) == 1);
     room.setPersistent(true);
     DbConnectionManager.fastcloseStmt(rs,pstmt);
-    pstmt=con.prepareStatement(LOAD_HISTORY);
-    long from=System.currentTimeMillis() - (86400000 * 2);
-    pstmt.setString(1,StringUtils.dateToMillis(new Date(from)));
-    pstmt.setLong(2,room.getID());
-    rs=pstmt.executeQuery();
-    while (rs.next()) {
-      String senderJID=rs.getString(1);
-      String nickname=rs.getString(2);
-      Date sentDate=new Date(Long.parseLong(rs.getString(3).trim()));
-      String subject=rs.getString(4);
-      String body=rs.getString(5);
-      if (room.isLogEnabled()) {
+    if (room.isLogEnabled()) {
+      pstmt=con.prepareStatement(LOAD_HISTORY);
+      long from=0;
+      String reloadLimit=JiveGlobals.getProperty(MUC_HISTORY_RELOAD_LIMIT);
+      if (reloadLimit != null) {
+        int reloadLimitDays=JiveGlobals.getIntProperty(MUC_HISTORY_RELOAD_LIMIT,2);
+        Log.warn("MUC history reload limit set to " + reloadLimitDays + " days");
+        from=System.currentTimeMillis() - (86400000 * reloadLimitDays);
+      }
+      pstmt.setString(1,StringUtils.dateToMillis(new Date(from)));
+      pstmt.setLong(2,room.getID());
+      rs=pstmt.executeQuery();
+      while (rs.next()) {
+        String senderJID=rs.getString(1);
+        String nickname=rs.getString(2);
+        Date sentDate=new Date(Long.parseLong(rs.getString(3).trim()));
+        String subject=rs.getString(4);
+        String body=rs.getString(5);
         room.getRoomHistory().addOldMessage(senderJID,nickname,sentDate,subject,body);
       }
     }
