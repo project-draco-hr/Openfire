@@ -2,9 +2,7 @@
   if (isServiceEnabled() == enabled) {
     return;
   }
-  XMPPServer server=XMPPServer.getInstance();
   if (!enabled) {
-    server.getIQDiscoItemsHandler().removeServerItemsProvider(this);
     stop();
   }
   if (persistent) {
@@ -13,6 +11,5 @@
   serviceEnabled=enabled;
   if (enabled) {
     start();
-    server.getIQDiscoItemsHandler().addServerItemsProvider(this);
   }
 }
