@@ -12,9 +12,14 @@
   }
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);
-    if (room != null && canDiscoverRoom(room)) {
+    if (room != null) {
       features.add("http://jabber.org/protocol/muc");
-      features.add("muc_public");
+      if (room.isPublicRoom()) {
+        features.add("muc_public");
+      }
+ else {
+        features.add("muc_hidden");
+      }
       if (room.isMembersOnly()) {
         features.add("muc_membersonly");
       }
