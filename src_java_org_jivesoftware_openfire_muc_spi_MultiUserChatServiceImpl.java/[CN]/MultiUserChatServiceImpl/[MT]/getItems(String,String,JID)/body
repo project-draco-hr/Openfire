@@ -5,14 +5,14 @@
   List<DiscoItem> answer=new ArrayList<DiscoItem>();
   if (name == null && node == null) {
     for (    MUCRoom room : rooms.values()) {
-      if (canDiscoverRoom(room)) {
+      if (canDiscoverRoom(room,senderJID)) {
         answer.add(new DiscoItem(room.getRole().getRoleAddress(),room.getNaturalLanguageName(),null,null));
       }
     }
   }
  else   if (name != null && node == null) {
     MUCRoom room=getChatRoom(name);
-    if (room != null && canDiscoverRoom(room)) {
+    if (room != null && canDiscoverRoom(room,senderJID)) {
       for (      MUCRole role : room.getOccupants()) {
         answer.add(new DiscoItem(role.getRoleAddress(),null,null,null));
       }

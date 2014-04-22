@@ -1,0 +1,15 @@
+{
+  if (!allowToDiscoverLockedRooms && room.isLocked()) {
+    return false;
+  }
+  if (!room.isPublicRoom()) {
+    if (!allowToDiscoverMembersOnlyRooms && room.isMembersOnly()) {
+      return false;
+    }
+    MUCRole.Affiliation affiliation=room.getAffiliation(senderJID.asBareJID());
+    if (affiliation != MUCRole.Affiliation.owner && affiliation != MUCRole.Affiliation.admin && affiliation != MUCRole.Affiliation.member) {
+      return false;
+    }
+  }
+  return true;
+}
