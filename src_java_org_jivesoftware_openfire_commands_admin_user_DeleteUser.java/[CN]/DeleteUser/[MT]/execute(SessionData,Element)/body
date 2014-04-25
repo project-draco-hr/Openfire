@@ -1,0 +1,34 @@
+{
+  Element note=command.addElement("note");
+  if (UserManager.getUserProvider().isReadOnly()) {
+    note.addAttribute("type","error");
+    note.setText("User provider is read only. Users cannot be deleted.");
+    return;
+  }
+  Map<String,List<String>> data=sessionData.getData();
+  JID account;
+  try {
+    account=new JID(get(data,"accountjid",0));
+  }
+ catch (  NullPointerException npe) {
+    note.addAttribute("type","error");
+    note.setText("JID required parameter.");
+    return;
+  }
+  if (!XMPPServer.getInstance().isLocal(account)) {
+    note.addAttribute("type","error");
+    note.setText("Cannot delete remote user.");
+    return;
+  }
+  try {
+    User user=UserManager.getInstance().getUser(account.getNode());
+    UserManager.getInstance().deleteUser(user);
+  }
+ catch (  UserNotFoundException e) {
+    note.addAttribute("type","error");
+    note.setText("User not found.");
+    return;
+  }
+  note.addAttribute("type","info");
+  note.setText("Operation finished successfully");
+}
