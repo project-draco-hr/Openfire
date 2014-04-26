@@ -17,14 +17,8 @@
     DbConnectionManager.fastcloseStmt(rs,pstmt);
     pstmt=null;
     if (!itemList.isEmpty()) {
-      StringBuilder sb=new StringBuilder(100);
-      sb.append(LOAD_ROSTER_ITEM_GROUPS).append(" WHERE rosterID IN (");
-      for (      RosterItem item : itemList) {
-        sb.append(item.getID()).append(",");
-      }
-      sb.setLength(sb.length() - 1);
-      sb.append(") ORDER BY rosterID, rank");
-      pstmt=con.prepareStatement(sb.toString());
+      pstmt=con.prepareStatement(LOAD_ROSTER_ITEM_GROUPS);
+      pstmt.setString(1,username);
       rs=pstmt.executeQuery();
       while (rs.next()) {
         itemsByID.get(rs.getLong(1)).getGroups().add(rs.getString(2));
