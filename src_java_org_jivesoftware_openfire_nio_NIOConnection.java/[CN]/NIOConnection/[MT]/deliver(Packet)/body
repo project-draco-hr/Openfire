@@ -7,6 +7,9 @@
     buffer.setAutoExpand(true);
     boolean errorDelivering=false;
     try {
+      if (!ioSession.isConnected()) {
+        throw new IOException("Connection reset/closed by peer");
+      }
       XMLWriter xmlSerializer=new XMLWriter(new ByteBufferWriter(buffer,encoder.get()),new OutputFormat());
       xmlSerializer.write(packet.getElement());
       xmlSerializer.flush();
@@ -17,7 +20,7 @@
       ioSession.write(buffer);
     }
  catch (    Exception e) {
-      Log.debug("NIOConnection: Error delivering packet" + "\n" + this.toString(),e);
+      Log.debug("Error delivering packet:\n" + packet,e);
       errorDelivering=true;
     }
     if (errorDelivering) {

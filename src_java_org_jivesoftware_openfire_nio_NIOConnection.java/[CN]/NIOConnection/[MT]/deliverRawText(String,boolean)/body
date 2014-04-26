@@ -10,6 +10,9 @@
       }
       buffer.flip();
       if (asynchronous) {
+        if (!ioSession.isConnected()) {
+          throw new IOException("Connection reset/closed by peer");
+        }
         ioSession.write(buffer);
       }
  else {
@@ -20,7 +23,7 @@
       }
     }
  catch (    Exception e) {
-      Log.debug("NIOConnection: Error delivering raw text" + "\n" + this.toString(),e);
+      Log.debug("Error delivering raw text:\n" + text,e);
       errorDelivering=true;
     }
     if (errorDelivering && asynchronous) {
