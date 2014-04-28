@@ -105,12 +105,14 @@
  else {
     String nick;
     String target;
-    boolean hasAffiliation=itemsList.get(0).attributeValue("affiliation") != null;
+    boolean hasAffiliation;
     List<Presence> presences=new ArrayList<Presence>(itemsList.size());
     for (    Object anItem : itemsList) {
       try {
         item=(Element)anItem;
-        target=(hasAffiliation ? item.attributeValue("affiliation") : item.attributeValue("role"));
+        affiliation=item.attributeValue("affiliation");
+        hasAffiliation=affiliation != null;
+        target=(hasAffiliation ? affiliation : item.attributeValue("role"));
         List<JID> jids=new ArrayList<JID>();
         if (hasJID) {
           jids.add(new JID(item.attributeValue("jid")));
