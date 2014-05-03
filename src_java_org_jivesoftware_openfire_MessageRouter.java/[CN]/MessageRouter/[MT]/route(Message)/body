@@ -41,7 +41,7 @@
           log.error("Failed to route packet: " + packet.toXML(),e);
           routingFailed(recipientJID,packet);
         }
-        if (packet.getType() == Message.Type.chat && !isPrivate) {
+        if (packet.getType() == Message.Type.chat && !isPrivate && session != null) {
           List<JID> routes=routingTable.getRoutes(packet.getFrom().asBareJID(),null);
           for (          JID route : routes) {
             if (!route.equals(session.getAddress())) {
