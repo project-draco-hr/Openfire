@@ -4,8 +4,8 @@
   AdminConsole.addModel("test3",in);
   in.close();
   boolean found=false;
-  for (Iterator tabs=AdminConsole.getModel().selectNodes("//tab").iterator(); tabs.hasNext(); ) {
-    Element tab=(Element)tabs.next();
+  for (  Object o : AdminConsole.getModel().selectNodes("//tab")) {
+    Element tab=(Element)o;
     if ("server".equals(tab.attributeValue("id"))) {
       found=true;
       assertEquals("New Server Title",tab.attributeValue("name"));
