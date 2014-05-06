@@ -96,7 +96,7 @@
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
   }
-  if (isLocked()) {
+  if (!isRoomNew && isLocked()) {
     Presence presenceItemNotFound=new Presence(Presence.Type.error);
     presenceItemNotFound.setError(PacketError.Condition.item_not_found);
     presenceItemNotFound.setFrom(role.getRoleAddress());
