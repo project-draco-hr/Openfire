@@ -10,25 +10,17 @@
   List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,port);
   for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
     try {
+      socket=new Socket();
       DNSUtil.HostAddress address=it.next();
       realHostname=address.getHost();
       realPort=address.getPort();
       Log.debug("LocalOutgoingServerSession: OS - Trying to connect to " + hostname + ":"+ port+ "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
-      socket=new Socket();
       socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
       Log.debug("LocalOutgoingServerSession: OS - Plain connection to " + hostname + ":"+ port+ " successful");
       break;
     }
- catch (    UnknownHostException uhe) {
-      Log.warn("Unknown host: " + realHostname);
-    }
-catch (    SocketTimeoutException ste) {
-      Log.error("Connection Timed out trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
-    }
-catch (    Exception e) {
+ catch (    Exception e) {
       Log.warn("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
-    }
- finally {
       try {
         if (socket != null) {
           socket.close();
@@ -39,7 +31,7 @@ catch (    Exception e) {
       }
     }
   }
-  if (socket == null || !socket.isConnected()) {
+  if (!socket.isConnected()) {
     return null;
   }
   SocketConnection connection=null;
@@ -96,23 +88,24 @@ catch (    Exception e) {
         Log.debug("LocalOutgoingServerSession: OS - Error, <starttls> was not received");
       }
     }
+    if (connection != null) {
+      connection.close();
+    }
   }
  catch (  SSLHandshakeException e) {
-    Log.debug("LocalOutgoingServerSession: SSL Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.getMessage());
+    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    if (connection != null) {
+      connection.close();
+    }
   }
 catch (  XmlPullParserException e) {
-    Log.warn("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): ",e);
-  }
-catch (  UnknownHostException uhe) {
-    Log.warn("Unknown host: " + realHostname);
-  }
-catch (  SocketTimeoutException ste) {
-    Log.error("Connection Timed out trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")");
+    Log.warn("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    if (connection != null) {
+      connection.close();
+    }
   }
 catch (  Exception e) {
     Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
-  }
- finally {
     if (connection != null) {
       connection.close();
     }
