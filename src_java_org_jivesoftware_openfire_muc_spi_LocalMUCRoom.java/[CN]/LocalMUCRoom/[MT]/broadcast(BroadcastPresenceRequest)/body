@@ -20,7 +20,7 @@
     if (occupant.getPresence().getFrom().equals(presence.getTo())) {
       Presence selfPresence=presence.createCopy();
       Element fragSelfPresence=selfPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
-      fragSelfPresence.addElement("status","110");
+      fragSelfPresence.addElement("status").addAttribute("code","110");
       if (presenceRequest.isJoinPresence()) {
         boolean isRoomNew=isLocked() && creationDate.getTime() == lockedTime;
         if (canAnyoneDiscoverJID()) {
