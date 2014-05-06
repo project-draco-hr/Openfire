@@ -20,14 +20,14 @@
       break;
     }
  catch (    Exception e) {
-      Log.warn("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+      Log.warn("Error trying to connect to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.toString());
       try {
         if (socket != null) {
           socket.close();
         }
       }
  catch (      IOException ex) {
-        Log.debug("Additional exception while trying to close socket when connection to remote server failed.",ex);
+        Log.debug("Additional exception while trying to close socket when connection to remote server failed: " + ex.toString());
       }
     }
   }
@@ -93,19 +93,19 @@
     }
   }
  catch (  SSLHandshakeException e) {
-    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "):"+ e.toString());
     if (connection != null) {
       connection.close();
     }
   }
 catch (  XmlPullParserException e) {
-    Log.warn("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    Log.warn("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.toString());
     if (connection != null) {
       connection.close();
     }
   }
 catch (  Exception e) {
-    Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.toString());
     if (connection != null) {
       connection.close();
     }
