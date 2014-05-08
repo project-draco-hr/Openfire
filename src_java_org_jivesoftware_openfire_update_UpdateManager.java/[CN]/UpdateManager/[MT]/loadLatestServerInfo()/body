@@ -30,12 +30,12 @@
   }
   Element openfire=xmlResponse.getRootElement().element("openfire");
   if (openfire != null) {
-    String latestVersion=openfire.attributeValue("latest");
+    Version latestVersion=new Version(openfire.attributeValue("latest"));
     String changelog=openfire.attributeValue("changelog");
     String url=openfire.attributeValue("url");
-    String serverVersion=XMPPServer.getInstance().getServerInfo().getVersion().getVersionString();
-    if (serverVersion.compareTo(latestVersion) < 0) {
-      serverUpdate=new Update("Openfire",latestVersion,changelog,url);
+    Version curentServerVersion=XMPPServer.getInstance().getServerInfo().getVersion();
+    if (latestVersion.isNewerThan(curentServerVersion)) {
+      serverUpdate=new Update("Openfire",latestVersion.getVersionString(),changelog,url);
     }
   }
 }

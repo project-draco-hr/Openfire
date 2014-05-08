@@ -11,10 +11,11 @@
       }
     }
   }
-  String serverVersion=XMPPServer.getInstance().getServerInfo().getVersion().getVersionString();
+  Version currentServerVersion=XMPPServer.getInstance().getServerInfo().getVersion();
   for (Iterator<AvailablePlugin> it=plugins.iterator(); it.hasNext(); ) {
     AvailablePlugin plugin=it.next();
-    if (serverVersion.compareTo(plugin.getMinServerVersion()) < 0) {
+    Version pluginMinServerVersion=new Version(plugin.getMinServerVersion());
+    if (pluginMinServerVersion.isNewerThan(currentServerVersion)) {
       it.remove();
     }
   }

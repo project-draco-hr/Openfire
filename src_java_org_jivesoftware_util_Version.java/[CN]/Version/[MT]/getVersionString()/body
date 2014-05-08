@@ -1,3 +1,21 @@
 {
+  if (versionString == null) {
+    if (status != null) {
+      if (status == ReleaseStatus.Release) {
+        versionString=major + "." + minor+ "."+ micro;
+      }
+ else {
+        if (statusVersion >= 0) {
+          versionString=major + "." + minor+ "."+ micro+ " "+ status.toString()+ " "+ statusVersion;
+        }
+ else {
+          versionString=major + "." + minor+ "."+ micro+ " "+ status.toString();
+        }
+      }
+    }
+ else {
+      versionString=major + "." + minor+ "."+ micro;
+    }
+  }
   return versionString;
 }
