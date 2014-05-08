@@ -5,10 +5,12 @@
   Element xmlResponse=xmlReader.read(new StringReader(response)).getRootElement();
   Element openfire=xmlResponse.element("openfire");
   if (openfire != null) {
-    String latestVersion=openfire.attributeValue("latest");
-    String changelog=openfire.attributeValue("changelog");
-    String url=openfire.attributeValue("url");
-    serverUpdate=new Update("Openfire",latestVersion,changelog,url);
+    Version latestVersion=new Version(openfire.attributeValue("latest"));
+    if (latestVersion.isNewerThan(XMPPServer.getInstance().getServerInfo().getVersion())) {
+      String changelog=openfire.attributeValue("changelog");
+      String url=openfire.attributeValue("url");
+      serverUpdate=new Update("Openfire",latestVersion.getVersionString(),changelog,url);
+    }
   }
   if (notificationsEnabled && isNotificationEnabled() && serverUpdate != null) {
     Collection<JID> admins=XMPPServer.getInstance().getAdmins();
