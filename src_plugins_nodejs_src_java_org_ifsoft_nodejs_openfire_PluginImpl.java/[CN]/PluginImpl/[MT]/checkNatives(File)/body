@@ -1,0 +1,39 @@
+{
+  File nodeFolder=new File(pluginDirectoryPath);
+  if (!nodeFolder.exists()) {
+    Log.info("initializePlugin home " + pluginDirectory);
+    nodeFolder.mkdirs();
+  }
+  try {
+    String suffix=null;
+    if (OSUtils.IS_LINUX32) {
+      suffix="linux-32";
+    }
+ else     if (OSUtils.IS_LINUX64) {
+      suffix="linux-64";
+    }
+ else     if (OSUtils.IS_WINDOWS32) {
+      suffix="win-32";
+    }
+ else     if (OSUtils.IS_WINDOWS64) {
+      suffix="win-64";
+    }
+ else     if (OSUtils.IS_MAC) {
+      suffix="osx-64";
+    }
+    if (suffix != null) {
+      nodeExePath=pluginDirectory.getAbsolutePath() + File.separator + "native"+ File.separator+ suffix+ File.separator+ "node";
+      File file=new File(nodeExePath);
+      file.setReadable(true,true);
+      file.setWritable(true,true);
+      file.setExecutable(true,true);
+      Log.info("checkNatives node executable path " + nodeExePath);
+    }
+ else {
+      Log.error("checkNatives unknown OS " + pluginDirectory.getAbsolutePath());
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

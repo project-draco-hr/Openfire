@@ -1,0 +1,24 @@
+{
+  PropertyEventDispatcher.addListener(this);
+  pluginDirectoryPath=JiveGlobals.getProperty("org.ifsoft.nodejs.openfire.path",JiveGlobals.getHomeDirectory() + File.separator + "nodejs");
+  checkNatives(pluginDirectory);
+  if (nodeExePath != null) {
+    executor=Executors.newCachedThreadPool();
+    executor.submit(new Callable<Boolean>(){
+      public Boolean call() throws Exception {
+        try {
+          List<String> properties=JiveGlobals.getPropertyNames();
+          for (          String propertyName : properties) {
+            String propertyValue=JiveGlobals.getProperty(propertyName);
+            executeScript(propertyName,propertyValue);
+          }
+        }
+ catch (        Exception e) {
+          Log.error("NodeJs initializePluginn",e);
+        }
+        return true;
+      }
+    }
+);
+  }
+}

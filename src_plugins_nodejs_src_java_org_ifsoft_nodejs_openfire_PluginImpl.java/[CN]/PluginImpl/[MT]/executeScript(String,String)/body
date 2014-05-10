@@ -1,0 +1,15 @@
+{
+  try {
+    if (scriptPropertyName.indexOf("js.") == 0 && scriptPropertyName.indexOf(".path") != scriptPropertyName.length() - 5) {
+      String scriptPath=scriptPropertyValue;
+      String scriptHomePath=JiveGlobals.getProperty(scriptPropertyName + ".path",pluginDirectoryPath);
+      Log.info("executeScript executable path " + scriptPath + " "+ scriptHomePath);
+      NodeThread nodeThread=new NodeThread();
+      nodeThread.start(nodeExePath + " " + scriptPath,new File(scriptHomePath));
+      scripts.put(scriptPropertyName,nodeThread);
+    }
+  }
+ catch (  Throwable t) {
+    Log.error("Error running NodeJ Scripts ",t);
+  }
+}

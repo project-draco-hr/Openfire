@@ -1,0 +1,22 @@
+{
+  Log.info("In stopThread()");
+  Thread targetThread=thread;
+  thread=null;
+  if ((targetThread != null) && targetThread.isAlive()) {
+    targetThread.interrupt();
+    try {
+      targetThread.join(500);
+    }
+ catch (    InterruptedException ignore) {
+    }
+    if (targetThread.isAlive()) {
+      targetThread.stop();
+      try {
+        targetThread.join(500);
+      }
+ catch (      InterruptedException ignore) {
+      }
+    }
+    Log.info("Stopped thread alive=" + targetThread.isAlive());
+  }
+}
