@@ -1,0 +1,11 @@
+def __init__(self, path, version, entries=None, variants=None, websiteProperties=True):
+    'Initializes the solution.\n\n    Args:\n      path: Path to solution file.\n      version: Format version to emit.\n      entries: List of entries in solution.  May contain Folder or Project\n          objects.  May be None, if the folder is empty.\n      variants: List of build variant strings.  If none, a default list will\n          be used.\n      websiteProperties: Flag to decide if the website properties section\n          is generated.\n    '
+    self.path = path
+    self.websiteProperties = websiteProperties
+    self.version = version
+    self.entries = list((entries or []))
+    if variants:
+        self.variants = variants[:]
+    else:
+        self.variants = ['Debug|Win32', 'Release|Win32']
+    self.Write()

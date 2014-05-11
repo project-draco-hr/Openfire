@@ -1,0 +1,10 @@
+def main():
+    if (len(sys.argv) < 2):
+        print ('Usage: %s "c:\\path\\to\\project.sln"' % sys.argv[0])
+        return 1
+    (projects, deps) = ParseSolution(sys.argv[1])
+    PrintDependencies(projects, deps)
+    PrintBuildOrder(projects, deps)
+    if ('--recursive' in sys.argv):
+        PrintVCProj(projects)
+    return 0

@@ -1,0 +1,4 @@
+def AddCustomBuildRule(self, name, cmd, description, additional_dependencies, outputs, extensions):
+    'Adds a rule to the tool file.\n\n    Args:\n      name: Name of the rule.\n      description: Description of the rule.\n      cmd: Command line of the rule.\n      additional_dependencies: other files which may trigger the rule.\n      outputs: outputs of the rule.\n      extensions: extensions handled by the rule.\n    '
+    rule = ['CustomBuildRule', {'Name': name, 'ExecutionDescription': description, 'CommandLine': cmd, 'Outputs': ';'.join(outputs), 'FileExtensions': ';'.join(extensions), 'AdditionalDependencies': ';'.join(additional_dependencies), }]
+    self.rules_section.append(rule)

@@ -1,0 +1,11 @@
+def FullPath(self):
+    xche = self
+    path = None
+    while (isinstance(xche, XCHierarchicalElement) and ((path is None) or ((not path.startswith('/')) and (not path.startswith('$'))))):
+        this_path = xche.PathFromSourceTreeAndPath()
+        if ((this_path != None) and (path != None)):
+            path = posixpath.join(this_path, path)
+        elif (this_path != None):
+            path = this_path
+        xche = xche.parent
+    return path

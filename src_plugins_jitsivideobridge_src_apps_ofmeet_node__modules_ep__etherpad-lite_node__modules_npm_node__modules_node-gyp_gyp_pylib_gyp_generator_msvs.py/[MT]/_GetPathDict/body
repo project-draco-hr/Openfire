@@ -1,0 +1,8 @@
+def _GetPathDict(root, path):
+    if ((not path) or path.endswith(os.sep)):
+        return root
+    (parent, folder) = os.path.split(path)
+    parent_dict = _GetPathDict(root, parent)
+    if (folder not in parent_dict):
+        parent_dict[folder] = dict()
+    return parent_dict[folder]

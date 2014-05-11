@@ -1,0 +1,11 @@
+def _GatherSolutionFolders(sln_projects, project_objects, flat):
+    root = {}
+    for p in sln_projects:
+        (gyp_file, target) = gyp.common.ParseQualifiedTarget(p)[0:2]
+        gyp_dir = os.path.dirname(gyp_file)
+        path_dict = _GetPathDict(root, gyp_dir)
+        path_dict[(target + '.vcproj')] = project_objects[p]
+    while ((len(root) == 1) and (type(root[root.keys()[0]]) == dict)):
+        root = root[root.keys()[0]]
+    root = _CollapseSingles('', root)
+    return _DictsToFolders('', root, flat)

@@ -1,0 +1,87 @@
+def main(argv=None):
+    if (argv is None):
+        argv = sys.argv
+    usage = 'gyptest.py [-ahlnq] [-f formats] [test ...]'
+    parser = optparse.OptionParser(usage=usage)
+    parser.add_option('-a', '--all', action='store_true', help='run all tests')
+    parser.add_option('-C', '--chdir', action='store', default=None, help='chdir to the specified directory')
+    parser.add_option('-f', '--format', action='store', default='', help='run tests with the specified formats')
+    parser.add_option('-G', '--gyp_option', action='append', default=[], help='Add -G options to the gyp command line')
+    parser.add_option('-l', '--list', action='store_true', help='list available tests and exit')
+    parser.add_option('-n', '--no-exec', action='store_true', help='no execute, just print the command line')
+    parser.add_option('--passed', action='store_true', help='report passed tests')
+    parser.add_option('--path', action='append', default=[], help='additional $PATH directory')
+    parser.add_option('-q', '--quiet', action='store_true', help="quiet, don't print test command lines")
+    (opts, args) = parser.parse_args(argv[1:])
+    if opts.chdir:
+        os.chdir(opts.chdir)
+    if opts.path:
+        extra_path = [os.path.abspath(p) for p in opts.path]
+        extra_path = os.pathsep.join(extra_path)
+        os.environ['PATH'] += (os.pathsep + extra_path)
+    if (not args):
+        if (not opts.all):
+            sys.stderr.write('Specify -a to get all tests.\n')
+            return 1
+        args = ['test']
+    tests = []
+    for arg in args:
+        if os.path.isdir(arg):
+            tests.extend(find_all_gyptest_files(os.path.normpath(arg)))
+        else:
+            if (not is_test_name(os.path.basename(arg))):
+                print  >> sys.stderr, arg, 'is not a valid gyp test name.'
+                sys.exit(1)
+            tests.append(arg)
+    if opts.list:
+        for test in tests:
+            print test
+        sys.exit(0)
+    CommandRunner.verbose = (not opts.quiet)
+    CommandRunner.active = (not opts.no_exec)
+    cr = CommandRunner()
+    os.environ['PYTHONPATH'] = os.path.abspath('test/lib')
+    if (not opts.quiet):
+        sys.stdout.write(('PYTHONPATH=%s\n' % os.environ['PYTHONPATH']))
+    passed = []
+    failed = []
+    no_result = []
+    if opts.format:
+        format_list = opts.format.split(',')
+    else:
+        format_list = {'aix5': ['make'], 'freebsd7': ['make'], 'freebsd8': ['make'], 'openbsd5': ['make'], 'cygwin': ['msvs'], 'win32': ['msvs', 'ninja'], 'linux2': ['make', 'ninja'], 'linux3': ['make', 'ninja'], 'darwin': ['make', 'ninja', 'xcode'], }[sys.platform]
+    for format in format_list:
+        os.environ['TESTGYP_FORMAT'] = format
+        if (not opts.quiet):
+            sys.stdout.write(('TESTGYP_FORMAT=%s\n' % format))
+        gyp_options = []
+        for option in opts.gyp_option:
+            gyp_options += ['-G', option]
+        if (gyp_options and (not opts.quiet)):
+            sys.stdout.write(('Extra Gyp options: %s\n' % gyp_options))
+        for test in tests:
+            status = cr.run(([sys.executable, test] + gyp_options), stdout=sys.stdout, stderr=sys.stderr)
+            if (status == 2):
+                no_result.append(test)
+            elif status:
+                failed.append(test)
+            else:
+                passed.append(test)
+    if (not opts.quiet):
+
+        def report(description, tests):
+            if tests:
+                if (len(tests) == 1):
+                    sys.stdout.write(('\n%s the following test:\n' % description))
+                else:
+                    fmt = '\n%s the following %d tests:\n'
+                    sys.stdout.write((fmt % (description, len(tests))))
+                sys.stdout.write((('\t' + '\n\t'.join(tests)) + '\n'))
+        if opts.passed:
+            report('Passed', passed)
+        report('Failed', failed)
+        report('No result from', no_result)
+    if failed:
+        return 1
+    else:
+        return 0

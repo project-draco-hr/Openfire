@@ -1,0 +1,7 @@
+def WriteIfChanged(self):
+    'Writes the user file.'
+    configs = ['Configurations']
+    for (config, spec) in sorted(self.configurations.iteritems()):
+        configs.append(spec)
+    content = ['VisualStudioUserFile', {'Version': self.version.ProjectVersion(), 'Name': self.name, }, configs]
+    easy_xml.WriteXmlIfChanged(content, self.user_file_path, encoding='Windows-1252')

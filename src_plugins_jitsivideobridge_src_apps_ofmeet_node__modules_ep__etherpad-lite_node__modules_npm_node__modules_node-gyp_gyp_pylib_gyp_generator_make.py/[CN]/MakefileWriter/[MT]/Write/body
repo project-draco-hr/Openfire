@@ -1,0 +1,73 @@
+def Write(self, qualified_target, base_path, output_filename, spec, configs, part_of_all):
+    "The main entry point: writes a .mk file for a single target.\n\n    Arguments:\n      qualified_target: target we're generating\n      base_path: path relative to source root we're building in, used to resolve\n                 target-relative paths\n      output_filename: output .mk file name to write\n      spec, configs: gyp info\n      part_of_all: flag indicating this target is part of 'all'\n    "
+    ensure_directory_exists(output_filename)
+    self.fp = open(output_filename, 'w')
+    self.fp.write(header)
+    self.qualified_target = qualified_target
+    self.path = base_path
+    self.target = spec['target_name']
+    self.type = spec['type']
+    self.toolset = spec['toolset']
+    self.is_mac_bundle = gyp.xcode_emulation.IsMacBundle(self.flavor, spec)
+    if (self.flavor == 'mac'):
+        self.xcode_settings = gyp.xcode_emulation.XcodeSettings(spec)
+    else:
+        self.xcode_settings = None
+    (deps, link_deps) = self.ComputeDeps(spec)
+    extra_outputs = []
+    extra_sources = []
+    extra_link_deps = []
+    extra_mac_bundle_resources = []
+    mac_bundle_deps = []
+    if self.is_mac_bundle:
+        self.output = self.ComputeMacBundleOutput(spec)
+        self.output_binary = self.ComputeMacBundleBinaryOutput(spec)
+    else:
+        self.output = self.output_binary = self.ComputeOutput(spec)
+    self.is_standalone_static_library = bool(spec.get('standalone_static_library', 0))
+    self._INSTALLABLE_TARGETS = ('executable', 'loadable_module', 'shared_library')
+    if (self.is_standalone_static_library or (self.type in self._INSTALLABLE_TARGETS)):
+        self.alias = os.path.basename(self.output)
+        install_path = self._InstallableTargetInstallPath()
+    else:
+        self.alias = self.output
+        install_path = self.output
+    self.WriteLn(('TOOLSET := ' + self.toolset))
+    self.WriteLn(('TARGET := ' + self.target))
+    if ('actions' in spec):
+        self.WriteActions(spec['actions'], extra_sources, extra_outputs, extra_mac_bundle_resources, part_of_all)
+    if ('rules' in spec):
+        self.WriteRules(spec['rules'], extra_sources, extra_outputs, extra_mac_bundle_resources, part_of_all)
+    if ('copies' in spec):
+        self.WriteCopies(spec['copies'], extra_outputs, part_of_all)
+    if self.is_mac_bundle:
+        all_mac_bundle_resources = (spec.get('mac_bundle_resources', []) + extra_mac_bundle_resources)
+        self.WriteMacBundleResources(all_mac_bundle_resources, mac_bundle_deps)
+        self.WriteMacInfoPlist(mac_bundle_deps)
+    all_sources = (spec.get('sources', []) + extra_sources)
+    if all_sources:
+        self.WriteSources(configs, deps, all_sources, extra_outputs, extra_link_deps, part_of_all, gyp.xcode_emulation.MacPrefixHeader(self.xcode_settings, (lambda p: Sourceify(self.Absolutify(p))), self.Pchify))
+        sources = filter(Compilable, all_sources)
+        if sources:
+            self.WriteLn(SHARED_HEADER_SUFFIX_RULES_COMMENT1)
+            extensions = set([os.path.splitext(s)[1] for s in sources])
+            for ext in extensions:
+                if (ext in self.suffix_rules_srcdir):
+                    self.WriteLn(self.suffix_rules_srcdir[ext])
+            self.WriteLn(SHARED_HEADER_SUFFIX_RULES_COMMENT2)
+            for ext in extensions:
+                if (ext in self.suffix_rules_objdir1):
+                    self.WriteLn(self.suffix_rules_objdir1[ext])
+            for ext in extensions:
+                if (ext in self.suffix_rules_objdir2):
+                    self.WriteLn(self.suffix_rules_objdir2[ext])
+            self.WriteLn('# End of this set of suffix rules')
+            if self.is_mac_bundle:
+                mac_bundle_deps.append(self.output_binary)
+    self.WriteTarget(spec, configs, deps, (extra_link_deps + link_deps), mac_bundle_deps, extra_outputs, part_of_all)
+    target_outputs[qualified_target] = install_path
+    if (self.type in ('static_library', 'shared_library')):
+        target_link_deps[qualified_target] = self.output_binary
+    if self.generator_flags.get('android_ndk_version', None):
+        self.WriteAndroidNdkModuleRule(self.target, all_sources, link_deps)
+    self.fp.close()

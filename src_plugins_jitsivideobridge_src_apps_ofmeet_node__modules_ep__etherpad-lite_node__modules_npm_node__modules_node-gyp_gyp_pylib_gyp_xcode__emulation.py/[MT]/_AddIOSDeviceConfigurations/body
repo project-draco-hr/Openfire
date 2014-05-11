@@ -1,0 +1,12 @@
+def _AddIOSDeviceConfigurations(targets):
+    'Clone all targets and append -iphoneos to the name. Configure these targets\n  to build for iOS devices.'
+    for target_dict in targets.values():
+        for config_name in target_dict['configurations'].keys():
+            config = target_dict['configurations'][config_name]
+            new_config_name = (config_name + '-iphoneos')
+            new_config_dict = copy.deepcopy(config)
+            if (target_dict['toolset'] == 'target'):
+                new_config_dict['xcode_settings']['ARCHS'] = ['armv7']
+                new_config_dict['xcode_settings']['SDKROOT'] = 'iphoneos'
+            target_dict['configurations'][new_config_name] = new_config_dict
+    return targets

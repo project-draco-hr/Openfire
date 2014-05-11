@@ -1,0 +1,7 @@
+def _MSVSOnly(tool, name, setting_type):
+    'Defines a setting that is only found in MSVS.\n\n  Args:\n    tool: a dictionary that gives the names of the tool for MSVS and MSBuild.\n    name: the name of the setting.\n    setting_type: the type of this setting.\n  '
+
+    def _Translate(unused_value, unused_msbuild_settings):
+        pass
+    _msvs_validators[tool.msvs_name][name] = setting_type.ValidateMSVS
+    _msvs_to_msbuild_converters[tool.msvs_name][name] = _Translate

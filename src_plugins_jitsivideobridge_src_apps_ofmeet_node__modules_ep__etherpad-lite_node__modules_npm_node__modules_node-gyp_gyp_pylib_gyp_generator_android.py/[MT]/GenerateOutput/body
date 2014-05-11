@@ -1,0 +1,73 @@
+def GenerateOutput(target_list, target_dicts, data, params):
+    options = params['options']
+    generator_flags = params.get('generator_flags', {})
+    builddir_name = generator_flags.get('output_dir', 'out')
+    limit_to_target_all = generator_flags.get('limit_to_target_all', False)
+    android_top_dir = os.environ.get('ANDROID_BUILD_TOP')
+    assert android_top_dir, '$ANDROID_BUILD_TOP not set; you need to run lunch.'
+
+    def CalculateMakefilePath(build_file, base_name):
+        'Determine where to write a Makefile for a given gyp file.'
+        base_path = gyp.common.RelativePath(os.path.dirname(build_file), options.depth)
+        output_file = os.path.join(options.depth, base_path, base_name)
+        assert (not options.generator_output), 'The Android backend does not support options.generator_output.'
+        base_path = gyp.common.RelativePath(os.path.dirname(build_file), options.toplevel_dir)
+        return (base_path, output_file)
+    default_configuration = None
+    toolsets = set([target_dicts[target]['toolset'] for target in target_list])
+    for target in target_list:
+        spec = target_dicts[target]
+        if (spec['default_configuration'] != 'Default'):
+            default_configuration = spec['default_configuration']
+            break
+    if (not default_configuration):
+        default_configuration = 'Default'
+    srcdir = '.'
+    makefile_name = (('GypAndroid' + options.suffix) + '.mk')
+    makefile_path = os.path.join(options.toplevel_dir, makefile_name)
+    assert (not options.generator_output), 'The Android backend does not support options.generator_output.'
+    make.ensure_directory_exists(makefile_path)
+    root_makefile = open(makefile_path, 'w')
+    root_makefile.write(header)
+    root_makefile.write('\nLOCAL_PATH := $(call my-dir)\n')
+    needed_targets = set()
+    for build_file in params['build_files']:
+        for target in gyp.common.AllTargets(target_list, target_dicts, build_file):
+            needed_targets.add(target)
+    build_files = set()
+    include_list = set()
+    android_modules = {}
+    for qualified_target in target_list:
+        (build_file, target, toolset) = gyp.common.ParseQualifiedTarget(qualified_target)
+        relative_build_file = gyp.common.RelativePath(build_file, options.toplevel_dir)
+        build_files.add(relative_build_file)
+        included_files = data[build_file]['included_files']
+        for included_file in included_files:
+            relative_include_file = gyp.common.RelativePath(gyp.common.UnrelativePath(included_file, build_file), options.toplevel_dir)
+            abs_include_file = os.path.abspath(relative_include_file)
+            if (params['home_dot_gyp'] and abs_include_file.startswith(params['home_dot_gyp'])):
+                build_files.add(abs_include_file)
+            else:
+                build_files.add(relative_include_file)
+        (base_path, output_file) = CalculateMakefilePath(build_file, ((((target + '.') + toolset) + options.suffix) + '.mk'))
+        spec = target_dicts[qualified_target]
+        configs = spec['configurations']
+        part_of_all = ((qualified_target in needed_targets) and (not int(spec.get('suppress_wildcard', False))))
+        if (limit_to_target_all and (not part_of_all)):
+            continue
+        relative_target = gyp.common.QualifiedTarget(relative_build_file, target, toolset)
+        writer = AndroidMkWriter(android_top_dir)
+        android_module = writer.Write(qualified_target, relative_target, base_path, output_file, spec, configs, part_of_all=part_of_all)
+        if (android_module in android_modules):
+            print ('ERROR: Android module names must be unique. The following targets both generate Android module name %s.\n  %s\n  %s' % (android_module, android_modules[android_module], qualified_target))
+            return
+        android_modules[android_module] = qualified_target
+        mkfile_rel_path = gyp.common.RelativePath(output_file, os.path.dirname(makefile_path))
+        include_list.add(mkfile_rel_path)
+    root_makefile.write(('GYP_CONFIGURATION ?= %s\n' % default_configuration))
+    root_makefile.write('\n')
+    for include_file in sorted(include_list):
+        root_makefile.write((('include $(LOCAL_PATH)/' + include_file) + '\n'))
+    root_makefile.write('\n')
+    root_makefile.write(SHARED_FOOTER)
+    root_makefile.close()

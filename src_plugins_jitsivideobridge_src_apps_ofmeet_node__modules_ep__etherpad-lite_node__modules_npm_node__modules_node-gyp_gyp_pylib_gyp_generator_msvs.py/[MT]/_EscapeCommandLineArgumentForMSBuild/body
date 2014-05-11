@@ -1,0 +1,7 @@
+def _EscapeCommandLineArgumentForMSBuild(s):
+    'Escapes a Windows command-line argument for use by MSBuild.'
+
+    def _Replace(match):
+        return ((((len(match.group(1)) / 2) * 4) * '\\') + '\\"')
+    s = quote_replacer_regex2.sub(_Replace, s)
+    return s

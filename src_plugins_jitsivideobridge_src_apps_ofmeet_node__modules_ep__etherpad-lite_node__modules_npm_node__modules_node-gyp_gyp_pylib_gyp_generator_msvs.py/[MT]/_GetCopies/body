@@ -1,0 +1,15 @@
+def _GetCopies(spec):
+    copies = []
+    for cpy in spec.get('copies', []):
+        for src in cpy.get('files', []):
+            dst = os.path.join(cpy['destination'], os.path.basename(src))
+            if src.endswith('/'):
+                src_bare = src[:(-1)]
+                base_dir = posixpath.split(src_bare)[0]
+                outer_dir = posixpath.split(src_bare)[1]
+                cmd = ('cd "%s" && xcopy /e /f /y "%s" "%s\\%s\\"' % (_FixPath(base_dir), outer_dir, _FixPath(dst), outer_dir))
+                copies.append(([src], ['dummy_copies', dst], cmd, ('Copying %s to %s' % (src, dst))))
+            else:
+                cmd = ('mkdir "%s" 2>nul & set ERRORLEVEL=0 & copy /Y "%s" "%s"' % (_FixPath(cpy['destination']), _FixPath(src), _FixPath(dst)))
+                copies.append(([src], [dst], cmd, ('Copying %s to %s' % (src, dst))))
+    return copies

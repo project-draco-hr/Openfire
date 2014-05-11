@@ -1,0 +1,15 @@
+def _GetMSBuildToolSettingsSections(spec, configurations):
+    groups = []
+    for (name, configuration) in sorted(configurations.iteritems()):
+        msbuild_settings = configuration['finalized_msbuild_settings']
+        group = ['ItemDefinitionGroup', {'Condition': _GetConfigurationCondition(name, configuration), }]
+        for (tool_name, tool_settings) in sorted(msbuild_settings.iteritems()):
+            if tool_name:
+                if tool_settings:
+                    tool = [tool_name]
+                    for (name, value) in sorted(tool_settings.iteritems()):
+                        formatted_value = _GetValueFormattedForMSBuild(tool_name, name, value)
+                        tool.append([name, formatted_value])
+                    group.append(tool)
+        groups.append(group)
+    return groups

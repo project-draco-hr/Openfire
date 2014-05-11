@@ -1,0 +1,6 @@
+def _GetOutputTargetExt(spec):
+    'Returns the extension for this target, including the dot\n\n  If product_extension is specified, set target_extension to this to avoid\n  MSB8012, returns None otherwise. Ignores any target_extension settings in\n  the input files.\n\n  Arguments:\n    spec: The target dictionary containing the properties of the target.\n  Returns:\n    A string with the extension, or None\n  '
+    target_extension = spec.get('product_extension')
+    if target_extension:
+        return ('.' + target_extension)
+    return None

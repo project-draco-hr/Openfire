@@ -1,0 +1,42 @@
+def WriteActions(self, actions, extra_sources, extra_outputs):
+    "Write Makefile code for any 'actions' from the gyp input.\n\n    extra_sources: a list that will be filled in with newly generated source\n                   files, if any\n    extra_outputs: a list that will be filled in with any outputs of these\n                   actions (used to make other pieces dependent on these\n                   actions)\n    "
+    for action in actions:
+        name = make.StringToMakefileVariable(('%s_%s' % (self.relative_target, action['action_name'])))
+        self.WriteLn(('### Rules for action "%s":' % action['action_name']))
+        inputs = action['inputs']
+        outputs = action['outputs']
+        dirs = set()
+        for out in outputs:
+            if (not out.startswith('$')):
+                print ('WARNING: Action for target "%s" writes output to local path "%s".' % (self.target, out))
+            dir = os.path.split(out)[0]
+            if dir:
+                dirs.add(dir)
+        if int(action.get('process_outputs_as_sources', False)):
+            extra_sources += outputs
+        command = gyp.common.EncodePOSIXShellList(action['action'])
+        if ('message' in action):
+            quiet_cmd = ('Gyp action: %s ($@)' % action['message'])
+        else:
+            quiet_cmd = ('Gyp action: %s ($@)' % name)
+        if (len(dirs) > 0):
+            command = ((('mkdir -p %s' % ' '.join(dirs)) + '; ') + command)
+        cd_action = ('cd $(gyp_local_path)/%s; ' % self.path)
+        command = (cd_action + command)
+        main_output = make.QuoteSpaces(self.LocalPathify(outputs[0]))
+        self.WriteLn(('%s: gyp_local_path := $(LOCAL_PATH)' % main_output))
+        self.WriteLn(('%s: gyp_intermediate_dir := $(abspath $(gyp_intermediate_dir))' % main_output))
+        self.WriteLn(('%s: gyp_shared_intermediate_dir := $(abspath $(gyp_shared_intermediate_dir))' % main_output))
+        self.WriteLn(('%s: export PATH := $(subst $(ANDROID_BUILD_PATHS),,$(PATH))' % main_output))
+        for input in inputs:
+            assert (' ' not in input), ('Spaces in action input filenames not supported (%s)' % input)
+        for output in outputs:
+            assert (' ' not in output), ('Spaces in action output filenames not supported (%s)' % output)
+        self.WriteLn(('%s: %s $(GYP_TARGET_DEPENDENCIES)' % (main_output, ' '.join(map(self.LocalPathify, inputs)))))
+        self.WriteLn(('\t@echo "%s"' % quiet_cmd))
+        self.WriteLn(('\t$(hide)%s\n' % command))
+        for output in outputs[1:]:
+            self.WriteLn(('%s: %s ;' % (self.LocalPathify(output), main_output)))
+        extra_outputs += outputs
+        self.WriteLn()
+    self.WriteLn()

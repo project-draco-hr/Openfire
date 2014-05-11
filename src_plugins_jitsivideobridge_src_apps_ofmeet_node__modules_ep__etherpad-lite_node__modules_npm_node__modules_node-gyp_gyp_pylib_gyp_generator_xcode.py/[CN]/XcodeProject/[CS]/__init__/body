@@ -1,0 +1,15 @@
+def __init__(self, gyp_path, path, build_file_dict):
+    self.gyp_path = gyp_path
+    self.path = path
+    self.project = gyp.xcodeproj_file.PBXProject(path=path)
+    projectDirPath = gyp.common.RelativePath(os.path.dirname(os.path.abspath(self.gyp_path)), (os.path.dirname(path) or '.'))
+    self.project.SetProperty('projectDirPath', projectDirPath)
+    self.project_file = gyp.xcodeproj_file.XCProjectFile({'rootObject': self.project, })
+    self.build_file_dict = build_file_dict
+    self.created_dir = False
+    try:
+        os.makedirs(self.path)
+        self.created_dir = True
+    except OSError as e:
+        if (e.errno != errno.EEXIST):
+            raise

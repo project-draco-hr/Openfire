@@ -1,0 +1,15 @@
+def __init__(self, project_path, version, name, guid=None, platforms=None):
+    "Initializes the project.\n\n    Args:\n      project_path: Path to the project file.\n      version: Format version to emit.\n      name: Name of the project.\n      guid: GUID to use for project, if not None.\n      platforms: Array of string, the supported platforms.  If null, ['Win32']\n    "
+    self.project_path = project_path
+    self.version = version
+    self.name = name
+    self.guid = guid
+    if (not platforms):
+        platforms = ['Win32']
+    self.platform_section = ['Platforms']
+    for platform in platforms:
+        self.platform_section.append(['Platform', {'Name': platform, }])
+    self.tool_files_section = ['ToolFiles']
+    self.configurations_section = ['Configurations']
+    self.files_section = ['Files']
+    self.files_dict = dict()

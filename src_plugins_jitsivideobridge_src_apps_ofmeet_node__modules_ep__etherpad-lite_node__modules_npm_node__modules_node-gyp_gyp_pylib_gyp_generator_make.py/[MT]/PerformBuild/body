@@ -1,0 +1,9 @@
+def PerformBuild(data, configurations, params):
+    options = params['options']
+    for config in configurations:
+        arguments = ['make']
+        if (options.toplevel_dir and (options.toplevel_dir != '.')):
+            arguments += ('-C', options.toplevel_dir)
+        arguments.append(('BUILDTYPE=' + config))
+        print ('Building [%s]: %s' % (config, arguments))
+        subprocess.check_call(arguments)

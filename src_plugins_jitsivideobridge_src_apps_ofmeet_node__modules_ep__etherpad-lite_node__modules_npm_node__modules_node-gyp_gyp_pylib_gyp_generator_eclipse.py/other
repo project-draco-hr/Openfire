@@ -1,0 +1,15 @@
+"GYP backend that generates Eclipse CDT settings files.\n\nThis backend DOES NOT generate Eclipse CDT projects. Instead, it generates XML\nfiles that can be imported into an Eclipse CDT project. The XML file contains a\nlist of include paths and symbols (i.e. defines).\n\nBecause a full .cproject definition is not created by this generator, it's not\npossible to properly define the include dirs and symbols for each file\nindividually.  Instead, one set of includes/symbols is generated for the entire\nproject.  This works fairly well (and is a vast improvement in general), but may\nstill result in a few indexer issues here and there.\n\nThis generator has no automated tests, so expect it to be broken.\n"
+from xml.sax.saxutils import escape
+import os.path
+import subprocess
+import gyp
+import gyp.common
+import gyp.msvs_emulation
+import shlex
+generator_wants_static_library_dependencies_adjusted = False
+generator_default_variables = {}
+for dirname in ['INTERMEDIATE_DIR', 'PRODUCT_DIR', 'LIB_DIR', 'SHARED_LIB_DIR']:
+    generator_default_variables[dirname] = 'dir'
+for unused in ['RULE_INPUT_PATH', 'RULE_INPUT_ROOT', 'RULE_INPUT_NAME', 'RULE_INPUT_DIRNAME', 'RULE_INPUT_EXT', 'EXECUTABLE_PREFIX', 'EXECUTABLE_SUFFIX', 'STATIC_LIB_PREFIX', 'STATIC_LIB_SUFFIX', 'SHARED_LIB_PREFIX', 'SHARED_LIB_SUFFIX', 'CONFIGURATION_NAME']:
+    generator_default_variables[unused] = ''
+generator_default_variables['SHARED_INTERMEDIATE_DIR'] = '$SHARED_INTERMEDIATE_DIR'

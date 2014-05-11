@@ -1,0 +1,13 @@
+def _DictsToFolders(base_path, bucket, flat):
+    children = []
+    for (folder, contents) in bucket.iteritems():
+        if (type(contents) == dict):
+            folder_children = _DictsToFolders(os.path.join(base_path, folder), contents, flat)
+            if flat:
+                children += folder_children
+            else:
+                folder_children = MSVSNew.MSVSFolder(os.path.join(base_path, folder), name=(('(' + folder) + ')'), entries=folder_children)
+                children.append(folder_children)
+        else:
+            children.append(contents)
+    return children

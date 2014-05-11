@@ -1,0 +1,7 @@
+def GetBundlePlistPath(self):
+    "Returns the qualified path to the bundle's plist file. E.g.\n    Chromium.app/Contents/Info.plist. Only valid for bundles."
+    assert self._IsBundle()
+    if (self.spec['type'] in ('executable', 'loadable_module')):
+        return os.path.join(self.GetBundleContentsFolderPath(), 'Info.plist')
+    else:
+        return os.path.join(self.GetBundleContentsFolderPath(), 'Resources', 'Info.plist')

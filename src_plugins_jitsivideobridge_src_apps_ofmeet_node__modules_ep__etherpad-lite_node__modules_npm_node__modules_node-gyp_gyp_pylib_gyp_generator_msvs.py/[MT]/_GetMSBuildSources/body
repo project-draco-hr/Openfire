@@ -1,0 +1,13 @@
+def _GetMSBuildSources(spec, sources, exclusions, extension_to_rule_name, actions_spec, sources_handled_by_action, list_excluded):
+    groups = ['none', 'midl', 'include', 'compile', 'resource', 'rule']
+    grouped_sources = {}
+    for g in groups:
+        grouped_sources[g] = []
+    _AddSources2(spec, sources, exclusions, grouped_sources, extension_to_rule_name, sources_handled_by_action, list_excluded)
+    sources = []
+    for g in groups:
+        if grouped_sources[g]:
+            sources.append((['ItemGroup'] + grouped_sources[g]))
+    if actions_spec:
+        sources.append((['ItemGroup'] + actions_spec))
+    return sources

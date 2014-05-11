@@ -1,0 +1,9 @@
+def _GetMSBuildExternalBuilderTargets(spec):
+    'Return a list of MSBuild targets for external builders.\n\n  Right now, only "Build" and "Clean" targets are generated.\n\n  Arguments:\n    spec: The gyp target spec.\n  Returns:\n    List of MSBuild \'Target\' specs.\n  '
+    build_cmd = _BuildCommandLineForRuleRaw(spec, spec['msvs_external_builder_build_cmd'], False, False, False, False)
+    build_target = ['Target', {'Name': 'Build', }]
+    build_target.append(['Exec', {'Command': build_cmd, }])
+    clean_cmd = _BuildCommandLineForRuleRaw(spec, spec['msvs_external_builder_clean_cmd'], False, False, False, False)
+    clean_target = ['Target', {'Name': 'Clean', }]
+    clean_target.append(['Exec', {'Command': clean_cmd, }])
+    return [build_target, clean_target]

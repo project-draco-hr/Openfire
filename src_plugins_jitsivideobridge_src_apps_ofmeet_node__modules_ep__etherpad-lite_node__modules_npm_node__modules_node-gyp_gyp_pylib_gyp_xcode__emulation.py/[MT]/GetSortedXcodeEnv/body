@@ -1,0 +1,3 @@
+def GetSortedXcodeEnv(xcode_settings, built_products_dir, srcroot, configuration, additional_settings=None):
+    env = _GetXcodeEnv(xcode_settings, built_products_dir, srcroot, configuration, additional_settings)
+    return [(key, env[key]) for key in _TopologicallySortedEnvVarKeys(env)]

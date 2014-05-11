@@ -1,0 +1,53 @@
+def Write(self, qualified_target, relative_target, base_path, output_filename, spec, configs, part_of_all):
+    "The main entry point: writes a .mk file for a single target.\n\n    Arguments:\n      qualified_target: target we're generating\n      relative_target: qualified target name relative to the root\n      base_path: path relative to source root we're building in, used to resolve\n                 target-relative paths\n      output_filename: output .mk file name to write\n      spec, configs: gyp info\n      part_of_all: flag indicating this target is part of 'all'\n    "
+    make.ensure_directory_exists(output_filename)
+    self.fp = open(output_filename, 'w')
+    self.fp.write(header)
+    self.qualified_target = qualified_target
+    self.relative_target = relative_target
+    self.path = base_path
+    self.target = spec['target_name']
+    self.type = spec['type']
+    self.toolset = spec['toolset']
+    (deps, link_deps) = self.ComputeDeps(spec)
+    extra_outputs = []
+    extra_sources = []
+    self.android_class = MODULE_CLASSES.get(self.type, 'GYP')
+    self.android_module = self.ComputeAndroidModule(spec)
+    (self.android_stem, self.android_suffix) = self.ComputeOutputParts(spec)
+    self.output = self.output_binary = self.ComputeOutput(spec)
+    self.WriteLn('include $(CLEAR_VARS)\n')
+    self.WriteLn(('LOCAL_MODULE_CLASS := ' + self.android_class))
+    self.WriteLn(('LOCAL_MODULE := ' + self.android_module))
+    if (self.android_stem != self.android_module):
+        self.WriteLn(('LOCAL_MODULE_STEM := ' + self.android_stem))
+    self.WriteLn(('LOCAL_MODULE_SUFFIX := ' + self.android_suffix))
+    self.WriteLn('LOCAL_MODULE_TAGS := optional')
+    if (self.toolset == 'host'):
+        self.WriteLn('LOCAL_IS_HOST_MODULE := true')
+    self.WriteLn('gyp_intermediate_dir := $(call local-intermediates-dir)')
+    self.WriteLn('gyp_shared_intermediate_dir := $(call intermediates-dir-for,GYP,shared)')
+    self.WriteLn()
+    target_dependencies = [x[1] for x in deps if (x[0] == 'path')]
+    self.WriteLn('# Make sure our deps are built first.')
+    self.WriteList(target_dependencies, 'GYP_TARGET_DEPENDENCIES', local_pathify=True)
+    if ('actions' in spec):
+        self.WriteActions(spec['actions'], extra_sources, extra_outputs)
+    if ('rules' in spec):
+        self.WriteRules(spec['rules'], extra_sources, extra_outputs)
+    if ('copies' in spec):
+        self.WriteCopies(spec['copies'], extra_outputs)
+    self.WriteList(extra_outputs, 'GYP_GENERATED_OUTPUTS', local_pathify=True)
+    self.WriteLn('# Make sure our deps and generated files are built first.')
+    self.WriteLn('LOCAL_ADDITIONAL_DEPENDENCIES := $(GYP_TARGET_DEPENDENCIES) $(GYP_GENERATED_OUTPUTS)')
+    self.WriteLn()
+    if (spec.get('sources', []) or extra_sources):
+        self.WriteSources(spec, configs, extra_sources)
+    self.WriteTarget(spec, configs, deps, link_deps, part_of_all)
+    target_outputs[qualified_target] = ('path', self.output_binary)
+    if (self.type == 'static_library'):
+        target_link_deps[qualified_target] = ('static', self.android_module)
+    elif (self.type == 'shared_library'):
+        target_link_deps[qualified_target] = ('shared', self.android_module)
+    self.fp.close()
+    return self.android_module

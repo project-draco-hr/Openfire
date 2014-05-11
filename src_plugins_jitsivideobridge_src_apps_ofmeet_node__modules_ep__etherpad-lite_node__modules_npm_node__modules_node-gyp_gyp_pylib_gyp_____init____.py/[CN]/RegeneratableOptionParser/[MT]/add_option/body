@@ -1,0 +1,10 @@
+def add_option(self, *args, **kw):
+    "Add an option to the parser.\n\n    This accepts the same arguments as OptionParser.add_option, plus the\n    following:\n      regenerate: can be set to False to prevent this option from being included\n                  in regeneration.\n      env_name: name of environment variable that additional values for this\n                option come from.\n      type: adds type='path', to tell the regenerator that the values of\n            this option need to be made relative to options.depth\n    "
+    env_name = kw.pop('env_name', None)
+    if (('dest' in kw) and kw.pop('regenerate', True)):
+        dest = kw['dest']
+        type = kw.get('type')
+        if (type == 'path'):
+            kw['type'] = 'string'
+        self.__regeneratable_options[dest] = {'action': kw.get('action'), 'type': type, 'env_name': env_name, 'opt': args[0], }
+    optparse.OptionParser.add_option(self, *args, **kw)

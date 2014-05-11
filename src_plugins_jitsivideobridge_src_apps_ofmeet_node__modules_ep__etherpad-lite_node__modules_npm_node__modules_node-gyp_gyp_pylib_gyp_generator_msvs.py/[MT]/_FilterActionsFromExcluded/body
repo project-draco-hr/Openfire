@@ -1,0 +1,4 @@
+def _FilterActionsFromExcluded(excluded_sources, actions_to_add):
+    "Take inputs with actions attached out of the list of exclusions.\n\n  Arguments:\n    excluded_sources: list of source files not to be built.\n    actions_to_add: dict of actions keyed on source file they're attached to.\n  Returns:\n    excluded_sources with files that have actions attached removed.\n  "
+    must_keep = set(_FixPaths(actions_to_add.keys()))
+    return [s for s in excluded_sources if (s not in must_keep)]

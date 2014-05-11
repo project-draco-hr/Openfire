@@ -1,0 +1,31 @@
+def Copy(self):
+    'Make a copy of this object.\n\n    The new object will have its own copy of lists and dicts.  Any XCObject\n    objects owned by this object (marked "strong") will be copied in the\n    new object, even those found in lists.  If this object has any weak\n    references to other XCObjects, the same references are added to the new\n    object without making a copy.\n    '
+    that = self.__class__(id=self.id, parent=self.parent)
+    for (key, value) in self._properties.iteritems():
+        is_strong = self._schema[key][2]
+        if isinstance(value, XCObject):
+            if is_strong:
+                new_value = value.Copy()
+                new_value.parent = that
+                that._properties[key] = new_value
+            else:
+                that._properties[key] = value
+        elif (isinstance(value, str) or isinstance(value, unicode) or isinstance(value, int)):
+            that._properties[key] = value
+        elif isinstance(value, list):
+            if is_strong:
+                that._properties[key] = []
+                for item in value:
+                    new_item = item.Copy()
+                    new_item.parent = that
+                    that._properties[key].append(new_item)
+            else:
+                that._properties[key] = value[:]
+        elif isinstance(value, dict):
+            if is_strong:
+                raise TypeError, ((('Strong dict for key ' + key) + ' in ') + self.__class__.__name__)
+            else:
+                that._properties[key] = value.copy()
+        else:
+            raise TypeError, ((((('Unexpected type ' + value.__class__.__name__) + ' for key ') + key) + ' in ') + self.__class__.__name__)
+    return that

@@ -1,0 +1,7 @@
+def _SdkPath(self, configname=None):
+    sdk_root = self._SdkRoot(configname)
+    if sdk_root.startswith('/'):
+        return sdk_root
+    if (sdk_root not in XcodeSettings._sdk_path_cache):
+        XcodeSettings._sdk_path_cache[sdk_root] = self._GetSdkVersionInfoItem(sdk_root, 'Path')
+    return XcodeSettings._sdk_path_cache[sdk_root]

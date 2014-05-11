@@ -1,0 +1,15 @@
+def _AddImportedDependencies(self, targets, dependencies=None):
+    'Given a list of direct dependencies, adds indirect dependencies that\n    other dependencies have declared to export their settings.\n\n    This method does not operate on self.  Rather, it operates on the list\n    of dependencies in the |dependencies| argument.  For each dependency in\n    that list, if any declares that it exports the settings of one of its\n    own dependencies, those dependencies whose settings are "passed through"\n    are added to the list.  As new items are added to the list, they too will\n    be processed, so it is possible to import settings through multiple levels\n    of dependencies.\n\n    This method is not terribly useful on its own, it depends on being\n    "primed" with a list of direct dependencies such as one provided by\n    DirectDependencies.  DirectAndImportedDependencies is intended to be the\n    public entry point.\n    '
+    if (dependencies == None):
+        dependencies = []
+    index = 0
+    while (index < len(dependencies)):
+        dependency = dependencies[index]
+        dependency_dict = targets[dependency]
+        add_index = 1
+        for imported_dependency in dependency_dict.get('export_dependent_settings', []):
+            if (imported_dependency not in dependencies):
+                dependencies.insert((index + add_index), imported_dependency)
+                add_index = (add_index + 1)
+        index = (index + 1)
+    return dependencies

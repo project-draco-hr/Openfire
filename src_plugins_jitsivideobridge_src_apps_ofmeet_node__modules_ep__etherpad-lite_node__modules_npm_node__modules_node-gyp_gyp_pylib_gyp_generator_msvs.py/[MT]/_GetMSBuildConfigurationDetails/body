@@ -1,0 +1,10 @@
+def _GetMSBuildConfigurationDetails(spec, build_file):
+    properties = {}
+    for (name, settings) in spec['configurations'].iteritems():
+        msbuild_attributes = _GetMSBuildAttributes(spec, settings, build_file)
+        condition = _GetConfigurationCondition(name, settings)
+        character_set = msbuild_attributes.get('CharacterSet')
+        _AddConditionalProperty(properties, condition, 'ConfigurationType', msbuild_attributes['ConfigurationType'])
+        if character_set:
+            _AddConditionalProperty(properties, condition, 'CharacterSet', character_set)
+    return _GetMSBuildPropertyGroup(spec, 'Configuration', properties)

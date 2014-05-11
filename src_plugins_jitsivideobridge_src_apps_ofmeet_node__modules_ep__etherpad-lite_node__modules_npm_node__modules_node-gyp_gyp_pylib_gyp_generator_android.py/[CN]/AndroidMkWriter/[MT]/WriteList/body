@@ -1,0 +1,9 @@
+def WriteList(self, value_list, variable=None, prefix='', quoter=make.QuoteIfNecessary, local_pathify=False):
+    "Write a variable definition that is a list of values.\n\n    E.g. WriteList(['a','b'], 'foo', prefix='blah') writes out\n         foo = blaha blahb\n    but in a pretty-printed style.\n    "
+    values = ''
+    if value_list:
+        value_list = [quoter((prefix + l)) for l in value_list]
+        if local_pathify:
+            value_list = [self.LocalPathify(l) for l in value_list]
+        values = (' \\\n\t' + ' \\\n\t'.join(value_list))
+    self.fp.write(('%s :=%s\n\n' % (variable, values)))

@@ -1,0 +1,22 @@
+def _MapFileToMsBuildSourceType(source, extension_to_rule_name):
+    'Returns the group and element type of the source file.\n\n  Arguments:\n      source: The source file name.\n      extension_to_rule_name: A dictionary mapping file extensions to rules.\n\n  Returns:\n      A pair of (group this file should be part of, the label of element)\n  '
+    (_, ext) = os.path.splitext(source)
+    if (ext in extension_to_rule_name):
+        group = 'rule'
+        element = extension_to_rule_name[ext]
+    elif (ext in ['.cc', '.cpp', '.c', '.cxx']):
+        group = 'compile'
+        element = 'ClCompile'
+    elif (ext in ['.h', '.hxx']):
+        group = 'include'
+        element = 'ClInclude'
+    elif (ext == '.rc'):
+        group = 'resource'
+        element = 'ResourceCompile'
+    elif (ext == '.idl'):
+        group = 'midl'
+        element = 'Midl'
+    else:
+        group = 'none'
+        element = 'None'
+    return (group, element)

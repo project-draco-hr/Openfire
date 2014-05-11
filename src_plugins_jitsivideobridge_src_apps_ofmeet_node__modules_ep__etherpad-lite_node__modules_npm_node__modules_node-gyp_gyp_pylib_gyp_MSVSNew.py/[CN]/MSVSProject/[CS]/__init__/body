@@ -1,0 +1,15 @@
+def __init__(self, path, name=None, dependencies=None, guid=None, spec=None, build_file=None, config_platform_overrides=None, fixpath_prefix=None):
+    'Initializes the project.\n\n    Args:\n      path: Absolute path to the project file.\n      name: Name of project.  If None, the name will be the same as the base\n          name of the project file.\n      dependencies: List of other Project objects this project is dependent\n          upon, if not None.\n      guid: GUID to use for project, if not None.\n      spec: Dictionary specifying how to build this project.\n      build_file: Filename of the .gyp file that the vcproj file comes from.\n      config_platform_overrides: optional dict of configuration platforms to\n          used in place of the default for this target.\n      fixpath_prefix: the path used to adjust the behavior of _fixpath\n    '
+    self.path = path
+    self.guid = guid
+    self.spec = spec
+    self.build_file = build_file
+    self.name = (name or os.path.splitext(os.path.basename(path))[0])
+    self.dependencies = list((dependencies or []))
+    self.entry_type_guid = ENTRY_TYPE_GUIDS['project']
+    if config_platform_overrides:
+        self.config_platform_overrides = config_platform_overrides
+    else:
+        self.config_platform_overrides = {}
+    self.fixpath_prefix = fixpath_prefix
+    self.msbuild_toolset = None

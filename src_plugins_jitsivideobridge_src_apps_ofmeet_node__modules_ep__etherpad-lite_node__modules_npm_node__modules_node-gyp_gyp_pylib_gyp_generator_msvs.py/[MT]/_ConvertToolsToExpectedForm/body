@@ -1,0 +1,15 @@
+def _ConvertToolsToExpectedForm(tools):
+    'Convert tools to a form expected by Visual Studio.\n\n  Arguments:\n    tools: A dictionary of settings; the tool name is the key.\n  Returns:\n    A list of Tool objects.\n  '
+    tool_list = []
+    for (tool, settings) in tools.iteritems():
+        settings_fixed = {}
+        for (setting, value) in settings.iteritems():
+            if (type(value) == list):
+                if (((tool == 'VCLinkerTool') and (setting == 'AdditionalDependencies')) or (setting == 'AdditionalOptions')):
+                    settings_fixed[setting] = ' '.join(value)
+                else:
+                    settings_fixed[setting] = ';'.join(value)
+            else:
+                settings_fixed[setting] = value
+        tool_list.append(MSVSProject.Tool(tool, settings_fixed))
+    return tool_list

@@ -1,0 +1,16 @@
+def Hashables(self):
+    "Custom hashables for XCHierarchicalElements.\n\n    XCHierarchicalElements are special.  Generally, their hashes shouldn't\n    change if the paths don't change.  The normal XCObject implementation of\n    Hashables adds a hashable for each object, which means that if\n    the hierarchical structure changes (possibly due to changes caused when\n    TakeOverOnlyChild runs and encounters slight changes in the hierarchy),\n    the hashes will change.  For example, if a project file initially contains\n    a/b/f1 and a/b becomes collapsed into a/b, f1 will have a single parent\n    a/b.  If someone later adds a/f2 to the project file, a/b can no longer be\n    collapsed, and f1 winds up with parent b and grandparent a.  That would\n    be sufficient to change f1's hash.\n\n    To counteract this problem, hashables for all XCHierarchicalElements except\n    for the main group (which has neither a name nor a path) are taken to be\n    just the set of path components.  Because hashables are inherited from\n    parents, this provides assurance that a/b/f1 has the same set of hashables\n    whether its parent is b or a/b.\n\n    The main group is a special case.  As it is permitted to have no name or\n    path, it is permitted to use the standard XCObject hash mechanism.  This\n    is not considered a problem because there can be only one main group.\n    "
+    if (self == self.PBXProjectAncestor()._properties['mainGroup']):
+        return XCObject.Hashables(self)
+    hashables = []
+    if ('name' in self._properties):
+        hashables.append((self.__class__.__name__ + '.name'))
+        hashables.append(self._properties['name'])
+    path = self.PathFromSourceTreeAndPath()
+    if (path != None):
+        components = path.split(posixpath.sep)
+        for component in components:
+            hashables.append((self.__class__.__name__ + '.path'))
+            hashables.append(component)
+    hashables.extend(self._hashables)
+    return hashables

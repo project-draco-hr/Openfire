@@ -1,0 +1,12 @@
+def GetCompilerPath(target_list, target_dicts, data):
+    'Determine a command that can be used to invoke the compiler.\n\n  Returns:\n    If this is a gyp project that has explicit make settings, try to determine\n    the compiler from that.  Otherwise, see if a compiler was specified via the\n    CC_target environment variable.\n  '
+    (build_file, _, _) = gyp.common.ParseQualifiedTarget(target_list[0])
+    make_global_settings_dict = data[build_file].get('make_global_settings', {})
+    for (key, value) in make_global_settings_dict:
+        if (key in ['CC', 'CXX']):
+            return value
+    for key in ['CC_target', 'CC', 'CXX']:
+        compiler = os.environ.get(key)
+        if compiler:
+            return compiler
+    return 'gcc'

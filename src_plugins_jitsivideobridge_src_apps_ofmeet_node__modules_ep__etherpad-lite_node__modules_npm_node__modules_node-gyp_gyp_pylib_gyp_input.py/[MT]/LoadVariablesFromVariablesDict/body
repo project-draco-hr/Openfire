@@ -1,0 +1,13 @@
+def LoadVariablesFromVariablesDict(variables, the_dict, the_dict_key):
+    for (key, value) in the_dict.get('variables', {}).iteritems():
+        if ((not isinstance(value, str)) and (not isinstance(value, int)) and (not isinstance(value, list))):
+            continue
+        if key.endswith('%'):
+            variable_name = key[:(-1)]
+            if (variable_name in variables):
+                continue
+            if ((the_dict_key is 'variables') and (variable_name in the_dict)):
+                value = the_dict[variable_name]
+        else:
+            variable_name = key
+        variables[variable_name] = value

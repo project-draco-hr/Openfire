@@ -1,0 +1,15 @@
+def _GetExcludedFilesFromBuild(spec, excluded_sources, excluded_idl):
+    exclusions = {}
+    for f in excluded_sources:
+        excluded_configs = []
+        for (config_name, config) in spec['configurations'].iteritems():
+            precomped = [_FixPath(config.get(i, '')) for i in precomp_keys]
+            if (f not in precomped):
+                excluded_configs.append((config_name, config))
+        exclusions[f] = excluded_configs
+    for f in excluded_idl:
+        excluded_configs = []
+        for (config_name, config) in spec['configurations'].iteritems():
+            excluded_configs.append((config_name, config))
+        exclusions[f] = excluded_configs
+    return exclusions

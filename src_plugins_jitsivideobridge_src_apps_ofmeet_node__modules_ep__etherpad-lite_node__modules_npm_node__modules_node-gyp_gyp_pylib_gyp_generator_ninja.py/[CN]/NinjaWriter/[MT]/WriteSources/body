@@ -1,0 +1,12 @@
+def WriteSources(self, ninja_file, config_name, config, sources, predepends, precompiled_header, spec):
+    'Write build rules to compile all of |sources|.'
+    if (self.toolset == 'host'):
+        self.ninja.variable('ar', '$ar_host')
+        self.ninja.variable('cc', '$cc_host')
+        self.ninja.variable('cxx', '$cxx_host')
+        self.ninja.variable('ld', '$ld_host')
+        self.ninja.variable('ldxx', '$ldxx_host')
+    if ((self.flavor != 'mac') or (len(self.archs) == 1)):
+        return self.WriteSourcesForArch(self.ninja, config_name, config, sources, predepends, precompiled_header, spec)
+    else:
+        return dict(((arch, self.WriteSourcesForArch(self.arch_subninjas[arch], config_name, config, sources, predepends, precompiled_header, spec, arch=arch)) for arch in self.archs))

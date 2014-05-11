@@ -1,0 +1,14 @@
+def GenerateOutput(target_list, target_dicts, data, params):
+    output_files = {}
+    for qualified_target in target_list:
+        [input_file, target] = gyp.common.ParseQualifiedTarget(qualified_target)[0:2]
+        if (input_file[(-4):] != '.gyp'):
+            continue
+        input_file_stem = input_file[:(-4)]
+        output_file = ((input_file_stem + params['options'].suffix) + '.gypd')
+        if (not (output_file in output_files)):
+            output_files[output_file] = input_file
+    for (output_file, input_file) in output_files.iteritems():
+        output = open(output_file, 'w')
+        pprint.pprint(data[input_file], output)
+        output.close()

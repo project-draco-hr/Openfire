@@ -1,0 +1,22 @@
+def _CreateProjectObjects(target_list, target_dicts, options, msvs_version):
+    'Create a MSVSProject object for the targets found in target list.\n\n  Arguments:\n    target_list: the list of targets to generate project objects for.\n    target_dicts: the dictionary of specifications.\n    options: global generator options.\n    msvs_version: the MSVSVersion object.\n  Returns:\n    A set of created projects, keyed by target.\n  '
+    global fixpath_prefix
+    projects = {}
+    for qualified_target in target_list:
+        spec = target_dicts[qualified_target]
+        if (spec['toolset'] != 'target'):
+            raise GypError(('Multiple toolsets not supported in msvs build (target %s)' % qualified_target))
+        (proj_path, fixpath_prefix) = _GetPathOfProject(qualified_target, spec, options, msvs_version)
+        guid = _GetGuidOfProject(proj_path, spec)
+        overrides = _GetPlatformOverridesOfProject(spec)
+        build_file = gyp.common.BuildFile(qualified_target)
+        obj = MSVSNew.MSVSProject(proj_path, name=spec['target_name'], guid=guid, spec=spec, build_file=build_file, config_platform_overrides=overrides, fixpath_prefix=fixpath_prefix)
+        if msvs_version.UsesVcxproj():
+            obj.set_msbuild_toolset(_GetMsbuildToolsetOfProject(proj_path, spec, msvs_version))
+        projects[qualified_target] = obj
+    for project in projects.values():
+        if (not project.spec.get('msvs_external_builder')):
+            deps = project.spec.get('dependencies', [])
+            deps = [projects[d] for d in deps]
+            project.set_dependencies(deps)
+    return projects

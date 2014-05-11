@@ -1,0 +1,6 @@
+def ComputeExportEnvString(self, env):
+    'Given an environment, returns a string looking like\n        \'export FOO=foo; export BAR="${FOO} bar;\'\n    that exports |env| to the shell.'
+    export_str = []
+    for (k, v) in env:
+        export_str.append(('export %s=%s;' % (k, ninja_syntax.escape(gyp.common.EncodePOSIXShellArgument(v)))))
+    return ' '.join(export_str)

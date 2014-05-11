@@ -1,0 +1,9 @@
+def PathHashables(self):
+    hashables = []
+    xche = self
+    while ((xche != None) and isinstance(xche, XCHierarchicalElement)):
+        xche_hashables = xche.Hashables()
+        for index in xrange(0, len(xche_hashables)):
+            hashables.insert(index, xche_hashables[index])
+        xche = xche.parent
+    return hashables

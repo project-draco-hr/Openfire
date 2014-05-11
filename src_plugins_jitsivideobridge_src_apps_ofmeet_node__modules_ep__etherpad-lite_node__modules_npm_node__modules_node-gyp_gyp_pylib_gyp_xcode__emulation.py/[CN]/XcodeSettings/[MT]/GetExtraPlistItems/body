@@ -1,0 +1,26 @@
+def GetExtraPlistItems(self, configname=None):
+    'Returns a dictionary with extra items to insert into Info.plist.'
+    if (configname not in XcodeSettings._plist_cache):
+        cache = {}
+        cache['BuildMachineOSBuild'] = self._BuildMachineOSBuild()
+        (xcode, xcode_build) = self._XcodeVersion()
+        cache['DTXcode'] = xcode
+        cache['DTXcodeBuild'] = xcode_build
+        sdk_root = self._SdkRoot(configname)
+        cache['DTSDKName'] = sdk_root
+        if (xcode >= '0430'):
+            cache['DTSDKBuild'] = self._GetSdkVersionInfoItem(sdk_root, 'ProductBuildVersion')
+        else:
+            cache['DTSDKBuild'] = cache['BuildMachineOSBuild']
+        if self.isIOS:
+            cache['DTPlatformName'] = cache['DTSDKName']
+            if configname.endswith('iphoneos'):
+                cache['DTPlatformVersion'] = self._GetSdkVersionInfoItem(sdk_root, 'ProductVersion')
+                cache['CFBundleSupportedPlatforms'] = ['iPhoneOS']
+            else:
+                cache['CFBundleSupportedPlatforms'] = ['iPhoneSimulator']
+        XcodeSettings._plist_cache[configname] = cache
+    items = dict(XcodeSettings._plist_cache[configname])
+    if self.isIOS:
+        items['UIDeviceFamily'] = self._XcodeIOSDeviceFamily(configname)
+    return items

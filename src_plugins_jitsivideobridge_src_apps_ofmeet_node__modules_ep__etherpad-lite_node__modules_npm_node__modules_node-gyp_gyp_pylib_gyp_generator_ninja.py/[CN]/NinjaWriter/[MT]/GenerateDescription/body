@@ -1,0 +1,8 @@
+def GenerateDescription(self, verb, message, fallback):
+    'Generate and return a description of a build step.\n\n    |verb| is the short summary, e.g. ACTION or RULE.\n    |message| is a hand-written description, or None if not available.\n    |fallback| is the gyp-level name of the step, usable as a fallback.\n    '
+    if (self.toolset != 'target'):
+        verb += ('(%s)' % self.toolset)
+    if message:
+        return ('%s %s' % (verb, self.ExpandSpecial(message)))
+    else:
+        return ('%s %s: %s' % (verb, self.name, fallback))

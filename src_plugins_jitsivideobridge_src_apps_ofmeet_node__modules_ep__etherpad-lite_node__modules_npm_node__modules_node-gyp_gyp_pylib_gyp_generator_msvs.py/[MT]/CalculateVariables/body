@@ -1,0 +1,12 @@
+def CalculateVariables(default_variables, params):
+    'Generated variables that require params to be known.'
+    generator_flags = params.get('generator_flags', {})
+    msvs_version = MSVSVersion.SelectVisualStudioVersion(generator_flags.get('msvs_version', 'auto'))
+    params['msvs_version'] = msvs_version
+    default_variables['MSVS_VERSION'] = msvs_version.ShortName()
+    if ((os.environ.get('PROCESSOR_ARCHITECTURE', '').find('64') >= 0) or (os.environ.get('PROCESSOR_ARCHITEW6432', '').find('64') >= 0)):
+        default_variables['MSVS_OS_BITS'] = 64
+    else:
+        default_variables['MSVS_OS_BITS'] = 32
+    if (gyp.common.GetFlavor(params) == 'ninja'):
+        default_variables['SHARED_INTERMEDIATE_DIR'] = '$(OutDir)gen'

@@ -1,0 +1,33 @@
+def ComputeIDs(self, recursive=True, overwrite=True, seed_hash=None):
+    'Set "id" properties deterministically.\n\n    An object\'s "id" property is set based on a hash of its class type and\n    name, as well as the class type and name of all ancestor objects.  As\n    such, it is only advisable to call ComputeIDs once an entire project file\n    tree is built.\n\n    If recursive is True, recurse into all descendant objects and update their\n    hashes.\n\n    If overwrite is True, any existing value set in the "id" property will be\n    replaced.\n    '
+
+    def _HashUpdate(hash, data):
+        "Update hash with data's length and contents.\n\n      If the hash were updated only with the value of data, it would be\n      possible for clowns to induce collisions by manipulating the names of\n      their objects.  By adding the length, it's exceedingly less likely that\n      ID collisions will be encountered, intentionally or not.\n      "
+        hash.update(struct.pack('>i', len(data)))
+        hash.update(data)
+    if (seed_hash is None):
+        seed_hash = _new_sha1()
+    hash = seed_hash.copy()
+    hashables = self.Hashables()
+    assert (len(hashables) > 0)
+    for hashable in hashables:
+        _HashUpdate(hash, hashable)
+    if recursive:
+        hashables_for_child = self.HashablesForChild()
+        if (hashables_for_child is None):
+            child_hash = hash
+        else:
+            assert (len(hashables_for_child) > 0)
+            child_hash = seed_hash.copy()
+            for hashable in hashables_for_child:
+                _HashUpdate(child_hash, hashable)
+        for child in self.Children():
+            child.ComputeIDs(recursive, overwrite, child_hash)
+    if (overwrite or (self.id is None)):
+        assert ((hash.digest_size % 4) == 0)
+        digest_int_count = (hash.digest_size / 4)
+        digest_ints = struct.unpack(('>' + ('I' * digest_int_count)), hash.digest())
+        id_ints = [0, 0, 0]
+        for index in xrange(0, digest_int_count):
+            id_ints[(index % 3)] ^= digest_ints[index]
+        self.id = ('%08X%08X%08X' % tuple(id_ints))

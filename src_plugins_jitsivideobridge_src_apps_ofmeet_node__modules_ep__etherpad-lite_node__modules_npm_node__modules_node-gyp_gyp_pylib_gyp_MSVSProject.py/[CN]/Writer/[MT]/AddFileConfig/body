@@ -1,0 +1,7 @@
+def AddFileConfig(self, path, config, attrs=None, tools=None):
+    'Adds a configuration to a file.\n\n    Args:\n      path: Relative path to the file.\n      config: Name of configuration to add.\n      attrs: Dict of configuration attributes; may be None.\n      tools: List of tools (strings or Tool objects); may be None.\n\n    Raises:\n      ValueError: Relative path does not match any file added via AddFiles().\n    '
+    parent = self.files_dict.get(path)
+    if (not parent):
+        raise ValueError(('AddFileConfig: file "%s" not in project.' % path))
+    spec = self._GetSpecForConfiguration('FileConfiguration', config, attrs, tools)
+    parent.append(spec)

@@ -1,0 +1,26 @@
+def GypBuild():
+    print '@@@BUILD_STEP cleanup@@@'
+    print ('Removing %s...' % OUT_DIR)
+    shutil.rmtree(OUT_DIR, ignore_errors=True)
+    print 'Done.'
+    retcode = 0
+    if (os.environ['BUILDBOT_BUILDERNAME'] == 'gyp-android'):
+        PrepareAndroidTree()
+        retcode += GypTestFormat('android')
+    elif sys.platform.startswith('linux'):
+        retcode += GypTestFormat('ninja')
+        retcode += GypTestFormat('make')
+    elif (sys.platform == 'darwin'):
+        retcode += GypTestFormat('ninja')
+        retcode += GypTestFormat('xcode')
+        retcode += GypTestFormat('make')
+    elif (sys.platform == 'win32'):
+        retcode += GypTestFormat('ninja')
+        if (os.environ['BUILDBOT_BUILDERNAME'] == 'gyp-win64'):
+            retcode += GypTestFormat('msvs-2010', format='msvs', msvs_version='2010')
+            retcode += GypTestFormat('msvs-2012', format='msvs', msvs_version='2012')
+    else:
+        raise Exception('Unknown platform')
+    if retcode:
+        print '@@@BUILD_STEP failures@@@'
+        sys.exit(retcode)

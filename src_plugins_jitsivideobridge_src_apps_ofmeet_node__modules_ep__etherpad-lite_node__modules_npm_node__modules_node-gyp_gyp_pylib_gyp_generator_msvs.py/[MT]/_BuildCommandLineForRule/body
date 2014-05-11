@@ -1,0 +1,8 @@
+def _BuildCommandLineForRule(spec, rule, has_input_path, do_setup_env):
+    mcs = rule.get('msvs_cygwin_shell')
+    if (mcs is None):
+        mcs = int(spec.get('msvs_cygwin_shell', 1))
+    elif isinstance(mcs, str):
+        mcs = int(mcs)
+    quote_cmd = int(rule.get('msvs_quote_cmd', 1))
+    return _BuildCommandLineForRuleRaw(spec, rule['action'], mcs, has_input_path, quote_cmd, do_setup_env=do_setup_env)

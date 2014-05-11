@@ -4,6 +4,7 @@
     String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
     String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     boolean websockets=XMPPServer.getInstance().getPluginManager().getPlugin("websockets") != null;
+    boolean nodejs=XMPPServer.getInstance().getPluginManager().getPlugin("nodejs") != null;
     writeHeader(response);
     ServletOutputStream out=response.getOutputStream();
     String iceServers=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.iceservers","");
@@ -22,6 +23,7 @@
     out.println("    useNicks: " + useNicks + ",");
     out.println("    recordVideo: " + recordVideo + ",");
     out.println("    useWebsockets: " + (websockets ? "true" : "false") + ",");
+    out.println("    useNodeJs: " + (nodejs ? "true" : "false") + ",");
     out.println("    resolution: '" + resolution + "',");
     out.println("    bosh: window.location.protocol + '//' + window.location.host + '/http-bind/'");
     out.println("};	");

@@ -1,0 +1,47 @@
+def WriteSources(self, spec, configs, extra_sources):
+    "Write Makefile code for any 'sources' from the gyp input.\n    These are source files necessary to build the current target.\n    We need to handle shared_intermediate directory source files as\n    a special case by copying them to the intermediate directory and\n    treating them as a genereated sources. Otherwise the Android build\n    rules won't pick them up.\n\n    Args:\n      spec, configs: input from gyp.\n      extra_sources: Sources generated from Actions or Rules.\n    "
+    sources = filter(make.Compilable, spec.get('sources', []))
+    generated_not_sources = [x for x in extra_sources if (not make.Compilable(x))]
+    extra_sources = filter(make.Compilable, extra_sources)
+    all_sources = (sources + extra_sources)
+    local_cpp_extension = '.cpp'
+    for source in all_sources:
+        (root, ext) = os.path.splitext(source)
+        if IsCPPExtension(ext):
+            local_cpp_extension = ext
+            break
+    if (local_cpp_extension != '.cpp'):
+        self.WriteLn(('LOCAL_CPP_EXTENSION := %s' % local_cpp_extension))
+    local_files = []
+    for source in sources:
+        (root, ext) = os.path.splitext(source)
+        if ('$(gyp_shared_intermediate_dir)' in source):
+            extra_sources.append(source)
+        elif ('$(gyp_intermediate_dir)' in source):
+            extra_sources.append(source)
+        elif (IsCPPExtension(ext) and (ext != local_cpp_extension)):
+            extra_sources.append(source)
+        else:
+            local_files.append(os.path.normpath(os.path.join(self.path, source)))
+    final_generated_sources = []
+    origin_src_dirs = []
+    for source in extra_sources:
+        local_file = source
+        if (not ('$(gyp_intermediate_dir)/' in local_file)):
+            basename = os.path.basename(local_file)
+            local_file = ('$(gyp_intermediate_dir)/' + basename)
+        (root, ext) = os.path.splitext(local_file)
+        if (IsCPPExtension(ext) and (ext != local_cpp_extension)):
+            local_file = (root + local_cpp_extension)
+        if (local_file != source):
+            self.WriteLn(('%s: %s' % (local_file, self.LocalPathify(source))))
+            self.WriteLn('\tmkdir -p $(@D); cp $< $@')
+            origin_src_dirs.append(os.path.dirname(source))
+        final_generated_sources.append(local_file)
+    final_generated_sources.extend(generated_not_sources)
+    self.WriteList(final_generated_sources, 'LOCAL_GENERATED_SOURCES')
+    origin_src_dirs = gyp.common.uniquer(origin_src_dirs)
+    origin_src_dirs = map(Sourceify, map(self.LocalPathify, origin_src_dirs))
+    self.WriteList(origin_src_dirs, 'GYP_COPIED_SOURCE_ORIGIN_DIRS')
+    self.WriteList(local_files, 'LOCAL_SRC_FILES')
+    self.WriteSourceFlags(spec, configs)

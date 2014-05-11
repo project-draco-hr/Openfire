@@ -1,0 +1,5 @@
+def QuoteForRspFile(arg):
+    'Quote a command line argument so that it appears as one argument when\n  processed via cmd.exe and parsed by CommandLineToArgvW (as is typical for\n  Windows programs).'
+    arg = windows_quoter_regex.sub((lambda mo: ((2 * mo.group(1)) + '\\"')), arg)
+    arg = arg.replace('%', '%%')
+    return (('"' + arg) + '"')

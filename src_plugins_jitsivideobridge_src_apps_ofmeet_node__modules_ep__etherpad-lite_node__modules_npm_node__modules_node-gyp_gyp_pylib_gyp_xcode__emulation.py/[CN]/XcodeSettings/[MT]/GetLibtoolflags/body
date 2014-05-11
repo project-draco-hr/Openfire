@@ -1,0 +1,8 @@
+def GetLibtoolflags(self, configname):
+    'Returns flags that need to be passed to the static linker.\n\n    Args:\n        configname: The name of the configuration to get ld flags for.\n    '
+    self.configname = configname
+    libtoolflags = []
+    for libtoolflag in self._Settings().get('OTHER_LDFLAGS', []):
+        libtoolflags.append(libtoolflag)
+    self.configname = None
+    return libtoolflags

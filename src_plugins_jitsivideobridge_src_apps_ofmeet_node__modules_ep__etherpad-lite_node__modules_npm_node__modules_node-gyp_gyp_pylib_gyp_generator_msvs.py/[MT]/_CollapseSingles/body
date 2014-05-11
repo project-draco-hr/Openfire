@@ -1,0 +1,8 @@
+def _CollapseSingles(parent, node):
+    if ((type(node) == dict) and (len(node) == 1) and (node.keys()[0] == (parent + '.vcproj'))):
+        return node[node.keys()[0]]
+    if (type(node) != dict):
+        return node
+    for child in node:
+        node[child] = _CollapseSingles(child, node[child])
+    return node

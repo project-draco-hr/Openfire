@@ -1,0 +1,9 @@
+def ExecFilterLibtool(self, *cmd_list):
+    "Calls libtool and filters out '/path/to/libtool: file: foo.o has no\n    symbols'."
+    libtool_re = re.compile('^.*libtool: file: .* has no symbols$')
+    libtoolout = subprocess.Popen(cmd_list, stderr=subprocess.PIPE)
+    (_, err) = libtoolout.communicate()
+    for line in err.splitlines():
+        if (not libtool_re.match(line)):
+            print  >> sys.stderr, line
+    return libtoolout.returncode

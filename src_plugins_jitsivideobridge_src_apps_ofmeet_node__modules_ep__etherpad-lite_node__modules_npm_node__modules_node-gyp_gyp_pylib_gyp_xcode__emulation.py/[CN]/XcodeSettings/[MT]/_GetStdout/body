@@ -1,0 +1,7 @@
+def _GetStdout(self, cmdlist):
+    job = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
+    out = job.communicate()[0]
+    if (job.returncode != 0):
+        sys.stderr.write((out + '\n'))
+        raise GypError(('Error %d running %s' % (job.returncode, cmdlist[0])))
+    return out.rstrip('\n')

@@ -1,0 +1,7 @@
+def _AddToolFilesToMSVS(p, spec):
+    tool_files = set()
+    for (_, config) in spec['configurations'].iteritems():
+        for f in config.get('msvs_tool_files', []):
+            tool_files.add(f)
+    for f in tool_files:
+        p.AddToolFile(f)

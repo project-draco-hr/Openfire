@@ -1,0 +1,15 @@
+def Print(self, file=sys.stdout):
+    self.VerifyHasRequiredProperties()
+    self._properties['objects'] = {}
+    self._XCPrint(file, 0, '// !$*UTF8*$!\n')
+    if self._should_print_single_line:
+        self._XCPrint(file, 0, '{ ')
+    else:
+        self._XCPrint(file, 0, '{\n')
+    for (property, value) in sorted(self._properties.iteritems(), cmp=(lambda x, y: cmp(x, y))):
+        if (property == 'objects'):
+            self._PrintObjects(file)
+        else:
+            self._XCKVPrint(file, 1, property, value)
+    self._XCPrint(file, 0, '}\n')
+    del self._properties['objects']

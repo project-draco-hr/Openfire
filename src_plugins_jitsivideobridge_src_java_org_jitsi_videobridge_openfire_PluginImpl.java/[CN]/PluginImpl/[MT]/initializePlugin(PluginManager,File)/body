@@ -3,6 +3,14 @@
   System.setProperty("net.java.sip.communicator.SC_HOME_DIR_LOCATION",pluginDirectory.getPath());
   System.setProperty("net.java.sip.communicator.SC_HOME_DIR_NAME",".");
   System.setProperty("org.jitsi.impl.neomedia.transform.srtp.SRTPCryptoContext.checkReplay",JiveGlobals.getProperty(CHECKREPLAY_PROPERTY_NAME,"false"));
+  String localAddress=JiveGlobals.getProperty(NAT_HARVESTER_LOCAL_ADDRESS,null);
+  String publicAddress=JiveGlobals.getProperty(NAT_HARVESTER_PUBLIC_ADDRESS,null);
+  if (localAddress != null && !"".equals(localAddress)) {
+    System.setProperty("org.jitsi.videobridge.NAT_HARVESTER_LOCAL_ADDRESS",localAddress);
+  }
+  if (publicAddress != null && !"".equals(publicAddress)) {
+    System.setProperty("org.jitsi.videobridge.NAT_HARVESTER_PUBLIC_ADDRESS",publicAddress);
+  }
   executorService=Executors.newFixedThreadPool(2);
   executorService.execute(new Runnable(){
     public void run(){
@@ -52,6 +60,12 @@
       }
  catch (      ComponentException ce) {
         ce.printStackTrace(System.err);
+      }
+      boolean nodejs=XMPPServer.getInstance().getPluginManager().getPlugin("nodejs") != null;
+      if (nodejs) {
+        Log.info("Found NodeJs Plugin. Starting Etherpad");
+        JiveGlobals.setProperty("js.jitsivideobridge.etherpad.path",pluginDirectory.getAbsolutePath() + File.separator + "apps"+ File.separator+ "ofmeet");
+        JiveGlobals.setProperty("js.jitsivideobridge.etherpad","node_modules/ep_etherpad-lite/node/server.js");
       }
     }
   }

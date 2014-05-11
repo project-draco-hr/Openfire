@@ -1,0 +1,12 @@
+def CheckedEval(file_contents):
+    'Return the eval of a gyp file.\n\n  The gyp file is restricted to dictionaries and lists only, and\n  repeated keys are not allowed.\n\n  Note that this is slower than eval() is.\n  '
+    ast = compiler.parse(file_contents)
+    assert isinstance(ast, Module)
+    c1 = ast.getChildren()
+    assert (c1[0] is None)
+    assert isinstance(c1[1], Stmt)
+    c2 = c1[1].getChildren()
+    assert isinstance(c2[0], Discard)
+    c3 = c2[0].getChildren()
+    assert (len(c3) == 1)
+    return CheckNode(c3[0], [])

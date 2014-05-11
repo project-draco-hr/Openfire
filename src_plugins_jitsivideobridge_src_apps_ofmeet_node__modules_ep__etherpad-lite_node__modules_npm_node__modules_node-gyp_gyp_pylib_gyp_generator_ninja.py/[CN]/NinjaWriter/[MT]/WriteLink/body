@@ -1,0 +1,12 @@
+def WriteLink(self, spec, config_name, config, link_deps):
+    'Write out a link step. Fills out target.binary. '
+    if ((self.flavor != 'mac') or (len(self.archs) == 1)):
+        return self.WriteLinkForArch(self.ninja, spec, config_name, config, link_deps)
+    else:
+        output = self.ComputeOutput(spec)
+        inputs = [self.WriteLinkForArch(self.arch_subninjas[arch], spec, config_name, config, link_deps[arch], arch=arch) for arch in self.archs]
+        extra_bindings = []
+        if (not self.is_mac_bundle):
+            self.AppendPostbuildVariable(extra_bindings, spec, output, output)
+        self.ninja.build(output, 'lipo', inputs, variables=extra_bindings)
+        return output

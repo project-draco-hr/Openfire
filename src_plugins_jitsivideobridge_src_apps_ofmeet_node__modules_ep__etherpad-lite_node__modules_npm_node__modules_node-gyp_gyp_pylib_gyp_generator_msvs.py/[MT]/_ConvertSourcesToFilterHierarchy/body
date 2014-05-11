@@ -1,0 +1,26 @@
+def _ConvertSourcesToFilterHierarchy(sources, prefix=None, excluded=None, list_excluded=True):
+    "Converts a list split source file paths into a vcproj folder hierarchy.\n\n  Arguments:\n    sources: A list of source file paths split.\n    prefix: A list of source file path layers meant to apply to each of sources.\n    excluded: A set of excluded files.\n\n  Returns:\n    A hierarchy of filenames and MSVSProject.Filter objects that matches the\n    layout of the source tree.\n    For example:\n    _ConvertSourcesToFilterHierarchy([['a', 'bob1.c'], ['b', 'bob2.c']],\n                                     prefix=['joe'])\n    -->\n    [MSVSProject.Filter('a', contents=['joe\\a\\bob1.c']),\n     MSVSProject.Filter('b', contents=['joe\\b\\bob2.c'])]\n  "
+    if (not prefix):
+        prefix = []
+    result = []
+    excluded_result = []
+    folders = dict()
+    for s in sources:
+        if (len(s) == 1):
+            filename = _NormalizedSource('\\'.join((prefix + s)))
+            if (filename in excluded):
+                excluded_result.append(filename)
+            else:
+                result.append(filename)
+        else:
+            if (not folders.get(s[0])):
+                folders[s[0]] = []
+            folders[s[0]].append(s[1:])
+    if (excluded_result and list_excluded):
+        excluded_folder = MSVSProject.Filter('_excluded_files', contents=excluded_result)
+        result.append(excluded_folder)
+    for f in folders:
+        contents = _ConvertSourcesToFilterHierarchy(folders[f], prefix=(prefix + [f]), excluded=excluded, list_excluded=list_excluded)
+        contents = MSVSProject.Filter(f, contents=contents)
+        result.append(contents)
+    return result

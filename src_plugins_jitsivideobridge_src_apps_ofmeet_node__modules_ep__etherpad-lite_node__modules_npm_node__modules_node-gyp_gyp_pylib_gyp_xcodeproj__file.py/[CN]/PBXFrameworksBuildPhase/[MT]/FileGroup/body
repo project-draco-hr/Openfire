@@ -1,0 +1,8 @@
+def FileGroup(self, path):
+    (root, ext) = posixpath.splitext(path)
+    if (ext != ''):
+        ext = ext[1:].lower()
+    if (ext == 'o'):
+        return self.PBXProjectAncestor().RootGroupForPath(path)
+    else:
+        return (self.PBXProjectAncestor().FrameworksGroup(), False)

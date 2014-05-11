@@ -1,0 +1,6 @@
+def VerifyHasRequiredProperties(self):
+    'Ensure that all properties identified as required by the schema are\n    set.\n    '
+    for (property, attributes) in self._schema.iteritems():
+        (is_list, property_type, is_strong, is_required) = attributes[0:4]
+        if (is_required and (not (property in self._properties))):
+            raise KeyError, ((self.__class__.__name__ + ' requires ') + property)

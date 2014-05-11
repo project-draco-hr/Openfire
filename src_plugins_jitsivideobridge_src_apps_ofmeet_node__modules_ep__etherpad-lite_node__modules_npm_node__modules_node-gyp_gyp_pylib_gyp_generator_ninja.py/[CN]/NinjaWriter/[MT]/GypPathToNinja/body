@@ -1,0 +1,16 @@
+def GypPathToNinja(self, path, env=None):
+    'Translate a gyp path to a ninja path, optionally expanding environment\n    variable references in |path| with |env|.\n\n    See the above discourse on path conversions.'
+    if env:
+        if (self.flavor == 'mac'):
+            path = gyp.xcode_emulation.ExpandEnvVars(path, env)
+        elif (self.flavor == 'win'):
+            path = gyp.msvs_emulation.ExpandMacros(path, env)
+    if path.startswith('$!'):
+        expanded = self.ExpandSpecial(path)
+        if (self.flavor == 'win'):
+            expanded = os.path.normpath(expanded)
+        return expanded
+    if ('$|' in path):
+        path = self.ExpandSpecial(path)
+    assert ('$' not in path), path
+    return os.path.normpath(os.path.join(self.build_to_base, path))

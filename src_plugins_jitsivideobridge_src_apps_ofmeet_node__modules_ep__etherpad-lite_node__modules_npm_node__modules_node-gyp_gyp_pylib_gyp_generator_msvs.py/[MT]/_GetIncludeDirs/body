@@ -1,0 +1,7 @@
+def _GetIncludeDirs(config):
+    'Returns the list of directories to be used for #include directives.\n\n  Arguments:\n    config: The dictionary that defines the special processing to be done\n            for this configuration.\n  Returns:\n    The list of directory paths.\n  '
+    include_dirs = (config.get('include_dirs', []) + config.get('msvs_system_include_dirs', []))
+    resource_include_dirs = config.get('resource_include_dirs', include_dirs)
+    include_dirs = _FixPaths(include_dirs)
+    resource_include_dirs = _FixPaths(resource_include_dirs)
+    return (include_dirs, resource_include_dirs)

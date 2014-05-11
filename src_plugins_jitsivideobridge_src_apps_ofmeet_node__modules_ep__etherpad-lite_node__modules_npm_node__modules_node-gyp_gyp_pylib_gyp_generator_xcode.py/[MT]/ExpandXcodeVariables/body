@@ -1,0 +1,13 @@
+def ExpandXcodeVariables(string, expansions):
+    'Expands Xcode-style $(VARIABLES) in string per the expansions dict.\n\n  In some rare cases, it is appropriate to expand Xcode variables when a\n  project file is generated.  For any substring $(VAR) in string, if VAR is a\n  key in the expansions dict, $(VAR) will be replaced with expansions[VAR].\n  Any $(VAR) substring in string for which VAR is not a key in the expansions\n  dict will remain in the returned string.\n  '
+    matches = _xcode_variable_re.findall(string)
+    if (matches == None):
+        return string
+    matches.reverse()
+    for match in matches:
+        (to_replace, variable) = match
+        if (not (variable in expansions)):
+            continue
+        replacement = expansions[variable]
+        string = re.sub(re.escape(to_replace), replacement, string)
+    return string

@@ -1,0 +1,8 @@
+def _RuleExpandPath(path, input_file):
+    'Given the input file to which a rule applied, string substitute a path.\n\n  Arguments:\n    path: a path to string expand\n    input_file: the file to which the rule applied.\n  Returns:\n    The string substituted path.\n  '
+    path = path.replace('$(InputName)', os.path.splitext(os.path.split(input_file)[1])[0])
+    path = path.replace('$(InputDir)', os.path.dirname(input_file))
+    path = path.replace('$(InputExt)', os.path.splitext(os.path.split(input_file)[1])[1])
+    path = path.replace('$(InputFileName)', os.path.split(input_file)[1])
+    path = path.replace('$(InputPath)', input_file)
+    return path

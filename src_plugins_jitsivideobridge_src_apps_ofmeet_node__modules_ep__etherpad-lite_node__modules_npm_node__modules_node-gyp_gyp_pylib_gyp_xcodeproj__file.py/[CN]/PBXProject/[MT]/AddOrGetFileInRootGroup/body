@@ -1,0 +1,4 @@
+def AddOrGetFileInRootGroup(self, path):
+    "Returns a PBXFileReference corresponding to path in the correct group\n    according to RootGroupForPath's heuristics.\n\n    If an existing PBXFileReference for path exists, it will be returned.\n    Otherwise, one will be created and returned.\n    "
+    (group, hierarchical) = self.RootGroupForPath(path)
+    return group.AddOrGetFileByPath(path, hierarchical)

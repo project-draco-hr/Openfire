@@ -1,0 +1,10 @@
+def GetBuildSetting(self, key):
+    'Gets the build setting for key.\n\n    All child XCConfiguration objects must have the same value set for the\n    setting, or a ValueError will be raised.\n    '
+    value = None
+    for configuration in self._properties['buildConfigurations']:
+        configuration_value = configuration.GetBuildSetting(key)
+        if (value is None):
+            value = configuration_value
+        elif (value != configuration_value):
+            raise ValueError, ('Variant values for ' + key)
+    return value

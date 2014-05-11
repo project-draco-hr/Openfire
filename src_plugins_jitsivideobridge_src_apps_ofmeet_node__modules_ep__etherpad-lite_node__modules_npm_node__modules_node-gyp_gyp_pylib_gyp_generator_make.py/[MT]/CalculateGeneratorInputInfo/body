@@ -1,0 +1,7 @@
+def CalculateGeneratorInputInfo(params):
+    'Calculate the generator specific info that gets fed to input (called by\n  gyp).'
+    generator_flags = params.get('generator_flags', {})
+    android_ndk_version = generator_flags.get('android_ndk_version', None)
+    if android_ndk_version:
+        global generator_wants_sorted_dependencies
+        generator_wants_sorted_dependencies = True

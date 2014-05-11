@@ -1,0 +1,12 @@
+def __init__(self, spec, generator_flags):
+    self.spec = spec
+    self.vs_version = GetVSVersion(generator_flags)
+    self.dxsdk_dir = _FindDirectXInstallation()
+    self.wdk_dir = os.environ.get('WDK_DIR')
+    supported_fields = [('msvs_configuration_attributes', dict), ('msvs_settings', dict), ('msvs_system_include_dirs', list), ('msvs_disabled_warnings', list), ('msvs_precompiled_header', str), ('msvs_precompiled_source', str), ('msvs_configuration_platform', str), ('msvs_target_platform', str)]
+    configs = spec['configurations']
+    for (field, default) in supported_fields:
+        setattr(self, field, {})
+        for (configname, config) in configs.iteritems():
+            getattr(self, field)[configname] = config.get(field, default())
+    self.msvs_cygwin_dirs = spec.get('msvs_cygwin_dirs', ['.'])

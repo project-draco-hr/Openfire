@@ -1,0 +1,26 @@
+def GenerateEnvironmentFiles(toplevel_build_dir, generator_flags, open_out):
+    'It\'s not sufficient to have the absolute path to the compiler, linker,\n  etc. on Windows, as those tools rely on .dlls being in the PATH. We also\n  need to support both x86 and x64 compilers within the same build (to support\n  msvs_target_platform hackery). Different architectures require a different\n  compiler binary, and different supporting environment variables (INCLUDE,\n  LIB, LIBPATH). So, we extract the environment here, wrap all invocations\n  of compiler tools (cl, link, lib, rc, midl, etc.) via win_tool.py which\n  sets up the environment, and then we do not prefix the compiler with\n  an absolute path, instead preferring something like "cl.exe" in the rule\n  which will then run whichever the environment setup has put in the path.\n  When the following procedure to generate environment files does not\n  meet your requirement (e.g. for custom toolchains), you can pass\n  "-G ninja_use_custom_environment_files" to the gyp to suppress file\n  generation and use custom environment files prepared by yourself.'
+    archs = ('x86', 'x64')
+    if generator_flags.get('ninja_use_custom_environment_files', 0):
+        cl_paths = {}
+        for arch in archs:
+            cl_paths[arch] = 'cl.exe'
+        return cl_paths
+    vs = GetVSVersion(generator_flags)
+    cl_paths = {}
+    for arch in archs:
+        args = vs.SetupScript(arch)
+        args.extend(('&&', 'set'))
+        popen = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        (variables, _) = popen.communicate()
+        env = _ExtractImportantEnvironment(variables)
+        env_block = _FormatAsEnvironmentBlock(env)
+        f = open_out(os.path.join(toplevel_build_dir, ('environment.' + arch)), 'wb')
+        f.write(env_block)
+        f.close()
+        args = vs.SetupScript(arch)
+        args.extend(('&&', 'for', '%i', 'in', '(cl.exe)', 'do', '@echo', 'LOC:%~$PATH:i'))
+        popen = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+        (output, _) = popen.communicate()
+        cl_paths[arch] = _ExtractCLPath(output)
+    return cl_paths

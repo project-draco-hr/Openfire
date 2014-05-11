@@ -1,0 +1,11 @@
+def _IdlFilesHandledNonNatively(spec, sources):
+    using_idl = False
+    for rule in spec.get('rules', []):
+        if ((rule['extension'] == 'idl') and int(rule.get('msvs_external_rule', 0))):
+            using_idl = True
+            break
+    if using_idl:
+        excluded_idl = [i for i in sources if i.endswith('.idl')]
+    else:
+        excluded_idl = []
+    return excluded_idl

@@ -1,0 +1,8 @@
+def _AddActionStep(actions_dict, inputs, outputs, description, command):
+    "Merge action into an existing list of actions.\n\n  Care must be taken so that actions which have overlapping inputs either don't\n  get assigned to the same input, or get collapsed into one.\n\n  Arguments:\n    actions_dict: dictionary keyed on input name, which maps to a list of\n      dicts describing the actions attached to that input file.\n    inputs: list of inputs\n    outputs: list of outputs\n    description: description of the action\n    command: command line to execute\n  "
+    assert inputs
+    action = {'inputs': inputs, 'outputs': outputs, 'description': description, 'command': command, }
+    chosen_input = inputs[0]
+    if (chosen_input not in actions_dict):
+        actions_dict[chosen_input] = []
+    actions_dict[chosen_input].append(action)

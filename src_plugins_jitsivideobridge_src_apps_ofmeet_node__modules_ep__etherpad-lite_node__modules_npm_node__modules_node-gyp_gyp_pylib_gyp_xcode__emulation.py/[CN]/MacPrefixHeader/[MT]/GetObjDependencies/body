@@ -1,0 +1,11 @@
+def GetObjDependencies(self, sources, objs, arch=None):
+    'Given a list of source files and the corresponding object files, returns\n    a list of (source, object, gch) tuples, where |gch| is the build-directory\n    relative path to the gch file each object file depends on.  |compilable[i]|\n    has to be the source file belonging to |objs[i]|.'
+    if ((not self.header) or (not self.compile_headers)):
+        return []
+    result = []
+    for (source, obj) in zip(sources, objs):
+        ext = os.path.splitext(source)[1]
+        lang = {'.c': 'c', '.cpp': 'cc', '.cc': 'cc', '.cxx': 'cc', '.m': 'm', '.mm': 'mm', }.get(ext, None)
+        if lang:
+            result.append((source, obj, self._Gch(lang, arch)))
+    return result

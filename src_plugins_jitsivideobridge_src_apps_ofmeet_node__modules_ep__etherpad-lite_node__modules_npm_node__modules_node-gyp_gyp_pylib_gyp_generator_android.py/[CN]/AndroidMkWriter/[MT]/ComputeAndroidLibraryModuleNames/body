@@ -1,0 +1,22 @@
+def ComputeAndroidLibraryModuleNames(self, libraries):
+    "Compute the Android module names from libraries, ie spec.get('libraries')\n\n    Args:\n      libraries: the value of spec.get('libraries')\n    Returns:\n      A tuple (static_lib_modules, dynamic_lib_modules)\n    "
+    static_lib_modules = []
+    dynamic_lib_modules = []
+    for libs in libraries:
+        for lib in libs.split():
+            if ((lib == '-lc') or (lib == '-lstdc++') or (lib == '-lm') or lib.endswith('libgcc.a')):
+                continue
+            match = re.search('([^/]+)\\.a$', lib)
+            if match:
+                static_lib_modules.append(match.group(1))
+                continue
+            match = re.search('([^/]+)\\.so$', lib)
+            if match:
+                dynamic_lib_modules.append(match.group(1))
+                continue
+            if lib.startswith('-l'):
+                if lib.endswith('_static'):
+                    static_lib_modules.append(('lib' + lib[2:]))
+                else:
+                    dynamic_lib_modules.append(('lib' + lib[2:]))
+    return (static_lib_modules, dynamic_lib_modules)

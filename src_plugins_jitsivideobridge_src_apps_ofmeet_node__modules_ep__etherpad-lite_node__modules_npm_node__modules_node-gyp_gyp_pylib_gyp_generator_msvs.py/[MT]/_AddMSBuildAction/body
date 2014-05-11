@@ -1,0 +1,13 @@
+def _AddMSBuildAction(spec, primary_input, inputs, outputs, cmd, description, sources_handled_by_action, actions_spec):
+    command = MSVSSettings.ConvertVCMacrosToMSBuild(cmd)
+    primary_input = _FixPath(primary_input)
+    inputs_array = _FixPaths(inputs)
+    outputs_array = _FixPaths(outputs)
+    additional_inputs = ';'.join([i for i in inputs_array if (i != primary_input)])
+    outputs = ';'.join(outputs_array)
+    sources_handled_by_action.add(primary_input)
+    action_spec = ['CustomBuild', {'Include': primary_input, }]
+    action_spec.extend([['FileType', 'Document'], ['Command', command], ['Message', description], ['Outputs', outputs]])
+    if additional_inputs:
+        action_spec.append(['AdditionalInputs', additional_inputs])
+    actions_spec.append(action_spec)

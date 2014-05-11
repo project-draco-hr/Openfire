@@ -1,0 +1,25 @@
+def Write(self):
+    (output_fd, new_pbxproj_path) = tempfile.mkstemp(suffix='.tmp', prefix='project.pbxproj.gyp.', dir=self.path)
+    try:
+        output_file = os.fdopen(output_fd, 'wb')
+        self.project_file.Print(output_file)
+        output_file.close()
+        pbxproj_path = os.path.join(self.path, 'project.pbxproj')
+        same = False
+        try:
+            same = filecmp.cmp(pbxproj_path, new_pbxproj_path, False)
+        except OSError as e:
+            if (e.errno != errno.ENOENT):
+                raise
+        if same:
+            os.unlink(new_pbxproj_path)
+        else:
+            umask = os.umask(63)
+            os.umask(umask)
+            os.chmod(new_pbxproj_path, (438 & (~ umask)))
+            os.rename(new_pbxproj_path, pbxproj_path)
+    except Exception:
+        os.unlink(new_pbxproj_path)
+        if self.created_dir:
+            shutil.rmtree(self.path, True)
+        raise

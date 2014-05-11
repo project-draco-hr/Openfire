@@ -1,0 +1,15 @@
+def _GenerateNativeRulesForMSVS(p, rules, output_dir, spec, options):
+    'Generate a native rules file.\n\n  Arguments:\n    p: the target project\n    rules: the set of rules to include\n    output_dir: the directory in which the project/gyp resides\n    spec: the project dict\n    options: global generator options\n  '
+    rules_filename = ('%s%s.rules' % (spec['target_name'], options.suffix))
+    rules_file = MSVSToolFile.Writer(os.path.join(output_dir, rules_filename), spec['target_name'])
+    for r in rules:
+        rule_name = r['rule_name']
+        rule_ext = r['extension']
+        inputs = _FixPaths(r.get('inputs', []))
+        outputs = _FixPaths(r.get('outputs', []))
+        if (('action' not in r) and (not r.get('rule_sources', []))):
+            continue
+        cmd = _BuildCommandLineForRule(spec, r, has_input_path=True, do_setup_env=True)
+        rules_file.AddCustomBuildRule(name=rule_name, description=r.get('message', rule_name), extensions=[rule_ext], additional_dependencies=inputs, outputs=outputs, cmd=cmd)
+    rules_file.WriteIfChanged()
+    p.AddToolFile(rules_filename)

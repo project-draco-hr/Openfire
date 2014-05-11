@@ -1,0 +1,9 @@
+def WritePchTargets(self, ninja_file, pch_commands):
+    'Writes ninja rules to compile prefix headers.'
+    if (not pch_commands):
+        return
+    for (gch, lang_flag, lang, input) in pch_commands:
+        var_name = {'c': 'cflags_pch_c', 'cc': 'cflags_pch_cc', 'm': 'cflags_pch_objc', 'mm': 'cflags_pch_objcc', }[lang]
+        map = {'c': 'cc', 'cc': 'cxx', 'm': 'objc', 'mm': 'objcxx', }
+        cmd = map.get(lang)
+        ninja_file.build(gch, cmd, input, variables=[(var_name, lang_flag)])

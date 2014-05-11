@@ -1,0 +1,13 @@
+def FixFilenames(filenames, current_directory):
+    new_list = []
+    for filename in filenames:
+        if filename:
+            for key in REPLACEMENTS:
+                filename = filename.replace(key, REPLACEMENTS[key])
+            os.chdir(current_directory)
+            filename = filename.strip('"\' ')
+            if filename.startswith('$'):
+                new_list.append(filename)
+            else:
+                new_list.append(os.path.abspath(filename))
+    return new_list

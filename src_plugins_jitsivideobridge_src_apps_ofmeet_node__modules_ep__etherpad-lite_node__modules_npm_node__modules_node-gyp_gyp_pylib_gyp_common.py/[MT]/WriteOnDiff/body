@@ -1,0 +1,40 @@
+def WriteOnDiff(filename):
+    'Write to a file only if the new contents differ.\n\n  Arguments:\n    filename: name of the file to potentially write to.\n  Returns:\n    A file like object which will write to temporary file and only overwrite\n    the target if it differs (on close).\n  '
+
+
+    class Writer:
+        'Wrapper around file which only covers the target if it differs.'
+
+        def __init__(self):
+            (tmp_fd, self.tmp_path) = tempfile.mkstemp(suffix='.tmp', prefix=(os.path.split(filename)[1] + '.gyp.'), dir=os.path.split(filename)[0])
+            try:
+                self.tmp_file = os.fdopen(tmp_fd, 'wb')
+            except Exception:
+                os.unlink(self.tmp_path)
+                raise
+
+        def __getattr__(self, attrname):
+            return getattr(self.tmp_file, attrname)
+
+        def close(self):
+            try:
+                self.tmp_file.close()
+                same = False
+                try:
+                    same = filecmp.cmp(self.tmp_path, filename, False)
+                except OSError as e:
+                    if (e.errno != errno.ENOENT):
+                        raise
+                if same:
+                    os.unlink(self.tmp_path)
+                else:
+                    umask = os.umask(63)
+                    os.umask(umask)
+                    os.chmod(self.tmp_path, (438 & (~ umask)))
+                    if ((sys.platform == 'win32') and os.path.exists(filename)):
+                        os.remove(filename)
+                    os.rename(self.tmp_path, filename)
+            except Exception:
+                os.unlink(self.tmp_path)
+                raise
+    return Writer()

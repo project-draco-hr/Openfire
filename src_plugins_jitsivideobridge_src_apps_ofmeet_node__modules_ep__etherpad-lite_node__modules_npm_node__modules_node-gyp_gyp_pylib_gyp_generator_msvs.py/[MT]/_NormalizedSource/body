@@ -1,0 +1,6 @@
+def _NormalizedSource(source):
+    'Normalize the path.\n\n  But not if that gets rid of a variable, as this may expand to something\n  larger than one directory.\n\n  Arguments:\n      source: The path to be normalize.d\n\n  Returns:\n      The normalized path.\n  '
+    normalized = os.path.normpath(source)
+    if (source.count('$') == normalized.count('$')):
+        source = normalized
+    return source

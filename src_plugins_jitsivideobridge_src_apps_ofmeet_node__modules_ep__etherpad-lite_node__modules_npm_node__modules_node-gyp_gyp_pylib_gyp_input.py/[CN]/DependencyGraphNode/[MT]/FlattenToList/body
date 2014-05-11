@@ -1,0 +1,15 @@
+def FlattenToList(self):
+    flat_list = []
+    in_degree_zeros = set(self.dependents[:])
+    while in_degree_zeros:
+        node = in_degree_zeros.pop()
+        flat_list.append(node.ref)
+        for node_dependent in node.dependents:
+            is_in_degree_zero = True
+            for node_dependent_dependency in node_dependent.dependencies:
+                if (not (node_dependent_dependency.ref in flat_list)):
+                    is_in_degree_zero = False
+                    break
+            if is_in_degree_zero:
+                in_degree_zeros.add(node_dependent)
+    return flat_list

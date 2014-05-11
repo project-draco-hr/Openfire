@@ -1,0 +1,7 @@
+def _GetUniquePlatforms(spec):
+    "Returns the list of unique platforms for this spec, e.g ['win32', ...].\n\n  Arguments:\n    spec: The target dictionary containing the properties of the target.\n  Returns:\n    The MSVSUserFile object created.\n  "
+    platforms = set()
+    for configuration in spec['configurations']:
+        platforms.add(_ConfigPlatform(spec['configurations'][configuration]))
+    platforms = list(platforms)
+    return platforms

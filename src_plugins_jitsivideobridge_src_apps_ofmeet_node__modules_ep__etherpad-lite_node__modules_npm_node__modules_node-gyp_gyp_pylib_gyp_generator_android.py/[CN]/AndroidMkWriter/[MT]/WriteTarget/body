@@ -1,0 +1,39 @@
+def WriteTarget(self, spec, configs, deps, link_deps, part_of_all):
+    "Write Makefile code to produce the final target of the gyp spec.\n\n    spec, configs: input from gyp.\n    deps, link_deps: dependency lists; see ComputeDeps()\n    part_of_all: flag indicating this target is part of 'all'\n    "
+    self.WriteLn('### Rules for final target.')
+    if (self.type != 'none'):
+        self.WriteTargetFlags(spec, configs, link_deps)
+    if part_of_all:
+        self.WriteLn('# Add target alias to "gyp_all_modules" target.')
+        self.WriteLn('.PHONY: gyp_all_modules')
+        self.WriteLn(('gyp_all_modules: %s' % self.android_module))
+        self.WriteLn('')
+    if (self.target != self.android_module):
+        self.WriteLn('# Alias gyp target name.')
+        self.WriteLn(('.PHONY: %s' % self.target))
+        self.WriteLn(('%s: %s' % (self.target, self.android_module)))
+        self.WriteLn('')
+    modifier = ''
+    if (self.toolset == 'host'):
+        modifier = 'HOST_'
+    if (self.type == 'static_library'):
+        self.WriteLn(('include $(BUILD_%sSTATIC_LIBRARY)' % modifier))
+    elif (self.type == 'shared_library'):
+        self.WriteLn('LOCAL_PRELINK_MODULE := false')
+        self.WriteLn(('include $(BUILD_%sSHARED_LIBRARY)' % modifier))
+    elif (self.type == 'executable'):
+        if (self.toolset == 'host'):
+            self.WriteLn('LOCAL_MODULE_PATH := $(gyp_shared_intermediate_dir)')
+        else:
+            self.WriteLn('LOCAL_UNINSTALLABLE_MODULE := true')
+        self.WriteLn(('include $(BUILD_%sEXECUTABLE)' % modifier))
+    else:
+        self.WriteLn('LOCAL_MODULE_PATH := $(PRODUCT_OUT)/gyp_stamp')
+        self.WriteLn('LOCAL_UNINSTALLABLE_MODULE := true')
+        self.WriteLn()
+        self.WriteLn('include $(BUILD_SYSTEM)/base_rules.mk')
+        self.WriteLn()
+        self.WriteLn('$(LOCAL_BUILT_MODULE): $(LOCAL_ADDITIONAL_DEPENDENCIES)')
+        self.WriteLn('\t$(hide) echo "Gyp timestamp: $@"')
+        self.WriteLn('\t$(hide) mkdir -p $(dir $@)')
+        self.WriteLn('\t$(hide) touch $@')

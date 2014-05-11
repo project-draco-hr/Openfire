@@ -1,0 +1,3 @@
+def EscapeXcodeDefine(s):
+    'We must escape the defines that we give to XCode so that it knows not to\n     split on spaces and to respect backslash and quote literals. However, we\n     must not quote the define, or Xcode will incorrectly intepret variables\n     especially $(inherited).'
+    return re.sub(_xcode_define_re, '\\\\\\1', s)

@@ -1,0 +1,16 @@
+def _WriteMSVSUserFile(project_path, version, spec):
+    if ('run_as' in spec):
+        run_as = spec['run_as']
+        action = run_as.get('action', [])
+        environment = run_as.get('environment', [])
+        working_directory = run_as.get('working_directory', '.')
+    elif int(spec.get('test', 0)):
+        action = ['$(TargetPath)', '--gtest_print_time']
+        environment = []
+        working_directory = '.'
+    else:
+        return
+    user_file = _CreateMSVSUserFile(project_path, version, spec)
+    for (config_name, c_data) in spec['configurations'].iteritems():
+        user_file.AddDebugSettings(_ConfigFullName(config_name, c_data), action, environment, working_directory)
+    user_file.WriteIfChanged()

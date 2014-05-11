@@ -1,0 +1,48 @@
+def AddOrGetFileByPath(self, path, hierarchical):
+    'Returns an existing or new file reference corresponding to path.\n\n    If hierarchical is True, this method will create or use the necessary\n    hierarchical group structure corresponding to path.  Otherwise, it will\n    look in and create an item in the current group only.\n\n    If an existing matching reference is found, it is returned, otherwise, a\n    new one will be created, added to the correct group, and returned.\n\n    If path identifies a directory by virtue of carrying a trailing slash,\n    this method returns a PBXFileReference of "folder" type.  If path\n    identifies a variant, by virtue of it identifying a file inside a directory\n    with an ".lproj" extension, this method returns a PBXVariantGroup\n    containing the variant named by path, and possibly other variants.  For\n    all other paths, a "normal" PBXFileReference will be returned.\n    '
+    is_dir = False
+    if path.endswith('/'):
+        is_dir = True
+    path = posixpath.normpath(path)
+    if is_dir:
+        path = (path + '/')
+    variant_name = None
+    parent = posixpath.dirname(path)
+    grandparent = posixpath.dirname(parent)
+    parent_basename = posixpath.basename(parent)
+    (parent_root, parent_ext) = posixpath.splitext(parent_basename)
+    if (parent_ext == '.lproj'):
+        variant_name = parent_root
+    if (grandparent == ''):
+        grandparent = None
+    assert ((not is_dir) or (variant_name is None))
+    path_split = path.split(posixpath.sep)
+    if ((len(path_split) == 1) or ((is_dir or (variant_name != None)) and (len(path_split) == 2)) or (not hierarchical)):
+        if (variant_name is None):
+            file_ref = self.GetChildByPath(path)
+            if (file_ref != None):
+                assert (file_ref.__class__ == PBXFileReference)
+            else:
+                file_ref = PBXFileReference({'path': path, })
+                self.AppendChild(file_ref)
+        else:
+            variant_group_name = posixpath.basename(path)
+            variant_group_ref = self.AddOrGetVariantGroupByNameAndPath(variant_group_name, grandparent)
+            variant_path = posixpath.sep.join(path_split[(-2):])
+            variant_ref = variant_group_ref.GetChildByPath(variant_path)
+            if (variant_ref != None):
+                assert (variant_ref.__class__ == PBXFileReference)
+            else:
+                variant_ref = PBXFileReference({'name': variant_name, 'path': variant_path, })
+                variant_group_ref.AppendChild(variant_ref)
+            file_ref = variant_group_ref
+        return file_ref
+    else:
+        next_dir = path_split[0]
+        group_ref = self.GetChildByPath(next_dir)
+        if (group_ref != None):
+            assert (group_ref.__class__ == PBXGroup)
+        else:
+            group_ref = PBXGroup({'path': next_dir, })
+            self.AppendChild(group_ref)
+        return group_ref.AddOrGetFileByPath(posixpath.sep.join(path_split[1:]), hierarchical)

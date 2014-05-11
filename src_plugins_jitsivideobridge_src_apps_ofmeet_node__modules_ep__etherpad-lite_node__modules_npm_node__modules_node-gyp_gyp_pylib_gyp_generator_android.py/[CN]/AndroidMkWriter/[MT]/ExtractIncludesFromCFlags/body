@@ -1,0 +1,10 @@
+def ExtractIncludesFromCFlags(self, cflags):
+    'Extract includes "-I..." out from cflags\n\n    Args:\n      cflags: A list of compiler flags, which may be mixed with "-I.."\n    Returns:\n      A tuple of lists: (clean_clfags, include_paths). "-I.." is trimmed.\n    '
+    clean_cflags = []
+    include_paths = []
+    for flag in cflags:
+        if flag.startswith('-I'):
+            include_paths.append(flag[2:])
+        else:
+            clean_cflags.append(flag)
+    return (clean_cflags, include_paths)

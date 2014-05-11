@@ -1,0 +1,15 @@
+def _AddAccumulatedActionsToMSVS(p, spec, actions_dict):
+    'Add actions accumulated into an actions_dict, merging as needed.\n\n  Arguments:\n    p: the target project\n    spec: the target project dict\n    actions_dict: dictionary keyed on input name, which maps to a list of\n        dicts describing the actions attached to that input file.\n  '
+    for primary_input in actions_dict:
+        inputs = set()
+        outputs = set()
+        descriptions = []
+        commands = []
+        for action in actions_dict[primary_input]:
+            inputs.update(set(action['inputs']))
+            outputs.update(set(action['outputs']))
+            descriptions.append(action['description'])
+            commands.append(action['command'])
+        description = ', and also '.join(descriptions)
+        command = '\r\n'.join(commands)
+        _AddCustomBuildToolForMSVS(p, spec, primary_input=primary_input, inputs=inputs, outputs=outputs, description=description, cmd=command)

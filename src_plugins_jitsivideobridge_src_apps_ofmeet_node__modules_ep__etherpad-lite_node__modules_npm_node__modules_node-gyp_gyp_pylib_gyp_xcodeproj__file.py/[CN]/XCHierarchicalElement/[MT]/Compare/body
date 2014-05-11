@@ -1,0 +1,9 @@
+def Compare(self, other):
+    valid_class_types = {PBXFileReference: 'file', PBXGroup: 'group', PBXVariantGroup: 'file', }
+    self_type = valid_class_types[self.__class__]
+    other_type = valid_class_types[other.__class__]
+    if (self_type == other_type):
+        return cmp(self.Name(), other.Name())
+    if (self_type == 'group'):
+        return (-1)
+    return 1

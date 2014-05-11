@@ -1,0 +1,21 @@
+def LoadTargetBuildFileCallback(self, result):
+    'Handle the results of running LoadTargetBuildFile in another process.\n    '
+    self.condition.acquire()
+    if (not result):
+        self.error = True
+        self.condition.notify()
+        self.condition.release()
+        return
+    (build_file_path0, data0, aux_data0, dependencies0) = result
+    self.data['target_build_files'].add(build_file_path0)
+    for key in data0:
+        self.data[key] = data0[key]
+    for key in aux_data0:
+        self.aux_data[key] = aux_data0[key]
+    for new_dependency in dependencies0:
+        if (new_dependency not in self.scheduled):
+            self.scheduled.add(new_dependency)
+            self.dependencies.append(new_dependency)
+    self.pending -= 1
+    self.condition.notify()
+    self.condition.release()

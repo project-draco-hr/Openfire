@@ -1,0 +1,10 @@
+def WriteCollapsedDependencies(self, name, targets):
+    'Given a list of targets, return a path for a single file\n    representing the result of building all the targets or None.\n\n    Uses a stamp file if necessary.'
+    assert (targets == filter(None, targets)), targets
+    if (len(targets) == 0):
+        return None
+    if (len(targets) > 1):
+        stamp = self.GypPathToUniqueOutput((name + '.stamp'))
+        targets = self.ninja.build(stamp, 'stamp', targets)
+        self.ninja.newline()
+    return targets[0]

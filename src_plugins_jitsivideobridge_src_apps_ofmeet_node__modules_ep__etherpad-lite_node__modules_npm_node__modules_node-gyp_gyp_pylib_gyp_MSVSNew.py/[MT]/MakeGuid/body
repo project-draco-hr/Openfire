@@ -1,0 +1,5 @@
+def MakeGuid(name, seed='msvs_new'):
+    'Returns a GUID for the specified target name.\n\n  Args:\n    name: Target name.\n    seed: Seed for MD5 hash.\n  Returns:\n    A GUID-line string calculated from the name and seed.\n\n  This generates something which looks like a GUID, but depends only on the\n  name and seed.  This means the same name/seed will always generate the same\n  GUID, so that projects and solutions which refer to each other can explicitly\n  determine the GUID to refer to explicitly.  It also means that the GUID will\n  not change when the project for a target is rebuilt.\n  '
+    d = _new_md5((str(seed) + str(name))).hexdigest().upper()
+    guid = (((((((((('{' + d[:8]) + '-') + d[8:12]) + '-') + d[12:16]) + '-') + d[16:20]) + '-') + d[20:32]) + '}')
+    return guid

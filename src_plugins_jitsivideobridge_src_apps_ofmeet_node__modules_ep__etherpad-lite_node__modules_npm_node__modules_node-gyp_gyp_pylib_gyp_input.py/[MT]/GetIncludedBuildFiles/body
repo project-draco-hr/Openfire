@@ -1,0 +1,10 @@
+def GetIncludedBuildFiles(build_file_path, aux_data, included=None):
+    'Return a list of all build files included into build_file_path.\n\n  The returned list will contain build_file_path as well as all other files\n  that it included, either directly or indirectly.  Note that the list may\n  contain files that were included into a conditional section that evaluated\n  to false and was not merged into build_file_path\'s dict.\n\n  aux_data is a dict containing a key for each build file or included build\n  file.  Those keys provide access to dicts whose "included" keys contain\n  lists of all other files included by the build file.\n\n  included should be left at its default None value by external callers.  It\n  is used for recursion.\n\n  The returned list will not contain any duplicate entries.  Each build file\n  in the list will be relative to the current directory.\n  '
+    if (included == None):
+        included = []
+    if (build_file_path in included):
+        return included
+    included.append(build_file_path)
+    for included_build_file in aux_data[build_file_path].get('included', []):
+        GetIncludedBuildFiles(included_build_file, aux_data, included)
+    return included

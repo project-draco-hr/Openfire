@@ -1,0 +1,11 @@
+def GypPathToUniqueOutput(self, path, qualified=True):
+    'Translate a gyp path to a ninja path for writing output.\n\n    If qualified is True, qualify the resulting filename with the name\n    of the target.  This is necessary when e.g. compiling the same\n    path twice for two separate output targets.\n\n    See the above discourse on path conversions.'
+    path = self.ExpandSpecial(path)
+    assert (not path.startswith('$')), path
+    obj = 'obj'
+    if (self.toolset != 'target'):
+        obj += ('.' + self.toolset)
+    (path_dir, path_basename) = os.path.split(path)
+    if qualified:
+        path_basename = ((self.name + '.') + path_basename)
+    return os.path.normpath(os.path.join(obj, self.base_dir, path_dir, path_basename))

@@ -1,0 +1,6 @@
+def _CreateMSVSUserFile(proj_path, version, spec):
+    'Generates a .user file for the user running this Gyp program.\n\n  Arguments:\n    proj_path: The path of the project file being created.  The .user file\n               shares the same path (with an appropriate suffix).\n    version: The VisualStudioVersion object.\n    spec: The target dictionary containing the properties of the target.\n  Returns:\n    The MSVSUserFile object created.\n  '
+    (domain, username) = _GetDomainAndUserName()
+    vcuser_filename = '.'.join([proj_path, domain, username, 'user'])
+    user_file = MSVSUserFile.Writer(vcuser_filename, version, spec['target_name'])
+    return user_file

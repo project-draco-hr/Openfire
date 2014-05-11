@@ -1,0 +1,24 @@
+def BuildDependencyList(targets):
+    dependency_nodes = {}
+    for (target, spec) in targets.iteritems():
+        if (target not in dependency_nodes):
+            dependency_nodes[target] = DependencyGraphNode(target)
+    root_node = DependencyGraphNode(None)
+    for (target, spec) in targets.iteritems():
+        target_node = dependency_nodes[target]
+        target_build_file = gyp.common.BuildFile(target)
+        dependencies = spec.get('dependencies')
+        if (not dependencies):
+            target_node.dependencies = [root_node]
+            root_node.dependents.append(target_node)
+        else:
+            for dependency in dependencies:
+                dependency_node = dependency_nodes.get(dependency)
+                if (not dependency_node):
+                    raise GypError(("Dependency '%s' not found while trying to load target %s" % (dependency, target)))
+                target_node.dependencies.append(dependency_node)
+                dependency_node.dependents.append(target_node)
+    flat_list = root_node.FlattenToList()
+    if (len(flat_list) != len(targets)):
+        raise DependencyGraphNode.CircularException(('Some targets not reachable, cycle in dependency graph detected: ' + ' '.join((set(flat_list) ^ set(targets)))))
+    return [dependency_nodes, flat_list]

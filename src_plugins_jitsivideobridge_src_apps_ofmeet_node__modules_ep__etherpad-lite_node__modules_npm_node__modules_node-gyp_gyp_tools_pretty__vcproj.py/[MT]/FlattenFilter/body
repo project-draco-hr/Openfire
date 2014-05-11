@@ -1,0 +1,11 @@
+def FlattenFilter(node):
+    'Returns a list of all the node and sub nodes.'
+    node_list = []
+    if (node.attributes and (node.getAttribute('Name') == '_excluded_files')):
+        return []
+    for current in node.childNodes:
+        if (current.nodeName == 'Filter'):
+            node_list.extend(FlattenFilter(current))
+        else:
+            node_list.append(current)
+    return node_list

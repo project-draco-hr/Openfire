@@ -1,0 +1,18 @@
+def _ToolSetOrAppend(tools, tool_name, setting, value, only_if_unset=False):
+    if (('Directories' in setting) or ('Dependencies' in setting)):
+        if (type(value) == str):
+            value = value.replace('/', '\\')
+        else:
+            value = [i.replace('/', '\\') for i in value]
+    if (not tools.get(tool_name)):
+        tools[tool_name] = dict()
+    tool = tools[tool_name]
+    if tool.get(setting):
+        if only_if_unset:
+            return
+        if ((type(tool[setting]) == list) and (type(value) == list)):
+            tool[setting] += value
+        else:
+            raise TypeError(('Appending "%s" to a non-list setting "%s" for tool "%s" is not allowed, previous value: %s' % (value, setting, tool_name, str(tool[setting]))))
+    else:
+        tool[setting] = value

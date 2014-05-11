@@ -1,0 +1,5 @@
+def _GetMSBuildExtensionTargets(targets_files_of_rules):
+    targets_node = ['ImportGroup', {'Label': 'ExtensionTargets', }]
+    for targets_file in sorted(targets_files_of_rules):
+        targets_node.append(['Import', {'Project': targets_file, }])
+    return [targets_node]

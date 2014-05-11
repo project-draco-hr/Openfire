@@ -1,0 +1,7 @@
+def FixupPlatformCommand(cmd):
+    if (sys.platform == 'win32'):
+        if (type(cmd) == list):
+            cmd = ([re.sub('^cat ', 'type ', cmd[0])] + cmd[1:])
+        else:
+            cmd = re.sub('^cat ', 'type ', cmd)
+    return cmd

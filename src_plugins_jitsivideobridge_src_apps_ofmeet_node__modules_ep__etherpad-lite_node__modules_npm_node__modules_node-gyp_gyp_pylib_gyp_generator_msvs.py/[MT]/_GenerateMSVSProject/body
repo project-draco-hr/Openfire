@@ -1,0 +1,32 @@
+def _GenerateMSVSProject(project, options, version, generator_flags):
+    'Generates a .vcproj file.  It may create .rules and .user files too.\n\n  Arguments:\n    project: The project object we will generate the file for.\n    options: Global options passed to the generator.\n    version: The VisualStudioVersion object.\n    generator_flags: dict of generator-specific flags.\n  '
+    spec = project.spec
+    vcproj_dir = os.path.dirname(project.path)
+    if (vcproj_dir and (not os.path.exists(vcproj_dir))):
+        os.makedirs(vcproj_dir)
+    platforms = _GetUniquePlatforms(spec)
+    p = MSVSProject.Writer(project.path, version, spec['target_name'], project.guid, platforms)
+    project_dir = os.path.split(project.path)[0]
+    gyp_path = _NormalizedSource(project.build_file)
+    relative_path_of_gyp_file = gyp.common.RelativePath(gyp_path, project_dir)
+    config_type = _GetMSVSConfigurationType(spec, project.build_file)
+    for (config_name, config) in spec['configurations'].iteritems():
+        _AddConfigurationToMSVSProject(p, spec, config_type, config_name, config)
+    gyp_file = os.path.split(project.build_file)[1]
+    (sources, excluded_sources) = _PrepareListOfSources(spec, generator_flags, gyp_file)
+    actions_to_add = {}
+    _GenerateRulesForMSVS(p, project_dir, options, spec, sources, excluded_sources, actions_to_add)
+    list_excluded = generator_flags.get('msvs_list_excluded_files', True)
+    (sources, excluded_sources, excluded_idl) = _AdjustSourcesAndConvertToFilterHierarchy(spec, options, project_dir, sources, excluded_sources, list_excluded)
+    missing_sources = _VerifySourcesExist(sources, project_dir)
+    p.AddFiles(sources)
+    _AddToolFilesToMSVS(p, spec)
+    _HandlePreCompiledHeaders(p, sources, spec)
+    _AddActions(actions_to_add, spec, relative_path_of_gyp_file)
+    _AddCopies(actions_to_add, spec)
+    _WriteMSVSUserFile(project.path, version, spec)
+    excluded_sources = _FilterActionsFromExcluded(excluded_sources, actions_to_add)
+    _ExcludeFilesFromBeingBuilt(p, spec, excluded_sources, excluded_idl, list_excluded)
+    _AddAccumulatedActionsToMSVS(p, spec, actions_to_add)
+    p.WriteIfChanged()
+    return missing_sources

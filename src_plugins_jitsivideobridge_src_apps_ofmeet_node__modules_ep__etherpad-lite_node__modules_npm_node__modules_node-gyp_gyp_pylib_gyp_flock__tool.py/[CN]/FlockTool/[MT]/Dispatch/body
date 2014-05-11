@@ -1,0 +1,6 @@
+def Dispatch(self, args):
+    'Dispatches a string command to a method.'
+    if (len(args) < 1):
+        raise Exception('Not enough arguments')
+    method = ('Exec%s' % self._CommandifyName(args[0]))
+    getattr(self, method)(*args[1:])

@@ -1,0 +1,10 @@
+def _GetGuidOfProject(proj_path, spec):
+    'Get the guid for the project.\n\n  Arguments:\n    proj_path: Path of the vcproj or vcxproj file to generate.\n    spec: The target dictionary containing the properties of the target.\n  Returns:\n    the guid.\n  Raises:\n    ValueError: if the specified GUID is invalid.\n  '
+    default_config = _GetDefaultConfiguration(spec)
+    guid = default_config.get('msvs_guid')
+    if guid:
+        if (VALID_MSVS_GUID_CHARS.match(guid) is None):
+            raise ValueError(('Invalid MSVS guid: "%s".  Must match regex: "%s".' % (guid, VALID_MSVS_GUID_CHARS.pattern)))
+        guid = ('{%s}' % guid)
+    guid = (guid or MSVSNew.MakeGuid(proj_path))
+    return guid

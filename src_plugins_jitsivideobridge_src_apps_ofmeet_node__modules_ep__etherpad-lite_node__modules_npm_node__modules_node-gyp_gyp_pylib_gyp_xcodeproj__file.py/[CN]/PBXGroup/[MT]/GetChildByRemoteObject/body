@@ -1,0 +1,10 @@
+def GetChildByRemoteObject(self, remote_object):
+    if (not ('children' in self._properties)):
+        return None
+    for child in self._properties['children']:
+        if (not isinstance(child, PBXReferenceProxy)):
+            continue
+        container_proxy = child._properties['remoteRef']
+        if (container_proxy._properties['remoteGlobalIDString'] == remote_object):
+            return child
+    return None

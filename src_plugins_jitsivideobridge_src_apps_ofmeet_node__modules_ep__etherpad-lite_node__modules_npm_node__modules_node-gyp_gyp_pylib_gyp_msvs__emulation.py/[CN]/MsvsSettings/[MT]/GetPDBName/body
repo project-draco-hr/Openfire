@@ -1,0 +1,7 @@
+def GetPDBName(self, config, expand_special):
+    "Gets the explicitly overridden pdb name for a target or returns None\n    if it's not overridden."
+    config = self._TargetConfig(config)
+    output_file = self._Setting(('VCLinkerTool', 'ProgramDatabaseFile'), config)
+    if output_file:
+        output_file = expand_special(self.ConvertVSMacros(output_file, config=config))
+    return output_file

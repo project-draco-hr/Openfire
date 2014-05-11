@@ -1,0 +1,9 @@
+def DeepDependencies(self, dependencies=None):
+    "Returns a list of all of a target's dependencies, recursively."
+    if (dependencies == None):
+        dependencies = []
+    for dependency in self.dependencies:
+        if ((dependency.ref != None) and (dependency.ref not in dependencies)):
+            dependencies.append(dependency.ref)
+            dependency.DeepDependencies(dependencies)
+    return dependencies

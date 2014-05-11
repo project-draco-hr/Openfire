@@ -1,0 +1,15 @@
+def display(self, command, stdout=None, stderr=None):
+    if (not self.verbose):
+        return
+    if (type(command) == type(())):
+        func = command[0]
+        args = command[1:]
+        s = ('%s(%s)' % (func.__name__, ', '.join(map(repr, args))))
+    if (type(command) == type([])):
+        s = ' '.join(command)
+    else:
+        s = self.subst(command)
+    if (not s.endswith('\n')):
+        s += '\n'
+    sys.stdout.write(s)
+    sys.stdout.flush()

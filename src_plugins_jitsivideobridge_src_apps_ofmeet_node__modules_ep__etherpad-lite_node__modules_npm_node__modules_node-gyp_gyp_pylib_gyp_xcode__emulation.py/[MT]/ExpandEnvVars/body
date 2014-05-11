@@ -1,0 +1,7 @@
+def ExpandEnvVars(string, expansions):
+    "Expands ${VARIABLES}, $(VARIABLES), and $VARIABLES in string per the\n  expansions list. If the variable expands to something that references\n  another variable, this variable is expanded as well if it's in env --\n  until no variables present in env are left."
+    for (k, v) in reversed(expansions):
+        string = string.replace((('${' + k) + '}'), v)
+        string = string.replace((('$(' + k) + ')'), v)
+        string = string.replace(('$' + k), v)
+    return string

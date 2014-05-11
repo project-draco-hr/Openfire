@@ -1,0 +1,11 @@
+def Children(self):
+    "Returns a list of all of this object's owned (strong) children."
+    children = []
+    for (property, attributes) in self._schema.iteritems():
+        (is_list, property_type, is_strong) = attributes[0:3]
+        if (is_strong and (property in self._properties)):
+            if (not is_list):
+                children.append(self._properties[property])
+            else:
+                children.extend(self._properties[property])
+    return children

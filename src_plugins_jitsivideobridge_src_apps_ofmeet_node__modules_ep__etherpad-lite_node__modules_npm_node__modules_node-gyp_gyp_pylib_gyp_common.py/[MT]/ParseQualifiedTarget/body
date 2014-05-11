@@ -1,0 +1,12 @@
+def ParseQualifiedTarget(target):
+    target_split = target.rsplit(':', 1)
+    if (len(target_split) == 2):
+        [build_file, target] = target_split
+    else:
+        build_file = None
+    target_split = target.rsplit('#', 1)
+    if (len(target_split) == 2):
+        [target, toolset] = target_split
+    else:
+        toolset = None
+    return [build_file, target, toolset]

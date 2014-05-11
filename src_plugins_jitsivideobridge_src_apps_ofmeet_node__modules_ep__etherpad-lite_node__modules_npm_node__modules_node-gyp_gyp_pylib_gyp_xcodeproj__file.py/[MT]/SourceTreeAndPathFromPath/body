@@ -1,0 +1,10 @@
+def SourceTreeAndPathFromPath(input_path):
+    "Given input_path, returns a tuple with sourceTree and path values.\n\n  Examples:\n    input_path     (source_tree, output_path)\n    '$(VAR)/path'  ('VAR', 'path')\n    '$(VAR)'       ('VAR', None)\n    'path'         (None, 'path')\n  "
+    source_group_match = _path_leading_variable.match(input_path)
+    if source_group_match:
+        source_tree = source_group_match.group(1)
+        output_path = source_group_match.group(3)
+    else:
+        source_tree = None
+        output_path = input_path
+    return (source_tree, output_path)

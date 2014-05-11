@@ -1,0 +1,16 @@
+def GenerateOutput(target_list, target_dicts, data, params):
+    edges = {}
+    targets_to_visit = target_list[:]
+    while (len(targets_to_visit) > 0):
+        target = targets_to_visit.pop()
+        if (target in edges):
+            continue
+        edges[target] = []
+        for dep in target_dicts[target].get('dependencies', []):
+            edges[target].append(dep)
+            targets_to_visit.append(dep)
+    filename = 'dump.json'
+    f = open(filename, 'w')
+    json.dump(edges, f)
+    f.close()
+    print ('Wrote json to %s.' % filename)

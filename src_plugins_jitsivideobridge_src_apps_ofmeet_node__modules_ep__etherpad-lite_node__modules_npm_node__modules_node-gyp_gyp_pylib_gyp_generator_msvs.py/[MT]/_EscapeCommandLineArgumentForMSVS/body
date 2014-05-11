@@ -1,0 +1,8 @@
+def _EscapeCommandLineArgumentForMSVS(s):
+    'Escapes a Windows command-line argument.\n\n  So that the Win32 CommandLineToArgv function will turn the escaped result back\n  into the original string.\n  See http://msdn.microsoft.com/en-us/library/17w5ykft.aspx\n  ("Parsing C++ Command-Line Arguments") to understand why we have to do\n  this.\n\n  Args:\n      s: the string to be escaped.\n  Returns:\n      the escaped string.\n  '
+
+    def _Replace(match):
+        return ((2 * match.group(1)) + '\\"')
+    s = quote_replacer_regex.sub(_Replace, s)
+    s = (('"' + s) + '"')
+    return s

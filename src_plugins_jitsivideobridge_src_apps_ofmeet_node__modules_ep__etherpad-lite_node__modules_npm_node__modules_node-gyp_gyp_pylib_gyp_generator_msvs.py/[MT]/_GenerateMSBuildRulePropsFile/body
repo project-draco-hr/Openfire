@@ -1,0 +1,6 @@
+def _GenerateMSBuildRulePropsFile(props_path, msbuild_rules):
+    'Generate the .props file.'
+    content = ['Project', {'xmlns': 'http://schemas.microsoft.com/developer/msbuild/2003', }]
+    for rule in msbuild_rules:
+        content.extend([['PropertyGroup', {'Condition': ("'$(%s)' == '' and '$(%s)' == '' and '$(ConfigurationType)' != 'Makefile'" % (rule.before_targets, rule.after_targets)), }, [rule.before_targets, 'Midl'], [rule.after_targets, 'CustomBuild']], ['PropertyGroup', [rule.depends_on, {'Condition': "'$(ConfigurationType)' != 'Makefile'", }, ('_SelectedFiles;$(%s)' % rule.depends_on)]], ['ItemDefinitionGroup', [rule.rule_name, ['CommandLineTemplate', rule.command], ['Outputs', rule.outputs], ['ExecutionDescription', rule.description], ['AdditionalDependencies', rule.additional_dependencies]]]])
+    easy_xml.WriteXmlIfChanged(content, props_path, pretty=True, win32=True)

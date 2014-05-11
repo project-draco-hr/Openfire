@@ -1,0 +1,45 @@
+def GetAllDefines(target_list, target_dicts, data, config_name, params):
+    'Calculate the defines for a project.\n\n  Returns:\n    A dict that includes explict defines declared in gyp files along with all of\n    the default defines that the compiler uses.\n  '
+    all_defines = {}
+    flavor = gyp.common.GetFlavor(params)
+    if (flavor == 'win'):
+        generator_flags = params.get('generator_flags', {})
+    for target_name in target_list:
+        target = target_dicts[target_name]
+        if (flavor == 'win'):
+            msvs_settings = gyp.msvs_emulation.MsvsSettings(target, generator_flags)
+            extra_defines = msvs_settings.GetComputedDefines(config_name)
+        else:
+            extra_defines = []
+        if (config_name in target['configurations']):
+            config = target['configurations'][config_name]
+            target_defines = config['defines']
+        else:
+            target_defines = []
+        for define in (target_defines + extra_defines):
+            split_define = define.split('=', 1)
+            if (len(split_define) == 1):
+                split_define.append('1')
+            if (split_define[0].strip() in all_defines):
+                continue
+            all_defines[split_define[0].strip()] = split_define[1].strip()
+    if (flavor == 'win'):
+        return all_defines
+    cc_target = GetCompilerPath(target_list, target_dicts, data)
+    if cc_target:
+        command = shlex.split(cc_target)
+        command.extend(['-E', '-dM', '-'])
+        cpp_proc = subprocess.Popen(args=command, cwd='.', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        cpp_output = cpp_proc.communicate()[0]
+        cpp_lines = cpp_output.split('\n')
+        for cpp_line in cpp_lines:
+            if (not cpp_line.strip()):
+                continue
+            cpp_line_parts = cpp_line.split(' ', 2)
+            key = cpp_line_parts[1]
+            if (len(cpp_line_parts) >= 3):
+                val = cpp_line_parts[2]
+            else:
+                val = '1'
+            all_defines[key] = val
+    return all_defines

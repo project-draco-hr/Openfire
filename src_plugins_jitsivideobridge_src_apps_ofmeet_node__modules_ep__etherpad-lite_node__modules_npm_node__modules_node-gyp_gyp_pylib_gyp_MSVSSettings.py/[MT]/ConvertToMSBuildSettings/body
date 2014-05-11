@@ -1,0 +1,17 @@
+def ConvertToMSBuildSettings(msvs_settings, stderr=sys.stderr):
+    'Converts MSVS settings (VS2008 and earlier) to MSBuild settings (VS2010+).\n\n  Args:\n      msvs_settings: A dictionary.  The key is the tool name.  The values are\n          themselves dictionaries of settings and their values.\n      stderr: The stream receiving the error messages.\n\n  Returns:\n      A dictionary of MSBuild settings.  The key is either the MSBuild tool name\n      or the empty string (for the global settings).  The values are themselves\n      dictionaries of settings and their values.\n  '
+    msbuild_settings = {}
+    for (msvs_tool_name, msvs_tool_settings) in msvs_settings.iteritems():
+        if (msvs_tool_name in _msvs_to_msbuild_converters):
+            msvs_tool = _msvs_to_msbuild_converters[msvs_tool_name]
+            for (msvs_setting, msvs_value) in msvs_tool_settings.iteritems():
+                if (msvs_setting in msvs_tool):
+                    try:
+                        msvs_tool[msvs_setting](msvs_value, msbuild_settings)
+                    except ValueError as e:
+                        print  >> stderr, ('Warning: while converting %s/%s to MSBuild, %s' % (msvs_tool_name, msvs_setting, e))
+                else:
+                    print  >> stderr, ('Warning: unrecognized setting %s/%s while converting to MSBuild.' % (msvs_tool_name, msvs_setting))
+        else:
+            print  >> stderr, ('Warning: unrecognized tool %s while converting to MSBuild.' % msvs_tool_name)
+    return msbuild_settings

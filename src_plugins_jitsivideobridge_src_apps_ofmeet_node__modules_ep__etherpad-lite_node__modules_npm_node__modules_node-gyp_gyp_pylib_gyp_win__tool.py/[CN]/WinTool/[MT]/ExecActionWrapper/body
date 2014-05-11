@@ -1,0 +1,8 @@
+def ExecActionWrapper(self, arch, rspfile, *dir):
+    'Runs an action command line from a response file using the environment\n    for |arch|. If |dir| is supplied, use that as the working directory.'
+    env = self._GetEnv(arch)
+    args = open(rspfile).read()
+    dir = (dir[0] if dir else None)
+    popen = subprocess.Popen(args, shell=True, env=env, cwd=dir)
+    popen.wait()
+    return popen.returncode

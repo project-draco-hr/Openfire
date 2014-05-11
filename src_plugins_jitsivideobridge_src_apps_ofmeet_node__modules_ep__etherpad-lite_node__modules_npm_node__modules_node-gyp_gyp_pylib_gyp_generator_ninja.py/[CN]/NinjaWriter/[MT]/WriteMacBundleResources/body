@@ -1,0 +1,6 @@
+def WriteMacBundleResources(self, resources, bundle_depends):
+    "Writes ninja edges for 'mac_bundle_resources'."
+    for (output, res) in gyp.xcode_emulation.GetMacBundleResources(generator_default_variables['PRODUCT_DIR'], self.xcode_settings, map(self.GypPathToNinja, resources)):
+        output = self.ExpandSpecial(output)
+        self.ninja.build(output, 'mac_tool', res, variables=[('mactool_cmd', 'copy-bundle-resource')])
+        bundle_depends.append(output)

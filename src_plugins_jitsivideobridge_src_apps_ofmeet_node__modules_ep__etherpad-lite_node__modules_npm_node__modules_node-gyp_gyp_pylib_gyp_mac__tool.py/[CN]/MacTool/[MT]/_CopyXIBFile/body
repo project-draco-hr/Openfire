@@ -1,0 +1,21 @@
+def _CopyXIBFile(self, source, dest):
+    'Compiles a XIB file with ibtool into a binary plist in the bundle.'
+    base = os.path.dirname(os.path.realpath(__file__))
+    if os.path.relpath(source):
+        source = os.path.join(base, source)
+    if os.path.relpath(dest):
+        dest = os.path.join(base, dest)
+    args = ['xcrun', 'ibtool', '--errors', '--warnings', '--notices', '--output-format', 'human-readable-text', '--compile', dest, source]
+    ibtool_section_re = re.compile('/\\*.*\\*/')
+    ibtool_re = re.compile('.*note:.*is clipping its content')
+    ibtoolout = subprocess.Popen(args, stdout=subprocess.PIPE)
+    current_section_header = None
+    for line in ibtoolout.stdout:
+        if ibtool_section_re.match(line):
+            current_section_header = line
+        elif (not ibtool_re.match(line)):
+            if current_section_header:
+                sys.stdout.write(current_section_header)
+                current_section_header = None
+            sys.stdout.write(line)
+    return ibtoolout.returncode

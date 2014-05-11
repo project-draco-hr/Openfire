@@ -1,0 +1,10 @@
+def _GenerateMSBuildFiltersFile(filters_path, source_files, extension_to_rule_name):
+    'Generate the filters file.\n\n  This file is used by Visual Studio to organize the presentation of source\n  files into folders.\n\n  Arguments:\n      filters_path: The path of the file to be created.\n      source_files: The hierarchical structure of all the sources.\n      extension_to_rule_name: A dictionary mapping file extensions to rules.\n  '
+    filter_group = []
+    source_group = []
+    _AppendFiltersForMSBuild('', source_files, extension_to_rule_name, filter_group, source_group)
+    if filter_group:
+        content = ['Project', {'ToolsVersion': '4.0', 'xmlns': 'http://schemas.microsoft.com/developer/msbuild/2003', }, (['ItemGroup'] + filter_group), (['ItemGroup'] + source_group)]
+        easy_xml.WriteXmlIfChanged(content, filters_path, pretty=True, win32=True)
+    elif os.path.exists(filters_path):
+        os.unlink(filters_path)

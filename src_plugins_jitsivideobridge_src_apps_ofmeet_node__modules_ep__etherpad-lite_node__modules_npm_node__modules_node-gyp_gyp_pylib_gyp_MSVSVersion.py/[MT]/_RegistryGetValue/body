@@ -1,0 +1,9 @@
+def _RegistryGetValue(key, value):
+    "Use reg.exe to obtain the value of a registry key.\n\n  Args:\n    key: The registry key.\n    value: The particular registry value to read.\n  Return:\n    contents of the registry key's value, or None on failure.\n  "
+    text = _RegistryQuery(key, value)
+    if (not text):
+        return None
+    match = re.search('REG_\\w+\\s+([^\\r]+)\\r\\n', text)
+    if (not match):
+        return None
+    return match.group(1)

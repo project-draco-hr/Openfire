@@ -1,0 +1,14 @@
+def _InitNinjaFlavor(options, target_list, target_dicts):
+    "Initialize targets for the ninja flavor.\n\n  This sets up the necessary variables in the targets to generate msvs projects\n  that use ninja as an external builder. The variables in the spec are only set\n  if they have not been set. This allows individual specs to override the\n  default values initialized here.\n  Arguments:\n    options: Options provided to the generator.\n    target_list: List of target pairs: 'base/base.gyp:base'.\n    target_dicts: Dict of target properties keyed on target pair.\n  "
+    for qualified_target in target_list:
+        spec = target_dicts[qualified_target]
+        if spec.get('msvs_external_builder'):
+            continue
+        path_to_ninja = spec.get('msvs_path_to_ninja', 'ninja.exe')
+        spec['msvs_external_builder'] = 'ninja'
+        if (not spec.get('msvs_external_builder_out_dir')):
+            spec['msvs_external_builder_out_dir'] = (options.depth + '/out/$(Configuration)')
+        if (not spec.get('msvs_external_builder_build_cmd')):
+            spec['msvs_external_builder_build_cmd'] = [path_to_ninja, '-C', '$(OutDir)', '$(ProjectName)']
+        if (not spec.get('msvs_external_builder_clean_cmd')):
+            spec['msvs_external_builder_clean_cmd'] = [path_to_ninja, '-C', '$(OutDir)', '-t', 'clean', '$(ProjectName)']

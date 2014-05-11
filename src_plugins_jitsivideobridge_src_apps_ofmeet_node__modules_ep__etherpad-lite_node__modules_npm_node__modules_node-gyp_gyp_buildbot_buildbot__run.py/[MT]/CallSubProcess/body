@@ -1,0 +1,6 @@
+def CallSubProcess(*args, **kwargs):
+    'Wrapper around subprocess.call which treats errors as build exceptions.'
+    retcode = subprocess.call(*args, **kwargs)
+    if (retcode != 0):
+        print '@@@STEP_EXCEPTION@@@'
+        sys.exit(1)

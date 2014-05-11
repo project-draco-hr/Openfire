@@ -1,0 +1,8 @@
+def _FormatAsEnvironmentBlock(envvar_dict):
+    "Format as an 'environment block' directly suitable for CreateProcess.\n  Briefly this is a list of key=value\x00, terminated by an additional \x00. See\n  CreateProcess documentation for more details."
+    block = ''
+    nul = '\x00'
+    for (key, value) in envvar_dict.iteritems():
+        block += (((key + '=') + value) + nul)
+    block += nul
+    return block

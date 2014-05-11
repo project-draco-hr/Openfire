@@ -1,0 +1,7 @@
+def Objectify(self, path):
+    'Convert a path to its output directory form.'
+    if ('$(' in path):
+        path = path.replace('$(obj)/', ('$(obj).%s/$(TARGET)/' % self.toolset))
+    if (not ('$(obj)' in path)):
+        path = ('$(obj).%s/$(TARGET)/%s' % (self.toolset, path))
+    return path

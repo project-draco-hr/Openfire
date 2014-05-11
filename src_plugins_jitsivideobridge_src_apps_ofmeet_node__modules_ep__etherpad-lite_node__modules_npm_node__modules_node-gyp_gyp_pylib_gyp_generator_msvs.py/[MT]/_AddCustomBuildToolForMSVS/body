@@ -1,0 +1,7 @@
+def _AddCustomBuildToolForMSVS(p, spec, primary_input, inputs, outputs, description, cmd):
+    'Add a custom build tool to execute something.\n\n  Arguments:\n    p: the target project\n    spec: the target project dict\n    primary_input: input file to attach the build tool to\n    inputs: list of inputs\n    outputs: list of outputs\n    description: description of the action\n    cmd: command line to execute\n  '
+    inputs = _FixPaths(inputs)
+    outputs = _FixPaths(outputs)
+    tool = MSVSProject.Tool('VCCustomBuildTool', {'Description': description, 'AdditionalDependencies': ';'.join(inputs), 'Outputs': ';'.join(outputs), 'CommandLine': cmd, })
+    for (config_name, c_data) in spec['configurations'].iteritems():
+        p.AddFileConfig(_FixPath(primary_input), _ConfigFullName(config_name, c_data), tools=[tool])

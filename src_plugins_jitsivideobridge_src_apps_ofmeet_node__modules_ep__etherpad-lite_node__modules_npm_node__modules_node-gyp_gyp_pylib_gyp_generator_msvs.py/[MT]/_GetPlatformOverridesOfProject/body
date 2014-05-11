@@ -1,0 +1,8 @@
+def _GetPlatformOverridesOfProject(spec):
+    config_platform_overrides = {}
+    for (config_name, c) in spec['configurations'].iteritems():
+        config_fullname = _ConfigFullName(config_name, c)
+        platform = c.get('msvs_target_platform', _ConfigPlatform(c))
+        fixed_config_fullname = ('%s|%s' % (_ConfigBaseName(config_name, _ConfigPlatform(c)), platform))
+        config_platform_overrides[config_fullname] = fixed_config_fullname
+    return config_platform_overrides

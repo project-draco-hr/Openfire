@@ -1,0 +1,7 @@
+def _EscapeCppDefineForMSVS(s):
+    'Escapes a CPP define so that it will reach the compiler unaltered.'
+    s = _EscapeEnvironmentVariableExpansion(s)
+    s = _EscapeCommandLineArgumentForMSVS(s)
+    s = _EscapeVCProjCommandLineArgListItem(s)
+    s = s.replace('#', ('\\%03o' % ord('#')))
+    return s

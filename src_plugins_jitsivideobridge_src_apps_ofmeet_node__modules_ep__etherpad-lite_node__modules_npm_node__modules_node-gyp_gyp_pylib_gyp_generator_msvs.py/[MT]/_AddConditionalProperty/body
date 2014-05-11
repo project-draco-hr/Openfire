@@ -1,0 +1,9 @@
+def _AddConditionalProperty(properties, condition, name, value):
+    'Adds a property / conditional value pair to a dictionary.\n\n  Arguments:\n    properties: The dictionary to be modified.  The key is the name of the\n        property.  The value is itself a dictionary; its key is the value and\n        the value a list of condition for which this value is true.\n    condition: The condition under which the named property has the value.\n    name: The name of the property.\n    value: The value of the property.\n  '
+    if (name not in properties):
+        properties[name] = {}
+    values = properties[name]
+    if (value not in values):
+        values[value] = []
+    conditions = values[value]
+    conditions.append(condition)

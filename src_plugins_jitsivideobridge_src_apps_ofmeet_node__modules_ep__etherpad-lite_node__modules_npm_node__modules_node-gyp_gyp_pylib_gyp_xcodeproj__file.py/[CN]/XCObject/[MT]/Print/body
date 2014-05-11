@@ -1,0 +1,14 @@
+def Print(self, file=sys.stdout):
+    'Prints a reprentation of this object to file, adhering to Xcode output\n    formatting.\n    '
+    self.VerifyHasRequiredProperties()
+    if self._should_print_single_line:
+        sep = ''
+        end_tabs = 0
+    else:
+        sep = '\n'
+        end_tabs = 2
+    self._XCPrint(file, 2, ((self._XCPrintableValue(2, self) + ' = {') + sep))
+    self._XCKVPrint(file, 3, 'isa', self.__class__.__name__)
+    for (property, value) in sorted(self._properties.iteritems()):
+        self._XCKVPrint(file, 3, property, value)
+    self._XCPrint(file, end_tabs, '};\n')

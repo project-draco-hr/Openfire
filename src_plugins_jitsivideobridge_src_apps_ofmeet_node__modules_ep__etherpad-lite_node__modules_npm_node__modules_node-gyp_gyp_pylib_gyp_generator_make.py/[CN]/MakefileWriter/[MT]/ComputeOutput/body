@@ -1,0 +1,8 @@
+def ComputeOutput(self, spec):
+    "Return the 'output' (full output path) of a gyp spec.\n\n    E.g., the loadable module 'foobar' in directory 'baz' will produce\n      '$(obj)/baz/libfoobar.so'\n    "
+    assert (not self.is_mac_bundle)
+    path = os.path.join(('$(obj).' + self.toolset), self.path)
+    if ((self.type == 'executable') or self._InstallImmediately()):
+        path = '$(builddir)'
+    path = spec.get('product_dir', path)
+    return os.path.join(path, self.ComputeOutputBasename(spec))

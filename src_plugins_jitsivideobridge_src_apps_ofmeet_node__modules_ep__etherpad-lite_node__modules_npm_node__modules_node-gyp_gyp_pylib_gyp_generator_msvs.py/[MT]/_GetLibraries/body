@@ -1,0 +1,14 @@
+def _GetLibraries(spec):
+    'Returns the list of libraries for this configuration.\n\n  Arguments:\n    spec: The target dictionary containing the properties of the target.\n  Returns:\n    The list of directory paths.\n  '
+    libraries = spec.get('libraries', [])
+    found = set()
+    unique_libraries_list = []
+    for entry in reversed(libraries):
+        library = re.sub('^\\-l', '', entry)
+        if (not os.path.splitext(library)[1]):
+            library += '.lib'
+        if (library not in found):
+            found.add(library)
+            unique_libraries_list.append(library)
+    unique_libraries_list.reverse()
+    return unique_libraries_list

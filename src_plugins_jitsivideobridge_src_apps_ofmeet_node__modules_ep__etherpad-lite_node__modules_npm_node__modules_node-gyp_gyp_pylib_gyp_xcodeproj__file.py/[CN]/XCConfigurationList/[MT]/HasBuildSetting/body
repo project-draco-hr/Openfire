@@ -1,0 +1,19 @@
+def HasBuildSetting(self, key):
+    'Determines the state of a build setting in all XCBuildConfiguration\n    child objects.\n\n    If all child objects have key in their build settings, and the value is the\n    same in all child objects, returns 1.\n\n    If no child objects have the key in their build settings, returns 0.\n\n    If some, but not all, child objects have the key in their build settings,\n    or if any children have different values for the key, returns -1.\n    '
+    has = None
+    value = None
+    for configuration in self._properties['buildConfigurations']:
+        configuration_has = configuration.HasBuildSetting(key)
+        if (has is None):
+            has = configuration_has
+        elif (has != configuration_has):
+            return (-1)
+        if configuration_has:
+            configuration_value = configuration.GetBuildSetting(key)
+            if (value is None):
+                value = configuration_value
+            elif (value != configuration_value):
+                return (-1)
+    if (not has):
+        return 0
+    return 1

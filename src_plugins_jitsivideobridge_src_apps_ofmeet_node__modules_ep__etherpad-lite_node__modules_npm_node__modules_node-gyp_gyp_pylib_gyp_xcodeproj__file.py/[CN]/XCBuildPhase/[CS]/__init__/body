@@ -1,0 +1,6 @@
+def __init__(self, properties=None, id=None, parent=None):
+    XCObject.__init__(self, properties, id, parent)
+    self._files_by_path = {}
+    self._files_by_xcfilelikeelement = {}
+    for pbxbuildfile in self._properties.get('files', []):
+        self._AddBuildFileToDicts(pbxbuildfile)

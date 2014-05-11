@@ -1,0 +1,42 @@
+def _BuildCommandLineForRuleRaw(spec, cmd, cygwin_shell, has_input_path, quote_cmd, do_setup_env):
+    if [x for x in cmd if ('$(InputDir)' in x)]:
+        input_dir_preamble = 'set INPUTDIR=$(InputDir)\nset INPUTDIR=%INPUTDIR:$(ProjectDir)=%\nset INPUTDIR=%INPUTDIR:~0,-1%\n'
+    else:
+        input_dir_preamble = ''
+    if cygwin_shell:
+        cygwin_dir = _FixPath(spec.get('msvs_cygwin_dirs', ['.'])[0])
+        direct_cmd = cmd
+        direct_cmd = [i.replace('$(IntDir)', '`cygpath -m "${INTDIR}"`') for i in direct_cmd]
+        direct_cmd = [i.replace('$(OutDir)', '`cygpath -m "${OUTDIR}"`') for i in direct_cmd]
+        direct_cmd = [i.replace('$(InputDir)', '`cygpath -m "${INPUTDIR}"`') for i in direct_cmd]
+        if has_input_path:
+            direct_cmd = [i.replace('$(InputPath)', '`cygpath -m "${INPUTPATH}"`') for i in direct_cmd]
+        direct_cmd = [('\\"%s\\"' % i.replace('"', '\\\\\\"')) for i in direct_cmd]
+        direct_cmd = ' '.join(direct_cmd)
+        cmd = ''
+        if do_setup_env:
+            cmd += 'call "$(ProjectDir)%(cygwin_dir)s\\setup_env.bat" && '
+        cmd += 'set CYGWIN=nontsec&& '
+        if (direct_cmd.find('NUMBER_OF_PROCESSORS') >= 0):
+            cmd += 'set /a NUMBER_OF_PROCESSORS_PLUS_1=%%NUMBER_OF_PROCESSORS%%+1&& '
+        if (direct_cmd.find('INTDIR') >= 0):
+            cmd += 'set INTDIR=$(IntDir)&& '
+        if (direct_cmd.find('OUTDIR') >= 0):
+            cmd += 'set OUTDIR=$(OutDir)&& '
+        if (has_input_path and (direct_cmd.find('INPUTPATH') >= 0)):
+            cmd += 'set INPUTPATH=$(InputPath) && '
+        cmd += 'bash -c "%(cmd)s"'
+        cmd = (cmd % {'cygwin_dir': cygwin_dir, 'cmd': direct_cmd, })
+        return (input_dir_preamble + cmd)
+    else:
+        if (cmd[0] == 'cat'):
+            command = ['type']
+        else:
+            command = [cmd[0].replace('/', '\\')]
+        command.insert(0, 'call')
+        arguments = [(i if (i[:1] in '/-') else _FixPath(i)) for i in cmd[1:]]
+        arguments = [i.replace('$(InputDir)', '%INPUTDIR%') for i in arguments]
+        arguments = [MSVSSettings.FixVCMacroSlashes(i) for i in arguments]
+        if quote_cmd:
+            arguments = [('"%s"' % i) for i in arguments]
+        return (input_dir_preamble + ' '.join((command + arguments)))

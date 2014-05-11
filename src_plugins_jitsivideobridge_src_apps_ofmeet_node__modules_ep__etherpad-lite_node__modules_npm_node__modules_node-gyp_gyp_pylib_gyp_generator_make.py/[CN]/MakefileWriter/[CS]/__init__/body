@@ -1,0 +1,10 @@
+def __init__(self, generator_flags, flavor):
+    self.generator_flags = generator_flags
+    self.flavor = flavor
+    self.suffix_rules_srcdir = {}
+    self.suffix_rules_objdir1 = {}
+    self.suffix_rules_objdir2 = {}
+    for ext in COMPILABLE_EXTENSIONS.keys():
+        self.suffix_rules_srcdir.update({ext: ('$(obj).$(TOOLSET)/$(TARGET)/%%.o: $(srcdir)/%%%s FORCE_DO_CMD\n\t@$(call do_cmd,%s,1)\n' % (ext, COMPILABLE_EXTENSIONS[ext])), })
+        self.suffix_rules_objdir1.update({ext: ('$(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj).$(TOOLSET)/%%%s FORCE_DO_CMD\n\t@$(call do_cmd,%s,1)\n' % (ext, COMPILABLE_EXTENSIONS[ext])), })
+        self.suffix_rules_objdir2.update({ext: ('$(obj).$(TOOLSET)/$(TARGET)/%%.o: $(obj)/%%%s FORCE_DO_CMD\n\t@$(call do_cmd,%s,1)\n' % (ext, COMPILABLE_EXTENSIONS[ext])), })

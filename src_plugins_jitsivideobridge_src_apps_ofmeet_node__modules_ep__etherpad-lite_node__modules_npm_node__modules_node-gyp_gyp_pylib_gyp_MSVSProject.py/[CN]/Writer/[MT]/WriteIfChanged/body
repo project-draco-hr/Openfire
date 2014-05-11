@@ -1,0 +1,4 @@
+def WriteIfChanged(self):
+    'Writes the project file.'
+    content = ['VisualStudioProject', {'ProjectType': 'Visual C++', 'Version': self.version.ProjectVersion(), 'Name': self.name, 'ProjectGUID': self.guid, 'RootNamespace': self.name, 'Keyword': 'Win32Proj', }, self.platform_section, self.tool_files_section, self.configurations_section, ['References'], self.files_section, ['Globals']]
+    easy_xml.WriteXmlIfChanged(content, self.project_path, encoding='Windows-1252')

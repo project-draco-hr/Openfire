@@ -1,0 +1,19 @@
+def ValidateSourcesInTarget(target, target_dict, build_file):
+    if (target_dict.get('type', None) not in ('static_library', 'shared_library')):
+        return
+    sources = target_dict.get('sources', [])
+    basenames = {}
+    for source in sources:
+        (name, ext) = os.path.splitext(source)
+        is_compiled_file = (ext in ['.c', '.cc', '.cpp', '.cxx', '.m', '.mm', '.s', '.S'])
+        if (not is_compiled_file):
+            continue
+        basename = os.path.basename(name)
+        basenames.setdefault(basename, []).append(source)
+    error = ''
+    for (basename, files) in basenames.iteritems():
+        if (len(files) > 1):
+            error += ('  %s: %s\n' % (basename, ' '.join(files)))
+    if error:
+        print ((('static library %s has several files with the same basename:\n' % target) + error) + 'Some build systems, e.g. MSVC08, cannot handle that.')
+        raise GypError('Duplicate basenames in sources section, see list above')

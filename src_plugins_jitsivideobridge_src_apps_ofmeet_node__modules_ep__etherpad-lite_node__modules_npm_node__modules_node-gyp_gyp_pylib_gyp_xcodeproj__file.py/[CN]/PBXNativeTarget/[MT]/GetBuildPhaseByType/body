@@ -1,0 +1,9 @@
+def GetBuildPhaseByType(self, type):
+    if (not ('buildPhases' in self._properties)):
+        return None
+    the_phase = None
+    for phase in self._properties['buildPhases']:
+        if isinstance(phase, type):
+            assert (the_phase is None)
+            the_phase = phase
+    return the_phase

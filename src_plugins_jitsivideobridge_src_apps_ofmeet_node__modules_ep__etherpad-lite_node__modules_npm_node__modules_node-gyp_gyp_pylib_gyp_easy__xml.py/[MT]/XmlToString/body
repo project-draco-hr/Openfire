@@ -1,0 +1,7 @@
+def XmlToString(content, encoding='utf-8', pretty=False):
+    " Writes the XML content to disk, touching the file only if it has changed.\n\n  Visual Studio files have a lot of pre-defined structures.  This function makes\n  it easy to represent these structures as Python data structures, instead of\n  having to create a lot of function calls.\n\n  Each XML element of the content is represented as a list composed of:\n  1. The name of the element, a string,\n  2. The attributes of the element, a dictionary (optional), and\n  3+. The content of the element, if any.  Strings are simple text nodes and\n      lists are child elements.\n\n  Example 1:\n      <test/>\n  becomes\n      ['test']\n\n  Example 2:\n      <myelement a='value1' b='value2'>\n         <childtype>This is</childtype>\n         <childtype>it!</childtype>\n      </myelement>\n\n  becomes\n      ['myelement', {'a':'value1', 'b':'value2'},\n         ['childtype', 'This is'],\n         ['childtype', 'it!'],\n      ]\n\n  Args:\n    content:  The structured content to be converted.\n    encoding: The encoding to report on the first XML line.\n    pretty: True if we want pretty printing with indents and new lines.\n\n  Returns:\n    The XML content as a string.\n  "
+    xml_parts = [('<?xml version="1.0" encoding="%s"?>' % encoding)]
+    if pretty:
+        xml_parts.append('\n')
+    _ConstructContentList(xml_parts, content, pretty)
+    return ''.join(xml_parts)

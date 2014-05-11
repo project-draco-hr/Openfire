@@ -1,0 +1,7 @@
+def _GetMSBuildProjectConfigurations(configurations):
+    group = ['ItemGroup', {'Label': 'ProjectConfigurations', }]
+    for (name, settings) in sorted(configurations.iteritems()):
+        (configuration, platform) = _GetConfigurationAndPlatform(name, settings)
+        designation = ('%s|%s' % (configuration, platform))
+        group.append(['ProjectConfiguration', {'Include': designation, }, ['Configuration', configuration], ['Platform', platform]])
+    return [group]

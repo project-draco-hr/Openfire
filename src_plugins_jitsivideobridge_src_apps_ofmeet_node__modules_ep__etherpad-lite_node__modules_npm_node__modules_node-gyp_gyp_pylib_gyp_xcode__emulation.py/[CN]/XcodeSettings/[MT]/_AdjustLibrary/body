@@ -1,0 +1,13 @@
+def _AdjustLibrary(self, library, config_name=None):
+    if library.endswith('.framework'):
+        l = ('-framework ' + os.path.splitext(os.path.basename(library))[0])
+    else:
+        m = self.library_re.match(library)
+        if m:
+            l = ('-l' + m.group(1))
+        else:
+            l = library
+    if self._SdkPath():
+        return l.replace('$(SDKROOT)', self._SdkPath(config_name))
+    else:
+        return l

@@ -1,0 +1,12 @@
+def AddDependency(self, other):
+    pbxproject = self.PBXProjectAncestor()
+    other_pbxproject = other.PBXProjectAncestor()
+    if (pbxproject == other_pbxproject):
+        container = PBXContainerItemProxy({'containerPortal': pbxproject, 'proxyType': 1, 'remoteGlobalIDString': other, 'remoteInfo': other.Name(), })
+        dependency = PBXTargetDependency({'target': other, 'targetProxy': container, })
+        self.AppendProperty('dependencies', dependency)
+    else:
+        other_project_ref = pbxproject.AddOrGetProjectReference(other_pbxproject)[1]
+        container = PBXContainerItemProxy({'containerPortal': other_project_ref, 'proxyType': 1, 'remoteGlobalIDString': other, 'remoteInfo': other.Name(), })
+        dependency = PBXTargetDependency({'name': other.Name(), 'targetProxy': container, })
+        self.AppendProperty('dependencies', dependency)

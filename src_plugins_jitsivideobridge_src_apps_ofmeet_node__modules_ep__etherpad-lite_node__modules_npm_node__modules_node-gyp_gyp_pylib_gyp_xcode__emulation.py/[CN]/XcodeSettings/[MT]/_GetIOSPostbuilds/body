@@ -1,0 +1,25 @@
+def _GetIOSPostbuilds(self, configname, output_binary):
+    'Return a shell command to codesign the iOS output binary so it can\n    be deployed to a device.  This should be run as the very last step of the\n    build.'
+    if (not (self.isIOS and (self.spec['type'] == 'executable'))):
+        return []
+    identity = self.xcode_settings[configname].get('CODE_SIGN_IDENTITY', '')
+    if (identity == ''):
+        return []
+    if (identity not in XcodeSettings._codesigning_key_cache):
+        proc = subprocess.Popen(['security', 'find-identity', '-p', 'codesigning', '-v'], stdout=subprocess.PIPE)
+        output = proc.communicate()[0].strip()
+        key = None
+        for item in output.split('\n'):
+            if (identity in item):
+                assert (key == None), ('Multiple codesigning identities for identity: %s' % identity)
+                key = item.split(' ')[1]
+        XcodeSettings._codesigning_key_cache[identity] = key
+    key = XcodeSettings._codesigning_key_cache[identity]
+    if key:
+        unimpl = ['CODE_SIGN_RESOURCE_RULES_PATH', 'OTHER_CODE_SIGN_FLAGS', 'CODE_SIGN_ENTITLEMENTS']
+        keys = set(self.xcode_settings[configname].keys())
+        unimpl = (set(unimpl) & keys)
+        if unimpl:
+            print 'Warning: Some codesign keys not implemented, ignoring:', ' '.join(unimpl)
+        return [('codesign --force --sign %s %s' % (key, output_binary))]
+    return []

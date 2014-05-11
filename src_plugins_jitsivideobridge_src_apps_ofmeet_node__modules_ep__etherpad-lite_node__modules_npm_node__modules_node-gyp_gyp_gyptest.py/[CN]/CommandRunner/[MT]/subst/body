@@ -1,0 +1,10 @@
+def subst(self, string, dictionary=None):
+    "\n    Substitutes (via the format operator) the values in the specified\n    dictionary into the specified command.\n\n    The command can be an (action, string) tuple.  In all cases, we\n    perform substitution on strings and don't worry if something isn't\n    a string.  (It's probably a Python function to be executed.)\n    "
+    if (dictionary is None):
+        dictionary = self._subst_dictionary
+    if dictionary:
+        try:
+            string = (string % dictionary)
+        except TypeError:
+            pass
+    return string

@@ -1,0 +1,22 @@
+def _GetDomainAndUserName():
+    if (sys.platform not in ('win32', 'cygwin')):
+        return ('DOMAIN', 'USERNAME')
+    global cached_username
+    global cached_domain
+    if ((not cached_domain) or (not cached_username)):
+        domain = os.environ.get('USERDOMAIN')
+        username = os.environ.get('USERNAME')
+        if ((not domain) or (not username)):
+            call = subprocess.Popen(['net', 'config', 'Workstation'], stdout=subprocess.PIPE)
+            config = call.communicate()[0]
+            username_re = re.compile('^User name\\s+(\\S+)', re.MULTILINE)
+            username_match = username_re.search(config)
+            if username_match:
+                username = username_match.group(1)
+            domain_re = re.compile('^Logon domain\\s+(\\S+)', re.MULTILINE)
+            domain_match = domain_re.search(config)
+            if domain_match:
+                domain = domain_match.group(1)
+        cached_domain = domain
+        cached_username = username
+    return (cached_domain, cached_username)

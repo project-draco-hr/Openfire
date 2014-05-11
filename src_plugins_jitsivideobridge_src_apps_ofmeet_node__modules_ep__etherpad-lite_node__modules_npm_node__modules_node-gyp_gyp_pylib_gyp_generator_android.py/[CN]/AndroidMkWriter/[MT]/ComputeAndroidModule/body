@@ -1,0 +1,18 @@
+def ComputeAndroidModule(self, spec):
+    'Return the Android module name used for a gyp spec.\n\n    We use the complete qualified target name to avoid collisions between\n    duplicate targets in different directories. We also add a suffix to\n    distinguish gyp-generated module names.\n    '
+    if int(spec.get('android_unmangled_name', 0)):
+        assert ((self.type != 'shared_library') or self.target.startswith('lib'))
+        return self.target
+    if (self.type == 'shared_library'):
+        prefix = 'lib_'
+    else:
+        prefix = ''
+    if (spec['toolset'] == 'host'):
+        suffix = '_host_gyp'
+    else:
+        suffix = '_gyp'
+    if self.path:
+        name = ('%s%s_%s%s' % (prefix, self.path, self.target, suffix))
+    else:
+        name = ('%s%s%s' % (prefix, self.target, suffix))
+    return make.StringToMakefileVariable(name)

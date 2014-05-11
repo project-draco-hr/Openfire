@@ -1,0 +1,27 @@
+def Load(build_files, format, default_variables={}, includes=[], depth='.', params=None, check=False, circular_check=True):
+    '\n  Loads one or more specified build files.\n  default_variables and includes will be copied before use.\n  Returns the generator for the specified format and the\n  data returned by loading the specified build files.\n  '
+    if (params is None):
+        params = {}
+    flavor = None
+    if ('-' in format):
+        (format, params['flavor']) = format.split('-', 1)
+    default_variables = copy.copy(default_variables)
+    default_variables['GENERATOR'] = format
+    if format.endswith('.py'):
+        generator_name = os.path.splitext(format)[0]
+        (path, generator_name) = os.path.split(generator_name)
+        path = os.path.abspath(path)
+        if (path not in sys.path):
+            sys.path.insert(0, path)
+    else:
+        generator_name = ('gyp.generator.' + format)
+    generator = __import__(generator_name, globals(), locals(), generator_name)
+    for (key, val) in generator.generator_default_variables.items():
+        default_variables.setdefault(key, val)
+    if getattr(generator, 'CalculateVariables', None):
+        generator.CalculateVariables(default_variables, params)
+    if getattr(generator, 'CalculateGeneratorInputInfo', None):
+        generator.CalculateGeneratorInputInfo(params)
+    generator_input_info = {'non_configuration_keys': getattr(generator, 'generator_additional_non_configuration_keys', []), 'path_sections': getattr(generator, 'generator_additional_path_sections', []), 'extra_sources_for_rules': getattr(generator, 'generator_extra_sources_for_rules', []), 'generator_supports_multiple_toolsets': getattr(generator, 'generator_supports_multiple_toolsets', False), 'generator_wants_static_library_dependencies_adjusted': getattr(generator, 'generator_wants_static_library_dependencies_adjusted', True), 'generator_wants_sorted_dependencies': getattr(generator, 'generator_wants_sorted_dependencies', False), 'generator_filelist_paths': getattr(generator, 'generator_filelist_paths', None), }
+    result = gyp.input.Load(build_files, default_variables, includes[:], depth, generator_input_info, check, circular_check, params['parallel'], params['root_targets'])
+    return ([generator] + result)

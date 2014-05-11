@@ -1,0 +1,17 @@
+def SortGroups(self):
+    self._properties['mainGroup']._properties['children'] = sorted(self._properties['mainGroup']._properties['children'], cmp=(lambda x, y: x.CompareRootGroup(y)))
+    for group in self._properties['mainGroup']._properties['children']:
+        if (not isinstance(group, PBXGroup)):
+            continue
+        if (group.Name() == 'Products'):
+            products = []
+            for target in self._properties['targets']:
+                if (not isinstance(target, PBXNativeTarget)):
+                    continue
+                product = target._properties['productReference']
+                assert (product in group._properties['children'])
+                products.append(product)
+            assert (len(products) == len(group._properties['children']))
+            group._properties['children'] = products
+        else:
+            group.SortGroup()

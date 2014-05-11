@@ -1,0 +1,16 @@
+def _AppendFiltersForMSBuild(parent_filter_name, sources, extension_to_rule_name, filter_group, source_group):
+    'Creates the list of filters and sources to be added in the filter file.\n\n  Args:\n      parent_filter_name: The name of the filter under which the sources are\n          found.\n      sources: The hierarchy of filters and sources to process.\n      extension_to_rule_name: A dictionary mapping file extensions to rules.\n      filter_group: The list to which filter entries will be appended.\n      source_group: The list to which source entries will be appeneded.\n  '
+    for source in sources:
+        if isinstance(source, MSVSProject.Filter):
+            if (not parent_filter_name):
+                filter_name = source.name
+            else:
+                filter_name = ('%s\\%s' % (parent_filter_name, source.name))
+            filter_group.append(['Filter', {'Include': filter_name, }, ['UniqueIdentifier', MSVSNew.MakeGuid(source.name)]])
+            _AppendFiltersForMSBuild(filter_name, source.contents, extension_to_rule_name, filter_group, source_group)
+        else:
+            (_, element) = _MapFileToMsBuildSourceType(source, extension_to_rule_name)
+            source_entry = [element, {'Include': source, }]
+            if parent_filter_name:
+                source_entry.append(['Filter', parent_filter_name])
+            source_group.append(source_entry)

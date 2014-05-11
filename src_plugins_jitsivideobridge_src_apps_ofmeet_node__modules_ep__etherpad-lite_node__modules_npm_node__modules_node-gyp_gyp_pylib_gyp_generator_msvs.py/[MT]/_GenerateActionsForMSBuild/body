@@ -1,0 +1,21 @@
+def _GenerateActionsForMSBuild(spec, actions_to_add):
+    'Add actions accumulated into an actions_to_add, merging as needed.\n\n  Arguments:\n    spec: the target project dict\n    actions_to_add: dictionary keyed on input name, which maps to a list of\n        dicts describing the actions attached to that input file.\n\n  Returns:\n    A pair of (action specification, the sources handled by this action).\n  '
+    sources_handled_by_action = set()
+    actions_spec = []
+    for (primary_input, actions) in actions_to_add.iteritems():
+        inputs = set()
+        outputs = set()
+        descriptions = []
+        commands = []
+        for action in actions:
+            inputs.update(set(action['inputs']))
+            outputs.update(set(action['outputs']))
+            descriptions.append(action['description'])
+            cmd = action['command']
+            if action.get('msbuild_use_call', True):
+                cmd = ('call ' + cmd)
+            commands.append(cmd)
+        description = ', and also '.join(descriptions)
+        command = '\r\nif %errorlevel% neq 0 exit /b %errorlevel%\r\n'.join(commands)
+        _AddMSBuildAction(spec, primary_input, inputs, outputs, command, description, sources_handled_by_action, actions_spec)
+    return (actions_spec, sources_handled_by_action)

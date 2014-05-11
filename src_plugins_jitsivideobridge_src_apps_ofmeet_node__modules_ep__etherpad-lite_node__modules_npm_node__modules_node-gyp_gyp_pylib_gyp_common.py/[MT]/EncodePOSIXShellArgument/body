@@ -1,0 +1,10 @@
+def EncodePOSIXShellArgument(argument):
+    'Encodes |argument| suitably for consumption by POSIX shells.\n\n  argument may be quoted and escaped as necessary to ensure that POSIX shells\n  treat the returned value as a literal representing the argument passed to\n  this function.  Parameter (variable) expansions beginning with $ are allowed\n  to remain intact without escaping the $, to allow the argument to contain\n  references to variables to be expanded by the shell.\n  '
+    if (not isinstance(argument, str)):
+        argument = str(argument)
+    if _quote.search(argument):
+        quote = '"'
+    else:
+        quote = ''
+    encoded = ((quote + re.sub(_escape, '\\\\\\1', argument)) + quote)
+    return encoded

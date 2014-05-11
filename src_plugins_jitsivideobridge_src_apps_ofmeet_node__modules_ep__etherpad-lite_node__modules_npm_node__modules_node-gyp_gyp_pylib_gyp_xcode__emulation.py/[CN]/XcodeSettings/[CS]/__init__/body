@@ -1,0 +1,12 @@
+def __init__(self, spec):
+    self.spec = spec
+    self.isIOS = False
+    self.xcode_settings = {}
+    configs = spec['configurations']
+    for (configname, config) in configs.iteritems():
+        self.xcode_settings[configname] = config.get('xcode_settings', {})
+        self._ConvertConditionalKeys(configname)
+        if self.xcode_settings[configname].get('IPHONEOS_DEPLOYMENT_TARGET', None):
+            self.isIOS = True
+    self.configname = None
+    self.library_re = re.compile('^lib([^/]+)\\.(a|dylib)$')

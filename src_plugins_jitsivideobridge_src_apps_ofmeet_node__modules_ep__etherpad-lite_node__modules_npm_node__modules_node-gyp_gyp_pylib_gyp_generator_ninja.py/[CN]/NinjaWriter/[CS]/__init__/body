@@ -1,0 +1,22 @@
+def __init__(self, qualified_target, target_outputs, base_dir, build_dir, output_file, toplevel_build, output_file_name, flavor, toplevel_dir=None):
+    '\n    base_dir: path from source root to directory containing this gyp file,\n              by gyp semantics, all input paths are relative to this\n    build_dir: path from source root to build output\n    toplevel_dir: path to the toplevel directory\n    '
+    self.qualified_target = qualified_target
+    self.target_outputs = target_outputs
+    self.base_dir = base_dir
+    self.build_dir = build_dir
+    self.ninja = ninja_syntax.Writer(output_file)
+    self.toplevel_build = toplevel_build
+    self.output_file_name = output_file_name
+    self.flavor = flavor
+    self.abs_build_dir = None
+    if (toplevel_dir is not None):
+        self.abs_build_dir = os.path.abspath(os.path.join(toplevel_dir, build_dir))
+    self.obj_ext = ('.obj' if (flavor == 'win') else '.o')
+    if (flavor == 'win'):
+        self.win_env = {}
+        for arch in ('x86', 'x64'):
+            self.win_env[arch] = ('environment.' + arch)
+    build_to_top = gyp.common.InvertRelativePath(build_dir, toplevel_dir)
+    self.build_to_base = os.path.join(build_to_top, base_dir)
+    base_to_top = gyp.common.InvertRelativePath(base_dir, toplevel_dir)
+    self.base_to_build = os.path.join(base_to_top, build_dir)

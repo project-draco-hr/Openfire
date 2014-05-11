@@ -1,0 +1,18 @@
+def ValidateRunAsInTarget(target, target_dict, build_file):
+    target_name = target_dict.get('target_name')
+    run_as = target_dict.get('run_as')
+    if (not run_as):
+        return
+    if (not isinstance(run_as, dict)):
+        raise GypError(("The 'run_as' in target %s from file %s should be a dictionary." % (target_name, build_file)))
+    action = run_as.get('action')
+    if (not action):
+        raise GypError(("The 'run_as' in target %s from file %s must have an 'action' section." % (target_name, build_file)))
+    if (not isinstance(action, list)):
+        raise GypError(("The 'action' for 'run_as' in target %s from file %s must be a list." % (target_name, build_file)))
+    working_directory = run_as.get('working_directory')
+    if (working_directory and (not isinstance(working_directory, str))):
+        raise GypError(("The 'working_directory' for 'run_as' in target %s in file %s should be a string." % (target_name, build_file)))
+    environment = run_as.get('environment')
+    if (environment and (not isinstance(environment, dict))):
+        raise GypError(("The 'environment' for 'run_as' in target %s in file %s should be a dictionary." % (target_name, build_file)))

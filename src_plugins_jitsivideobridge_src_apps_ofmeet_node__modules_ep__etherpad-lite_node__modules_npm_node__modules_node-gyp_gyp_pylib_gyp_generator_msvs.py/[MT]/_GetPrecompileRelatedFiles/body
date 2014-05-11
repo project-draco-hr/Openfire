@@ -1,0 +1,8 @@
+def _GetPrecompileRelatedFiles(spec):
+    precompiled_related = []
+    for (_, config) in spec['configurations'].iteritems():
+        for k in precomp_keys:
+            f = config.get(k)
+            if f:
+                precompiled_related.append(_FixPath(f))
+    return precompiled_related

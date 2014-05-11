@@ -1,0 +1,21 @@
+def WriteActions(self, actions, extra_sources, prebuild, extra_mac_bundle_resources):
+    env = self.GetSortedXcodeEnv()
+    if (self.flavor == 'win'):
+        env = self.msvs_settings.GetVSMacroEnv('$!PRODUCT_DIR', config=self.config_name)
+    all_outputs = []
+    for action in actions:
+        name = ('%s_%s' % (action['action_name'], hashlib.md5(self.qualified_target).hexdigest()))
+        description = self.GenerateDescription('ACTION', action.get('message', None), name)
+        is_cygwin = (self.msvs_settings.IsRuleRunUnderCygwin(action) if (self.flavor == 'win') else False)
+        args = action['action']
+        (rule_name, _) = self.WriteNewNinjaRule(name, args, description, is_cygwin, env=env)
+        inputs = [self.GypPathToNinja(i, env) for i in action['inputs']]
+        if int(action.get('process_outputs_as_sources', False)):
+            extra_sources += action['outputs']
+        if int(action.get('process_outputs_as_mac_bundle_resources', False)):
+            extra_mac_bundle_resources += action['outputs']
+        outputs = [self.GypPathToNinja(o, env) for o in action['outputs']]
+        self.ninja.build(outputs, rule_name, inputs, order_only=prebuild)
+        all_outputs += outputs
+        self.ninja.newline()
+    return all_outputs

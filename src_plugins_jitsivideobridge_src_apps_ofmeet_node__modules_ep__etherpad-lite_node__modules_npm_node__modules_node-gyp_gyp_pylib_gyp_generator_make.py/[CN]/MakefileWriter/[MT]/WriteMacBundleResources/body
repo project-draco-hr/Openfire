@@ -1,0 +1,6 @@
+def WriteMacBundleResources(self, resources, bundle_deps):
+    "Writes Makefile code for 'mac_bundle_resources'."
+    self.WriteLn('### Generated for mac_bundle_resources')
+    for (output, res) in gyp.xcode_emulation.GetMacBundleResources(generator_default_variables['PRODUCT_DIR'], self.xcode_settings, map(Sourceify, map(self.Absolutify, resources))):
+        self.WriteDoCmd([output], [res], 'mac_tool,,,copy-bundle-resource', part_of_all=True)
+        bundle_deps.append(output)

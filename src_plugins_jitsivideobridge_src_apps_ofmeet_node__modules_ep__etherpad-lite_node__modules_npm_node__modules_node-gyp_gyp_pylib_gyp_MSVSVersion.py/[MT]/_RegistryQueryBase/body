@@ -1,0 +1,12 @@
+def _RegistryQueryBase(sysdir, key, value):
+    'Use reg.exe to read a particular key.\n\n  While ideally we might use the win32 module, we would like gyp to be\n  python neutral, so for instance cygwin python lacks this module.\n\n  Arguments:\n    sysdir: The system subdirectory to attempt to launch reg.exe from.\n    key: The registry key to read from.\n    value: The particular value to read.\n  Return:\n    stdout from reg.exe, or None for failure.\n  '
+    if (sys.platform not in ('win32', 'cygwin')):
+        return None
+    cmd = [os.path.join(os.environ.get('WINDIR', ''), sysdir, 'reg.exe'), 'query', key]
+    if value:
+        cmd.extend(['/v', value])
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    text = p.communicate()[0]
+    if p.returncode:
+        return None
+    return text

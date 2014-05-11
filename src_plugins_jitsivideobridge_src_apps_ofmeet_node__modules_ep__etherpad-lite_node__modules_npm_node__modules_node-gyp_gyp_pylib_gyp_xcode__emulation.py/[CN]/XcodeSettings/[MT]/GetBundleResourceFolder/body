@@ -1,0 +1,6 @@
+def GetBundleResourceFolder(self):
+    "Returns the qualified path to the bundle's resource folder. E.g.\n    Chromium.app/Contents/Resources. Only valid for bundles."
+    assert self._IsBundle()
+    if self.isIOS:
+        return self.GetBundleContentsFolderPath()
+    return os.path.join(self.GetBundleContentsFolderPath(), 'Resources')

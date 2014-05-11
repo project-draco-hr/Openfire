@@ -1,0 +1,9 @@
+def ExecLinkWrapper(self, arch, *args):
+    "Filter diagnostic output from link that looks like:\n    '   Creating library ui.dll.lib and object ui.dll.exp'\n    This happens when there are exports from the dll or exe.\n    "
+    env = self._GetEnv(arch)
+    popen = subprocess.Popen(args, shell=True, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    (out, _) = popen.communicate()
+    for line in out.splitlines():
+        if (not line.startswith('   Creating library ')):
+            print line
+    return popen.returncode

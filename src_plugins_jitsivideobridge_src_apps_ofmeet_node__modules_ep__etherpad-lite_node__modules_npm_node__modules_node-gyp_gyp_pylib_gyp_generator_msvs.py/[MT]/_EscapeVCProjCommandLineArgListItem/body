@@ -1,0 +1,12 @@
+def _EscapeVCProjCommandLineArgListItem(s):
+    "Escapes command line arguments for MSVS.\n\n  The VCProj format stores string lists in a single string using commas and\n  semi-colons as separators, which must be quoted if they are to be\n  interpreted literally. However, command-line arguments may already have\n  quotes, and the VCProj parser is ignorant of the backslash escaping\n  convention used by CommandLineToArgv, so the command-line quotes and the\n  VCProj quotes may not be the same quotes. So to store a general\n  command-line argument in a VCProj list, we need to parse the existing\n  quoting according to VCProj's convention and quote any delimiters that are\n  not already quoted by that convention. The quotes that we add will also be\n  seen by CommandLineToArgv, so if backslashes precede them then we also have\n  to escape those backslashes according to the CommandLineToArgv\n  convention.\n\n  Args:\n      s: the string to be escaped.\n  Returns:\n      the escaped string.\n  "
+
+    def _Replace(match):
+        return ((((2 * match.group(1)) + '"') + match.group(2)) + '"')
+    segments = s.split('"')
+    for i in range(0, len(segments), 2):
+        segments[i] = delimiters_replacer_regex.sub(_Replace, segments[i])
+    s = '"'.join(segments)
+    if ((len(segments) % 2) == 0):
+        print  >> sys.stderr, (('Warning: MSVS may misinterpret the odd number of ' + 'quotes in ') + s)
+    return s

@@ -1,0 +1,11 @@
+def __init__(self, path, name=None, entries=None, guid=None, items=None):
+    'Initializes the folder.\n\n    Args:\n      path: Full path to the folder.\n      name: Name of the folder.\n      entries: List of folder entries to nest inside this folder.  May contain\n          Folder or Project objects.  May be None, if the folder is empty.\n      guid: GUID to use for folder, if not None.\n      items: List of solution items to include in the folder project.  May be\n          None, if the folder does not directly contain items.\n    '
+    if name:
+        self.name = name
+    else:
+        self.name = os.path.basename(path)
+    self.path = path
+    self.guid = guid
+    self.entries = sorted(list((entries or [])))
+    self.items = list((items or []))
+    self.entry_type_guid = ENTRY_TYPE_GUIDS['folder']

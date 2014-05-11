@@ -1,0 +1,8 @@
+def _AppendPlatformVersionMinFlags(self, lst):
+    self._Appendf(lst, 'MACOSX_DEPLOYMENT_TARGET', '-mmacosx-version-min=%s')
+    if ('IPHONEOS_DEPLOYMENT_TARGET' in self._Settings()):
+        sdk_path_basename = os.path.basename(self._SdkPath())
+        if sdk_path_basename.lower().startswith('iphonesimulator'):
+            self._Appendf(lst, 'IPHONEOS_DEPLOYMENT_TARGET', '-mios-simulator-version-min=%s')
+        else:
+            self._Appendf(lst, 'IPHONEOS_DEPLOYMENT_TARGET', '-miphoneos-version-min=%s')

@@ -1,0 +1,17 @@
+def _AddBuildFileToDicts(self, pbxbuildfile, path=None):
+    "Maintains the _files_by_path and _files_by_xcfilelikeelement dicts.\n\n    If path is specified, then it is the path that is being added to the\n    phase, and pbxbuildfile must contain either a PBXFileReference directly\n    referencing that path, or it must contain a PBXVariantGroup that itself\n    contains a PBXFileReference referencing the path.\n\n    If path is not specified, either the PBXFileReference's path or the paths\n    of all children of the PBXVariantGroup are taken as being added to the\n    phase.\n\n    If the path is already present in the phase, raises an exception.\n\n    If the PBXFileReference or PBXVariantGroup referenced by pbxbuildfile\n    are already present in the phase, referenced by a different PBXBuildFile\n    object, raises an exception.  This does not raise an exception when\n    a PBXFileReference or PBXVariantGroup reappear and are referenced by the\n    same PBXBuildFile that has already introduced them, because in the case\n    of PBXVariantGroup objects, they may correspond to multiple paths that are\n    not all added simultaneously.  When this situation occurs, the path needs\n    to be added to _files_by_path, but nothing needs to change in\n    _files_by_xcfilelikeelement, and the caller should have avoided adding\n    the PBXBuildFile if it is already present in the list of children.\n    "
+    xcfilelikeelement = pbxbuildfile._properties['fileRef']
+    paths = []
+    if (path != None):
+        if isinstance(xcfilelikeelement, PBXVariantGroup):
+            paths.append(path)
+    elif isinstance(xcfilelikeelement, PBXVariantGroup):
+        for variant in xcfilelikeelement._properties['children']:
+            paths.append(variant.FullPath())
+    else:
+        paths.append(xcfilelikeelement.FullPath())
+    for a_path in paths:
+        self._AddPathToDict(pbxbuildfile, a_path)
+    if ((xcfilelikeelement in self._files_by_xcfilelikeelement) and (self._files_by_xcfilelikeelement[xcfilelikeelement] != pbxbuildfile)):
+        raise ValueError, ('Found multiple build files for ' + xcfilelikeelement.Name())
+    self._files_by_xcfilelikeelement[xcfilelikeelement] = pbxbuildfile

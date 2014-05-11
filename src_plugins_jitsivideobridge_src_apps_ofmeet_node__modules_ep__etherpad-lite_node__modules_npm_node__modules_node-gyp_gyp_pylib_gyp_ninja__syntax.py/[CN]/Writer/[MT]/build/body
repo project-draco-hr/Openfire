@@ -1,0 +1,22 @@
+def build(self, outputs, rule, inputs=None, implicit=None, order_only=None, variables=None):
+    outputs = self._as_list(outputs)
+    all_inputs = self._as_list(inputs)[:]
+    out_outputs = list(map(escape_path, outputs))
+    all_inputs = list(map(escape_path, all_inputs))
+    if implicit:
+        implicit = map(escape_path, self._as_list(implicit))
+        all_inputs.append('|')
+        all_inputs.extend(implicit)
+    if order_only:
+        order_only = map(escape_path, self._as_list(order_only))
+        all_inputs.append('||')
+        all_inputs.extend(order_only)
+    self._line(('build %s: %s' % (' '.join(out_outputs), ' '.join(([rule] + all_inputs)))))
+    if variables:
+        if isinstance(variables, dict):
+            iterator = iter(variables.items())
+        else:
+            iterator = iter(variables)
+        for (key, val) in iterator:
+            self.variable(key, val, indent=1)
+    return outputs

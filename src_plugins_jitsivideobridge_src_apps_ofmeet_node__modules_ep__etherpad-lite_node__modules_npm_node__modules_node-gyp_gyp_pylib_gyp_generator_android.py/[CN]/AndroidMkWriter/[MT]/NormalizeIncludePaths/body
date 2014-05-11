@@ -1,0 +1,9 @@
+def NormalizeIncludePaths(self, include_paths):
+    ' Normalize include_paths.\n    Convert absolute paths to relative to the Android top directory;\n    filter out include paths that are already brought in by the Android build\n    system.\n\n    Args:\n      include_paths: A list of unprocessed include paths.\n    Returns:\n      A list of normalized include paths.\n    '
+    normalized = []
+    for path in include_paths:
+        if (path[0] == '/'):
+            path = gyp.common.RelativePath(path, self.android_top_dir)
+        if (path not in android_standard_include_paths):
+            normalized.append(path)
+    return normalized
