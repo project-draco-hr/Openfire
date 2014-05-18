@@ -114,12 +114,11 @@
         hasAffiliation=affiliation != null;
         target=(hasAffiliation ? affiliation : item.attributeValue("role"));
         List<JID> jids=new ArrayList<JID>();
+        nick=item.attributeValue("nick");
         if (hasJID) {
           jids.add(new JID(item.attributeValue("jid")));
-          nick=null;
         }
  else {
-          nick=item.attributeValue("nick");
           for (          MUCRole role : room.getOccupantsByNickname(nick)) {
             if (!jids.contains(role.getUserAddress())) {
               jids.add(role.getUserAddress());
