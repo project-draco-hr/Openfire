@@ -8,13 +8,13 @@
     streamError=new StreamError(StreamError.Condition.host_unknown);
     Log.warn("Closing session due to incorrect hostname in stream header. Host: " + host + ". Connection: "+ connection);
   }
- else   if (!"http://etherx.jabber.org/streams".equals(xpp.getNamespace())) {
+ else   if (!"http://etherx.jabber.org/streams".equals(xpp.getNamespace()) && !"http://www.jabber.com/streams/flash".equals(xpp.getNamespace())) {
     streamError=new StreamError(StreamError.Condition.invalid_namespace);
-    Log.warn("Closing session due to invalid_namespace in stream header. Namespace: " + xpp.getNamespace() + ". Connection: "+ connection);
+    Log.warn("Closing session due to invalid namespace in stream header. Namespace: " + xpp.getNamespace() + ". Connection: "+ connection);
   }
  else   if (!createSession(xpp.getNamespace(null),serverName,xpp,connection)) {
     streamError=new StreamError(StreamError.Condition.invalid_namespace);
-    Log.warn("Closing session due to invalid_namespace in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
+    Log.warn("Closing session due to invalid namespace in stream header. Prefix: " + xpp.getNamespace(null) + ". Connection: "+ connection);
   }
   if (streamError != null) {
     StringBuilder sb=new StringBuilder(250);
