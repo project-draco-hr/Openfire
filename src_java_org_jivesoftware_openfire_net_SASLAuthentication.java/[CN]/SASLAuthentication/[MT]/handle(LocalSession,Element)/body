@@ -35,8 +35,13 @@ authenticationFailed(session,Failure.INVALID_MECHANISM);
 return Status.failed;
 }
 byte[] token=new byte[0];
-if (doc.getText().length() > 0) {
-token=StringUtils.decodeBase64(doc.getText().trim());
+String value=doc.getTextTrim();
+if (value.length() > 0) {
+if (!BASE64_ENCODED.matcher(value).matches()) {
+  authenticationFailed(session,Failure.INCORRECT_ENCODING);
+  return Status.failed;
+}
+token=StringUtils.decodeBase64(value);
 if (token == null) {
   token=new byte[0];
 }
@@ -80,6 +85,10 @@ SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
 if (ss != null) {
 boolean ssComplete=ss.isComplete();
 String response=doc.getTextTrim();
+if (!BASE64_ENCODED.matcher(response).matches()) {
+authenticationFailed(session,Failure.INCORRECT_ENCODING);
+return Status.failed;
+}
 try {
 if (ssComplete) {
 authenticationSuccessful(session,ss.getAuthorizationID(),null);
