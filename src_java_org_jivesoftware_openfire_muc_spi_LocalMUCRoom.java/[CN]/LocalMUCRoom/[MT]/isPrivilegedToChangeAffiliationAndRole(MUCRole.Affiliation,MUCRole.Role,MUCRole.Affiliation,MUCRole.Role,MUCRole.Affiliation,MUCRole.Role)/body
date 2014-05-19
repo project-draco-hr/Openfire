@@ -1,0 +1,20 @@
+{
+switch (actorAffiliation) {
+case owner:
+    return true;
+case admin:
+  if (occupantAffiliation == newAffiliation) {
+    return occupantAffiliation != MUCRole.Affiliation.owner;
+  }
+ else {
+    return occupantAffiliation != MUCRole.Affiliation.owner && newAffiliation != MUCRole.Affiliation.admin && newAffiliation != MUCRole.Affiliation.owner;
+  }
+default :
+if (actorRole == MUCRole.Role.moderator && occupantAffiliation == newAffiliation) {
+  if (occupantRole == MUCRole.Role.moderator && newRole != MUCRole.Role.moderator) {
+    return occupantAffiliation != MUCRole.Affiliation.owner && occupantAffiliation != MUCRole.Affiliation.admin;
+  }
+}
+return false;
+}
+}
