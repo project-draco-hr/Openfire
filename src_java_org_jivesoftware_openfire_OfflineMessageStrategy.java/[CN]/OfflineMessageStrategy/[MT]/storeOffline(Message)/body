@@ -4,9 +4,6 @@
     if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
       return;
     }
-    if (Message.Type.groupchat == message.getType() || Message.Type.error == message.getType() || Message.Type.headline == message.getType()) {
-      return;
-    }
     PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(recipientJID.getNode());
     if (list != null && list.shouldBlockPacket(message)) {
       Message result=message.createCopy();
@@ -14,6 +11,29 @@
       result.setError(PacketError.Condition.service_unavailable);
       XMPPServer.getInstance().getRoutingTable().routePacket(message.getFrom(),result,true);
       return;
+    }
+    if (recipientJID.getResource() == null) {
+      if (message.getType() == Message.Type.headline || message.getType() == Message.Type.error) {
+        return;
+      }
+ else       if (message.getType() == Message.Type.groupchat) {
+        bounce(message);
+        return;
+      }
+    }
+ else {
+      if (message.getType() == Message.Type.normal || message.getType() == Message.Type.groupchat || message.getType() == Message.Type.headline) {
+        if (type == Type.bounce) {
+          bounce(message);
+          return;
+        }
+ else {
+          return;
+        }
+      }
+ else       if (message.getType() == Message.Type.error) {
+        return;
+      }
     }
     if (type == Type.bounce) {
       bounce(message);
