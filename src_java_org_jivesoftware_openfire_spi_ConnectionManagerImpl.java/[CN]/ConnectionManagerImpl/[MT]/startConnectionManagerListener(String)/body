@@ -9,7 +9,8 @@
           bindInterface=InetAddress.getByName(interfaceName);
         }
       }
-      multiplexerSocketAcceptor.bind(new InetSocketAddress(bindInterface,port),new MultiplexerConnectionHandler(serverName));
+      multiplexerSocketAcceptor.setHandler(new MultiplexerConnectionHandler(serverName));
+      multiplexerSocketAcceptor.bind(new InetSocketAddress(bindInterface,port));
       ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.connectionManager));
       List<String> params=new ArrayList<String>();
       params.add(Integer.toString(port));

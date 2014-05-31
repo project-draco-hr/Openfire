@@ -28,10 +28,13 @@
       tmpMsgRead+=(readMessages - sessStat.lastMessageRead);
       tmpBytesWritten+=(writtenBytes - sessStat.lastByteWrite);
       tmpBytesRead+=(readBytes - sessStat.lastByteRead);
-      tmpScheduledWrites+=session.getScheduledWriteRequests();
-      ExecutorFilter executorFilter=(ExecutorFilter)session.getFilterChain().get(ExecutorThreadModel.class.getName());
+      tmpScheduledWrites+=session.getScheduledWriteMessages();
+      ExecutorFilter executorFilter=(ExecutorFilter)session.getFilterChain().get(EXECUTOR_FILTER_NAME);
       if (executorFilter != null) {
-        tmpQueuevedEvents+=executorFilter.getEventQueueSize(session);
+        Executor executor=executorFilter.getExecutor();
+        if (executor instanceof OrderedThreadPoolExecutor) {
+          tmpQueuevedEvents+=((OrderedThreadPoolExecutor)executor).getActiveCount();
+        }
       }
       sessStat.lastByteRead=readBytes;
       sessStat.lastByteWrite=writtenBytes;

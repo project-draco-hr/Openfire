@@ -1,6 +1,6 @@
 {
   if (!isClosed()) {
-    ByteBuffer buffer=ByteBuffer.allocate(text.length());
+    IoBuffer buffer=IoBuffer.allocate(text.length());
     buffer.setAutoExpand(true);
     boolean errorDelivering=false;
     try {
@@ -16,7 +16,7 @@
         ioSession.write(buffer);
       }
  else {
-        boolean ok=ioSession.write(buffer).join(JiveGlobals.getIntProperty("connection.ack.timeout",2000));
+        boolean ok=ioSession.write(buffer).awaitUninterruptibly(JiveGlobals.getIntProperty("connection.ack.timeout",2000));
         if (!ok) {
           Log.warn("No ACK was received when sending stanza to: " + this.toString());
         }

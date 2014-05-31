@@ -1,12 +1,10 @@
 {
-  SocketAcceptor socketAcceptor;
-  int ioThreads=JiveGlobals.getIntProperty("xmpp.processor.count",Runtime.getRuntime().availableProcessors());
-  Executor ioExecutor=new ThreadPoolExecutor(ioThreads + 1,ioThreads + 1,60,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>());
-  socketAcceptor=new SocketAcceptor(ioThreads,ioExecutor);
-  SocketAcceptorConfig socketAcceptorConfig=socketAcceptor.getDefaultConfig();
-  socketAcceptorConfig.setReuseAddress(true);
-  socketAcceptorConfig.setBacklog(JiveGlobals.getIntProperty("xmpp.socket.backlog",50));
-  SocketSessionConfig socketSessionConfig=socketAcceptorConfig.getSessionConfig();
+  NioSocketAcceptor socketAcceptor;
+  int processorCount=JiveGlobals.getIntProperty("xmpp.processor.count",Runtime.getRuntime().availableProcessors());
+  socketAcceptor=new NioSocketAcceptor(processorCount);
+  socketAcceptor.setReuseAddress(true);
+  socketAcceptor.setBacklog(JiveGlobals.getIntProperty("xmpp.socket.backlog",50));
+  SocketSessionConfig socketSessionConfig=socketAcceptor.getSessionConfig();
   int receiveBuffer=JiveGlobals.getIntProperty("xmpp.socket.buffer.receive",-1);
   if (receiveBuffer > 0) {
     socketSessionConfig.setReceiveBufferSize(receiveBuffer);
