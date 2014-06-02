@@ -5,10 +5,10 @@
       if (!CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
         Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
       }
-      final SslContextFactory sslContextFactory=new SslContextFactory(SSLConfig.getKeystoreLocation());
+      final SslContextFactory sslContextFactory=new SslContextFactory();
       sslContextFactory.setTrustStorePassword(SSLConfig.getc2sTrustPassword());
       sslContextFactory.setTrustStoreType(SSLConfig.getStoreType());
-      sslContextFactory.setTrustStore(SSLConfig.getc2sTruststoreLocation());
+      sslContextFactory.setKeyStorePath(SSLConfig.getKeystoreLocation());
       sslContextFactory.setKeyStorePassword(SSLConfig.getKeyPassword());
       sslContextFactory.setKeyStoreType(SSLConfig.getStoreType());
       String certPol=JiveGlobals.getProperty("xmpp.client.cert.policy","disabled");
@@ -24,10 +24,20 @@
         sslContextFactory.setNeedClientAuth(false);
         sslContextFactory.setWantClientAuth(false);
       }
-      final SslSelectChannelConnector sslConnector=new SslSelectChannelConnector(sslContextFactory);
+      HttpConfiguration httpsConfig=new HttpConfiguration();
+      httpsConfig.setSecureScheme("https");
+      httpsConfig.setSecurePort(securePort);
+      configureProxiedConnector(httpsConfig);
+      httpsConfig.addCustomizer(new SecureRequestCustomizer());
+      ServerConnector sslConnector=null;
+      if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {
+        sslConnector=new HTTPSPDYServerConnector(httpBindServer,sslContextFactory);
+      }
+ else {
+        sslConnector=new ServerConnector(httpBindServer,new SslConnectionFactory(sslContextFactory,"http/1.1"),new HttpConnectionFactory(httpsConfig));
+      }
       sslConnector.setHost(getBindInterface());
       sslConnector.setPort(securePort);
-      configureProxiedConnector(sslConnector);
       httpsConnector=sslConnector;
     }
   }

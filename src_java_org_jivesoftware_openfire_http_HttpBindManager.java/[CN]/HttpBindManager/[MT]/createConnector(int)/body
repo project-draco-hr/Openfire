@@ -1,10 +1,11 @@
 {
   httpConnector=null;
   if (port > 0) {
-    SelectChannelConnector connector=new SelectChannelConnector();
+    HttpConfiguration httpConfig=new HttpConfiguration();
+    configureProxiedConnector(httpConfig);
+    ServerConnector connector=new ServerConnector(httpBindServer,new HttpConnectionFactory(httpConfig));
     connector.setHost(getBindInterface());
     connector.setPort(port);
-    configureProxiedConnector(connector);
     httpConnector=connector;
   }
 }

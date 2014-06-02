@@ -4,22 +4,23 @@
   CertificateManager.addListener(certificateListener);
   adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
   adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
-  adminServer=new Server();
-  if (JMXManager.isEnabled()) {
-    JMXManager jmx=JMXManager.getInstance();
-    adminServer.getContainer().addEventListener(jmx.getContainer());
-    adminServer.addBean(jmx.getContainer());
-  }
   final QueuedThreadPool tp=new QueuedThreadPool(254);
   tp.setName("Jetty-QTP-AdminConsole");
-  adminServer.setThreadPool(tp);
-  adminServer.setSendServerVersion(false);
+  adminServer=new Server(tp);
+  if (JMXManager.isEnabled()) {
+    JMXManager jmx=JMXManager.getInstance();
+    adminServer.addBean(jmx.getContainer());
+  }
+  ServerConnector httpConnector=null;
+  ServerConnector httpsConnector=null;
+  HttpConfiguration httpConfig=null;
   if (adminPort > 0) {
-    Connector httpConnector=new SelectChannelConnector();
+    httpConfig=new HttpConfiguration();
+    httpConfig.setSendServerVersion(false);
+    httpConnector=new ServerConnector(adminServer,new HttpConnectionFactory(httpConfig));
     String bindInterface=getBindInterface();
     httpConnector.setHost(bindInterface);
     httpConnector.setPort(adminPort);
-    httpConnector.setStatsOn(JMXManager.isEnabled());
     adminServer.addConnector(httpConnector);
   }
   sslEnabled=false;
@@ -28,19 +29,29 @@
       if (!CertificateManager.isRSACertificate(SSLConfig.getKeyStore(),XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
         Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
       }
-      final SslContextFactory sslContextFactory=new SslContextFactory(SSLConfig.getKeystoreLocation());
+      final SslContextFactory sslContextFactory=new SslContextFactory();
       sslContextFactory.setTrustStorePassword(SSLConfig.gets2sTrustPassword());
       sslContextFactory.setTrustStoreType(SSLConfig.getStoreType());
-      sslContextFactory.setTrustStore(SSLConfig.gets2sTruststoreLocation());
+      sslContextFactory.setKeyStorePath(SSLConfig.getKeystoreLocation());
       sslContextFactory.setNeedClientAuth(false);
       sslContextFactory.setWantClientAuth(false);
       sslContextFactory.setKeyStorePassword(SSLConfig.getKeyPassword());
       sslContextFactory.setKeyStoreType(SSLConfig.getStoreType());
-      final SslSelectChannelConnector httpsConnector=new SslSelectChannelConnector(sslContextFactory);
+      if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {
+        httpsConnector=new HTTPSPDYServerConnector(adminServer,sslContextFactory);
+      }
+ else {
+        HttpConfiguration httpsConfig=new HttpConfiguration(httpConfig);
+        httpsConfig.setSecureScheme("https");
+        httpsConfig.setSecurePort(adminSecurePort);
+        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+        HttpConnectionFactory httpConnectionFactory=new HttpConnectionFactory(httpsConfig);
+        SslConnectionFactory sslConnectionFactory=new SslConnectionFactory(sslContextFactory,org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
+        httpsConnector=new ServerConnector(adminServer,sslConnectionFactory,httpConnectionFactory);
+      }
       String bindInterface=getBindInterface();
       httpsConnector.setHost(bindInterface);
       httpsConnector.setPort(adminSecurePort);
-      httpsConnector.setStatsOn(JMXManager.isEnabled());
       adminServer.addConnector(httpsConnector);
       sslEnabled=true;
     }
