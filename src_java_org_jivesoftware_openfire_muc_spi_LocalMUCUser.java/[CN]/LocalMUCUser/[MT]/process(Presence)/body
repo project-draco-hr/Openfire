@@ -7,12 +7,12 @@
   String group=recipient.getNode();
   if (group != null) {
     MUCRole role=roles.get(group);
-    if (role == null) {
+    Element mucInfo=packet.getChildElement("x","http://jabber.org/protocol/muc");
+    if (role == null || mucInfo != null) {
       if (recipient.getResource() != null && recipient.getResource().trim().length() > 0) {
         if (packet.isAvailable()) {
           try {
             MUCRoom room=server.getChatRoom(group,packet.getFrom());
-            Element mucInfo=packet.getChildElement("x","http://jabber.org/protocol/muc");
             HistoryRequest historyRequest=null;
             String password=null;
             if (mucInfo != null) {
