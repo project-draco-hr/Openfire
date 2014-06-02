@@ -7,7 +7,7 @@
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
     log.debug("Negotiating TLS...");
-    boolean needed=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true) && JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true) && !JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false);
+    boolean needed=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true) && JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_CHAIN_VERIFY,true) && !JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ACCEPT_SELFSIGNED_CERTS,false);
     connection.startTLS(true,hostname,needed ? Connection.ClientAuth.needed : Connection.ClientAuth.wanted);
     log.debug("TLS negotiation was successful.");
     connection.deliverRawText(openingStream.toString());
@@ -18,7 +18,7 @@
     String id=xpp.getAttributeValue("","id");
     features=reader.parseDocument().getRootElement();
     if (features != null) {
-      String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
+      String policyName=JiveGlobals.getProperty(ConnectionSettings.Server.COMPRESSION_SETTINGS,Connection.CompressionPolicy.disabled.toString());
       Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
       if (Connection.CompressionPolicy.optional == compressionPolicy) {
         Element compression=features.element("compression");

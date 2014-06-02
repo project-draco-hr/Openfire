@@ -34,13 +34,13 @@
       }
       connection.setTlsPolicy(hasCertificates ? tlsPolicy : Connection.TLSPolicy.disabled);
     }
-    String policyName=JiveGlobals.getProperty("xmpp.server.compression.policy",Connection.CompressionPolicy.disabled.toString());
+    String policyName=JiveGlobals.getProperty(ConnectionSettings.Server.COMPRESSION_SETTINGS,Connection.CompressionPolicy.disabled.toString());
     Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
     connection.setCompressionPolicy(compressionPolicy);
     StringBuilder sb=new StringBuilder();
     if (serverVersion[0] >= 1) {
       sb.append("<stream:features>");
-      if (JiveGlobals.getBooleanProperty("xmpp.server.tls.enabled",true)) {
+      if (JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ENABLED,true)) {
         sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
         if (!ServerDialback.isEnabled()) {
           sb.append("<required/>");

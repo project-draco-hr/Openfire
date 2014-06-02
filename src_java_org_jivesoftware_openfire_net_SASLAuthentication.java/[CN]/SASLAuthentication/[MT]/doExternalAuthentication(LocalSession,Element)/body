@@ -6,7 +6,7 @@
       return Status.needResponse;
     }
     hostname=new String(StringUtils.decodeBase64(hostname),CHARSET);
-    boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
+    boolean verify=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true);
     if (!verify) {
       authenticationSuccessful(session,hostname,null);
       return Status.authenticated;

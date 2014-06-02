@@ -1,5 +1,5 @@
 {
-  boolean verify=JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify",true);
+  boolean verify=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true);
   if (verify) {
     int nSize=x509Certificates.length;
     if (Log.isDebugEnabled()) {
@@ -9,7 +9,7 @@
       }
     }
     List<String> peerIdentities=CertificateManager.getPeerIdentities(x509Certificates[0]);
-    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.chain",true)) {
+    if (JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_CHAIN_VERIFY,true)) {
       Log.debug("Verifying certificate chain...");
       Principal principalLast=null;
       for (int i=nSize - 1; i >= 0; i--) {
@@ -34,13 +34,13 @@
         principalLast=principalSubject;
       }
     }
-    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.root",true)) {
+    if (JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_ROOT_VERIFY,true)) {
       Log.debug("Verifying certificate chain root certificate...");
       boolean trusted=false;
       try {
         trusted=trustStore.getCertificateAlias(x509Certificates[nSize - 1]) != null;
         connection.setUsingSelfSignedCertificate(!trusted && nSize == 1);
-        if (!trusted && nSize == 1 && JiveGlobals.getBooleanProperty("xmpp.server.certificate.accept-selfsigned",false)) {
+        if (!trusted && nSize == 1 && JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ACCEPT_SELFSIGNED_CERTS,false)) {
           Log.warn("Accepting self-signed certificate of remote server: " + peerIdentities);
           trusted=true;
         }
@@ -62,7 +62,7 @@
     if (!found) {
       throw new CertificateException("target verification failed of " + peerIdentities);
     }
-    if (JiveGlobals.getBooleanProperty("xmpp.server.certificate.verify.validity",true)) {
+    if (JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY_VALIDITY,true)) {
       Log.debug("Verifying certificate chain validity (by date)...");
       Date date=new Date();
       for (      X509Certificate x509Certificate : x509Certificates) {
