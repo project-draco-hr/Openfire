@@ -3,19 +3,23 @@
   String hostname=getBindInterface() == null ? XMPPServer.getInstance().getServerInfo().getXMPPDomain() : getBindInterface();
   boolean isPlainStarted=false;
   boolean isSecureStarted=false;
+  boolean isSPDY=false;
   for (  Connector connector : adminServer.getConnectors()) {
-    if (connector.getPort() == adminPort) {
+    if (((ServerConnector)connector).getPort() == adminPort) {
       isPlainStarted=true;
     }
- else     if (connector.getPort() == adminSecurePort) {
+ else     if (((ServerConnector)connector).getPort() == adminSecurePort) {
       isSecureStarted=true;
+    }
+    if (connector instanceof HTTPSPDYServerConnector) {
+      isSPDY=true;
     }
   }
   if (isPlainStarted && isSecureStarted) {
-    log(listening + ":" + System.getProperty("line.separator")+ "  http://"+ hostname+ ":"+ adminPort+ System.getProperty("line.separator")+ "  https://"+ hostname+ ":"+ adminSecurePort);
+    log(listening + ":" + System.getProperty("line.separator")+ "  http://"+ hostname+ ":"+ adminPort+ System.getProperty("line.separator")+ "  https://"+ hostname+ ":"+ adminSecurePort+ (isSPDY ? " (SPDY)" : ""));
   }
  else   if (isSecureStarted) {
-    log(listening + " https://" + hostname+ ":"+ adminSecurePort);
+    log(listening + " https://" + hostname+ ":"+ adminSecurePort+ (isSPDY ? " (SPDY)" : ""));
   }
  else   if (isPlainStarted) {
     log(listening + " http://" + hostname+ ":"+ adminPort);

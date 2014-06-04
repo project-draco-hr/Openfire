@@ -1,22 +1,22 @@
 {
   if (isXFFEnabled()) {
-    connector.setForwarded(true);
+    ForwardedRequestCustomizer customizer=new ForwardedRequestCustomizer();
     String forwardedForHeader=getXFFHeader();
     if (forwardedForHeader != null) {
-      connector.setForwardedForHeader(forwardedForHeader);
+      customizer.setForwardedForHeader(forwardedForHeader);
     }
     String forwardedServerHeader=getXFFServerHeader();
     if (forwardedServerHeader != null) {
-      connector.setForwardedServerHeader(forwardedServerHeader);
+      customizer.setForwardedServerHeader(forwardedServerHeader);
     }
     String forwardedHostHeader=getXFFHostHeader();
     if (forwardedHostHeader != null) {
-      connector.setForwardedHostHeader(forwardedHostHeader);
+      customizer.setForwardedHostHeader(forwardedHostHeader);
     }
     String hostName=getXFFHostName();
     if (hostName != null) {
-      connector.setHostHeader(hostName);
+      customizer.setHostHeader(hostName);
     }
+    httpConfig.addCustomizer(customizer);
   }
-  connector.setStatsOn(JMXManager.isEnabled());
 }
