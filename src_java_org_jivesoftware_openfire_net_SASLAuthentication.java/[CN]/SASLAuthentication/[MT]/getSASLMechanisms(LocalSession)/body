@@ -2,31 +2,6 @@
   if (!(session instanceof ClientSession) && !(session instanceof IncomingServerSession)) {
     return "";
   }
-  StringBuilder sb=new StringBuilder(195);
-  sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
-  if (session instanceof IncomingServerSession) {
-    if (session.isSecure()) {
-      boolean usingSelfSigned=true;
-      try {
-        X509Certificate trusted=CertificateManager.getEndEntityCertificate(session.getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-        usingSelfSigned=trusted == null;
-      }
- catch (      IOException ex) {
-        Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Proceeding as if it is.",ex);
-        usingSelfSigned=true;
-      }
-      if (!usingSelfSigned) {
-        sb.append("<mechanism>EXTERNAL</mechanism>");
-      }
-    }
-  }
- else {
-    for (    String mech : getSupportedMechanisms()) {
-      sb.append("<mechanism>");
-      sb.append(mech);
-      sb.append("</mechanism>");
-    }
-  }
-  sb.append("</mechanisms>");
-  return sb.toString();
+  Element mechs=getSASLMechanismsElement(session);
+  return mechs.asXML();
 }

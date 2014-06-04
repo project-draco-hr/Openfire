@@ -3,13 +3,14 @@
     return null;
   }
   X509Certificate first=(X509Certificate)chain[0];
-  if (chain.length == 1 && first.getSubjectDN().equals(first.getIssuerDN())) {
+  if (chain.length == 1 && first.getSubjectX500Principal().equals(first.getIssuerX500Principal())) {
     try {
       if (trustStore.getCertificateAlias(first) != null) {
         return first;
       }
     }
  catch (    KeyStoreException e) {
+      Log.warn("Keystore error while looking for self-signed cert; assuming untrusted.");
     }
     return null;
   }
@@ -52,6 +53,7 @@ catch (  CertPathValidatorException e) {
     Log.warn("Path validator: " + e.getMessage());
   }
 catch (  Exception e) {
+    Log.warn("Unkown exception while validating certificate chain: " + e.getMessage());
   }
   return null;
 }
