@@ -5,8 +5,19 @@
   Element mechs=DocumentHelper.createElement(new QName("mechanisms",new Namespace("","urn:ietf:params:xml:ns:xmpp-sasl")));
   if (session instanceof IncomingServerSession) {
     if (session.isSecure()) {
-      Element mechanism=mechs.addElement("mechanism");
-      mechanism.setText("EXTERNAL");
+      boolean usingSelfSigned=true;
+      try {
+        X509Certificate trusted=CertificateManager.getEndEntityCertificate(((LocalSession)session).getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
+        usingSelfSigned=trusted == null;
+      }
+ catch (      IOException ex) {
+        Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Proceeding as if it is.",ex);
+        usingSelfSigned=true;
+      }
+      if (!usingSelfSigned) {
+        Element mechanism=mechs.addElement("mechanism");
+        mechanism.setText("EXTERNAL");
+      }
     }
   }
  else {

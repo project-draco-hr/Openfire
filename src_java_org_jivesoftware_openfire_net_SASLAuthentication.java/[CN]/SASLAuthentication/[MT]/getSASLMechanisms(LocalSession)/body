@@ -6,23 +6,14 @@
   sb.append("<mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">");
   if (session instanceof IncomingServerSession) {
     if (session.isSecure()) {
-      boolean usingSelfSigned;
-      final Certificate[] chain=session.getConnection().getLocalCertificates();
-      if (chain == null || chain.length == 0) {
-        usingSelfSigned=true;
+      boolean usingSelfSigned=true;
+      try {
+        X509Certificate trusted=CertificateManager.getEndEntityCertificate(session.getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
+        usingSelfSigned=trusted == null;
       }
- else {
-        try {
-          usingSelfSigned=CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)chain[0]);
-        }
- catch (        KeyStoreException ex) {
-          Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
-          usingSelfSigned=true;
-        }
-catch (        IOException ex) {
-          Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
-          usingSelfSigned=true;
-        }
+ catch (      IOException ex) {
+        Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Proceeding as if it is.",ex);
+        usingSelfSigned=true;
       }
       if (!usingSelfSigned) {
         sb.append("<mechanism>EXTERNAL</mechanism>");
