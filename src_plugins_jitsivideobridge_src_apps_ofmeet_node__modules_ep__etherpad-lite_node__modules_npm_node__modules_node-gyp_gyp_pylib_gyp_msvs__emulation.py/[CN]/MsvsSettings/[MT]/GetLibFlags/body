@@ -1,9 +1,0 @@
-def GetLibFlags(self, config, gyp_to_build_path):
-    'Returns the flags that need to be added to lib commands.'
-    config = self._TargetConfig(config)
-    libflags = []
-    lib = self._GetWrapper(self, self.msvs_settings[config], 'VCLibrarianTool', append=libflags)
-    libflags.extend(self._GetAdditionalLibraryDirectories('VCLibrarianTool', config, gyp_to_build_path))
-    lib('LinkTimeCodeGeneration', map={'true': '/LTCG', })
-    lib('AdditionalOptions')
-    return libflags

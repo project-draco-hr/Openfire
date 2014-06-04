@@ -1,8 +1,0 @@
-def _ExcludeFilesFromBeingBuilt(p, spec, excluded_sources, excluded_idl, list_excluded):
-    exclusions = _GetExcludedFilesFromBuild(spec, excluded_sources, excluded_idl)
-    for (file_name, excluded_configs) in exclusions.iteritems():
-        if ((not list_excluded) and (len(excluded_configs) == len(spec['configurations']))):
-            pass
-        else:
-            for (config_name, config) in excluded_configs:
-                p.AddFileConfig(file_name, _ConfigFullName(config_name, config), {'ExcludedFromBuild': 'true', })

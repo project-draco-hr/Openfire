@@ -1,8 +1,0 @@
-def PerformBuild(data, configurations, params):
-    options = params['options']
-    makefile = os.path.abspath(os.path.join(options.toplevel_dir, 'GypAndroid.mk'))
-    env = dict(os.environ)
-    env['ONE_SHOT_MAKEFILE'] = makefile
-    arguments = ['make', '-C', os.environ['ANDROID_BUILD_TOP'], 'gyp_all_modules']
-    print ('Building: %s' % arguments)
-    subprocess.check_call(arguments, env=env)

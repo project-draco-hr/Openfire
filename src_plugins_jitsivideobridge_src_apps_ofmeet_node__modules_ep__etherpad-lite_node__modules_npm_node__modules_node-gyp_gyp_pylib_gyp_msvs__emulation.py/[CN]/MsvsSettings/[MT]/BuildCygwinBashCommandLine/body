@@ -1,9 +1,0 @@
-def BuildCygwinBashCommandLine(self, args, path_to_base):
-    "Build a command line that runs args via cygwin bash. We assume that all\n    incoming paths are in Windows normpath'd form, so they need to be\n    converted to posix style for the part of the command line that's passed to\n    bash. We also have to do some Visual Studio macro emulation here because\n    various rules use magic VS names for things. Also note that rules that\n    contain ninja variables cannot be fixed here (for example ${source}), so\n    the outer generator needs to make sure that the paths that are written out\n    are in posix style, if the command line will be used here."
-    cygwin_dir = os.path.normpath(os.path.join(path_to_base, self.msvs_cygwin_dirs[0]))
-    cd = ('cd %s' % path_to_base).replace('\\', '/')
-    args = [a.replace('\\', '/').replace('"', '\\"') for a in args]
-    args = [("'%s'" % a.replace("'", "'\\''")) for a in args]
-    bash_cmd = ' '.join(args)
-    cmd = (('call "%s\\setup_env.bat" && set CYGWIN=nontsec && ' % cygwin_dir) + ('bash -c "%s ; %s"' % (cd, bash_cmd)))
-    return cmd

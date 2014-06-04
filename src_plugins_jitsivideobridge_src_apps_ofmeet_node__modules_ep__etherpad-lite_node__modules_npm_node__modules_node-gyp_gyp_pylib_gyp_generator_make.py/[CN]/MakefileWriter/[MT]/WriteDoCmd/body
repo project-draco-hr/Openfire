@@ -1,9 +1,0 @@
-def WriteDoCmd(self, outputs, inputs, command, part_of_all, comment=None, postbuilds=False):
-    'Write a Makefile rule that uses do_cmd.\n\n    This makes the outputs dependent on the command line that was run,\n    as well as support the V= make command line flag.\n    '
-    suffix = ''
-    if postbuilds:
-        assert (',' not in command)
-        suffix = ',,1'
-    self.WriteMakeRule(outputs, inputs, actions=[('$(call do_cmd,%s%s)' % (command, suffix))], comment=comment, force=True)
-    outputs = [QuoteSpaces(o, SPACE_REPLACEMENT) for o in outputs]
-    self.WriteLn(('all_deps += %s' % ' '.join(outputs)))

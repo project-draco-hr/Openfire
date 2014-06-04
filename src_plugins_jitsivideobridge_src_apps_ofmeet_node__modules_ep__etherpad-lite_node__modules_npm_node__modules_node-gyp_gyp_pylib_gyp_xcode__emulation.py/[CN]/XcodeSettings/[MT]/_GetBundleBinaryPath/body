@@ -1,8 +1,0 @@
-def _GetBundleBinaryPath(self):
-    'Returns the name of the bundle binary of by this target.\n    E.g. Chromium.app/Contents/MacOS/Chromium. Only valid for bundles.'
-    assert self._IsBundle()
-    if ((self.spec['type'] in 'shared_library') or self.isIOS):
-        path = self.GetBundleContentsFolderPath()
-    elif (self.spec['type'] in ('executable', 'loadable_module')):
-        path = os.path.join(self.GetBundleContentsFolderPath(), 'MacOS')
-    return os.path.join(path, self.GetExecutableName())

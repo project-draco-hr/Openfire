@@ -1,8 +1,0 @@
-def LocalPathify(self, path):
-    'Convert a subdirectory-relative path into a normalized path which starts\n    with the make variable $(LOCAL_PATH) (i.e. the top of the project tree).\n    Absolute paths, or paths that contain variables, are just normalized.'
-    if (('$(' in path) or os.path.isabs(path)):
-        return os.path.normpath(path)
-    local_path = os.path.join('$(LOCAL_PATH)', self.path, path)
-    local_path = os.path.normpath(local_path)
-    assert local_path.startswith('$(LOCAL_PATH)'), ('Path %s attempts to escape from gyp path %s !)' % (path, self.path))
-    return local_path

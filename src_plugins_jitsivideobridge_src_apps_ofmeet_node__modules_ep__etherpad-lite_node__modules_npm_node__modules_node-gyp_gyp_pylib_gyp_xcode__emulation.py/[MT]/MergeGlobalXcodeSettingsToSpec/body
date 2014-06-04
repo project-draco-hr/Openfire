@@ -1,8 +1,0 @@
-def MergeGlobalXcodeSettingsToSpec(global_dict, spec):
-    'Merges the global xcode_settings dictionary into each configuration of the\n  target represented by spec. For keys that are both in the global and the local\n  xcode_settings dict, the local key gets precendence.\n  '
-    global_xcode_settings = global_dict.get('xcode_settings', {})
-    for config in spec['configurations'].values():
-        if ('xcode_settings' in config):
-            new_settings = global_xcode_settings.copy()
-            new_settings.update(config['xcode_settings'])
-            config['xcode_settings'] = new_settings

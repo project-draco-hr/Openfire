@@ -1,9 +1,0 @@
-def _NormalizeEnvVarReferences(str):
-    'Takes a string containing variable references in the form ${FOO}, $(FOO),\n  or $FOO, and returns a string with all variable references in the form ${FOO}.\n  '
-    str = re.sub('\\$([a-zA-Z_][a-zA-Z0-9_]*)', '${\\1}', str)
-    matches = re.findall('(\\$\\(([a-zA-Z0-9\\-_]+)\\))', str)
-    for match in matches:
-        (to_replace, variable) = match
-        assert ('$(' not in match), ('$($(FOO)) variables not supported: ' + match)
-        str = str.replace(to_replace, (('${' + variable) + '}'))
-    return str

@@ -1,9 +1,0 @@
-def _GetPchFlags(self, config, extension):
-    'Get the flags to be added to the cflags for precompiled header support.\n    '
-    config = self._TargetConfig(config)
-    if self.msvs_precompiled_header[config]:
-        source_ext = os.path.splitext(self.msvs_precompiled_source[config])[1]
-        if _LanguageMatchesForPch(source_ext, extension):
-            pch = os.path.split(self.msvs_precompiled_header[config])[1]
-            return [('/Yu' + pch), ('/FI' + pch), (('/Fp${pchprefix}.' + pch) + '.pch')]
-    return []

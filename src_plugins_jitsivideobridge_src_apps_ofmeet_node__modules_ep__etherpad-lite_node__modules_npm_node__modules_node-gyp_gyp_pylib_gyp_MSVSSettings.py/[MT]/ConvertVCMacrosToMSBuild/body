@@ -1,8 +1,0 @@
-def ConvertVCMacrosToMSBuild(s):
-    'Convert the the MSVS macros found in the string to the MSBuild equivalent.\n\n  This list is probably not exhaustive.  Add as needed.\n  '
-    if ('$' in s):
-        replace_map = {'$(ConfigurationName)': '$(Configuration)', '$(InputDir)': '%(RootDir)%(Directory)', '$(InputExt)': '%(Extension)', '$(InputFileName)': '%(Filename)%(Extension)', '$(InputName)': '%(Filename)', '$(InputPath)': '%(FullPath)', '$(ParentName)': '$(ProjectFileName)', '$(PlatformName)': '$(Platform)', '$(SafeInputName)': '%(Filename)', }
-        for (old, new) in replace_map.iteritems():
-            s = s.replace(old, new)
-        s = FixVCMacroSlashes(s)
-    return s
