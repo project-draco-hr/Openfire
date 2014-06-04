@@ -25,34 +25,35 @@
       if (message.getType() == Message.Type.normal || message.getType() == Message.Type.groupchat || message.getType() == Message.Type.headline) {
         if (type == Type.bounce) {
           bounce(message);
-          return;
         }
- else {
-          return;
-        }
+        return;
       }
  else       if (message.getType() == Message.Type.error) {
         return;
       }
     }
-    if (type == Type.bounce) {
+switch (type) {
+case bounce:
       bounce(message);
-    }
- else     if (type == Type.store) {
-      store(message);
-    }
- else     if (type == Type.store_and_bounce) {
-      if (underQuota(message)) {
-        store(message);
-      }
+    break;
+case store:
+  store(message);
+break;
+case store_and_bounce:
+if (underQuota(message)) {
+store(message);
+}
  else {
-        bounce(message);
-      }
-    }
- else     if (type == Type.store_and_drop) {
-      if (underQuota(message)) {
-        store(message);
-      }
-    }
-  }
+bounce(message);
+}
+break;
+case store_and_drop:
+if (underQuota(message)) {
+store(message);
+}
+break;
+case drop:
+break;
+}
+}
 }
