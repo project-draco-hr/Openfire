@@ -5,16 +5,15 @@
   Element mechs=DocumentHelper.createElement(new QName("mechanisms",new Namespace("","urn:ietf:params:xml:ns:xmpp-sasl")));
   if (session instanceof IncomingServerSession) {
     if (session.isSecure()) {
-      boolean usingSelfSigned=true;
+      boolean haveTrustedCertificate=false;
       try {
         X509Certificate trusted=CertificateManager.getEndEntityCertificate(((LocalSession)session).getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-        usingSelfSigned=trusted == null;
+        haveTrustedCertificate=trusted != null;
       }
  catch (      IOException ex) {
         Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Treating as untrusted.",ex);
-        usingSelfSigned=true;
       }
-      if (!usingSelfSigned) {
+      if (haveTrustedCertificate) {
         Element mechanism=mechs.addElement("mechanism");
         mechanism.setText("EXTERNAL");
       }

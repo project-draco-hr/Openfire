@@ -3,6 +3,13 @@
     return null;
   }
   X509Certificate first=(X509Certificate)chain[0];
+  try {
+    first.checkValidity();
+  }
+ catch (  CertificateException e) {
+    Log.warn("EE Certificate not valid: " + e.getMessage());
+    return null;
+  }
   if (chain.length == 1 && first.getSubjectX500Principal().equals(first.getIssuerX500Principal())) {
     try {
       if (trustStore.getCertificateAlias(first) != null) {
