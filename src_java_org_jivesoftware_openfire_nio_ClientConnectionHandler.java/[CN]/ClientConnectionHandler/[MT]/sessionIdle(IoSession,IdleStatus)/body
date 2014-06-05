@@ -1,6 +1,6 @@
 {
   super.sessionIdle(session,status);
-  final boolean doPing=JiveGlobals.getBooleanProperty("xmpp.client.idle.ping",true);
+  final boolean doPing=JiveGlobals.getBooleanProperty(ConnectionSettings.Client.KEEP_ALIVE_PING,true);
   if (doPing && session.getIdleCount(status) == 1) {
     final ClientStanzaHandler handler=(ClientStanzaHandler)session.getAttribute(HANDLER);
     final JID entity=handler.getAddress();

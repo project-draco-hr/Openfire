@@ -33,10 +33,10 @@
       trustFactory.init(SSLConfig.getc2sTrustStore());
       sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
       SSLFilter sslFilter=new SSLFilter(sslContext);
-      if (JiveGlobals.getProperty("xmpp.client.cert.policy","disabled").equals("needed")) {
+      if (JiveGlobals.getProperty(ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,"disabled").equals("needed")) {
         sslFilter.setNeedClientAuth(true);
       }
- else       if (JiveGlobals.getProperty("xmpp.client.cert.policy","disabled").equals("wanted")) {
+ else       if (JiveGlobals.getProperty(ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,"disabled").equals("wanted")) {
         sslFilter.setWantClientAuth(true);
       }
       sslSocketAcceptor.getFilterChain().addFirst("tls",sslFilter);
