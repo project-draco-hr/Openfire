@@ -20,7 +20,7 @@
       String focusJid=XMPPServer.getInstance().createJID(focusName,focusName).toString();
       Content vbContent=getVideoBridge().getConference(focusId,focusJid).getOrCreateContent("video");
       if (vbContent != null) {
-        Channel videoChannel=vbContent.getChannel(participant.videoChannelId);
+        RtpChannel videoChannel=(RtpChannel)vbContent.getChannel(participant.videoChannelId);
         if (videoChannel != null) {
           participant.setVideoStream(videoChannel.getMediaStream());
         }
@@ -31,7 +31,7 @@
       String focusJid=XMPPServer.getInstance().createJID(focusName,focusName).toString();
       Content vbContent=getVideoBridge().getConference(focusId,focusJid).getOrCreateContent("audio");
       if (vbContent != null) {
-        Channel audioChannel=vbContent.getChannel(participant.audioChannelId);
+        RtpChannel audioChannel=(RtpChannel)vbContent.getChannel(participant.audioChannelId);
         if (audioChannel != null) {
           participant.setAudioStream(audioChannel.getMediaStream());
         }
