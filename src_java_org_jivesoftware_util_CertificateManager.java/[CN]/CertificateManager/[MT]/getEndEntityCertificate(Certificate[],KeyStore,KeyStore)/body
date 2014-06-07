@@ -1,0 +1,66 @@
+{
+  if (chain.length == 0) {
+    return null;
+  }
+  X509Certificate first=(X509Certificate)chain[0];
+  try {
+    first.checkValidity();
+  }
+ catch (  CertificateException e) {
+    Log.warn("EE Certificate not valid: " + e.getMessage());
+    return null;
+  }
+  if (chain.length == 1 && first.getSubjectX500Principal().equals(first.getIssuerX500Principal())) {
+    try {
+      if (trustStore.getCertificateAlias(first) != null) {
+        return first;
+      }
+    }
+ catch (    KeyStoreException e) {
+      Log.warn("Keystore error while looking for self-signed cert; assuming untrusted.");
+    }
+    return null;
+  }
+  final List<Certificate> all_certs=new ArrayList<Certificate>();
+  try {
+    for (Enumeration<String> aliases=certStore.aliases(); aliases.hasMoreElements(); ) {
+      String alias=aliases.nextElement();
+      if (certStore.isCertificateEntry(alias)) {
+        X509Certificate cert=(X509Certificate)certStore.getCertificate(alias);
+        all_certs.add(cert);
+      }
+    }
+    for (Enumeration<String> aliases=trustStore.aliases(); aliases.hasMoreElements(); ) {
+      String alias=aliases.nextElement();
+      if (trustStore.isCertificateEntry(alias)) {
+        X509Certificate cert=(X509Certificate)trustStore.getCertificate(alias);
+        all_certs.add(cert);
+      }
+    }
+    for (int i=0; i < chain.length; ++i) {
+      all_certs.add(chain[i]);
+    }
+    CertStore cs=CertStore.getInstance("Collection",new CollectionCertStoreParameters(all_certs));
+    X509CertSelector selector=new X509CertSelector();
+    selector.setCertificate(first);
+    PKIXBuilderParameters params=new PKIXBuilderParameters(trustStore,selector);
+    params.addCertStore(cs);
+    params.setDate(new Date());
+    params.setRevocationEnabled(false);
+    CertPathBuilder pathBuilder=CertPathBuilder.getInstance(CertPathBuilder.getDefaultType());
+    CertPath cp=pathBuilder.build(params).getCertPath();
+    CertPathValidator pathValidator=CertPathValidator.getInstance("PKIX");
+    pathValidator.validate(cp,params);
+    return (X509Certificate)cp.getCertificates().get(0);
+  }
+ catch (  CertPathBuilderException e) {
+    Log.warn("Path builder: " + e.getMessage());
+  }
+catch (  CertPathValidatorException e) {
+    Log.warn("Path validator: " + e.getMessage());
+  }
+catch (  Exception e) {
+    Log.warn("Unkown exception while validating certificate chain: " + e.getMessage());
+  }
+  return null;
+}

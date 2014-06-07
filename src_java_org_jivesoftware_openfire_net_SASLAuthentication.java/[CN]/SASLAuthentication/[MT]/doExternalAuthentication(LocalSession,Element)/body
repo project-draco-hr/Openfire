@@ -12,13 +12,18 @@
       return Status.authenticated;
     }
     Connection connection=session.getConnection();
-    for (    Certificate certificate : connection.getPeerCertificates()) {
-      for (      String identity : CertificateManager.getPeerIdentities((X509Certificate)certificate)) {
-        if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
-          authenticationSuccessful(session,hostname,null);
-          return Status.authenticated;
+    try {
+      X509Certificate trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
+      if (trusted != null) {
+        for (        String identity : CertificateManager.getPeerIdentities(trusted)) {
+          if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
+            authenticationSuccessful(session,hostname,null);
+            return Status.authenticated;
+          }
         }
       }
+    }
+ catch (    IOException e) {
     }
   }
  else   if (session instanceof LocalClientSession) {
