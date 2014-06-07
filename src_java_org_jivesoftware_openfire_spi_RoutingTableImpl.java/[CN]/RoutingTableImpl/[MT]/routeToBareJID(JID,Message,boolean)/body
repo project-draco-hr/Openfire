@@ -6,21 +6,25 @@
       sessions.add(session);
     }
   }
-  if (sessions.isEmpty()) {
+  List<ClientSession> nonNegativePrioritySessions=getNonNegativeSessions(sessions,0);
+  List<ClientSession> highestPrioritySessions=getHighestPrioritySessions(nonNegativePrioritySessions);
+  for (  ClientSession session : nonNegativePrioritySessions) {
+    if (shouldCarbonCopyToResource(session,packet,isPrivate)) {
+      session.process(packet);
+    }
+  }
+  if (highestPrioritySessions.isEmpty()) {
     Log.debug("Unable to route packet. No session is available so store offline. {} ",packet.toXML());
     return false;
   }
- else   if (sessions.size() == 1) {
-    sessions.get(0).process(packet);
+ else   if (highestPrioritySessions.size() == 1) {
+    if (!shouldCarbonCopyToResource(highestPrioritySessions.get(0),packet,isPrivate)) {
+      highestPrioritySessions.get(0).process(packet);
+    }
   }
  else {
-    for (    ClientSession session : sessions) {
-      if (shouldSentToResource(session,packet,isPrivate)) {
-        session.process(packet);
-      }
-    }
     if (!JiveGlobals.getBooleanProperty("route.all-resources",false)) {
-      Collections.sort(sessions,new Comparator<ClientSession>(){
+      Collections.sort(highestPrioritySessions,new Comparator<ClientSession>(){
         public int compare(        ClientSession o1,        ClientSession o2){
           int thisVal=getShowValue(o1);
           int anotherVal=getShowValue(o2);
@@ -50,8 +54,8 @@
       }
 );
       List<ClientSession> targets=new ArrayList<ClientSession>();
-      Presence.Show showFilter=sessions.get(0).getPresence().getShow();
-      for (      ClientSession session : sessions) {
+      Presence.Show showFilter=highestPrioritySessions.get(0).getPresence().getShow();
+      for (      ClientSession session : highestPrioritySessions) {
         if (session.getPresence().getShow() == showFilter) {
           targets.add(session);
         }
@@ -66,14 +70,13 @@
       }
 );
       ClientSession session=targets.get(0);
-      if (!shouldSentToResource(session,packet,isPrivate)) {
+      if (!shouldCarbonCopyToResource(session,packet,isPrivate)) {
         session.process(packet);
       }
     }
  else {
-      sessions=getHighestPrioritySessions(sessions);
-      for (      ClientSession session : sessions) {
-        if (!shouldSentToResource(session,packet,isPrivate)) {
+      for (      ClientSession session : highestPrioritySessions) {
+        if (!shouldCarbonCopyToResource(session,packet,isPrivate)) {
           session.process(packet);
         }
       }
