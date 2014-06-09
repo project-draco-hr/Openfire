@@ -27,6 +27,10 @@
       routingTable.routePacket(recipientJID,packet,false);
       return;
     }
+    if (recipientJID != null && recipientJID.getNode() != null && serverName.equals(recipientJID.getDomain()) && !userManager.isRegisteredUser(recipientJID.getNode()) && (IQ.Type.set == packet.getType() || IQ.Type.get == packet.getType())) {
+      sendErrorPacket(packet,PacketError.Condition.service_unavailable);
+      return;
+    }
     if (isLocalServer(recipientJID)) {
       Element childElement=packet.getChildElement();
       String namespace=null;
