@@ -5,11 +5,11 @@
   boolean hasJID=itemsList.get(0).attributeValue("jid") != null;
   boolean hasNick=itemsList.get(0).attributeValue("nick") != null;
   if (!hasJID && !hasNick) {
+    Element result=reply.setChildElement("query","http://jabber.org/protocol/muc#admin");
     for (    Object anItem : itemsList) {
       item=(Element)anItem;
       affiliation=item.attributeValue("affiliation");
       roleAttribute=item.attributeValue("role");
-      Element result=reply.setChildElement("query","http://jabber.org/protocol/muc#admin");
       Element metaData;
       if ("outcast".equals(affiliation)) {
         if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
