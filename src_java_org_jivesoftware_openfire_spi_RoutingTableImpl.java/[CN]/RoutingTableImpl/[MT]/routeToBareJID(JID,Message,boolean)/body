@@ -7,17 +7,17 @@
     }
   }
   List<ClientSession> nonNegativePrioritySessions=getNonNegativeSessions(sessions,0);
+  if (nonNegativePrioritySessions.isEmpty()) {
+    Log.debug("Unable to route packet. No session is available so store offline. {} ",packet.toXML());
+    return false;
+  }
   List<ClientSession> highestPrioritySessions=getHighestPrioritySessions(nonNegativePrioritySessions);
   for (  ClientSession session : nonNegativePrioritySessions) {
     if (shouldCarbonCopyToResource(session,packet,isPrivate)) {
       session.process(packet);
     }
   }
-  if (highestPrioritySessions.isEmpty()) {
-    Log.debug("Unable to route packet. No session is available so store offline. {} ",packet.toXML());
-    return false;
-  }
- else   if (highestPrioritySessions.size() == 1) {
+  if (highestPrioritySessions.size() == 1) {
     if (!shouldCarbonCopyToResource(highestPrioritySessions.get(0),packet,isPrivate)) {
       highestPrioritySessions.get(0).process(packet);
     }
