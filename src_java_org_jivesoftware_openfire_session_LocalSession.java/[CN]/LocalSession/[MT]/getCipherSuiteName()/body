@@ -1,0 +1,13 @@
+{
+  SocketConnection s=(SocketConnection)getConnection();
+  if (s != null) {
+    TLSStreamHandler t=s.getTLSStreamHandler();
+    if (t != null) {
+      SSLSession ssl=t.getSSLSession();
+      if (ssl != null) {
+        return ssl.getCipherSuite();
+      }
+    }
+  }
+  return "NONE";
+}
