@@ -2,6 +2,7 @@
   XMPPPacketReader reader;
   Writer writer=null;
   socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
+  VerifyResult result=VerifyResult.error;
   try {
     reader=new XMPPPacketReader();
     reader.setXPPFactory(FACTORY);
@@ -47,10 +48,17 @@
             writer.flush();
             throw new RemoteConnectionFailedException("Invalid From");
           }
+ else           if ("valid".equals(doc.attributeValue("type"))) {
+            Log.debug("ServerDialback: RS - Key was VERIFIED by the Authoritative Server for: {}",hostname);
+            result=VerifyResult.valid;
+          }
+ else           if ("invalid".equals(doc.attributeValue("type"))) {
+            Log.debug("ServerDialback: RS - Key was NOT VERIFIED by the Authoritative Server for: {}",hostname);
+            result=VerifyResult.invalid;
+          }
  else {
-            boolean valid="valid".equals(doc.attributeValue("type"));
-            Log.debug("ServerDialback: RS - Key was " + (valid ? "" : "NOT ") + "VERIFIED by the Authoritative Server for: "+ hostname);
-            return valid;
+            Log.debug("ServerDialback: RS - Key was ERRORED by the Authoritative Server for: {}",hostname);
+            result=VerifyResult.error;
           }
         }
  else {
@@ -80,5 +88,5 @@
  catch (    IOException ioe) {
     }
   }
-  return false;
+  return result;
 }
