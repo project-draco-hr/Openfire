@@ -22,12 +22,22 @@
       }
     }
     if (alreadyExists && !sessionManager.isMultipleServerConnectionsAllowed()) {
-      connection.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
-      connection.close();
+      dialbackError(recipient,hostname,new PacketError(PacketError.Condition.resource_constraint,PacketError.Type.cancel,"Incoming session already exists"));
       Log.debug("ServerDialback: RS - Error, incoming connection already exists from: " + hostname);
       return false;
     }
  else {
+      if (SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname)) {
+        Log.debug("ServerDialback: RS - Sending key verification result to OS: " + hostname);
+        sb=new StringBuilder();
+        sb.append("<db:result");
+        sb.append(" from=\"").append(recipient).append("\"");
+        sb.append(" to=\"").append(hostname).append("\"");
+        sb.append(" type=\"valid\"");
+        sb.append("/>");
+        connection.deliverRawText(sb.toString());
+        return true;
+      }
       String key=doc.getTextTrim();
       List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,RemoteServerManager.getPortForServer(hostname));
       Socket socket=new Socket();
