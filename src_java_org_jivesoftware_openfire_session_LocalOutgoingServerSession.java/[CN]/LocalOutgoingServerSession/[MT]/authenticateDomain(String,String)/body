@@ -38,38 +38,10 @@
           sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
           return true;
         }
+      }
  else {
-          if (!pattern.matcher(hostname).find()) {
-            return false;
-          }
-          for (          String otherHost : sessionManager.getOutgoingServers()) {
-            if (hostname.contains(otherHost)) {
-              session=sessionManager.getOutgoingServerSession(otherHost);
-              session.addHostname(hostname);
-              return true;
-            }
-          }
-          int index=hostname.indexOf('.');
-          while (index > -1 && index < hostname.length()) {
-            String newHostname=hostname.substring(index + 1);
-            String serverName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
-            if ("com".equals(newHostname) || "net".equals(newHostname) || "org".equals(newHostname)|| "gov".equals(newHostname)|| "edu".equals(newHostname)|| serverName.equals(newHostname)) {
-              return false;
-            }
-            session=createOutgoingSession(domain,newHostname,port);
-            if (session != null) {
-              session.addAuthenticatedDomain(domain);
-              session.addHostname(hostname);
-              session.addHostname(newHostname);
-              sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
-              return true;
-            }
- else {
-              index=hostname.indexOf('.',index + 1);
-            }
-          }
-          return false;
-        }
+        Log.warn("Fail to connect to {} for {}",hostname,domain);
+        return false;
       }
     }
     if (session.getAuthenticatedDomains().contains(domain) && session.getHostnames().contains(hostname)) {

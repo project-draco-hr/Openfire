@@ -4,14 +4,13 @@
   String hostname=doc.attributeValue("from");
   Log.debug("ServerDialback: RS - Received dialback key from host: " + hostname + " to: "+ recipient);
   if (!RemoteServerManager.canAccess(hostname)) {
-    connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
+    connection.deliverRawText(new StreamError(StreamError.Condition.policy_violation).toXML());
     connection.close();
     Log.debug("ServerDialback: RS - Error, hostname is not allowed to establish a connection to " + "this server: " + recipient);
     return false;
   }
  else   if (isHostUnknown(recipient)) {
-    connection.deliverRawText(new StreamError(StreamError.Condition.host_unknown).toXML());
-    connection.close();
+    dialbackError(recipient,hostname,new PacketError(PacketError.Condition.item_not_found,PacketError.Type.cancel,"Service not hosted here"));
     Log.debug("ServerDialback: RS - Error, hostname not recognized: " + recipient);
     return false;
   }
@@ -23,12 +22,22 @@
       }
     }
     if (alreadyExists && !sessionManager.isMultipleServerConnectionsAllowed()) {
-      connection.deliverRawText(new StreamError(StreamError.Condition.not_authorized).toXML());
-      connection.close();
+      dialbackError(recipient,hostname,new PacketError(PacketError.Condition.resource_constraint,PacketError.Type.cancel,"Incoming session already exists"));
       Log.debug("ServerDialback: RS - Error, incoming connection already exists from: " + hostname);
       return false;
     }
  else {
+      if (SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname)) {
+        Log.debug("ServerDialback: RS - Sending key verification result to OS: " + hostname);
+        sb=new StringBuilder();
+        sb.append("<db:result");
+        sb.append(" from=\"").append(recipient).append("\"");
+        sb.append(" to=\"").append(hostname).append("\"");
+        sb.append(" type=\"valid\"");
+        sb.append("/>");
+        connection.deliverRawText(sb.toString());
+        return true;
+      }
       String key=doc.getTextTrim();
       List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,RemoteServerManager.getPortForServer(hostname));
       Socket socket=new Socket();
@@ -49,31 +58,46 @@
         }
       }
       if (!socket.isConnected()) {
+        dialbackError(recipient,hostname,new PacketError(PacketError.Condition.remote_server_not_found,PacketError.Type.cancel,"Unable to connect to authoritative server"));
         Log.warn("No server available for verifying key of remote server: " + hostname);
+        try {
+          socket.close();
+        }
+ catch (        IOException e) {
+          Log.warn("Socket error on close",e);
+        }
         return false;
       }
       try {
-        boolean valid=verifyKey(key,streamID.toString(),recipient,hostname,socket);
+        VerifyResult result=verifyKey(key,streamID.toString(),recipient,hostname,socket);
+switch (result) {
+case valid:
+case invalid:
+          boolean valid=(result == VerifyResult.valid);
         Log.debug("ServerDialback: RS - Sending key verification result to OS: " + hostname);
-        sb=new StringBuilder();
-        sb.append("<db:result");
-        sb.append(" from=\"").append(recipient).append("\"");
-        sb.append(" to=\"").append(hostname).append("\"");
-        sb.append(" type=\"");
-        sb.append(valid ? "valid" : "invalid");
-        sb.append("\"/>");
-        connection.deliverRawText(sb.toString());
-        if (!valid) {
-          connection.close();
-        }
-        return valid;
-      }
- catch (      Exception e) {
-        Log.warn("Error verifying key of remote server: " + hostname,e);
-        connection.deliverRawText(new StreamError(StreamError.Condition.remote_connection_failed).toXML());
-        connection.close();
-        return false;
-      }
-    }
-  }
+      sb=new StringBuilder();
+    sb.append("<db:result");
+  sb.append(" from=\"").append(recipient).append("\"");
+sb.append(" to=\"").append(hostname).append("\"");
+sb.append(" type=\"");
+sb.append(valid ? "valid" : "invalid");
+sb.append("\"/>");
+connection.deliverRawText(sb.toString());
+if (!valid) {
+connection.close();
+}
+return valid;
+default :
+break;
+}
+dialbackError(recipient,hostname,new PacketError(PacketError.Condition.remote_server_timeout,PacketError.Type.cancel,"Authoritative server returned error"));
+return false;
+}
+ catch (Exception e) {
+dialbackError(recipient,hostname,new PacketError(PacketError.Condition.remote_server_timeout,PacketError.Type.cancel,"Authoritative server failed"));
+Log.warn("Error verifying key of remote server: " + hostname,e);
+return false;
+}
+}
+}
 }

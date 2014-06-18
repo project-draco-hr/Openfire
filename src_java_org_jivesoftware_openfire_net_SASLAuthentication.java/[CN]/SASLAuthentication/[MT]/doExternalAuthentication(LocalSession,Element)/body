@@ -11,19 +11,13 @@
       authenticationSuccessful(session,hostname,null);
       return Status.authenticated;
     }
-    Connection connection=session.getConnection();
-    try {
-      X509Certificate trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-      if (trusted != null) {
-        for (        String identity : CertificateManager.getPeerIdentities(trusted)) {
-          if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
-            authenticationSuccessful(session,hostname,null);
-            return Status.authenticated;
-          }
-        }
+ else     if (verifyCertificates(session.getConnection().getPeerCertificates(),hostname)) {
+      authenticationSuccessful(session,hostname,null);
+      LocalIncomingServerSession s=(LocalIncomingServerSession)session;
+      if (s != null) {
+        s.tlsAuth();
       }
-    }
- catch (    IOException e) {
+      return Status.authenticated;
     }
   }
  else   if (session instanceof LocalClientSession) {

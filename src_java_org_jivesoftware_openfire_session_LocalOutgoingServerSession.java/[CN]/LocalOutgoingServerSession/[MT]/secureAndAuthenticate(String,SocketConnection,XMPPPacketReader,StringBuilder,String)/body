@@ -7,9 +7,25 @@
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
     log.debug("Negotiating TLS...");
-    boolean needed=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true) && JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_CHAIN_VERIFY,true) && !JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ACCEPT_SELFSIGNED_CERTS,false);
-    connection.startTLS(true,hostname,needed ? Connection.ClientAuth.needed : Connection.ClientAuth.wanted);
+    try {
+      boolean needed=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true) && JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_CHAIN_VERIFY,true) && !JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ACCEPT_SELFSIGNED_CERTS,false);
+      connection.startTLS(true,hostname,needed ? Connection.ClientAuth.needed : Connection.ClientAuth.wanted);
+    }
+ catch (    Exception e) {
+      log.debug("Got an exception whilst negotiating TLS: " + e.getMessage());
+      throw e;
+    }
     log.debug("TLS negotiation was successful.");
+    if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname)) {
+      log.debug("X.509/PKIX failure on outbound session");
+      if (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned()) {
+        log.debug("Will continue with dialback.");
+      }
+ else {
+        log.warn("No TLS auth, but TLS auth required.");
+        return null;
+      }
+    }
     connection.deliverRawText(openingStream.toString());
     xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
@@ -30,6 +46,10 @@
             if ("zlib".equals(method.getTextTrim())) {
               zlibSupported=true;
             }
+          }
+          if (zlibSupported) {
+            log.debug("Suppressing request to perform compression; unsupported in this version.");
+            zlibSupported=false;
           }
           if (zlibSupported) {
             log.debug("Requesting stream compression (zlib).");
@@ -65,33 +85,27 @@
         }
       }
       boolean saslEXTERNALoffered=false;
-      if (features.element("mechanisms") != null) {
-        Iterator<Element> it=features.element("mechanisms").elementIterator();
-        while (it.hasNext()) {
-          Element mechanism=it.next();
-          if ("EXTERNAL".equals(mechanism.getTextTrim())) {
-            saslEXTERNALoffered=true;
-            break;
+      if (features != null) {
+        if (features.element("mechanisms") != null) {
+          Iterator<Element> it=features.element("mechanisms").elementIterator();
+          while (it.hasNext()) {
+            Element mechanism=it.next();
+            if ("EXTERNAL".equals(mechanism.getTextTrim())) {
+              saslEXTERNALoffered=true;
+              break;
+            }
           }
         }
       }
       final boolean dialbackOffered=features.element("dialback") != null;
-      final boolean usesSelfSigned=connection.isUsingSelfSignedCertificate();
       log.debug("Offering dialback functionality: {}",dialbackOffered);
       log.debug("Offering EXTERNAL SASL: {}",saslEXTERNALoffered);
-      log.debug("Is using a self-signed certificate: {}",usesSelfSigned);
       LocalOutgoingServerSession result=null;
-      if (usesSelfSigned) {
-        log.debug("As remote server is using self-signed certificate, SASL EXTERNAL is skipped. Attempting dialback over TLS instead.");
-        result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
+      if (saslEXTERNALoffered) {
+        result=attemptSASLexternal(connection,xpp,reader,domain,hostname,id,openingStream);
       }
- else {
-        if (saslEXTERNALoffered) {
-          result=attemptSASLexternal(connection,xpp,reader,domain,hostname,id,openingStream);
-        }
-        if (result == null) {
-          result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
-        }
+      if (result == null) {
+        result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
       }
       return result;
     }
