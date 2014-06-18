@@ -10,7 +10,7 @@
     if (reloadLimit != null) {
       int reloadLimitDays=JiveGlobals.getIntProperty(MUC_HISTORY_RELOAD_LIMIT,2);
       Log.warn("MUC history reload limit set to " + reloadLimitDays + " days");
-      from=System.currentTimeMillis() - (86400000 * reloadLimitDays);
+      from=System.currentTimeMillis() - (BigInteger.valueOf(86400000).multiply(BigInteger.valueOf(reloadLimitDays))).longValue();
     }
     statement.setLong(1,serviceID);
     statement.setString(2,StringUtils.dateToMillis(new Date(from)));
