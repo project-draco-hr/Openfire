@@ -1,0 +1,7 @@
+{
+  if (usingServerDialback == -1) {
+    ClusterTask task=getRemoteSessionTask(RemoteSessionTask.Operation.isUsingServerDialback);
+    usingServerDialback=(Boolean)doSynchronousClusterTask(task) ? 1 : 0;
+  }
+  return usingServerDialback == 1;
+}
