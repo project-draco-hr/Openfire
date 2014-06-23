@@ -1,0 +1,11 @@
+{
+  try {
+    if (!roomName.equals(mucRoomEntity.getRoomName())) {
+      throw new MUCServiceException("Could not update the channel",roomName,"The roomname is different to the entity room name");
+    }
+    createRoom(mucRoomEntity,serviceName,owner);
+  }
+ catch (  NotAllowedException e) {
+    throw new MUCServiceException("Could not update the channel",roomName,"NotAllowedException");
+  }
+}

@@ -1,0 +1,8 @@
+{
+  MUCRoom chatRoom=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName);
+  if (chatRoom == null) {
+    throw new MUCServiceException("Could not fetch the channel",roomName,"Chat room could be not found");
+  }
+  MUCRoomEntity mucRoomEntity=convertToMUCRoomEntity(chatRoom);
+  return mucRoomEntity;
+}
