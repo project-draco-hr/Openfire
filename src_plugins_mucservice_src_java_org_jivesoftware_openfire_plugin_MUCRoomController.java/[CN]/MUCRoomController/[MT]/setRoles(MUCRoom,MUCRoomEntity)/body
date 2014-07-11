@@ -1,0 +1,29 @@
+{
+  List<JID> roles=new ArrayList<JID>();
+  Collection<JID> owners=new ArrayList<JID>();
+  Collection<JID> existingOwners=new ArrayList<JID>();
+  List<JID> mucRoomEntityOwners=MUCRoomUtils.convertStringsToJIDs(mucRoomEntity.getOwners());
+  owners.addAll(room.getOwners());
+  for (  JID jid : owners) {
+    if (mucRoomEntityOwners.contains(jid)) {
+      existingOwners.add(jid);
+    }
+  }
+  owners.removeAll(existingOwners);
+  room.addOwners(MUCRoomUtils.convertStringsToJIDs(mucRoomEntity.getOwners()),room.getRole());
+  roles.addAll(owners);
+  roles.addAll(room.getAdmins());
+  roles.addAll(room.getMembers());
+  roles.addAll(room.getOutcasts());
+  for (  JID jid : roles) {
+    room.addNone(jid,room.getRole());
+  }
+  room.addOwners(MUCRoomUtils.convertStringsToJIDs(mucRoomEntity.getOwners()),room.getRole());
+  room.addAdmins(MUCRoomUtils.convertStringsToJIDs(mucRoomEntity.getAdmins()),room.getRole());
+  for (  String memberJid : mucRoomEntity.getMembers()) {
+    room.addMember(new JID(memberJid),null,room.getRole());
+  }
+  for (  String outcastJid : mucRoomEntity.getOutcasts()) {
+    room.addOutcast(new JID(outcastJid),null,room.getRole());
+  }
+}
