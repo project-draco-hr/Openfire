@@ -1,0 +1,14 @@
+{
+  try {
+    createRoom(mucRoomEntity,serviceName);
+  }
+ catch (  NotAllowedException e) {
+    throw new MUCServiceException("Could not create the channel",mucRoomEntity.getRoomName(),"NotAllowedException");
+  }
+catch (  ForbiddenException e) {
+    throw new MUCServiceException("Could not create the channel",mucRoomEntity.getRoomName(),"ForbiddenException");
+  }
+catch (  ConflictException e) {
+    throw new MUCServiceException("Could not create the channel",mucRoomEntity.getRoomName(),"ConflictException");
+  }
+}
