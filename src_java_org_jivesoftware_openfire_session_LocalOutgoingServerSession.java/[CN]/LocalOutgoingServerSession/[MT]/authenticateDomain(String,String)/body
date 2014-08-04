@@ -29,15 +29,12 @@
     }
     if (session == null) {
       int port=RemoteServerManager.getPortForServer(hostname);
-      session=sessionManager.getOutgoingServerSession(hostname);
-      if (session == null) {
-        session=createOutgoingSession(domain,hostname,port);
-        if (session != null) {
-          session.addAuthenticatedDomain(domain);
-          session.addHostname(hostname);
-          sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
-          return true;
-        }
+      session=createOutgoingSession(domain,hostname,port);
+      if (session != null) {
+        session.addAuthenticatedDomain(domain);
+        session.addHostname(hostname);
+        sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
+        return true;
       }
  else {
         Log.warn("Fail to connect to {} for {}",hostname,domain);
