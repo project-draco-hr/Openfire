@@ -6,6 +6,28 @@
       return Status.needResponse;
     }
     hostname=new String(StringUtils.decodeBase64(hostname),CHARSET);
+    if (hostname.length() == 0) {
+      hostname=null;
+    }
+    try {
+      LocalIncomingServerSession svr=(LocalIncomingServerSession)session;
+      String defHostname=svr.getDefaultIdentity();
+      if (hostname == null) {
+        hostname=defHostname;
+      }
+ else       if (!hostname.equals(defHostname)) {
+        Log.info("SASLAuthentication rejected from='{}' and authzid='{}'",hostname,defHostname);
+        authenticationFailed(session,Failure.NOT_AUTHORIZED);
+        return Status.failed;
+      }
+    }
+ catch (    Exception e) {
+    }
+    if (hostname == null) {
+      Log.info("No authzid supplied for anonymous session.");
+      authenticationFailed(session,Failure.NOT_AUTHORIZED);
+      return Status.failed;
+    }
     boolean verify=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true);
     if (!verify) {
       authenticationSuccessful(session,hostname,null);
@@ -31,9 +53,19 @@
       authenticationFailed(session,Failure.NOT_AUTHORIZED);
       return Status.failed;
     }
-    for (    Certificate certificate : connection.getPeerCertificates()) {
-      principals.addAll(CertificateManager.getPeerIdentities((X509Certificate)certificate));
+    X509Certificate trusted;
+    try {
+      trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
     }
+ catch (    IOException e) {
+      trusted=null;
+    }
+    if (trusted == null) {
+      Log.debug("SASLAuthentication: EXTERNAL authentication requested, but EE cert untrusted.");
+      authenticationFailed(session,Failure.NOT_AUTHORIZED);
+      return Status.failed;
+    }
+    principals.addAll(CertificateManager.getPeerIdentities((X509Certificate)trusted));
     if (principals.size() == 1) {
       principal=principals.get(0);
     }

@@ -3,12 +3,16 @@
     return null;
   }
   Element mechs=DocumentHelper.createElement(new QName("mechanisms",new Namespace("","urn:ietf:params:xml:ns:xmpp-sasl")));
-  if (session instanceof IncomingServerSession) {
+  if (session instanceof LocalIncomingServerSession) {
     if (session.isSecure()) {
       boolean haveTrustedCertificate=false;
       try {
-        X509Certificate trusted=CertificateManager.getEndEntityCertificate(((LocalSession)session).getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
+        LocalIncomingServerSession svr=(LocalIncomingServerSession)session;
+        X509Certificate trusted=CertificateManager.getEndEntityCertificate(svr.getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
         haveTrustedCertificate=trusted != null;
+        if (trusted != null && svr.getDefaultIdentity() != null) {
+          haveTrustedCertificate=verifyCertificate(trusted,svr.getDefaultIdentity());
+        }
       }
  catch (      IOException ex) {
         Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Treating as untrusted.",ex);

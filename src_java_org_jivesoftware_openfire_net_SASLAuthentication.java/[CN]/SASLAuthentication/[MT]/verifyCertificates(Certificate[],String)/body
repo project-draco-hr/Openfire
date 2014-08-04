@@ -2,11 +2,7 @@
   try {
     X509Certificate trusted=CertificateManager.getEndEntityCertificate(chain,SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
     if (trusted != null) {
-      for (      String identity : CertificateManager.getPeerIdentities(trusted)) {
-        if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
-          return true;
-        }
-      }
+      return verifyCertificate(trusted,hostname);
     }
   }
  catch (  IOException e) {
