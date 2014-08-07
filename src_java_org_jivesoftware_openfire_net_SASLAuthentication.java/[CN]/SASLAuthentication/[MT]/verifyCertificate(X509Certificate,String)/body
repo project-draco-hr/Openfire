@@ -1,0 +1,8 @@
+{
+  for (  String identity : CertificateManager.getPeerIdentities(trustedCert)) {
+    if ((identity.startsWith("*.") && (hostname.endsWith(identity.replace("*.",".")) || hostname.equals(identity.replace("*.","")))) || hostname.equals(identity)) {
+      return true;
+    }
+  }
+  return false;
+}

@@ -20,7 +20,7 @@
         Log.debug("ServerDialback: RS - Validating remote domain for incoming session from {} to {}",hostname,recipient);
         if (validateRemoteDomain(doc,streamID)) {
           Log.debug("ServerDialback: RS - Validation of remote domain for incoming session from {} to {} was successful.",hostname,recipient);
-          LocalIncomingServerSession session=sessionManager.createIncomingServerSession(connection,streamID);
+          LocalIncomingServerSession session=sessionManager.createIncomingServerSession(connection,streamID,hostname);
           session.addValidatedDomain(hostname);
           session.setLocalDomain(recipient);
           return session;

@@ -1,16 +1,20 @@
 {
   XmlPullParser xpp=reader.getXPPParser();
   String version=xpp.getAttributeValue("","version");
+  String fromDomain=xpp.getAttributeValue("","from");
   int[] serverVersion=version != null ? decodeVersion(version) : new int[]{0,0};
   try {
     StreamID streamID=SessionManager.getInstance().nextStreamID();
-    LocalIncomingServerSession session=SessionManager.getInstance().createIncomingServerSession(connection,streamID);
+    LocalIncomingServerSession session=SessionManager.getInstance().createIncomingServerSession(connection,streamID,fromDomain);
     StringBuilder openingStream=new StringBuilder();
     openingStream.append("<stream:stream");
     openingStream.append(" xmlns:db=\"jabber:server:dialback\"");
     openingStream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
     openingStream.append(" xmlns=\"jabber:server\"");
     openingStream.append(" from=\"").append(serverName).append("\"");
+    if (fromDomain != null) {
+      openingStream.append(" to=\"").append(fromDomain).append("\"");
+    }
     openingStream.append(" id=\"").append(streamID).append("\"");
     if (serverVersion[0] >= 1) {
       openingStream.append(" version=\"1.0\">");
@@ -49,7 +53,7 @@
       }
       sb.append(SASLAuthentication.getSASLMechanisms(session));
       if (ServerDialback.isEnabled()) {
-        sb.append("<dialback xmlns=\"urn:xmpp:features:dialback\"/>");
+        sb.append("<dialback xmlns=\"urn:xmpp:features:dialback\"><errors/></dialback>");
       }
       sb.append("</stream:features>");
     }
