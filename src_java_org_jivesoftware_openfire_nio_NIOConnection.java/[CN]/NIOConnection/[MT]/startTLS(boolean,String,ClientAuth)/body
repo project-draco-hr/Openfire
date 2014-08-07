@@ -27,7 +27,7 @@
  else   if (authentication == ClientAuth.wanted) {
     filter.setWantClientAuth(true);
   }
-  ioSession.getFilterChain().addBefore("org.apache.mina.common.ExecutorThreadModel","tls",filter);
+  ioSession.getFilterChain().addBefore("org.apache.mina.filter.ReadThrottleFilterBuilder.add","tls",filter);
   ioSession.setAttribute(SSLFilter.DISABLE_ENCRYPTION_ONCE,Boolean.TRUE);
   if (!clientMode) {
     deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");

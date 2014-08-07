@@ -1,14 +1,20 @@
 {
   if (isClientListenerEnabled()) {
     socketAcceptor=buildSocketAcceptor("client");
-    ExecutorThreadModel threadModel=ExecutorThreadModel.getInstance("client");
     int eventThreads=JiveGlobals.getIntProperty("xmpp.client.processing.threads",16);
-    ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)threadModel.getExecutor();
+    ExecutorFilter executorFilter=new ExecutorFilter();
+    ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
+    ThreadFactory threadFactory=eventExecutor.getThreadFactory();
+    threadFactory=new DelegatingThreadFactory("Old executor thread - ",threadFactory);
+    eventExecutor.setThreadFactory(threadFactory);
     eventExecutor.setCorePoolSize(eventThreads + 1);
     eventExecutor.setMaximumPoolSize(eventThreads + 1);
     eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
-    socketAcceptor.getDefaultConfig().setThreadModel(threadModel);
+    socketAcceptor.getDefaultConfig().setThreadModel(ThreadModel.MANUAL);
     socketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
+    socketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
     socketAcceptor.getFilterChain().addAfter("xmpp","outCap",new StalledSessionsFilter());
+    int maxBufferSize=JiveGlobals.getIntProperty("xmpp.client.maxReadBufferSize",10 * MB);
+    installReadThrottle(socketAcceptor,maxBufferSize);
   }
 }
