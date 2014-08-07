@@ -7,18 +7,9 @@
       int eventThreads=JiveGlobals.getIntProperty("xmpp.client_ssl.processing.threads",16);
       ExecutorFilter executorFilter=new ExecutorFilter();
       ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
-      final ThreadFactory originalThreadFactory=eventExecutor.getThreadFactory();
-      ThreadFactory newThreadFactory=new ThreadFactory(){
-        private final AtomicInteger threadId=new AtomicInteger(0);
-        public Thread newThread(        Runnable runnable){
-          Thread t=originalThreadFactory.newThread(runnable);
-          t.setName("Old SSL executor thread - " + threadId.incrementAndGet());
-          t.setDaemon(true);
-          return t;
-        }
-      }
-;
-      eventExecutor.setThreadFactory(newThreadFactory);
+      ThreadFactory threadFactory=eventExecutor.getThreadFactory();
+      threadFactory=new DelegatingThreadFactory("Old SSL executor thread - ",threadFactory);
+      eventExecutor.setThreadFactory(threadFactory);
       eventExecutor.setCorePoolSize(eventThreads + 1);
       eventExecutor.setMaximumPoolSize(eventThreads + 1);
       eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
@@ -26,6 +17,8 @@
       sslSocketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
       sslSocketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
       sslSocketAcceptor.getFilterChain().addAfter("xmpp","outCap",new StalledSessionsFilter());
+      int maxBufferSize=JiveGlobals.getIntProperty("xmpp.client_ssl.maxReadBufferSize",10 * MB);
+      installReadThrottle(sslSocketAcceptor,maxBufferSize);
       SSLContext sslContext=SSLContext.getInstance(algorithm);
       KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
       keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());

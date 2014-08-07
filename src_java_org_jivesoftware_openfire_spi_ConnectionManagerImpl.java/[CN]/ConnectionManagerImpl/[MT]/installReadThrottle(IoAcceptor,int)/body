@@ -1,0 +1,9 @@
+{
+  if (maxBufferSize <= 0) {
+    return;
+  }
+  Log.debug("Throttling read buffer for connections from socketAcceptor={} to max={} bytes",socketAcceptor,maxBufferSize);
+  ReadThrottleFilterBuilder readThrottle=new ReadThrottleFilterBuilder();
+  readThrottle.setMaximumConnectionBufferSize(maxBufferSize);
+  readThrottle.attach(socketAcceptor.getFilterChain());
+}
