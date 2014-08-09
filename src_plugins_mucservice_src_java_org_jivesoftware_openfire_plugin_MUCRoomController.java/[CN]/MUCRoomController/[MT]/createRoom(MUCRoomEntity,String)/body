@@ -8,7 +8,7 @@
     owners.add(owner.toBareJID());
     mucRoomEntity.setOwners(owners);
   }
-  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(mucRoomEntity.getRoomName(),owner);
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(mucRoomEntity.getRoomName().toLowerCase(),owner);
   room.setNaturalLanguageName(mucRoomEntity.getNaturalName());
   room.setSubject(mucRoomEntity.getSubject());
   room.setDescription(mucRoomEntity.getDescription());
@@ -33,5 +33,14 @@
   }
  else {
     room.setCreationDate(new Date());
+  }
+  if (mucRoomEntity.getModificationDate() != null) {
+    room.setModificationDate(mucRoomEntity.getModificationDate());
+  }
+ else {
+    room.setModificationDate(new Date());
+  }
+  if (room.isPersistent()) {
+    room.saveToDB();
   }
 }
