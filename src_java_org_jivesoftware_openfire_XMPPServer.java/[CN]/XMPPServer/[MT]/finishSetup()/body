@@ -5,6 +5,11 @@
   if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
     name=JiveGlobals.getProperty("xmpp.domain").toLowerCase();
     xmppServerInfo.setXMPPDomain(name);
+    for (    String propName : (List<String>)JiveGlobals.getXMLPropertyNames()) {
+      if (JiveGlobals.getProperty(propName) == null) {
+        JiveGlobals.setProperty(propName,JiveGlobals.getXMLProperty(propName));
+      }
+    }
     try {
       KeyStore ksKeys=SSLConfig.getKeyStore();
       boolean dsaFound=CertificateManager.isDSACertificate(ksKeys,name);
