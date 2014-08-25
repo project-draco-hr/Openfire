@@ -5,7 +5,9 @@
   for (  Object element : copy.getElement().elements()) {
     if (element instanceof Element) {
       Element el=(Element)element;
-      el.setQName(QName.get(el.getName(),"jabber:client"));
+      if ("".equals(el.getNamespace().getStringValue())) {
+        el.setQName(QName.get(el.getName(),"jabber:client"));
+      }
     }
   }
   element.add(copy.getElement());
