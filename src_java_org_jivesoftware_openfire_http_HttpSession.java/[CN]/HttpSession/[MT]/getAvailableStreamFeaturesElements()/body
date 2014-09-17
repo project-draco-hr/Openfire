@@ -12,6 +12,9 @@
     method.setText("zlib");
     elements.add(compression);
   }
+  if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
+    elements.add(DocumentHelper.createElement(new QName("register",new Namespace("","http://jabber.org/features/iq-register"))));
+  }
   Element bind=DocumentHelper.createElement(new QName("bind",new Namespace("","urn:ietf:params:xml:ns:xmpp-bind")));
   elements.add(bind);
   Element session=DocumentHelper.createElement(new QName("session",new Namespace("","urn:ietf:params:xml:ns:xmpp-session")));
