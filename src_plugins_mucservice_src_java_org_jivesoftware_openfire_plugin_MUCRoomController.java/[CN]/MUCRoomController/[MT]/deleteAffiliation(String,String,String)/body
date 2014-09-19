@@ -1,0 +1,14 @@
+{
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName.toLowerCase());
+  try {
+    room.addNone(new JID(jid),room.getRole());
+  }
+ catch (  ForbiddenException e) {
+    LOG.error("Could not delete affiliation",e);
+    throw new MUCServiceException("Could not delete affiliation",jid,"ForbiddenException");
+  }
+catch (  ConflictException e) {
+    LOG.error("Could not delete affiliation",e);
+    throw new MUCServiceException("Could not delete affiliation",jid,"ConflictException");
+  }
+}

@@ -26,7 +26,12 @@
   room.setMaxUsers(mucRoomEntity.getMaxUsers());
   room.setMembersOnly(mucRoomEntity.isMembersOnly());
   room.setModerated(mucRoomEntity.isModerated());
-  room.setRolesToBroadcastPresence(mucRoomEntity.getBroadcastPresenceRoles());
+  if (mucRoomEntity.getBroadcastPresenceRoles() != null) {
+    room.setRolesToBroadcastPresence(mucRoomEntity.getBroadcastPresenceRoles());
+  }
+ else {
+    room.setRolesToBroadcastPresence(new ArrayList<String>());
+  }
   setRoles(room,mucRoomEntity);
   if (mucRoomEntity.getCreationDate() != null) {
     room.setCreationDate(mucRoomEntity.getCreationDate());
