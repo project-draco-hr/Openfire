@@ -1,0 +1,14 @@
+{
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName.toLowerCase());
+  try {
+    room.addAdmin(new JID(jid),room.getRole());
+  }
+ catch (  ForbiddenException e) {
+    LOG.error("Could not add admin",e);
+    throw new MUCServiceException("Could not add admin",jid,"ForbiddenException");
+  }
+catch (  ConflictException e) {
+    LOG.error("Could not add admin",e);
+    throw new MUCServiceException("Could not add admin",jid,"ConflictException");
+  }
+}

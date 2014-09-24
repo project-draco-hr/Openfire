@@ -1,0 +1,18 @@
+{
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName.toLowerCase());
+  try {
+    room.addOutcast(new JID(jid),null,room.getRole());
+  }
+ catch (  NotAllowedException e) {
+    LOG.error("Could not add outcast",e);
+    throw new MUCServiceException("Could not add outcast",jid,"NotAllowedException");
+  }
+catch (  ForbiddenException e) {
+    LOG.error("Could not add outcast",e);
+    throw new MUCServiceException("Could not add outcast",jid,"ForbiddenException");
+  }
+catch (  ConflictException e) {
+    LOG.error("Could not add outcast",e);
+    throw new MUCServiceException("Could not add outcast",jid,"ConflictException");
+  }
+}
