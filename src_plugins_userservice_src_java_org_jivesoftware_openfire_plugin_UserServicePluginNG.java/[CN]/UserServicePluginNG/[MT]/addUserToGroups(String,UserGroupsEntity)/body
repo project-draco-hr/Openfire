@@ -1,0 +1,18 @@
+{
+  if (userGroupsEntity != null) {
+    Collection<Group> groups=new ArrayList<Group>();
+    for (    String groupName : userGroupsEntity.getGroupNames()) {
+      Group group=null;
+      try {
+        group=GroupManager.getInstance().getGroup(groupName);
+      }
+ catch (      GroupNotFoundException e) {
+        group=createGroup(groupName);
+      }
+      groups.add(group);
+    }
+    for (    Group group : groups) {
+      group.getMembers().add(server.createJID(username,null));
+    }
+  }
+}
