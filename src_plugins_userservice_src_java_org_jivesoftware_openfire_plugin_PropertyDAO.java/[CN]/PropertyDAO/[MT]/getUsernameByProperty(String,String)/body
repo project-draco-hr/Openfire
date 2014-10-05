@@ -1,0 +1,29 @@
+{
+  List<String> usernames=new ArrayList<String>();
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    if (propertyValue != null) {
+      pstmt=con.prepareStatement(LOAD_PROPERTY);
+      pstmt.setString(1,propertyName);
+      pstmt.setString(2,propertyValue);
+    }
+ else {
+      pstmt=con.prepareStatement(LOAD_PROPERTY_BY_KEY);
+      pstmt.setString(1,propertyName);
+    }
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      usernames.add(rs.getString(1));
+    }
+  }
+ catch (  SQLException sqle) {
+    throw new ServiceException("Could not get username by property",propertyName,ExceptionType.PROPERTY_NOT_FOUND,Response.Status.NOT_FOUND,sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return usernames;
+}
