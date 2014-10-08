@@ -18,6 +18,9 @@
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
   }
+  if ("userService/userservice".equals(containerRequest.getPath())) {
+    return containerRequest;
+  }
   String auth=containerRequest.getHeaderValue("authorization");
   if (auth == null) {
     throw new WebApplicationException(Status.UNAUTHORIZED);
