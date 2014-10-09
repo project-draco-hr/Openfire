@@ -1,0 +1,16 @@
+{
+  if (provider.shouldNotBeCached()) {
+    return provider.getDisabledStatus(username);
+  }
+  LockOutFlag flag=lockOutCache.get(username);
+  if (flag == null) {
+synchronized (username.intern()) {
+      flag=lockOutCache.get(username);
+      if (flag == null) {
+        flag=provider.getDisabledStatus(username);
+        lockOutCache.put(username,flag);
+      }
+    }
+  }
+  return flag;
+}
