@@ -12,6 +12,12 @@
     return false;
   }
   List<ClientSession> highestPrioritySessions=getHighestPrioritySessions(nonNegativePrioritySessions);
+  if (JiveGlobals.getBooleanProperty("route.really-all-resources",false)) {
+    for (    ClientSession session : nonNegativePrioritySessions) {
+      session.process(packet);
+    }
+    return true;
+  }
   for (  ClientSession session : nonNegativePrioritySessions) {
     if (shouldCarbonCopyToResource(session,packet,isPrivate)) {
       session.process(packet);
