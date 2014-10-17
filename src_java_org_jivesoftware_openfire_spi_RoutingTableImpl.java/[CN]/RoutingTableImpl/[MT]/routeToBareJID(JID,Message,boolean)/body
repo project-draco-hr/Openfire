@@ -11,18 +11,15 @@
     Log.debug("Unable to route packet. No session is available so store offline. {} ",packet.toXML());
     return false;
   }
-  List<ClientSession> highestPrioritySessions=getHighestPrioritySessions(nonNegativePrioritySessions);
-  if (JiveGlobals.getBooleanProperty("route.really-all-resources",false)) {
-    for (    ClientSession session : nonNegativePrioritySessions) {
-      session.process(packet);
-    }
-    return true;
-  }
   for (  ClientSession session : nonNegativePrioritySessions) {
     if (shouldCarbonCopyToResource(session,packet,isPrivate)) {
       session.process(packet);
     }
+ else     if (JiveGlobals.getBooleanProperty("route.really-all-resources",false)) {
+      session.process(packet);
+    }
   }
+  List<ClientSession> highestPrioritySessions=getHighestPrioritySessions(nonNegativePrioritySessions);
   if (highestPrioritySessions.size() == 1) {
     if (!shouldCarbonCopyToResource(highestPrioritySessions.get(0),packet,isPrivate)) {
       highestPrioritySessions.get(0).process(packet);
