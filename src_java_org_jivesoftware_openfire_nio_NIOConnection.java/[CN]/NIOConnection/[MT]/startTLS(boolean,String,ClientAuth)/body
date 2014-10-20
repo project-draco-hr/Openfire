@@ -16,10 +16,10 @@
       tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust,this)};
     }
   }
-  String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm","TLS");
+  String algorithm=JiveGlobals.getProperty(ConnectionSettings.Client.TLS_ALGORITHM,"TLS");
   SSLContext tlsContext=SSLContext.getInstance(algorithm);
   tlsContext.init(km,tm,null);
-  SSLFilter filter=new SSLFilter(tlsContext);
+  SslFilter filter=new SslFilter(tlsContext);
   filter.setUseClientMode(clientMode);
   if (authentication == ClientAuth.needed) {
     filter.setNeedClientAuth(true);
@@ -27,8 +27,8 @@
  else   if (authentication == ClientAuth.wanted) {
     filter.setWantClientAuth(true);
   }
-  ioSession.getFilterChain().addBefore("org.apache.mina.filter.ReadThrottleFilterBuilder.add","tls",filter);
-  ioSession.setAttribute(SSLFilter.DISABLE_ENCRYPTION_ONCE,Boolean.TRUE);
+  ioSession.getFilterChain().addAfter(EXECUTOR_FILTER_NAME,TLS_FILTER_NAME,filter);
+  ioSession.setAttribute(SslFilter.DISABLE_ENCRYPTION_ONCE,Boolean.TRUE);
   if (!clientMode) {
     deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
   }

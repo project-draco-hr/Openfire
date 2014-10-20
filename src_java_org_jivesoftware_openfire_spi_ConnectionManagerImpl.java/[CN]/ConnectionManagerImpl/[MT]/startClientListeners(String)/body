@@ -9,7 +9,8 @@
           bindInterface=InetAddress.getByName(interfaceName);
         }
       }
-      socketAcceptor.bind(new InetSocketAddress(bindInterface,port),new ClientConnectionHandler(serverName));
+      socketAcceptor.setHandler(new ClientConnectionHandler(serverName));
+      socketAcceptor.bind(new InetSocketAddress(bindInterface,port));
       ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.client));
       List<String> params=new ArrayList<String>();
       params.add(Integer.toString(port));
