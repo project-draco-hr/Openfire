@@ -1,11 +1,10 @@
 {
-  final String prefix=IoServiceManager.class.getPackage().getName();
+  final String prefix=IoServiceMBean.class.getPackage().getName();
   try {
-    IoServiceManager mbean=new IoServiceManager(acceptor);
+    IoServiceMBean mbean=new IoServiceMBean(acceptor);
     MBeanServer mbs=ManagementFactory.getPlatformMBeanServer();
     ObjectName name=new ObjectName(prefix + ":type=SocketAcceptor,name=" + suffix);
     mbs.registerMBean(mbean,name);
-    mbean.startCollectingStats(JiveGlobals.getIntProperty("xmpp.socket.jmx.interval",60000));
   }
  catch (  JMException ex) {
     Log.warn("Failed to register MINA acceptor mbean (JMX): " + ex);
@@ -14,7 +13,7 @@
     acceptor.addListener(new IoServiceListener(){
       public void sessionCreated(      IoSession session){
         try {
-          IoSessionManager mbean=new IoSessionManager(session);
+          IoSessionMBean mbean=new IoSessionMBean(session);
           MBeanServer mbs=ManagementFactory.getPlatformMBeanServer();
           ObjectName name=new ObjectName(prefix + ":type=IoSession,name=" + session.getRemoteAddress().toString().replace(':','/'));
           mbs.registerMBean(mbean,name);
@@ -32,9 +31,11 @@
           Log.warn("Failed to unregister MINA session mbean (JMX): " + ex);
         }
       }
-      public void serviceActivated(      IoService is,      SocketAddress sa,      IoHandler ih,      IoServiceConfig isc){
+      public void serviceActivated(      IoService service) throws Exception {
       }
-      public void serviceDeactivated(      IoService is,      SocketAddress sa,      IoHandler ih,      IoServiceConfig isc){
+      public void serviceDeactivated(      IoService service) throws Exception {
+      }
+      public void serviceIdle(      IoService service,      IdleStatus idleStatus) throws Exception {
       }
     }
 );
