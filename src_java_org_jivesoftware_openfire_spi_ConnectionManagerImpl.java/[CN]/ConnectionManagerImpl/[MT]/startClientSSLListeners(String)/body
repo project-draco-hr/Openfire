@@ -9,7 +9,8 @@
           bindInterface=InetAddress.getByName(interfaceName);
         }
       }
-      sslSocketAcceptor.bind(new InetSocketAddress(bindInterface,port),new ClientConnectionHandler(serverName));
+      sslSocketAcceptor.setHandler(new ClientConnectionHandler(serverName));
+      sslSocketAcceptor.bind(new InetSocketAddress(bindInterface,port));
       ports.add(new ServerPort(port,serverName,localIPAddress,true,null,ServerPort.Type.client));
       List<String> params=new ArrayList<String>();
       params.add(Integer.toString(port));
