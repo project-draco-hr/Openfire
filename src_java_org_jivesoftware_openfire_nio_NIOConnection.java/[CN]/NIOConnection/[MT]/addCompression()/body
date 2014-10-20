@@ -1,8 +1,8 @@
 {
   IoFilterChain chain=ioSession.getFilterChain();
-  String baseFilter="org.apache.mina.common.ExecutorThreadModel";
-  if (chain.contains("tls")) {
-    baseFilter="tls";
+  String baseFilter=EXECUTOR_FILTER_NAME;
+  if (chain.contains(TLS_FILTER_NAME)) {
+    baseFilter=TLS_FILTER_NAME;
   }
-  chain.addAfter(baseFilter,"compression",new CompressionFilter(true,false,CompressionFilter.COMPRESSION_MAX));
+  chain.addAfter(baseFilter,COMPRESSION_FILTER_NAME,new CompressionFilter(true,false,CompressionFilter.COMPRESSION_MAX));
 }

@@ -1,5 +1,5 @@
 {
-  if (isComponentListenerEnabled() && componentAcceptor != null && componentAcceptor.getManagedServiceAddresses().isEmpty()) {
+  if (isComponentListenerEnabled() && componentAcceptor != null && componentAcceptor.getManagedSessionCount() == 0) {
     int port=getComponentListenerPort();
     try {
       String interfaceName=JiveGlobals.getXMLProperty("network.interface");
@@ -9,7 +9,8 @@
           bindInterface=InetAddress.getByName(interfaceName);
         }
       }
-      componentAcceptor.bind(new InetSocketAddress(bindInterface,port),new ComponentConnectionHandler(serverName));
+      componentAcceptor.setHandler(new ComponentConnectionHandler(serverName));
+      componentAcceptor.bind(new InetSocketAddress(bindInterface,port));
       ports.add(new ServerPort(port,serverName,localIPAddress,false,null,ServerPort.Type.component));
       List<String> params=new ArrayList<String>();
       params.add(Integer.toString(port));

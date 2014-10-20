@@ -5,13 +5,18 @@
     sb.append(',');
     sb.append(DbConnectionManager.getConnectionProvider().toString());
     sb.append(',');
-    ExecutorThreadModel threadModel=(ExecutorThreadModel)socketAcceptor.getDefaultConfig().getThreadModel();
-    ThreadPoolExecutor executor=(ThreadPoolExecutor)threadModel.getExecutor();
+    ExecutorFilter executorFilter=(ExecutorFilter)socketAcceptor.getFilterChain().get(EXECUTOR_FILTER_NAME);
+    ThreadPoolExecutor executor=(ThreadPoolExecutor)executorFilter.getExecutor();
     sb.append(executor.getCorePoolSize());
     sb.append(',');
     sb.append(executor.getActiveCount());
     sb.append(',');
-    sb.append(executor.getQueue().size());
+    try {
+      sb.append(executor.getQueue().size());
+    }
+ catch (    UnsupportedOperationException e) {
+      sb.append(-1);
+    }
     sb.append(',');
     sb.append(executor.getCompletedTaskCount());
     sb.append(',');

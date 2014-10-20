@@ -1,7 +1,7 @@
 {
   if (isClientListenerEnabled()) {
-    socketAcceptor=buildSocketAcceptor("client");
-    int eventThreads=JiveGlobals.getIntProperty("xmpp.client.processing.threads",16);
+    socketAcceptor=buildSocketAcceptor(CLIENT_SOCKET_ACCEPTOR_NAME);
+    int eventThreads=JiveGlobals.getIntProperty(ConnectionSettings.Client.MAX_THREADS,16);
     ExecutorFilter executorFilter=new ExecutorFilter();
     ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
     ThreadFactory threadFactory=eventExecutor.getThreadFactory();
@@ -10,11 +10,11 @@
     eventExecutor.setCorePoolSize(eventThreads + 1);
     eventExecutor.setMaximumPoolSize(eventThreads + 1);
     eventExecutor.setKeepAliveTime(60,TimeUnit.SECONDS);
-    socketAcceptor.getDefaultConfig().setThreadModel(ThreadModel.MANUAL);
-    socketAcceptor.getFilterChain().addFirst("xmpp",new ProtocolCodecFilter(new XMPPCodecFactory()));
-    socketAcceptor.getFilterChain().addFirst("threadModel",executorFilter);
-    socketAcceptor.getFilterChain().addAfter("xmpp","outCap",new StalledSessionsFilter());
-    int maxBufferSize=JiveGlobals.getIntProperty("xmpp.client.maxReadBufferSize",10 * MB);
-    installReadThrottle(socketAcceptor,maxBufferSize);
+    socketAcceptor.getFilterChain().addFirst(XMPP_CODEC_FILTER_NAME,new ProtocolCodecFilter(new XMPPCodecFactory()));
+    socketAcceptor.getFilterChain().addFirst(EXECUTOR_FILTER_NAME,executorFilter);
+    socketAcceptor.getFilterChain().addAfter(XMPP_CODEC_FILTER_NAME,CAPACITY_FILTER_NAME,new StalledSessionsFilter());
+    int maxBufferSize=JiveGlobals.getIntProperty(ConnectionSettings.Client.MAX_READ_BUFFER,10 * MB);
+    socketAcceptor.getSessionConfig().setMaxReadBufferSize(maxBufferSize);
+    Log.debug("Throttling read buffer for connections from socketAcceptor={} to max={} bytes",socketAcceptor,maxBufferSize);
   }
 }
