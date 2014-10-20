@@ -1,12 +1,6 @@
 {
   StanzaHandler handler=(StanzaHandler)session.getAttribute(HANDLER);
-  int hashCode=Thread.currentThread().hashCode();
-  XMPPPacketReader parser=parsers.get(hashCode);
-  if (parser == null) {
-    parser=new XMPPPacketReader();
-    parser.setXPPFactory(factory);
-    parsers.put(hashCode,parser);
-  }
+  final XMPPPacketReader parser=PARSER_CACHE.get();
   updateReadBytesCounter(session);
   try {
     handler.process((String)message,parser);
