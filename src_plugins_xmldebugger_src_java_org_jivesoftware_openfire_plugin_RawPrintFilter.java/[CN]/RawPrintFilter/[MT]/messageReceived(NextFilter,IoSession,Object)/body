@@ -3,7 +3,7 @@
     ByteBuffer byteBuffer=(ByteBuffer)message;
     int currentPos=byteBuffer.position();
     Charset encoder=Charset.forName("UTF-8");
-    CharBuffer charBuffer=encoder.decode(byteBuffer.buf());
+    CharBuffer charBuffer=encoder.decode(byteBuffer.asReadOnlyBuffer());
     System.out.println(prefix + " - RECV (" + session.hashCode()+ "): "+ charBuffer);
     byteBuffer.position(currentPos);
   }
