@@ -1,6 +1,6 @@
 {
-  if (enabled) {
-    System.out.println(prefix + " - SENT (" + session.hashCode()+ "): "+ Charset.forName("UTF-8").decode(((ByteBuffer)message).asReadOnlyBuffer()));
+  if (enabled && writeRequest.getMessage() instanceof ByteBuffer) {
+    System.out.println(prefix + " - SENT (" + session.hashCode()+ "): "+ Charset.forName("UTF-8").decode(((ByteBuffer)writeRequest.getMessage()).asReadOnlyBuffer()));
   }
-  super.messageSent(nextFilter,session,message);
+  super.messageSent(nextFilter,session,writeRequest);
 }
