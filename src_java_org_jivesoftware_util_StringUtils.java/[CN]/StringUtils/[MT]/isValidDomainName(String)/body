@@ -1,0 +1,13 @@
+{
+  if (domain == null) {
+    return false;
+  }
+  Pattern re=Pattern.compile(DOMAIN_NAME);
+  StringTokenizer parser=new StringTokenizer(domain,".");
+  while (parser.hasMoreTokens()) {
+    if (!re.matcher(parser.nextToken()).matches()) {
+      return false;
+    }
+  }
+  return true;
+}
