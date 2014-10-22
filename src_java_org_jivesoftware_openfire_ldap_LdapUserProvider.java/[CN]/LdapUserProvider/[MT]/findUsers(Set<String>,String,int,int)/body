@@ -5,9 +5,6 @@
   if (!searchFields.keySet().containsAll(fields)) {
     throw new IllegalArgumentException("Search fields " + fields + " are not valid.");
   }
-  if (!query.endsWith("*")) {
-    query=query + "*";
-  }
   StringBuilder filter=new StringBuilder();
   filter.append("(&(");
   filter.append(MessageFormat.format(manager.getSearchFilter(),"*"));
@@ -17,7 +14,7 @@
   }
   for (  String field : fields) {
     String attribute=searchFields.get(field);
-    filter.append("(").append(attribute).append("=").append(query).append(")");
+    filter.append("(").append(attribute).append("=").append(LdapManager.sanitizeSearchFilter(query)).append("*)");
   }
   if (fields.size() > 1) {
     filter.append(")");
