@@ -1,0 +1,18 @@
+{
+  String before="Jive Software, Inc";
+  String after="Jive Software\\, Inc";
+  String converted=Rdn.escapeValue(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+  before="Test.User; (+1)";
+  after="Test.User\\; (\\+1)";
+  converted=Rdn.escapeValue(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+  before="Wildcard *";
+  after="Wildcard *";
+  converted=Rdn.escapeValue(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+  before="Group/Section";
+  after="Group/Section";
+  converted=Rdn.escapeValue(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+}

@@ -14,7 +14,7 @@
       constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     constraints.setReturningAttributes(new String[]{usernameField});
-    NamingEnumeration answer=ctx.search("",princSearchFilter,new String[]{principal},constraints);
+    NamingEnumeration answer=ctx.search("",princSearchFilter,new String[]{LdapManager.sanitizeSearchFilter(principal)},constraints);
     Log.debug("LdapAuthorizationMapping: ... search finished");
     if (answer == null || !answer.hasMoreElements()) {
       Log.debug("LdapAuthorizationMapping: Username based on principal '" + principal + "' not found.");

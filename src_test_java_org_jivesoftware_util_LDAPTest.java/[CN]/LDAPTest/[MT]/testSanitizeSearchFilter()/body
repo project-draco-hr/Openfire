@@ -1,0 +1,14 @@
+{
+  String before="Test.User; (+1)";
+  String after="Test.User; \\28+1\\29";
+  String converted=LdapManager.sanitizeSearchFilter(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+  before="Wildcard *";
+  after="Wildcard \\2a";
+  converted=LdapManager.sanitizeSearchFilter(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+  before="~ Group|Section & Teams!";
+  after="\\7e Group\\7cSection \\26 Teams\\21";
+  converted=LdapManager.sanitizeSearchFilter(before);
+  assertTrue("Conversion result " + before + " to "+ converted,converted.equals(after));
+}
