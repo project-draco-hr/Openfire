@@ -1,10 +1,6 @@
 {
-  String domain="www.my_company.com";
-  assertFalse("Domain should not be valid",StringUtils.isValidDomainName(domain));
-  domain="www.-dash.com";
-  assertFalse("Domain should not be valid",StringUtils.isValidDomainName(domain));
-  domain="www.dash-.com";
-  assertFalse("Domain should not be valid",StringUtils.isValidDomainName(domain));
-  domain="abc.<test>.de";
-  assertFalse("Domain should not be valid",StringUtils.isValidDomainName(domain));
+  assertInvalidDomainName("www.my_company.com","Contains non-LDH characters");
+  assertInvalidDomainName("www.-dash.com","Has leading or trailing hyphen");
+  assertInvalidDomainName("www.dash-.com","Has leading or trailing hyphen");
+  assertInvalidDomainName("abc.<test>.de","Contains non-LDH characters");
 }

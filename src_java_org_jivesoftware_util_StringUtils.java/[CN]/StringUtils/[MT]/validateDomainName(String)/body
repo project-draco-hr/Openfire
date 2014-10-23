@@ -1,0 +1,13 @@
+{
+  if (domain == null || domain.trim().length() == 0) {
+    throw new IllegalArgumentException("Domain name cannot be null or empty");
+  }
+  String result=IDN.toASCII(domain);
+  if (result.equals(domain)) {
+    IDN.toASCII(domain,IDN.USE_STD3_ASCII_RULES);
+  }
+ else {
+    Log.info(MessageFormat.format("Converted domain name: from '{0}' to '{1}'",domain,result));
+  }
+  return result;
+}
