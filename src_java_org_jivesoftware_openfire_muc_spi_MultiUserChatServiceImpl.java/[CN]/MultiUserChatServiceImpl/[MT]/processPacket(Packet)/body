@@ -8,9 +8,14 @@
         return;
       }
     }
-    JID receipient=packet.getTo();
-    String roomName=receipient != null ? receipient.getNode() : null;
-    getChatUser(packet.getFrom(),roomName).process(packet);
+    if (packet.getError() != null && packet.getError().getType().equals(PacketError.Condition.remote_server_not_found)) {
+      removeUser(packet.getFrom());
+    }
+ else {
+      JID receipient=packet.getTo();
+      String roomName=receipient != null ? receipient.getNode() : null;
+      getChatUser(packet.getFrom(),roomName).process(packet);
+    }
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
