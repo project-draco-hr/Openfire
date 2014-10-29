@@ -1,0 +1,19 @@
+{
+  final Set<Rule.Phoneme> newPhonemes=new LinkedHashSet<Rule.Phoneme>(maxPhonemes);
+  EXPR:   for (  final Rule.Phoneme left : this.phonemes) {
+    for (    final Rule.Phoneme right : phonemeExpr.getPhonemes()) {
+      final LanguageSet languages=left.getLanguages().restrictTo(right.getLanguages());
+      if (!languages.isEmpty()) {
+        final Rule.Phoneme join=new Phoneme(left,right,languages);
+        if (newPhonemes.size() < maxPhonemes) {
+          newPhonemes.add(join);
+          if (newPhonemes.size() >= maxPhonemes) {
+            break EXPR;
+          }
+        }
+      }
+    }
+  }
+  this.phonemes.clear();
+  this.phonemes.addAll(newPhonemes);
+}

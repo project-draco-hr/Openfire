@@ -1,0 +1,11 @@
+{
+  String acceptVersion=header.getAcceptVersion();
+  String[] parts=acceptVersion.split(",");
+  for (  String part : parts) {
+    if (part.trim().equals(VERSION)) {
+      log.info("Accept version is valid for {}",hostPort);
+      return;
+    }
+  }
+  throw new StompVersionException("Only STOMP version " + VERSION + " is supported");
+}

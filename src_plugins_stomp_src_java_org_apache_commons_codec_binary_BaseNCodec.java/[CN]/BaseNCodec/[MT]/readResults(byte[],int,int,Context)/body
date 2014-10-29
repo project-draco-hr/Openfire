@@ -1,0 +1,12 @@
+{
+  if (context.buffer != null) {
+    final int len=Math.min(available(context),bAvail);
+    System.arraycopy(context.buffer,context.readPos,b,bPos,len);
+    context.readPos+=len;
+    if (context.readPos >= context.pos) {
+      context.buffer=null;
+    }
+    return len;
+  }
+  return context.eof ? EOF : 0;
+}

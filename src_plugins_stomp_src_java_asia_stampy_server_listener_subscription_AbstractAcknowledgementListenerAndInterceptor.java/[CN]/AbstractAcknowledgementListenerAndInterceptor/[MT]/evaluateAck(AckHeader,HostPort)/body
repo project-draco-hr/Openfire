@@ -1,0 +1,10 @@
+{
+  String id=header.getId();
+  if (hasMessageAck(id,hostPort)) {
+    clearMessageAck(id,hostPort);
+    getHandler().ackReceived(id,header.getReceipt(),header.getTransaction());
+  }
+ else {
+    throw new UnexpectedAcknowledgementException("No ACK message expected, yet received id " + id + " from "+ hostPort);
+  }
+}

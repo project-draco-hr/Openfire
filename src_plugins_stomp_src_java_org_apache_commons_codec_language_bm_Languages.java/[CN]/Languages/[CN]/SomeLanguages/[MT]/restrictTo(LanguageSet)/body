@@ -1,0 +1,18 @@
+{
+  if (other == NO_LANGUAGES) {
+    return other;
+  }
+ else   if (other == ANY_LANGUAGE) {
+    return this;
+  }
+ else {
+    final SomeLanguages sl=(SomeLanguages)other;
+    final Set<String> ls=new HashSet<String>(Math.min(languages.size(),sl.languages.size()));
+    for (    String lang : languages) {
+      if (sl.languages.contains(lang)) {
+        ls.add(lang);
+      }
+    }
+    return from(ls);
+  }
+}

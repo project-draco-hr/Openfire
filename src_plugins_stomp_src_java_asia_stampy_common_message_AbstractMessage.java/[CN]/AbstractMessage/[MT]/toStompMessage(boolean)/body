@@ -1,0 +1,15 @@
+{
+  if (validate)   validate();
+  StringBuilder builder=new StringBuilder();
+  String body=postHeader();
+  builder.append(getMessageType().name());
+  String header=getHeader().toMessageHeader();
+  if (StringUtils.isNotEmpty(header)) {
+    builder.append("\n");
+    builder.append(header);
+  }
+  builder.append("\n\n");
+  builder.append(body);
+  builder.append(StompMessageParser.EOM);
+  return builder.toString();
+}

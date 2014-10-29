@@ -1,0 +1,37 @@
+{
+  Log.info("[" + NAME + "] initialize "+ NAME+ " plugin resources");
+  String appName=JiveGlobals.getProperty("websockets.webapp.name",NAME);
+  try {
+    ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+    try {
+      Log.info("[" + NAME + "] initialize "+ NAME+ " initialize Websockets "+ appName);
+      ServletContextHandler context=new ServletContextHandler(contexts,"/" + appName,ServletContextHandler.SESSIONS);
+      context.addServlet(new ServletHolder(new XMPPServlet()),"/server");
+      WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath(),"/websockets");
+      context.setWelcomeFiles(new String[]{"index.html"});
+      String username=JiveGlobals.getProperty("websockets.hub.username","btg199251");
+      String password=JiveGlobals.getProperty("websockets.hub.password","969131");
+      String domains=JiveGlobals.getProperty("websockets.hub.domains","localhost");
+      String domain=JiveGlobals.getProperty("xmpp.domain","localhost");
+      String hubUriString=JiveGlobals.getProperty("websockets.hub.uri","ws://biblestudy.4ng.net/kafka/server?username=" + username + "&password="+ password+ "&topics="+ domains);
+      if (hubUriString != null && "".equals(hubUriString) == false) {
+        Log.info("[" + NAME + "] initialize "+ NAME+ " initialize HubSocket");
+        client=new WebSocketClient();
+        HubSocket socket=new HubSocket(domain,domains);
+        client.start();
+        URI hubUri=new URI(hubUriString);
+        ClientUpgradeRequest request=new ClientUpgradeRequest();
+        List<String> subProtocols=new ArrayList<>();
+        subProtocols.add("kafka-text");
+        request.setSubProtocols(subProtocols);
+        client.connect(socket,hubUri,request);
+      }
+    }
+ catch (    Exception e) {
+      Log.error("An error has occurred",e);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error initializing WebSockets Plugin",e);
+  }
+}

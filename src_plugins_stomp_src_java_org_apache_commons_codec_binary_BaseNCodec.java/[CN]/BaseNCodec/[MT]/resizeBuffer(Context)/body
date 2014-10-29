@@ -1,0 +1,13 @@
+{
+  if (context.buffer == null) {
+    context.buffer=new byte[getDefaultBufferSize()];
+    context.pos=0;
+    context.readPos=0;
+  }
+ else {
+    final byte[] b=new byte[context.buffer.length * DEFAULT_BUFFER_RESIZE_FACTOR];
+    System.arraycopy(context.buffer,0,b,0,context.buffer.length);
+    context.buffer=b;
+  }
+  return context.buffer;
+}

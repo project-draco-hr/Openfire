@@ -1,0 +1,30 @@
+{
+  if (name1 == null || EMPTY.equalsIgnoreCase(name1) || SPACE.equalsIgnoreCase(name1)) {
+    return false;
+  }
+ else   if (name2 == null || EMPTY.equalsIgnoreCase(name2) || SPACE.equalsIgnoreCase(name2)) {
+    return false;
+  }
+ else   if (name1.length() == 1 || name2.length() == 1) {
+    return false;
+  }
+ else   if (name1.equalsIgnoreCase(name2)) {
+    return true;
+  }
+  name1=cleanName(name1);
+  name2=cleanName(name2);
+  name1=removeVowels(name1);
+  name2=removeVowels(name2);
+  name1=removeDoubleConsonants(name1);
+  name2=removeDoubleConsonants(name2);
+  name1=getFirst3Last3(name1);
+  name2=getFirst3Last3(name2);
+  if (Math.abs(name1.length() - name2.length()) >= THREE) {
+    return false;
+  }
+  final int sumLength=Math.abs(name1.length() + name2.length());
+  int minRating=0;
+  minRating=getMinRating(sumLength);
+  final int count=leftToRightThenRightToLeftProcessing(name1,name2);
+  return count >= minRating;
+}

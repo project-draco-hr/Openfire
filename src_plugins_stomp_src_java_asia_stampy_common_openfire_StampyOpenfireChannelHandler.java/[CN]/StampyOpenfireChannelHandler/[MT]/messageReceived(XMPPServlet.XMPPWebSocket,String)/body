@@ -1,0 +1,21 @@
+{
+  final HostPort hostPort=createHostPort(socket);
+  Log.debug("Received raw message {} from {}",msg,hostPort);
+  helper.resetHeartbeat(hostPort);
+  if (!helper.isValidObject(msg)) {
+    Log.error("Object {} is not a valid STOMP message, closing connection {}",msg,hostPort);
+    illegalAccess();
+    return;
+  }
+  if (helper.isHeartbeat(msg)) {
+    Log.trace("Received heartbeat");
+    return;
+  }
+  Runnable runnable=new Runnable(){
+    @Override public void run(){
+      asyncProcessing(hostPort,msg);
+    }
+  }
+;
+  getExecutor().execute(runnable);
+}

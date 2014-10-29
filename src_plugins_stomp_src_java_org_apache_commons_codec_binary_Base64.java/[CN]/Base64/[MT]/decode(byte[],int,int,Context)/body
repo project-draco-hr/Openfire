@@ -1,0 +1,48 @@
+{
+  if (context.eof) {
+    return;
+  }
+  if (inAvail < 0) {
+    context.eof=true;
+  }
+  for (int i=0; i < inAvail; i++) {
+    final byte[] buffer=ensureBufferSize(decodeSize,context);
+    final byte b=in[inPos++];
+    if (b == PAD) {
+      context.eof=true;
+      break;
+    }
+ else {
+      if (b >= 0 && b < DECODE_TABLE.length) {
+        final int result=DECODE_TABLE[b];
+        if (result >= 0) {
+          context.modulus=(context.modulus + 1) % BYTES_PER_ENCODED_BLOCK;
+          context.ibitWorkArea=(context.ibitWorkArea << BITS_PER_ENCODED_BYTE) + result;
+          if (context.modulus == 0) {
+            buffer[context.pos++]=(byte)((context.ibitWorkArea >> 16) & MASK_8BITS);
+            buffer[context.pos++]=(byte)((context.ibitWorkArea >> 8) & MASK_8BITS);
+            buffer[context.pos++]=(byte)(context.ibitWorkArea & MASK_8BITS);
+          }
+        }
+      }
+    }
+  }
+  if (context.eof && context.modulus != 0) {
+    final byte[] buffer=ensureBufferSize(decodeSize,context);
+switch (context.modulus) {
+case 1:
+      break;
+case 2:
+    context.ibitWorkArea=context.ibitWorkArea >> 4;
+  buffer[context.pos++]=(byte)((context.ibitWorkArea) & MASK_8BITS);
+break;
+case 3:
+context.ibitWorkArea=context.ibitWorkArea >> 2;
+buffer[context.pos++]=(byte)((context.ibitWorkArea >> 8) & MASK_8BITS);
+buffer[context.pos++]=(byte)((context.ibitWorkArea) & MASK_8BITS);
+break;
+default :
+throw new IllegalStateException("Impossible modulus " + context.modulus);
+}
+}
+}

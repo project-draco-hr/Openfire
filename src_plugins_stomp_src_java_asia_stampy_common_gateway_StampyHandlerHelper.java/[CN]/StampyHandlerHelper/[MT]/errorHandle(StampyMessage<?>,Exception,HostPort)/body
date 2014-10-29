@@ -1,0 +1,7 @@
+{
+  log.error("Handling error, sending error message to {}",hostPort,e);
+  String receipt=message.getHeader().getHeaderValue(ClientMessageHeader.RECEIPT);
+  ErrorMessage error=new ErrorMessage(StringUtils.isEmpty(receipt) ? "n/a" : receipt);
+  error.getHeader().setMessageHeader("Could not execute " + message.getMessageType() + " - "+ e.getMessage());
+  getGateway().sendMessage(error.toStompMessage(true),hostPort);
+}

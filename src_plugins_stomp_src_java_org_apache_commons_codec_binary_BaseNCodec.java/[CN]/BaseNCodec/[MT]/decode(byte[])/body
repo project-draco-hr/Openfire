@@ -1,0 +1,11 @@
+{
+  if (pArray == null || pArray.length == 0) {
+    return pArray;
+  }
+  final Context context=new Context();
+  decode(pArray,0,pArray.length,context);
+  decode(pArray,0,EOF,context);
+  final byte[] result=new byte[context.pos];
+  readResults(result,0,result.length,context);
+  return result;
+}

@@ -1,0 +1,13 @@
+{
+  final int avail=baseNCodec.available(context);
+  if (avail > 0) {
+    final byte[] buf=new byte[avail];
+    final int c=baseNCodec.readResults(buf,0,avail,context);
+    if (c > 0) {
+      out.write(buf,0,c);
+    }
+  }
+  if (propagate) {
+    out.flush();
+  }
+}

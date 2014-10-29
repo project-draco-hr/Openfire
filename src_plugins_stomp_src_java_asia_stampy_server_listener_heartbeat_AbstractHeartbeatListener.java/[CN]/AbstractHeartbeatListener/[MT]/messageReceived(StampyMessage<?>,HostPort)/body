@@ -1,0 +1,12 @@
+{
+  if (isDisconnectMessage(message)) {
+    getHeartbeatContainer().remove(hostPort);
+    return;
+  }
+  ConnectHeader header=getConnectHeader(message);
+  int requested=header.getIncomingHeartbeat();
+  if (getGateway().getHeartbeat() <= 0 || requested <= 0)   return;
+  int heartbeat=Math.max(requested,getGateway().getHeartbeat());
+  log.info("Starting heartbeats for {} at {} ms intervals",hostPort,heartbeat);
+  getHeartbeatContainer().start(hostPort,getGateway(),heartbeat);
+}

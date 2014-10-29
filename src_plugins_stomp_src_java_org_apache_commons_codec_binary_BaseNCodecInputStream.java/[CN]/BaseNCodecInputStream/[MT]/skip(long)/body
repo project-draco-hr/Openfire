@@ -1,0 +1,16 @@
+{
+  if (n < 0) {
+    throw new IllegalArgumentException("Negative skip length: " + n);
+  }
+  final byte[] b=new byte[512];
+  long todo=n;
+  while (todo > 0) {
+    int len=(int)Math.min(b.length,todo);
+    len=this.read(b,0,len);
+    if (len == EOF) {
+      break;
+    }
+    todo-=len;
+  }
+  return n - todo;
+}

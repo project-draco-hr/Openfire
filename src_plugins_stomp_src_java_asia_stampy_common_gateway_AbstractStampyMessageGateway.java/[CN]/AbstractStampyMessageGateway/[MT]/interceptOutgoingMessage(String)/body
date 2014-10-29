@@ -1,0 +1,11 @@
+{
+  textInterceptorLock.lock();
+  try {
+    for (    StampyOutgoingTextInterceptor interceptor : textInterceptors) {
+      interceptor.interceptMessage(message);
+    }
+  }
+  finally {
+    textInterceptorLock.unlock();
+  }
+}
