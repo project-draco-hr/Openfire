@@ -17,7 +17,7 @@
       constraints.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     }
     constraints.setReturningAttributes(new String[]{groupNameField});
-    String filter=MessageFormat.format(getGroupSearchFilter(),sanitizeSearchFilter(JID.unescapeNode(groupname)));
+    String filter=MessageFormat.format(getGroupSearchFilter(),sanitizeSearchFilter(groupname));
     NamingEnumeration<SearchResult> answer=ctx.search("",filter,constraints);
     if (debug) {
       Log.debug("LdapManager: ... search finished");
