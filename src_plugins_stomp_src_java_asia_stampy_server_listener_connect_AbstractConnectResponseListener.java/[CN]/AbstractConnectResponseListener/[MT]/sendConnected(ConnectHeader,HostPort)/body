@@ -1,0 +1,12 @@
+{
+  log.debug("Sending connected message to {}",hostPort);
+  ConnectedMessage message=new ConnectedMessage("1.2");
+  int requested=message.getHeader().getIncomingHeartbeat();
+  if (requested >= 0 || getGateway().getHeartbeat() >= 0) {
+    int heartbeat=Math.max(requested,getGateway().getHeartbeat());
+    message.getHeader().setHeartbeat(heartbeat,header.getOutgoingHeartbeat());
+  }
+  message.getHeader().setSession(hostPort.toString());
+  getGateway().sendMessage(message,hostPort);
+  log.debug("Sent connected message to {}",hostPort);
+}

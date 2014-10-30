@@ -1,0 +1,38 @@
+{
+  response.setHeader("Expires","Sat, 6 May 1995 12:00:00 GMT");
+  response.setHeader("Cache-Control","no-store, no-cache, must-revalidate");
+  response.addHeader("Cache-Control","post-check=0, pre-check=0");
+  response.setHeader("Pragma","no-cache");
+  response.setHeader("Content-Type","text/html");
+  response.setHeader("Connection","close");
+  ServletOutputStream out=response.getOutputStream();
+  Map<String,String> errors=new HashMap<String,String>();
+  action=request.getParameter("action");
+  if (action == null) {
+    action="edit";
+  }
+  if (action.equals("edit")) {
+    webAppName=JiveGlobals.getProperty("websockets.webapp.name",webAppName);
+    displayPage(out,errors.size());
+  }
+ else   if (action.equals("update")) {
+    webAppName=request.getParameter("webAppName");
+    validateFields(errors);
+    if (errors.isEmpty()) {
+      try {
+        JiveGlobals.setProperty("websockets.webapp.name",webAppName);
+        Log.info("WebSockets Properties updated");
+      }
+ catch (      Exception e) {
+        Log.error(e.getMessage(),e);
+      }
+      response.sendRedirect("websockets-properties");
+    }
+ else {
+      displayPage(out,errors.size());
+    }
+  }
+ else {
+    displayPage(out,errors.size());
+  }
+}

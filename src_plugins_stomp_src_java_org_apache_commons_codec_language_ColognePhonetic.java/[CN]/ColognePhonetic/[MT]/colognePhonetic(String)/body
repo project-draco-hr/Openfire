@@ -1,0 +1,91 @@
+{
+  if (text == null) {
+    return null;
+  }
+  text=preprocess(text);
+  final CologneOutputBuffer output=new CologneOutputBuffer(text.length() * 2);
+  final CologneInputBuffer input=new CologneInputBuffer(text.toCharArray());
+  char nextChar;
+  char lastChar='-';
+  char lastCode='/';
+  char code;
+  char chr;
+  int rightLength=input.length();
+  while (rightLength > 0) {
+    chr=input.removeNext();
+    if ((rightLength=input.length()) > 0) {
+      nextChar=input.getNextChar();
+    }
+ else {
+      nextChar='-';
+    }
+    if (arrayContains(AEIJOUY,chr)) {
+      code='0';
+    }
+ else     if (chr == 'H' || chr < 'A' || chr > 'Z') {
+      if (lastCode == '/') {
+        continue;
+      }
+      code='-';
+    }
+ else     if (chr == 'B' || (chr == 'P' && nextChar != 'H')) {
+      code='1';
+    }
+ else     if ((chr == 'D' || chr == 'T') && !arrayContains(SCZ,nextChar)) {
+      code='2';
+    }
+ else     if (arrayContains(WFPV,chr)) {
+      code='3';
+    }
+ else     if (arrayContains(GKQ,chr)) {
+      code='4';
+    }
+ else     if (chr == 'X' && !arrayContains(CKQ,lastChar)) {
+      code='4';
+      input.addLeft('S');
+      rightLength++;
+    }
+ else     if (chr == 'S' || chr == 'Z') {
+      code='8';
+    }
+ else     if (chr == 'C') {
+      if (lastCode == '/') {
+        if (arrayContains(AHKLOQRUX,nextChar)) {
+          code='4';
+        }
+ else {
+          code='8';
+        }
+      }
+ else {
+        if (arrayContains(SZ,lastChar) || !arrayContains(AHOUKQX,nextChar)) {
+          code='8';
+        }
+ else {
+          code='4';
+        }
+      }
+    }
+ else     if (arrayContains(TDX,chr)) {
+      code='8';
+    }
+ else     if (chr == 'R') {
+      code='7';
+    }
+ else     if (chr == 'L') {
+      code='5';
+    }
+ else     if (chr == 'M' || chr == 'N') {
+      code='6';
+    }
+ else {
+      code=chr;
+    }
+    if (code != '-' && (lastCode != code && (code != '0' || lastCode == '/') || code < '0' || code > '8')) {
+      output.addRight(code);
+    }
+    lastChar=chr;
+    lastCode=code;
+  }
+  return output.toString();
+}

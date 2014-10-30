@@ -1,0 +1,69 @@
+{
+  StampyHeartbeatContainer heartbeat=new HeartbeatContainer();
+  ServerOpenfireChannelHandler channelHandler=new ServerOpenfireChannelHandler();
+  channelHandler.setGateway(gateway);
+  channelHandler.setHeartbeatContainer(heartbeat);
+  gateway.setHandler(channelHandler);
+  SecurityMessageListener sml=new SecurityMessageListener(){
+    @Override public void messageReceived(    StampyMessage<?> message,    HostPort hostPort) throws Exception {
+    }
+    @Override public boolean isForMessage(    StampyMessage<?> message){
+      return false;
+    }
+    @Override public StompMessageType[] getMessageTypes(){
+      return null;
+    }
+  }
+;
+  gateway.addMessageListener(sml);
+  ServerMessageValidationListener smvl=new ServerMessageValidationListener();
+  gateway.addMessageListener(smvl);
+  OpenfireConnectResponseListener ncrl=new OpenfireConnectResponseListener();
+  ncrl.setGateway(gateway);
+  gateway.addMessageListener(ncrl);
+  OpenfireConnectStateListener ncsl=new OpenfireConnectStateListener();
+  ncsl.setGateway(gateway);
+  gateway.addMessageListener(ncsl);
+  OpenfireHeartbeatListener nhbl=new OpenfireHeartbeatListener();
+  nhbl.setHeartbeatContainer(heartbeat);
+  nhbl.setGateway(gateway);
+  gateway.addMessageListener(nhbl);
+  OpenfireTransactionListener ntl=new OpenfireTransactionListener();
+  ntl.setGateway(gateway);
+  gateway.addMessageListener(ntl);
+  StampyAcknowledgementHandler sah=new StampyAcknowledgementHandler(){
+    @Override public void noAcknowledgementReceived(    String id){
+      Log.info("No acknowledgement received for " + id);
+    }
+    @Override public void nackReceived(    String id,    String receipt,    String transaction) throws Exception {
+      Log.info("Nack message received for " + id);
+    }
+    @Override public void ackReceived(    String id,    String receipt,    String transaction) throws Exception {
+      Log.info("Ack message received for " + id);
+    }
+  }
+;
+  OpenfireAcknowledgementListenerAndInterceptor nalai=new OpenfireAcknowledgementListenerAndInterceptor();
+  nalai.setAckTimeoutMillis(200);
+  nalai.setHandler(sah);
+  nalai.setGateway(gateway);
+  gateway.addOutgoingMessageInterceptor(nalai);
+  gateway.addMessageListener(nalai);
+  OpenfireReceiptListener nrl=new OpenfireReceiptListener();
+  nrl.setGateway(gateway);
+  gateway.addMessageListener(nrl);
+  gateway.addMessageListener(new StampyMessageListener(){
+    @Override public void messageReceived(    StampyMessage<?> message,    HostPort hostPort) throws Exception {
+      Log.info("server received: " + message.getMessageType() + " "+ message.getHeader().getHeaders());
+    }
+    @Override public boolean isForMessage(    StampyMessage<?> message){
+      return true;
+    }
+    @Override public StompMessageType[] getMessageTypes(){
+      return StompMessageType.values();
+    }
+  }
+);
+  socket.setHandler(channelHandler,request.getRemoteHost(),request.getRemotePort());
+  return true;
+}

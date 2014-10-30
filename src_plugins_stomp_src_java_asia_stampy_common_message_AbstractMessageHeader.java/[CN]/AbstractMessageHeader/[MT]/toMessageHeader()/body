@@ -1,0 +1,15 @@
+{
+  boolean first=true;
+  StringBuilder builder=new StringBuilder();
+  for (  Entry<String,List<String>> entry : headers.entrySet()) {
+    if (entry.getValue() == null || entry.getValue().isEmpty())     continue;
+    for (    String value : entry.getValue()) {
+      if (!first)       builder.append("\n");
+      builder.append(entry.getKey());
+      builder.append(":");
+      builder.append(value);
+      first=false;
+    }
+  }
+  return builder.toString();
+}

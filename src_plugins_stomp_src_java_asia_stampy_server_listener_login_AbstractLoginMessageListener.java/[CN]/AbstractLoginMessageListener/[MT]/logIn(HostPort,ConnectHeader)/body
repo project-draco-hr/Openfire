@@ -1,0 +1,14 @@
+{
+  if (loggedInConnections.contains(hostPort))   throw new AlreadyLoggedInException(hostPort + " is already logged in");
+  if (!isForHeader(header))   throw new NotLoggedInException("login and passcode not specified, cannot log in");
+  try {
+    getLoginHandler().login(header.getLogin(),header.getPasscode());
+    loggedInConnections.add(hostPort);
+  }
+ catch (  TerminateSessionException e) {
+    log.error("Login handler has terminated the session",e);
+    sendErrorMessage(e.getMessage(),hostPort);
+    gateway.closeConnection(hostPort);
+    throw new MessageListenerHaltException();
+  }
+}

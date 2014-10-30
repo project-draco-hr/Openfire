@@ -1,0 +1,8 @@
+{
+  if (!AbstractBodyMessage.JAVA_BASE64_MIME_TYPE.equals(contentType)) {
+    throw new NotImplementedException("Subclass this class and override convertToObject to enable conversion using mime type " + contentType);
+  }
+  Object o=SerializationUtils.deserializeBase64(body);
+  illegalObjectCheck(o);
+  return o;
+}

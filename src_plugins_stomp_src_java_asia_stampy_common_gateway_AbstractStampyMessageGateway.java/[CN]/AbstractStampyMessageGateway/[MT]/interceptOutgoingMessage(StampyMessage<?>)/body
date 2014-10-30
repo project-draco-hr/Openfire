@@ -1,0 +1,13 @@
+{
+  stampyInterceptorLock.lock();
+  try {
+    for (    StampyOutgoingMessageInterceptor interceptor : interceptors) {
+      if (isForType(interceptor.getMessageTypes(),message.getMessageType()) && interceptor.isForMessage(message)) {
+        interceptor.interceptMessage(message);
+      }
+    }
+  }
+  finally {
+    stampyInterceptorLock.unlock();
+  }
+}

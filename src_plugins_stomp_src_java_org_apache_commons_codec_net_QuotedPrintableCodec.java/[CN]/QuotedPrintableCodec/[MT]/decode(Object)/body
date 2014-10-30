@@ -1,0 +1,14 @@
+{
+  if (obj == null) {
+    return null;
+  }
+ else   if (obj instanceof byte[]) {
+    return decode((byte[])obj);
+  }
+ else   if (obj instanceof String) {
+    return decode((String)obj);
+  }
+ else {
+    throw new DecoderException("Objects of type " + obj.getClass().getName() + " cannot be quoted-printable decoded");
+  }
+}

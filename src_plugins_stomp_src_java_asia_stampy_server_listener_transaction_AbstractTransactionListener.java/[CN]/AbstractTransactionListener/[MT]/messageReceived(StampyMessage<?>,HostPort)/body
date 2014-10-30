@@ -1,0 +1,18 @@
+{
+switch (message.getMessageType()) {
+case ABORT:
+    abort(hostPort,((AbortMessage)message).getHeader().getTransaction());
+  break;
+case BEGIN:
+begin(hostPort,((BeginMessage)message).getHeader().getTransaction());
+break;
+case COMMIT:
+commit(hostPort,((CommitMessage)message).getHeader().getTransaction());
+break;
+case DISCONNECT:
+logOutstandingTransactions(hostPort);
+break;
+default :
+break;
+}
+}

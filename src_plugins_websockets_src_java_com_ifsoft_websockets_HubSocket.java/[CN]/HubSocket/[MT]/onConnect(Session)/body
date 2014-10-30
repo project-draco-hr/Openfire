@@ -1,0 +1,30 @@
+{
+  Log.info("HubSocket onConnect: " + session);
+  this.session=session;
+  try {
+    heartbeatTask=new HeartbeatTask();
+    TaskEngine.getInstance().scheduleAtFixedRate(heartbeatTask,0,10000);
+    conn1=new HubConnection(session.getRemoteAddress().getAddress().getHostAddress(),session.getRemoteAddress().getAddress().getHostName());
+    conn1.setSocket(this);
+    StreamID streamID1=new BasicStreamID("url" + System.currentTimeMillis());
+    HubServerSession xmppSession=new HubServerSession(localDomain,conn1,streamID1);
+    conn1.registerCloseListener(new HubServerSessionListener(),xmppSession);
+    xmppSession.setLocalDomain(localDomain);
+    conn2=new HubConnection(session.getRemoteAddress().getAddress().getHostAddress(),session.getRemoteAddress().getAddress().getHostName());
+    conn2.setSocket(this);
+    StreamID streamID2=new BasicStreamID("url" + System.currentTimeMillis());
+    HubOutgoingServerSession xmppOutSession=new HubOutgoingServerSession(localDomain,conn2,streamID2);
+    conn2.init(xmppOutSession);
+    xmppOutSession.setAddress(new JID(null,localDomain,null));
+    xmppOutSession.addHostname(localDomain);
+    SessionManager.getInstance().outgoingServerSessionCreated((LocalOutgoingServerSession)xmppOutSession);
+    for (    String remoteDomain : remoteDomains) {
+      xmppSession.addValidatedDomain(remoteDomain);
+      xmppOutSession.addAuthenticatedDomain(remoteDomain);
+      XMPPServer.getInstance().getRoutingTable().addServerRoute(new JID(null,remoteDomain,null,true),xmppOutSession);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("onConnect error",e);
+  }
+}

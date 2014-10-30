@@ -1,0 +1,11 @@
+{
+  if (wsSession != null && wsSession.isOpen() && !"".equals(packet.trim())) {
+    try {
+      Log.debug(digest + " : Delivered : " + packet);
+      wsSession.getRemote().sendString(packet);
+    }
+ catch (    Exception e) {
+      Log.error("XMPPWebSocket deliver " + e);
+    }
+  }
+}

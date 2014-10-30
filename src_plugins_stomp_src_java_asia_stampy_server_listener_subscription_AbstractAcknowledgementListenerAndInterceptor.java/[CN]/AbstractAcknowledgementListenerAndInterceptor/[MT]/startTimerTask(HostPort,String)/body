@@ -1,0 +1,12 @@
+{
+  TimerTask task=new TimerTask(){
+    @Override public void run(){
+      Queue<String> q=messages.get(hostPort);
+      if (q == null || !q.contains(ack))       return;
+      getHandler().noAcknowledgementReceived(ack);
+      q.remove(ack);
+    }
+  }
+;
+  ackTimer.schedule(task,getAckTimeoutMillis());
+}

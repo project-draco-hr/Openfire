@@ -1,0 +1,35 @@
+{
+  final char[] name1Char=name1.toCharArray();
+  final char[] name2Char=name2.toCharArray();
+  final int name1Size=name1.length() - 1;
+  final int name2Size=name2.length() - 1;
+  String name1LtRStart=EMPTY;
+  String name1LtREnd=EMPTY;
+  String name2RtLStart=EMPTY;
+  String name2RtLEnd=EMPTY;
+  for (int i=0; i < name1Char.length; i++) {
+    if (i > name2Size) {
+      break;
+    }
+    name1LtRStart=name1.substring(i,i + 1);
+    name1LtREnd=name1.substring(name1Size - i,name1Size - i + 1);
+    name2RtLStart=name2.substring(i,i + 1);
+    name2RtLEnd=name2.substring(name2Size - i,name2Size - i + 1);
+    if (name1LtRStart.equals(name2RtLStart)) {
+      name1Char[i]=' ';
+      name2Char[i]=' ';
+    }
+    if (name1LtREnd.equals(name2RtLEnd)) {
+      name1Char[name1Size - i]=' ';
+      name2Char[name2Size - i]=' ';
+    }
+  }
+  final String strA=new String(name1Char).replaceAll("\\s+",EMPTY);
+  final String strB=new String(name2Char).replaceAll("\\s+",EMPTY);
+  if (strA.length() > strB.length()) {
+    return Math.abs(SIX - strA.length());
+  }
+ else {
+    return Math.abs(SIX - strB.length());
+  }
+}

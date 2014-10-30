@@ -1,0 +1,11 @@
+{
+  DESERIALIZE_LOCK.lock();
+  try {
+    byte[] bytes=Base64.decodeBase64(s);
+    ObjectInputStream ois=new ObjectInputStream(new ByteArrayInputStream(bytes));
+    return ois.readObject();
+  }
+  finally {
+    DESERIALIZE_LOCK.unlock();
+  }
+}

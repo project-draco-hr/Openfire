@@ -1,0 +1,9 @@
+{
+  if (socket == null || !socket.isOpen()) {
+    Log.error("Channel is not connected, cannot send message {}",message);
+    return;
+  }
+  if (hostPort == null)   hostPort=createHostPort(socket);
+  helper.resetHeartbeat(hostPort);
+  socket.deliver(message);
+}

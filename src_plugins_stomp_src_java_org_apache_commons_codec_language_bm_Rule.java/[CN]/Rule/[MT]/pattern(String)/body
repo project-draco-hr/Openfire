@@ -1,0 +1,92 @@
+{
+  final boolean startsWith=regex.startsWith("^");
+  final boolean endsWith=regex.endsWith("$");
+  final String content=regex.substring(startsWith ? 1 : 0,endsWith ? regex.length() - 1 : regex.length());
+  final boolean boxes=content.contains("[");
+  if (!boxes) {
+    if (startsWith && endsWith) {
+      if (content.length() == 0) {
+        return new RPattern(){
+          @Override public boolean isMatch(          final CharSequence input){
+            return input.length() == 0;
+          }
+        }
+;
+      }
+ else {
+        return new RPattern(){
+          @Override public boolean isMatch(          final CharSequence input){
+            return input.equals(content);
+          }
+        }
+;
+      }
+    }
+ else     if ((startsWith || endsWith) && content.length() == 0) {
+      return ALL_STRINGS_RMATCHER;
+    }
+ else     if (startsWith) {
+      return new RPattern(){
+        @Override public boolean isMatch(        final CharSequence input){
+          return startsWith(input,content);
+        }
+      }
+;
+    }
+ else     if (endsWith) {
+      return new RPattern(){
+        @Override public boolean isMatch(        final CharSequence input){
+          return endsWith(input,content);
+        }
+      }
+;
+    }
+  }
+ else {
+    final boolean startsWithBox=content.startsWith("[");
+    final boolean endsWithBox=content.endsWith("]");
+    if (startsWithBox && endsWithBox) {
+      String boxContent=content.substring(1,content.length() - 1);
+      if (!boxContent.contains("[")) {
+        final boolean negate=boxContent.startsWith("^");
+        if (negate) {
+          boxContent=boxContent.substring(1);
+        }
+        final String bContent=boxContent;
+        final boolean shouldMatch=!negate;
+        if (startsWith && endsWith) {
+          return new RPattern(){
+            @Override public boolean isMatch(            final CharSequence input){
+              return input.length() == 1 && contains(bContent,input.charAt(0)) == shouldMatch;
+            }
+          }
+;
+        }
+ else         if (startsWith) {
+          return new RPattern(){
+            @Override public boolean isMatch(            final CharSequence input){
+              return input.length() > 0 && contains(bContent,input.charAt(0)) == shouldMatch;
+            }
+          }
+;
+        }
+ else         if (endsWith) {
+          return new RPattern(){
+            @Override public boolean isMatch(            final CharSequence input){
+              return input.length() > 0 && contains(bContent,input.charAt(input.length() - 1)) == shouldMatch;
+            }
+          }
+;
+        }
+      }
+    }
+  }
+  return new RPattern(){
+    Pattern pattern=Pattern.compile(regex);
+    @Override public boolean isMatch(    final CharSequence input){
+      final Matcher matcher=pattern.matcher(input);
+      return matcher.find();
+    }
+  }
+;
+}
