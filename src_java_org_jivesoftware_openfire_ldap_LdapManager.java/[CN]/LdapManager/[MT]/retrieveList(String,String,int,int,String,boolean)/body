@@ -1,0 +1,166 @@
+{
+  List<String> results=new ArrayList<String>();
+  int pageSize=-1;
+  String pageSizeStr=properties.get("ldap.pagedResultsSize");
+  if (pageSizeStr != null) {
+    try {
+      pageSize=Integer.parseInt(pageSizeStr);
+    }
+ catch (    NumberFormatException e) {
+    }
+  }
+  Boolean clientSideSort=false;
+  String clientSideSortStr=properties.get("ldap.clientSideSorting");
+  if (clientSideSortStr != null) {
+    clientSideSort=Boolean.valueOf(clientSideSortStr);
+  }
+  LdapContext ctx=null;
+  LdapContext ctx2=null;
+  try {
+    ctx=getContext(baseDN);
+    List<Control> baseTmpRequestControls=new ArrayList<Control>();
+    if (!clientSideSort) {
+      baseTmpRequestControls.add(new SortControl(new String[]{attribute},Control.NONCRITICAL));
+    }
+    if (pageSize > 0) {
+      baseTmpRequestControls.add(new PagedResultsControl(pageSize,Control.NONCRITICAL));
+    }
+    Control[] baseRequestControls=baseTmpRequestControls.toArray(new Control[baseTmpRequestControls.size()]);
+    ctx.setRequestControls(baseRequestControls);
+    SearchControls searchControls=new SearchControls();
+    if (isSubTreeSearch()) {
+      searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+    }
+ else {
+      searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+    }
+    searchControls.setReturningAttributes(new String[]{attribute});
+    int skip=-1;
+    int lastRes=-1;
+    if (!clientSideSort) {
+      if (startIndex != -1) {
+        skip=startIndex;
+      }
+      if (numResults != -1) {
+        lastRes=startIndex + numResults;
+      }
+    }
+    byte[] cookie;
+    int count=0;
+    do {
+      cookie=null;
+      NamingEnumeration<SearchResult> answer=ctx.search("",searchFilter,searchControls);
+      while (answer.hasMoreElements()) {
+        count++;
+        if (skip > 0 && count <= skip) {
+          answer.next();
+          continue;
+        }
+        if (lastRes != -1 && count > lastRes) {
+          answer.next();
+          break;
+        }
+        String result=(String)answer.next().getAttributes().get(attribute).get();
+        if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
+          result=result.substring(0,result.length() - suffixToTrim.length());
+        }
+        results.add(escapeJIDs ? JID.escapeNode(result) : result);
+      }
+      Control[] controls=ctx.getResponseControls();
+      if (controls != null) {
+        for (        Control control : controls) {
+          if (control instanceof PagedResultsResponseControl) {
+            PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+            cookie=prrc.getCookie();
+          }
+        }
+      }
+      answer.close();
+      List<Control> tmpRequestControls=new ArrayList<Control>();
+      if (!clientSideSort) {
+        tmpRequestControls.add(new SortControl(new String[]{attribute},Control.NONCRITICAL));
+      }
+      if (pageSize > 0) {
+        tmpRequestControls.add(new PagedResultsControl(pageSize,cookie,Control.CRITICAL));
+      }
+      Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+      ctx.setRequestControls(requestControls);
+    }
+ while (cookie != null && (lastRes == -1 || count <= lastRes));
+    if (alternateBaseDN != null && (lastRes == -1 || count <= lastRes)) {
+      ctx2=getContext(alternateBaseDN);
+      ctx2.setRequestControls(baseRequestControls);
+      do {
+        cookie=null;
+        NamingEnumeration<SearchResult> answer=ctx2.search("",searchFilter,searchControls);
+        while (answer.hasMoreElements()) {
+          count++;
+          if (skip > 0 && count <= skip) {
+            answer.next();
+            continue;
+          }
+          if (lastRes != -1 && count > lastRes) {
+            answer.next();
+            break;
+          }
+          String result=(String)answer.next().getAttributes().get(attribute).get();
+          if (suffixToTrim != null && suffixToTrim.length() > 0 && result.endsWith(suffixToTrim)) {
+            result=result.substring(0,result.length() - suffixToTrim.length());
+          }
+          results.add(escapeJIDs ? JID.escapeNode(result) : result);
+        }
+        Control[] controls=ctx2.getResponseControls();
+        if (controls != null) {
+          for (          Control control : controls) {
+            if (control instanceof PagedResultsResponseControl) {
+              PagedResultsResponseControl prrc=(PagedResultsResponseControl)control;
+              cookie=prrc.getCookie();
+            }
+          }
+        }
+        answer.close();
+        List<Control> tmpRequestControls=new ArrayList<Control>();
+        if (!clientSideSort) {
+          tmpRequestControls.add(new SortControl(new String[]{attribute},Control.NONCRITICAL));
+        }
+        if (pageSize > 0) {
+          tmpRequestControls.add(new PagedResultsControl(pageSize,cookie,Control.CRITICAL));
+        }
+        Control[] requestControls=tmpRequestControls.toArray(new Control[tmpRequestControls.size()]);
+        ctx2.setRequestControls(requestControls);
+      }
+ while (cookie != null && (lastRes == -1 || count <= lastRes));
+    }
+    if (clientSideSort) {
+      Collections.sort(results);
+      if (startIndex != -1 || numResults != -1) {
+        if (startIndex == -1) {
+          startIndex=0;
+        }
+        if (numResults == -1) {
+          numResults=results.size();
+        }
+        int endIndex=Math.min(startIndex + numResults,results.size() - 1);
+        results=results.subList(startIndex,endIndex);
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+ finally {
+    try {
+      if (ctx != null) {
+        ctx.setRequestControls(null);
+        ctx.close();
+      }
+      if (ctx2 != null) {
+        ctx2.setRequestControls(null);
+        ctx2.close();
+      }
+    }
+ catch (    Exception ignored) {
+    }
+  }
+  return results;
+}

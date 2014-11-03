@@ -1,9 +1,9 @@
 {
-  final HashMap<Long,Conversation> conversations;
+  final TreeMap<Long,Conversation> conversations;
   final StringBuilder querySB;
   final StringBuilder whereSB;
   final StringBuilder limitSB;
-  conversations=new HashMap<Long,Conversation>();
+  conversations=new TreeMap<Long,Conversation>();
   querySB=new StringBuilder(SELECT_CONVERSATIONS);
   whereSB=new StringBuilder();
   limitSB=new StringBuilder();
@@ -18,7 +18,7 @@
     appendWhere(whereSB,CONVERSATION_OWNER_JID," = ?");
   }
   if (withJid != null) {
-    appendWhere(whereSB,CONVERSATION_WITH_JID);
+    appendWhere(whereSB,CONVERSATION_WITH_JID," = ?");
   }
   if (xmppResultSet != null) {
     Integer firstIndex=null;
@@ -81,10 +81,8 @@
     DbConnectionManager.closeConnection(rs,pstmt,con);
   }
   if (xmppResultSet != null && conversations.size() > 0) {
-    ArrayList<Long> sortedConvKeys=new ArrayList<Long>(conversations.keySet());
-    Collections.sort(sortedConvKeys);
-    xmppResultSet.setFirst(sortedConvKeys.get(0));
-    xmppResultSet.setLast(sortedConvKeys.get(sortedConvKeys.size() - 1));
+    xmppResultSet.setFirst(conversations.firstKey());
+    xmppResultSet.setLast(conversations.lastKey());
   }
   return conversations.values();
 }

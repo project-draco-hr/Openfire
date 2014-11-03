@@ -5,7 +5,7 @@
     host=InetAddress.getLocalHost().getHostName();
   }
  catch (  UnknownHostException ex) {
-    Log.warn("Unable to determine local hostname.",ex);
+    logger.warn("Unable to determine local hostname.",ex);
   }
   if (host == null) {
     host="127.0.0.1";
@@ -15,7 +15,7 @@
     setupMode=false;
   }
   if (isStandAlone()) {
-    Log.info("Registering shutdown hook (standalone mode)");
+    logger.info("Registering shutdown hook (standalone mode)");
     Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
     TaskEngine.getInstance().schedule(new Terminator(),1000,1000);
   }
@@ -25,11 +25,12 @@
   }
  catch (  InitializationException e) {
     e.printStackTrace();
-    Log.error(e.getMessage(),e);
+    logger.error(e.getMessage(),e);
   }
   JiveGlobals.migrateProperty("xmpp.domain");
   name=JiveGlobals.getProperty("xmpp.domain",host).toLowerCase();
-  org.jivesoftware.util.Log.setDebugEnabled(JiveGlobals.getXMLProperty("log.debug.enabled",false));
+  JiveGlobals.migrateProperty(Log.LOG_DEBUG_ENABLED);
+  Log.setDebugEnabled(JiveGlobals.getBooleanProperty(Log.LOG_DEBUG_ENABLED,false));
   xmppServerInfo=new XMPPServerInfoImpl(name,host,version,startDate);
   initialized=true;
 }

@@ -12,7 +12,7 @@
     ServerTrafficCounter.initStatistics();
     pluginManager.start();
     String startupBanner=LocaleUtils.getLocalizedString("short.title") + " " + version.getVersionString()+ " ["+ JiveGlobals.formatDateTime(new Date())+ "]";
-    Log.info(startupBanner);
+    logger.info(startupBanner);
     System.out.println(startupBanner);
     started=true;
     for (    XMPPServerListener listener : listeners) {
@@ -21,7 +21,7 @@
   }
  catch (  Exception e) {
     e.printStackTrace();
-    Log.error(e.getMessage(),e);
+    logger.error(e.getMessage(),e);
     System.out.println(LocaleUtils.getLocalizedString("startup.error"));
     shutdownServer();
   }
