@@ -1,0 +1,68 @@
+{
+  Log.info("Jitsi Videobridge - startComponent");
+  PropertyEventDispatcher.addListener(this);
+  System.setProperty("net.java.sip.communicator.SC_HOME_DIR_LOCATION",pluginDirectory.getPath());
+  System.setProperty("net.java.sip.communicator.SC_HOME_DIR_NAME",".");
+  System.setProperty("org.jitsi.impl.neomedia.transform.srtp.SRTPCryptoContext.checkReplay",JiveGlobals.getProperty(CHECKREPLAY_PROPERTY_NAME,"false"));
+  String localAddress=JiveGlobals.getProperty(NAT_HARVESTER_LOCAL_ADDRESS,null);
+  String publicAddress=JiveGlobals.getProperty(NAT_HARVESTER_PUBLIC_ADDRESS,null);
+  if (localAddress != null && !"".equals(localAddress)) {
+    System.setProperty("org.jitsi.videobridge.NAT_HARVESTER_LOCAL_ADDRESS",localAddress);
+  }
+  if (publicAddress != null && !"".equals(publicAddress)) {
+    System.setProperty("org.jitsi.videobridge.NAT_HARVESTER_PUBLIC_ADDRESS",publicAddress);
+  }
+  executorService=Executors.newFixedThreadPool(2);
+  executorService.execute(new Runnable(){
+    public void run(){
+      try {
+        String appName=JiveGlobals.getProperty(VIDEO_CONFERENCE_PROPERTY_NAME,"jitsi");
+        Log.info("Initialize Web App " + appName);
+        ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+        WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/" + appName);
+        context.setWelcomeFiles(new String[]{"index.html"});
+        String username=JiveGlobals.getProperty(USERNAME_PROPERTY_NAME,null);
+        String password=JiveGlobals.getProperty(PASSWORD_PROPERTY_NAME,"jitsi");
+        if (username != null && "".equals(username) == false) {
+          context.setSecurityHandler(basicAuth(username,password,"Videobridge"));
+        }
+        createIQHandlers();
+        Properties properties=new Properties();
+        String hostName=XMPPServer.getInstance().getServerInfo().getHostname();
+        String logDir=pluginDirectory.getAbsolutePath() + File.separator + ".."+ File.separator+ ".."+ File.separator+ "logs"+ File.separator;
+        String port=JiveGlobals.getProperty(SIP_PORT_PROPERTY_NAME,"5070");
+        properties.setProperty("com.voxbone.kelpie.hostname",hostName);
+        properties.setProperty("com.voxbone.kelpie.ip",hostName);
+        properties.setProperty("com.voxbone.kelpie.sip_port",port);
+        properties.setProperty("javax.sip.IP_ADDRESS",hostName);
+        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","99");
+        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",logDir + "sip_server.log");
+        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logDir + "sip_debug.log");
+        new SipService(properties);
+        Log.info("Initialize SIP Stack at " + hostName + ":"+ port);
+      }
+ catch (      Exception e) {
+        Log.error("Jitsi Videobridge web app initialize error",e);
+      }
+      String maxVal=JiveGlobals.getProperty(MAX_PORT_NUMBER_PROPERTY_NAME);
+      String minVal=JiveGlobals.getProperty(MIN_PORT_NUMBER_PROPERTY_NAME);
+      if (maxVal != null)       setIntProperty(DefaultStreamConnector.MAX_PORT_NUMBER_PROPERTY_NAME,maxVal);
+      if (minVal != null)       setIntProperty(DefaultStreamConnector.MIN_PORT_NUMBER_PROPERTY_NAME,minVal);
+      checkNatives();
+      checkRecordingFolder(pluginDirectory);
+      componentManager=ComponentManagerFactory.getComponentManager();
+      subdomain=ComponentImpl.SUBDOMAIN;
+      component=new ComponentImpl();
+      boolean added=false;
+      try {
+        componentManager.addComponent(subdomain,component);
+        added=true;
+        componentImpl=(ComponentImpl)component;
+      }
+ catch (      ComponentException ce) {
+        ce.printStackTrace(System.err);
+      }
+    }
+  }
+);
+}

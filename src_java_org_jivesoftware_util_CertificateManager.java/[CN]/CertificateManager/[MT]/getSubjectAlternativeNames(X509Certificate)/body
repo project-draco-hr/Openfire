@@ -11,7 +11,7 @@
         try {
           ASN1InputStream decoder=new ASN1InputStream((byte[])item.get(1));
           ASN1Sequence otherNameSeq=(ASN1Sequence)decoder.readObject();
-          DERObjectIdentifier objectId=(DERObjectIdentifier)otherNameSeq.getObjectAt(0);
+          ASN1ObjectIdentifier objectId=(ASN1ObjectIdentifier)otherNameSeq.getObjectAt(0);
           Log.debug("Parsing otherName for subject alternative names: " + objectId.toString());
           if (!OTHERNAME_XMPP_OID.equals(objectId.getId())) {
             Log.debug("Ignoring non-XMPP otherName, " + objectId.getId());

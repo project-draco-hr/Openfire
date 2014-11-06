@@ -1,15 +1,6 @@
 {
-  PropertyEventDispatcher.removeListener(this);
-  executorService.shutdown();
-  if ((componentManager != null) && (subdomain != null)) {
-    try {
-      componentManager.removeComponent(subdomain);
-    }
- catch (    ComponentException ce) {
-    }
-    componentManager=null;
-    subdomain=null;
-    component=null;
-  }
-  destroyIQHandlers();
+  Log.info("Jitsi Videobridge - destroyPlugin");
+  stopComponent();
+  ClusterManager.removeListener(this);
+  ;
 }
