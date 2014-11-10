@@ -1,0 +1,18 @@
+{
+  Group result=null;
+  try {
+    GroupManager groupManger=GroupManager.getInstance();
+    if (proxy instanceof JID) {
+      result=groupManger.getGroup((JID)proxy);
+    }
+ else     if (proxy instanceof String) {
+      result=groupManger.getGroup((String)proxy);
+    }
+ else     if (proxy instanceof Group) {
+      result=(Group)proxy;
+    }
+  }
+ catch (  GroupNotFoundException gnfe) {
+  }
+  return result;
+}

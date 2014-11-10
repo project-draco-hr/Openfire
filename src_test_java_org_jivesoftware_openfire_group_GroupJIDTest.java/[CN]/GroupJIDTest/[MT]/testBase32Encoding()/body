@@ -1,0 +1,9 @@
+{
+  String testGroupName="Test Group (1)";
+  String testDomainName="localhost";
+  String testBase32GroupName=StringUtils.encodeBase32(testGroupName);
+  JID testJid=new JID(testBase32GroupName,testDomainName,null);
+  assertEquals(testBase32GroupName,testJid.getNode());
+  String testDecodedGroupName=new String(StringUtils.decodeBase32(testJid.getNode()));
+  assertEquals(testGroupName,testDecodedGroupName);
+}

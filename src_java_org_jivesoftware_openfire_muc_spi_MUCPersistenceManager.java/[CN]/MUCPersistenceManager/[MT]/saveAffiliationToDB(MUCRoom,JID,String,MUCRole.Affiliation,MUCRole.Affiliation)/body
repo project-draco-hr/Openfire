@@ -1,5 +1,5 @@
 {
-  final String bareJID=jid.toBareJID();
+  final String affiliationJid=jid.toBareJID();
   if (!room.isPersistent() || !room.wasSavedToDB()) {
     return;
   }
@@ -11,7 +11,7 @@
         con=DbConnectionManager.getConnection();
         pstmt=con.prepareStatement(ADD_MEMBER);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.setString(3,nickname);
         pstmt.executeUpdate();
       }
@@ -29,7 +29,7 @@
         con=DbConnectionManager.getConnection();
         pstmt=con.prepareStatement(ADD_AFFILIATION);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.setInt(3,newAffiliation.getValue());
         pstmt.executeUpdate();
       }
@@ -50,7 +50,7 @@
         pstmt=con.prepareStatement(UPDATE_MEMBER);
         pstmt.setString(1,nickname);
         pstmt.setLong(2,room.getID());
-        pstmt.setString(3,bareJID);
+        pstmt.setString(3,affiliationJid);
         pstmt.executeUpdate();
       }
  catch (      SQLException sqle) {
@@ -68,12 +68,12 @@
         con=DbConnectionManager.getTransactionConnection();
         pstmt=con.prepareStatement(DELETE_AFFILIATION);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.executeUpdate();
         DbConnectionManager.fastcloseStmt(pstmt);
         pstmt=con.prepareStatement(ADD_MEMBER);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.setString(3,nickname);
         pstmt.executeUpdate();
       }
@@ -94,12 +94,12 @@
         con=DbConnectionManager.getTransactionConnection();
         pstmt=con.prepareStatement(DELETE_MEMBER);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.executeUpdate();
         DbConnectionManager.fastcloseStmt(pstmt);
         pstmt=con.prepareStatement(ADD_AFFILIATION);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJid);
         pstmt.setInt(3,newAffiliation.getValue());
         pstmt.executeUpdate();
       }
@@ -120,7 +120,7 @@
         pstmt=con.prepareStatement(UPDATE_AFFILIATION);
         pstmt.setInt(1,newAffiliation.getValue());
         pstmt.setLong(2,room.getID());
-        pstmt.setString(3,bareJID);
+        pstmt.setString(3,affiliationJid);
         pstmt.executeUpdate();
       }
  catch (      SQLException sqle) {

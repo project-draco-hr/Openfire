@@ -2,6 +2,7 @@
   Connection connection=null;
   PreparedStatement statement=null;
   ResultSet resultSet=null;
+  JID affiliationJID=null;
   try {
     connection=DbConnectionManager.getConnection();
     statement=connection.prepareStatement(LOAD_ALL_MEMBERS);
@@ -14,7 +15,8 @@
           continue;
         }
         try {
-          room.addMember(new JID(resultSet.getString(2)),resultSet.getString(3),room.getRole());
+          affiliationJID=GroupJID.fromString(resultSet.getString(2));
+          room.addMember(affiliationJID,resultSet.getString(3),room.getRole());
         }
  catch (        ForbiddenException e) {
           Log.warn("Unable to add member to room.",e);

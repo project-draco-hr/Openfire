@@ -75,21 +75,21 @@
     pstmt.setLong(1,room.getID());
     rs=pstmt.executeQuery();
     while (rs.next()) {
-      JID jid=new JID(rs.getString(1));
+      JID affiliationJID=GroupJID.fromString(rs.getString(1));
       MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(2));
       try {
 switch (affiliation) {
 case owner:
-          room.addOwner(jid,room.getRole());
+          room.addOwner(affiliationJID,room.getRole());
         break;
 case admin:
-      room.addAdmin(jid,room.getRole());
+      room.addAdmin(affiliationJID,room.getRole());
     break;
 case outcast:
-  room.addOutcast(jid,null,room.getRole());
+  room.addOutcast(affiliationJID,null,room.getRole());
 break;
 default :
-Log.error("Unkown affiliation value " + affiliation + " for user "+ jid.toBareJID()+ " in persistent room "+ room.getID());
+Log.error("Unkown affiliation value " + affiliation + " for user "+ affiliationJID.toBareJID()+ " in persistent room "+ room.getID());
 }
 }
  catch (Exception e) {

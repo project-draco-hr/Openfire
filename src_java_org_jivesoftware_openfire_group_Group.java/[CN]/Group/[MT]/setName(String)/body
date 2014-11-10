@@ -4,11 +4,14 @@
   }
   try {
     String originalName=this.name;
+    GroupJID originalJID=getJID();
     provider.setName(originalName,name);
     this.name=name;
+    this.jid=null;
     Map<String,Object> params=new HashMap<String,Object>();
     params.put("type","nameModified");
     params.put("originalValue",originalName);
+    params.put("originalJID",originalJID);
     GroupEventDispatcher.dispatchEvent(this,GroupEventDispatcher.EventType.group_modified,params);
   }
  catch (  GroupAlreadyExistsException e) {

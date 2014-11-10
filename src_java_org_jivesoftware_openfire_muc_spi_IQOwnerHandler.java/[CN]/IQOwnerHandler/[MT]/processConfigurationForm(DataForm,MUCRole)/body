@@ -8,7 +8,7 @@
   if (field != null) {
     for (    String value : field.getValues()) {
       if (value != null && value.trim().length() != 0) {
-        admins.add(new JID(value.trim()).asBareJID());
+        admins.add(GroupJID.fromString((value.trim())).asBareJID());
       }
     }
   }
@@ -18,7 +18,7 @@
   if (field != null) {
     for (    String value : field.getValues()) {
       if (value != null && value.trim().length() != 0) {
-        owners.add(new JID(value.trim()).asBareJID());
+        owners.add(GroupJID.fromString((value.trim())).asBareJID());
       }
     }
   }
@@ -143,7 +143,9 @@
     ownersToRemove.removeAll(admins);
     ownersToRemove.removeAll(owners);
     for (    JID jid : ownersToRemove) {
-      presences.addAll(room.addMember(jid,null,senderRole));
+      if (!GroupJID.isGroup(jid)) {
+        presences.addAll(room.addMember(jid,null,senderRole));
+      }
     }
   }
   if (adminsSent) {
@@ -151,7 +153,9 @@
     adminsToRemove.removeAll(admins);
     adminsToRemove.removeAll(owners);
     for (    JID jid : adminsToRemove) {
-      presences.addAll(room.addMember(jid,null,senderRole));
+      if (!GroupJID.isGroup(jid)) {
+        presences.addAll(room.addMember(jid,null,senderRole));
+      }
     }
   }
   if (!room.isPersistent() && room.getOccupantsCount() == 0) {

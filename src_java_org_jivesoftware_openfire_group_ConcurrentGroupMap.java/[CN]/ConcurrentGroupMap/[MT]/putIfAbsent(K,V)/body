@@ -1,0 +1,13 @@
+{
+  V priorValue=super.putIfAbsent(key,value);
+  if (!value.equals(priorValue)) {
+    syncGroups(value,VALUES,ADD);
+    if (priorValue == null) {
+      syncGroups(key,KEYS,ADD);
+    }
+ else {
+      syncGroups(priorValue,VALUES,REMOVE);
+    }
+  }
+  return priorValue;
+}

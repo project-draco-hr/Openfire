@@ -28,10 +28,5 @@
     lock.writeLock().unlock();
   }
   CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.admin));
-  try {
-    return changeOccupantAffiliation(sendRole,jid,MUCRole.Affiliation.admin,MUCRole.Role.moderator);
-  }
- catch (  NotAllowedException e) {
-    return null;
-  }
+  return applyAffiliationChange(getRole(),bareJID,null);
 }

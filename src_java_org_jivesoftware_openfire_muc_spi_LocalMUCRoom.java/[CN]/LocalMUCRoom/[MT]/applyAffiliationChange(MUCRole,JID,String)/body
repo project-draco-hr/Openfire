@@ -1,0 +1,76 @@
+{
+  List<JID> affectedOccupants=new ArrayList<JID>();
+  if (GroupJID.isGroup(affiliationJID)) {
+    try {
+      Group group=GroupManager.getInstance().getGroup(affiliationJID);
+      for (      JID groupMember : group.getAll()) {
+        if (occupantsByBareJID.containsKey(groupMember)) {
+          affectedOccupants.add(groupMember);
+        }
+      }
+    }
+ catch (    GroupNotFoundException gnfe) {
+      Log.error("Error updating group presences for " + affiliationJID,gnfe);
+    }
+  }
+ else {
+    if (occupantsByBareJID.containsKey(affiliationJID)) {
+      affectedOccupants.add(affiliationJID);
+    }
+  }
+  MUCRole.Role newRole;
+  MUCRole.Affiliation newAffiliation;
+  List<Presence> updatedPresences=new ArrayList<Presence>();
+  for (  JID occupantJID : affectedOccupants) {
+    Log.info("Applying affiliation change for " + occupantJID);
+    boolean kickMember=false, isOutcast=false;
+    if (owners.includes(occupantJID)) {
+      newRole=MUCRole.Role.moderator;
+      newAffiliation=MUCRole.Affiliation.owner;
+    }
+ else     if (admins.includes(occupantJID)) {
+      newRole=MUCRole.Role.moderator;
+      newAffiliation=MUCRole.Affiliation.admin;
+    }
+ else     if (outcasts.includes(occupantJID)) {
+      newAffiliation=MUCRole.Affiliation.none;
+      newRole=MUCRole.Role.none;
+      kickMember=true;
+      isOutcast=true;
+    }
+ else     if (members.includesKey(occupantJID)) {
+      newRole=MUCRole.Role.participant;
+      newAffiliation=MUCRole.Affiliation.member;
+    }
+ else     if (isMembersOnly()) {
+      newRole=MUCRole.Role.none;
+      newAffiliation=MUCRole.Affiliation.none;
+      kickMember=true;
+    }
+ else {
+      newRole=isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant;
+      newAffiliation=MUCRole.Affiliation.member;
+    }
+    Log.info("New affiliation: " + newAffiliation);
+    try {
+      List<Presence> thisOccupant=changeOccupantAffiliation(senderRole,occupantJID,newAffiliation,newRole);
+      if (isMembersOnly() && kickMember) {
+        for (        Presence presence : thisOccupant) {
+          presence.setType(Presence.Type.unavailable);
+          presence.setStatus(null);
+          Element x=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
+          if (reason != null && reason.trim().length() > 0) {
+            x.element("item").addElement("reason").setText(reason);
+          }
+          x.addElement("status").addAttribute("code",isOutcast ? "301" : "321");
+          kickPresence(presence,senderRole.getUserAddress());
+        }
+      }
+      updatedPresences.addAll(thisOccupant);
+    }
+ catch (    NotAllowedException e) {
+      Log.error("Error updating presences for " + occupantJID,e);
+    }
+  }
+  return updatedPresences;
+}

@@ -1,0 +1,6 @@
+{
+  String testGroupName="Test Group (2);  - now with *special* =characters= too!";
+  JID testJid=new JID(StringUtils.encodeBase32(testGroupName),"localhost",StringUtils.hash(testGroupName));
+  assertTrue(GroupJID.isGroup(testJid));
+  assertEquals(testGroupName,((GroupJID)GroupJID.fromString(testJid.toString())).getGroupName());
+}

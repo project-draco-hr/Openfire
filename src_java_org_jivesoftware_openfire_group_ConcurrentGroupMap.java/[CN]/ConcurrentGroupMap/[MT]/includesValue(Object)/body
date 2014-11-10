@@ -1,0 +1,14 @@
+{
+  boolean found=false;
+  if (containsValue(value)) {
+    found=true;
+  }
+ else   if (value instanceof JID) {
+    JID target=(JID)value;
+    Iterator<Group> iterator=getGroupsFromValues().iterator();
+    while (!found && iterator.hasNext()) {
+      found=iterator.next().isUser(target);
+    }
+  }
+  return found;
+}

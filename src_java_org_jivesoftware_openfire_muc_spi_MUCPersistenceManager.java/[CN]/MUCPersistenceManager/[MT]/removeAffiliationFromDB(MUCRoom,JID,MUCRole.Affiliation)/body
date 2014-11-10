@@ -1,5 +1,5 @@
 {
-  final String bareJID=jid.toBareJID();
+  final String affiliationJID=jid.toBareJID();
   if (room.isPersistent() && room.wasSavedToDB()) {
     if (MUCRole.Affiliation.member == oldAffiliation) {
       Connection con=null;
@@ -8,7 +8,7 @@
         con=DbConnectionManager.getConnection();
         pstmt=con.prepareStatement(DELETE_MEMBER);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJID);
         pstmt.executeUpdate();
       }
  catch (      SQLException sqle) {
@@ -25,7 +25,7 @@
         con=DbConnectionManager.getConnection();
         pstmt=con.prepareStatement(DELETE_AFFILIATION);
         pstmt.setLong(1,room.getID());
-        pstmt.setString(2,bareJID);
+        pstmt.setString(2,affiliationJID);
         pstmt.executeUpdate();
       }
  catch (      SQLException sqle) {

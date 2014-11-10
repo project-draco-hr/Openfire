@@ -11,7 +11,7 @@
       throw new ServiceUnavailableException();
     }
     final JID bareJID=user.getAddress().asBareJID();
-    boolean isOwner=owners.contains(bareJID);
+    boolean isOwner=owners.includes(bareJID);
     if (isLocked()) {
       if (!isOwner) {
         throw new RoomLockedException();
@@ -46,19 +46,22 @@
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
- else     if (mucService.getSysadmins().contains(bareJID)) {
+ else     if (mucService.isSysadmin(bareJID)) {
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.owner;
     }
- else     if (admins.contains(bareJID)) {
+ else     if (admins.includes(bareJID)) {
       role=MUCRole.Role.moderator;
       affiliation=MUCRole.Affiliation.admin;
     }
- else     if (members.containsKey(bareJID)) {
+ else     if (outcasts.contains(bareJID)) {
+      throw new ForbiddenException();
+    }
+ else     if (members.includesKey(bareJID)) {
       role=MUCRole.Role.participant;
       affiliation=MUCRole.Affiliation.member;
     }
- else     if (outcasts.contains(bareJID)) {
+ else     if (outcasts.includes(bareJID)) {
       throw new ForbiddenException();
     }
  else {
