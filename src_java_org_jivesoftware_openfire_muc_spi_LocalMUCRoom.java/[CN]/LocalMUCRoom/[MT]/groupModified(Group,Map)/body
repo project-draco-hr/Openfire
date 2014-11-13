@@ -1,0 +1,24 @@
+{
+  if ("nameModified".equals(params.get("type"))) {
+    GroupJID originalJID=(GroupJID)params.get("originalJID");
+    GroupJID newJID=group.getJID();
+    try {
+      if (owners.contains(originalJID)) {
+        addOwner(newJID,getRole());
+      }
+ else       if (admins.contains(originalJID)) {
+        addAdmin(newJID,getRole());
+      }
+ else       if (outcasts.contains(originalJID)) {
+        addOutcast(newJID,null,getRole());
+      }
+ else       if (members.containsKey(originalJID)) {
+        addMember(newJID,null,getRole());
+      }
+      addNone(originalJID,getRole());
+    }
+ catch (    Exception ex) {
+      Log.error("Failed to update group affiliation for " + newJID,ex);
+    }
+  }
+}

@@ -57,12 +57,38 @@
     field=configurationForm.getField("muc#roomconfig_roomadmins");
     field.clearValues();
     for (    JID jid : room.getAdmins()) {
-      field.addValue(jid.toString());
+      if (GroupJID.isGroup(jid)) {
+        try {
+          Group group=GroupManager.getInstance().getGroup(jid);
+          for (          JID groupMember : group.getAll()) {
+            field.addValue(groupMember);
+          }
+        }
+ catch (        GroupNotFoundException gnfe) {
+          Log.warn("Invalid group JID in the member list: " + jid);
+        }
+      }
+ else {
+        field.addValue(jid.toString());
+      }
     }
     field=configurationForm.getField("muc#roomconfig_roomowners");
     field.clearValues();
     for (    JID jid : room.getOwners()) {
-      field.addValue(jid.toString());
+      if (GroupJID.isGroup(jid)) {
+        try {
+          Group group=GroupManager.getInstance().getGroup(jid);
+          for (          JID groupMember : group.getAll()) {
+            field.addValue(groupMember);
+          }
+        }
+ catch (        GroupNotFoundException gnfe) {
+          Log.warn("Invalid group JID in the member list: " + jid);
+        }
+      }
+ else {
+        field.addValue(jid.toString());
+      }
     }
     probeResult.remove(probeResult.element(QName.get("x","jabber:x:data")));
     probeResult.add(configurationForm.getElement());

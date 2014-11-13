@@ -16,9 +16,9 @@
         }
         final MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(resultSet.getInt(3));
         final String jidValue=resultSet.getString(2);
-        final JID jid;
+        final JID affiliationJID;
         try {
-          jid=new JID(jidValue);
+          affiliationJID=GroupJID.fromString(jidValue);
         }
  catch (        IllegalArgumentException ex) {
           Log.warn("An illegal JID ({}) was found in the database, " + "while trying to load all affiliations for room " + "{}. The JID is ignored.",new Object[]{jidValue,roomID});
@@ -27,16 +27,16 @@
         try {
 switch (affiliation) {
 case owner:
-            room.addOwner(jid,room.getRole());
+            room.addOwner(affiliationJID,room.getRole());
           break;
 case admin:
-        room.addAdmin(jid,room.getRole());
+        room.addAdmin(affiliationJID,room.getRole());
       break;
 case outcast:
-    room.addOutcast(jid,null,room.getRole());
+    room.addOutcast(affiliationJID,null,room.getRole());
   break;
 default :
-Log.error("Unknown affiliation value " + affiliation + " for user "+ jid+ " in persistent room "+ room.getID());
+Log.error("Unknown affiliation value " + affiliation + " for user "+ affiliationJID+ " in persistent room "+ room.getID());
 }
 }
  catch (ForbiddenException e) {

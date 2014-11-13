@@ -28,16 +28,5 @@
     lock.writeLock().unlock();
   }
   CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.outcast));
-  JID actorJID=senderRole.getUserAddress();
-  List<Presence> updatedPresences=changeOccupantAffiliation(senderRole,jid,MUCRole.Affiliation.outcast,MUCRole.Role.none);
-  Element frag;
-  for (  Presence presence : updatedPresences) {
-    frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
-    frag.addElement("status").addAttribute("code","301");
-    if (reason != null && reason.trim().length() > 0) {
-      frag.element("item").addElement("reason").setText(reason);
-    }
-    kickPresence(presence,actorJID);
-  }
-  return updatedPresences;
+  return applyAffiliationChange(senderRole,bareJID,reason);
 }

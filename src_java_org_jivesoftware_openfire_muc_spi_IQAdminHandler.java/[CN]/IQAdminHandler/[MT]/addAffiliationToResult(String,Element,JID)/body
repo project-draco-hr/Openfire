@@ -1,0 +1,14 @@
+{
+  Element result=parent.addElement("item","http://jabber.org/protocol/muc#admin");
+  result.addAttribute("affiliation",affiliation);
+  result.addAttribute("jid",jid.toString());
+  try {
+    List<MUCRole> roles=room.getOccupantsByBareJID(jid);
+    MUCRole role=roles.get(0);
+    result.addAttribute("role",role.getRole().toString());
+    result.addAttribute("nick",role.getNickname());
+  }
+ catch (  UserNotFoundException e) {
+  }
+  return result;
+}

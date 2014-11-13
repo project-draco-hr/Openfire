@@ -16,9 +16,20 @@
           throw new ForbiddenException();
         }
         for (        JID jid : room.getOutcasts()) {
-          metaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
-          metaData.addAttribute("affiliation","outcast");
-          metaData.addAttribute("jid",jid.toString());
+          if (GroupJID.isGroup(jid)) {
+            try {
+              Group group=GroupManager.getInstance().getGroup(jid);
+              for (              JID groupMember : group.getAll()) {
+                metaData=addAffiliationToResult(affiliation,result,groupMember);
+              }
+            }
+ catch (            GroupNotFoundException gnfe) {
+              logger.warn("Invalid group JID in the outcast list: " + jid);
+            }
+          }
+ else {
+            metaData=addAffiliationToResult(affiliation,result,jid);
+          }
         }
       }
  else       if ("member".equals(affiliation)) {
@@ -26,16 +37,19 @@
           throw new ForbiddenException();
         }
         for (        JID jid : room.getMembers()) {
-          metaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
-          metaData.addAttribute("affiliation","member");
-          metaData.addAttribute("jid",jid.toString());
-          try {
-            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
-            MUCRole role=roles.get(0);
-            metaData.addAttribute("role",role.getRole().toString());
-            metaData.addAttribute("nick",role.getNickname());
+          if (GroupJID.isGroup(jid)) {
+            try {
+              Group group=GroupManager.getInstance().getGroup(jid);
+              for (              JID groupMember : group.getAll()) {
+                metaData=addAffiliationToResult(affiliation,result,groupMember);
+              }
+            }
+ catch (            GroupNotFoundException gnfe) {
+              logger.warn("Invalid group JID in the member list: " + jid);
+            }
           }
- catch (          UserNotFoundException e) {
+ else {
+            metaData=addAffiliationToResult(affiliation,result,jid);
           }
         }
       }
@@ -64,36 +78,38 @@
         }
       }
  else       if ("owner".equals(affiliation)) {
-        Element ownerMetaData;
-        MUCRole role;
         for (        JID jid : room.getOwners()) {
-          ownerMetaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
-          ownerMetaData.addAttribute("affiliation","owner");
-          ownerMetaData.addAttribute("jid",jid.toBareJID());
-          try {
-            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
-            role=roles.get(0);
-            ownerMetaData.addAttribute("role",role.getRole().toString());
-            ownerMetaData.addAttribute("nick",role.getNickname());
+          if (GroupJID.isGroup(jid)) {
+            try {
+              Group group=GroupManager.getInstance().getGroup(jid);
+              for (              JID groupMember : group.getAll()) {
+                metaData=addAffiliationToResult(affiliation,result,groupMember);
+              }
+            }
+ catch (            GroupNotFoundException gnfe) {
+              logger.warn("Invalid group JID in the owner list: " + jid);
+            }
           }
- catch (          UserNotFoundException e) {
+ else {
+            metaData=addAffiliationToResult(affiliation,result,jid);
           }
         }
       }
  else       if ("admin".equals(affiliation)) {
-        Element adminMetaData;
-        MUCRole role;
         for (        JID jid : room.getAdmins()) {
-          adminMetaData=result.addElement("item","http://jabber.org/protocol/muc#admin");
-          adminMetaData.addAttribute("affiliation","admin");
-          adminMetaData.addAttribute("jid",jid.toBareJID());
-          try {
-            List<MUCRole> roles=room.getOccupantsByBareJID(jid);
-            role=roles.get(0);
-            adminMetaData.addAttribute("role",role.getRole().toString());
-            adminMetaData.addAttribute("nick",role.getNickname());
+          if (GroupJID.isGroup(jid)) {
+            try {
+              Group group=GroupManager.getInstance().getGroup(jid);
+              for (              JID groupMember : group.getAll()) {
+                metaData=addAffiliationToResult(affiliation,result,groupMember);
+              }
+            }
+ catch (            GroupNotFoundException gnfe) {
+              logger.warn("Invalid group JID in the admin list: " + jid);
+            }
           }
- catch (          UserNotFoundException e) {
+ else {
+            metaData=addAffiliationToResult(affiliation,result,jid);
           }
         }
       }
@@ -116,7 +132,7 @@
         List<JID> jids=new ArrayList<JID>();
         nick=item.attributeValue("nick");
         if (hasJID) {
-          jids.add(new JID(item.attributeValue("jid")));
+          jids.add(GroupJID.fromString(item.attributeValue("jid")));
         }
  else {
           for (          MUCRole role : room.getOccupantsByNickname(nick)) {
@@ -145,7 +161,24 @@
             boolean hadAffiliation=room.getAffiliation(jid) != MUCRole.Affiliation.none;
             presences.addAll(room.addMember(jid,nick,senderRole));
             if (!skipInvite && !hadAffiliation && room.isMembersOnly()) {
-              room.sendInvitation(jid,null,senderRole,null);
+              List<JID> invitees=new ArrayList<JID>();
+              if (GroupJID.isGroup(jid)) {
+                try {
+                  Group group=GroupManager.getInstance().getGroup(jid);
+                  for (                  JID inGroup : group.getAll()) {
+                    invitees.add(inGroup);
+                  }
+                }
+ catch (                GroupNotFoundException gnfe) {
+                  logger.error("Failed to send invitations for group members",gnfe);
+                }
+              }
+ else {
+                invitees.add(jid);
+              }
+              for (              JID invitee : invitees) {
+                room.sendInvitation(invitee,null,senderRole,null);
+              }
             }
           }
  else           if ("outcast".equals(target)) {

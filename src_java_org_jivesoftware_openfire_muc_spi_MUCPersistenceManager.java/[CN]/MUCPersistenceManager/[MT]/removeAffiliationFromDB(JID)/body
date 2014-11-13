@@ -4,11 +4,11 @@
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(DELETE_USER_MEMBER);
-    pstmt.setString(1,bareJID.toBareJID());
+    pstmt.setString(1,affiliationJID.toBareJID());
     pstmt.executeUpdate();
     DbConnectionManager.fastcloseStmt(pstmt);
     pstmt=con.prepareStatement(DELETE_USER_MUCAFFILIATION);
-    pstmt.setString(1,bareJID.toBareJID());
+    pstmt.setString(1,affiliationJID.toBareJID());
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

@@ -1,0 +1,17 @@
+{
+  boolean result=false;
+  Set<Group> groupSet=(keyOrValue == KEYS) ? groupsFromKeys : groupsFromValues;
+  if (groupSet != null) {
+    Group group=Group.resolveFrom(item);
+    if (group != null) {
+      result=true;
+      if (addOrRemove == ADD) {
+        groupSet.add(group);
+      }
+ else       if (addOrRemove == REMOVE) {
+        groupSet.remove(group);
+      }
+    }
+  }
+  return result;
+}

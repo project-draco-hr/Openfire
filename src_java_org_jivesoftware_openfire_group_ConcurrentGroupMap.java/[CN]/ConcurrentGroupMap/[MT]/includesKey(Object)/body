@@ -1,0 +1,14 @@
+{
+  boolean found=false;
+  if (containsKey(key)) {
+    found=true;
+  }
+ else   if (key instanceof JID) {
+    JID target=(JID)key;
+    Iterator<Group> iterator=getGroupsFromKeys().iterator();
+    while (!found && iterator.hasNext()) {
+      found=iterator.next().isUser(target);
+    }
+  }
+  return found;
+}

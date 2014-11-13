@@ -1,25 +1,26 @@
 {
   final JID bareJID=jid.asBareJID();
-  List<Presence> updatedPresences=Collections.emptyList();
-  boolean wasMember=false;
+  MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
+  boolean jidWasAffiliated=false;
   lock.writeLock().lock();
   try {
-    MUCRole.Affiliation oldAffiliation=MUCRole.Affiliation.none;
     if (MUCRole.Affiliation.admin != senderRole.getAffiliation() && MUCRole.Affiliation.owner != senderRole.getAffiliation()) {
       throw new ForbiddenException();
     }
     if (owners.contains(bareJID) && owners.size() == 1) {
       throw new ConflictException();
     }
-    wasMember=members.containsKey(bareJID) || admins.contains(bareJID) || owners.contains(bareJID);
     if (removeOwner(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.owner;
+      jidWasAffiliated=true;
     }
  else     if (removeAdmin(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.admin;
+      jidWasAffiliated=true;
     }
  else     if (removeMember(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.member;
+      jidWasAffiliated=true;
     }
  else     if (removeOutcast(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.outcast;
@@ -30,29 +31,10 @@
     lock.writeLock().unlock();
   }
   CacheFactory.doClusterTask(new AddAffiliation(this,jid.toBareJID(),MUCRole.Affiliation.none));
-  try {
-    MUCRole.Role newRole;
-    if (isMembersOnly() && wasMember) {
-      newRole=MUCRole.Role.none;
-    }
+  if (jidWasAffiliated) {
+    return applyAffiliationChange(senderRole,bareJID,null);
+  }
  else {
-      newRole=isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant;
-    }
-    updatedPresences=changeOccupantAffiliation(senderRole,bareJID,MUCRole.Affiliation.none,newRole);
-    if (isMembersOnly() && wasMember) {
-      Element frag;
-      for (      Presence presence : updatedPresences) {
-        presence.setType(Presence.Type.unavailable);
-        presence.setStatus(null);
-        frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
-        frag.addElement("status").addAttribute("code","321");
-        JID actorJID=senderRole.getUserAddress();
-        kickPresence(presence,actorJID);
-      }
-    }
+    return Collections.emptyList();
   }
- catch (  NotAllowedException e) {
-    Log.error(e.getMessage(),e);
-  }
-  return updatedPresences;
 }

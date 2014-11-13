@@ -1,0 +1,17 @@
+{
+  boolean isGroup=false;
+  String groupName=null, node=jid.getNode();
+  if (node != null) {
+    isGroup=(jid instanceof GroupJID) ? true : jid.getResource() != null && StringUtils.isBase32(node) && StringUtils.hash(groupName=decodeNode(node)).equals(jid.getResource());
+    if (isGroup && groupMustExist) {
+      Log.debug("Validating group: " + jid);
+      if (XMPPServer.getInstance().isLocal(jid)) {
+        GroupManager.getInstance().getGroup(groupName);
+      }
+ else {
+        isGroup=false;
+      }
+    }
+  }
+  return isGroup;
+}

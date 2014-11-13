@@ -23,6 +23,9 @@
     if (owners.contains(bareJID) && owners.size() == 1) {
       throw new ConflictException();
     }
+    if (members.containsKey(bareJID)) {
+      return Collections.emptyList();
+    }
     members.put(bareJID,(nickname == null ? "" : nickname.toLowerCase()));
     if (removeOwner(bareJID)) {
       oldAffiliation=MUCRole.Affiliation.owner;
@@ -39,10 +42,5 @@
     lock.writeLock().unlock();
   }
   CacheFactory.doClusterTask(new AddMember(this,jid.toBareJID(),(nickname == null ? "" : nickname)));
-  try {
-    return changeOccupantAffiliation(sendRole,jid,MUCRole.Affiliation.member,MUCRole.Role.participant);
-  }
- catch (  NotAllowedException e) {
-    return null;
-  }
+  return applyAffiliationChange(getRole(),bareJID,null);
 }
