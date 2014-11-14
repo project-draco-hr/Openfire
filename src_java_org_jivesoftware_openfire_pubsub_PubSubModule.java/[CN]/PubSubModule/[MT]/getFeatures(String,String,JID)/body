@@ -2,6 +2,8 @@
   ArrayList<String> features=new ArrayList<String>();
   if (name == null && node == null) {
     features.add("http://jabber.org/protocol/pubsub");
+    String modelName=getDefaultNodeConfiguration(true).getAccessModel().getName();
+    features.add("http://jabber.org/protocol/pubsub#access-" + modelName);
     if (isCollectionNodesSupported()) {
       features.add("http://jabber.org/protocol/pubsub#collections");
     }
@@ -31,8 +33,6 @@
     features.add("http://jabber.org/protocol/pubsub#retrieve-subscriptions");
     features.add("http://jabber.org/protocol/pubsub#subscribe");
     features.add("http://jabber.org/protocol/pubsub#subscription-options");
-    String modelName=getDefaultNodeConfiguration(true).getAccessModel().getName();
-    features.add("http://jabber.org/protocol/pubsub#default_access_model_" + modelName);
   }
  else   if (name == null) {
     Node pubNode=getNode(node);
