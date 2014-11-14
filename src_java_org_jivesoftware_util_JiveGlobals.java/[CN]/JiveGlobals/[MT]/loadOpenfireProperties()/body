@@ -12,8 +12,16 @@
         openfireProperties=new XMLProperties(home + File.separator + getConfigName());
       }
  catch (      IOException ioe) {
-        Log.error(ioe.getMessage(),ioe);
+        Log.error(ioe.getMessage());
         failedLoading=true;
+      }
+    }
+    if (openfireProperties == null) {
+      try {
+        openfireProperties=new XMLProperties();
+      }
+ catch (      IOException e) {
+        Log.error("Failed to setup default openfire properties",e);
       }
     }
   }

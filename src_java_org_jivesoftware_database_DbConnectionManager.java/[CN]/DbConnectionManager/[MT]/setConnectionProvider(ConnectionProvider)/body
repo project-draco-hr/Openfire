@@ -12,7 +12,10 @@ synchronized (providerLock) {
       setMetaData(con);
       schemaManager.checkOpenfireSchema(con);
     }
- catch (    Exception e) {
+ catch (    MissingResourceException mre) {
+      Log.error(mre.getMessage());
+    }
+catch (    Exception e) {
       Log.error(e.getMessage(),e);
     }
  finally {

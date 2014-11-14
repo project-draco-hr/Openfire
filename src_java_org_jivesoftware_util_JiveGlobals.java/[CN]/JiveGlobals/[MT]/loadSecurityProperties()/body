@@ -6,12 +6,6 @@
       msg.append("Critical Error! The home directory has not been configured, \n");
       msg.append("which will prevent the application from working correctly.\n\n");
       System.err.println(msg.toString());
-      try {
-        securityProperties=new XMLProperties();
-      }
- catch (      IOException ioe) {
-        Log.error("Failed to setup default secuirty properties",ioe);
-      }
     }
  else {
       try {
@@ -30,8 +24,16 @@
 ,1000);
       }
  catch (      IOException ioe) {
-        Log.error(ioe.getMessage(),ioe);
+        Log.error(ioe.getMessage());
         failedLoading=true;
+      }
+    }
+    if (securityProperties == null) {
+      try {
+        securityProperties=new XMLProperties();
+      }
+ catch (      IOException e) {
+        Log.error("Failed to setup default security properties",e);
       }
     }
   }
