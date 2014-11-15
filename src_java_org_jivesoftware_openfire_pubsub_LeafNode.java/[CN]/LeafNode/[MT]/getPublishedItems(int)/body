@@ -1,3 +1,19 @@
 {
-  return PubSubPersistenceManager.getPublishedItems(this,recentItems);
+  List<PublishedItem> publishedItems=PubSubPersistenceManager.getPublishedItems(this,recentItems);
+  if (lastPublished != null) {
+    boolean persistentItemsContainsLastItem=false;
+    for (    PublishedItem publishedItem : publishedItems) {
+      if (publishedItem.getID().equals(lastPublished.getID())) {
+        persistentItemsContainsLastItem=true;
+        break;
+      }
+    }
+    if (!persistentItemsContainsLastItem) {
+      publishedItems.add(0,lastPublished);
+      if (publishedItems.size() > recentItems) {
+        publishedItems.remove(publishedItems.size() - 1);
+      }
+    }
+  }
+  return publishedItems;
 }

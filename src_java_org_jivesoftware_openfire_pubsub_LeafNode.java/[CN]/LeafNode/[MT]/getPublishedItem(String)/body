@@ -2,5 +2,10 @@
   if (!isItemRequired()) {
     return null;
   }
+synchronized (this) {
+    if (lastPublished != null && lastPublished.getID().equals(itemID)) {
+      return lastPublished;
+    }
+  }
   return PubSubPersistenceManager.getPublishedItem(this,itemID);
 }
