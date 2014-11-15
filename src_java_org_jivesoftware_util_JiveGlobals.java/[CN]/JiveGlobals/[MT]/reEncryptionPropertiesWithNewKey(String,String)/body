@@ -1,0 +1,35 @@
+{
+  Encryptor oldEncryptor=null;
+  Encryptor newEncryptor=null;
+  String oldAlgorithm=securityProperties.getProperty(OLD_ENCRYPTION_ALGORITHM);
+  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(oldAlgorithm)) {
+    oldEncryptor=new AesEncryptor(oldKey);
+  }
+ else {
+    oldEncryptor=new Blowfish(oldKey);
+  }
+  String newAlgorithm=securityProperties.getProperty(ENCRYPTION_ALGORITHM);
+  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(newAlgorithm)) {
+    newEncryptor=new AesEncryptor(newKey);
+  }
+ else {
+    newEncryptor=new Blowfish(newKey);
+  }
+  currentKey=oldKey;
+  propertyEncryptor=oldEncryptor;
+  if (properties == null) {
+    properties=JiveProperties.getInstance();
+  }
+  currentKey=newKey;
+  propertyEncryptor=newEncryptor;
+  Iterator<String> iterator=properties.keySet().iterator();
+  while (iterator.hasNext()) {
+    String name=iterator.next();
+    if (isPropertyEncrypted(name)) {
+      String xmlProperty=getXMLProperty(name);
+      if (StringUtils.isNotEmpty(xmlProperty)) {
+        setXMLProperty(name,getProperty(name));
+      }
+    }
+  }
+}
