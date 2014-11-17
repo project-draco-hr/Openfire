@@ -1,0 +1,11 @@
+{
+  secret=JiveGlobals.getProperty("plugin.restapi.secret","");
+  if ("".equals(secret)) {
+    secret=StringUtils.randomString(16);
+    setSecret(secret);
+  }
+  enabled=JiveGlobals.getBooleanProperty("plugin.restapi.enabled",false);
+  httpBasicAuth=JiveGlobals.getBooleanProperty("plugin.restapi.httpAuth.enabled",false);
+  allowedIPs=StringUtils.stringToCollection(JiveGlobals.getProperty("plugin.restapi.allowedIPs",""));
+  PropertyEventDispatcher.addListener(this);
+}
