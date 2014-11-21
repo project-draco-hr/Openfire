@@ -1,9 +1,8 @@
 {
-  currentKey=key;
+  String oldAlg=securityProperties.getProperty(ENCRYPTION_ALGORITHM);
   String oldKey=securityProperties.getProperty(ENCRYPTION_KEY_CURRENT);
-  if (StringUtils.isNotEmpty(oldKey) && !oldKey.equals(key)) {
-    oldKey=new AesEncryptor().decrypt(oldKey);
-    reEncryptionPropertiesWithNewKey(oldKey,key);
+  if (StringUtils.isNotEmpty(oldKey) && !oldKey.equals(key) && StringUtils.isNotEmpty(oldAlg)) {
+    updateEncryptionProperties(oldAlg,oldKey,oldAlg,key);
   }
   securityProperties.setProperty(ENCRYPTION_KEY_CURRENT,new AesEncryptor().encrypt(currentKey));
 }
