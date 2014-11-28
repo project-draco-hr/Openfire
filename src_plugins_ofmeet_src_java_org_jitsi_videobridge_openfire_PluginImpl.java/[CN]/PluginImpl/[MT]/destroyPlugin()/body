@@ -1,0 +1,13 @@
+{
+  Log.info("PluginImpl destroyPlugin");
+  PropertyEventDispatcher.removeListener(this);
+  if ((componentManager != null) && (subdomain != null)) {
+    try {
+      componentManager.removeComponent(subdomain);
+    }
+ catch (    ComponentException ce) {
+    }
+    componentManager=null;
+    subdomain=null;
+  }
+}

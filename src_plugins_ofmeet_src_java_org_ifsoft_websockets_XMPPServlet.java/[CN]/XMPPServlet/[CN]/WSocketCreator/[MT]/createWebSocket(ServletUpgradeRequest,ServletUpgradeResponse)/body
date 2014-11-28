@@ -1,0 +1,13 @@
+{
+  for (  String subprotocol : req.getSubProtocols()) {
+    if ("xmpp".equals(subprotocol)) {
+      XMPPWebSocket socket=new XMPPWebSocket();
+      if (doWebSocketConnect(req.getHttpServletRequest(),socket)) {
+        resp.setAcceptedSubProtocol(subprotocol);
+        return socket;
+      }
+ else       return null;
+    }
+  }
+  return null;
+}

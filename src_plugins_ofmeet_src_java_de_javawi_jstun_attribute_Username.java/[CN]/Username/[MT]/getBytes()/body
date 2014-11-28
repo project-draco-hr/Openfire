@@ -1,0 +1,13 @@
+{
+  int length=username.length();
+  if ((length % 4) != 0) {
+    length+=4 - (length % 4);
+  }
+  length+=4;
+  byte[] result=new byte[length];
+  System.arraycopy(Utility.integerToTwoBytes(typeToInteger(type)),0,result,0,2);
+  System.arraycopy(Utility.integerToTwoBytes(length - 4),0,result,2,2);
+  byte[] temp=username.getBytes();
+  System.arraycopy(temp,0,result,4,temp.length);
+  return result;
+}

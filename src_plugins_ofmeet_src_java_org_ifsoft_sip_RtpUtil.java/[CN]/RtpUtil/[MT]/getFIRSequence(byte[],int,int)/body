@@ -1,0 +1,12 @@
+{
+  if (start + 1 >= end) {
+    return -1;
+  }
+  if (buffer[start + 1] == (byte)206 && (buffer[start] & 0x0F) == (byte)0x04) {
+    return (int)buffer[start + 16] & 0xFF;
+  }
+ else {
+    int length=getShort(buffer,start + 2) * 4 + 4;
+    return getFIRSequence(buffer,start + length,end);
+  }
+}

@@ -1,0 +1,53 @@
+{
+  FromHeader fromHeader=null;
+  ToHeader toHeader=null;
+  URI requestURI=null;
+  URI fromURI=null;
+  try {
+    ListeningPoint lp=sipProvider.getListeningPoint(ListeningPoint.UDP);
+    localip=lp.getIPAddress();
+    requestURI=addressFactory.createURI(cs.jabberRemote);
+    toHeader=headerFactory.createToHeader(addressFactory.createAddress(requestURI),null);
+    fromURI=addressFactory.createURI(cs.jabberLocal);
+    fromHeader=headerFactory.createFromHeader(addressFactory.createAddress(fromURI),null);
+    int tag=(int)(Math.random() * 100000);
+    fromHeader.setTag(Integer.toString(tag));
+    ArrayList<ViaHeader> viaHeaders=new ArrayList<ViaHeader>();
+    ViaHeader viaHeader=null;
+    viaHeader=headerFactory.createViaHeader(lp.getIPAddress(),lp.getPort(),lp.getTransport(),null);
+    viaHeaders.add(viaHeader);
+    CallIdHeader callIdHeader=sipProvider.getNewCallId();
+    CSeqHeader cSeqHeader=headerFactory.createCSeqHeader(1L,Request.INVITE);
+    MaxForwardsHeader maxForwards=headerFactory.createMaxForwardsHeader(70);
+    ContentTypeHeader contentTypeHeader=headerFactory.createContentTypeHeader("application","sdp");
+    Request request=messageFactory.createRequest(requestURI,Request.INVITE,callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwards,contentTypeHeader,cs.buildSDP(true));
+    Address localAddress=addressFactory.createAddress(requestURI);
+    ContactHeader ch=headerFactory.createContactHeader(localAddress);
+    request.addHeader(ch);
+    AllowHeader allowHeader=headerFactory.createAllowHeader("INVITE, ACK, CANCEL, OPTIONS, BYE, UPDATE, NOTIFY, MESSAGE, SUBSCRIBE, INFO");
+    request.addHeader(allowHeader);
+    UserAgentHeader userAgent=(UserAgentHeader)headerFactory.createHeader(UserAgentHeader.NAME,agentName);
+    request.setHeader(userAgent);
+    ClientTransaction t=sipProvider.getNewClientTransaction(request);
+    Dialog d=SipService.sipProvider.getNewDialog(t);
+    cs.sipDialog=d;
+    d.setApplicationData(cs);
+    t.setApplicationData(cs);
+    cs.inviteOutTransaction=t;
+    t.sendRequest();
+    return true;
+  }
+ catch (  ParseException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  InvalidArgumentException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  TransactionUnavailableException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  SipException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+  return false;
+}

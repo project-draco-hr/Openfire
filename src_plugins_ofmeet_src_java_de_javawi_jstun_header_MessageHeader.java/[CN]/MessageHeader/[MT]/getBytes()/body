@@ -1,0 +1,20 @@
+{
+  int length=20;
+  Iterator<MessageAttribute.MessageAttributeType> it=ma.keySet().iterator();
+  while (it.hasNext()) {
+    MessageAttribute attri=ma.get(it.next());
+    length+=attri.getLength();
+  }
+  byte[] result=new byte[length];
+  System.arraycopy(Utility.integerToTwoBytes(typeToInteger(type)),0,result,0,2);
+  System.arraycopy(Utility.integerToTwoBytes(length - 20),0,result,2,2);
+  System.arraycopy(id,0,result,4,16);
+  int offset=20;
+  it=ma.keySet().iterator();
+  while (it.hasNext()) {
+    MessageAttribute attri=ma.get(it.next());
+    System.arraycopy(attri.getBytes(),0,result,offset,attri.getLength());
+    offset+=attri.getLength();
+  }
+  return result;
+}

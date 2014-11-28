@@ -1,0 +1,20 @@
+{
+  try {
+    for (    XMPPServlet.XMPPWebSocket socket : sockets.values()) {
+      try {
+        LocalClientSession session=socket.getSession();
+        session.close();
+        SessionManager.getInstance().removeSession(session);
+        session=null;
+      }
+ catch (      Exception e) {
+      }
+    }
+    sockets.clear();
+    jitsiPlugin.destroyPlugin();
+    jigasiPlugin.destroyPlugin();
+    ClusterManager.removeListener(this);
+  }
+ catch (  Exception e) {
+  }
+}

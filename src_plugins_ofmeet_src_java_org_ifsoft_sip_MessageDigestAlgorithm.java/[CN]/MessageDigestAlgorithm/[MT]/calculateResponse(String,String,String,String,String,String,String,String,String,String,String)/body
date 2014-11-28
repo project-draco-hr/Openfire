@@ -1,0 +1,27 @@
+{
+  if (username_value == null || realm_value == null || passwd == null || Method == null || digest_uri_value == null || nonce_value == null)   throw new NullPointerException("Null parameter to MessageDigestAlgorithm.calculateResponse()");
+  String A1=null;
+  if (algorithm == null || algorithm.trim().length() == 0 || algorithm.trim().equalsIgnoreCase("MD5")) {
+    A1=username_value + ":" + realm_value+ ":"+ passwd;
+  }
+ else {
+    if (cnonce_value == null || cnonce_value.length() == 0)     throw new NullPointerException("cnonce_value may not be absent for MD5-Sess algorithm.");
+    A1=MessageDigestAlgorithm.H(username_value + ":" + realm_value+ ":"+ passwd) + ":" + nonce_value+ ":"+ cnonce_value;
+  }
+  String A2=null;
+  if (qop_value == null || qop_value.trim().length() == 0 || qop_value.trim().equalsIgnoreCase("auth")) {
+    A2=Method + ":" + digest_uri_value;
+  }
+ else {
+    if (entity_body == null)     entity_body="";
+    A2=Method + ":" + digest_uri_value+ ":"+ MessageDigestAlgorithm.H(entity_body);
+  }
+  String request_digest=null;
+  if (cnonce_value != null && qop_value != null && (qop_value.equals("auth") || (qop_value.equals("auth-int")))) {
+    request_digest=MessageDigestAlgorithm.KD(MessageDigestAlgorithm.H(A1),nonce_value + ":" + nc_value+ ":"+ cnonce_value+ ":"+ qop_value+ ":"+ MessageDigestAlgorithm.H(A2));
+  }
+ else {
+    request_digest=MessageDigestAlgorithm.KD(MessageDigestAlgorithm.H(A1),nonce_value + ":" + MessageDigestAlgorithm.H(A2));
+  }
+  return request_digest;
+}

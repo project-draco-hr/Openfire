@@ -1,0 +1,11 @@
+{
+  if (!"".equals(data.trim())) {
+    try {
+      Log.debug(digest + " : onMessage : Received : " + data);
+      wsConnection.getRouter().route(DocumentHelper.parseText(data).getRootElement());
+    }
+ catch (    Exception e) {
+      Log.error("An error occurred while attempting to route the packet : ",e);
+    }
+  }
+}

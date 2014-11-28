@@ -1,0 +1,17 @@
+{
+  if (fromHeader != null) {
+    return fromHeader;
+  }
+  try {
+    SipURI fromURI=(SipURI)addressFactory.createURI("sip:" + proxyCredentials.getUserName() + "@"+ registrar);
+    fromURI.setTransportParam(sipProvider.getListeningPoint().getTransport());
+    fromURI.setPort(sipProvider.getListeningPoint().getPort());
+    Address fromAddress=addressFactory.createAddress(fromURI);
+    fromAddress.setDisplayName(proxyCredentials.getUserDisplay());
+    fromHeader=headerFactory.createFromHeader(fromAddress,Integer.toString(hashCode()));
+  }
+ catch (  ParseException e) {
+    throw new IOException("A ParseException occurred while creating From Header! " + e.getMessage());
+  }
+  return fromHeader;
+}

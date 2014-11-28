@@ -1,0 +1,31 @@
+{
+  StringTokenizer st=new StringTokenizer(address,".");
+  if (st.countTokens() != 4) {
+    throw new UtilityException("4 octets in address string are required.");
+  }
+  int i=0;
+  while (st.hasMoreTokens()) {
+    int temp=Integer.parseInt(st.nextToken());
+    if ((temp < 0) || (temp > 255)) {
+      throw new UtilityException("Address is in incorrect format.");
+    }
+switch (i) {
+case 0:
+      firstOctet=temp;
+    ++i;
+  break;
+case 1:
+secondOctet=temp;
+++i;
+break;
+case 2:
+thirdOctet=temp;
+++i;
+break;
+case 3:
+fourthOctet=temp;
+++i;
+break;
+}
+}
+}

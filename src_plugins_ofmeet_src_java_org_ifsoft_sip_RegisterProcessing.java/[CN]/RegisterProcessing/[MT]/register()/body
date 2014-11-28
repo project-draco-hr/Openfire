@@ -1,0 +1,97 @@
+{
+  Log.info("Registering with " + registrar);
+  FromHeader fromHeader=getFromHeader();
+  Address fromAddress=fromHeader.getAddress();
+  SipURI requestURI=null;
+  try {
+    requestURI=addressFactory.createSipURI(null,registrar);
+  }
+ catch (  ParseException e) {
+    throw new IOException("Bad registrar address:" + registrar + " "+ e.getMessage());
+  }
+  try {
+    requestURI.setTransportParam(sipProvider.getListeningPoint().getTransport());
+  }
+ catch (  ParseException e) {
+    throw new IOException(sipProvider.getListeningPoint().getTransport() + " is not a valid transport! " + e.getMessage());
+  }
+  CallIdHeader callIdHeader=sipProvider.getNewCallId();
+  CSeqHeader cSeqHeader=null;
+  try {
+    cSeqHeader=headerFactory.createCSeqHeader(1,Request.REGISTER);
+  }
+ catch (  ParseException e) {
+    throw new IOException("Corrupt Sip Stack " + e.getMessage());
+  }
+catch (  InvalidArgumentException e) {
+    throw new IOException("The application is corrupt ");
+  }
+  ToHeader toHeader=null;
+  try {
+    String proxyWorkAround=System.getProperty("com.sun.mc.softphone.REGISTRAR_WORKAROUND");
+    if (proxyWorkAround != null && proxyWorkAround.toUpperCase().equals("TRUE")) {
+      SipURI toURI=(SipURI)(requestURI.clone());
+      toURI.setUser(System.getProperty("user.name"));
+      toHeader=headerFactory.createToHeader(addressFactory.createAddress(toURI),null);
+    }
+ else {
+      toHeader=headerFactory.createToHeader(fromAddress,null);
+    }
+  }
+ catch (  ParseException e) {
+    throw new IOException("Could not create a To header for address:" + fromHeader.getAddress() + " "+ e.getMessage());
+  }
+  ArrayList viaHeaders=getLocalViaHeaders();
+  MaxForwardsHeader maxForwardsHeader=getMaxForwardsHeader();
+  Request request=null;
+  try {
+    request=messageFactory.createRequest(requestURI,Request.REGISTER,callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwardsHeader);
+  }
+ catch (  ParseException e) {
+    throw new IOException("Could not create the register request! " + e.getMessage());
+  }
+  ExpiresHeader expHeader=null;
+  for (int retry=0; retry < 2; retry++) {
+    try {
+      expHeader=headerFactory.createExpiresHeader(expires);
+    }
+ catch (    InvalidArgumentException e) {
+      if (retry == 0) {
+        continue;
+      }
+      throw new IOException("Invalid registrations expiration parameter - " + expires + " "+ e.getMessage());
+    }
+  }
+  request.addHeader(expHeader);
+  ContactHeader contactHeader=getRegistrationContactHeader();
+  request.addHeader(contactHeader);
+  try {
+    SipURI routeURI=(SipURI)addressFactory.createURI("sip:" + proxyCredentials.getProxy() + ";lr");
+    RouteHeader routeHeader=headerFactory.createRouteHeader(addressFactory.createAddress(routeURI));
+    request.addHeader(routeHeader);
+  }
+ catch (  Exception e) {
+    Log.error("Creating registration route error ",e);
+  }
+  ClientTransaction regTrans=null;
+  try {
+    regTrans=sipProvider.getNewClientTransaction(request);
+  }
+ catch (  TransactionUnavailableException e) {
+    throw new IOException("Could not create a register transaction!\n" + "Check that the Registrar address is correct! " + e.getMessage());
+  }
+  try {
+    sipCallId=callIdHeader.getCallId();
+    sipServerCallback.addSipListener(sipCallId,this);
+    registerRequest=request;
+    regTrans.sendRequest();
+    Log.debug("Sent register request " + registerRequest);
+    if (expires > 0) {
+      scheduleReRegistration();
+    }
+  }
+ catch (  Exception e) {
+    throw new IOException("Could not send out the register request! " + e.getMessage());
+  }
+  this.registerRequest=request;
+}
