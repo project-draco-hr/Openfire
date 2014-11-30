@@ -1,0 +1,22 @@
+{
+  Request req;
+  try {
+    if (cs.inviteOutTransaction != null && (cs.sipDialog.getState() == null || cs.sipDialog.getState() == DialogState.EARLY)) {
+      req=cs.inviteOutTransaction.createCancel();
+      ClientTransaction t=sipProvider.getNewClientTransaction(req);
+      t.sendRequest();
+      cs.sendBye();
+      return false;
+    }
+ else {
+      req=cs.sipDialog.createRequest(Request.BYE);
+      ClientTransaction t=sipProvider.getNewClientTransaction(req);
+      cs.sipDialog.sendRequest(t);
+      cs.sendBye();
+    }
+  }
+ catch (  SipException e) {
+    Log.error("Error sending BYE",e);
+  }
+  return true;
+}

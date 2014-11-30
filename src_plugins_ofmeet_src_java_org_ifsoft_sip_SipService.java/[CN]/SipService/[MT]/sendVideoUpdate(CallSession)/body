@@ -1,0 +1,18 @@
+{
+  Request req;
+  try {
+    ContentTypeHeader cth=headerFactory.createContentTypeHeader("application","media_control+xml");
+    String body="<?xml version=\"1.0\" encoding=\"utf-8\" ?>" + "<media_control>" + "<vc_primitive>"+ "<to_encoder>"+ "<picture_fast_update>"+ "</picture_fast_update>"+ "</to_encoder>"+ "</vc_primitive>"+ "</media_control>";
+    req=cs.sipDialog.createRequest(Request.INFO);
+    ClientTransaction t=sipProvider.getNewClientTransaction(req);
+    req.setContent(body,cth);
+    cs.sipDialog.sendRequest(t);
+  }
+ catch (  SipException e) {
+    Log.error("Error sending FVR INFO",e);
+  }
+catch (  ParseException e) {
+    Log.error("Error sending FVR INFO",e);
+  }
+  return true;
+}

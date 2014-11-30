@@ -1,0 +1,22 @@
+{
+  byte[] buffer=new byte[4096];
+  try {
+    URL url=new URL(urlString);
+    URLConnection urlConn=url.openConnection();
+    InputStream inStream=urlConn.getInputStream();
+    int n=-1;
+    while ((n=inStream.read(buffer)) != -1) {
+      out.write(buffer,0,n);
+    }
+    out.close();
+  }
+ catch (  MalformedURLException e) {
+    Log.info("HttpProxy writeGet MalformedURLException",e);
+  }
+catch (  IOException e1) {
+    Log.info("HttpProxy writeGet IOException",e1);
+  }
+catch (  Exception e2) {
+    Log.info("HttpProxy - writeGet Exception",e2);
+  }
+}

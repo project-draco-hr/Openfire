@@ -1,0 +1,41 @@
+{
+  MessageHeader sendMH=new MessageHeader(MessageHeaderType.BindingRequest);
+  Username name=new Username(user + me);
+  try {
+    sendMH.generateTransactionID();
+  }
+ catch (  UtilityException e) {
+    Log.error("Unable to make stun transaction id",e);
+  }
+  if (name.getUsername().length() > 0) {
+    sendMH.addMessageAttribute(name);
+  }
+  try {
+    byte[] data=sendMH.getBytes();
+    Log.debug("[[" + cs.internalCallId + "]] Sending: "+ Arrays.toString(data));
+    DatagramChannel socket=null;
+    if (rtcp) {
+      socket=jabberSocketRtcp;
+    }
+ else {
+      socket=jabberSocket;
+    }
+synchronized (transmitters) {
+      if (jabberDest == null) {
+        Log.debug("[[" + cs.internalCallId + "]] Sending Bind to: "+ destIp+ ":"+ destPort);
+        StunTransmitter st=new StunTransmitter(data,user,me,new InetSocketAddress(destIp,destPort),socket);
+        String key=name.getUsername() + "_" + destIp+ ":"+ destPort;
+        if (transmitters.containsKey(key)) {
+          transmitters.get(key).cancel();
+          transmitters.remove(key);
+        }
+        transmitters.put(key,st);
+        Log.debug("[[" + cs.internalCallId + "]] RtpRelay::StunTransmitter scheduled (fast) ["+ jabberSocket.socket().getLocalPort()+ "]["+ sipSocket.socket().getLocalPort()+ "] ==> "+ st.socket.socket().getLocalPort());
+        retransTimer.schedule(st,50,50);
+      }
+    }
+  }
+ catch (  UtilityException e) {
+    Log.error("Error in stun bind!",e);
+  }
+}

@@ -1,0 +1,25 @@
+{
+  Log.info("JigasiPlugin - initializePlugin");
+  this.pluginDirectory=pluginDirectory;
+  ComponentManager componentManager=ComponentManagerFactory.getComponentManager();
+  String subdomain="call-control";
+  CallControlComponent component=new CallControlComponent(pluginDirectory);
+  boolean added=false;
+  try {
+    componentManager.addComponent(subdomain,component);
+    added=true;
+  }
+ catch (  ComponentException ce) {
+    ce.printStackTrace(System.err);
+  }
+  if (added) {
+    this.componentManager=componentManager;
+    this.subdomain=subdomain;
+    this.component=component;
+  }
+ else {
+    this.componentManager=null;
+    this.subdomain=null;
+    this.component=null;
+  }
+}

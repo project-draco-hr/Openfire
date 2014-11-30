@@ -1,0 +1,40 @@
+{
+  FromHeader fromHeader=null;
+  ToHeader toHeader=null;
+  URI requestURI=null;
+  URI fromURI=null;
+  try {
+    requestURI=addressFactory.createURI(to);
+    toHeader=headerFactory.createToHeader(addressFactory.createAddress(requestURI),null);
+    fromURI=addressFactory.createURI(from);
+    fromHeader=headerFactory.createFromHeader(addressFactory.createAddress(fromURI),null);
+    int tag=(int)(Math.random() * 100000);
+    fromHeader.setTag(Integer.toString(tag));
+    ArrayList<ViaHeader> viaHeaders=new ArrayList<ViaHeader>();
+    ViaHeader viaHeader=null;
+    ListeningPoint lp=sipProvider.getListeningPoint(ListeningPoint.UDP);
+    viaHeader=headerFactory.createViaHeader(lp.getIPAddress(),lp.getPort(),lp.getTransport(),null);
+    viaHeaders.add(viaHeader);
+    CallIdHeader callIdHeader=sipProvider.getNewCallId();
+    CSeqHeader cSeqHeader=headerFactory.createCSeqHeader(1L,Request.MESSAGE);
+    MaxForwardsHeader maxForwards=headerFactory.createMaxForwardsHeader(70);
+    ContentTypeHeader contentTypeHeader=headerFactory.createContentTypeHeader("text","plain");
+    Request request=messageFactory.createRequest(requestURI,"MESSAGE",callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwards,contentTypeHeader,body);
+    ClientTransaction t=sipProvider.getNewClientTransaction(request);
+    t.sendRequest();
+    return true;
+  }
+ catch (  ParseException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  InvalidArgumentException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  TransactionUnavailableException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+catch (  SipException e) {
+    Log.error("Error on SIPTransmitter:deliverMessage",e);
+  }
+  return false;
+}

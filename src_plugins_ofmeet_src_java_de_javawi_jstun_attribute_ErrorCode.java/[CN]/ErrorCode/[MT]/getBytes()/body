@@ -1,0 +1,16 @@
+{
+  int length=reason.length();
+  if ((length % 4) != 0) {
+    length+=4 - (length % 4);
+  }
+  length+=4;
+  byte[] result=new byte[length];
+  System.arraycopy(Utility.integerToTwoBytes(typeToInteger(type)),0,result,0,2);
+  System.arraycopy(Utility.integerToTwoBytes(length - 4),0,result,2,2);
+  int classHeader=(int)Math.floor(((double)responseCode) / 100);
+  result[6]=Utility.integerToOneByte(classHeader);
+  result[7]=Utility.integerToOneByte(responseCode % 100);
+  byte[] reasonArray=reason.getBytes();
+  System.arraycopy(reasonArray,0,result,8,reasonArray.length);
+  return result;
+}

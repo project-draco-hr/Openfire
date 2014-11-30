@@ -1,0 +1,14 @@
+{
+  try {
+    Collection<ServiceReference<ComponentImpl>> serviceReferences=bundleContext.getServiceReferences(ComponentImpl.class,null);
+    if (serviceReferences != null) {
+      for (      ServiceReference<ComponentImpl> serviceReference : serviceReferences) {
+        Object service=bundleContext.getService(serviceReference);
+        if (service == this)         bundleContext.ungetService(serviceReference);
+      }
+    }
+  }
+  finally {
+    this.bundleContext=null;
+  }
+}

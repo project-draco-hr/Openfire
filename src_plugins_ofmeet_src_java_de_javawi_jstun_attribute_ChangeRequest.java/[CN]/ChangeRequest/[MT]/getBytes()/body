@@ -1,0 +1,9 @@
+{
+  byte[] result=new byte[8];
+  System.arraycopy(Utility.integerToTwoBytes(typeToInteger(type)),0,result,0,2);
+  System.arraycopy(Utility.integerToTwoBytes(4),0,result,2,2);
+  if (changeIP)   result[7]=Utility.integerToOneByte(4);
+  if (changePort)   result[7]=Utility.integerToOneByte(2);
+  if (changeIP && changePort)   result[7]=Utility.integerToOneByte(6);
+  return result;
+}

@@ -1,0 +1,27 @@
+{
+  ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+  this.manager=manager;
+  this.pluginDirectory=pluginDirectory;
+  try {
+    Log.info("OfMeet Plugin - Initialize jitsi videobridge ");
+    jitsiPlugin=new PluginImpl();
+    jitsiPlugin.initializePlugin(manager,pluginDirectory);
+    Log.info("OfMeet Plugin - Initialize jitsi sip gateway ");
+    jigasiPlugin=new JigasiPlugin();
+    jigasiPlugin.initializePlugin(manager,pluginDirectory);
+    ClusterManager.addListener(this);
+    Log.info("OfMeet Plugin - Initialize websockets ");
+    ServletContextHandler context=new ServletContextHandler(contexts,"/ofmeetws",ServletContextHandler.SESSIONS);
+    context.addServlet(new ServletHolder(new XMPPServlet()),"/server");
+    WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath(),"/ofmeet");
+    context2.setWelcomeFiles(new String[]{"index.html"});
+    String securityEnabled=JiveGlobals.getProperty("ofmeet.security.enabled","true");
+    if ("true".equals(securityEnabled)) {
+      Log.info("OfMeet Plugin - Initialize security");
+      context2.setSecurityHandler(basicAuth("ofmeet"));
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Could NOT start open fire meetings");
+  }
+}

@@ -1,0 +1,64 @@
+{
+  FromHeader fromHeader=null;
+  ToHeader toHeader=null;
+  URI requestURI=null;
+  try {
+    requestURI=SipService.addressFactory.createURI(this.contact);
+    toHeader=SipService.headerFactory.createToHeader(this.remoteParty,this.remoteTag);
+    fromHeader=SipService.headerFactory.createFromHeader(this.localParty,this.localTag);
+    ArrayList<ViaHeader> viaHeaders=new ArrayList<ViaHeader>();
+    ViaHeader viaHeader=null;
+    ListeningPoint lp=SipService.sipProvider.getListeningPoint(ListeningPoint.UDP);
+    viaHeader=SipService.headerFactory.createViaHeader(lp.getIPAddress(),lp.getPort(),lp.getTransport(),null);
+    viaHeaders.add(viaHeader);
+    CallIdHeader callIdHeader=SipService.headerFactory.createCallIdHeader(this.callId);
+    CSeqHeader cSeqHeader=SipService.headerFactory.createCSeqHeader(this.cseq++,Request.SUBSCRIBE);
+    MaxForwardsHeader maxForwards=SipService.headerFactory.createMaxForwardsHeader(70);
+    Request request=SipService.messageFactory.createRequest(requestURI,"SUBSCRIBE",callIdHeader,cSeqHeader,fromHeader,toHeader,viaHeaders,maxForwards);
+    EventHeader eph=SipService.headerFactory.createEventHeader("presence");
+    request.addHeader(eph);
+    if (expire) {
+      ExpiresHeader eh=SipService.headerFactory.createExpiresHeader(0);
+      request.addHeader(eh);
+      this.cancel();
+    }
+ else {
+      ExpiresHeader eh=SipService.headerFactory.createExpiresHeader(3600);
+      request.addHeader(eh);
+      this.expires=System.currentTimeMillis() + (3600 * 1000);
+      try {
+        SipSubscriptionManager.saveSubscription(this);
+      }
+ catch (      IOException e) {
+        Log.error("Error persisting subscriber",e);
+      }
+catch (      SAXException e) {
+        Log.error("Error persisting subscriber",e);
+      }
+    }
+    String fromUser=((SipURI)this.localParty.getURI()).getUser();
+    Address localAddress=SipService.addressFactory.createAddress("sip:" + fromUser + "@"+ lp.getIPAddress()+ ":"+ lp.getPort());
+    ContactHeader ch=SipService.headerFactory.createContactHeader(localAddress);
+    request.addHeader(ch);
+    if (this.rl != null && !this.rl.isEmpty()) {
+      ListIterator<Address> li=this.rl.listIterator();
+      while (li.hasNext()) {
+        request.addHeader(SipService.headerFactory.createRouteHeader(li.next()));
+      }
+    }
+    ClientTransaction t=SipService.sipProvider.getNewClientTransaction(request);
+    t.sendRequest();
+  }
+ catch (  ParseException e) {
+    Log.error("Error on SipSubscription:sendSubscribe",e);
+  }
+catch (  InvalidArgumentException e) {
+    Log.error("Error on SipSubscription:sendSubscribe",e);
+  }
+catch (  TransactionUnavailableException e) {
+    Log.error("Error on SipSubscription:sendSubscribe",e);
+  }
+catch (  SipException e) {
+    Log.error("Error on SipSubscription:sendSubscribe",e);
+  }
+}

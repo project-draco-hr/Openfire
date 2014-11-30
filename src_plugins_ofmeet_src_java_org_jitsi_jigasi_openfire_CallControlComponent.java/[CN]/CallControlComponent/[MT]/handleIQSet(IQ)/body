@@ -1,0 +1,74 @@
+{
+  IQ reply=IQ.createResultIQ(iq);
+  try {
+    Log.info("CallControlComponent - handleIQSet\n" + iq);
+    JID focusJid=iq.getFrom();
+    String username=focusJid.getNode();
+    Element element=iq.getChildElement();
+    String namespace=element.getNamespaceURI();
+    String request=element.getName();
+    if ("dial".equals(request) && "urn:xmpp:rayo:1".equals(namespace)) {
+      Log.info("CallControlComponent - Dial");
+      String from=element.attributeValue("from");
+      String to=element.attributeValue("to");
+      String confId=null;
+      for (Iterator i=element.elementIterator("header"); i.hasNext(); ) {
+        Element header=(Element)i.next();
+        String name=header.attributeValue("name");
+        String value=header.attributeValue("value");
+        if ("JvbRoomName".equals(name))         confId=value;
+      }
+      if (confId == null) {
+        reply.setError(PacketError.Condition.item_not_found);
+        Log.error("No JvbRoomName header found");
+      }
+ else {
+        String callId=Long.toHexString(System.currentTimeMillis());
+        Log.info("Got dial request " + from + " -> "+ to+ " focusJid: "+ focusJid+ " confId "+ confId+ " callId "+ callId);
+        String callResource="xmpp:" + callId + "@"+ getJID();
+        final Element childElement=reply.setChildElement("ref","urn:xmpp:rayo:1");
+        childElement.addAttribute("uri",(String)"xmpp:" + callId + "@"+ getJID());
+        childElement.addAttribute("id",(String)callId);
+        String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
+        Conference conference=getVideobridge().getConference(confId,focusJid.toString());
+        if (conference != null) {
+          makeCall(conference,focusJid,from,to,callId);
+        }
+ else {
+          Log.error("CallControlComponent - invalid conf id " + confId + " "+ focusJid);
+          reply.setError(PacketError.Condition.item_not_found);
+        }
+      }
+    }
+ else     if ("accept".equals(request) && "urn:xmpp:rayo:1".equals(namespace)) {
+      Log.info("CallControlComponent - Accept");
+      String confId=null;
+      String confName=null;
+      for (Iterator i=element.elementIterator("header"); i.hasNext(); ) {
+        Element header=(Element)i.next();
+        String name=header.attributeValue("name");
+        String value=header.attributeValue("value");
+        if ("JvbRoomId".equals(name))         confId=value;
+        if ("JvbRoomName".equals(name))         confName=value;
+      }
+      if (confId != null && confName != null) {
+        Log.info("CallControlComponent - Accept register " + confId + " "+ confName);
+        conferences.put(confName,confId);
+      }
+    }
+ else     if ("hangup".equals(request) && "urn:xmpp:rayo:1".equals(namespace)) {
+      Log.info("CallControlComponent - HangUp");
+      String callId=iq.getTo().getNode();
+      hangupCall(callId);
+    }
+ else {
+      Log.warn("CallControlComponent - Unknown");
+      reply.setError(PacketError.Condition.item_not_found);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("CallControlComponent handleIQSet",e);
+    reply.setError(PacketError.Condition.internal_server_error);
+  }
+  return reply;
+}

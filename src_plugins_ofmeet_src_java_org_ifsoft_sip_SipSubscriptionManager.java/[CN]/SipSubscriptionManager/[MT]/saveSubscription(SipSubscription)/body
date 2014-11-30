@@ -1,0 +1,15 @@
+{
+  String filename=spoolPath + "/subscriptions/" + ((SipURI)sub.localParty.getURI()).getUser()+ "_"+ sub.callId;
+  FileOutputStream fs=new FileOutputStream(new File(filename));
+  OutputFormat of=new OutputFormat("XML","ISO-8859-1",true);
+  of.setIndent(1);
+  of.setIndenting(true);
+  XMLSerializer serializer=new XMLSerializer(fs,of);
+  ContentHandler hd=serializer.asContentHandler();
+  hd.startDocument();
+  hd.startElement("","","SUBSCRIPTION",null);
+  sub.buildSubscriptionXML(hd);
+  hd.endElement("","","SUBSCRIPTION");
+  hd.endDocument();
+  fs.close();
+}

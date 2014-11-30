@@ -1,0 +1,56 @@
+{
+  Log.info("CallControlComponent - findCreateSession " + from + " "+ to+ " "+ destination);
+  CallSession session=null;
+  String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
+  String callerId=to;
+  String confJID=null;
+  Conference conference=null;
+  boolean allowDirectSIP="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.allow.direct.sip","false"));
+  if (!allowDirectSIP && !registrations.containsKey(from)) {
+    Log.warn("CallControlComponent - call rejected from " + from + " "+ to);
+    return null;
+  }
+  if (callerId.indexOf("+") == 0)   callerId=callerId.substring(1);
+  for (  MultiUserChatService service : mucManager.getMultiUserChatServices()) {
+    for (    MUCRoom room : service.getChatRooms()) {
+      if (!room.isPasswordProtected() && (room.getDescription().indexOf(callerId) > -1 || room.getJID().getNode().equals(callerId))) {
+        confJID=room.getJID().toString();
+        break;
+      }
+    }
+    if (confJID != null)     break;
+  }
+  if (confJID != null && conferences.containsKey(confJID)) {
+    Log.info("CallControlComponent - findCreateSession conference id " + confJID);
+    for (    Conference conf : getVideobridge().getConferences()) {
+      if (conf.getID().equals(conferences.get(confJID)))       conference=conf;
+    }
+  }
+  if (conference != null) {
+    Log.info("CallControlComponent - findCreateSession conference " + conference.getFocus());
+    try {
+      MediaService mediaService=LibJitsi.getMediaService();
+      MediaStream mediaStream=mediaService.createMediaStream(null,org.jitsi.service.neomedia.MediaType.AUDIO,mediaService.createSrtpControl(SrtpControlType.MIKEY));
+      mediaStream.setName("rayo-" + System.currentTimeMillis());
+      Content content=conference.getOrCreateContent("audio");
+      boolean audioMixer="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer","false"));
+      if (audioMixer) {
+        mediaStream.setSSRCFactory(ssrcFactory);
+        mediaStream.setDevice(content.getMixer());
+      }
+ else {
+        mediaStream.setRTPTranslator(content.getRTPTranslator());
+      }
+      content.createRtpChannel(null);
+      String callId=Long.toHexString(System.currentTimeMillis());
+      session=new CallSession(mediaStream,hostname,this,callId,conference.getFocus(),confJID);
+      session.jabberRemote=from;
+      session.jabberLocal=to;
+      callSessions.put(callId,session);
+    }
+ catch (    Exception e) {
+      Log.error("CallControlComponent findCreateSession",e);
+    }
+  }
+  return session;
+}

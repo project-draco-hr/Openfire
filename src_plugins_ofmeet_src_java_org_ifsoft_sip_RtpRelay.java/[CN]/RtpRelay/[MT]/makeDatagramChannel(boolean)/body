@@ -1,0 +1,22 @@
+{
+  DatagramChannel socket=DatagramChannel.open();
+  while (!socket.socket().isBound()) {
+    nextPort+=1;
+    if (nextPort > RTP_MAX_PORT) {
+      nextPort=RTP_MIN_PORT;
+    }
+    Log.debug("[[" + cs.internalCallId + "]] trying to bind to port: "+ nextPort);
+    try {
+      if (!any) {
+        socket.socket().bind(new InetSocketAddress(SipService.getLocalIP(),nextPort));
+      }
+ else {
+        socket.socket().bind(new InetSocketAddress(nextPort));
+      }
+    }
+ catch (    SocketException e) {
+      Log.error("Unable to make RTP socket!",e);
+    }
+  }
+  return socket;
+}

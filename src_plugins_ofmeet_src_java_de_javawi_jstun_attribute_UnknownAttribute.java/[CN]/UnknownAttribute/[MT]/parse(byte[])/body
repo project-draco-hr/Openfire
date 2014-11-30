@@ -1,0 +1,16 @@
+{
+  try {
+    UnknownAttribute result=new UnknownAttribute();
+    if (data.length % 4 != 0)     throw new MessageAttributeParsingException("Data array too short");
+    for (int i=0; i < data.length; i+=4) {
+      byte[] temp=new byte[4];
+      System.arraycopy(data,i,temp,0,4);
+      long attri=Utility.fourBytesToLong(temp);
+      result.addAttribute(MessageAttribute.intToType(attri));
+    }
+    return result;
+  }
+ catch (  UtilityException ue) {
+    throw new MessageAttributeParsingException("Parsing error");
+  }
+}

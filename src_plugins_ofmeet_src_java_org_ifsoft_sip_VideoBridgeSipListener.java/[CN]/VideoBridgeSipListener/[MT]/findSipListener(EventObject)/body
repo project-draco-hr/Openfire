@@ -1,0 +1,28 @@
+{
+  String sipCallId=null;
+  try {
+    CallIdHeader callIdHeader;
+    if (event instanceof RequestEvent) {
+      Request request=((RequestEvent)event).getRequest();
+      callIdHeader=(CallIdHeader)request.getHeader(CallIdHeader.NAME);
+    }
+ else     if (event instanceof ResponseEvent) {
+      Response response=((ResponseEvent)event).getResponse();
+      callIdHeader=(CallIdHeader)response.getHeader(CallIdHeader.NAME);
+    }
+ else {
+      Log.error("Invalid event object " + event);
+      return null;
+    }
+    sipCallId=callIdHeader.getCallId();
+synchronized (sipListenersTable) {
+      return (SipListener)sipListenersTable.get(sipCallId);
+    }
+  }
+ catch (  NullPointerException e) {
+    if (sipCallId == null || "".equals(sipCallId)) {
+      Log.error("could not get SIP CallId from incoming message.  Dropping message",e);
+    }
+    throw e;
+  }
+}

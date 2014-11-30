@@ -1,0 +1,75 @@
+{
+  SdpFactory sdpFactory=SdpFactory.getInstance();
+  try {
+    SessionDescription sd=sdpFactory.createSessionDescription();
+    sd.setVersion(sdpFactory.createVersion(0));
+    long ntpts=SdpFactory.getNtpTime(new Date());
+    sd.setOrigin(sdpFactory.createOrigin("JabberGW",ntpts,ntpts,"IN","IP4",SipService.getLocalIP()));
+    sd.setSessionName(sdpFactory.createSessionName("Jabber Call"));
+    Vector<Time> times=new Vector<Time>();
+    times.add(sdpFactory.createTime());
+    sd.setTimeDescriptions(times);
+    sd.setConnection(sdpFactory.createConnection(SipService.getLocalIP()));
+    int[] formats;
+    Vector<Attribute> attributes=new Vector<Attribute>();
+    attributes.add(sdpFactory.createAttribute("a","sendrecv"));
+    attributes.add(sdpFactory.createAttribute("a","rtcp-mux"));
+    if (offer) {
+      formats=new int[offerPayloads.size() + 1];
+      int i=0;
+      for (      Payload p : offerPayloads) {
+        formats[i++]=p.id;
+        attributes.add(sdpFactory.createAttribute("rtpmap",Integer.toString(p.id) + " " + p.name+ "/"+ p.clockRate));
+      }
+    }
+ else {
+      formats=new int[answerPayloads.size() + 1];
+      int i=0;
+      for (      Payload p : answerPayloads) {
+        formats[i++]=p.id;
+        attributes.add(sdpFactory.createAttribute("rtpmap",Integer.toString(p.id) + " " + p.name+ "/"+ p.clockRate));
+      }
+    }
+    formats[formats.length - 1]=101;
+    attributes.add(sdpFactory.createAttribute("rtpmap","101 telephone-event/8000"));
+    attributes.add(sdpFactory.createAttribute("fmtp","101 0-15"));
+    MediaDescription md=sdpFactory.createMediaDescription("audio",connector.getDataSocket().getLocalPort(),1,"RTP/AVP",formats);
+    md.setAttributes(attributes);
+    Vector<MediaDescription> mds=new Vector<MediaDescription>();
+    mds.add(md);
+    if (vRelay != null) {
+      attributes=new Vector<Attribute>();
+      if (offer) {
+        formats=new int[offerVPayloads.size()];
+        int i=0;
+        for (        Payload p : offerVPayloads) {
+          formats[i++]=p.id;
+          attributes.add(sdpFactory.createAttribute("rtpmap",Integer.toString(p.id) + " " + p.name+ "/"+ p.clockRate));
+          attributes.add(sdpFactory.createAttribute("fmtp",Integer.toString(p.id) + " packetization-rate=1"));
+        }
+      }
+ else {
+        formats=new int[answerVPayloads.size()];
+        int i=0;
+        for (        Payload p : answerVPayloads) {
+          formats[i++]=p.id;
+          attributes.add(sdpFactory.createAttribute("rtpmap",Integer.toString(p.id) + " " + p.name+ "/"+ p.clockRate));
+          attributes.add(sdpFactory.createAttribute("fmtp",Integer.toString(p.id) + " packetization-rate=1"));
+        }
+      }
+      attributes.add(sdpFactory.createAttribute("framerate","30"));
+      attributes.add(sdpFactory.createAttribute("rtcp",Integer.toString(this.vRelay.getSipRtcpPort())));
+      md.setBandwidth("AS",960);
+      md=sdpFactory.createMediaDescription("video",this.vRelay.getSipPort(),1,"RTP/AVP",formats);
+      md.setAttributes(attributes);
+      mds.add(md);
+    }
+    sd.setMediaDescriptions(mds);
+    Log.info("buildSDP " + sd);
+    return sd;
+  }
+ catch (  SdpException e) {
+    Log.error("Error building SDP",e);
+  }
+  return null;
+}
