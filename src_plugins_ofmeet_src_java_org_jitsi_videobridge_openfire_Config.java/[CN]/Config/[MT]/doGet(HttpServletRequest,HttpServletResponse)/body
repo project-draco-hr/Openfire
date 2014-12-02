@@ -4,9 +4,20 @@
     String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
     String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     String userName="null";
+    String userAvatar="null";
     String securityEnabled=JiveGlobals.getProperty("ofmeet.security.enabled","true");
     if ("true".equals(securityEnabled)) {
       userName=request.getUserPrincipal().getName();
+      VCardManager vcardManager=VCardManager.getInstance();
+      Element vcard=vcardManager.getVCard(userName);
+      if (vcard != null) {
+        Element photo=vcard.element("PHOTO");
+        if (photo != null) {
+          String type=photo.element("TYPE").getText();
+          String binval=photo.element("BINVAL").getText();
+          userAvatar="data:" + type + ";base64,"+ binval;
+        }
+      }
     }
     boolean nodejs=XMPPServer.getInstance().getPluginManager().getPlugin("nodejs") != null;
     writeHeader(response);
@@ -81,6 +92,7 @@
     out.println("    audioBandwidth: '" + audioBandwidth + "',");
     out.println("    videoBandwidth: '" + videoBandwidth + "',");
     out.println("    userName: '" + userName + "',");
+    out.println("    userAvatar: '" + userAvatar + "',");
     out.println("    disablePrezi: true,");
     out.println("    bosh: window.location.protocol + '//' + window.location.host + '/http-bind/'");
     out.println("};	");
