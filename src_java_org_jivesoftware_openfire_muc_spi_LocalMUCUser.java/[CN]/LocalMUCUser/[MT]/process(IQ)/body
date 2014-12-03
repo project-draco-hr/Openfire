@@ -1,7 +1,4 @@
 {
-  if (IQ.Type.error == packet.getType() || IQ.Type.result == packet.getType()) {
-    return;
-  }
   lastPacketTime=System.currentTimeMillis();
   JID recipient=packet.getTo();
   String group=recipient.getNode();
@@ -13,7 +10,7 @@
     if (role == null) {
       sendErrorPacket(packet,PacketError.Condition.not_authorized);
     }
- else     if (IQ.Type.result == packet.getType()) {
+ else     if (IQ.Type.result == packet.getType() || IQ.Type.error == packet.getType()) {
       if (packet.getTo().getResource() != null) {
         try {
           role.getChatRoom().sendPrivatePacket(packet,role);
