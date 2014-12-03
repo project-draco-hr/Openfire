@@ -1,0 +1,8 @@
+{
+  ErrorResponse errorResponse=new ErrorResponse();
+  errorResponse.setRessource(exception.getRessource());
+  errorResponse.setMessage(exception.getMessage());
+  errorResponse.setException(exception.getException());
+  LOG.error(exception.getException() + ": " + exception.getMessage()+ " with ressource "+ exception.getRessource(),exception.getException());
+  return Response.status(exception.getStatus()).entity(errorResponse).type(MediaType.APPLICATION_XML).build();
+}

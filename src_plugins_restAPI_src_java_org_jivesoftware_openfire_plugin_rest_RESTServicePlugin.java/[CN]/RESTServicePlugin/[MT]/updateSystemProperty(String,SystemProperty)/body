@@ -1,0 +1,13 @@
+{
+  if (JiveGlobals.getProperty(propertyKey) != null) {
+    if (systemProperty.getKey().equals(propertyKey)) {
+      JiveGlobals.setProperty(propertyKey,systemProperty.getValue());
+    }
+ else {
+      throw new ServiceException("Path property name and entity property name doesn't match",propertyKey,ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST);
+    }
+  }
+ else {
+    throw new ServiceException("Could not find property for update",systemProperty.getKey(),ExceptionType.PROPERTY_NOT_FOUND,Response.Status.NOT_FOUND);
+  }
+}
