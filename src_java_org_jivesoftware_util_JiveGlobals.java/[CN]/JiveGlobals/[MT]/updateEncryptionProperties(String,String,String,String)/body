@@ -1,15 +1,13 @@
 {
   Encryptor oldEncryptor=null;
   Encryptor newEncryptor=null;
-  String oldAlgorithm=securityProperties.getProperty(OLD_ENCRYPTION_ALGORITHM);
-  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(oldAlgorithm)) {
+  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(oldAlg)) {
     oldEncryptor=new AesEncryptor(oldKey);
   }
  else {
     oldEncryptor=new Blowfish(oldKey);
   }
-  String newAlgorithm=securityProperties.getProperty(ENCRYPTION_ALGORITHM);
-  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(newAlgorithm)) {
+  if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(newAlg)) {
     newEncryptor=new AesEncryptor(newKey);
   }
  else {
@@ -22,14 +20,18 @@
   }
   currentKey=newKey;
   propertyEncryptor=newEncryptor;
-  Iterator<String> iterator=properties.keySet().iterator();
+  Iterator<Entry<String,String>> iterator=properties.entrySet().iterator();
+  Entry<String,String> entry=null;
+  String name=null;
   while (iterator.hasNext()) {
-    String name=iterator.next();
+    entry=iterator.next();
+    name=entry.getKey();
     if (isPropertyEncrypted(name)) {
       String xmlProperty=getXMLProperty(name);
       if (StringUtils.isNotEmpty(xmlProperty)) {
-        setXMLProperty(name,getProperty(name));
+        setXMLProperty(name,entry.getValue());
       }
     }
+    properties.put(name,entry.getValue());
   }
 }
