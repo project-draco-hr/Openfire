@@ -1,7 +1,8 @@
 {
   String oldAlg=securityProperties.getProperty(ENCRYPTION_ALGORITHM);
-  if (StringUtils.isNotEmpty(oldAlg)) {
-    securityProperties.setProperty(OLD_ENCRYPTION_ALGORITHM,oldAlg);
+  String oldKey=securityProperties.getProperty(ENCRYPTION_KEY_CURRENT);
+  if (StringUtils.isNotEmpty(oldAlg) && !oldAlg.equals(alg) && StringUtils.isNotEmpty(oldKey)) {
+    updateEncryptionProperties(oldAlg,oldKey,alg,oldAlg);
   }
   if (ENCRYPTION_ALGORITHM_AES.equalsIgnoreCase(alg)) {
     securityProperties.setProperty(ENCRYPTION_ALGORITHM,ENCRYPTION_ALGORITHM_AES);
