@@ -3,7 +3,8 @@
   if (port > 0) {
     HttpConfiguration httpConfig=new HttpConfiguration();
     configureProxiedConnector(httpConfig);
-    ServerConnector connector=new ServerConnector(httpBindServer,new HttpConnectionFactory(httpConfig));
+    ServerConnector connector=new ServerConnector(httpBindServer,-1,bindThreads);
+    connector.addConnectionFactory(new HttpConnectionFactory(httpConfig));
     connector.setHost(getBindInterface());
     connector.setPort(port);
     httpConnector=connector;
