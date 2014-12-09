@@ -17,9 +17,8 @@
   HttpConfiguration httpConfig=null;
   if (adminPort > 0) {
     httpConfig=new HttpConfiguration();
-    httpConnector=new ServerConnector(adminServer,-1,serverThreads);
     httpConfig.setSendServerVersion(false);
-    httpConnector.addConnectionFactory(new HttpConnectionFactory(httpConfig));
+    httpConnector=new ServerConnector(adminServer,null,null,null,-1,serverThreads,new HttpConnectionFactory(httpConfig));
     String bindInterface=getBindInterface();
     httpConnector.setHost(bindInterface);
     httpConnector.setPort(adminPort);
@@ -50,9 +49,7 @@
         httpsConfig.addCustomizer(new SecureRequestCustomizer());
         HttpConnectionFactory httpConnectionFactory=new HttpConnectionFactory(httpsConfig);
         SslConnectionFactory sslConnectionFactory=new SslConnectionFactory(sslContextFactory,org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
-        httpsConnector=new ServerConnector(adminServer,-1,serverThreads);
-        httpsConnector.addConnectionFactory(sslConnectionFactory);
-        httpsConnector.addConnectionFactory(httpConnectionFactory);
+        httpsConnector=new ServerConnector(adminServer,null,null,null,-1,serverThreads,sslConnectionFactory,httpConnectionFactory);
       }
       String bindInterface=getBindInterface();
       httpsConnector.setHost(bindInterface);
