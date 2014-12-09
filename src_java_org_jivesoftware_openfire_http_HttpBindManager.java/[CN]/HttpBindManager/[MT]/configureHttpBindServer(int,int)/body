@@ -1,5 +1,6 @@
 {
-  final QueuedThreadPool tp=new QueuedThreadPool(JiveGlobals.getIntProperty(HTTP_BIND_THREADS,HTTP_BIND_THREADS_DEFAULT));
+  int maxThreads=JiveGlobals.getIntProperty(HTTP_BIND_THREADS,HTTP_BIND_THREADS_DEFAULT);
+  final QueuedThreadPool tp=new QueuedThreadPool(maxThreads,getMinThreads(maxThreads));
   tp.setName("Jetty-QTP-BOSH");
   httpBindServer=new Server(tp);
   if (JMXManager.isEnabled()) {
