@@ -4,7 +4,7 @@
   CertificateManager.addListener(certificateListener);
   adminPort=JiveGlobals.getXMLProperty("adminConsole.port",9090);
   adminSecurePort=JiveGlobals.getXMLProperty("adminConsole.securePort",9091);
-  final QueuedThreadPool tp=new QueuedThreadPool(254);
+  final QueuedThreadPool tp=new QueuedThreadPool(16,2);
   tp.setName("Jetty-QTP-AdminConsole");
   adminServer=new Server(tp);
   if (JMXManager.isEnabled()) {
