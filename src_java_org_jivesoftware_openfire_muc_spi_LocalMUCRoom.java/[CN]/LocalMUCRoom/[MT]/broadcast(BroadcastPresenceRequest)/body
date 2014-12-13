@@ -1,6 +1,7 @@
 {
   String jid=null;
   Presence presence=presenceRequest.getPresence();
+  JID to=presence.getTo();
   Element frag=presence.getChildElement("x","http://jabber.org/protocol/muc#user");
   if (!canAnyoneDiscoverJID()) {
     jid=frag.element("item").attributeValue("jid");
@@ -17,7 +18,7 @@
         frag.element("item").addAttribute("jid",null);
       }
     }
-    if (occupant.getPresence().getFrom().equals(presence.getTo())) {
+    if (occupant.getPresence().getFrom().equals(to)) {
       Presence selfPresence=presence.createCopy();
       Element fragSelfPresence=selfPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
       fragSelfPresence.addElement("status").addAttribute("code","110");
