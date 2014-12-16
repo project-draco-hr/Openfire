@@ -21,9 +21,13 @@
     if (confJID != null)     break;
   }
   if (confJID != null && conferences.containsKey(confJID)) {
-    Log.info("CallControlComponent - findCreateSession conference id " + confJID);
+    String confId=conferences.get(confJID);
+    Log.info("CallControlComponent - findCreateSession conference id " + confJID + " "+ confId);
     for (    Conference conf : getVideobridge().getConferences()) {
-      if (conf.getID().equals(conferences.get(confJID)))       conference=conf;
+      if (conf.getID().equals(confId)) {
+        conference=conf;
+        break;
+      }
     }
   }
   if (conference != null) {

@@ -1,0 +1,12 @@
+{
+  logger.info("Focus role: " + evt.getNewRole() + " init: "+ evt.isInitial());
+  focusRole=evt.getNewRole();
+  if (ChatRoomMemberRole.MODERATOR.compareTo(focusRole) < 0) {
+    logger.error("Focus must be a moderator!");
+    conference.stop();
+    return;
+  }
+  if (evt.isInitial() && moderator == null) {
+    electNewModerator();
+  }
+}

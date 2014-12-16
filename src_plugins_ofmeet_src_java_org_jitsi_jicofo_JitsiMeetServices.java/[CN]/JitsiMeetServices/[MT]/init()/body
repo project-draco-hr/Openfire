@@ -1,0 +1,17 @@
+{
+  List<String> items=capsOpSet.getItems(xmppDomain);
+  for (  String item : items) {
+    if (capsOpSet.hasFeatureSupport(item,VIDEOBRIDGE_FEATURES)) {
+      logger.info("Discovered videobridge: " + item);
+      bridgeSelector.addJvbAddress(item);
+    }
+ else     if (jireconRecorder == null && capsOpSet.hasFeatureSupport(item,JIRECON_RECORDER_FEATURES)) {
+      logger.info("Discovered Jirecon recorder: " + item);
+      setJireconRecorder(item);
+    }
+ else     if (sipGateway == null && capsOpSet.hasFeatureSupport(item,SIP_GW_FEATURES)) {
+      logger.info("Discovered SIP gateway: " + item);
+      setSipGateway(item);
+    }
+  }
+}

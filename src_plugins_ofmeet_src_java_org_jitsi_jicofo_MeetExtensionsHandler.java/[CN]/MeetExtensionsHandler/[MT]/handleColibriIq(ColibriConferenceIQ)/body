@@ -1,0 +1,11 @@
+{
+  ColibriConferenceIQ.Recording recording=colibriIQ.getRecording();
+  boolean recordingState=conference.modifyRecordingState(colibriIQ.getFrom(),recording.getToken(),recording.getState(),recording.getDirectory());
+  ColibriConferenceIQ response=new ColibriConferenceIQ();
+  response.setType(IQ.Type.RESULT);
+  response.setPacketID(colibriIQ.getPacketID());
+  response.setTo(colibriIQ.getFrom());
+  response.setFrom(colibriIQ.getTo());
+  response.setRecording(new ColibriConferenceIQ.Recording(recordingState));
+  smackXmpp.getXmppConnection().sendPacket(response);
+}

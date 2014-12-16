@@ -1,0 +1,6 @@
+{
+  logger.info("Terminate session: " + session.getAddress());
+  JingleIQ terminate=JinglePacketFactory.createSessionTerminate(getOurJID(),session.getAddress(),session.getSessionID(),reason,null);
+  getConnection().sendPacket(terminate);
+  sessions.remove(session.getSessionID());
+}

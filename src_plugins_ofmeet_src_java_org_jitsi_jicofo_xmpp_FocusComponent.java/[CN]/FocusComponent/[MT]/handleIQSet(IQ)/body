@@ -1,0 +1,46 @@
+{
+  try {
+    org.jivesoftware.smack.packet.IQ smackIq=IQUtils.convert(iq);
+    if (smackIq instanceof ConferenceIq) {
+      ConferenceIq query=(ConferenceIq)smackIq;
+      ConferenceIq response=new ConferenceIq();
+      String room=query.getRoom();
+      logger.info("Focus request for room: " + room);
+      if (focusManager.isShutdownInProgress() && focusManager.getConference(room) == null) {
+        org.jivesoftware.smack.packet.IQ smackReply=ColibriConferenceIQ.createGracefulShutdownErrorResponse(query);
+        return IQUtils.convert(smackReply);
+      }
+      boolean ready=focusManager.conferenceRequest(room,query.getPropertiesMap());
+      if (!isFocusAnonymous) {
+        ready=true;
+      }
+      response.setType(org.jivesoftware.smack.packet.IQ.Type.RESULT);
+      response.setPacketID(query.getPacketID());
+      response.setFrom(query.getTo());
+      response.setTo(query.getFrom());
+      response.setRoom(query.getRoom());
+      response.setReady(ready);
+      response.setFocusJid(focusAuthJid);
+      return IQUtils.convert(response);
+    }
+ else     if (smackIq instanceof GracefulShutdownIQ) {
+      GracefulShutdownIQ gracefulShutdownIQ=(GracefulShutdownIQ)smackIq;
+      String from=gracefulShutdownIQ.getFrom();
+      if (StringUtils.isNullOrEmpty(shutdownAllowedJid) || !shutdownAllowedJid.equals(from)) {
+        XMPPError forbiddenError=new XMPPError(XMPPError.Condition.forbidden);
+        logger.warn("Rejected shutdown request from: " + from);
+        return IQUtils.convert(org.jivesoftware.smack.packet.IQ.createErrorResponse(smackIq,forbiddenError));
+      }
+      logger.info("Accepted shutdown request from: " + from);
+      focusManager.enableGracefulShutdownMode();
+      return IQUtils.convert(org.jivesoftware.smack.packet.IQ.createResultIQ(smackIq));
+    }
+ else {
+      return super.handleIQSet(iq);
+    }
+  }
+ catch (  Exception e) {
+    logger.error(e,e);
+    throw e;
+  }
+}

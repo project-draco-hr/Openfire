@@ -1,0 +1,12 @@
+{
+  StringBuilder builder=new StringBuilder();
+  builder.append("<").append(LOG_ELEM_NAME).append(" ").append("xmlns='").append(NAMESPACE).append("'");
+  for (  Map.Entry<String,Object> entry : attributes.entrySet()) {
+    builder.append(" ").append(entry.getKey()).append("='").append(entry.getValue()).append("'");
+  }
+  builder.append("><").append(MESSAGE_ELEM_NAME).append(">").append(message).append("</").append(MESSAGE_ELEM_NAME).append(">");
+  for (  Map.Entry<String,String> entry : tags.entrySet()) {
+    builder.append("<").append(TAG_ELEM_NAME).append(" name='").append(entry.getKey()).append("' value='").append(entry.getValue()).append("'/>");
+  }
+  return builder.toString();
+}

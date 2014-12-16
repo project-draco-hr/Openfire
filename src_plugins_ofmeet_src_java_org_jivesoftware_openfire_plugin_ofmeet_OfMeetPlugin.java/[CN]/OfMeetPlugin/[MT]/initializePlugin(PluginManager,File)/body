@@ -9,6 +9,27 @@
     Log.info("OfMeet Plugin - Initialize jitsi sip gateway ");
     jigasiPlugin=new JigasiPlugin();
     jigasiPlugin.initializePlugin(manager,pluginDirectory);
+    Log.info("OfMeet Plugin - Initialize jitsi conference focus");
+    UserManager userManager=XMPPServer.getInstance().getUserManager();
+    String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+    String userName="focus";
+    String focusUserJid=userName + "@" + domain;
+    String focusUserPassword="focus-password-" + System.currentTimeMillis();
+    try {
+      userManager.getUser(userName);
+    }
+ catch (    UserNotFoundException e) {
+      Log.info("OfMeet Plugin - Setup focus user " + focusUserJid);
+      userManager.createUser(userName,focusUserPassword,"Openfire Meetings Focus User",focusUserJid);
+      JiveGlobals.setProperty("org.jitsi.videobridge.ofmeet.focus.user.jid",focusUserJid);
+      JiveGlobals.setProperty("org.jitsi.videobridge.ofmeet.focus.user.password",focusUserPassword);
+      MultiUserChatService mucService=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference");
+      List<JID> allowedJIDs=new ArrayList<JID>();
+      allowedJIDs.add(new JID(focusUserJid));
+      mucService.addSysadmins(allowedJIDs);
+    }
+    jicofoPlugin=new JicofoPlugin();
+    jicofoPlugin.initializePlugin(manager,pluginDirectory);
     ClusterManager.addListener(this);
     Log.info("OfMeet Plugin - Initialize websockets ");
     ServletContextHandler context=new ServletContextHandler(contexts,"/ofmeetws",ServletContextHandler.SESSIONS);

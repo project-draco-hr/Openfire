@@ -1,0 +1,25 @@
+{
+  Log.info("handleIQGet\n" + iq);
+  try {
+    org.jivesoftware.smack.packet.IQ smackIq=IQUtils.convert(iq);
+    if (smackIq instanceof ColibriStatsIQ) {
+      Log.info("handleIQGet ColibriStatsIQ " + smackIq);
+      ColibriStatsIQ colibriStatsQuery=(ColibriStatsIQ)smackIq;
+      ColibriStatsIQ statsReply=new ColibriStatsIQ();
+      statsReply.setType(org.jivesoftware.smack.packet.IQ.Type.RESULT);
+      statsReply.setPacketID(iq.getID());
+      statsReply.setTo(iq.getFrom().toString());
+      int conferenceCount=focusManager.getConferenceCount();
+      statsReply.addStat(new ColibriStatsExtension.Stat("conferences",Integer.toString(conferenceCount)));
+      statsReply.addStat(new ColibriStatsExtension.Stat("graceful_shutdown",focusManager.isShutdownInProgress() ? "true" : "false"));
+      return IQUtils.convert(statsReply);
+    }
+ else {
+      return super.handleIQGet(iq);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("handleIQGet",e);
+    throw e;
+  }
+}

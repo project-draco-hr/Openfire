@@ -1,0 +1,31 @@
+{
+  Participant participant=findParticipantForJingleSession(peerJingleSession);
+  if (participant.getJingleSession() != null) {
+    logger.error("Reassigning jingle session for participant: " + peerJingleSession.getAddress());
+  }
+  participant.setJingleSession(peerJingleSession);
+  participant.addSSRCsFromContent(answer);
+  participant.addSSRCGroupsFromContent(answer);
+  colibri.updateSsrcGroupsInfo(participant.getSSRCGroupsCopy(),participant.getColibriChannelsInfo());
+  logger.info("Got SSRCs from " + peerJingleSession.getAddress());
+  for (  Participant peerToNotify : participants) {
+    JingleSession jingleSessionToNotify=peerToNotify.getJingleSession();
+    if (jingleSessionToNotify == null) {
+      logger.warn("No jingle session yet for " + peerToNotify.getChatMember().getContactAddress());
+      peerToNotify.scheduleSSRCsToAdd(participant.getSSRCS());
+      peerToNotify.scheduleSSRCGroupsToAdd(participant.getSSRCGroups());
+      continue;
+    }
+    if (peerJingleSession.equals(jingleSessionToNotify))     continue;
+    jingle.sendAddSourceIQ(participant.getSSRCS(),participant.getSSRCGroups(),jingleSessionToNotify);
+  }
+  if (participant.hasSsrcsToAdd()) {
+    jingle.sendAddSourceIQ(participant.getSsrcsToAdd(),participant.getSSRCGroupsToAdd(),peerJingleSession);
+    participant.clearSsrcsToAdd();
+  }
+  if (participant.hasSsrcsToRemove()) {
+    jingle.sendRemoveSourceIQ(participant.getSsrcsToRemove(),participant.getSsrcGroupsToRemove(),peerJingleSession);
+    participant.clearSsrcsToRemove();
+  }
+  onTransportInfo(peerJingleSession,answer);
+}

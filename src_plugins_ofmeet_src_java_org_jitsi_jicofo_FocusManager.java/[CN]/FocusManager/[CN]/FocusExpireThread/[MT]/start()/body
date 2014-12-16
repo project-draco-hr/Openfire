@@ -1,0 +1,13 @@
+{
+  if (timeoutThread != null) {
+    throw new IllegalStateException();
+  }
+  timeoutThread=new Thread(new Runnable(){
+    @Override public void run(){
+      expireLoop();
+    }
+  }
+,"FocusExpireThread");
+  enabled=true;
+  timeoutThread.start();
+}

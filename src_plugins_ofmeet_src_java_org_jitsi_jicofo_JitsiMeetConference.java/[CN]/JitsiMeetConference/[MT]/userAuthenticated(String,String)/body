@@ -1,0 +1,19 @@
+{
+  logger.info("Authenticate request for: " + realJid + " as "+ identity);
+  Participant participant=findParticipantForJabberId(realJid);
+  if (participant == null) {
+    logger.error("Auth request - no member found for JID: " + realJid);
+    return;
+  }
+  ChatRoomMember chatMember=participant.getChatMember();
+  if (chatMember == null) {
+    logger.error("No chat member for JID: " + realJid);
+    return;
+  }
+  if (participant.getAuthenticatedIdentity() != null) {
+    logger.error(realJid + " already authenticated");
+    return;
+  }
+  participant.setAuthenticatedIdentity(identity);
+  chatRoom.grantModerator(chatMember.getName());
+}

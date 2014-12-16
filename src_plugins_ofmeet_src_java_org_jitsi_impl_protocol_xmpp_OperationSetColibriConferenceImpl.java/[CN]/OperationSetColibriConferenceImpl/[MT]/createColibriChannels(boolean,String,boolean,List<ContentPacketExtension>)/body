@@ -1,0 +1,28 @@
+{
+  colibriBuilder.reset();
+  colibriBuilder.addAllocateChannelsReq(useBundle,endpointName,peerIsInitiator,contents);
+  ColibriConferenceIQ allocateRequest=colibriBuilder.getRequest(jitsiVideobridge);
+  boolean useAudioMixer=false;
+  String useAudioString=System.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer");
+  if (useAudioString != null)   useAudioMixer=useAudioString.equals("true");
+  ColibriConferenceIQ.Content colibriContent=allocateRequest.getContent("audio");
+  if (useAudioMixer && colibriContent != null) {
+    logger.info("audio mixer set " + colibriContent);
+    for (    ColibriConferenceIQ.Channel channel : colibriContent.getChannels()) {
+      channel.setRTPLevelRelayType(RTPLevelRelayType.MIXER);
+    }
+  }
+  Packet response=connection.sendPacketAndGetReply(allocateRequest);
+  if (response == null) {
+    throw new OperationFailedException("Failed to allocate colibri channels: response is null." + " Maybe the response timed out.",OperationFailedException.NETWORK_FAILURE);
+  }
+ else   if (response.getError() != null) {
+    throw new OperationFailedException("Failed to allocate colibri channels: " + response.getError(),OperationFailedException.GENERAL_ERROR);
+  }
+ else   if (!(response instanceof ColibriConferenceIQ)) {
+    throw new OperationFailedException("Failed to allocate colibri channels: response is not a" + " colibri conference",OperationFailedException.GENERAL_ERROR);
+  }
+  ColibriAnalyser analyser=new ColibriAnalyser(conferenceState);
+  analyser.processChannelAllocResp((ColibriConferenceIQ)response);
+  return ColibriAnalyser.getResponseContents((ColibriConferenceIQ)response,contents);
+}

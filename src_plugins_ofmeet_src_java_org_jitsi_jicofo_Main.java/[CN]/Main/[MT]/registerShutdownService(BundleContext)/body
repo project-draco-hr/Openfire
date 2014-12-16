@@ -1,0 +1,10 @@
+{
+  context.registerService(ShutdownService.class,new ShutdownService(){
+    @Override public void beginShutdown(){
+synchronized (exitSynRoot) {
+        exitSynRoot.notifyAll();
+      }
+    }
+  }
+,null);
+}

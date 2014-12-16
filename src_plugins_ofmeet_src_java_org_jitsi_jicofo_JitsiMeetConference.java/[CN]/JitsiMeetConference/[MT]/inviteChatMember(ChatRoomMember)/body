@@ -1,0 +1,19 @@
+{
+  if (isFocusMember(chatRoomMember))   return;
+  if (findParticipantForChatMember(chatRoomMember) != null)   return;
+  logger.info("Inviting " + chatRoomMember.getContactAddress());
+  String address=chatRoomMember.getContactAddress();
+  Participant newParticipant=new Participant((XmppChatMember)chatRoomMember);
+  participants.add(newParticipant);
+  try {
+    List<ContentPacketExtension> offer=createOffer(newParticipant);
+    jingle.initiateSession(newParticipant.hasBundleSupport(),address,offer);
+  }
+ catch (  OperationFailedException e) {
+    logger.error("Failed to invite " + chatRoomMember.getContactAddress(),e);
+    participants.remove(newParticipant);
+    if (BRIDGE_FAILURE_ERR_CODE == e.getErrorCode()) {
+      meetTools.sendPresenceExtension(chatRoom,new BridgeIsDownPacketExt());
+    }
+  }
+}

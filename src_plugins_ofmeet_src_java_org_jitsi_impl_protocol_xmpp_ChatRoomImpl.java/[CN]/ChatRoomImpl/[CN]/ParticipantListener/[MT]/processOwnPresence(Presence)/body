@@ -1,0 +1,9 @@
+{
+  MUCUser mucUser=getMUCUserExtension(presence);
+  if (mucUser != null) {
+    String affiliation=mucUser.getItem().getAffiliation();
+    String role=mucUser.getItem().getRole();
+    ChatRoomMemberRole jitsiRole=ChatRoomJabberImpl.smackRoleToScRole(role,affiliation);
+    setLocalUserRole(jitsiRole,true);
+  }
+}

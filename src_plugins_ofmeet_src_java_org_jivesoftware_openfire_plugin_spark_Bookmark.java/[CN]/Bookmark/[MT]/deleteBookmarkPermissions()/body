@@ -1,0 +1,18 @@
+{
+  Connection con=null;
+  boolean abortTransaction=false;
+  try {
+    con=DbConnectionManager.getTransactionConnection();
+    PreparedStatement pstmt=con.prepareStatement(DELETE_BOOKMARK_PERMISSIONS);
+    pstmt.setLong(1,bookmarkID);
+    pstmt.executeUpdate();
+    pstmt.close();
+  }
+ catch (  SQLException sqle) {
+    abortTransaction=true;
+    throw sqle;
+  }
+ finally {
+    DbConnectionManager.closeTransactionConnection(con,abortTransaction);
+  }
+}
