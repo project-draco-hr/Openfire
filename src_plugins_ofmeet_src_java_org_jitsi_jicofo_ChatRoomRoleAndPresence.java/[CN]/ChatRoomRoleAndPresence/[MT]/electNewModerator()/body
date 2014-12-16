@@ -1,0 +1,26 @@
+{
+  if (focusRole == null) {
+    return;
+  }
+  for (  ChatRoomMember member : chatRoom.getMembers()) {
+    if (JitsiMeetConference.isFocusMember(member) || conference.isSipGateway(member)) {
+      continue;
+    }
+ else     if (ChatRoomMemberRole.MODERATOR.compareTo(member.getRole()) >= 0) {
+      moderator=member;
+      logger.info("Moderator already in the room: " + member.getName());
+      break;
+    }
+ else {
+      try {
+        chatRoom.grantModerator(member.getName());
+        logger.info("Granted moderator to " + member.getContactAddress());
+        moderator=member;
+        break;
+      }
+ catch (      RuntimeException e) {
+        logger.error("Failed to grant moderator status to " + member.getName(),e);
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  if (timeoutThread == null) {
+    return;
+  }
+  enabled=false;
+synchronized (sleepLock) {
+    sleepLock.notifyAll();
+  }
+  try {
+    if (Thread.currentThread() != timeoutThread) {
+      timeoutThread.join();
+    }
+    timeoutThread=null;
+  }
+ catch (  InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+}

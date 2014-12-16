@@ -1,0 +1,14 @@
+{
+  LoggingService loggingService=getLoggingService();
+  if (loggingService != null) {
+    if (LOG_ID_PC_STATS.equals(log.getID())) {
+      String content=getContent(log);
+      if (content != null) {
+        loggingService.logEvent(LogEventFactory.peerConnectionStats(colibri.getConferenceId(),participant.getChatMember().getName(),content));
+      }
+    }
+ else {
+      if (logger.isInfoEnabled())       logger.info("Ignoring log request with an unknown ID:" + log.getID());
+    }
+  }
+}

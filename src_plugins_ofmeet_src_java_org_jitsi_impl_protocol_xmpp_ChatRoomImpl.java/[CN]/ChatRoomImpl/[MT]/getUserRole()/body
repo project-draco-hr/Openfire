@@ -1,0 +1,8 @@
+{
+  if (this.role == null) {
+    Occupant o=muc.getOccupant(muc.getRoom() + "/" + muc.getNickname());
+    if (o == null)     return ChatRoomMemberRole.GUEST;
+ else     this.role=ChatRoomJabberImpl.smackRoleToScRole(o.getRole(),o.getAffiliation());
+  }
+  return this.role;
+}

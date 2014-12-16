@@ -1,0 +1,22 @@
+{
+  Participant sourcePeer=findParticipantForJingleSession(sourceJingleSession);
+  if (sourcePeer == null) {
+    logger.error("Remove-source: no session for " + sourceJingleSession.getAddress());
+    return;
+  }
+  sourcePeer.removeSSRCs(ssrcsToRemove);
+  sourcePeer.removeSSRCGroups(ssrcGroupsToRemove);
+  colibri.updateSsrcGroupsInfo(ssrcGroupsToRemove,sourcePeer.getColibriChannelsInfo());
+  logger.info("Remove SSRC " + sourceJingleSession.getAddress());
+  for (  Participant peer : participants) {
+    if (peer == sourcePeer)     continue;
+    JingleSession jingleSessionToNotify=peer.getJingleSession();
+    if (jingleSessionToNotify == null) {
+      logger.warn("Remove source: no jingle session for " + peer.getChatMember().getContactAddress());
+      peer.scheduleSSRCsToRemove(ssrcsToRemove);
+      peer.scheduleSSRCGroupsToRemove(ssrcGroupsToRemove);
+      continue;
+    }
+    jingle.sendRemoveSourceIQ(ssrcsToRemove,ssrcGroupsToRemove,jingleSessionToNotify);
+  }
+}

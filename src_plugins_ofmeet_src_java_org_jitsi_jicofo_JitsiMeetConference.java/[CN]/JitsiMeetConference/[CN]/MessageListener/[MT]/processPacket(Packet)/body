@@ -1,0 +1,20 @@
+{
+  if (!(packet instanceof Message))   return;
+  Message message=(Message)packet;
+  LogPacketExtension log=null;
+  for (  PacketExtension ext : message.getExtensions()) {
+    if (ext instanceof LogPacketExtension) {
+      log=(LogPacketExtension)ext;
+      break;
+    }
+  }
+  if (log != null) {
+    Participant participant=findParticipantForRoomJid(message.getFrom());
+    if (participant != null) {
+      handleLogRequest(log,participant);
+    }
+ else {
+      logger.info("Ignoring log request from unknown JID: " + message.getFrom());
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  if (bridges.size() == 0) {
+    return null;
+  }
+  Iterator<BridgeState> bridgesIter=bridges.values().iterator();
+  BridgeState bestChoice=bridgesIter.next();
+  while (bridgesIter.hasNext()) {
+    BridgeState candidate=bridgesIter.next();
+    if (candidate.compareTo(bestChoice) < 0) {
+      bestChoice=candidate;
+    }
+  }
+  return bestChoice.isOperational ? bestChoice.jid : null;
+}

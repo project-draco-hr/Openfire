@@ -1,0 +1,23 @@
+{
+  Participant participant=findParticipantForJingleSession(jingleSession);
+  if (participant == null) {
+    logger.error("Add-source: no peer state for " + jingleSession.getAddress());
+    return;
+  }
+  participant.addSSRCsFromContent(contents);
+  participant.addSSRCGroupsFromContent(contents);
+  MediaSSRCMap ssrcsToAdd=MediaSSRCMap.getSSRCsFromContent(contents);
+  MediaSSRCGroupMap ssrcGroupsToAdd=MediaSSRCGroupMap.getSSRCGroupsForContents(contents);
+  colibri.updateSsrcGroupsInfo(participant.getSSRCGroupsCopy(),participant.getColibriChannelsInfo());
+  for (  Participant peerToNotify : participants) {
+    if (peerToNotify == participant)     continue;
+    JingleSession peerJingleSession=peerToNotify.getJingleSession();
+    if (peerJingleSession == null) {
+      logger.warn("Add source: no call for " + peerToNotify.getChatMember().getContactAddress());
+      peerToNotify.scheduleSSRCsToAdd(ssrcsToAdd);
+      peerToNotify.scheduleSSRCGroupsToAdd(ssrcGroupsToAdd);
+      continue;
+    }
+    jingle.sendAddSourceIQ(ssrcsToAdd,ssrcGroupsToAdd,peerJingleSession);
+  }
+}

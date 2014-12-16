@@ -1,0 +1,22 @@
+{
+  if (username == null || username.equals("null"))   return false;
+  if (bookmark.getUsers().contains(username)) {
+    return true;
+  }
+  Collection<String> groups=bookmark.getGroups();
+  if (groups != null && !groups.isEmpty()) {
+    GroupManager groupManager=GroupManager.getInstance();
+    for (    String groupName : groups) {
+      try {
+        Group group=groupManager.getGroup(groupName);
+        if (group.isUser(username)) {
+          return true;
+        }
+      }
+ catch (      GroupNotFoundException e) {
+        Log.debug(e.getMessage(),e);
+      }
+    }
+  }
+  return false;
+}

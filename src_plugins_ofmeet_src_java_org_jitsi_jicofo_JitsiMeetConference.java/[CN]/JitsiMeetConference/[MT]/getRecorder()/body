@@ -1,0 +1,14 @@
+{
+  if (recorder == null) {
+    OperationSetDirectSmackXmpp xmppOpSet=protocolProviderHandler.getOperationSet(OperationSetDirectSmackXmpp.class);
+    String recorderService=services.getJireconRecorder();
+    if (!StringUtils.isNullOrEmpty(recorderService)) {
+      recorder=new JireconRecorder(getFocusJid(),services.getJireconRecorder(),xmppOpSet);
+    }
+ else {
+      logger.warn("No recorder service discovered - using JVB");
+      recorder=new JvbRecorder(colibri.getConferenceId(),services.getVideobridge(),xmppOpSet);
+    }
+  }
+  return recorder;
+}

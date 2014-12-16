@@ -1,0 +1,29 @@
+{
+  try {
+    muc.addPresenceInterceptor(new PacketInterceptor(){
+      @Override public void interceptPacket(      Packet packet){
+        if (packet instanceof Presence) {
+          lastPresenceSent=(Presence)packet;
+        }
+      }
+    }
+);
+    logger.info("joinAs " + nickname);
+    try {
+      muc.join(nickname);
+    }
+ catch (    Exception e) {
+      muc.create(nickname);
+    }
+    this.myNickName=nickname;
+    Form config=muc.getConfigurationForm();
+    Form answer=config.createAnswerForm();
+    FormField whois=new FormField("muc#roomconfig_whois");
+    whois.addValue("anyone");
+    answer.addField(whois);
+    muc.sendConfigurationForm(answer);
+  }
+ catch (  XMPPException e) {
+    throw new OperationFailedException("Failed to join the room",OperationFailedException.GENERAL_ERROR,e);
+  }
+}

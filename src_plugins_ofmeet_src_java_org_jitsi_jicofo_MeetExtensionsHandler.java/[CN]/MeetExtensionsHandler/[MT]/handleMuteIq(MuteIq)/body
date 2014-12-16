@@ -1,0 +1,20 @@
+{
+  Boolean doMute=muteIq.getMute();
+  String jid=muteIq.getJid();
+  if (doMute == null || StringUtils.isNullOrEmpty(jid))   return;
+  IQ result;
+  if (conference.handleMuteRequest(muteIq.getFrom(),jid,doMute)) {
+    result=IQ.createResultIQ(muteIq);
+    if (!muteIq.getFrom().equals(jid)) {
+      MuteIq muteStatusUpdate=new MuteIq();
+      muteStatusUpdate.setType(IQ.Type.SET);
+      muteStatusUpdate.setTo(jid);
+      muteStatusUpdate.setMute(doMute);
+      smackXmpp.getXmppConnection().sendPacket(muteStatusUpdate);
+    }
+  }
+ else {
+    result=IQ.createErrorResponse(muteIq,new XMPPError(XMPPError.Condition.interna_server_error));
+  }
+  smackXmpp.getXmppConnection().sendPacket(result);
+}

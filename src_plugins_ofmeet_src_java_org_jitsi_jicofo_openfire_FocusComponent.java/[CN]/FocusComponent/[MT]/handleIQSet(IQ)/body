@@ -1,0 +1,34 @@
+{
+  Log.info("handleIQSet\n" + iq);
+  try {
+    org.jivesoftware.smack.packet.IQ smackIq=IQUtils.convert(iq);
+    if (smackIq instanceof ConferenceIq) {
+      ConferenceIq query=(ConferenceIq)smackIq;
+      ConferenceIq response=new ConferenceIq();
+      String room=query.getRoom();
+      Log.info("Focus request for room: " + room);
+      if (focusManager.isShutdownInProgress() && focusManager.getConference(room) == null) {
+        org.jivesoftware.smack.packet.IQ smackReply=ColibriConferenceIQ.createGracefulShutdownErrorResponse(query);
+        return IQUtils.convert(smackReply);
+      }
+      boolean ready=focusManager.conferenceRequest(room,query.getPropertiesMap());
+      if (!isFocusAnonymous) {
+        ready=true;
+      }
+      response.setType(org.jivesoftware.smack.packet.IQ.Type.RESULT);
+      response.setPacketID(query.getPacketID());
+      response.setFrom(query.getTo());
+      response.setTo(query.getFrom());
+      response.setRoom(query.getRoom());
+      response.setReady(ready);
+      return IQUtils.convert(response);
+    }
+ else {
+      return super.handleIQSet(iq);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("handleIQSet",e);
+    throw e;
+  }
+}

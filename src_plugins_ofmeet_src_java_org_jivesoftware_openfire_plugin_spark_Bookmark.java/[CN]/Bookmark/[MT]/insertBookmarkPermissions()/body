@@ -1,0 +1,28 @@
+{
+  try {
+    deleteBookmarkPermissions();
+  }
+ catch (  SQLException e) {
+    Log.error(e.getMessage(),e);
+  }
+  if (users != null) {
+    for (    String user : users) {
+      try {
+        insertBookmarkPermission(USERS,user);
+      }
+ catch (      SQLException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+  if (groups != null) {
+    for (    String group : groups) {
+      try {
+        insertBookmarkPermission(GROUPS,group);
+      }
+ catch (      SQLException e) {
+        Log.error(e.getMessage(),e);
+      }
+    }
+  }
+}

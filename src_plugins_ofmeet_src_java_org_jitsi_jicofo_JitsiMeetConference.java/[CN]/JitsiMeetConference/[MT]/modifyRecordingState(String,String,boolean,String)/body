@@ -1,0 +1,20 @@
+{
+  ChatRoomMember member=findMember(from);
+  if (member == null) {
+    logger.error("No member found for address: " + from);
+    return false;
+  }
+  if (ChatRoomMemberRole.MODERATOR.compareTo(member.getRole()) < 0) {
+    logger.info("Recording - request denied, not a moderator: " + from);
+    return false;
+  }
+  Recorder recorder=getRecorder();
+  if (recorder == null) {
+    return false;
+  }
+  boolean isTokenCorrect=recorder.setRecording(from,token,state,path);
+  if (!isTokenCorrect) {
+    logger.info("Incorrect recording token received ! Session: " + chatRoom.getName());
+  }
+  return recorder.isRecording();
+}

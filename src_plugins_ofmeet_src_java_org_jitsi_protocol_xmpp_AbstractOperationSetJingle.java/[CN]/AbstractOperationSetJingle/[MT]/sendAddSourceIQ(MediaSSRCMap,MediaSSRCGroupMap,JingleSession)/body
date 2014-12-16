@@ -1,0 +1,53 @@
+{
+  JingleIQ addSourceIq=new JingleIQ();
+  addSourceIq.setAction(JingleAction.SOURCEADD);
+  addSourceIq.setFrom(getOurJID());
+  addSourceIq.setType(IQ.Type.SET);
+  for (  String media : ssrcs.getMediaTypes()) {
+    ContentPacketExtension content=new ContentPacketExtension();
+    content.setName(media);
+    RtpDescriptionPacketExtension rtpDesc=new RtpDescriptionPacketExtension();
+    rtpDesc.setMedia(media);
+    content.addChildExtension(rtpDesc);
+    for (    SourcePacketExtension ssrc : ssrcs.getSSRCsForMedia(media)) {
+      try {
+        rtpDesc.addChildExtension(ssrc.copy());
+      }
+ catch (      Exception e) {
+        logger.error("Copy SSRC error",e);
+      }
+    }
+    addSourceIq.addContent(content);
+  }
+  if (ssrcGroupMap != null) {
+    for (    String media : ssrcGroupMap.getMediaTypes()) {
+      ContentPacketExtension content=addSourceIq.getContentByName(media);
+      RtpDescriptionPacketExtension rtpDesc;
+      if (content == null) {
+        logger.warn("No SSRCs to be added when group exists for media: " + media);
+        content=new ContentPacketExtension();
+        content.setName(media);
+        addSourceIq.addContent(content);
+        rtpDesc=new RtpDescriptionPacketExtension();
+        rtpDesc.setMedia(media);
+        content.addChildExtension(rtpDesc);
+      }
+ else {
+        rtpDesc=content.getFirstChildOfType(RtpDescriptionPacketExtension.class);
+      }
+      for (      SSRCGroup ssrcGroup : ssrcGroupMap.getSSRCGroupsForMedia(media)) {
+        try {
+          rtpDesc.addChildExtension(ssrcGroup.getExtensionCopy());
+        }
+ catch (        Exception e) {
+          logger.error("Copy SSRC GROUP error",e);
+        }
+      }
+    }
+  }
+  String peerSid=session.getSessionID();
+  addSourceIq.setTo(session.getAddress());
+  addSourceIq.setSID(peerSid);
+  logger.info("Notify add SSRC" + session.getAddress() + " SID: "+ peerSid);
+  getConnection().sendPacket(addSourceIq);
+}

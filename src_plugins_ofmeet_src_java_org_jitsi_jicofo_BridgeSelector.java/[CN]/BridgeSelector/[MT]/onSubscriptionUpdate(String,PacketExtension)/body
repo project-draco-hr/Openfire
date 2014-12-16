@@ -1,0 +1,31 @@
+{
+  if (!(payload instanceof ColibriStatsExtension)) {
+    logger.error("Unexpected pub-sub notification payload: " + payload.getClass().getName());
+    return;
+  }
+  BridgeState bridgeState=findBridgeForNode(node);
+  if (bridgeState == null) {
+    logger.warn("No bridge registered or missing mapping for node: " + node);
+    return;
+  }
+  ColibriStatsExtension stats=(ColibriStatsExtension)payload;
+  for (  PacketExtension child : stats.getChildExtensions()) {
+    if (!(child instanceof ColibriStatsExtension.Stat)) {
+      continue;
+    }
+    ColibriStatsExtension.Stat stat=(ColibriStatsExtension.Stat)child;
+    if (VideobridgeStatistics.CONFERENCES.equals(stat.getName())) {
+      Object statValue=stat.getValue();
+      if (statValue == null) {
+        return;
+      }
+      String stringStatValue=String.valueOf(statValue);
+      try {
+        bridgeState.setConferenceCount(Integer.parseInt(stringStatValue));
+      }
+ catch (      NumberFormatException e) {
+        logger.error("Error parsing conference count stat: " + stringStatValue);
+      }
+    }
+  }
+}

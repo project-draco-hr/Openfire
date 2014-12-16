@@ -1,0 +1,27 @@
+{
+  JingleSession session=getSession(iq.getSID());
+  JingleAction action=iq.getAction();
+  if (session == null) {
+    logger.error("Action: " + action + ", no session found for SID "+ iq.getSID());
+    return;
+  }
+  if (requestHandler == null) {
+    logger.error("No request handler set.");
+    return;
+  }
+  if (JingleAction.SESSION_ACCEPT.equals(action)) {
+    requestHandler.onSessionAccept(session,iq.getContentList());
+  }
+ else   if (JingleAction.TRANSPORT_INFO.equals(action)) {
+    requestHandler.onTransportInfo(session,iq.getContentList());
+  }
+ else   if (JingleAction.ADDSOURCE.equals(action) || JingleAction.SOURCEADD.equals(action)) {
+    requestHandler.onAddSource(session,iq.getContentList());
+  }
+ else   if (JingleAction.REMOVESOURCE.equals(action) || JingleAction.SOURCEREMOVE.equals(action)) {
+    requestHandler.onRemoveSource(session,iq.getContentList());
+  }
+ else {
+    logger.warn("unsupported action " + action);
+  }
+}

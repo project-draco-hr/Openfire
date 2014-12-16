@@ -1,0 +1,7 @@
+{
+  PacketCollector packetCollector=connection.createPacketCollector(new PacketIDFilter(packet.getPacketID()));
+  connection.sendPacket(packet);
+  Packet response=packetCollector.nextResult(20000);
+  packetCollector.cancel();
+  return response;
+}

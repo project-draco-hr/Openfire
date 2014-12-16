@@ -1,0 +1,20 @@
+{
+  JitsiMeetConfig config=new JitsiMeetConfig(properties);
+  JitsiMeetConference conference=new JitsiMeetConference(room,hostName,focusUserDomain,focusUserPassword,this,config);
+  try {
+    conferences.put(room,conference);
+    StringBuilder options=new StringBuilder();
+    for (    Map.Entry<String,String> option : properties.entrySet()) {
+      options.append("\n    ").append(option.getKey()).append(": ").append(option.getValue());
+    }
+    logger.info("Created new focus for " + room + "@"+ focusUserDomain+ " conferences count: "+ conferences.size()+ " options:"+ options.toString());
+    LoggingService loggingService=FocusBundleActivator.getLoggingService();
+    if (loggingService != null) {
+      loggingService.logEvent(LogEventFactory.focusCreated(room + "@" + focusUserDomain));
+    }
+    conference.start();
+  }
+ catch (  Exception e) {
+    logger.error("Failed to start conference for room: " + room,e);
+  }
+}

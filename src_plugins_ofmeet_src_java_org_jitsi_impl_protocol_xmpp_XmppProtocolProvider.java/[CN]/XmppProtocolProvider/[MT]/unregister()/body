@@ -1,0 +1,10 @@
+{
+  if (connection != null) {
+    connection.disconnect();
+    logger.info("XMPP provider " + jabberAccountID + " disconnected");
+    RegistrationState prevState=registrationState;
+    registrationState=RegistrationState.UNREGISTERED;
+    fireRegistrationStateChanged(prevState,RegistrationState.UNREGISTERED,RegistrationStateChangeEvent.REASON_NOT_SPECIFIED,null);
+    connection=null;
+  }
+}

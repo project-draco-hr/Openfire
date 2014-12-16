@@ -1,0 +1,15 @@
+{
+  this.subscriptionOpSet=subscriptionOpSet;
+  String mappingPropertyValue=FocusBundleActivator.getConfigService().getString(BRIDGE_TO_PUBSUB_PNAME);
+  if (StringUtils.isNullOrEmpty(mappingPropertyValue)) {
+    return;
+  }
+  String[] pairs=mappingPropertyValue.split(";");
+  for (  String pair : pairs) {
+    String[] bridgeAndNode=pair.split(":");
+    String bridge=bridgeAndNode[0];
+    String pubSubNode=bridgeAndNode[1];
+    pubSubToBridge.put(pubSubNode,bridge);
+    logger.info("Pub-sub mapping: " + pubSubNode + " -> "+ bridge);
+  }
+}

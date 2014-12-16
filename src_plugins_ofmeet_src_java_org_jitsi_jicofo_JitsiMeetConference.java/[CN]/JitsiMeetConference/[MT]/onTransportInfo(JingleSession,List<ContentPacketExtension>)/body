@@ -1,0 +1,35 @@
+{
+  Participant participant=findParticipantForJingleSession(session);
+  if (participant == null) {
+    logger.error("Failed to process transport-info," + " no session for: " + session.getAddress());
+    return;
+  }
+  if (participant.hasBundleSupport()) {
+    IceUdpTransportPacketExtension transport=null;
+    for (    ContentPacketExtension cpe : contentList) {
+      IceUdpTransportPacketExtension contentTransport=cpe.getFirstChildOfType(IceUdpTransportPacketExtension.class);
+      if (contentTransport != null) {
+        transport=contentTransport;
+        break;
+      }
+    }
+    if (transport == null) {
+      logger.error("No valid transport suppied in transport-update from " + participant.getChatMember().getName());
+      return;
+    }
+    transport.addChildExtension(new RtcpmuxPacketExtension());
+    boolean initiator=true;
+    colibri.updateBundleTransportInfo(initiator,transport,participant.getColibriChannelsInfo());
+  }
+ else {
+    Map<String,IceUdpTransportPacketExtension> transportMap=new HashMap<String,IceUdpTransportPacketExtension>();
+    for (    ContentPacketExtension cpe : contentList) {
+      IceUdpTransportPacketExtension transport=cpe.getFirstChildOfType(IceUdpTransportPacketExtension.class);
+      if (transport != null) {
+        transportMap.put(cpe.getName(),transport);
+      }
+    }
+    boolean initiator=true;
+    colibri.updateTransportInfo(initiator,transportMap,participant.getColibriChannelsInfo());
+  }
+}

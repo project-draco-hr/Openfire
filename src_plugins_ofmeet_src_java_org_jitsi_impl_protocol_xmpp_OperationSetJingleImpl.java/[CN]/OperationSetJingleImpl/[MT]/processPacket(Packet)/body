@@ -1,0 +1,19 @@
+{
+  IQ iq=(IQ)packet;
+  if (iq.getType() == IQ.Type.SET) {
+    IQ ack=IQ.createResultIQ(iq);
+    getConnection().sendPacket(ack);
+  }
+  try {
+    if (iq instanceof JingleIQ)     processJingleIQ((JingleIQ)iq);
+  }
+ catch (  Throwable t) {
+    if (logger.isInfoEnabled()) {
+      String packetClass;
+      if (iq instanceof JingleIQ)       packetClass="Jingle";
+ else       packetClass=packet.getClass().getSimpleName();
+      logger.info("Error while handling incoming " + packetClass + " packet: ",t);
+    }
+    if (t instanceof ThreadDeath)     throw (ThreadDeath)t;
+  }
+}

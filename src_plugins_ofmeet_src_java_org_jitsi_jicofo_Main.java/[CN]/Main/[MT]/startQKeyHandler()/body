@@ -1,0 +1,23 @@
+{
+  Thread handler=new Thread(new Runnable(){
+    @Override public void run(){
+      do {
+        try {
+          if (System.in.read() == 'q')           break;
+          Thread.sleep(100);
+        }
+ catch (        Exception e) {
+          logger.error(e,e);
+          break;
+        }
+      }
+ while (true);
+synchronized (exitSynRoot) {
+        exitSynRoot.notifyAll();
+      }
+    }
+  }
+,"q-key-handler");
+  handler.setDaemon(true);
+  handler.start();
+}

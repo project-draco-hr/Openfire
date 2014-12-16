@@ -1,0 +1,13 @@
+{
+  expireThread.start();
+  ConfigurationService config=FocusBundleActivator.getConfigService();
+  hostName=config.getString(HOSTNAME_PNAME);
+  String xmppDomain=config.getString(XMPP_DOMAIN_PNAME);
+  focusUserDomain=config.getString(FOCUS_USER_DOMAIN_PNAME);
+  String focusUserName=config.getString(FOCUS_USER_NAME_PNAME);
+  focusUserPassword=config.getString(FOCUS_USER_PASSWORD_PNAME);
+  jitsiMeetServices=new JitsiMeetServices();
+  jitsiMeetServices.start(hostName,xmppDomain,focusUserDomain,focusUserName,focusUserPassword);
+  ProviderManager.getInstance().addExtensionProvider(LogPacketExtension.LOG_ELEM_NAME,LogPacketExtension.NAMESPACE,new LogExtensionProvider());
+  FocusBundleActivator.bundleContext.registerService(JitsiMeetServices.class,jitsiMeetServices,null);
+}

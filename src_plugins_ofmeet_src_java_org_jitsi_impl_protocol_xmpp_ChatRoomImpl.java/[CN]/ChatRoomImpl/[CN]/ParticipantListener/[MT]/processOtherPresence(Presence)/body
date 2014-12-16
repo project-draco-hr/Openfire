@@ -1,0 +1,16 @@
+{
+  MUCUser mucUser=(MUCUser)presence.getExtension("x","http://jabber.org/protocol/muc#user");
+  ChatMemberImpl member=members.get(presence.getFrom());
+  if (member == null) {
+    logger.warn("Received presence for non-existing member: " + presence.toXML());
+    return;
+  }
+  String jid=mucUser.getItem().getJid();
+  if (StringUtils.isNullOrEmpty(member.getJabberID())) {
+    logger.info("JID: " + jid + " received for: "+ member.getContactAddress());
+    member.setJabberID(mucUser.getItem().getJid());
+  }
+ else   if (!jid.equals(member.getJabberID())) {
+    logger.warn("New jid received in presence: " + presence.toXML());
+  }
+}

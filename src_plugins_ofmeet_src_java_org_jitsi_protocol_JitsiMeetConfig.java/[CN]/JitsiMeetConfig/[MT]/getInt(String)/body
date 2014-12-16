@@ -1,0 +1,13 @@
+{
+  String stringValue=properties.get(name);
+  Integer intValue=null;
+  if (!StringUtils.isNullOrEmpty(stringValue)) {
+    try {
+      intValue=Integer.parseInt(stringValue);
+    }
+ catch (    NumberFormatException ex) {
+      logger.error("Error parsing: " + name + ", v: "+ stringValue,ex);
+    }
+  }
+  return intValue;
+}

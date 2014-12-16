@@ -20,6 +20,18 @@
         }
       }
     }
+    String conferences="[";
+    final Collection<Bookmark> bookmarks=BookmarkManager.getBookmarks();
+    for (    Bookmark bookmark : bookmarks) {
+      boolean addBookmarkForUser=bookmark.isGlobalBookmark() || isBookmarkForJID(userName,bookmark);
+      if (addBookmarkForUser) {
+        if (bookmark.getType() == Bookmark.Type.group_chat) {
+          conferences=conferences + (conferences.equals("[") ? "" : ",");
+          conferences=conferences + "{name: '" + bookmark.getName()+ "', jid: '"+ bookmark.getValue()+ "'}";
+        }
+      }
+    }
+    conferences=conferences + "]";
     boolean nodejs=XMPPServer.getInstance().getPluginManager().getPlugin("nodejs") != null;
     writeHeader(response);
     ServletOutputStream out=response.getOutputStream();
@@ -37,7 +49,7 @@
     String adaptiveSimulcast=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.adaptive.simulcast","false");
     String useRtcpMux=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.use.rtcp.mux","true");
     String useBundle=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.use.bundle","false");
-    String enableWelcomePage=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.welcomePage","false");
+    String enableWelcomePage=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.welcomePage","true");
     String enableSimulcast=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.simulcast","false");
     String enableRtpStats=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.rtp.stats","true");
     String openSctp=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.open.sctp","true");
@@ -46,12 +58,16 @@
     String channelLastN=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.channel.lastn","-1");
     String desktopShareSrcs=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.desktop.sharing.sources","[\"screen\", \"window\"]");
     String minChromeExtVer=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.min.chrome.ext.ver","0.1");
+    String enableFirefoxSupport=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.firefox.support","false");
+    String logStats=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.enable.stats.logging","false");
+    String focusUserJid=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.focus.user.jid","focus@" + domain);
     out.println("var config = {");
     out.println("    hosts: {");
     out.println("        domain: '" + domain + "',");
     out.println("        muc: 'conference." + domain + "',");
     out.println("        bridge: 'ofmeet-jitsi-videobridge." + domain + "',");
     out.println("        call_control: 'ofmeet-call-control." + domain + "',");
+    out.println("        focus: 'ofmeet-focus." + domain + "',");
     out.println("    },");
     out.println("    getroomnode: function (path)");
     out.println("    {");
@@ -81,6 +97,7 @@
     out.println("    openSctp: " + openSctp + ",");
     out.println("    enableRecording: " + recordVideo + ",");
     out.println("    clientNode: 'http://igniterealtime.org/ofmeet',");
+    out.println("    focusUserJid: '" + focusUserJid + "',");
     out.println("    defaultSipNumber: '" + defaultSipNumber + "',");
     out.println("    desktopSharing: '" + desktopSharing + "',");
     out.println("    chromeExtensionId: '" + chromeExtensionId + "',");
@@ -94,7 +111,10 @@
     out.println("    videoBandwidth: '" + videoBandwidth + "',");
     out.println("    userName: '" + userName + "',");
     out.println("    userAvatar: '" + userAvatar + "',");
+    out.println("    enableFirefoxSupport: " + enableFirefoxSupport + ",");
+    out.println("    logStats: " + logStats + ",");
     out.println("    disablePrezi: true,");
+    out.println("    conferences: " + conferences + ",");
     out.println("    bosh: window.location.protocol + '//' + window.location.host + '/http-bind/'");
     out.println("};	");
   }

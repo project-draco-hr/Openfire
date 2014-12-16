@@ -1,0 +1,14 @@
+{
+  logger.info("Joining the room: " + roomName);
+  try {
+    chatRoom=chatOpSet.findRoom(roomName);
+    presenceHandler=new ChatRoomRoleAndPresence(this,chatRoom);
+    presenceHandler.init();
+    chatRoom.join();
+    meetExtensionsHandler.init();
+  }
+ catch (  Exception e) {
+    logger.error(e,e);
+    stop();
+  }
+}

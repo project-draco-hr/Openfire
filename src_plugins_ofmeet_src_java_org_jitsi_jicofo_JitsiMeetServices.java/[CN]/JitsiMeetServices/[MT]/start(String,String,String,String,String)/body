@@ -1,0 +1,16 @@
+{
+  if (protocolProviderHandler != null) {
+    throw new IllegalStateException("Already started");
+  }
+  this.xmppDomain=xmppDomain;
+  this.protocolProviderHandler=new ProtocolProviderHandler();
+  protocolProviderHandler.start(serverAddress,xmppAuthDomain,xmppLoginPassword,xmppUserName,this);
+  this.capsOpSet=protocolProviderHandler.getOperationSet(OperationSetSimpleCaps.class);
+  this.bridgeSelector=new BridgeSelector(protocolProviderHandler.getProtocolProvider().getOperationSet(OperationSetSubscription.class));
+  if (protocolProviderHandler.isRegistered()) {
+    init();
+  }
+ else {
+    protocolProviderHandler.register();
+  }
+}

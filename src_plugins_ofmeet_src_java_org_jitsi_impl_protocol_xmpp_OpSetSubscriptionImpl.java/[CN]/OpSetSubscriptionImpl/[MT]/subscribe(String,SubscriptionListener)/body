@@ -1,0 +1,14 @@
+{
+  listenerMap.put(node,listener);
+  PubSubManager manager=getManager();
+  try {
+    Node pubSubNode=manager.getNode(node);
+    if (!isSubscribed(getOurJid(),pubSubNode)) {
+      pubSubNode.addItemEventListener(this);
+      pubSubNode.subscribe(parentProvider.getOurJid());
+    }
+  }
+ catch (  XMPPException e) {
+    logger.error(e.getMessage(),e);
+  }
+}
