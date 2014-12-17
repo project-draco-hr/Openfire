@@ -1,6 +1,9 @@
 {
   if (cause instanceof IOException) {
     Log.info("ConnectionHandler reports IOException for session: " + session,cause);
+    if (cause instanceof SSLHandshakeException) {
+      session.close(true);
+    }
   }
  else   if (cause instanceof ProtocolDecoderException) {
     Log.warn("Closing session due to exception: " + session,cause);
