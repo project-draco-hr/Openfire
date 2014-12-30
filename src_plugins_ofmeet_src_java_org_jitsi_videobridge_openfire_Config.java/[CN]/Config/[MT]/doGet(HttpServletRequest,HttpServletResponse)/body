@@ -21,14 +21,21 @@
       }
     }
     String conferences="[";
-    final Collection<Bookmark> bookmarks=BookmarkManager.getBookmarks();
-    for (    Bookmark bookmark : bookmarks) {
-      boolean addBookmarkForUser=bookmark.isGlobalBookmark() || isBookmarkForJID(userName,bookmark);
-      if (addBookmarkForUser) {
-        if (bookmark.getType() == Bookmark.Type.group_chat) {
-          conferences=conferences + (conferences.equals("[") ? "" : ",");
-          conferences=conferences + "{name: '" + bookmark.getName()+ "', jid: '"+ bookmark.getValue()+ "'}";
+    boolean clientControl=XMPPServer.getInstance().getPluginManager().getPlugin("clientControl") != null || XMPPServer.getInstance().getPluginManager().getPlugin("clientcontrol") != null;
+    if (clientControl) {
+      try {
+        final Collection<Bookmark> bookmarks=BookmarkManager.getBookmarks();
+        for (        Bookmark bookmark : bookmarks) {
+          boolean addBookmarkForUser=bookmark.isGlobalBookmark() || isBookmarkForJID(userName,bookmark);
+          if (addBookmarkForUser) {
+            if (bookmark.getType() == Bookmark.Type.group_chat) {
+              conferences=conferences + (conferences.equals("[") ? "" : ",");
+              conferences=conferences + "{name: '" + bookmark.getName()+ "', jid: '"+ bookmark.getValue()+ "'}";
+            }
+          }
         }
+      }
+ catch (      Exception e) {
       }
     }
     conferences=conferences + "]";
