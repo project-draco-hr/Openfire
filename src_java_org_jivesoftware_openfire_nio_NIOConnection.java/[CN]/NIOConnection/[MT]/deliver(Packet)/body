@@ -3,10 +3,11 @@
     backupDeliverer.deliver(packet);
   }
  else {
-    IoBuffer buffer=IoBuffer.allocate(4096);
-    buffer.setAutoExpand(true);
     boolean errorDelivering=false;
     try {
+      ioSessionLock.acquire();
+      IoBuffer buffer=IoBuffer.allocate(4096);
+      buffer.setAutoExpand(true);
       if (!ioSession.isConnected()) {
         throw new IOException("Connection reset/closed by peer");
       }
@@ -22,6 +23,9 @@
  catch (    Exception e) {
       Log.debug("Error delivering packet:\n" + packet,e);
       errorDelivering=true;
+    }
+ finally {
+      ioSessionLock.release();
     }
     if (errorDelivering) {
       close();

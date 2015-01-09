@@ -1,9 +1,10 @@
 {
   if (!isClosed()) {
-    IoBuffer buffer=IoBuffer.allocate(text.length());
-    buffer.setAutoExpand(true);
     boolean errorDelivering=false;
     try {
+      ioSessionLock.acquire();
+      IoBuffer buffer=IoBuffer.allocate(text.length());
+      buffer.setAutoExpand(true);
       buffer.put(text.getBytes(CHARSET));
       if (flashClient) {
         buffer.put((byte)'\0');
@@ -25,6 +26,9 @@
  catch (    Exception e) {
       Log.debug("Error delivering raw text:\n" + text,e);
       errorDelivering=true;
+    }
+ finally {
+      ioSessionLock.release();
     }
     if (errorDelivering && asynchronous) {
       close();
