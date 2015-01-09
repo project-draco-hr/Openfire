@@ -1,5 +1,10 @@
 {
-  if (conn != null && !conn.isClosed()) {
+  if (conn != null) {
     conn.deliver(packet);
+  }
+ else {
+    Log.error("Failed to deliver packet to invalid session (no connection); will retry");
+    sessionManager.removeSession(this);
+    XMPPServer.getInstance().getPacketDeliverer().deliver(packet);
   }
 }
