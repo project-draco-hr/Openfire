@@ -1,0 +1,33 @@
+{
+  if (account == null) {
+    BufferedReader in=null;
+    try {
+      in=new BufferedReader(new InputStreamReader(Collector.class.getClassLoader().getResourceAsStream("uuid")));
+      account=in.readLine();
+    }
+  finally {
+      if (in != null) {
+        in.close();
+      }
+    }
+  }
+  if (pushUrl == null) {
+    BufferedReader in=null;
+    try {
+      final String urlString;
+      if (System.getProperty(JAVA_MONITOR_URL) != null) {
+        urlString=getProperty(JAVA_MONITOR_URL);
+      }
+ else {
+        in=new BufferedReader(new InputStreamReader(Collector.class.getClassLoader().getResourceAsStream("pushUrl")));
+        urlString=in.readLine();
+      }
+      pushUrl=new URL(urlString);
+    }
+  finally {
+      if (in != null) {
+        in.close();
+      }
+    }
+  }
+}

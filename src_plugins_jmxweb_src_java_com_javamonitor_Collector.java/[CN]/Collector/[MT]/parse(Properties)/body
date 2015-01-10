@@ -1,0 +1,15 @@
+{
+  if (response.get(ONHOLD) != null) {
+    throw new OnHoldException((String)response.get(ONHOLD));
+  }
+  if (response.get(SESSION) != null) {
+    session=(String)response.remove(SESSION);
+    items.clear();
+    for (    final Map.Entry<Object,Object> entry : response.entrySet()) {
+      final String[] parts=((String)entry.getValue()).split("\\|");
+      items.add(new Item(entry.getKey().toString(),parts[0],parts[1],Boolean.parseBoolean(parts[2])));
+    }
+    return true;
+  }
+  return false;
+}

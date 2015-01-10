@@ -1,0 +1,22 @@
+{
+  this.uniqueId=uniqueId;
+  final String proxyHost=getProperty("http.proxyHost");
+  final int proxyPort=parseInt(getProperty("http.proxyPort","80"));
+  final String proxyUser=getProperty("http.proxyUser");
+  final String proxyPass=getProperty("http.proxyPassword","");
+  if (proxyHost != null) {
+    proxy=new Proxy(HTTP,new InetSocketAddress(proxyHost,proxyPort));
+    log.info("using proxy " + proxy);
+    if (proxyUser != null) {
+      Authenticator.setDefault(new Authenticator(){
+        @Override protected PasswordAuthentication getPasswordAuthentication(){
+          return new PasswordAuthentication(proxyUser,proxyPass.toCharArray());
+        }
+      }
+);
+    }
+  }
+ else {
+    proxy=NO_PROXY;
+  }
+}

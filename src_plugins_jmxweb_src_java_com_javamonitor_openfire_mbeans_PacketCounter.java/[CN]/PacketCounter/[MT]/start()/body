@@ -1,0 +1,43 @@
+{
+  interceptor=new PacketInterceptor(){
+    public void interceptPacket(    final Packet packet,    final Session session,    final boolean incoming,    final boolean processed){
+      if (!processed) {
+        return;
+      }
+      stanza.incrementAndGet();
+      if (packet instanceof Message) {
+        message.incrementAndGet();
+      }
+      if (packet instanceof Presence) {
+        presence.incrementAndGet();
+      }
+      if (packet instanceof IQ) {
+        iq.incrementAndGet();
+switch (((IQ)packet).getType()) {
+case get:
+          iqGet.incrementAndGet();
+        break;
+case set:
+      iqSet.incrementAndGet();
+    break;
+case result:
+  iqResult.incrementAndGet();
+break;
+case error:
+iqError.incrementAndGet();
+break;
+}
+}
+}
+}
+;
+stanza.set(0);
+message.set(0);
+presence.set(0);
+iq.set(0);
+iqGet.set(0);
+iqSet.set(0);
+iqResult.set(0);
+iqError.set(0);
+InterceptorManager.getInstance().addInterceptor(interceptor);
+}

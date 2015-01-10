@@ -1,0 +1,8 @@
+{
+  if (acceptor == null) {
+    throw new NullPointerException("acceptor is null");
+  }
+  final ExecutorFilter executorFilter=(ExecutorFilter)acceptor.getFilterChain().get(EXECUTOR_FILTER_NAME);
+  this.executor=(ThreadPoolExecutor)executorFilter.getExecutor();
+  this.mina=new MINAStatCollector(acceptor);
+}

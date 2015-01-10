@@ -1,0 +1,8 @@
+{
+  final int dot=field.indexOf('.');
+  if (dot < 0) {
+    final Object ret=attribute.get(field);
+    return ret == null ? null : ret;
+  }
+  return resolveFields((CompositeData)attribute.get(field.substring(0,dot)),field.substring(dot + 1));
+}

@@ -1,0 +1,8 @@
+{
+  final long[] threadIds=(long[])findDeadlockMethod.invoke(threadMXBean,(Object[])null);
+  if (threadIds == null || threadIds.length < 1) {
+    return null;
+  }
+  final ThreadInfo[] threads=threadMXBean.getThreadInfo(threadIds,Integer.MAX_VALUE);
+  return threads;
+}

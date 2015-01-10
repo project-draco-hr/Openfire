@@ -1,0 +1,62 @@
+{
+  Log.info("[" + NAME + "] initialize "+ NAME+ " plugin resources");
+  try {
+    openfire=new Openfire();
+    openfire.start();
+    JmxHelper.register(openfire,OBJECTNAME_OPENFIRE);
+    Log.info("[" + NAME + "] .. started openfire server detector.");
+  }
+ catch (  Exception e) {
+    Log.debug("cannot start openfire server detector: " + e.getMessage(),e);
+  }
+  try {
+    packetCounter=new PacketCounter();
+    packetCounter.start();
+    JmxHelper.register(packetCounter,OBJECTNAME_PACKET_COUNTER);
+    Log.info("[" + NAME + "] .. started stanza counter.");
+  }
+ catch (  Exception e) {
+    Log.debug("cannot start stanza counter: " + e.getMessage(),e);
+  }
+  try {
+    client=new CoreThreadPool(((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager()).getSocketAcceptor());
+    client.start();
+    JmxHelper.register(client,OBJECTNAME_CORE_CLIENT_THREADPOOL);
+    Log.info("[" + NAME + "] .. started client thread pool monitor.");
+  }
+ catch (  Exception e) {
+    Log.debug("cannot start client thread pool monitor: " + e.getMessage(),e);
+  }
+  try {
+    database=new DatabasePool();
+    database.start();
+    JmxHelper.register(database,OBJECTNAME_DATABASEPOOL);
+    Log.info("[" + NAME + "] .. started database pool monitor.");
+  }
+ catch (  Exception e) {
+    Log.debug("cannot start database pool monitor: " + e.getMessage(),e);
+  }
+  try {
+    ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+    try {
+      Log.info("[" + NAME + "] starting jolokia");
+      WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/jolokia");
+      context.setWelcomeFiles(new String[]{"index.html"});
+      Log.info("[" + NAME + "] starting hawtio");
+      WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath() + "/hawtio","/hawtio");
+      context2.setWelcomeFiles(new String[]{"index.html"});
+      if (JiveGlobals.getBooleanProperty("xmpp.jmx.secure",true)) {
+        SecurityHandler securityHandler=basicAuth("jmxweb");
+        if (securityHandler != null)         context.setSecurityHandler(securityHandler);
+        SecurityHandler securityHandler2=basicAuth("jmxweb");
+        if (securityHandler2 != null)         context2.setSecurityHandler(securityHandler2);
+      }
+    }
+ catch (    Exception e) {
+      Log.error("An error has occurred",e);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error initializing JmxWeb Plugin",e);
+  }
+}
