@@ -6,7 +6,8 @@
     }
  else {
       ClusterTask task=getRemoteSessionTask(RemoteSessionTask.Operation.isInitialized);
-      initialized=(Boolean)doSynchronousClusterTask(task) ? 1 : 0;
+      Object result=doSynchronousClusterTask(task);
+      initialized=result != null && (Boolean)result ? 1 : 0;
     }
   }
   return initialized == 1;

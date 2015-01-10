@@ -1,7 +1,10 @@
 {
   ClusterNodeInfo info=CacheFactory.getClusterNodeInfo(nodeID);
   if (info == null && task instanceof RemoteSessionTask) {
-    SessionManager.getInstance().removeSession(null,((RemoteSessionTask)task).getSession().getAddress(),false,false);
+    Session remoteSession=((RemoteSessionTask)task).getSession();
+    if (remoteSession instanceof ClientSession) {
+      SessionManager.getInstance().removeSession(null,remoteSession.getAddress(),false,false);
+    }
   }
  else {
     CacheFactory.doClusterTask(task,nodeID);

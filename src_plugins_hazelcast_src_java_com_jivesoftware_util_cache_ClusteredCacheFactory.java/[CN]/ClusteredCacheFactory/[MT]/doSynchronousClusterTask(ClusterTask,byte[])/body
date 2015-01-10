@@ -19,7 +19,9 @@ catch (    Exception e) {
     }
   }
  else {
-    logger.warn("Requested node " + StringUtils.getString(nodeID) + " not found in cluster");
+    String msg=MessageFormat.format("Requested node {0} not found in cluster",StringUtils.getString(nodeID));
+    logger.warn(msg);
+    throw new IllegalArgumentException(msg);
   }
   return result;
 }
