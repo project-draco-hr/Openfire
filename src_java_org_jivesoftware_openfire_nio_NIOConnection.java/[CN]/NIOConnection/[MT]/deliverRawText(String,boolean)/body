@@ -1,34 +1,36 @@
 {
   if (!isClosed()) {
     boolean errorDelivering=false;
+    IoBuffer buffer=IoBuffer.allocate(text.length());
+    buffer.setAutoExpand(true);
     try {
-      ioSessionLock.acquire();
-      IoBuffer buffer=IoBuffer.allocate(text.length());
-      buffer.setAutoExpand(true);
       buffer.put(text.getBytes(CHARSET));
       if (flashClient) {
         buffer.put((byte)'\0');
       }
       buffer.flip();
-      if (asynchronous) {
-        if (!ioSession.isConnected()) {
-          throw new IOException("Connection reset/closed by peer");
+      ioSessionLock.lock();
+      try {
+        if (asynchronous) {
+          if (!ioSession.isConnected()) {
+            throw new IOException("Connection reset/closed by peer");
+          }
+          ioSession.write(buffer);
         }
-        ioSession.write(buffer);
-      }
  else {
-        boolean ok=ioSession.write(buffer).awaitUninterruptibly(JiveGlobals.getIntProperty("connection.ack.timeout",2000));
-        if (!ok) {
-          Log.warn("No ACK was received when sending stanza to: " + this.toString());
+          boolean ok=ioSession.write(buffer).awaitUninterruptibly(JiveGlobals.getIntProperty("connection.ack.timeout",2000));
+          if (!ok) {
+            Log.warn("No ACK was received when sending stanza to: " + this.toString());
+          }
         }
+      }
+  finally {
+        ioSessionLock.unlock();
       }
     }
  catch (    Exception e) {
       Log.debug("Error delivering raw text:\n" + text,e);
       errorDelivering=true;
-    }
- finally {
-      ioSessionLock.release();
     }
     if (errorDelivering && asynchronous) {
       close();
