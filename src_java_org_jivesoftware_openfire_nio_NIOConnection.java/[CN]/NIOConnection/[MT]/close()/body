@@ -1,21 +1,18 @@
 {
-  boolean closedSuccessfully=false;
 synchronized (this) {
-    if (!isClosed()) {
-      try {
-        deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>",false);
-      }
- catch (      Exception e) {
-      }
-      if (session != null) {
-        session.setStatus(Session.STATUS_CLOSED);
-      }
-      ioSession.close(false);
-      closed=true;
-      closedSuccessfully=true;
+    if (isClosed()) {
+      return;
     }
-  }
-  if (closedSuccessfully) {
+    try {
+      deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>",false);
+    }
+ catch (    Exception e) {
+    }
+    if (session != null) {
+      session.setStatus(Session.STATUS_CLOSED);
+    }
     notifyCloseListeners();
+    closed=true;
   }
+  ioSession.close(false);
 }
