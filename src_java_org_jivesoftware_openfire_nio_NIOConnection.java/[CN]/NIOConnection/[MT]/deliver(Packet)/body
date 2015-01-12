@@ -4,10 +4,9 @@
   }
  else {
     boolean errorDelivering=false;
+    IoBuffer buffer=IoBuffer.allocate(4096);
+    buffer.setAutoExpand(true);
     try {
-      ioSessionLock.acquire();
-      IoBuffer buffer=IoBuffer.allocate(4096);
-      buffer.setAutoExpand(true);
       if (!ioSession.isConnected()) {
         throw new IOException("Connection reset/closed by peer");
       }
@@ -18,14 +17,17 @@
         buffer.put((byte)'\0');
       }
       buffer.flip();
-      ioSession.write(buffer);
+      ioSessionLock.lock();
+      try {
+        ioSession.write(buffer);
+      }
+  finally {
+        ioSessionLock.unlock();
+      }
     }
  catch (    Exception e) {
       Log.debug("Error delivering packet:\n" + packet,e);
       errorDelivering=true;
-    }
- finally {
-      ioSessionLock.release();
     }
     if (errorDelivering) {
       close();
