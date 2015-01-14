@@ -1,7 +1,7 @@
 {
   if (message != null) {
     JID recipientJID=message.getTo();
-    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
+    if (recipientJID == null || serverAddress.equals(recipientJID) || recipientJID.getNode() == null || message.getExtension("received","urn:xmpp:carbons:2") != null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
       return;
     }
     PrivacyList list=PrivacyListManager.getInstance().getDefaultPrivacyList(recipientJID.getNode());
