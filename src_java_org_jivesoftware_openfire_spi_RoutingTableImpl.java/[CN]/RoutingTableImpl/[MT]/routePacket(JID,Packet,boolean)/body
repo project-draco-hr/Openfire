@@ -1,17 +1,22 @@
 {
   boolean routed=false;
-  if (serverName.equals(jid.getDomain())) {
-    routed=routeToLocalDomain(jid,packet,fromServer);
-  }
- else   if (jid.getDomain().endsWith(serverName) && hasComponentRoute(jid)) {
-    routed=routeToComponent(jid,packet,routed);
-  }
+  try {
+    if (serverName.equals(jid.getDomain())) {
+      routed=routeToLocalDomain(jid,packet,fromServer);
+    }
+ else     if (jid.getDomain().endsWith(serverName) && hasComponentRoute(jid)) {
+      routed=routeToComponent(jid,packet,routed);
+    }
  else {
-    routed=routeToRemoteDomain(jid,packet,routed);
+      routed=routeToRemoteDomain(jid,packet,routed);
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("Primary packet routing failed",ex);
   }
   if (!routed) {
     if (Log.isDebugEnabled()) {
-      Log.debug("RoutingTableImpl: Failed to route packet to JID: {} packet: {}",jid,packet.toXML());
+      Log.debug("Failed to route packet to JID: {} packet: {}",jid,packet.toXML());
     }
     if (packet instanceof IQ) {
       iqRouter.routingFailed(jid,packet);
