@@ -1,0 +1,21 @@
+{
+  StringBuilder xml=new StringBuilder();
+  xml.append('<').append(ELEMENT_NAME);
+  xml.append(" xmlns='").append(NAMESPACE).append("' ");
+  printAttributes(xml);
+  Collection<PacketExtension> extensions=getExtensions();
+  if (extensions.size() > 0 || properties.size() > 0) {
+    xml.append(">");
+    for (    PacketExtension extension : extensions) {
+      xml.append(extension.toXML());
+    }
+    for (    Property property : properties) {
+      xml.append(property.toXML());
+    }
+    xml.append("</").append(ELEMENT_NAME).append(">");
+  }
+ else {
+    xml.append("/>");
+  }
+  return xml.toString();
+}

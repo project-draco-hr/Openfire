@@ -12,5 +12,11 @@
   properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","99");
   properties.setProperty("gov.nist.javax.sip.SERVER_LOG",logDir + "sip_server.log");
   properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logDir + "sip_debug.log");
-  sipService=new SipService(properties);
+  if (JiveGlobals.getBooleanProperty("org.jitsi.videobridge.ofmeet.sip.enabled",true)) {
+    Log.info("CallControlComponent - enabling SIP gateway ");
+    sipService=new SipService(properties);
+  }
+ else {
+    Log.info("CallControlComponent -enabling SIP gateway");
+  }
 }
