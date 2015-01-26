@@ -1,4 +1,17 @@
 {
   ServletContextHandler context=new ServletContextHandler(contexts,boshPath,ServletContextHandler.SESSIONS);
   context.addServlet(new ServletHolder(new HttpBindServlet()),"/*");
+  if (isHttpCompressionEnabled()) {
+    Filter gzipFilter=new GzipFilter(){
+      @Override public void init(      FilterConfig config) throws ServletException {
+        super.init(config);
+        _methods.add(HttpMethod.POST.asString());
+        Log.info("Installed response compression filter");
+      }
+    }
+;
+    FilterHolder filterHolder=new FilterHolder();
+    filterHolder.setFilter(gzipFilter);
+    context.addFilter(filterHolder,"/*",EnumSet.of(DispatcherType.REQUEST));
+  }
 }

@@ -16,7 +16,14 @@
   }
   String sid=node.attributeValue("sid");
   if (sid == null) {
-    createNewSession(request,response,node);
+    if (node.elements().size() > 0) {
+      Log.warn("Invalid client request; SID is required. [" + request.getRemoteAddr() + "]");
+      sendLegacyError(response,BoshBindingError.badRequest);
+      return;
+    }
+ else {
+      createNewSession(request,response,node);
+    }
   }
  else {
     handleSessionRequest(sid,request,response,node);
