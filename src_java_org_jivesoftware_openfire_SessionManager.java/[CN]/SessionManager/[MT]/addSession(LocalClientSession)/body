@@ -1,6 +1,6 @@
 {
-  localSessionManager.getPreAuthenticatedSessions().remove(session.getStreamID().toString());
   routingTable.addClientRoute(session.getAddress(),session);
+  localSessionManager.getPreAuthenticatedSessions().remove(session.getStreamID().toString());
   SessionEventDispatcher.EventType event=session.getAuthToken().isAnonymous() ? SessionEventDispatcher.EventType.anonymous_session_created : SessionEventDispatcher.EventType.session_created;
   SessionEventDispatcher.dispatchEvent(session,event);
   if (ClusterManager.isClusteringStarted()) {
