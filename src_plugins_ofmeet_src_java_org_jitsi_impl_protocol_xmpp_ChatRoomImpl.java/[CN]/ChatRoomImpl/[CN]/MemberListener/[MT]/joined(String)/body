@@ -1,7 +1,13 @@
 {
-  ChatMemberImpl member;
-synchronized (members) {
-    member=addMember(participant);
+  Presence peerPresence=onJoinPresence.get(participant);
+  if (peerPresence == null) {
+    earlyParticipant.add(participant);
+    return;
   }
-  if (member != null)   notifyParticipantJoined(member);
+  onJoinPresence.remove(participant);
+  ChatMemberImpl member=addMember(participant);
+  if (member != null) {
+    member.processPresence(peerPresence);
+    notifyParticipantJoined(member);
+  }
 }
