@@ -1,0 +1,13 @@
+{
+  final List<MBeanServer> servers=MBeanServerFactory.findMBeanServer(null);
+  for (int i=0; i < servers.size(); i++) {
+    try {
+      if (servers.get(i).getObjectInstance(objectName) != null) {
+        return servers.get(i);
+      }
+    }
+ catch (    InstanceNotFoundException e) {
+    }
+  }
+  return getPlatformMBeanServer();
+}

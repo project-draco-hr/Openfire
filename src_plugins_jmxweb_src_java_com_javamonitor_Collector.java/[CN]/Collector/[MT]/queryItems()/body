@@ -1,0 +1,32 @@
+{
+  final Properties data=new Properties();
+  final Iterator<Item> itemIterator=items.iterator();
+  while (itemIterator.hasNext()) {
+    final Item item=itemIterator.next();
+    try {
+      int uniquefier=0;
+      for (      final ObjectName objectName : JmxHelper.queryNames(item.getObjectName())) {
+        final String key=item.getId() + (uniquefier > 0 ? ":" + uniquefier : "");
+        final String actualObjectName=item.getObjectName().equals(objectName.toString()) ? "" : objectName.toString();
+        final Object value=JmxHelper.query(objectName,item.getAttribute());
+        if (value == null) {
+          data.put(key,"|0||" + actualObjectName);
+        }
+ else {
+          data.put(key,value + "|" + getClassId(value)+ "||"+ actualObjectName);
+        }
+        uniquefier++;
+      }
+      if (!item.isPeriodic()) {
+        itemIterator.remove();
+      }
+    }
+ catch (    Throwable e) {
+      final StringWriter sw=new StringWriter();
+      e.printStackTrace(new PrintWriter(sw));
+      data.put(item.getId(),"||" + e.getClass().getName() + ": "+ sw.toString()+ "|");
+      itemIterator.remove();
+    }
+  }
+  return data;
+}

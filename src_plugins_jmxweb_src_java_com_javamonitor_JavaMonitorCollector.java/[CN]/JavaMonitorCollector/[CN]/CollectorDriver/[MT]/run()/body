@@ -1,0 +1,34 @@
+{
+  try {
+    sleep(2000L);
+    for (; ; ) {
+      try {
+        for (; ; ) {
+          if (collector.push()) {
+            collector.push();
+          }
+          server.setLastException(null);
+          sleep(ONE_MINUTE);
+        }
+      }
+ catch (      InterruptedException e) {
+        throw e;
+      }
+catch (      OnHoldException e) {
+        throw e;
+      }
+catch (      Throwable e) {
+        if (server.getLastException() == null) {
+          server.setLastException(e);
+          log.log(Level.SEVERE,"This probe was hit by an unexpected exception: " + e.getMessage(),e);
+        }
+        sleep(ONE_MINUTE);
+      }
+    }
+  }
+ catch (  InterruptedException e) {
+  }
+catch (  OnHoldException e) {
+    log.log(SEVERE,"This probe was put on hold by the collector (redeploy to try again): " + e.getOnHoldBecause());
+  }
+}

@@ -1,0 +1,10 @@
+{
+  if (mbeanExists(serverObjectName)) {
+    throw new OnHoldException("A Java-monitor probe is already running in this JVM. See http://java-monitor.com/duplicate-probe.html");
+  }
+  if (!started && collectorThread != null) {
+    registerCoolMBeans(server);
+    collectorThread.start();
+    started=true;
+  }
+}

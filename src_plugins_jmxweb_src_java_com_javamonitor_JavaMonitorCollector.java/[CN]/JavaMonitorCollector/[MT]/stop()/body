@@ -1,0 +1,12 @@
+{
+  if (started && collectorThread != null) {
+    collectorThread.interrupt();
+    try {
+      collectorThread.join();
+    }
+ catch (    InterruptedException e) {
+    }
+    unregisterCoolMBeans();
+    started=false;
+  }
+}

@@ -1,0 +1,20 @@
+{
+  int lowestClientPort=Integer.MAX_VALUE;
+  int lowestPort=Integer.MAX_VALUE;
+  for (  final ServerPort port : XMPPServer.getInstance().getConnectionManager().getPorts()) {
+    final int number=port.getPort();
+    if (number < lowestPort) {
+      lowestPort=number;
+    }
+    if (ServerPort.Type.client.equals(port.getType()) && number < lowestClientPort) {
+      lowestClientPort=number;
+    }
+  }
+  if (lowestClientPort != Integer.MAX_VALUE) {
+    return lowestClientPort;
+  }
+ else   if (lowestPort != Integer.MAX_VALUE) {
+    return lowestPort;
+  }
+  return null;
+}

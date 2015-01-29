@@ -1,0 +1,11 @@
+{
+  String id=uniqueId;
+  if (getProperty(JAVA_MONITOR_ID) != null) {
+    id=getProperty(JAVA_MONITOR_ID);
+  }
+  if (id == null) {
+    id=checkForEatJId();
+  }
+  collector=new Collector(id);
+  collectorThread=new Thread(new CollectorDriver(),"java-monitor collector");
+}

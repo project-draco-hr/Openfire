@@ -1,0 +1,21 @@
+{
+  init();
+  final Properties request=queryItems();
+  request.put("account",account);
+  request.put("localIp",getLocalIp());
+  if (uniqueId != null) {
+    request.put("lowestPort",uniqueId);
+  }
+ else {
+    final String lowestPort=queryString(serverObjectName,httpPortAttribute);
+    if (lowestPort != null) {
+      request.put("lowestPort",lowestPort);
+    }
+  }
+  request.put("appserver",queryString(serverObjectName,nameAttribute));
+  if (session != null) {
+    request.put(SESSION,session);
+  }
+  final Properties response=push(request);
+  return parse(response);
+}

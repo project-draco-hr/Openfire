@@ -1,0 +1,63 @@
+{
+  UserIdentity identity=null;
+  if (identities.containsKey(userName)) {
+    identity=identities.get(userName);
+    if (authTokens.containsKey(userName) == false) {
+      Log.debug("UserIdentity login " + userName + " ");
+      try {
+        if (AdminManager.getInstance().isUserAdmin(userName,true)) {
+          AuthToken authToken=AuthFactory.authenticate(userName,(String)credential);
+          authTokens.put(userName,authToken);
+        }
+ else {
+          Log.error("access denied, not admin user " + userName);
+          return null;
+        }
+      }
+ catch (      UnauthorizedException e) {
+        Log.error("access denied, bad password " + userName);
+        return null;
+      }
+catch (      Exception e) {
+        Log.error("access denied " + userName);
+        return null;
+      }
+    }
+  }
+ else {
+    Log.debug("UserIdentity login " + userName + " ");
+    try {
+      userManager.getUser(userName);
+    }
+ catch (    UserNotFoundException e) {
+      return null;
+    }
+    try {
+      if (AdminManager.getInstance().isUserAdmin(userName,true)) {
+        AuthToken authToken=AuthFactory.authenticate(userName,(String)credential);
+        authTokens.put(userName,authToken);
+      }
+ else {
+        Log.error("access denied, not admin user " + userName);
+        return null;
+      }
+    }
+ catch (    UnauthorizedException e) {
+      Log.error("access denied, bad password " + userName);
+      return null;
+    }
+catch (    Exception e) {
+      Log.error("access denied " + userName);
+      return null;
+    }
+    Principal userPrincipal=new KnownUser(userName,credential);
+    Subject subject=new Subject();
+    subject.getPrincipals().add(userPrincipal);
+    subject.getPrivateCredentials().add(credential);
+    subject.getPrincipals().add(new RolePrincipal("jmxweb"));
+    subject.setReadOnly();
+    identity=_identityService.newUserIdentity(subject,userPrincipal,new String[]{"jmxweb"});
+    identities.put(userName,identity);
+  }
+  return identity;
+}

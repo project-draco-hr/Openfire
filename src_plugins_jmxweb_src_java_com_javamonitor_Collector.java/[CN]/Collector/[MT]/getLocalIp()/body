@@ -1,0 +1,26 @@
+{
+  Socket s=null;
+  try {
+    if (getProperty("http.proxyHost") != null) {
+      s=new Socket(getProperty("http.proxyHost"),parseInt(getProperty("http.proxyPort","80")));
+    }
+ else {
+      int port=80;
+      if (pushUrl.getPort() != -1) {
+        port=pushUrl.getPort();
+      }
+      s=new Socket(pushUrl.getHost(),port);
+    }
+    s.setSoTimeout(TWO_MINUTES);
+    return s.getLocalAddress().getHostAddress();
+  }
+  finally {
+    if (s != null) {
+      try {
+        s.close();
+      }
+ catch (      IOException e) {
+      }
+    }
+  }
+}

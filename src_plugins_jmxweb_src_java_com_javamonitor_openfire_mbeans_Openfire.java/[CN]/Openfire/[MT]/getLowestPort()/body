@@ -1,0 +1,17 @@
+{
+  int slept=0;
+  Integer lowestPort=null;
+  do {
+    lowestPort=findLowestPort();
+    if (XMPP_CLIENT_PORT.equals(lowestPort)) {
+      return lowestPort;
+    }
+    try {
+      Thread.sleep(1000L);
+    }
+ catch (    InterruptedException e) {
+    }
+  }
+ while (slept++ < 30);
+  return lowestPort;
+}
