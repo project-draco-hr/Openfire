@@ -1,0 +1,15 @@
+{
+  getAndCheckUser(username);
+  Roster roster=getUserRoster(username);
+  JID jid=new JID(rosterJid);
+  RosterItem rosterItem=roster.getRosterItem(jid);
+  if (rosterItemEntity.getNickname() != null) {
+    rosterItem.setNickname(rosterItemEntity.getNickname());
+  }
+  if (rosterItemEntity.getGroups() != null) {
+    rosterItem.setGroups(rosterItemEntity.getGroups());
+  }
+  UserUtils.checkSubType(rosterItemEntity.getSubscriptionType());
+  rosterItem.setSubStatus(RosterItem.SubType.getTypeFromInt(rosterItemEntity.getSubscriptionType()));
+  roster.updateRosterItem(rosterItem);
+}

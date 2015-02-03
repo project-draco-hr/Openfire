@@ -1,0 +1,12 @@
+{
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName.toLowerCase());
+  try {
+    room.addMember(UserUtils.checkAndGetJID(jid),null,room.getRole());
+  }
+ catch (  ForbiddenException e) {
+    throw new ServiceException("Could not add member",jid,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+catch (  ConflictException e) {
+    throw new ServiceException("Could not add member",jid,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+}

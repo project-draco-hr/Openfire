@@ -1,0 +1,20 @@
+{
+  getUser(username);
+  Roster r=rosterManager.getRoster(username);
+  JID j=new JID(itemJID);
+  RosterItem ri=r.getRosterItem(j);
+  List<String> groups=new ArrayList<String>();
+  if (groupNames != null) {
+    StringTokenizer tkn=new StringTokenizer(groupNames,",");
+    while (tkn.hasMoreTokens()) {
+      groups.add(tkn.nextToken());
+    }
+  }
+  ri.setGroups(groups);
+  ri.setNickname(itemName);
+  if (subscription == null) {
+    subscription="0";
+  }
+  ri.setSubStatus(RosterItem.SubType.getTypeFromInt(Integer.parseInt(subscription)));
+  r.updateRosterItem(ri);
+}

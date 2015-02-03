@@ -1,0 +1,52 @@
+{
+  JID owner=XMPPServer.getInstance().createJID("admin",null);
+  if (mucRoomEntity.getOwners() != null && mucRoomEntity.getOwners().size() > 0) {
+    owner=new JID(mucRoomEntity.getOwners().get(0));
+  }
+ else {
+    List<String> owners=new ArrayList<String>();
+    owners.add(owner.toBareJID());
+    mucRoomEntity.setOwners(owners);
+  }
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(mucRoomEntity.getRoomName().toLowerCase(),owner);
+  room.setNaturalLanguageName(mucRoomEntity.getNaturalName());
+  room.setSubject(mucRoomEntity.getSubject());
+  room.setDescription(mucRoomEntity.getDescription());
+  room.setPassword(mucRoomEntity.getPassword());
+  room.setPersistent(mucRoomEntity.isPersistent());
+  room.setPublicRoom(mucRoomEntity.isPublicRoom());
+  room.setRegistrationEnabled(mucRoomEntity.isRegistrationEnabled());
+  room.setCanAnyoneDiscoverJID(mucRoomEntity.isCanAnyoneDiscoverJID());
+  room.setCanOccupantsChangeSubject(mucRoomEntity.isCanOccupantsChangeSubject());
+  room.setCanOccupantsInvite(mucRoomEntity.isCanOccupantsInvite());
+  room.setChangeNickname(mucRoomEntity.isCanChangeNickname());
+  room.setModificationDate(mucRoomEntity.getModificationDate());
+  room.setLogEnabled(mucRoomEntity.isLogEnabled());
+  room.setLoginRestrictedToNickname(mucRoomEntity.isLoginRestrictedToNickname());
+  room.setMaxUsers(mucRoomEntity.getMaxUsers());
+  room.setMembersOnly(mucRoomEntity.isMembersOnly());
+  room.setModerated(mucRoomEntity.isModerated());
+  if (mucRoomEntity.getBroadcastPresenceRoles() != null) {
+    room.setRolesToBroadcastPresence(mucRoomEntity.getBroadcastPresenceRoles());
+  }
+ else {
+    room.setRolesToBroadcastPresence(new ArrayList<String>());
+  }
+  setRoles(room,mucRoomEntity);
+  if (mucRoomEntity.getCreationDate() != null) {
+    room.setCreationDate(mucRoomEntity.getCreationDate());
+  }
+ else {
+    room.setCreationDate(new Date());
+  }
+  if (mucRoomEntity.getModificationDate() != null) {
+    room.setModificationDate(mucRoomEntity.getModificationDate());
+  }
+ else {
+    room.setModificationDate(new Date());
+  }
+  room.unlock(room.getRole());
+  if (room.isPersistent()) {
+    room.saveToDB();
+  }
+}

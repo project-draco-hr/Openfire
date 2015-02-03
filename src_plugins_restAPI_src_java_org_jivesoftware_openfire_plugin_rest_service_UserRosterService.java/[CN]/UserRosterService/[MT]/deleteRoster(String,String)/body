@@ -1,0 +1,9 @@
+{
+  try {
+    plugin.deleteRosterItem(username,rosterJid);
+  }
+ catch (  SharedGroupException e) {
+    throw new ServiceException("Could not delete the roster item",rosterJid,ExceptionType.SHARED_GROUP_EXCEPTION,Response.Status.BAD_REQUEST,e);
+  }
+  return Response.status(Response.Status.OK).build();
+}
