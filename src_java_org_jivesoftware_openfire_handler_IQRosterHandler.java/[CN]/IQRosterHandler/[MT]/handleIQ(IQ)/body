@@ -1,13 +1,15 @@
 {
   try {
-    IQ returnPacket=null;
+    IQ returnPacket;
     org.xmpp.packet.Roster roster=(org.xmpp.packet.Roster)packet;
     JID recipientJID=packet.getTo();
-    if (recipientJID == null || recipientJID.getNode() == null || !UserManager.getInstance().isRegisteredUser(recipientJID.getNode())) {
+    if (recipientJID == null || recipientJID.equals(packet.getFrom().asBareJID())) {
       returnPacket=manageRoster(roster);
     }
  else {
-      removeRosterItem(roster);
+      returnPacket=IQ.createResultIQ(packet);
+      returnPacket.setChildElement(packet.getChildElement().createCopy());
+      returnPacket.setError(PacketError.Condition.service_unavailable);
     }
     return returnPacket;
   }
