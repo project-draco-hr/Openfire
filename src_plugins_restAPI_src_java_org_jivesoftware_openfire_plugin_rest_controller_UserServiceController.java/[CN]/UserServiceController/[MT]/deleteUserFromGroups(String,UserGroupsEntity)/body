@@ -1,0 +1,14 @@
+{
+  if (userGroupsEntity != null) {
+    for (    String groupName : userGroupsEntity.getGroupNames()) {
+      Group group=null;
+      try {
+        group=GroupManager.getInstance().getGroup(groupName);
+      }
+ catch (      GroupNotFoundException e) {
+        throw new ServiceException("Could not find group",groupName,ExceptionType.GROUP_NOT_FOUND,Response.Status.NOT_FOUND,e);
+      }
+      group.getMembers().remove(server.createJID(username,null));
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  if (userEntity != null && !userEntity.getUsername().isEmpty()) {
+    if (userEntity.getPassword() == null) {
+      throw new ServiceException("Could not create new user, because password is null",userEntity.getUsername(),"PasswordIsNull",Response.Status.BAD_REQUEST);
+    }
+    try {
+      userManager.createUser(userEntity.getUsername(),userEntity.getPassword(),userEntity.getName(),userEntity.getEmail());
+    }
+ catch (    UserAlreadyExistsException e) {
+      throw new ServiceException("Could not create new user",userEntity.getUsername(),ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.BAD_REQUEST);
+    }
+    addProperties(userEntity);
+  }
+}

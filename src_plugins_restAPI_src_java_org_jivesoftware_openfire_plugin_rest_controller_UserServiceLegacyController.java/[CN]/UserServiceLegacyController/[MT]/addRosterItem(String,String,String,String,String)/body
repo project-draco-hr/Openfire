@@ -1,0 +1,26 @@
+{
+  getUser(username);
+  Roster r=rosterManager.getRoster(username);
+  JID j=new JID(itemJID);
+  try {
+    r.getRosterItem(j);
+    throw new UserAlreadyExistsException(j.toBareJID());
+  }
+ catch (  UserNotFoundException e) {
+  }
+  if (r != null) {
+    List<String> groups=new ArrayList<String>();
+    if (groupNames != null) {
+      StringTokenizer tkn=new StringTokenizer(groupNames,",");
+      while (tkn.hasMoreTokens()) {
+        groups.add(tkn.nextToken());
+      }
+    }
+    RosterItem ri=r.createRosterItem(j,itemName,groups,false,true);
+    if (subscription == null) {
+      subscription="0";
+    }
+    ri.setSubStatus(RosterItem.SubType.getTypeFromInt(Integer.parseInt(subscription)));
+    r.updateRosterItem(ri);
+  }
+}

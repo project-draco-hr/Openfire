@@ -1,0 +1,14 @@
+{
+  ParticipantEntities participantEntities=new ParticipantEntities();
+  List<ParticipantEntity> participants=new ArrayList<ParticipantEntity>();
+  Collection<MUCRole> serverParticipants=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName).getParticipants();
+  for (  MUCRole role : serverParticipants) {
+    ParticipantEntity participantEntity=new ParticipantEntity();
+    participantEntity.setJid(role.getRoleAddress().toFullJID());
+    participantEntity.setRole(role.getRole().name());
+    participantEntity.setAffiliation(role.getAffiliation().name());
+    participants.add(participantEntity);
+  }
+  participantEntities.setParticipants(participants);
+  return participantEntities;
+}

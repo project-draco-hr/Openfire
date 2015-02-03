@@ -1,0 +1,9 @@
+{
+  MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(roomName.toLowerCase());
+  try {
+    room.addOwner(UserUtils.checkAndGetJID(jid),room.getRole());
+  }
+ catch (  ForbiddenException e) {
+    throw new ServiceException("Could not add owner",jid,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+}

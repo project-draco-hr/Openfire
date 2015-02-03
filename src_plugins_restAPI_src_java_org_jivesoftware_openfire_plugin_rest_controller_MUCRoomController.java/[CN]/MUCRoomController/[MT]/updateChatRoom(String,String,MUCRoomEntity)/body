@@ -1,0 +1,17 @@
+{
+  try {
+    if (!roomName.equals(mucRoomEntity.getRoomName())) {
+      throw new ServiceException("Could not update the channel. The room name is different to the entity room name.",roomName,ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST);
+    }
+    createRoom(mucRoomEntity,serviceName);
+  }
+ catch (  NotAllowedException e) {
+    throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+catch (  ForbiddenException e) {
+    throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+catch (  ConflictException e) {
+    throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+  }
+}

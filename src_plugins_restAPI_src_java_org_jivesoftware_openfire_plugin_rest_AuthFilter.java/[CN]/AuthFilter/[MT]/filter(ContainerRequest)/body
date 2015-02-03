@@ -2,6 +2,9 @@
   if (!plugin.isEnabled()) {
     throw new WebApplicationException(Status.FORBIDDEN);
   }
+  if ("restapi/v1/userservice".equals(containerRequest.getPath())) {
+    return containerRequest;
+  }
   if (!plugin.getAllowedIPs().isEmpty()) {
     String ipAddress=httpRequest.getHeader("x-forwarded-for");
     if (ipAddress == null) {

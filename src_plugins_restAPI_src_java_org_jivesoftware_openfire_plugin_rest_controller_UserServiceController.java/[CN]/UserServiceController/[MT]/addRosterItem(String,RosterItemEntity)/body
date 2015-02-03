@@ -1,0 +1,19 @@
+{
+  Roster roster=getUserRoster(username);
+  if (rosterItemEntity.getJid() == null) {
+    throw new ServiceException("JID is null","JID","IllegalArgumentException",Response.Status.BAD_REQUEST);
+  }
+  JID jid=new JID(rosterItemEntity.getJid());
+  try {
+    roster.getRosterItem(jid);
+    throw new UserAlreadyExistsException(jid.toBareJID());
+  }
+ catch (  UserNotFoundException e) {
+  }
+  if (roster != null) {
+    RosterItem rosterItem=roster.createRosterItem(jid,rosterItemEntity.getNickname(),rosterItemEntity.getGroups(),false,true);
+    UserUtils.checkSubType(rosterItemEntity.getSubscriptionType());
+    rosterItem.setSubStatus(RosterItem.SubType.getTypeFromInt(rosterItemEntity.getSubscriptionType()));
+    roster.updateRosterItem(rosterItem);
+  }
+}

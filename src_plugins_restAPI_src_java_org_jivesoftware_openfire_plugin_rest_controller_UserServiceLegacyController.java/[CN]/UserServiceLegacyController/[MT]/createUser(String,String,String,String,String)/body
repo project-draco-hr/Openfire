@@ -1,0 +1,25 @@
+{
+  userManager.createUser(username,password,name,email);
+  userManager.getUser(username);
+  if (groupNames != null) {
+    Collection<Group> groups=new ArrayList<Group>();
+    StringTokenizer tkn=new StringTokenizer(groupNames,",");
+    while (tkn.hasMoreTokens()) {
+      String groupName=tkn.nextToken();
+      Group group=null;
+      try {
+        group=GroupManager.getInstance().getGroup(groupName);
+      }
+ catch (      GroupNotFoundException e) {
+        group=GroupManager.getInstance().createGroup(groupName);
+        group.getProperties().put("sharedRoster.showInRoster","onlyGroup");
+        group.getProperties().put("sharedRoster.displayName",groupName);
+        group.getProperties().put("sharedRoster.groupList","");
+      }
+      groups.add(group);
+    }
+    for (    Group group : groups) {
+      group.getMembers().add(server.createJID(username,null));
+    }
+  }
+}
