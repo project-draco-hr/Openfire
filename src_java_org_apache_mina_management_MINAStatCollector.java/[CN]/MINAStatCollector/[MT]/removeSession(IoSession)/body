@@ -1,9 +1,10 @@
 {
   polledSessions.remove(session);
-  IoSessionStat sessStat=(IoSessionStat)session.getAttribute(KEY);
-  session.removeAttribute(KEY);
-  totalMsgWritten.addAndGet(session.getWrittenMessages() - sessStat.lastMessageWrite);
-  totalMsgRead.addAndGet(session.getReadMessages() - sessStat.lastMessageRead);
-  totalBytesWritten.addAndGet(session.getWrittenBytes() - sessStat.lastByteWrite);
-  totalBytesRead.addAndGet(session.getReadBytes() - sessStat.lastByteRead);
+  IoSessionStat sessStat=(IoSessionStat)session.removeAttribute(KEY);
+  if (sessStat != null) {
+    totalMsgWritten.addAndGet(session.getWrittenMessages() - sessStat.lastMessageWrite);
+    totalMsgRead.addAndGet(session.getReadMessages() - sessStat.lastMessageRead);
+    totalBytesWritten.addAndGet(session.getWrittenBytes() - sessStat.lastByteWrite);
+    totalBytesRead.addAndGet(session.getReadBytes() - sessStat.lastByteRead);
+  }
 }
