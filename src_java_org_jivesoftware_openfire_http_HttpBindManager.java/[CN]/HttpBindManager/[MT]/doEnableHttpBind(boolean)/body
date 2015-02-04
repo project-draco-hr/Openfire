@@ -1,19 +1,8 @@
 {
   if (shouldEnable && httpBindServer == null) {
-    try {
-      changeHttpBindPorts(JiveGlobals.getIntProperty(HTTP_BIND_PORT,HTTP_BIND_PORT_DEFAULT),JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,HTTP_BIND_SECURE_PORT_DEFAULT));
-    }
- catch (    Exception e) {
-      Log.error("Error configuring HTTP binding ports",e);
-    }
+    start();
   }
  else   if (!shouldEnable && httpBindServer != null) {
-    try {
-      httpBindServer.stop();
-    }
- catch (    Exception e) {
-      Log.error("Error stopping HTTP bind service",e);
-    }
-    httpBindServer=null;
+    stop();
   }
 }

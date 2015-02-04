@@ -2,11 +2,5 @@
   if (value == bindPort) {
     return;
   }
-  try {
-    changeHttpBindPorts(value,JiveGlobals.getIntProperty(HTTP_BIND_SECURE_PORT,HTTP_BIND_SECURE_PORT_DEFAULT));
-    bindPort=value;
-  }
- catch (  Exception ex) {
-    Log.error("Error setting HTTP bind ports",ex);
-  }
+  restartServer();
 }
