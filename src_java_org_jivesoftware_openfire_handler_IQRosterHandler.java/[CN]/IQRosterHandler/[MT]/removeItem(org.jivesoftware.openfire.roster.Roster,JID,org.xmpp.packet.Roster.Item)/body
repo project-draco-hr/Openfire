@@ -1,6 +1,6 @@
 {
   JID recipient=item.getJID();
-  roster.deleteRosterItem(item.getJID(),true);
+  RosterItem removedItem=roster.deleteRosterItem(item.getJID(),true);
   if (localServer.isLocal(recipient)) {
     try {
       Roster recipientRoster=userManager.getUser(recipient.getNode()).getRoster();
@@ -27,4 +27,5 @@
       router.route(removePacket);
     }
   }
+  return removedItem;
 }
