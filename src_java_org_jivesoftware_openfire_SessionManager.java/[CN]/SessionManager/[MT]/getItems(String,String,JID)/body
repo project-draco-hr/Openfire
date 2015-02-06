@@ -1,0 +1,15 @@
+{
+  try {
+    if (server.getUserManager().isRegisteredUser(senderJID) && name.equals(senderJID.getNode()) || server.getPresenceManager().canProbePresence(senderJID,name)) {
+      Collection<DiscoItem> discoItems=new ArrayList<DiscoItem>();
+      for (      ClientSession clientSession : getSessions(name)) {
+        discoItems.add(new DiscoItem(clientSession.getAddress(),null,null,null));
+      }
+      return discoItems.iterator();
+    }
+    return Collections.emptyIterator();
+  }
+ catch (  UserNotFoundException e) {
+    return Collections.emptyIterator();
+  }
+}
