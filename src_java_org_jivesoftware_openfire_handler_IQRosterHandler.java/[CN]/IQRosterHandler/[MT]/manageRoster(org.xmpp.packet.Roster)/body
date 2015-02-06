@@ -22,22 +22,35 @@
       returnPacket=null;
     }
  else     if (IQ.Type.set == type) {
-      for (      org.xmpp.packet.Roster.Item item : packet.getItems()) {
-        if (item.getSubscription() == org.xmpp.packet.Roster.Subscription.remove) {
-          removeItem(cachedRoster,packet.getFrom(),item);
-        }
+      returnPacket=IQ.createResultIQ(packet);
+      if (packet.getItems().size() > 1) {
+        returnPacket.setError(new PacketError(PacketError.Condition.bad_request,PacketError.Type.modify,"Query contains more than one item"));
+      }
  else {
-          if (cachedRoster.isRosterItem(item.getJID())) {
-            RosterItem cachedItem=cachedRoster.getRosterItem(item.getJID());
-            cachedItem.setAsCopyOf(item);
-            cachedRoster.updateRosterItem(cachedItem);
+        for (        org.xmpp.packet.Roster.Item item : packet.getItems()) {
+          if (item.getSubscription() == org.xmpp.packet.Roster.Subscription.remove) {
+            if (removeItem(cachedRoster,packet.getFrom(),item) == null) {
+              returnPacket.setError(PacketError.Condition.item_not_found);
+            }
           }
  else {
-            cachedRoster.createRosterItem(item);
+            PacketError error=checkGroups(item.getGroups());
+            if (error != null) {
+              returnPacket.setError(error);
+            }
+ else {
+              if (cachedRoster.isRosterItem(item.getJID())) {
+                RosterItem cachedItem=cachedRoster.getRosterItem(item.getJID());
+                cachedItem.setAsCopyOf(item);
+                cachedRoster.updateRosterItem(cachedItem);
+              }
+ else {
+                cachedRoster.createRosterItem(item);
+              }
+            }
           }
         }
       }
-      returnPacket=IQ.createResultIQ(packet);
     }
   }
  catch (  UserNotFoundException e) {

@@ -1,0 +1,12 @@
+{
+  Set<String> set=new HashSet<String>();
+  for (  String group : groups) {
+    if (!set.add(group)) {
+      return new PacketError(PacketError.Condition.bad_request,PacketError.Type.modify,"Item contains duplicate groups");
+    }
+    if (group.isEmpty()) {
+      return new PacketError(PacketError.Condition.not_acceptable,PacketError.Type.modify,"Group is of zero length");
+    }
+  }
+  return null;
+}
