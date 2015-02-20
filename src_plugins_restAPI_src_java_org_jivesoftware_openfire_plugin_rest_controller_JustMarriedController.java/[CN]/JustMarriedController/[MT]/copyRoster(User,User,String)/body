@@ -1,0 +1,30 @@
+{
+  Roster newRoster=newUser.getRoster();
+  Roster currentRoster=currentUser.getRoster();
+  for (  RosterItem item : currentRoster.getRosterItems()) {
+    try {
+      List<String> groups=item.getGroups();
+      RosterItem justCreated=newRoster.createRosterItem(item.getJid(),item.getNickname(),groups,true,true);
+      justCreated.setAskStatus(item.getAskStatus());
+      justCreated.setRecvStatus(item.getRecvStatus());
+      justCreated.setSubStatus(item.getSubStatus());
+      for (      Group gr : item.getSharedGroups()) {
+        justCreated.addSharedGroup(gr);
+      }
+      for (      Group gr : item.getInvisibleSharedGroups()) {
+        justCreated.addInvisibleSharedGroup(gr);
+      }
+      newRoster.updateRosterItem(justCreated);
+      addNewUserToOthersRoster(newUser,item,currentUserName);
+    }
+ catch (    UserAlreadyExistsException e) {
+      throw new ServiceException("Could not create roster item for user ",newUser.getUsername(),ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.CONFLICT,e);
+    }
+catch (    SharedGroupException e) {
+      throw new ServiceException("Could not create roster item, because it is a contact from a shared group",newUser.getUsername(),ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.BAD_REQUEST,e);
+    }
+catch (    UserNotFoundException e) {
+      throw new ServiceException("Could not update roster item for user " + newUser.getUsername() + " because it was not properly created.",newUser.getUsername(),ExceptionType.USER_NOT_FOUND_EXCEPTION,Response.Status.NOT_FOUND,e);
+    }
+  }
+}

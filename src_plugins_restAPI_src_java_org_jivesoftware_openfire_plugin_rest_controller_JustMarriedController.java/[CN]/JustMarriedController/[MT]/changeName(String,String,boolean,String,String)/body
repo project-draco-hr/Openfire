@@ -1,0 +1,28 @@
+{
+  UserManager userManager=UserManager.getInstance();
+  try {
+    User currentUser=userManager.getUser(currentUserName);
+    String password=AuthFactory.getPassword(currentUserName);
+    String newName=(newRealName == null || newRealName.length() == 0) ? currentUser.getName() : newRealName;
+    String newMail=(newEmail == null || newEmail.length() == 0) ? currentUser.getEmail() : newEmail;
+    User newUser=userManager.createUser(newUserName,password,currentUser.getName(),newMail);
+    newUser.setName(newName);
+    newUser.setNameVisible(currentUser.isNameVisible());
+    newUser.setEmailVisible(currentUser.isEmailVisible());
+    newUser.setCreationDate(currentUser.getCreationDate());
+    copyRoster(currentUser,newUser,currentUserName);
+    copyProperties(currentUser,newUser);
+    copyToGroups(currentUserName,newUserName);
+    copyVCard(currentUserName,newUserName);
+    if (deleteOldUser) {
+      deleteUser(currentUser);
+    }
+  }
+ catch (  UserNotFoundException e) {
+    throw new ServiceException("Could not find user",currentUserName,ExceptionType.USER_NOT_FOUND_EXCEPTION,Response.Status.NOT_FOUND,e);
+  }
+catch (  UserAlreadyExistsException e) {
+    throw new ServiceException("Could not create new user",newUserName,ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.CONFLICT,e);
+  }
+  return true;
+}
