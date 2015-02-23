@@ -8,6 +8,10 @@
     owners.add(owner.toBareJID());
     mucRoomEntity.setOwners(owners);
   }
+  boolean serviceRegistered=XMPPServer.getInstance().getMultiUserChatManager().isServiceRegistered(serviceName);
+  if (!serviceRegistered) {
+    XMPPServer.getInstance().getMultiUserChatManager().createMultiUserChatService(serviceName,serviceName,false);
+  }
   MUCRoom room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService(serviceName).getChatRoom(mucRoomEntity.getRoomName().toLowerCase(),owner);
   room.setNaturalLanguageName(mucRoomEntity.getNaturalName());
   room.setSubject(mucRoomEntity.getSubject());

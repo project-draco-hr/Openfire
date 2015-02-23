@@ -1,5 +1,12 @@
 {
   if (userEntity != null && !username.isEmpty()) {
+    if (userEntity.getUsername() != null) {
+      if (!userEntity.getUsername().equals(username)) {
+        JustMarriedController.changeName(username,userEntity.getUsername(),true,userEntity.getEmail(),userEntity.getName());
+        addProperties(userEntity.getUsername(),userEntity.getProperties());
+        return;
+      }
+    }
     User user=getAndCheckUser(username);
     if (userEntity.getPassword() != null) {
       user.setPassword(userEntity.getPassword());
@@ -10,6 +17,6 @@
     if (userEntity.getEmail() != null) {
       user.setEmail(userEntity.getEmail());
     }
-    addProperties(userEntity);
+    addProperties(username,userEntity.getProperties());
   }
 }

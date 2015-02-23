@@ -1,0 +1,8 @@
+{
+  UserManager.getInstance().deleteUser(oldUser);
+  final StreamError error=new StreamError(StreamError.Condition.not_authorized);
+  for (  ClientSession sess : SessionManager.getInstance().getSessions(oldUser.getUsername())) {
+    sess.deliverRawText(error.toXML());
+    sess.close();
+  }
+}

@@ -12,6 +12,9 @@ catch (  ForbiddenException e) {
     throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
   }
 catch (  ConflictException e) {
-    throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.FORBIDDEN,e);
+    throw new ServiceException("Could not update the channel",roomName,ExceptionType.NOT_ALLOWED,Response.Status.CONFLICT,e);
+  }
+catch (  AlreadyExistsException e) {
+    throw new ServiceException("Could not update the channel",mucRoomEntity.getRoomName(),ExceptionType.ALREADY_EXISTS,Response.Status.CONFLICT,e);
   }
 }

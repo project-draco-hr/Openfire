@@ -7,8 +7,8 @@
       userManager.createUser(userEntity.getUsername(),userEntity.getPassword(),userEntity.getName(),userEntity.getEmail());
     }
  catch (    UserAlreadyExistsException e) {
-      throw new ServiceException("Could not create new user",userEntity.getUsername(),ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.BAD_REQUEST);
+      throw new ServiceException("Could not create new user",userEntity.getUsername(),ExceptionType.USER_ALREADY_EXISTS_EXCEPTION,Response.Status.CONFLICT);
     }
-    addProperties(userEntity);
+    addProperties(userEntity.getUsername(),userEntity.getProperties());
   }
 }

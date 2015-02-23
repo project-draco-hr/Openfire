@@ -1,0 +1,12 @@
+{
+  VCardManager vcardManager=VCardManager.getInstance();
+  Element vcard=vcardManager.getVCard(currentUserName);
+  if (vcard != null) {
+    try {
+      vcardManager.setVCard(newUserName,vcard);
+    }
+ catch (    Exception e) {
+      throw new ServiceException("Could not copy vcard to new user",newUserName,ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST,e);
+    }
+  }
+}
