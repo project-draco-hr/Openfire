@@ -15,9 +15,6 @@
   if (JiveGlobals.getBooleanProperty("log.httpbind.enabled",false)) {
     System.out.println(new Date() + ": HTTP SENT(" + session.getStreamID().getID()+ "): "+ content);
   }
-  byte[] byteContent=content.getBytes("UTF-8");
-  response.setContentLength(byteContent.length);
-  response.getOutputStream().write(byteContent);
-  response.getOutputStream().close();
-  context.complete();
+  final byte[] byteContent=content.getBytes("UTF-8");
+  response.getOutputStream().setWriteListener(new WriteListenerImpl(context,byteContent));
 }
