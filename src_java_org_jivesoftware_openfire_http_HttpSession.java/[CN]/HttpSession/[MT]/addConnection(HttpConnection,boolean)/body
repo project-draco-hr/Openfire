@@ -39,7 +39,6 @@ synchronized (connectionQueue) {
   }
   checkOveractivity(isPoll);
   sslCertificates=connection.getPeerCertificates();
-  connection.setSession(this);
   if (isPollingSession() || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
 synchronized (pendingElements) {
       deliver(connection,pendingElements);
