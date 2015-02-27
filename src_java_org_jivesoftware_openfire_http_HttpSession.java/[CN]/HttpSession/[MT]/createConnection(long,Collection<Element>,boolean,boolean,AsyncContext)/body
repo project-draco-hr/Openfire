@@ -4,12 +4,14 @@
   context.setTimeout(getWait() * JiveConstants.SECOND);
   context.addListener(new AsyncListener(){
     @Override public void onComplete(    AsyncEvent asyncEvent) throws IOException {
+      Log.debug("complete event " + asyncEvent);
       connectionQueue.remove(connection);
       fireConnectionClosed(connection);
     }
     @Override public void onTimeout(    AsyncEvent asyncEvent) throws IOException {
+      Log.debug("timeout event " + asyncEvent);
       try {
-        connection.deliverBody(createEmptyBody());
+        connection.deliverBody(createEmptyBody(),false);
         setLastResponseEmpty(true);
         if (connection.getRequestId() != lastRequestID + 1) {
           throw new IOException("Unexpected RID error.");
@@ -25,6 +27,7 @@
       }
     }
     @Override public void onError(    AsyncEvent asyncEvent) throws IOException {
+      Log.debug("error event " + asyncEvent);
       Log.warn("Unhandled AsyncListener error: " + asyncEvent.getThrowable());
     }
     @Override public void onStartAsync(    AsyncEvent asyncEvent) throws IOException {
@@ -37,7 +40,7 @@
       Log.warn("Deliverable unavailable for " + rid);
       throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
     }
-    connection.deliverBody(createDeliverable(deliverable.deliverables));
+    connection.deliverBody(createDeliverable(deliverable.deliverables),true);
     addConnection(connection,isPoll);
     return connection;
   }

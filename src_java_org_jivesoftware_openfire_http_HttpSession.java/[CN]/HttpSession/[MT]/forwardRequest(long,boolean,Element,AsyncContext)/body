@@ -12,17 +12,17 @@
   String restartStream=rootNode.attributeValue(new QName("restart",rootNode.getNamespaceForPrefix("xmpp")));
   int pauseDuration=HttpBindServlet.getIntAttribute(rootNode.attributeValue("pause"),-1);
   if ("terminate".equals(type)) {
-    connection.deliverBody(createEmptyBody(true));
+    connection.deliverBody(createEmptyBody(true),true);
     close();
     lastRequestID=connection.getRequestId();
   }
  else   if ("true".equals(restartStream) && rootNode.elements().size() == 0) {
-    connection.deliverBody(createSessionRestartResponse());
+    connection.deliverBody(createSessionRestartResponse(),true);
     lastRequestID=connection.getRequestId();
   }
  else   if (pauseDuration > 0 && pauseDuration <= getMaxPause()) {
     pause(pauseDuration);
-    connection.deliverBody(createEmptyBody(false));
+    connection.deliverBody(createEmptyBody(false),true);
     lastRequestID=connection.getRequestId();
     setLastResponseEmpty(true);
   }
