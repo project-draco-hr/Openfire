@@ -1,0 +1,23 @@
+{
+  final HttpServletResponse response=((HttpServletResponse)context.getResponse());
+  final HttpServletRequest request=((HttpServletRequest)context.getRequest());
+  response.setStatus(HttpServletResponse.SC_OK);
+  response.setContentType("GET".equals(request.getMethod()) ? "text/javascript" : "text/xml");
+  response.setCharacterEncoding("UTF-8");
+  if ("GET".equals(request.getMethod())) {
+    if (JiveGlobals.getBooleanProperty("xmpp.httpbind.client.no-cache.enabled",true)) {
+      response.addHeader("Cache-Control","no-store");
+      response.addHeader("Cache-Control","no-cache");
+      response.addHeader("Pragma","no-cache");
+    }
+    content="_BOSH_(\"" + StringEscapeUtils.escapeJavaScript(content) + "\")";
+  }
+  if (JiveGlobals.getBooleanProperty("log.httpbind.enabled",false)) {
+    System.out.println(new Date() + ": HTTP SENT(" + session.getStreamID().getID()+ "): "+ content);
+  }
+  byte[] byteContent=content.getBytes("UTF-8");
+  response.setContentLength(byteContent.length);
+  response.getOutputStream().write(byteContent);
+  response.getOutputStream().close();
+  context.complete();
+}

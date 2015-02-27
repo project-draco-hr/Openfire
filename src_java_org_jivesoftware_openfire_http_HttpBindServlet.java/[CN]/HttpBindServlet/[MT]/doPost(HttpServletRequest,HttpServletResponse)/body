@@ -1,6 +1,4 @@
 {
-  if (isContinuation(request,response)) {
-    return;
-  }
-  parseDocument(request,response,request.getInputStream());
+  final AsyncContext context=request.startAsync();
+  request.getInputStream().setReadListener(new ReadListenerImpl(context));
 }

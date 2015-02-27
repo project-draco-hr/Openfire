@@ -31,9 +31,15 @@
     connection.deliverBody(createSessionCreationResponse(session));
   }
  catch (  HttpConnectionClosedException e) {
+    Log.error("Error creating session.",e);
+    throw new HttpBindException("Internal server error",BoshBindingError.internalServerError);
   }
 catch (  DocumentException e) {
-    Log.error("Error creating document",e);
+    Log.error("Error creating session.",e);
+    throw new HttpBindException("Internal server error",BoshBindingError.internalServerError);
+  }
+catch (  IOException e) {
+    Log.error("Error creating session.",e);
     throw new HttpBindException("Internal server error",BoshBindingError.internalServerError);
   }
   return session;

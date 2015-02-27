@@ -3,19 +3,10 @@ synchronized (this) {
     if (isClosed) {
       throw new HttpConnectionClosedException("The http connection is no longer " + "available to deliver content");
     }
- else {
-      isClosed=true;
-    }
+    isClosed=true;
   }
   if (body == null) {
-    body=CONNECTION_CLOSED;
+    body=HttpBindServlet.createEmptyBody(false);
   }
-  if (isSuspended()) {
-    continuation.setAttribute(RESPONSE_BODY,body);
-    continuation.resume();
-    session.incrementServerPacketCount();
-  }
- else {
-    this.body=body;
-  }
+  HttpBindServlet.respond(this.getSession(),this.context,body);
 }
