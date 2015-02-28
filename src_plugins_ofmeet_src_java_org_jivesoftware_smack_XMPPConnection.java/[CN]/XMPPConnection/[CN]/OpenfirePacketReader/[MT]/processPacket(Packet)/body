@@ -1,0 +1,10 @@
+{
+  if (packet == null) {
+    return;
+  }
+  Log.debug("OpenfirePacketReader processPacket\n" + packet.toXML());
+  for (  PacketCollector collector : connection.getPacketCollectors()) {
+    collector.processPacket(packet);
+  }
+  listenerExecutor.submit(new ListenerNotification(packet));
+}

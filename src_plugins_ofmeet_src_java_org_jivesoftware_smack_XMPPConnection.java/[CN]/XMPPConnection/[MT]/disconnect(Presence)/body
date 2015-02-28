@@ -1,0 +1,14 @@
+{
+  shutdown(unavailablePresence);
+  if (roster != null) {
+    roster.cleanup();
+    roster=null;
+  }
+  wasAuthenticated=false;
+  packetWriter.cleanup();
+  packetReader.cleanup();
+  if (session != null) {
+    session.close();
+    SessionManager.getInstance().removeSession(session);
+  }
+}

@@ -1,0 +1,12 @@
+{
+  try {
+    String data=packet.toXML();
+    Log.debug("OpenfirePacketWriter sendPacket " + data);
+    smackConnection.getRouter().route(DocumentHelper.parseText(data).getRootElement());
+    connection.firePacketInterceptors(packet);
+    connection.firePacketSendingListeners(packet);
+  }
+ catch (  Exception e) {
+    Log.error("An error occurred while attempting to route the packet : ",e);
+  }
+}

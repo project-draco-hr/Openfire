@@ -1,0 +1,33 @@
+{
+synchronized (this) {
+    if (!isAuthenticated() || isAnonymous()) {
+      if (roster == null) {
+        roster=new Roster(this);
+      }
+      return roster;
+    }
+  }
+  if (!config.isRosterLoadedAtLogin()) {
+    roster.reload();
+  }
+  if (!roster.rosterInitialized) {
+    try {
+synchronized (roster) {
+        long waitTime=SmackConfiguration.getPacketReplyTimeout();
+        long start=System.currentTimeMillis();
+        while (!roster.rosterInitialized) {
+          if (waitTime <= 0) {
+            break;
+          }
+          roster.wait(waitTime);
+          long now=System.currentTimeMillis();
+          waitTime-=now - start;
+          start=now;
+        }
+      }
+    }
+ catch (    InterruptedException ie) {
+    }
+  }
+  return roster;
+}

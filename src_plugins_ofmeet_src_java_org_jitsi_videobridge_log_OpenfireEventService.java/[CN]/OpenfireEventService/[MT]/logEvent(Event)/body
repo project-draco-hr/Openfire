@@ -1,0 +1,25 @@
+{
+  JSONObject jsonObject=new JSONObject();
+  jsonObject.put("name",e.getName());
+  JSONArray columns=new JSONArray();
+  JSONArray point=new JSONArray();
+  if (e.useLocalTime()) {
+    columns.add("time");
+    point.add(System.currentTimeMillis());
+  }
+  Collections.addAll(columns,e.getColumns());
+  Collections.addAll(point,e.getValues());
+  jsonObject.put("columns",columns);
+  JSONArray points=new JSONArray();
+  points.add(point);
+  jsonObject.put("points",points);
+  JSONArray jsonArray=new JSONArray();
+  jsonArray.add(jsonObject);
+  final String jsonString=jsonArray.toJSONString();
+  executor.execute(new Runnable(){
+    @Override public void run(){
+      sendPost(jsonString);
+    }
+  }
+);
+}

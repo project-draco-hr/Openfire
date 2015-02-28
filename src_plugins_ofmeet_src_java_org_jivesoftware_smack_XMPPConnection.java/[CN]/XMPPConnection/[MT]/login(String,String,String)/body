@@ -1,0 +1,36 @@
+{
+  Log.info("XMPPConnection login");
+  if (!isConnected())   throw new IllegalStateException("Not connected to server.");
+  if (authenticated)   throw new IllegalStateException("Already logged in to server.");
+  try {
+    username=username.toLowerCase().trim();
+    user=username;
+    config.setServiceName(StringUtils.parseServer("openfire"));
+    JID userJid=XMPPServer.getInstance().createJID(username,resource);
+    session=(LocalClientSession)SessionManager.getInstance().getSession(userJid);
+    if (session != null) {
+      session.close();
+      SessionManager.getInstance().removeSession(session);
+    }
+    AuthToken authToken=null;
+    try {
+      authToken=AuthFactory.authenticate(username,password);
+    }
+ catch (    UnauthorizedException e) {
+      authToken=new AuthToken(resource,true);
+    }
+    session=SessionManager.getInstance().createClientSession(smackConnection,new BasicStreamID("ofmeet-focus-" + System.currentTimeMillis()));
+    smackConnection.setRouter(new SessionPacketRouter(session));
+    session.setAuthToken(authToken,resource);
+    authenticated=true;
+    anonymous=false;
+    if (roster == null)     roster=new Roster(this);
+    if (config.isRosterLoadedAtLogin())     roster.reload();
+    packetWriter.sendPacket(new Presence(org.jivesoftware.smack.packet.Presence.Type.available));
+    config.setLoginInfo(username,password,resource);
+    if (config.isDebuggerEnabled() && debugger != null)     debugger.userHasLogged(user);
+  }
+ catch (  Exception e) {
+    Log.error("XMPPConnection login error",e);
+  }
+}
