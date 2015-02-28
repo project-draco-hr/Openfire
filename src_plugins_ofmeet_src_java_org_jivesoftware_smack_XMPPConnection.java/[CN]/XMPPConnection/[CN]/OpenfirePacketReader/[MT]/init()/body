@@ -1,0 +1,11 @@
+{
+  Log.info("OpenfirePacketReader init");
+  listenerExecutor=Executors.newSingleThreadExecutor(new ThreadFactory(){
+    public Thread newThread(    Runnable runnable){
+      Thread thread=new Thread(runnable,"Smack Listener Processor (" + connection.connectionCounterValue + ")");
+      thread.setDaemon(true);
+      return thread;
+    }
+  }
+);
+}
