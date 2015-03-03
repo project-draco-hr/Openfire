@@ -1,0 +1,21 @@
+{
+  Group group;
+  if (groupEntity != null && !groupEntity.getName().isEmpty()) {
+    if (groupName.equals(groupEntity.getName())) {
+      try {
+        group=GroupManager.getInstance().getGroup(groupName);
+        group.setDescription(groupEntity.getDescription());
+      }
+ catch (      GroupNotFoundException e) {
+        throw new ServiceException("Could not find group",groupName,ExceptionType.GROUP_NOT_FOUND,Response.Status.NOT_FOUND,e);
+      }
+    }
+ else {
+      throw new ServiceException("Could not update the group. The group name is different to the payload group name.",groupName + " != " + groupEntity.getName(),ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST);
+    }
+  }
+ else {
+    throw new ServiceException("Could not update new group","groups",ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST);
+  }
+  return group;
+}
