@@ -1,0 +1,19 @@
+{
+  Group group;
+  if (groupEntity != null && !groupEntity.getName().isEmpty()) {
+    try {
+      group=GroupManager.getInstance().createGroup(groupEntity.getName());
+      group.setDescription(groupEntity.getDescription());
+      group.getProperties().put("sharedRoster.showInRoster","onlyGroup");
+      group.getProperties().put("sharedRoster.displayName",groupEntity.getName());
+      group.getProperties().put("sharedRoster.groupList","");
+    }
+ catch (    GroupAlreadyExistsException e) {
+      throw new ServiceException("Could not create a group",groupEntity.getName(),ExceptionType.GROUP_ALREADY_EXISTS,Response.Status.CONFLICT,e);
+    }
+  }
+ else {
+    throw new ServiceException("Could not create new group","groups",ExceptionType.ILLEGAL_ARGUMENT_EXCEPTION,Response.Status.BAD_REQUEST);
+  }
+  return group;
+}

@@ -1,0 +1,9 @@
+{
+  try {
+    Group group=GroupManager.getInstance().getGroup(groupName);
+    GroupManager.getInstance().deleteGroup(group);
+  }
+ catch (  GroupNotFoundException e) {
+    throw new ServiceException("Could not find group",groupName,ExceptionType.GROUP_NOT_FOUND,Response.Status.NOT_FOUND,e);
+  }
+}

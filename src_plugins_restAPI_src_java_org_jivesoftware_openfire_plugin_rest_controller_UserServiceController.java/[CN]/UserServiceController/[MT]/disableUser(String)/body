@@ -1,4 +1,11 @@
 {
   getAndCheckUser(username);
-  LockOutManager.getInstance().disableAccount(username,null,null);
+  lockOutManager.disableAccount(username,null,null);
+  if (lockOutManager.isAccountDisabled(username)) {
+    final StreamError error=new StreamError(StreamError.Condition.not_authorized);
+    for (    ClientSession sess : SessionManager.getInstance().getSessions(username)) {
+      sess.deliverRawText(error.toXML());
+      sess.close();
+    }
+  }
 }
