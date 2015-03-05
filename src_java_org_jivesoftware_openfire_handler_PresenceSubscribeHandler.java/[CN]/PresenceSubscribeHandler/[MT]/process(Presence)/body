@@ -58,8 +58,17 @@
         }
         if (type == Presence.Type.subscribed) {
           JID prober=localServer.isLocal(recipientJID) ? recipientJID.asBareJID() : recipientJID;
-          presenceManager.probePresence(prober,senderJID);
-          PresenceEventDispatcher.subscribedToPresence(recipientJID,senderJID);
+          if (presenceManager.canProbePresence(prober,senderJID.toString())) {
+            presenceManager.probePresence(prober,senderJID);
+            PresenceEventDispatcher.subscribedToPresence(recipientJID,senderJID);
+          }
+ else {
+            Presence nonProbablePresence=new Presence();
+            nonProbablePresence.setStatus("unavailable");
+            nonProbablePresence.setFrom(senderJID);
+            nonProbablePresence.setTo(recipientJID);
+            presenceManager.handleProbe(nonProbablePresence);
+          }
         }
       }
       if (type == Presence.Type.unsubscribed) {
