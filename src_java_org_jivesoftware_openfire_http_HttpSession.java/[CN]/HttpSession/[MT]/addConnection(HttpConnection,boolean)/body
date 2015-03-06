@@ -21,7 +21,7 @@ synchronized (connectionQueue) {
             Log.warn("Deliverable unavailable for " + rid);
             throw new HttpBindException("Unexpected RID error.",BoshBindingError.itemNotFound);
           }
-          connection.deliverBody(createDeliverable(deliverable.deliverables));
+          connection.deliverBody(createDeliverable(deliverable.deliverables),true);
         }
  else {
           if (Log.isDebugEnabled()) {
@@ -39,7 +39,6 @@ synchronized (connectionQueue) {
   }
   checkOveractivity(isPoll);
   sslCertificates=connection.getPeerCertificates();
-  connection.setSession(this);
   if (isPollingSession() || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
 synchronized (pendingElements) {
       deliver(connection,pendingElements);

@@ -1,0 +1,32 @@
+{
+  List<Element> elements=rootNode.elements();
+  boolean isPoll=(elements.size() == 0);
+  if ("terminate".equals(rootNode.attributeValue("type")))   isPoll=false;
+ else   if ("true".equals(rootNode.attributeValue(new QName("restart",rootNode.getNamespaceForPrefix("xmpp")))))   isPoll=false;
+ else   if (rootNode.attributeValue("pause") != null)   isPoll=false;
+  HttpConnection connection=this.createConnection(rid,elements,isSecure,isPoll,context);
+  if (elements.size() > 0) {
+    new HttpPacketSender(this).init();
+  }
+  final String type=rootNode.attributeValue("type");
+  String restartStream=rootNode.attributeValue(new QName("restart",rootNode.getNamespaceForPrefix("xmpp")));
+  int pauseDuration=HttpBindServlet.getIntAttribute(rootNode.attributeValue("pause"),-1);
+  if ("terminate".equals(type)) {
+    connection.deliverBody(createEmptyBody(true),true);
+    close();
+    lastRequestID=connection.getRequestId();
+  }
+ else   if ("true".equals(restartStream) && rootNode.elements().size() == 0) {
+    connection.deliverBody(createSessionRestartResponse(),true);
+    lastRequestID=connection.getRequestId();
+  }
+ else   if (pauseDuration > 0 && pauseDuration <= getMaxPause()) {
+    pause(pauseDuration);
+    connection.deliverBody(createEmptyBody(false),true);
+    lastRequestID=connection.getRequestId();
+    setLastResponseEmpty(true);
+  }
+ else {
+    resetInactivityTimeout();
+  }
+}

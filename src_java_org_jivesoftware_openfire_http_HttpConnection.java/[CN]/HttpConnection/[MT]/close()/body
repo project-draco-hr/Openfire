@@ -1,11 +1,16 @@
 {
-  if (isClosed) {
-    return;
+synchronized (this) {
+    if (isClosed) {
+      return;
+    }
   }
   try {
-    deliverBody(CONNECTION_CLOSED);
+    deliverBody(null,true);
   }
  catch (  HttpConnectionClosedException e) {
+    Log.warn("Unexpected exception occurred while trying to close an HttpException.",e);
+  }
+catch (  IOException e) {
     Log.warn("Unexpected exception occurred while trying to close an HttpException.",e);
   }
 }

@@ -1,17 +1,20 @@
 {
+  final AsyncContext context=request.startAsync();
   boolean isScriptSyntaxEnabled=boshManager.isScriptSyntaxEnabled();
   if (!isScriptSyntaxEnabled) {
-    sendLegacyError(response,BoshBindingError.itemNotFound);
-    return;
-  }
-  if (isContinuation(request,response)) {
+    sendLegacyError(context,BoshBindingError.itemNotFound);
     return;
   }
   String queryString=request.getQueryString();
   if (queryString == null || "".equals(queryString)) {
-    sendLegacyError(response,BoshBindingError.badRequest);
+    sendLegacyError(context,BoshBindingError.badRequest);
+    return;
+  }
+ else   if ("isBoshAvailable".equals(queryString)) {
+    response.setStatus(HttpServletResponse.SC_OK);
+    context.complete();
     return;
   }
   queryString=URLDecoder.decode(queryString,"UTF-8");
-  parseDocument(request,response,new ByteArrayInputStream(queryString.getBytes("UTF-8")));
+  processContent(context,queryString);
 }

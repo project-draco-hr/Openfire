@@ -1,0 +1,41 @@
+{
+  final String remoteAddress=getRemoteAddress(context);
+  Document document;
+  try {
+    document=getPacketReader().read(new StringReader(content),"UTF-8");
+  }
+ catch (  Exception ex) {
+    Log.warn("Error parsing request data from [" + remoteAddress + "]",ex);
+    sendLegacyError(context,BoshBindingError.badRequest);
+    return;
+  }
+  if (document == null) {
+    Log.info("The result of parsing request data from [" + remoteAddress + "] was a null-object.");
+    sendLegacyError(context,BoshBindingError.badRequest);
+    return;
+  }
+  final Element node=document.getRootElement();
+  if (node == null || !"body".equals(node.getName())) {
+    Log.info("Root element 'body' is missing from parsed request data from [" + remoteAddress + "]");
+    sendLegacyError(context,BoshBindingError.badRequest);
+    return;
+  }
+  final long rid=getLongAttribute(node.attributeValue("rid"),-1);
+  if (rid <= 0) {
+    Log.info("Root element 'body' does not contain a valid RID attribute value in parsed request data from [" + remoteAddress + "]");
+    sendLegacyError(context,BoshBindingError.badRequest,"Body-element is missing a RID (Request ID) value, or the provided value is a non-positive integer.");
+    return;
+  }
+  final String sid=node.attributeValue("sid");
+  if (sid == null) {
+    if (node.elements().size() > 0) {
+      Log.info("Root element 'body' does not contain a SID attribute value in parsed request data from [" + remoteAddress + "]");
+      sendLegacyError(context,BoshBindingError.badRequest);
+      return;
+    }
+    createNewSession(context,node);
+  }
+ else {
+    handleSessionRequest(sid,context,node);
+  }
+}

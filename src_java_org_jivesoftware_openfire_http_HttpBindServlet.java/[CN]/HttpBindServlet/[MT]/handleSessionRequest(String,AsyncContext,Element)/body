@@ -1,0 +1,26 @@
+{
+  if (JiveGlobals.getBooleanProperty("log.httpbind.enabled",false)) {
+    Log.info(new Date() + ": HTTP RECV(" + sid+ "): "+ rootNode.asXML());
+  }
+  HttpSession session=sessionManager.getSession(sid);
+  if (session == null) {
+    if (Log.isDebugEnabled()) {
+      Log.debug("Client provided invalid session: " + sid + ". ["+ context.getRequest().getRemoteAddr()+ "]");
+    }
+    sendLegacyError(context,BoshBindingError.itemNotFound,"Invalid SID value.");
+    return;
+  }
+  final long rid=getLongAttribute(rootNode.attributeValue("rid"),-1);
+synchronized (session) {
+    try {
+      session.forwardRequest(rid,context.getRequest().isSecure(),rootNode,context);
+    }
+ catch (    HttpBindException e) {
+      sendError(session,context,e.getBindingError());
+    }
+catch (    HttpConnectionClosedException nc) {
+      Log.error("Error sending packet to client.",nc);
+      context.complete();
+    }
+  }
+}

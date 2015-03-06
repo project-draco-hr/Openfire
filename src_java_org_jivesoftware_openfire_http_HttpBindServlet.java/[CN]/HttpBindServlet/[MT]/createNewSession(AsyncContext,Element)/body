@@ -1,0 +1,18 @@
+{
+  final long rid=getLongAttribute(rootNode.attributeValue("rid"),-1);
+  try {
+    final X509Certificate[] certificates=(X509Certificate[])context.getRequest().getAttribute("javax.servlet.request.X509Certificate");
+    final HttpConnection connection=new HttpConnection(rid,context.getRequest().isSecure(),certificates,context);
+    final InetAddress address=InetAddress.getByName(context.getRequest().getRemoteAddr());
+    connection.setSession(sessionManager.createSession(address,rootNode,connection));
+    if (JiveGlobals.getBooleanProperty("log.httpbind.enabled",false)) {
+      Log.info(new Date() + ": HTTP RECV(" + connection.getSession().getStreamID().getID()+ "): "+ rootNode.asXML());
+    }
+  }
+ catch (  UnauthorizedException e) {
+    sendLegacyError(context,BoshBindingError.internalServerError,"Server has not finished initialization.");
+  }
+catch (  HttpBindException e) {
+    sendLegacyError(context,BoshBindingError.internalServerError,"Server has not finished initialization.");
+  }
+}

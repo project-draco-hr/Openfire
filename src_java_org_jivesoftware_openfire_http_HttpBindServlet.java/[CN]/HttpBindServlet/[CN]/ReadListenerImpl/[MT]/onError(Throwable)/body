@@ -1,0 +1,9 @@
+{
+  Log.warn("Error reading request data from [" + remoteAddress + "]",throwable);
+  try {
+    sendLegacyError(context,BoshBindingError.badRequest);
+  }
+ catch (  IOException ex) {
+    Log.debug("Error while sending an error to [" + remoteAddress + "] in response to an earlier data-read failure.",ex);
+  }
+}

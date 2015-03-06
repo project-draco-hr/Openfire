@@ -16,11 +16,14 @@ synchronized (pendingElements) {
               }
             }
  else {
-              toClose.deliverBody(null);
+              toClose.deliverBody(null,true);
             }
           }
         }
  catch (        HttpConnectionClosedException e) {
+        }
+catch (        IOException e) {
+          Log.debug("An unexpected exception occurred while closing a session.",e);
         }
       }
     }
