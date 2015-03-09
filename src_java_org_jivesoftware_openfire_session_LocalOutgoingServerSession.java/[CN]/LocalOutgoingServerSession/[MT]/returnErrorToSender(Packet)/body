@@ -1,6 +1,13 @@
 {
   RoutingTable routingTable=XMPPServer.getInstance().getRoutingTable();
   try {
+    String el="ext";
+    String ns=getClass().getName();
+    if (packet.deleteExtension(el,ns)) {
+      Log.warn("Failed to route error to sender; remote server not found. Original packet: " + packet);
+      return;
+    }
+    packet.addExtension(new PacketExtension(el,ns));
     if (packet instanceof IQ) {
       if (((IQ)packet).isResponse()) {
         Log.debug("XMPP specs forbid us to respond with an IQ error to: " + packet.toXML());
