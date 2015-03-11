@@ -1,6 +1,8 @@
 {
   String nodeID=publishElement.attributeValue("node");
   Node node;
+  JID from=iq.getFrom();
+  JID owner=from.asBareJID();
   if (nodeID == null) {
     Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
     sendErrorPacket(iq,PacketError.Condition.bad_request,pubsubError);
@@ -9,12 +11,23 @@
  else {
     node=service.getNode(nodeID);
     if (node == null) {
-      sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
-      return;
+      if (service instanceof PEPService && service.isServiceAdmin(owner)) {
+        Element childElement=iq.getChildElement();
+        Element createElement=publishElement.element("publish");
+        CreateNodeResponse response=createNodeHelper(service,iq,childElement,createElement);
+        if (response.newNode == null) {
+          sendErrorPacket(iq,response.creationStatus,response.pubsubError);
+        }
+ else {
+          node=response.newNode;
+        }
+      }
+ else {
+        sendErrorPacket(iq,PacketError.Condition.item_not_found,null);
+        return;
+      }
     }
   }
-  JID from=iq.getFrom();
-  JID owner=from.asBareJID();
   if (!node.getPublisherModel().canPublish(node,owner) && !service.isServiceAdmin(owner)) {
     sendErrorPacket(iq,PacketError.Condition.forbidden,null);
     return;

@@ -1,0 +1,105 @@
+{
+  JID from=iq.getFrom();
+  if (!service.canCreateNode(from) || (!UserManager.getInstance().isRegisteredUser(from) && !isComponent(from))) {
+    return new CreateNodeResponse(PacketError.Condition.forbidden,null,null);
+  }
+  DataForm completedForm=null;
+  CollectionNode parentNode=null;
+  String nodeID=createElement.attributeValue("node");
+  String newNodeID=nodeID;
+  if (nodeID == null) {
+    if (!service.isInstantNodeSupported()) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("nodeid-required","http://jabber.org/protocol/pubsub#errors"));
+      return new CreateNodeResponse(PacketError.Condition.not_acceptable,pubsubError,null);
+    }
+    do {
+      newNodeID=StringUtils.randomString(15);
+    }
+ while (service.getNode(newNodeID) != null);
+  }
+  boolean collectionType=false;
+  Element configureElement=childElement.element("configure");
+  if (configureElement != null) {
+    completedForm=getSentConfigurationForm(configureElement);
+    if (completedForm != null) {
+      FormField field=completedForm.getField("pubsub#collection");
+      if (field != null) {
+        List<String> values=field.getValues();
+        if (!values.isEmpty()) {
+          String parentNodeID=values.get(0);
+          Node tempNode=service.getNode(parentNodeID);
+          if (tempNode == null) {
+            return new CreateNodeResponse(PacketError.Condition.item_not_found,null,null);
+          }
+ else           if (!tempNode.isCollectionNode()) {
+            return new CreateNodeResponse(PacketError.Condition.not_acceptable,null,null);
+          }
+          parentNode=(CollectionNode)tempNode;
+        }
+      }
+      field=completedForm.getField("pubsub#node_type");
+      if (field != null) {
+        List<String> values=field.getValues();
+        if (!values.isEmpty()) {
+          collectionType="collection".equals(values.get(0));
+        }
+      }
+    }
+  }
+  if (parentNode == null && service.isCollectionNodesSupported()) {
+    parentNode=service.getRootCollectionNode();
+  }
+  Node existingNode=service.getNode(newNodeID);
+  if (existingNode != null) {
+    return new CreateNodeResponse(PacketError.Condition.conflict,null,null);
+  }
+  if (collectionType && !service.isCollectionNodesSupported()) {
+    Element pubsubError=DocumentHelper.createElement(QName.get("unsupported","http://jabber.org/protocol/pubsub#errors"));
+    pubsubError.addAttribute("feature","collections");
+    return new CreateNodeResponse(PacketError.Condition.feature_not_implemented,pubsubError,null);
+  }
+  if (parentNode != null && !collectionType) {
+    if (!parentNode.isAssociationAllowed(from)) {
+      return new CreateNodeResponse(PacketError.Condition.forbidden,null,null);
+    }
+    if (parentNode.isMaxLeafNodeReached()) {
+      Element pubsubError=DocumentHelper.createElement(QName.get("max-nodes-exceeded","http://jabber.org/protocol/pubsub#errors"));
+      return new CreateNodeResponse(PacketError.Condition.conflict,pubsubError,null);
+    }
+  }
+  boolean conflict=false;
+  Node newNode=null;
+  try {
+    JID owner=from.asBareJID();
+synchronized (newNodeID.intern()) {
+      if (service.getNode(newNodeID) == null) {
+        if (collectionType) {
+          newNode=new CollectionNode(service,parentNode,newNodeID,from);
+        }
+ else {
+          newNode=new LeafNode(service,parentNode,newNodeID,from);
+        }
+        newNode.addOwner(owner);
+        if (completedForm != null) {
+          newNode.configure(completedForm);
+        }
+ else {
+          newNode.saveToDB();
+        }
+        CacheFactory.doClusterTask(new RefreshNodeTask(newNode));
+      }
+ else {
+        conflict=true;
+      }
+    }
+    if (conflict) {
+      return new CreateNodeResponse(PacketError.Condition.conflict,null,null);
+    }
+ else {
+      return new CreateNodeResponse(null,null,newNode);
+    }
+  }
+ catch (  NotAcceptableException e) {
+    return new CreateNodeResponse(PacketError.Condition.not_acceptable,null,null);
+  }
+}
