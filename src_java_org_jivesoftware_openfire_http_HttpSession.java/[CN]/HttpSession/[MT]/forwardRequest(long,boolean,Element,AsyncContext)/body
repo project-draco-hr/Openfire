@@ -4,8 +4,9 @@
   if ("terminate".equals(rootNode.attributeValue("type")))   isPoll=false;
  else   if ("true".equals(rootNode.attributeValue(new QName("restart",rootNode.getNamespaceForPrefix("xmpp")))))   isPoll=false;
  else   if (rootNode.attributeValue("pause") != null)   isPoll=false;
-  HttpConnection connection=this.createConnection(rid,elements,isSecure,isPoll,context);
+  HttpConnection connection=this.createConnection(rid,isSecure,isPoll,context);
   if (elements.size() > 0) {
+    packetsToSend.add(elements);
     new HttpPacketSender(this).init();
   }
   final String type=rootNode.attributeValue("type");

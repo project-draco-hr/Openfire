@@ -1,8 +1,13 @@
 {
   Collection<Deliverable> deliverable=Arrays.asList(stanza);
   boolean delivered=false;
+  int pendingConnections=0;
 synchronized (connectionQueue) {
     for (    HttpConnection connection : connectionQueue) {
+      if (connection.isClosed()) {
+        continue;
+      }
+      pendingConnections++;
       try {
         if (connection.getRequestId() == lastRequestID + 1) {
           lastRequestID=connection.getRequestId();
@@ -20,6 +25,9 @@ catch (      IOException e) {
     }
   }
   if (!delivered) {
+    if (pendingConnections > 0) {
+      Log.warn("Unable to deliver a stanza (it is being queued instead), although there are available connections! RID / Connection processing is out of sync!");
+    }
     pendingElements.add(stanza);
   }
 }

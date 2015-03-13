@@ -40,13 +40,12 @@ synchronized (connectionQueue) {
   checkOveractivity(isPoll);
   sslCertificates=connection.getPeerCertificates();
   if (isPollingSession() || (pendingElements.size() > 0 && connection.getRequestId() == lastRequestID + 1)) {
+    fireConnectionOpened(connection);
 synchronized (pendingElements) {
       deliver(connection,pendingElements);
       lastRequestID=connection.getRequestId();
       pendingElements.clear();
     }
-    connectionQueue.add(connection);
-    Collections.sort(connectionQueue,connectionComparator);
   }
  else {
     connectionQueue.add(connection);
@@ -75,5 +74,4 @@ synchronized (connectionQueue) {
       }
     }
   }
-  fireConnectionOpened(connection);
 }
