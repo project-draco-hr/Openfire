@@ -1,3 +1,9 @@
 {
-  return XMPPServer.getInstance().getPubSubModule().getFeatures(null,null,null);
+  Iterator<String> it=XMPPServer.getInstance().getPubSubModule().getFeatures(null,null,null);
+  ArrayList<String> features=new ArrayList<String>();
+  while (it.hasNext()) {
+    features.add(it.next());
+  }
+  features.add("http://jabber.org/protocol/pubsub#auto-create");
+  return features.iterator();
 }
