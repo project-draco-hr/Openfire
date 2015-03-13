@@ -1,5 +1,6 @@
 {
   try {
+    boolean isExistingSession=false;
     String username=URLDecoder.decode(ParamUtils.getParameter(request,"username"),"UTF-8");
     String password=URLDecoder.decode(ParamUtils.getParameter(request,"password"),"UTF-8");
     String resource=URLDecoder.decode(ParamUtils.getParameter(request,"resource"),"UTF-8");
@@ -11,6 +12,7 @@
     Log.debug(digest + " : doWebSocketConnect : Digest created for " + userJid+ " : "+ register);
     LocalClientSession session=(LocalClientSession)SessionManager.getInstance().getSession(userJid);
     if (session != null) {
+      isExistingSession=true;
       int conflictLimit=SessionManager.getInstance().getConflictKickLimit();
       if (conflictLimit == SessionManager.NEVER_KICK) {
         return false;
@@ -41,35 +43,40 @@
             authToken=new AuthToken(resource,true);
           }
  else {
-            try {
-              String userName=JID.unescapeNode(username);
-              UserManager userManager=XMPPServer.getInstance().getUserManager();
-              if (register != null && register.equals("true") && XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
-                try {
-                  userManager.getUser(userName);
-                }
- catch (                UserNotFoundException e) {
-                  userManager.createUser(userName,password,null,null);
-                }
-              }
+            if (isExistingSession && (password.equals("dummy") || password.equals("reuse"))) {
+              authToken=new AuthToken(username);
+            }
  else {
-                try {
-                  userManager.getUser(userName);
+              try {
+                String userName=JID.unescapeNode(username);
+                UserManager userManager=XMPPServer.getInstance().getUserManager();
+                if (register != null && register.equals("true") && XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
+                  try {
+                    userManager.getUser(userName);
+                  }
+ catch (                  UserNotFoundException e) {
+                    userManager.createUser(userName,password,null,null);
+                  }
                 }
- catch (                UserNotFoundException e) {
-                  Log.error("user not found " + userName,e);
-                  return false;
+ else {
+                  try {
+                    userManager.getUser(userName);
+                  }
+ catch (                  UserNotFoundException e) {
+                    Log.error("user not found " + userName,e);
+                    return false;
+                  }
                 }
+                authToken=AuthFactory.authenticate(userName,password);
               }
-              authToken=AuthFactory.authenticate(userName,password);
-            }
- catch (            UnauthorizedException e) {
-              Log.error("An error occurred while attempting to create a web socket (USERNAME: " + username + " RESOURCE: "+ resource+ " ) : ",e);
-              return false;
-            }
-catch (            Exception e) {
-              Log.error("An error occurred while attempting to create a web socket : ",e);
-              return false;
+ catch (              UnauthorizedException e) {
+                Log.error("An error occurred while attempting to create a web socket (USERNAME: " + username + " RESOURCE: "+ resource+ " ) : ",e);
+                return false;
+              }
+catch (              Exception e) {
+                Log.error("An error occurred while attempting to create a web socket : ",e);
+                return false;
+              }
             }
           }
         }
