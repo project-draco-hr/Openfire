@@ -20,6 +20,7 @@
     response.getOutputStream().setWriteListener(new WriteListenerImpl(context,byteContent));
   }
  else {
+    context.getResponse().setBufferSize(byteContent.length);
     context.getResponse().getOutputStream().write(byteContent);
     context.getResponse().getOutputStream().flush();
     context.complete();
