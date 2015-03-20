@@ -2,7 +2,7 @@
   ServletContextHandler context=new ServletContextHandler(contexts,boshPath,ServletContextHandler.SESSIONS);
   context.addServlet(new ServletHolder(new HttpBindServlet()),"/*");
   if (isHttpCompressionEnabled()) {
-    Filter gzipFilter=new GzipFilter(){
+    Filter gzipFilter=new AsyncGzipFilter(){
       @Override public void init(      FilterConfig config) throws ServletException {
         super.init(config);
         _methods.add(HttpMethod.POST.asString());
