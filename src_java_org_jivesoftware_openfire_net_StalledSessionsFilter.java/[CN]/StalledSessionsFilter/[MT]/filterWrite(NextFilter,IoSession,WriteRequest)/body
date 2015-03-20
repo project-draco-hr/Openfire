@@ -1,11 +1,13 @@
 {
-  long pendingBytes=session.getScheduledWriteBytes();
-  if (pendingBytes > bytesCap) {
-    long writeTime=session.getLastWriteTime();
-    int pendingRequests=session.getScheduledWriteMessages();
-    Log.debug("About to kill session with pendingBytes: " + pendingBytes + " pendingWrites: "+ pendingRequests+ " lastWrite: "+ new Date(writeTime)+ "session: "+ session);
-    session.close(false);
-    throw new IOException("Closing session that seems to be stalled. Preventing OOM");
+  if (!session.isClosing()) {
+    long pendingBytes=session.getScheduledWriteBytes();
+    if (pendingBytes > bytesCap) {
+      long writeTime=session.getLastWriteTime();
+      int pendingRequests=session.getScheduledWriteMessages();
+      Log.debug("About to kill session with pendingBytes: " + pendingBytes + " pendingWrites: "+ pendingRequests+ " lastWrite: "+ new Date(writeTime)+ "session: "+ session);
+      session.close(false);
+      throw new IOException("Closing session that seems to be stalled. Preventing OOM");
+    }
   }
   super.filterWrite(nextFilter,session,writeRequest);
 }
