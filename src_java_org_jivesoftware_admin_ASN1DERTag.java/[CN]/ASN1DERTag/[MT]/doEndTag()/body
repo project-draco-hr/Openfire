@@ -1,0 +1,14 @@
+{
+  try {
+    final ASN1InputStream decoder=new ASN1InputStream(value);
+    ASN1Primitive primitive=decoder.readObject();
+    while (primitive != null && !(primitive instanceof ASN1Null)) {
+      pageContext.getOut().write(doPrimitive(primitive));
+      primitive=decoder.readObject();
+    }
+  }
+ catch (  Exception ex) {
+    throw new JspException(ex.getMessage());
+  }
+  return super.doEndTag();
+}

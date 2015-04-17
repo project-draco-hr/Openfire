@@ -1,0 +1,14 @@
+{
+switch (asn1Encodables.length) {
+case 1:
+    return "<table><tr><td colspan='2'>" + doPrimitive(asn1Encodables[0].toASN1Primitive()) + "</td></tr></table>";
+case 2:
+  return "<table><tr><td>" + doPrimitive(asn1Encodables[0].toASN1Primitive()) + "</td>"+ "<td>"+ doPrimitive(asn1Encodables[1].toASN1Primitive())+ "</td></tr></table>";
+default :
+final StringBuilder sb=new StringBuilder();
+for (ASN1Encodable asn1Encodable : asn1Encodables) {
+sb.append("<table><tr><td colspan='2'>").append(doPrimitive(asn1Encodable.toASN1Primitive())).append("</td></tr></table>");
+}
+return sb.toString();
+}
+}

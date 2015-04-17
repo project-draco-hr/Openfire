@@ -1,0 +1,32 @@
+{
+  if (trustStore == null) {
+    throw new IllegalArgumentException("Argument 'trustStore' cannot be null.");
+  }
+  if (alias == null || alias.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'alias' cannot be null or an empty String.");
+  }
+  if (inputStream == null) {
+    throw new IllegalArgumentException("Argument 'inputStream' cannot be null.");
+  }
+  alias=alias.trim();
+  if (trustStore.containsAlias(alias)) {
+    throw new IllegalArgumentException("Certificate already exists for alias: " + alias);
+  }
+  final Collection<? extends Certificate> certificates=CertificateFactory.getInstance("X509").generateCertificates(inputStream);
+  if (certificates.isEmpty()) {
+    throw new Exception("No certificate was found in the input.");
+  }
+  if (certificates.size() != 1) {
+    throw new Exception("More than one certificate was found in the input.");
+  }
+  final X509Certificate certificate=(X509Certificate)certificates.iterator().next();
+  trustStore.setCertificateEntry(alias,certificate);
+  for (  CertificateEventListener listener : listeners) {
+    try {
+      listener.certificateCreated(trustStore,alias,certificate);
+    }
+ catch (    Throwable e) {
+      Log.warn("An exception occurred during the invocation of a CertificateEventListener.",e);
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  if (primitive == null || primitive instanceof ASN1Null) {
+    return "";
+  }
+  if (primitive instanceof ASN1String) {
+    return ((ASN1String)primitive).getString();
+  }
+  if (primitive instanceof DERUTCTime) {
+    return ((DERUTCTime)primitive).getAdjustedTime();
+  }
+  if (primitive instanceof DERGeneralizedTime) {
+    return ((DERGeneralizedTime)primitive).getTime();
+  }
+  if (primitive instanceof ASN1ObjectIdentifier) {
+switch (((ASN1ObjectIdentifier)primitive).getId()) {
+case "1.3.6.1.5.5.7.8.5":
+      return "xmppAddr";
+default :
+    return primitive.toString();
+}
+}
+return primitive.toString();
+}
