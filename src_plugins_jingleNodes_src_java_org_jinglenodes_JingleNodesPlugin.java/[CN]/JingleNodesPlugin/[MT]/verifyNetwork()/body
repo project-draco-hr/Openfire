@@ -1,6 +1,14 @@
 {
-  final String localAddress=JiveGlobals.getProperty(JN_PUB_IP_PROPERTY,LocalIPResolver.getLocalIP());
+  final String localAddress=JiveGlobals.getProperty(JN_LOCAL_IP_PROPERTY,LocalIPResolver.getLocalIP());
   LocalIPResolver.setOverrideIp(localAddress);
-  final InetSocketAddress publicAddress=PublicIPResolver.getPublicAddress("stun.xten.com",3478);
-  hasPublicIP=publicAddress != null && publicAddress.getAddress().getHostAddress().equals(localAddress);
+  final InetSocketAddress publicAddress=PublicIPResolver.getPublicAddress(getTestSTUNServer(),getTestSTUNPort());
+  hasPublicIP=publicAddress != null && publicAddress.getAddress().getHostAddress().equals(getPublicIP());
+  if (!hasPublicIP) {
+    if (publicAddress != null) {
+      Log.error("verifyNetwork Failed - public IP address from test STUN server [" + publicAddress.getAddress().getHostAddress() + "] does not match server configuration ["+ getPublicIP()+ "]");
+    }
+ else {
+      Log.error("verifyNetwork Failed - failed to retrieve public address from test STUN server " + getTestSTUNServer() + ":"+ Integer.toString(getTestSTUNPort()));
+    }
+  }
 }
