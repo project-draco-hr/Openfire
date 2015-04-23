@@ -1,0 +1,9 @@
+{
+  isTrying=false;
+  log.debug("Failed to spin up new session to {}",domain.toString());
+  while (!this.packets.isEmpty()) {
+    Packet packet=this.packets.remove();
+    LocalSession.returnErrorToSender(packet);
+  }
+  this.packets=null;
+}

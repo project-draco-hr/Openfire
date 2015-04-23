@@ -3,7 +3,7 @@
   if (!getAuthenticatedDomains().contains(senderDomain)) {
 synchronized (senderDomain.intern()) {
       if (!getAuthenticatedDomains().contains(senderDomain) && !authenticateSubdomain(senderDomain,packet.getTo().getDomain())) {
-        returnErrorToSender(packet);
+        LocalSession.returnErrorToSender(packet);
         return false;
       }
     }
