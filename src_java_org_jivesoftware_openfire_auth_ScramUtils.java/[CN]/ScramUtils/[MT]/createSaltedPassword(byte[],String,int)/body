@@ -1,0 +1,15 @@
+{
+  Mac mac=createSha1Hmac(password.getBytes(StandardCharsets.US_ASCII));
+  mac.update(salt);
+  mac.update(new byte[]{0,0,0,1});
+  byte[] result=mac.doFinal();
+  byte[] previous=null;
+  for (int i=1; i < iters; i++) {
+    mac.update(previous != null ? previous : result);
+    previous=mac.doFinal();
+    for (int x=0; x < result.length; x++) {
+      result[x]^=previous[x];
+    }
+  }
+  return result;
+}

@@ -1,0 +1,20 @@
+{
+  try {
+    String saltshaker=UserManager.getUserProvider().loadUser(username).getSalt();
+    byte[] salt;
+    if (saltshaker == null) {
+      String password=AuthFactory.getPassword(username);
+      AuthFactory.setPassword(username,password);
+      salt=DatatypeConverter.parseBase64Binary(UserManager.getUserProvider().loadUser(username).getSalt());
+    }
+ else {
+      salt=DatatypeConverter.parseBase64Binary(saltshaker);
+    }
+    return salt;
+  }
+ catch (  UserNotFoundException|UnsupportedOperationException|ConnectionException|InternalUnauthenticatedException e) {
+    byte[] salt=new byte[32];
+    random.nextBytes(salt);
+    return salt;
+  }
+}

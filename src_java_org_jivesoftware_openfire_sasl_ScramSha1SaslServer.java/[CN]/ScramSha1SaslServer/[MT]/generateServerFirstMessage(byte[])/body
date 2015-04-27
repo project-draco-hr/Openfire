@@ -1,0 +1,18 @@
+{
+  String clientFirstMessage=new String(response,StandardCharsets.US_ASCII);
+  Matcher m=CLIENT_FIRST_MESSAGE.matcher(clientFirstMessage);
+  if (!m.matches()) {
+    throw new SaslException("Invalid first client message");
+  }
+  clientFirstMessageBare=m.group(5);
+  username=m.group(6);
+  String clientNonce=m.group(7);
+  nonce=clientNonce + UUID.randomUUID().toString();
+  try {
+    serverFirstMessage=String.format("r=%s,s=%s,i=%d",nonce,DatatypeConverter.printBase64Binary(getSalt(username)),getIterations(username));
+  }
+ catch (  UserNotFoundException e) {
+    throw new SaslException(e.getMessage(),e);
+  }
+  return serverFirstMessage.getBytes(StandardCharsets.US_ASCII);
+}

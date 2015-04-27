@@ -1,0 +1,21 @@
+{
+  byte[] challenge;
+switch (state) {
+case INITIAL:
+    challenge=generateServerFirstMessage(response);
+  state=State.IN_PROGRESS;
+break;
+case IN_PROGRESS:
+challenge=generateServerFinalMessage(response);
+state=State.COMPLETE;
+break;
+case COMPLETE:
+if (response == null || response.length == 0) {
+challenge=new byte[0];
+break;
+}
+default :
+throw new SaslException("No response expected in state " + state);
+}
+return challenge;
+}
