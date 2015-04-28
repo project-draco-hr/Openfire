@@ -11,7 +11,7 @@
     @Override public void onTimeout(    AsyncEvent asyncEvent) throws IOException {
       Log.debug("timeout event " + asyncEvent);
       try {
-        connection.deliverBody(createEmptyBody(),false);
+        connection.deliverBody(createEmptyBody(false),false);
         setLastResponseEmpty(true);
         if (connection.getRequestId() != lastRequestID + 1) {
           throw new IOException("Unexpected RID error.");
