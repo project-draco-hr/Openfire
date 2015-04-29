@@ -1,0 +1,45 @@
+{
+  String conversationKey=getConversationKey(sender,receiver);
+synchronized (conversationKey.intern()) {
+    Conversation conversation=conversations.get(conversationKey);
+    if (conversation == null) {
+      Collection<JID> participants=new ArrayList<JID>(2);
+      participants.add(sender);
+      participants.add(receiver);
+      XMPPServer server=XMPPServer.getInstance();
+      boolean external=isExternal(server,sender) ^ isExternal(server,receiver);
+      Date start=new Date(date.getTime() - 1);
+      conversation=new Conversation(this,participants,external,start);
+      conversations.put(conversationKey,conversation);
+      for (      ConversationListener listener : conversationListeners) {
+        listener.conversationCreated(conversation);
+      }
+    }
+ else     if ((date.getTime() - conversation.getLastActivity().getTime() > idleTime) || (date.getTime() - conversation.getStartDate().getTime() > maxTime)) {
+      removeConversation(conversationKey,conversation,conversation.getLastActivity());
+      Collection<JID> participants=new ArrayList<JID>(2);
+      participants.add(sender);
+      participants.add(receiver);
+      XMPPServer server=XMPPServer.getInstance();
+      boolean external=isExternal(server,sender) ^ isExternal(server,receiver);
+      Date start=new Date(date.getTime() - 1);
+      conversation=new Conversation(this,participants,external,start);
+      conversations.put(conversationKey,conversation);
+      for (      ConversationListener listener : conversationListeners) {
+        listener.conversationCreated(conversation);
+      }
+    }
+    conversation.messageReceived(sender,date);
+    if (metadataArchivingEnabled) {
+      conversationQueue.add(conversation);
+    }
+    if (messageArchivingEnabled) {
+      if (body != null) {
+        messageQueue.add(new ArchivedMessage(conversation.getConversationID(),sender,receiver,date,body,stanza,false));
+      }
+    }
+    for (    ConversationListener listener : conversationListeners) {
+      listener.conversationUpdated(conversation,date);
+    }
+  }
+}

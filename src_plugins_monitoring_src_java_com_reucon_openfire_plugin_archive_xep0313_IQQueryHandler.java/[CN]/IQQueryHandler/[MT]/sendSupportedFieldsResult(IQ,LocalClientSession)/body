@@ -1,0 +1,12 @@
+{
+  IQ result=IQ.createResultIQ(packet);
+  Element query=result.setChildElement("query",NAMESPACE);
+  DataForm form=new DataForm(DataForm.Type.form);
+  form.addField("FORM_TYPE",null,FormField.Type.hidden);
+  form.getField("FORM_TYPE").addValue(NAMESPACE);
+  form.addField("with",null,FormField.Type.jid_single);
+  form.addField("start",null,FormField.Type.text_single);
+  form.addField("end",null,FormField.Type.text_single);
+  query.add(form.getElement());
+  session.process(result);
+}

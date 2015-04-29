@@ -21,6 +21,7 @@ synchronized (this) {
         pstmt.setString(5,message.getToJID().getResource());
         pstmt.setLong(6,message.getSentDate().getTime());
         DbConnectionManager.setLargeTextField(pstmt,7,message.getBody());
+        DbConnectionManager.setLargeTextField(pstmt,8,message.getStanza());
         if (DbConnectionManager.isBatchUpdatesSupported()) {
           pstmt.addBatch();
         }

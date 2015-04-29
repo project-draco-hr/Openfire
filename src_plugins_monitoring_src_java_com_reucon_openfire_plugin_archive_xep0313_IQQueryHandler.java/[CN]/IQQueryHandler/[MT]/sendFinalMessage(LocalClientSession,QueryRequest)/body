@@ -1,0 +1,15 @@
+{
+  Message finalMessage=new Message();
+  Element fin=finalMessage.addChildElement("fin",NAMESPACE);
+  if (queryRequest.getQueryid() != null) {
+    fin.addAttribute("queryid",queryRequest.getQueryid());
+  }
+  XmppResultSet resultSet=queryRequest.getResultSet();
+  if (resultSet != null) {
+    fin.add(resultSet.createResultElement());
+    if (resultSet.isComplete()) {
+      fin.addAttribute("complete","true");
+    }
+  }
+  session.process(finalMessage);
+}
