@@ -6,31 +6,53 @@
       JID confJID=new JID(session.roomJID);
       String conferenceId=confJID.getNode();
       MultiUserChatService service=mucManager.getMultiUserChatService(confJID);
-      if (service.hasChatRoom(conferenceId)) {
-        MUCRoom room=service.getChatRoom(conferenceId);
-        if (room != null) {
-          for (          MUCRole role : room.getOccupants()) {
-            Presence presence=new Presence();
-            presence.setFrom(callId + "@" + getJID());
-            presence.setTo(role.getUserAddress());
-            if (accepted) {
-              Element answered=presence.addChildElement("answered","urn:xmpp:rayo:1");
-              answered.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
-              answered.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
-            }
+      if (service != null) {
+        if (service.hasChatRoom(conferenceId)) {
+          MUCRoom room=service.getChatRoom(conferenceId);
+          if (room != null) {
+            for (            MUCRole role : room.getOccupants()) {
+              Presence presence=new Presence();
+              presence.setFrom(callId + "@" + getJID());
+              presence.setTo(role.getUserAddress());
+              if (accepted) {
+                Element answered=presence.addChildElement("answered","urn:xmpp:rayo:1");
+                answered.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
+                answered.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
+              }
  else {
-              Element hangup=presence.addChildElement("hangup","urn:xmpp:rayo:1");
-              hangup.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
-              hangup.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
-              callSessions.remove(callId);
+                Element hangup=presence.addChildElement("hangup","urn:xmpp:rayo:1");
+                hangup.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
+                hangup.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
+                callSessions.remove(callId);
+              }
+              sendPacket(presence);
             }
-            sendPacket(presence);
+            return;
           }
         }
       }
+      String username=(new JID(session.focusJID)).getNode();
+      Collection<ClientSession> sessions=SessionManager.getInstance().getSessions(username);
+      for (      ClientSession clientSession : sessions) {
+        Presence presence=new Presence();
+        presence.setFrom(callId + "@" + getJID());
+        presence.setTo(clientSession.getAddress());
+        if (accepted) {
+          Element answered=presence.addChildElement("answered","urn:xmpp:rayo:1");
+          answered.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
+          answered.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
+        }
+ else {
+          Element hangup=presence.addChildElement("hangup","urn:xmpp:rayo:1");
+          hangup.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
+          hangup.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
+          callSessions.remove(callId);
+        }
+        sendPacket(presence);
+      }
     }
  catch (    Exception e) {
-      Log.error("CallControlComponent inviteEvent. error finding room " + session.roomJID,e);
+      Log.error("CallControlComponent inviteEvent. error" + session.roomJID,e);
     }
   }
  else {

@@ -1,12 +1,12 @@
 {
   Log.info("CallControlComponent - findCreateSession " + from + " "+ to+ " "+ destination);
   CallSession session=null;
-  String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
+  String hostname=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
   String callerId=to;
   String confJID=null;
   Conference conference=null;
   boolean allowDirectSIP="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.allow.direct.sip","false"));
-  if (!allowDirectSIP && !registrations.containsKey(from)) {
+  if (!allowDirectSIP || !registrations.containsKey(from)) {
     Log.warn("CallControlComponent - call rejected from " + from + " "+ to);
     return null;
   }

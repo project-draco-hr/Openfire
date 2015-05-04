@@ -2,6 +2,7 @@
   ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
   this.manager=manager;
   this.pluginDirectory=pluginDirectory;
+  self=this;
   try {
     Log.info("OfMeet Plugin - Initialize jitsi videobridge ");
     jitsiPlugin=new PluginImpl();
@@ -10,7 +11,6 @@
     jigasiPlugin=new JigasiPlugin();
     jigasiPlugin.initializePlugin(manager,pluginDirectory);
     Log.info("OfMeet Plugin - Initialize jitsi conference focus");
-    UserManager userManager=XMPPServer.getInstance().getUserManager();
     String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     String userName="focus";
     String focusUserJid=userName + "@" + domain;
@@ -40,6 +40,20 @@
       }
     }
 ,5000);
+    try {
+      boolean clientControl=XMPPServer.getInstance().getPluginManager().getPlugin("clientControl") != null || XMPPServer.getInstance().getPluginManager().getPlugin("clientcontrol") != null;
+      if (clientControl) {
+        new Timer().scheduleAtFixedRate(new TimerTask(){
+          @Override public void run(){
+            processMeetingPlanner();
+          }
+        }
+,0,900000);
+      }
+    }
+ catch (    Exception e) {
+      Log.error("Meeting Planner Executor error",e);
+    }
     ClusterManager.addListener(this);
     Log.info("OfMeet Plugin - Initialize websockets ");
     ServletContextHandler context=new ServletContextHandler(contexts,"/ofmeetws",ServletContextHandler.SESSIONS);
