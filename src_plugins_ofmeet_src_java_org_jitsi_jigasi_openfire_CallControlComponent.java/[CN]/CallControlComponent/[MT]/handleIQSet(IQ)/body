@@ -16,15 +16,23 @@
         Element header=(Element)i.next();
         String name=header.attributeValue("name");
         String value=header.attributeValue("value");
+        if ("JvbRoomId".equals(name))         confId=value;
         if ("JvbRoomName".equals(name))         confJid=value;
       }
-      if (confJid == null) {
+      if (confJid == null && confId == null) {
         reply.setError(PacketError.Condition.item_not_found);
-        Log.error("No JvbRoomName header found");
+        Log.error("No JvbRoomName or JvbRoomId header found");
       }
  else {
-        if (conferences.containsKey(confJid)) {
-          confId=conferences.get(confJid);
+        if (confId == null) {
+          if (conferences.containsKey(confJid)) {
+            confId=conferences.get(confJid);
+          }
+        }
+        if (confJid == null) {
+          confJid=confId + "@conference." + XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+        }
+        if (confId != null) {
           String callId=Long.toHexString(System.currentTimeMillis());
           Log.info("Got dial request " + from + " -> "+ to+ " confId "+ confId+ " callId "+ callId);
           String callResource="xmpp:" + callId + "@"+ getJID();

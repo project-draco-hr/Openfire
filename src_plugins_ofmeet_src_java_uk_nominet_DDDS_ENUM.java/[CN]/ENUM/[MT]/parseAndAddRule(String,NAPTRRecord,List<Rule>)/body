@@ -1,0 +1,10 @@
+{
+  String service=unescape(naptr.getService());
+  String[] services=service.toLowerCase().split("\\+");
+  if (services.length < 2)   return;
+  if (!services[0].equals("e2u"))   return;
+  for (int i=1; i < services.length; ++i) {
+    EnumRule rule=new EnumRule(aus,naptr.getOrder(),naptr.getPreference(),unescape(naptr.getFlags()),"E2U+" + services[i],unescape(naptr.getRegexp()),naptr.getReplacement(),i);
+    rules.add(rule);
+  }
+}

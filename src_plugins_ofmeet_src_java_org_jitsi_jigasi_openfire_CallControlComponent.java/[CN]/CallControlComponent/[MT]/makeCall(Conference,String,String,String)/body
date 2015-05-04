@@ -1,7 +1,7 @@
 {
   Log.info("CallControlComponent - makeCall " + confJid + " "+ to+ " "+ callId);
   try {
-    String hostname=XMPPServer.getInstance().getServerInfo().getHostname();
+    String hostname=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     String callerId=(new JID(confJid)).getNode();
     String focusJid=conference.getFocus();
     MediaService mediaService=LibJitsi.getMediaService();
@@ -23,11 +23,34 @@
     boolean toPhone=to.indexOf("tel:") == 0;
     String from=null;
     if (!toSip && !toPhone) {
-      to="tel:" + to;
-      toPhone=true;
+      String sipUri=null;
+      if (to.length() == 8) {
+        toSip=true;
+        to="sip:8835100" + to + "@81.201.82.25";
+      }
+ else {
+        if (to.indexOf("+") != 0)         to="+" + to;
+        Log.info("CallControlComponent - makeCall looking up " + to);
+        ENUM mEnum=new ENUM("e164.arpa");
+        Rule[] rules=mEnum.lookup(to);
+        for (        Rule rule : rules) {
+          String temp=rule.evaluate();
+          Log.info("CallControlComponent - makeCall found " + temp);
+          if (temp.indexOf("sip:") == 0)           sipUri=temp;
+        }
+        if (sipUri != null) {
+          toSip=true;
+          to=sipUri;
+        }
+ else {
+          to="tel:" + to;
+          toPhone=true;
+        }
+      }
     }
     if (toSip) {
       from="sip:" + callerId + "@"+ hostname;
+      Log.info("CallControlComponent - makeCall with direct sip " + to + " "+ from);
     }
  else {
       to=to.substring(4);

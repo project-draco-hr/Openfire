@@ -1,0 +1,14 @@
+{
+  Pattern pattern=Pattern.compile("\\[(.+?)\\]");
+  Matcher matcher=pattern.matcher(text);
+  StringBuffer buffer=new StringBuffer();
+  while (matcher.find()) {
+    String replacement=replacements.get(matcher.group(1));
+    if (replacement != null) {
+      matcher.appendReplacement(buffer,"");
+      buffer.append(replacement);
+    }
+  }
+  matcher.appendTail(buffer);
+  return buffer.toString();
+}
