@@ -11,8 +11,7 @@
   }
   Element forwarded=result.addElement("forwarded","urn:xmpp:forward:0");
   Element delay=forwarded.addElement("delay","urn:xmpp:delay");
-  XEP0082_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-  delay.addAttribute("stamp",XEP0082_DATE_FORMAT.format(archivedMessage.getTime()));
+  delay.addAttribute("stamp",XMPPDateTimeFormat.format(archivedMessage.getTime()));
   Document stanza;
   try {
     stanza=DocumentHelper.parseText(archivedMessage.getStanza());
