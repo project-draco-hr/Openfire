@@ -1,0 +1,13 @@
+{
+  if (xmppConnection == null || !xmppConnection.isConnected()) {
+    return null;
+  }
+  final JingleChannelIQ iq=new JingleChannelIQ();
+  iq.setFrom(xmppConnection.getUser());
+  iq.setTo(serviceNode);
+  PacketCollector collector=xmppConnection.createPacketCollector(new PacketIDFilter(iq.getPacketID()));
+  xmppConnection.sendPacket(iq);
+  JingleChannelIQ result=(JingleChannelIQ)collector.nextResult(Math.round(SmackConfiguration.getPacketReplyTimeout() * 1.5));
+  collector.cancel();
+  return result;
+}

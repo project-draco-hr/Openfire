@@ -1,0 +1,19 @@
+{
+  connection.connect();
+  connection.addConnectionListener(this);
+  if (tryCreateAccount) {
+    try {
+      connection.getAccountManager().createAccount(user,password);
+      try {
+        Thread.sleep(200);
+      }
+ catch (      InterruptedException e) {
+      }
+    }
+ catch (    final XMPPException e) {
+    }
+  }
+  connection.login(user,password);
+  connection.getRoster().setSubscriptionMode(mode);
+  setup();
+}
