@@ -1,0 +1,10 @@
+{
+  final JingleTrackerIQ iq=new JingleTrackerIQ();
+  iq.setType(IQ.Type.RESULT);
+  for (  final TrackerEntry entry : trackerEntries.values()) {
+    if (!entry.getPolicy().equals(TrackerEntry.Policy._roster)) {
+      iq.addEntry(entry);
+    }
+  }
+  return iq;
+}

@@ -1,0 +1,23 @@
+{
+  try {
+    final RelayChannel rc=RelayChannel.createLocalRelayChannel("0.0.0.0",10000,40000);
+    final int id=ids.incrementAndGet();
+    final String sId=String.valueOf(id);
+    rc.setAttachment(sId);
+    channels.put(sId,rc);
+    final JingleChannelIQ result=new JingleChannelIQ();
+    result.setType(IQ.Type.RESULT);
+    result.setTo(iq.getFrom());
+    result.setFrom(iq.getTo());
+    result.setPacketID(iq.getPacketID());
+    result.setHost(rc.getIp());
+    result.setLocalport(rc.getPortA());
+    result.setRemoteport(rc.getPortB());
+    result.setId(sId);
+    return result;
+  }
+ catch (  IOException e) {
+    e.printStackTrace();
+    return JingleChannelIQ.createEmptyError();
+  }
+}

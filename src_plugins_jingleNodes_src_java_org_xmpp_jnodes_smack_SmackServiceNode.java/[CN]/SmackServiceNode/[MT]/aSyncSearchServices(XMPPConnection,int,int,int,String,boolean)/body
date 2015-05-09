@@ -1,0 +1,11 @@
+{
+  final MappedNodes mappedNodes=new MappedNodes();
+  final Runnable bgTask=new Runnable(){
+    @Override public void run(){
+      searchServices(new ConcurrentHashMap<String,String>(),xmppConnection,maxEntries,maxDepth,maxSearchNodes,protocol,searchBuddies,mappedNodes);
+    }
+  }
+;
+  executorService.submit(bgTask);
+  return mappedNodes;
+}

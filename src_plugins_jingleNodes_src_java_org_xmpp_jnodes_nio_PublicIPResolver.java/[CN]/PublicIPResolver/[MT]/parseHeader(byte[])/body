@@ -1,0 +1,25 @@
+{
+  byte[] typeArray=new byte[2];
+  System.arraycopy(data,0,typeArray,0,2);
+  int type=unsignedShortToInt(typeArray);
+  byte[] lengthArray=new byte[2];
+  System.arraycopy(data,2,lengthArray,0,2);
+  int lengthValue=unsignedShortToInt(lengthArray);
+  byte[] valueArray=new byte[lengthValue];
+  System.arraycopy(data,4,valueArray,0,lengthValue);
+  if (data.length >= 8) {
+    int family=unsignedByteToInt(valueArray[1]);
+    if (family == 1) {
+      byte[] portArray=new byte[2];
+      System.arraycopy(valueArray,2,portArray,0,2);
+      int port=unsignedShortToInt(portArray);
+      int firstOctet=unsignedByteToInt(valueArray[4]);
+      int secondOctet=unsignedByteToInt(valueArray[5]);
+      int thirdOctet=unsignedByteToInt(valueArray[6]);
+      int fourthOctet=unsignedByteToInt(valueArray[7]);
+      final StringBuilder ip=new StringBuilder().append(firstOctet).append(".").append(secondOctet).append(".").append(thirdOctet).append(".").append(fourthOctet);
+      return new Header(new InetSocketAddress(ip.toString(),port),type,lengthValue + 4);
+    }
+  }
+  return new Header(null,-1,lengthValue + 4);
+}

@@ -1,0 +1,14 @@
+{
+  final DiscoverItems items=new DiscoverItems();
+  items.setTo(startPoint);
+  PacketCollector collector=xmppConnection.createPacketCollector(new PacketIDFilter(items.getPacketID()));
+  xmppConnection.sendPacket(items);
+  DiscoverItems result=(DiscoverItems)collector.nextResult(Math.round(SmackConfiguration.getPacketReplyTimeout() * 1.5));
+  if (result != null) {
+    final Iterator<DiscoverItems.Item> i=result.getItems();
+    for (DiscoverItems.Item item=i.hasNext() ? i.next() : null; item != null; item=i.hasNext() ? i.next() : null) {
+      deepSearch(xmppConnection,maxEntries,item.getEntityID(),mappedNodes,maxDepth,maxSearchNodes,protocol,visited);
+    }
+  }
+  collector.cancel();
+}

@@ -1,0 +1,19 @@
+{
+  System.out.println("Received: " + packet.toXML());
+  if (packet instanceof JingleChannelIQ) {
+    final JingleChannelIQ request=(JingleChannelIQ)packet;
+    if (request.isRequest()) {
+      connection.sendPacket(createUdpChannel(request));
+    }
+  }
+ else   if (packet instanceof JingleTrackerIQ) {
+    final JingleTrackerIQ iq=(JingleTrackerIQ)packet;
+    if (iq.isRequest()) {
+      final JingleTrackerIQ result=createKnownNodes();
+      result.setPacketID(packet.getPacketID());
+      result.setFrom(packet.getTo());
+      result.setTo(packet.getFrom());
+      connection.sendPacket(result);
+    }
+  }
+}

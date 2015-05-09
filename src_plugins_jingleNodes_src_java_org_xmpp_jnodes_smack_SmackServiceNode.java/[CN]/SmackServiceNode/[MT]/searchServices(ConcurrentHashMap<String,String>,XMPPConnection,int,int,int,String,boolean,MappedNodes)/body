@@ -1,0 +1,18 @@
+{
+  if (xmppConnection == null || !xmppConnection.isConnected()) {
+    return null;
+  }
+  searchDiscoItems(xmppConnection,maxEntries,xmppConnection.getServiceName(),mappedNodes,maxDepth - 1,maxSearchNodes,protocol,visited);
+  deepSearch(xmppConnection,maxEntries,xmppConnection.getHost(),mappedNodes,maxDepth - 1,maxSearchNodes,protocol,visited);
+  if (xmppConnection.getRoster() != null && searchBuddies) {
+    for (    final RosterEntry re : xmppConnection.getRoster().getEntries()) {
+      for (final Iterator<Presence> i=xmppConnection.getRoster().getPresences(re.getUser()); i.hasNext(); ) {
+        final Presence presence=i.next();
+        if (presence.isAvailable()) {
+          deepSearch(xmppConnection,maxEntries,presence.getFrom(),mappedNodes,maxDepth - 1,maxSearchNodes,protocol,visited);
+        }
+      }
+    }
+  }
+  return mappedNodes;
+}

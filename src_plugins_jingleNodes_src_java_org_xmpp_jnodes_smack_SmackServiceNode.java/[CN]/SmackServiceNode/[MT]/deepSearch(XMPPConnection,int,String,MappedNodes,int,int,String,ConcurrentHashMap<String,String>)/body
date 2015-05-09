@@ -1,0 +1,29 @@
+{
+  if (xmppConnection == null || !xmppConnection.isConnected()) {
+    return;
+  }
+  if (mappedNodes.getRelayEntries().size() > maxEntries || maxDepth <= 0) {
+    return;
+  }
+  if (startPoint.equals(xmppConnection.getUser())) {
+    return;
+  }
+  if (visited.size() > maxSearchNodes) {
+    return;
+  }
+  JingleTrackerIQ result=getServices(xmppConnection,startPoint);
+  visited.put(startPoint,startPoint);
+  if (result != null && result.getType().equals(IQ.Type.RESULT)) {
+    for (    final TrackerEntry entry : result.getEntries()) {
+      if (entry.getType().equals(TrackerEntry.Type.tracker)) {
+        mappedNodes.getTrackerEntries().put(entry.getJid(),entry);
+        deepSearch(xmppConnection,maxEntries,entry.getJid(),mappedNodes,maxDepth - 1,maxSearchNodes,protocol,visited);
+      }
+ else       if (entry.getType().equals(TrackerEntry.Type.relay)) {
+        if (protocol == null || protocol.equals(entry.getProtocol())) {
+          mappedNodes.getRelayEntries().put(entry.getJid(),entry);
+        }
+      }
+    }
+  }
+}
