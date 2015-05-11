@@ -1,0 +1,25 @@
+{
+  if (archivedMessage.getStanza() == null) {
+    return;
+  }
+  Message messagePacket=new Message();
+  messagePacket.setTo(session.getAddress());
+  Element result=messagePacket.addChildElement("result",NAMESPACE);
+  result.addAttribute("id",archivedMessage.getId().toString());
+  if (queryRequest.getQueryid() != null) {
+    result.addAttribute("queryid",queryRequest.getQueryid());
+  }
+  Element forwarded=result.addElement("forwarded","urn:xmpp:forward:0");
+  Element delay=forwarded.addElement("delay","urn:xmpp:delay");
+  delay.addAttribute("stamp",XMPPDateTimeFormat.format(archivedMessage.getTime()));
+  Document stanza;
+  try {
+    stanza=DocumentHelper.parseText(archivedMessage.getStanza());
+    forwarded.add(stanza.getRootElement());
+  }
+ catch (  DocumentException e) {
+    Log.error("Failed to parse message stanza.",e);
+    return;
+  }
+  session.process(messagePacket);
+}

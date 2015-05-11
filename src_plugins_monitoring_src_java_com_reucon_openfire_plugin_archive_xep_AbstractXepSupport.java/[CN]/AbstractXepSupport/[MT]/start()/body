@@ -1,0 +1,20 @@
+{
+  for (  IQHandler iqHandler : iqHandlers) {
+    try {
+      iqHandler.initialize(server);
+      iqHandler.start();
+    }
+ catch (    Exception e) {
+      Log.error("Unable to initialize and start " + iqHandler.getClass());
+      continue;
+    }
+    element2Handlers.put(iqHandler.getInfo().getName(),iqHandler);
+    if (iqHandler instanceof ServerFeaturesProvider) {
+      for (Iterator<String> i=((ServerFeaturesProvider)iqHandler).getFeatures(); i.hasNext(); ) {
+        server.getIQDiscoInfoHandler().addServerFeature(i.next());
+      }
+    }
+  }
+  server.getIQDiscoInfoHandler().addServerFeature(namespace);
+  server.getIQRouter().addHandler(iqDispatcher);
+}

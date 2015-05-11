@@ -1,0 +1,31 @@
+{
+  String withField=null;
+  String startField=null;
+  String endField=null;
+  DataForm dataForm=queryRequest.getDataForm();
+  if (dataForm != null) {
+    if (dataForm.getField("with") != null) {
+      withField=dataForm.getField("with").getFirstValue();
+    }
+    if (dataForm.getField("start") != null) {
+      startField=dataForm.getField("start").getFirstValue();
+    }
+    if (dataForm.getField("end") != null) {
+      endField=dataForm.getField("end").getFirstValue();
+    }
+  }
+  Date startDate=null;
+  Date endDate=null;
+  try {
+    if (startField != null) {
+      startDate=xmppDateTimeFormat.parseString(startField);
+    }
+    if (endField != null) {
+      endDate=xmppDateTimeFormat.parseString(endField);
+    }
+  }
+ catch (  ParseException e) {
+    Log.error("Error parsing query date filters.",e);
+  }
+  return getPersistenceManager().findMessages(startDate,endDate,queryRequest.getArchive().toBareJID(),withField,queryRequest.getResultSet());
+}

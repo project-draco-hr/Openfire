@@ -1,0 +1,26 @@
+{
+  LocalClientSession session=(LocalClientSession)sessionManager.getSession(packet.getFrom());
+  if (session == null) {
+    Log.error("Error during resource binding. Session not found in " + sessionManager.getPreAuthenticatedKeys() + " for key "+ packet.getFrom());
+    return buildErrorResponse(packet);
+  }
+  if (packet.getType().equals(IQ.Type.get)) {
+    sendSupportedFieldsResult(packet,session);
+    return null;
+  }
+  JID archiveJid=packet.getFrom();
+  if (packet.getElement().attribute("to") != null) {
+    archiveJid=new JID(packet.getElement().attribute("to").getStringValue());
+    if (!archiveJid.toBareJID().equals(packet.getFrom().toBareJID())) {
+      return buildForbiddenResponse(packet);
+    }
+  }
+  sendAcknowledgementResult(packet,session);
+  final QueryRequest queryRequest=new QueryRequest(packet.getChildElement(),archiveJid);
+  Collection<ArchivedMessage> archivedMessages=retrieveMessages(queryRequest);
+  for (  ArchivedMessage archivedMessage : archivedMessages) {
+    sendMessageResult(session,queryRequest,archivedMessage);
+  }
+  sendFinalMessage(session,queryRequest);
+  return null;
+}
