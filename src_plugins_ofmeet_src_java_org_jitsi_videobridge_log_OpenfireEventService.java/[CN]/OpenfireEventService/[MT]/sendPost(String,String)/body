@@ -1,0 +1,14 @@
+{
+  try {
+    String focusUsername="focus";
+    String focusUserJid=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.focus.user.jid");
+    if (focusUserJid != null) {
+      focusUsername=(new JID(focusUserJid)).getNode();
+    }
+    Log.info("OpenfireEventService sendPost " + focusUsername + " "+ detail);
+    SecurityAuditManager.getInstance().logEvent(focusUsername,summary,detail);
+  }
+ catch (  Exception e) {
+    Log.error("Failed to send event to Openfire: " + e);
+  }
+}

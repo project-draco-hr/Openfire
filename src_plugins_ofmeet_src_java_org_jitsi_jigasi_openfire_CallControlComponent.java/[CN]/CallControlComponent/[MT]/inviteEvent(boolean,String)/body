@@ -46,7 +46,10 @@
           Element hangup=presence.addChildElement("hangup","urn:xmpp:rayo:1");
           hangup.addElement("header").addAttribute("name","caller_id").addAttribute("value",session.jabberRemote);
           hangup.addElement("header").addAttribute("name","called_id").addAttribute("value",session.jabberLocal);
-          callSessions.remove(callId);
+          CallSession cs=callSessions.remove(callId);
+          if (cs != null) {
+            updateCallRecord(cs.startTimestamp,(int)(System.currentTimeMillis() - cs.startTimestamp));
+          }
         }
         sendPacket(presence);
       }

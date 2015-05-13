@@ -56,5 +56,10 @@
       Log.error("CallControlComponent findCreateSession",e);
     }
   }
+  if (session != null) {
+    long startTimestamp=System.currentTimeMillis();
+    session.startTimestamp=startTimestamp;
+    createCallRecord("admin",from,confJID,startTimestamp,0,"received");
+  }
   return session;
 }
