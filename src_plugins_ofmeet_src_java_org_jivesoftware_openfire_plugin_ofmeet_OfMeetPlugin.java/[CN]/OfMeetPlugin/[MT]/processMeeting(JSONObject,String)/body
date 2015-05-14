@@ -23,6 +23,7 @@
       variables.put("url",url);
       variables.put("domain",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
       sendEmail(name,email,title,replaceTokens(template,variables),null);
+      SecurityAuditManager.getInstance().logEvent(user.getUsername(),"sent email - " + title,description);
     }
   }
  catch (  Exception e) {

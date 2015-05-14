@@ -47,7 +47,10 @@
             }
           }
           if (conference != null) {
-            makeCall(conference,confJid,to,callId);
+            String username=iq.getFrom().getNode();
+            long startTimestamp=System.currentTimeMillis();
+            makeCall(conference,confJid,to,callId,username,startTimestamp);
+            createCallRecord(username,confJid,to,startTimestamp,0,"dialed");
           }
  else {
             Log.error("CallControlComponent - can't find conference " + confId);
