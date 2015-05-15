@@ -1,0 +1,16 @@
+{
+  if (isEnabled()) {
+    if (ack.attribute("h") != null) {
+      long count=Long.valueOf(ack.attributeValue("h"));
+      Map<Long,Packet> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
+      long i=getClientProcessedStanzas();
+      while (i <= count) {
+        if (unacknowledgedStanzas.containsKey(i)) {
+          unacknowledgedStanzas.remove(i);
+        }
+        i++;
+      }
+      setClientProcessedStanzas(count);
+    }
+  }
+}

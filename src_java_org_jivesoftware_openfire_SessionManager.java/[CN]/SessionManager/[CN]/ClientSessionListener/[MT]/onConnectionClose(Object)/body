@@ -8,6 +8,14 @@
         presence.setFrom(session.getAddress());
         router.route(presence);
       }
+      if (session.getStreamManager().isEnabled()) {
+        Map<Long,Packet> unacknowledgedStanzas=session.getStreamManager().getUnacknowledgedServerStanzas();
+        if (!unacknowledgedStanzas.isEmpty()) {
+          for (          Entry<Long,Packet> unacknowledgedStanza : unacknowledgedStanzas.entrySet()) {
+            router.route(unacknowledgedStanza.getValue());
+          }
+        }
+      }
     }
   finally {
       removeSession(session);
