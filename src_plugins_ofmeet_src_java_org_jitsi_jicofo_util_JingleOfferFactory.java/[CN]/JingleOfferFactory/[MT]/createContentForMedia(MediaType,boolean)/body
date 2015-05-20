@@ -85,6 +85,10 @@
     nack.setFeedbackType("nack");
     vp8.addRtcpFeedbackType(nack);
     if (!enableFirefoxHacks) {
+      RtcpFbPacketExtension nackPli=new RtcpFbPacketExtension();
+      nackPli.setFeedbackType("nack");
+      nackPli.setFeedbackSubtype("pli");
+      vp8.addRtcpFeedbackType(nackPli);
       RtcpFbPacketExtension remb=new RtcpFbPacketExtension();
       remb.setFeedbackType("goog-remb");
       vp8.addRtcpFeedbackType(remb);
