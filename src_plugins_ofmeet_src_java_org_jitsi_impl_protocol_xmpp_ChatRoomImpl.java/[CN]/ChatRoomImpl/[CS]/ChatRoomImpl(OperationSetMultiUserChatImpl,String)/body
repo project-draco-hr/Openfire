@@ -4,4 +4,8 @@
   muc=new MultiUserChat(parentChatOperationSet.getConnection(),roomName);
   muc.addParticipantStatusListener(new MemberListener());
   muc.addParticipantListener(new ParticipantListener());
+  String roomId=roomName;
+  int pos=roomId.indexOf("@");
+  if (pos > -1)   roomId=roomId.substring(0,pos);
+  this.room=XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatService("conference").getChatRoom(roomId);
 }
