@@ -6,7 +6,9 @@
     }
   }
  catch (  SSLPeerUnverifiedException e) {
-    Log.warn("Error retrieving client certificates of: " + session,e);
+    if (Log.isTraceEnabled()) {
+      Log.trace("Peer does not offer certificates in session: " + session,e);
+    }
   }
   return new Certificate[0];
 }
