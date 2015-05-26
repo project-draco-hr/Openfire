@@ -1,14 +1,8 @@
 {
-  if (cause instanceof IOException) {
-    Log.info("ConnectionHandler reports IOException for session: " + session,cause);
-    if (cause instanceof SSLHandshakeException) {
-      session.close(true);
-    }
-  }
- else   if (cause instanceof ProtocolDecoderException) {
-    Log.warn("Closing session due to exception: " + session,cause);
+  Log.warn("Closing session due to exception: " + session,cause);
+  try {
     final StreamError error;
-    if (cause.getCause() != null && cause.getCause() instanceof XMLNotWellFormedException) {
+    if (cause != null && (cause instanceof XMLNotWellFormedException || (cause.getCause() != null && cause.getCause() instanceof XMLNotWellFormedException))) {
       error=new StreamError(StreamError.Condition.not_well_formed);
     }
  else {
@@ -16,9 +10,8 @@
     }
     final Connection connection=(Connection)session.getAttribute(CONNECTION);
     connection.deliverRawText(error.toXML());
-    session.close(true);
   }
- else {
-    Log.error("ConnectionHandler reports unexpected exception for session: " + session,cause);
+  finally {
+    session.close(false);
   }
 }
