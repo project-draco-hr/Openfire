@@ -1,3 +1,6 @@
 {
-  return ((InetSocketAddress)ioSession.getRemoteAddress()).getAddress().getHostAddress();
+  final SocketAddress remoteAddress=ioSession.getRemoteAddress();
+  final InetSocketAddress socketAddress=(InetSocketAddress)remoteAddress;
+  final InetAddress inetAddress=socketAddress.getAddress();
+  return inetAddress.getHostAddress();
 }
