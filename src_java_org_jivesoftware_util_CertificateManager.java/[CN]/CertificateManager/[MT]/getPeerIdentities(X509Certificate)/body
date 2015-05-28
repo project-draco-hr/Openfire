@@ -1,12 +1,9 @@
 {
-  List<String> names=getSubjectAlternativeNames(x509Certificate);
-  if (names.isEmpty()) {
-    String name=x509Certificate.getSubjectDN().getName();
-    Matcher matcher=cnPattern.matcher(name);
-    names=new ArrayList<String>();
-    while (matcher.find()) {
-      names.add(matcher.group(2));
-    }
+  List<String> names=new ArrayList<String>();
+  for (  CertificateIdentityMapping mapping : certIdentityMapping) {
+    List<String> identities=mapping.mapIdentity(x509Certificate);
+    Log.debug("CertificateManager: " + mapping.name() + " returned "+ identities.toString());
+    names.addAll(identities);
   }
   return names;
 }
