@@ -4,7 +4,7 @@ synchronized (this) {
       return;
     }
     try {
-      deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>",false);
+      deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>",true);
     }
  catch (    Exception e) {
     }
@@ -14,5 +14,5 @@ synchronized (this) {
     closed=true;
   }
   notifyCloseListeners();
-  ioSession.close(false);
+  ioSession.close(true);
 }
