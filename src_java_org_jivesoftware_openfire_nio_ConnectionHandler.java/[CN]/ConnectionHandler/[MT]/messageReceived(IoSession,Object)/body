@@ -7,7 +7,9 @@
   }
  catch (  Exception e) {
     Log.error("Closing connection due to error while processing message: " + message,e);
-    Connection connection=(Connection)session.getAttribute(CONNECTION);
-    connection.close();
+    final Connection connection=(Connection)session.getAttribute(CONNECTION);
+    if (connection != null) {
+      connection.close();
+    }
   }
 }

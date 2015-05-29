@@ -1,3 +1,31 @@
 {
-  deliverRawText(text,true);
+  if (state != State.CLOSED) {
+    boolean errorDelivering=false;
+    IoBuffer buffer=IoBuffer.allocate(text.length());
+    buffer.setAutoExpand(true);
+    try {
+      buffer.put(text.getBytes(CHARSET));
+      if (flashClient) {
+        buffer.put((byte)'\0');
+      }
+      buffer.flip();
+      ioSessionLock.lock();
+      try {
+        if (!ioSession.isConnected()) {
+          throw new IOException("Connection reset/closed by peer");
+        }
+        ioSession.write(buffer);
+      }
+  finally {
+        ioSessionLock.unlock();
+      }
+    }
+ catch (    Exception e) {
+      Log.debug("Error delivering raw text:\n" + text,e);
+      errorDelivering=true;
+    }
+    if (errorDelivering) {
+      close();
+    }
+  }
 }
