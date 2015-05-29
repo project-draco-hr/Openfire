@@ -8,14 +8,23 @@
         return;
       }
     }
-    if (packet.getError() != null && packet.getError().getType().equals(PacketError.Type.cancel)) {
-      removeUser(packet.getFrom());
+ else     if (packet instanceof Message) {
+      Message msg=(Message)packet;
+      if (msg.getType() == Message.Type.error) {
+        removeUser(packet.getFrom());
+        return;
+      }
     }
- else {
-      JID receipient=packet.getTo();
-      String roomName=receipient != null ? receipient.getNode() : null;
-      getChatUser(packet.getFrom(),roomName).process(packet);
+ else     if (packet instanceof Presence) {
+      Presence pres=(Presence)packet;
+      if (pres.getType() == Presence.Type.error) {
+        removeUser(packet.getFrom());
+        return;
+      }
     }
+    JID recipient=packet.getTo();
+    String roomName=recipient != null ? recipient.getNode() : null;
+    getChatUser(packet.getFrom(),roomName).process(packet);
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);
