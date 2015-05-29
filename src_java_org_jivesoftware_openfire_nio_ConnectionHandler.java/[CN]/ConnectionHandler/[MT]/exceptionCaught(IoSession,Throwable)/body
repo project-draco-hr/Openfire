@@ -1,5 +1,5 @@
 {
-  Log.warn("Closing session due to exception: " + session,cause);
+  Log.warn("Closing connection due to exception in session: " + session,cause);
   try {
     final StreamError error;
     if (cause != null && (cause instanceof XMLNotWellFormedException || (cause.getCause() != null && cause.getCause() instanceof XMLNotWellFormedException))) {
@@ -12,6 +12,9 @@
     connection.deliverRawText(error.toXML());
   }
   finally {
-    session.close(false);
+    final Connection connection=(Connection)session.getAttribute(CONNECTION);
+    if (connection != null) {
+      connection.close();
+    }
   }
 }
