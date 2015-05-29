@@ -1,31 +1,3 @@
 {
-  boolean notifyClose=false;
-synchronized (this) {
-    try {
-      if (state == State.CLOSED) {
-        return;
-      }
-      if (state != State.CLOSING) {
-        state=State.CLOSING;
-        try {
-          deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
-        }
- catch (        Exception e) {
-        }
-      }
-      if (state == State.CLOSING) {
-        notifyClose=true;
-      }
-    }
-  finally {
-      state=State.CLOSED;
-      if (session != null) {
-        session.setStatus(Session.STATUS_CLOSED);
-      }
-      ioSession.close(true);
-    }
-  }
-  if (notifyClose) {
-    notifyCloseListeners();
-  }
+  close(false);
 }
