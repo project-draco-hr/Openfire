@@ -1,9 +1,11 @@
 {
   if (session.getIdleCount(status) > 1) {
     final Connection connection=(Connection)session.getAttribute(CONNECTION);
-    if (Log.isDebugEnabled()) {
-      Log.debug("ConnectionHandler: Closing connection that has been idle: " + connection);
+    if (connection != null) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("ConnectionHandler: Closing connection that has been idle: " + connection);
+      }
+      connection.close();
     }
-    connection.close();
   }
 }
