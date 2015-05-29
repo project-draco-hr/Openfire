@@ -1,25 +1,31 @@
 {
-  try {
-    if (state == State.CLOSED) {
-      return;
-    }
-    if (state != State.CLOSING) {
-      state=State.CLOSING;
-      try {
-        deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
+  boolean notifyClose=false;
+synchronized (this) {
+    try {
+      if (state == State.CLOSED) {
+        return;
       }
- catch (      Exception e) {
+      if (state != State.CLOSING) {
+        state=State.CLOSING;
+        try {
+          deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
+        }
+ catch (        Exception e) {
+        }
+      }
+      if (state == State.CLOSING) {
+        notifyClose=true;
       }
     }
-    if (state == State.CLOSING) {
-      notifyCloseListeners();
+  finally {
+      state=State.CLOSED;
+      if (session != null) {
+        session.setStatus(Session.STATUS_CLOSED);
+      }
+      ioSession.close(true);
     }
   }
-  finally {
-    state=State.CLOSED;
-    if (session != null) {
-      session.setStatus(Session.STATUS_CLOSED);
-    }
-    ioSession.close(true);
+  if (notifyClose) {
+    notifyCloseListeners();
   }
 }
