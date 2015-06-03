@@ -1,0 +1,51 @@
+{
+  List<SessionEntity> sessions=new ArrayList<SessionEntity>();
+  SessionEntities sessionEntities=new SessionEntities(sessions);
+  for (  ClientSession clientSession : clientSessions) {
+    SessionEntity session=new SessionEntity();
+    session.setSessionId(clientSession.getAddress().toString());
+    if (!clientSession.isAnonymousUser()) {
+      try {
+        session.setUsername(clientSession.getUsername());
+      }
+ catch (      UserNotFoundException e) {
+        throw new ServiceException("Could not get user","",ExceptionType.USER_NOT_FOUND_EXCEPTION,Response.Status.NOT_FOUND,e);
+      }
+    }
+ else {
+      session.setUsername("Anonymous");
+    }
+    session.setRessource(clientSession.getAddress().getResource());
+    session.setNode(session.getNode());
+    String status="";
+    if (clientSession.getStatus() == Session.STATUS_CLOSED) {
+      status="Closed";
+    }
+ else     if (clientSession.getStatus() == Session.STATUS_CONNECTED) {
+      status="Connected";
+    }
+ else     if (clientSession.getStatus() == Session.STATUS_AUTHENTICATED) {
+      status="Authenticated";
+    }
+ else {
+      status="Unkown";
+    }
+    session.setSessionStatus(status);
+    if (clientSession.getPresence() != null) {
+      session.setPresenceStatus(clientSession.getPresence().getStatus());
+      session.setPriority(clientSession.getPresence().getPriority());
+    }
+    try {
+      session.setHostAddress(clientSession.getHostAddress());
+      session.setHostName(clientSession.getHostName());
+    }
+ catch (    UnknownHostException e) {
+      LOG.error("UnknownHostException",e);
+    }
+    session.setCreationDate(clientSession.getCreationDate());
+    session.setLastActionDate(clientSession.getLastActiveDate());
+    session.setSecure(clientSession.isSecure());
+    sessions.add(session);
+  }
+  return sessionEntities;
+}
