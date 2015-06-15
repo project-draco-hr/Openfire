@@ -1,5 +1,6 @@
 {
   final SocketAddress remoteAddress=ioSession.getRemoteAddress();
+  if (remoteAddress == null)   throw new UnknownHostException();
   final InetSocketAddress socketAddress=(InetSocketAddress)remoteAddress;
   final InetAddress inetAddress=socketAddress.getAddress();
   return inetAddress.getHostAddress();
