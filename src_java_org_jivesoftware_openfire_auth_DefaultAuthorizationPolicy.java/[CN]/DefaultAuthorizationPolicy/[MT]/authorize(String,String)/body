@@ -12,18 +12,20 @@
     authenUser=authenID.substring(0,(authenID.lastIndexOf("@")));
     authenRealm=authenID.substring((authenID.lastIndexOf("@") + 1));
   }
-  if (!userUser.equals(authenUser)) {
-    if (JiveGlobals.getBooleanProperty("xmpp.auth.ignorecase",true)) {
-      if (!userUser.toLowerCase().equals(authenUser.toLowerCase())) {
-        if (Log.isDebugEnabled()) {
-          Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
+  if (!proxyAuth || !AdminManager.getInstance().isUserAdmin(authenUser,true)) {
+    if (!userUser.equals(authenUser)) {
+      if (JiveGlobals.getBooleanProperty("xmpp.auth.ignorecase",true)) {
+        if (!userUser.toLowerCase().equals(authenUser.toLowerCase())) {
+          if (Log.isDebugEnabled()) {
+            Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
+          }
+          return false;
         }
+      }
+ else {
+        Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
         return false;
       }
-    }
- else {
-      Log.debug("DefaultAuthorizationPolicy: usernames don't match (" + userUser + " "+ authenUser+ ")");
-      return false;
     }
   }
   Log.debug("DefaultAuthorizationPolicy: Checking authenID realm");
