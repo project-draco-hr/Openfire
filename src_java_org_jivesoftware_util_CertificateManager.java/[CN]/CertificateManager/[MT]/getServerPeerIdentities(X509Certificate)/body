@@ -1,0 +1,9 @@
+{
+  List<String> names=new ArrayList<String>();
+  for (  CertificateIdentityMapping mapping : serverCertIdentityMapping) {
+    List<String> identities=mapping.mapIdentity(x509Certificate);
+    Log.debug("CertificateManager: " + mapping.name() + " returned "+ identities.toString());
+    names.addAll(identities);
+  }
+  return names;
+}
