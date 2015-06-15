@@ -29,7 +29,7 @@ props.put(Sasl.QOP,"auth");
 if (mechanism.equals("GSSAPI")) {
 props.put(Sasl.SERVER_AUTH,"TRUE");
 }
-SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",JiveGlobals.getProperty("xmpp.fqdn",session.getServerName()),props,new XMPPCallbackHandler());
+SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
 if (ss == null) {
 authenticationFailed(session,Failure.INVALID_MECHANISM);
 return Status.failed;
