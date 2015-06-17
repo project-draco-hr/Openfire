@@ -10,7 +10,6 @@
   env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
   env.put(Context.PROVIDER_URL,getProviderURL(baseDN));
   if (sslEnabled) {
-    env.put("java.naming.ldap.factory.socket","org.jivesoftware.util.SimpleSSLSocketFactory");
     env.put(Context.SECURITY_PROTOCOL,"ssl");
   }
   if (adminDN != null) {
@@ -31,6 +30,7 @@
   if (connectionPoolEnabled) {
     if (!startTlsEnabled) {
       env.put("com.sun.jndi.ldap.connect.pool","true");
+      System.setProperty("com.sun.jndi.ldap.connect.pool.protocol","plain ssl");
     }
  else {
       if (debug) {
@@ -61,7 +61,7 @@
     }
     StartTlsResponse tls=(StartTlsResponse)context.extendedOperation(new StartTlsRequest());
     try {
-      SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
+      SSLSession session=tls.negotiate();
       context.setTlsResponse(tls);
       context.setSslSession(session);
       if (debug) {
