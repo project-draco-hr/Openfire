@@ -14,7 +14,7 @@ synchronized (connectionLock) {
   transfer.setTransferFuture(executor.submit(new Runnable(){
     public void run(){
       try {
-        transferManager.fireFileTransferIntercept(transfer,true);
+        transferManager.fireFileTransferStart(transfer.getSessionID(),true);
       }
  catch (      FileTransferRejectedException e) {
         notifyFailure(transfer,e);
@@ -22,9 +22,11 @@ synchronized (connectionLock) {
       }
       try {
         transfer.doTransfer();
+        transferManager.fireFileTransferCompleted(transfer.getSessionID(),true);
       }
  catch (      IOException e) {
         Log.error("Error during file transfer",e);
+        transferManager.fireFileTransferCompleted(transfer.getSessionID(),false);
       }
  finally {
         connectionMap.remove(digest);

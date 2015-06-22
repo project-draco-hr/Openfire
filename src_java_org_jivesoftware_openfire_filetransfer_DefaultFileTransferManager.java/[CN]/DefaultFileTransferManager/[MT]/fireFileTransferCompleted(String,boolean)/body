@@ -1,0 +1,11 @@
+{
+  final FileTransfer transfer=fileTransferMap.get(sid);
+  for (  FileTransferEventListener listener : eventListeners) {
+    try {
+      listener.fileTransferComplete(transfer,wasSuccessful);
+    }
+ catch (    Exception ex) {
+      Log.warn("Listener '{}' threw exception when being informed of file transfer complete for transfer '{}'.",listener,transfer,ex);
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  final FileTransfer transfer=fileTransferMap.get(sid);
+  for (  FileTransferEventListener listener : eventListeners) {
+    try {
+      listener.fileTransferStart(transfer,isReady);
+    }
+ catch (    FileTransferRejectedException ex) {
+      Log.debug("Listener '{}' rejected file transfer '{}'.",listener,transfer);
+      throw ex;
+    }
+catch (    Exception ex) {
+      Log.warn("Listener '{}' threw exception when being informed of file transfer complete for transfer '{}'.",listener,transfer,ex);
+    }
+  }
+}
