@@ -1,0 +1,7 @@
+{
+  final StreamError error=new StreamError(StreamError.Condition.not_authorized);
+  for (  ClientSession session : SessionManager.getInstance().getSessions(username)) {
+    session.deliverRawText(error.toXML());
+    session.close();
+  }
+}
