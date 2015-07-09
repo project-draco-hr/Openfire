@@ -61,4 +61,16 @@
       maxAge=DEFAULT_MAX_AGE * JiveConstants.DAY;
     }
   }
+ else   if (property.equals("conversation.maxTimeDebug")) {
+    String value=(String)params.get("value");
+    try {
+      Log.info("Monitoring plugin max time overridden (as used by userCreation plugin)");
+      maxTime=Integer.parseInt(value);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+      Log.info("Monitoring plugin max time reset back to " + DEFAULT_MAX_TIME + " minutes");
+      maxTime=DEFAULT_MAX_TIME * JiveConstants.MINUTE;
+    }
+  }
 }
