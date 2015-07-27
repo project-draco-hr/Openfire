@@ -1,7 +1,7 @@
 {
   StringBuilder sb=new StringBuilder(340);
   sb.append(String.format("<failed xmlns='%s'>",getNamespace()));
-  sb.append("<unexpected-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>");
+  sb.append(new PacketError(PacketError.Condition.unexpected_request).toXML());
   sb.append("</failed>");
   getConnection().deliverRawText(sb.toString());
 }
