@@ -1,12 +1,6 @@
 {
   if (state != State.RUNNING) {
-    if (backupDeliverer == null) {
-      Log.error("Failed to deliver packet: " + packet.toXML());
-      throw new IllegalStateException("Connection closed");
-    }
-    PacketDeliverer backup=backupDeliverer;
-    backupDeliverer=null;
-    backup.deliver(packet);
+    backupDeliverer.deliver(packet);
   }
  else {
     boolean errorDelivering=false;
