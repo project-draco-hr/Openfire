@@ -2,12 +2,17 @@
   if (isEnabled()) {
     if (ack.attribute("h") != null) {
       long count=Long.valueOf(ack.attributeValue("h"));
-      Map<Long,Packet> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
+      Deque<UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
       long i=getClientProcessedStanzas();
-      while (i <= count) {
-        if (unacknowledgedStanzas.containsKey(i)) {
-          unacknowledgedStanzas.remove(i);
+      if (count < i) {
+        if (i > mask) {
+          while (count < i) {
+            count+=mask + 1;
+          }
         }
+      }
+      while (i < count) {
+        unacknowledgedStanzas.removeFirst();
         i++;
       }
       setClientProcessedStanzas(count);
