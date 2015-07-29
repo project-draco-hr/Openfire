@@ -1,0 +1,29 @@
+{
+  if (XmppWebSocket.isCompressionEnabled()) {
+    factory.getExtensionFactory().register("permessage-deflate",PerMessageDeflateExtension.class);
+  }
+  factory.setCreator(new WebSocketCreator(){
+    @Override public Object createWebSocket(    ServletUpgradeRequest req,    ServletUpgradeResponse resp){
+      ClassLoader ccl=Thread.currentThread().getContextClassLoader();
+      try {
+        ClassLoader pcl=getPluginClassLoader();
+        Thread.currentThread().setContextClassLoader(pcl == null ? ccl : pcl);
+        for (        String subprotocol : req.getSubProtocols()) {
+          if ("xmpp".equals(subprotocol)) {
+            resp.setAcceptedSubProtocol(subprotocol);
+            return new XmppWebSocket();
+          }
+        }
+      }
+ catch (      Exception e) {
+        Log.warn(MessageFormat.format("Unable to load websocket factory: {0} ({1})",e.getClass().getName(),e.getMessage()));
+      }
+ finally {
+        Thread.currentThread().setContextClassLoader(ccl);
+      }
+      Log.warn("Failed to create websocket: " + req);
+      return null;
+    }
+  }
+);
+}

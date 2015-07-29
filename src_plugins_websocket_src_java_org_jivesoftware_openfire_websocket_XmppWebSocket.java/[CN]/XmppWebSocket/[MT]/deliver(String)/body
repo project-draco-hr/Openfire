@@ -1,0 +1,15 @@
+{
+  if (isWebSocketOpen()) {
+    try {
+      xmppSession.incrementServerPacketCount();
+      wsSession.getRemote().sendStringByFuture(packet);
+    }
+ catch (    Exception e) {
+      Log.error("Packet delivery  failed; session: " + wsSession,e);
+      Log.warn("Failed to deliver packet:\n" + packet);
+    }
+  }
+ else {
+    Log.warn("Failed to deliver packet; socket is closed:\n" + packet);
+  }
+}
