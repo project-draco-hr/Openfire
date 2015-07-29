@@ -1,3 +1,10 @@
 {
   conn.deliver(packet);
+  if (streamManager.isEnabled()) {
+    streamManager.incrementServerSentStanzas();
+    streamManager.getUnacknowledgedServerStanzas().addLast(new StreamManager.UnackedPacket(new Date(),packet.createCopy()));
+    if (getNumServerPackets() % JiveGlobals.getLongProperty("stream.management.requestFrequency",5) == 0) {
+      streamManager.sendServerRequest();
+    }
+  }
 }

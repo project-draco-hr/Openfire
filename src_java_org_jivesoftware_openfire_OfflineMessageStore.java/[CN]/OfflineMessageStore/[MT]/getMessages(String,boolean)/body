@@ -24,12 +24,15 @@
         }
         message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
       }
-      Element delay=message.addChildElement("delay","urn:xmpp:delay");
-      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
-      delay.addAttribute("stamp",XMPPDateTimeFormat.format(creationDate));
-      delay=message.addChildElement("x","jabber:x:delay");
-      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
-      delay.addAttribute("stamp",XMPPDateTimeFormat.formatOld(creationDate));
+      Element delaytest=message.getChildElement("delay","urn:xmpp:delay");
+      if (delaytest == null) {
+        Element delay=message.addChildElement("delay","urn:xmpp:delay");
+        delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
+        delay.addAttribute("stamp",XMPPDateTimeFormat.format(creationDate));
+        delay=message.addChildElement("x","jabber:x:delay");
+        delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
+        delay.addAttribute("stamp",XMPPDateTimeFormat.formatOld(creationDate));
+      }
       messages.add(message);
     }
     if (delete && !messages.isEmpty()) {
