@@ -19,7 +19,12 @@
     }
  else     if (Status.authenticated.equals(saslStatus)) {
       if (router == null) {
-        router=new StreamManagementPacketRouter(xmppSession);
+        if (isStreamManagementAvailable()) {
+          router=new StreamManagementPacketRouter(xmppSession);
+        }
+ else {
+          router=new SessionPacketRouter(xmppSession);
+        }
       }
       router.route(stanza);
     }
