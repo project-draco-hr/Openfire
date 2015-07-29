@@ -1,5 +1,6 @@
 {
   boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
+  boolean scramOnly=JiveGlobals.getBooleanProperty("user.scramHashedPasswordOnly");
   String encryptedPassword=null;
   if (username.contains("@")) {
     int index=username.indexOf("@");
@@ -11,13 +12,31 @@
       throw new UserNotFoundException();
     }
   }
-  if (!usePlainPassword) {
+  byte[] saltShaker=new byte[32];
+  random.nextBytes(saltShaker);
+  String salt=DatatypeConverter.printBase64Binary(saltShaker);
+  int iterations=JiveGlobals.getIntProperty("sasl.scram-sha-1.iteration-count",ScramUtils.DEFAULT_ITERATION_COUNT);
+  byte[] saltedPassword=null, clientKey=null, storedKey=null, serverKey=null;
+  try {
+    saltedPassword=ScramUtils.createSaltedPassword(saltShaker,password,iterations);
+    clientKey=ScramUtils.computeHmac(saltedPassword,"Client Key");
+    storedKey=MessageDigest.getInstance("SHA-1").digest(clientKey);
+    serverKey=ScramUtils.computeHmac(saltedPassword,"Server Key");
+  }
+ catch (  SaslException|NoSuchAlgorithmException|UnsupportedEncodingException e) {
+    Log.warn("Unable to persist values for SCRAM authentication.");
+  }
+  if (!scramOnly && !usePlainPassword) {
     try {
       encryptedPassword=AuthFactory.encryptPassword(password);
       password=null;
     }
  catch (    UnsupportedOperationException uoe) {
     }
+  }
+  if (scramOnly) {
+    encryptedPassword=null;
+    password=null;
   }
   Connection con=null;
   PreparedStatement pstmt=null;
@@ -36,7 +55,21 @@
  else {
       pstmt.setString(2,encryptedPassword);
     }
-    pstmt.setString(3,username);
+    if (storedKey == null) {
+      pstmt.setNull(3,Types.VARCHAR);
+    }
+ else {
+      pstmt.setString(3,DatatypeConverter.printBase64Binary(storedKey));
+    }
+    if (serverKey == null) {
+      pstmt.setNull(4,Types.VARCHAR);
+    }
+ else {
+      pstmt.setString(4,DatatypeConverter.printBase64Binary(serverKey));
+    }
+    pstmt.setString(5,salt);
+    pstmt.setInt(6,iterations);
+    pstmt.setString(7,username);
     pstmt.executeUpdate();
   }
  catch (  SQLException sqle) {

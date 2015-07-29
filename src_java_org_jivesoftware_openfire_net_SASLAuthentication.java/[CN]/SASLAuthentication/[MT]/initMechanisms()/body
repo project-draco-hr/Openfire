@@ -10,13 +10,14 @@
     mechanisms.add("PLAIN");
     mechanisms.add("DIGEST-MD5");
     mechanisms.add("CRAM-MD5");
+    mechanisms.add("SCRAM-SHA-1");
     mechanisms.add("JIVE-SHAREDSECRET");
   }
  else {
     StringTokenizer st=new StringTokenizer(available," ,\t\n\r\f");
     while (st.hasMoreTokens()) {
       String mech=st.nextToken().toUpperCase();
-      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("GSSAPI")|| mech.equals("EXTERNAL")|| mech.equals("JIVE-SHAREDSECRET")) {
+      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("SCRAM-SHA-1")|| mech.equals("GSSAPI")|| mech.equals("EXTERNAL")|| mech.equals("JIVE-SHAREDSECRET")) {
         Log.debug("SASLAuthentication: Added " + mech + " to mech list");
         mechanisms.add(mech);
       }

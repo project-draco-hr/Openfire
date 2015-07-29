@@ -11,5 +11,11 @@
     }
     return new ClearspaceSaslServer();
   }
+ else   if (mechanism.equals(myMechs[SCRAM_SHA_1])) {
+    if (cbh == null) {
+      throw new SaslException("CallbackHandler with support for AuthorizeCallback required");
+    }
+    return new ScramSha1SaslServer();
+  }
   return null;
 }

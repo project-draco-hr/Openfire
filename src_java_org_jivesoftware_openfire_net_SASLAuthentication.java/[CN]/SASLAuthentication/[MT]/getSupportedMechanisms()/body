@@ -7,6 +7,11 @@
         it.remove();
       }
     }
+ else     if (mech.equals("SCRAM-SHA-1")) {
+      if (!AuthFactory.supportsPasswordRetrieval() && !AuthFactory.supportsScram()) {
+        it.remove();
+      }
+    }
  else     if (mech.equals("ANONYMOUS")) {
       if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
         it.remove();

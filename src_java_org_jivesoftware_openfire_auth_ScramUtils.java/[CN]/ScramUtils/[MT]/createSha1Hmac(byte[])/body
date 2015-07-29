@@ -1,0 +1,11 @@
+{
+  try {
+    SecretKeySpec key=new SecretKeySpec(keyBytes,"HmacSHA1");
+    Mac mac=Mac.getInstance("HmacSHA1");
+    mac.init(key);
+    return mac;
+  }
+ catch (  NoSuchAlgorithmException|InvalidKeyException e) {
+    throw new SaslException(e.getMessage(),e);
+  }
+}

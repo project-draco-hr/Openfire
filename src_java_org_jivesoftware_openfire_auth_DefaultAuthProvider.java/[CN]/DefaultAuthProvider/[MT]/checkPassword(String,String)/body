@@ -1,0 +1,66 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  if (username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
+      username=username.substring(0,index);
+    }
+ else {
+      throw new UserNotFoundException();
+    }
+  }
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(TEST_PASSWORD);
+    pstmt.setString(1,username);
+    rs=pstmt.executeQuery();
+    if (!rs.next()) {
+      throw new UserNotFoundException(username);
+    }
+    String plainText=rs.getString(1);
+    String encrypted=rs.getString(2);
+    int iterations=rs.getInt(3);
+    String salt=rs.getString(4);
+    String storedKey=rs.getString(5);
+    if (encrypted != null) {
+      try {
+        plainText=AuthFactory.decryptPassword(encrypted);
+      }
+ catch (      UnsupportedOperationException uoe) {
+      }
+    }
+    if (plainText != null) {
+      boolean scramOnly=JiveGlobals.getBooleanProperty("user.scramHashedPasswordOnly");
+      if (scramOnly) {
+        setPassword(username,plainText);
+      }
+      return testPassword.equals(plainText);
+    }
+    if (salt == null || iterations == 0 || storedKey == null) {
+      Log.warn("No available credentials for checkPassword.");
+      return false;
+    }
+    byte[] saltShaker=DatatypeConverter.parseBase64Binary(salt);
+    byte[] saltedPassword=null, clientKey=null, testStoredKey=null;
+    try {
+      saltedPassword=ScramUtils.createSaltedPassword(saltShaker,testPassword,iterations);
+      clientKey=ScramUtils.computeHmac(saltedPassword,"Client Key");
+      testStoredKey=MessageDigest.getInstance("SHA-1").digest(clientKey);
+    }
+ catch (    SaslException|NoSuchAlgorithmException|UnsupportedEncodingException e) {
+      Log.warn("Unable to check SCRAM values for PLAIN authentication.");
+      return false;
+    }
+    return DatatypeConverter.printBase64Binary(testStoredKey).equals(storedKey);
+  }
+ catch (  SQLException sqle) {
+    Log.error("User SQL failure:",sqle);
+    throw new UserNotFoundException(sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}

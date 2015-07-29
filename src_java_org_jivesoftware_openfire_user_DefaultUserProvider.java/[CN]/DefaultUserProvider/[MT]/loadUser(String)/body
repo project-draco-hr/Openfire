@@ -16,11 +16,20 @@
     if (!rs.next()) {
       throw new UserNotFoundException();
     }
-    String name=rs.getString(1);
-    String email=rs.getString(2);
-    Date creationDate=new Date(Long.parseLong(rs.getString(3).trim()));
-    Date modificationDate=new Date(Long.parseLong(rs.getString(4).trim()));
-    return new User(username,name,email,creationDate,modificationDate);
+    String salt=rs.getString(1);
+    String serverKey=rs.getString(2);
+    String storedKey=rs.getString(3);
+    int iterations=rs.getInt(4);
+    String name=rs.getString(5);
+    String email=rs.getString(6);
+    Date creationDate=new Date(Long.parseLong(rs.getString(7).trim()));
+    Date modificationDate=new Date(Long.parseLong(rs.getString(8).trim()));
+    User user=new User(username,name,email,creationDate,modificationDate);
+    user.setSalt(salt);
+    user.setServerKey(serverKey);
+    user.setStoredKey(storedKey);
+    user.setIterations(iterations);
+    return user;
   }
  catch (  Exception e) {
     throw new UserNotFoundException(e);

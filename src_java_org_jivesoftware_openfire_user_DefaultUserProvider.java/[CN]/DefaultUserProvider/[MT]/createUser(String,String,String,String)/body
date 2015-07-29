@@ -4,16 +4,6 @@
     throw new UserAlreadyExistsException("Username " + username + " already exists");
   }
  catch (  UserNotFoundException unfe) {
-    boolean usePlainPassword=JiveGlobals.getBooleanProperty("user.usePlainPassword");
-    String encryptedPassword=null;
-    if (!usePlainPassword) {
-      try {
-        encryptedPassword=AuthFactory.encryptPassword(password);
-        password=null;
-      }
- catch (      UnsupportedOperationException uoe) {
-      }
-    }
     Date now=new Date();
     Connection con=null;
     PreparedStatement pstmt=null;
@@ -21,32 +11,20 @@
       con=DbConnectionManager.getConnection();
       pstmt=con.prepareStatement(INSERT_USER);
       pstmt.setString(1,username);
-      if (password == null) {
+      if (name == null || name.matches("\\s*")) {
         pstmt.setNull(2,Types.VARCHAR);
       }
  else {
-        pstmt.setString(2,password);
+        pstmt.setString(2,name);
       }
-      if (encryptedPassword == null) {
+      if (email == null || email.matches("\\s*")) {
         pstmt.setNull(3,Types.VARCHAR);
       }
  else {
-        pstmt.setString(3,encryptedPassword);
+        pstmt.setString(3,email);
       }
-      if (name == null || name.matches("\\s*")) {
-        pstmt.setNull(4,Types.VARCHAR);
-      }
- else {
-        pstmt.setString(4,name);
-      }
-      if (email == null || email.matches("\\s*")) {
-        pstmt.setNull(5,Types.VARCHAR);
-      }
- else {
-        pstmt.setString(5,email);
-      }
-      pstmt.setString(6,StringUtils.dateToMillis(now));
-      pstmt.setString(7,StringUtils.dateToMillis(now));
+      pstmt.setString(4,StringUtils.dateToMillis(now));
+      pstmt.setString(5,StringUtils.dateToMillis(now));
       pstmt.execute();
     }
  catch (    Exception e) {
@@ -54,6 +32,12 @@
     }
  finally {
       DbConnectionManager.closeConnection(pstmt,con);
+    }
+    try {
+      AuthFactory.setPassword(username,password);
+    }
+ catch (    Exception e) {
+      Log.error("User pasword not set",e);
     }
     return new User(username,name,email,now,now);
   }
