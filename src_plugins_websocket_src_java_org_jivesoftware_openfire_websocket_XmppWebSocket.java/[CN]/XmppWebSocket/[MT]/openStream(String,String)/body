@@ -1,0 +1,14 @@
+{
+  xmppSession.incrementClientPacketCount();
+  StringBuilder sb=new StringBuilder(250);
+  sb.append("<open ");
+  if (jid != null) {
+    sb.append("to='").append(jid).append("' ");
+  }
+  sb.append("from='").append(XMPPServer.getInstance().getServerInfo().getXMPPDomain()).append("' ");
+  sb.append("id='").append(xmppSession.getStreamID().toString()).append("' ");
+  sb.append("xmlns='").append(FRAMING_NAMESPACE).append("' ");
+  sb.append("lang='").append(lang).append("' ");
+  sb.append("version='1.0' />");
+  deliver(sb.toString());
+}

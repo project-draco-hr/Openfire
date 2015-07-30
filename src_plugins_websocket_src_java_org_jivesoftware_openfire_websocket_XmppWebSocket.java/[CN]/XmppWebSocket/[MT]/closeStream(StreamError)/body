@@ -1,0 +1,13 @@
+{
+  if (isWebSocketOpen()) {
+    if (streamError != null) {
+      deliver(streamError.toXML());
+    }
+    StringBuilder sb=new StringBuilder(250);
+    sb.append("<close ");
+    sb.append("xmlns='").append(FRAMING_NAMESPACE).append("' ");
+    sb.append(" />");
+    deliver(sb.toString());
+    closeWebSocket();
+  }
+}

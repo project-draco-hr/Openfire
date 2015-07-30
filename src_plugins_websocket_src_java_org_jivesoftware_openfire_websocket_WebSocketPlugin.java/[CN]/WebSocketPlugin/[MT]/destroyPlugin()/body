@@ -1,0 +1,15 @@
+{
+  SessionManager sm=XMPPServer.getInstance().getSessionManager();
+  for (  ClientSession session : sm.getSessions()) {
+    if (session instanceof LocalSession) {
+      Object ws=((LocalSession)session).getSessionData("ws");
+      if (ws != null && (Boolean)ws) {
+        session.close();
+      }
+    }
+  }
+  ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+  contexts.removeHandler(contextHandler);
+  contextHandler=null;
+  pluginClassLoader=null;
+}

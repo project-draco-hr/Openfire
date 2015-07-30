@@ -1,0 +1,33 @@
+{
+  String host=stanza.attributeValue("to");
+  StreamError streamError=null;
+  if (STREAM_FOOTER.equals(stanza.getName())) {
+    closeStream(null);
+  }
+ else   if (!STREAM_HEADER.equals(stanza.getName())) {
+    streamError=new StreamError(StreamError.Condition.unsupported_stanza_type);
+    Log.warn("Closing session due to incorrect stream header. Tag: " + stanza.getName());
+  }
+ else   if (!FRAMING_NAMESPACE.equals(stanza.getNamespace().getURI())) {
+    streamError=new StreamError(StreamError.Condition.invalid_namespace);
+    Log.warn("Closing session due to invalid namespace in stream header. Namespace: " + stanza.getNamespace().getURI());
+  }
+ else   if (STREAM_FOOTER.equals(stanza.getName())) {
+    closeStream(null);
+  }
+ else   if (!validateHost(host)) {
+    streamError=new StreamError(StreamError.Condition.host_unknown);
+    Log.warn("Closing session due to incorrect hostname in stream header. Host: " + host);
+  }
+ else {
+    xmppSession=SessionManager.getInstance().createClientSession(wsConnection);
+    xmppSession.setSessionData("ws",Boolean.TRUE);
+  }
+  if (streamError == null) {
+    openStream(stanza.attributeValue("lang","en"),stanza.attributeValue("from"));
+    configureStream();
+  }
+ else {
+    closeStream(streamError);
+  }
+}

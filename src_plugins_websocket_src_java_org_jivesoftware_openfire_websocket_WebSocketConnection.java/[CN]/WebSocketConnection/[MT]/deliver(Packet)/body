@@ -1,0 +1,11 @@
+{
+  if (Namespace.NO_NAMESPACE.equals(packet.getElement().getNamespace())) {
+    packet.getElement().add(Namespace.get(CLIENT_NAMESPACE));
+  }
+  if (validate()) {
+    deliverRawText(packet.toXML());
+  }
+ else {
+    getPacketDeliverer().deliver(packet);
+  }
+}

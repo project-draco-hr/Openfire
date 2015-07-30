@@ -1,0 +1,44 @@
+{
+  try {
+    String tag=stanza.getName();
+    if (STREAM_FOOTER.equals(tag)) {
+      closeStream(null);
+    }
+ else     if ("auth".equals(tag)) {
+      startedSASL=true;
+      xmppSession.incrementClientPacketCount();
+      saslStatus=SASLAuthentication.handle(xmppSession,stanza);
+    }
+ else     if (startedSASL && "response".equals(tag) || "abort".equals(tag)) {
+      xmppSession.incrementClientPacketCount();
+      saslStatus=SASLAuthentication.handle(xmppSession,stanza);
+    }
+ else     if (STREAM_HEADER.equals(tag)) {
+      openStream(stanza.attributeValue("lang","en"),stanza.attributeValue("from"));
+      configureStream();
+    }
+ else     if (Status.authenticated.equals(saslStatus)) {
+      if (router == null) {
+        if (isStreamManagementAvailable()) {
+          router=new StreamManagementPacketRouter(xmppSession);
+        }
+ else {
+          router=new SessionPacketRouter(xmppSession);
+        }
+      }
+      router.route(stanza);
+    }
+ else {
+      Log.warn("Not authorized: " + stanza.asXML());
+      sendPacketError(stanza,PacketError.Condition.not_authorized);
+    }
+  }
+ catch (  UnknownStanzaException use) {
+    Log.warn("Received invalid stanza: " + stanza.asXML());
+    sendPacketError(stanza,PacketError.Condition.bad_request);
+  }
+catch (  Exception ex) {
+    Log.error("Failed to process incoming stanza: " + stanza.asXML(),ex);
+    closeStream(new StreamError(StreamError.Condition.internal_server_error));
+  }
+}
