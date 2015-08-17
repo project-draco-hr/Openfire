@@ -7,12 +7,8 @@
   presenceManager=XMPPServer.getInstance().getPresenceManager();
   userManager=XMPPServer.getInstance().getUserManager();
   client=ClientBuilder.newClient();
-  String code="plugin.callback_on_offline.url";
-  url=JiveGlobals.getProperty(code,null);
-  if (url == null || url.length() == 0) {
-    String url="http://localhost:8080/user/offline/callback/url";
-    JiveGlobals.setProperty(code,url);
-  }
+  url=getProperty("plugin.callback_on_offline.url","http://localhost:8080/user/offline/callback/url");
+  token=getProperty("plugin.callback_on_offline.token",UUID.randomUUID().toString());
   interceptorManager.addInterceptor(this);
   if (debug) {
     Log.debug("initialize CallbackOnOffline plugin. Finish.");
