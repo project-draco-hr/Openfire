@@ -2,19 +2,24 @@
   ChatRoomMember member=findMember(from);
   if (member == null) {
     logger.error("No member found for address: " + from);
-    return false;
+    return State.OFF;
   }
   if (ChatRoomMemberRole.MODERATOR.compareTo(member.getRole()) < 0) {
     logger.info("Recording - request denied, not a moderator: " + from);
-    return false;
+    return State.OFF;
   }
   Recorder recorder=getRecorder();
   if (recorder == null) {
-    return false;
+    if (state.equals(State.OFF)) {
+      earlyRecordingState=null;
+      return State.OFF;
+    }
+    earlyRecordingState=new RecordingState(from,token,state,path,to);
+    return State.PENDING;
   }
-  boolean isTokenCorrect=recorder.setRecording(from,token,state,path);
+  boolean isTokenCorrect=recorder.setRecording(from,token,state.equals(State.ON),path);
   if (!isTokenCorrect) {
     logger.info("Incorrect recording token received ! Session: " + chatRoom.getName());
   }
-  return recorder.isRecording();
+  return recorder.isRecording() ? State.ON : State.OFF;
 }

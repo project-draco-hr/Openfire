@@ -2,7 +2,7 @@
   Log.info("handleIQSet\n" + iq);
   try {
     org.jivesoftware.smack.packet.IQ smackIq=IQUtils.convert(iq);
-    if (smackIq instanceof ConferenceIq) {
+    if (focusManager != null && smackIq instanceof ConferenceIq) {
       ConferenceIq query=(ConferenceIq)smackIq;
       ConferenceIq response=new ConferenceIq();
       String room=query.getRoom();

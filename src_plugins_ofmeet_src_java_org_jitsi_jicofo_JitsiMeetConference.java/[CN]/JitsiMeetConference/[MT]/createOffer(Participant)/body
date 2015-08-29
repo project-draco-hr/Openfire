@@ -9,6 +9,7 @@
   }
   boolean useBundle=peer.hasBundleSupport();
   ColibriConferenceIQ peerChannels=allocateChannels(peer,contents);
+  if (peerChannels == null)   return null;
   peer.setColibriChannelsInfo(peerChannels);
   for (  ContentPacketExtension cpe : contents) {
     ColibriConferenceIQ.Content colibriContent=peerChannels.getContent(cpe.getName());
