@@ -1,10 +1,11 @@
 {
-  byte[] challenge;
+  try {
+    byte[] challenge;
 switch (state) {
 case INITIAL:
-    challenge=generateServerFirstMessage(response);
-  state=State.IN_PROGRESS;
-break;
+      challenge=generateServerFirstMessage(response);
+    state=State.IN_PROGRESS;
+  break;
 case IN_PROGRESS:
 challenge=generateServerFinalMessage(response);
 state=State.COMPLETE;
@@ -18,4 +19,8 @@ default :
 throw new SaslException("No response expected in state " + state);
 }
 return challenge;
+}
+ catch (RuntimeException ex) {
+throw new SaslException("Unexpected exception while evaluating SASL response.",ex);
+}
 }
