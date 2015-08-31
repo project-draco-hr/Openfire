@@ -13,7 +13,13 @@
   try {
     String authMessage=clientFirstMessageBare + "," + serverFirstMessage+ ","+ clientFinalMessageWithoutProof;
     byte[] storedKey=getStoredKey(username);
+    if (storedKey == null) {
+      throw new SaslException("No stored key for user '" + username + "'");
+    }
     byte[] serverKey=getServerKey(username);
+    if (serverKey == null) {
+      throw new SaslException("No server key for user '" + username + "'");
+    }
     byte[] clientSignature=ScramUtils.computeHmac(storedKey,authMessage);
     byte[] serverSignature=ScramUtils.computeHmac(serverKey,authMessage);
     byte[] clientKey=clientSignature.clone();

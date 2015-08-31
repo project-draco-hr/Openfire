@@ -1,3 +1,9 @@
 {
-  return DatatypeConverter.parseBase64Binary(UserManager.getUserProvider().loadUser(username).getServerKey());
+  final String serverKey=UserManager.getUserProvider().loadUser(username).getServerKey();
+  if (serverKey == null) {
+    return null;
+  }
+ else {
+    return DatatypeConverter.parseBase64Binary(serverKey);
+  }
 }
