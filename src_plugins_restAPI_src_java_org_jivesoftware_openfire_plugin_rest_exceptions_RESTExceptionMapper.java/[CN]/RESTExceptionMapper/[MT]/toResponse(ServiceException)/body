@@ -4,5 +4,14 @@
   errorResponse.setMessage(exception.getMessage());
   errorResponse.setException(exception.getException());
   LOG.error(exception.getException() + ": " + exception.getMessage()+ " with ressource "+ exception.getRessource(),exception.getException());
-  return Response.status(exception.getStatus()).entity(errorResponse).type(MediaType.APPLICATION_XML).build();
+  ResponseBuilder responseBuilder=Response.status(exception.getStatus()).entity(errorResponse);
+  List<MediaType> accepts=headers.getAcceptableMediaTypes();
+  if (accepts != null && accepts.size() > 0) {
+    MediaType mediaType=accepts.get(0);
+    responseBuilder=responseBuilder.type(mediaType);
+  }
+ else {
+    responseBuilder=responseBuilder.type(headers.getMediaType());
+  }
+  return responseBuilder.build();
 }

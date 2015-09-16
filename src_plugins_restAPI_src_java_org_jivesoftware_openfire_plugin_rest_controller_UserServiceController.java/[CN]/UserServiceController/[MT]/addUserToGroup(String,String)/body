@@ -1,0 +1,10 @@
+{
+  Group group=null;
+  try {
+    group=GroupManager.getInstance().getGroup(groupName);
+  }
+ catch (  GroupNotFoundException e) {
+    group=GroupController.getInstance().createGroup(new GroupEntity(groupName,""));
+  }
+  group.getMembers().add(server.createJID(username,null));
+}
