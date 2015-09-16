@@ -18,7 +18,7 @@
       for (      Future<Object> future : futures.values()) {
         long start=System.nanoTime();
         result.add(future.get(nanosLeft,TimeUnit.NANOSECONDS));
-        nanosLeft=(System.nanoTime() - start);
+        nanosLeft=nanosLeft - (System.nanoTime() - start);
       }
     }
  catch (    TimeoutException te) {
