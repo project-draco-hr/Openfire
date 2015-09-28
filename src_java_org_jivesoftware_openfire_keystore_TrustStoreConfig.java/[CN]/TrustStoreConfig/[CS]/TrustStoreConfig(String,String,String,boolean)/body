@@ -1,0 +1,12 @@
+{
+  super(path,password,type,createIfAbsent);
+  try {
+    certPathValidator=CertPathValidator.getInstance("PKIX");
+    certificateFactory=CertificateFactory.getInstance("X.509");
+    trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    trustFactory.init(store);
+  }
+ catch (  CertificateException|NoSuchAlgorithmException|KeyStoreException ex) {
+    throw new CertificateStoreConfigException("Unable to load store of type '" + type + "' from location '"+ path+ "'",ex);
+  }
+}

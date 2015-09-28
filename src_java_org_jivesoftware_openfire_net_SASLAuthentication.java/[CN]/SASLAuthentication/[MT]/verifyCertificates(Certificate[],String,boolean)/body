@@ -1,0 +1,9 @@
+{
+  final KeyStore keyStore=SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE);
+  final KeyStore trustStore=SSLConfig.getStore(isS2S ? Purpose.SOCKETBASED_S2S_TRUSTSTORE : Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+  final X509Certificate trusted=CertificateManager.getEndEntityCertificate(chain,keyStore,trustStore);
+  if (trusted != null) {
+    return verifyCertificate(trusted,hostname);
+  }
+  return false;
+}

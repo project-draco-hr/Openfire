@@ -5,17 +5,13 @@
   Element mechs=DocumentHelper.createElement(new QName("mechanisms",new Namespace("","urn:ietf:params:xml:ns:xmpp-sasl")));
   if (session instanceof LocalIncomingServerSession) {
     if (session.isSecure()) {
-      boolean haveTrustedCertificate=false;
-      try {
-        LocalIncomingServerSession svr=(LocalIncomingServerSession)session;
-        X509Certificate trusted=CertificateManager.getEndEntityCertificate(svr.getConnection().getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-        haveTrustedCertificate=trusted != null;
-        if (trusted != null && svr.getDefaultIdentity() != null) {
-          haveTrustedCertificate=verifyCertificate(trusted,svr.getDefaultIdentity());
-        }
-      }
- catch (      IOException ex) {
-        Log.warn("Exception occurred while trying to determine whether remote certificate is trusted. Treating as untrusted.",ex);
+      LocalIncomingServerSession svr=(LocalIncomingServerSession)session;
+      final KeyStore keyStore=SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE);
+      final KeyStore trustStore=SSLConfig.getStore(Purpose.SOCKETBASED_S2S_TRUSTSTORE);
+      final X509Certificate trusted=CertificateManager.getEndEntityCertificate(svr.getConnection().getPeerCertificates(),keyStore,trustStore);
+      boolean haveTrustedCertificate=trusted != null;
+      if (trusted != null && svr.getDefaultIdentity() != null) {
+        haveTrustedCertificate=verifyCertificate(trusted,svr.getDefaultIdentity());
       }
       if (haveTrustedCertificate) {
         Element mechanism=mechs.addElement("mechanism");

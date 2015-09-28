@@ -1,0 +1,17 @@
+{
+  final KeyStore store=storeConfig.getStore();
+  if (!store.containsAlias(alias)) {
+    Log.info("Unable to delete certificate for alias '" + alias + "' from store, as the store does not contain a certificate for that alias.");
+    return;
+  }
+  storeConfig.getStore().deleteEntry(alias);
+  storeConfig.persist();
+  for (  CertificateEventListener listener : listeners) {
+    try {
+      listener.certificateDeleted(store,alias);
+    }
+ catch (    Exception e) {
+      Log.warn("An exception occurred while notifying CertificateEventListener " + listener,e);
+    }
+  }
+}

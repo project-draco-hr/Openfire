@@ -1,0 +1,24 @@
+{
+switch (purpose) {
+case SOCKETBASED_IDENTITYSTORE:
+    return JiveGlobals.getProperty("xmpp.socket.ssl.storeType","jks").trim();
+case BOSHBASED_IDENTITYSTORE:
+  return JiveGlobals.getProperty("xmpp.bosh.ssl.storeType",getStoreType(Purpose.SOCKETBASED_IDENTITYSTORE)).trim();
+case ADMINISTRATIVE_IDENTITYSTORE:
+return JiveGlobals.getProperty("admin.ssl.storeType",getStoreType(Purpose.SOCKETBASED_IDENTITYSTORE)).trim();
+case WEBADMIN_IDENTITYSTORE:
+return JiveGlobals.getProperty("admin.web.ssl.storeType",getStoreType(Purpose.ADMINISTRATIVE_IDENTITYSTORE)).trim();
+case SOCKETBASED_S2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.socket.ssl.storeType","jks").trim();
+case SOCKETBASED_C2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.socket.ssl.client.storeType","jks").trim();
+case BOSHBASED_C2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.bosh.ssl.client.storeType",getStoreType(Purpose.SOCKETBASED_C2S_TRUSTSTORE)).trim();
+case ADMINISTRATIVE_TRUSTSTORE:
+return JiveGlobals.getProperty("admin.ssl.storeType",getStoreType(Purpose.SOCKETBASED_S2S_TRUSTSTORE)).trim();
+case WEBADMIN_TRUSTSTORE:
+return JiveGlobals.getProperty("admin.web.ssl.storeType",getStoreType(Purpose.ADMINISTRATIVE_TRUSTSTORE)).trim();
+default :
+throw new IllegalStateException("Unrecognized purpose: " + purpose);
+}
+}

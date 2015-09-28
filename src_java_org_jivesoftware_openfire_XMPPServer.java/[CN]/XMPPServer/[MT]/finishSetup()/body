@@ -12,18 +12,8 @@
     }
     JiveGlobals.setProperty("sasl.scram-sha-1.iteration-count",Integer.toString(ScramUtils.DEFAULT_ITERATION_COUNT));
     try {
-      KeyStore ksKeys=SSLConfig.getKeyStore();
-      boolean dsaFound=CertificateManager.isDSACertificate(ksKeys,name);
-      boolean rsaFound=CertificateManager.isRSACertificate(ksKeys,name);
-      if (!dsaFound) {
-        CertificateManager.createDSACert(ksKeys,SSLConfig.getKeyPassword(),name + "_dsa","cn=" + name,"cn=" + name,"*." + name);
-      }
-      if (!rsaFound) {
-        CertificateManager.createRSACert(ksKeys,SSLConfig.getKeyPassword(),name + "_rsa","cn=" + name,"cn=" + name,"*." + name);
-      }
-      if (!dsaFound || !rsaFound) {
-        SSLConfig.saveStores();
-      }
+      final IdentityStoreConfig storeConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
+      storeConfig.ensureDomainCertificates("DSA","RSA");
     }
  catch (    Exception e) {
       logger.error("Error generating self-signed certificates",e);

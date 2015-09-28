@@ -1,11 +1,8 @@
 {
   try {
-    return JiveGlobals.getBooleanProperty(ConnectionSettings.Client.ENABLE_OLD_SSLPORT,false) && SSLConfig.getKeyStore().size() > 0;
+    return JiveGlobals.getBooleanProperty(ConnectionSettings.Client.ENABLE_OLD_SSLPORT,false) && SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE).size() > 0;
   }
  catch (  KeyStoreException e) {
-    return false;
-  }
-catch (  IOException e) {
     return false;
   }
 }

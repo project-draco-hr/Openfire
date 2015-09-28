@@ -1,0 +1,11 @@
+{
+  final String domainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  final List<String> serverIdentities=CertificateManager.getServerIdentities(certificate);
+  for (  String identity : serverIdentities) {
+    if (DNSUtil.isNameCoveredByPattern(domainName,identity)) {
+      return true;
+    }
+  }
+  Log.info("The supplied certificate chain does not cover the domain of this XMPP service ('" + domainName + "'). Instead, it covers "+ Arrays.toString(serverIdentities.toArray(new String[serverIdentities.size()])));
+  return false;
+}

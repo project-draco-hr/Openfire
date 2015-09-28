@@ -1,2 +1,16 @@
 {
+  for (  Purpose purpose : Purpose.values()) {
+    final String location=getLocation(purpose);
+    if (!storesByLocation.containsKey(location)) {
+      final CertificateStoreConfig storeConfig;
+      if (purpose.isTrustStore()) {
+        storeConfig=new TrustStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false);
+      }
+ else {
+        storeConfig=new IdentityStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false);
+      }
+      storesByLocation.put(location,storeConfig);
+    }
+    locationByPurpose.put(purpose,location);
+  }
 }

@@ -1,0 +1,24 @@
+{
+switch (purpose) {
+case SOCKETBASED_IDENTITYSTORE:
+    return JiveGlobals.getProperty("xmpp.socket.ssl.keypass","changeit").trim();
+case BOSHBASED_IDENTITYSTORE:
+  return JiveGlobals.getProperty("xmpp.bosh.ssl.keypass",getPassword(Purpose.SOCKETBASED_IDENTITYSTORE)).trim();
+case ADMINISTRATIVE_IDENTITYSTORE:
+return JiveGlobals.getProperty("admin.ssl.keypass",getPassword(Purpose.SOCKETBASED_IDENTITYSTORE)).trim();
+case WEBADMIN_IDENTITYSTORE:
+return JiveGlobals.getProperty("admin.web.ssl.keypass",getPassword(Purpose.ADMINISTRATIVE_IDENTITYSTORE)).trim();
+case SOCKETBASED_S2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.socket.ssl.trustpass","changeit").trim();
+case SOCKETBASED_C2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.socket.ssl.client.trustpass","changeit").trim();
+case BOSHBASED_C2S_TRUSTSTORE:
+return JiveGlobals.getProperty("xmpp.bosh.ssl.client.trustpass",getPassword(Purpose.SOCKETBASED_C2S_TRUSTSTORE)).trim();
+case ADMINISTRATIVE_TRUSTSTORE:
+return JiveGlobals.getProperty("admin.ssl.trustpass",getPassword(Purpose.SOCKETBASED_S2S_TRUSTSTORE)).trim();
+case WEBADMIN_TRUSTSTORE:
+return JiveGlobals.getProperty("admin..web.ssl.trustpass",getPassword(Purpose.ADMINISTRATIVE_TRUSTSTORE)).trim();
+default :
+throw new IllegalStateException("Unrecognized purpose: " + purpose);
+}
+}

@@ -1,0 +1,23 @@
+{
+  final String domainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  try {
+    for (    final String alias : Collections.list(store.aliases())) {
+      final Certificate certificate=store.getCertificate(alias);
+      if (!(certificate instanceof X509Certificate)) {
+        continue;
+      }
+      if (!certificate.getPublicKey().getAlgorithm().equalsIgnoreCase(algorithm)) {
+        continue;
+      }
+      for (      String identity : CertificateManager.getServerIdentities((X509Certificate)certificate)) {
+        if (DNSUtil.isNameCoveredByPattern(domainName,identity)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+ catch (  KeyStoreException e) {
+    throw new CertificateStoreConfigException("An exception occurred while searching for " + algorithm + " certificates that match the Openfire domain.",e);
+  }
+}

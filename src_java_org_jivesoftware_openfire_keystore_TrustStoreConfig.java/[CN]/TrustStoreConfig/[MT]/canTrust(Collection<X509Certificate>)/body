@@ -1,0 +1,20 @@
+{
+  if (chain == null) {
+    throw new IllegalArgumentException("Argument 'chain' cannot be null.");
+  }
+  if (chain.isEmpty()) {
+    return false;
+  }
+  try {
+    final Set<TrustAnchor> trustAnchors=getAllValidTrustAnchors();
+    final CertPath certPath=getCertPath(chain);
+    final PKIXParameters pkixp=new PKIXParameters(trustAnchors);
+    pkixp.setRevocationEnabled(false);
+    certPathValidator.validate(certPath,pkixp);
+  }
+ catch (  Exception ex) {
+    Log.info("Unable to trust certificate chain.",ex);
+    return false;
+  }
+  return true;
+}

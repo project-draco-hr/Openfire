@@ -16,12 +16,10 @@
       int maxBufferSize=JiveGlobals.getIntProperty(ConnectionSettings.Client.MAX_READ_BUFFER_SSL,10 * MB);
       sslSocketAcceptor.getSessionConfig().setMaxReadBufferSize(maxBufferSize);
       Log.debug("Throttling read buffer for connections from sslSocketAcceptor={} to max={} bytes",sslSocketAcceptor,maxBufferSize);
-      SSLContext sslContext=SSLContext.getInstance(algorithm);
-      KeyManagerFactory keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      keyFactory.init(SSLConfig.getKeyStore(),SSLConfig.getKeyPassword().toCharArray());
-      TrustManagerFactory trustFactory=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      trustFactory.init(SSLConfig.getc2sTrustStore());
-      sslContext.init(keyFactory.getKeyManagers(),trustFactory.getTrustManagers(),new java.security.SecureRandom());
+      final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
+      final TrustStoreConfig trustStoreConfig=(TrustStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+      final SSLContext sslContext=SSLContext.getInstance(algorithm);
+      sslContext.init(identityStoreConfig.getKeyManagers(),trustStoreConfig.getTrustManagers(),new java.security.SecureRandom());
       SslFilter sslFilter=new SslFilter(sslContext);
       if (JiveGlobals.getProperty(ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,"disabled").equals("needed")) {
         sslFilter.setNeedClientAuth(true);

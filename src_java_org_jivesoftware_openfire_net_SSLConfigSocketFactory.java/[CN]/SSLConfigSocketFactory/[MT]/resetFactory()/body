@@ -1,0 +1,19 @@
+{
+  Log.debug("(Re)setting the SSL-based socket factories.");
+  try {
+    final KeyStore s2sTrustStore=SSLConfig.getStore(Purpose.SOCKETBASED_S2S_TRUSTSTORE);
+    final KeyStore c2sTrustStore=SSLConfig.getStore(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+    s2sFactory=createS2SServerSocketFactory();
+    if (s2sTrustStore == c2sTrustStore) {
+      c2sFactory=s2sFactory;
+    }
+ else {
+      c2sFactory=createC2SServerSocketFactory();
+    }
+  }
+ catch (  Exception e) {
+    Log.error("An exception occurred while (re)setting the SSL-based socket factories. Factories will be unavailable.",e);
+    s2sFactory=null;
+    c2sFactory=null;
+  }
+}
