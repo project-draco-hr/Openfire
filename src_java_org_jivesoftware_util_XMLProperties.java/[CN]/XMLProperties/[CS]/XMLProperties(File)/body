@@ -17,6 +17,7 @@
   if (!file.canWrite()) {
     throw new IOException("XML properties file must be writable: " + file.getName());
   }
-  FileReader reader=new FileReader(file);
-  buildDoc(reader);
-}
+  try (FileReader reader=new FileReader(file)){
+    buildDoc(reader);
+  }
+ }
