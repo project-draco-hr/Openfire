@@ -22,7 +22,13 @@
         if (matcher.find()) {
           msgXML=matcher.replaceAll("");
         }
-        message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+        try {
+          message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+        }
+ catch (        DocumentException de) {
+          Log.error("Failed to route packet (offline message): " + msgXML,de);
+          continue;
+        }
       }
       Element delaytest=message.getChildElement("delay","urn:xmpp:delay");
       if (delaytest == null) {
