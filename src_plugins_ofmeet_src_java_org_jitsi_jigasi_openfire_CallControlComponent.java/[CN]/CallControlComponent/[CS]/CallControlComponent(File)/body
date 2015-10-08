@@ -2,7 +2,12 @@
   Log.info("CallControlComponent " + pluginDirectory);
   self=this;
   Properties properties=new Properties();
-  String hostName=JiveGlobals.getProperty("org.jitsi.videobridge.nat.harvester.public.address",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
+  hostName=JiveGlobals.getProperty("org.jitsi.videobridge.nat.harvester.public.address",XMPPServer.getInstance().getServerInfo().getHostname());
+  try {
+    hostName=InetAddress.getByName(hostName).getHostAddress();
+  }
+ catch (  Exception e) {
+  }
   String logDir=pluginDirectory.getAbsolutePath() + File.separator + ".."+ File.separator+ ".."+ File.separator+ "logs"+ File.separator;
   String port=JiveGlobals.getProperty("org.jitsi.videobridge.sip.port.number","5060");
   properties.setProperty("com.voxbone.kelpie.hostname",hostName);
@@ -17,6 +22,6 @@
     sipService=new SipService(properties);
   }
  else {
-    Log.info("CallControlComponent -enabling SIP gateway");
+    Log.info("CallControlComponent - disabling SIP gateway");
   }
 }

@@ -1,28 +1,15 @@
 {
   Log.info("CallControlComponent - makeCall " + confJid + " "+ to+ " "+ callId);
   try {
-    String hostname=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     String callerId=(new JID(confJid)).getNode();
     String focusJid=conference.getFocus();
-    MediaService mediaService=LibJitsi.getMediaService();
-    MediaStream mediaStream=mediaService.createMediaStream(null,org.jitsi.service.neomedia.MediaType.AUDIO,mediaService.createSrtpControl(SrtpControlType.MIKEY));
-    mediaStream.setName("rayo-" + System.currentTimeMillis());
-    Content content=conference.getOrCreateContent("audio");
-    boolean audioMixer="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer","false"));
-    if (audioMixer) {
-      mediaStream.setSSRCFactory(ssrcFactory);
-      mediaStream.setDevice(content.getMixer());
-    }
- else {
-      mediaStream.setRTPTranslator(content.getRTPTranslator());
-    }
-    content.createRtpChannel(null,null,null);
-    CallSession cs=new CallSession(mediaStream,hostname,this,callId,focusJid,confJid);
+    CallSession cs=new CallSession(conference,hostName,this,callId,focusJid,confJid);
     callSessions.put(callId,cs);
     boolean toSip=to.indexOf("sip:") == 0;
     boolean toPhone=to.indexOf("tel:") == 0;
-    String from=null;
-    if (!toSip && !toPhone) {
+    boolean toMulticast=to.indexOf("mrtp:") == 0;
+    String from="sip:" + callerId + "@"+ hostName;
+    if (!toSip && !toPhone && !toMulticast) {
       String sipUri=null;
       if (to.length() == 8) {
         toSip=true;
@@ -49,14 +36,14 @@
       }
     }
     if (toSip) {
-      from="sip:" + callerId + "@"+ hostname;
+      from="sip:" + callerId + "@"+ hostName;
       Log.info("CallControlComponent - makeCall with direct sip " + to + " "+ from);
     }
- else {
+ else     if (toPhone) {
       to=to.substring(4);
       if (registrations.containsKey(to)) {
         to=registrations.get(to);
-        from="sip:" + callerId + "@"+ hostname;
+        from="sip:" + callerId + "@"+ hostName;
         Log.info("CallControlComponent - makeCall with registration " + to + " "+ from);
       }
  else {
@@ -73,11 +60,24 @@
         }
       }
     }
-    cs.jabberRemote=to;
+ else     if (toMulticast) {
+      String params[]=to.split(":");
+      InetAddress remoteAddr=InetAddress.getByName(params[1]);
+      cs.mediaStream.setTarget(new MediaStreamTarget(new InetSocketAddress(remoteAddr,Integer.parseInt(params[2])),null));
+      cs.mediaStream.setDirection(MediaDirection.SENDONLY);
+      cs.mediaStream.start();
+    }
     cs.jabberLocal=from;
     cs.username=username;
     cs.startTimestamp=startTimestamp;
-    SipService.sendInvite(cs);
+    if (!toMulticast) {
+      cs.jabberRemote=to;
+      SipService.sendInvite(cs);
+    }
+ else {
+      cs.jabberRemote="multicast";
+      inviteEvent(true,callId);
+    }
   }
  catch (  Exception e) {
     Log.error("CallControlComponent makeCall",e);

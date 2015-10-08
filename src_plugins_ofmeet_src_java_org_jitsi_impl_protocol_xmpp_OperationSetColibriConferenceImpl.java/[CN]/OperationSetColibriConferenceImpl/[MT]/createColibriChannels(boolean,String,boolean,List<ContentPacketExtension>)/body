@@ -2,10 +2,10 @@
   colibriBuilder.reset();
   colibriBuilder.addAllocateChannelsReq(useBundle,endpointName,peerIsInitiator,contents);
   ColibriConferenceIQ allocateRequest=colibriBuilder.getRequest(jitsiVideobridge);
-  boolean useAudioMixer=false;
-  String useAudioString=System.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer");
-  if (useAudioString != null)   useAudioMixer=useAudioString.equals("true");
   ColibriConferenceIQ.Content colibriContent=allocateRequest.getContent("audio");
+  boolean useAudioMixer=false;
+  String useAudioString=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer");
+  if (useAudioString != null)   useAudioMixer=useAudioString.equals("true");
   if (useAudioMixer && colibriContent != null) {
     logger.info("audio mixer set " + colibriContent);
     for (    ColibriConferenceIQ.Channel channel : colibriContent.getChannels()) {

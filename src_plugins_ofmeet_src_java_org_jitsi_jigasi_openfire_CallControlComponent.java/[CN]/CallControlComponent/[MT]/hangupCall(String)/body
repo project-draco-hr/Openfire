@@ -1,8 +1,13 @@
 {
   Log.info("hangupCall " + callId);
-  CallSession cs=callSessions.remove(callId);
+  CallSession cs=callSessions.get(callId);
   if (cs != null) {
-    SipService.sendBye(cs);
+    if (cs.jabberRemote != null && cs.jabberRemote.startsWith("multicast")) {
+      cs.sendBye();
+    }
+ else {
+      SipService.sendBye(cs);
+    }
     updateCallRecord(cs.startTimestamp,(int)(System.currentTimeMillis() - cs.startTimestamp));
   }
  else {
