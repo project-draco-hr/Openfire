@@ -1,0 +1,36 @@
+{
+  try {
+    File file=new File(url.toURI());
+    if (file.isDirectory()) {
+      File[] files=file.listFiles();
+      for (      File temp : files) {
+        addResource(temp.toURI().toURL());
+      }
+      return;
+    }
+  }
+ catch (  Exception e) {
+  }
+  try {
+    URLConnection uc=url.openConnection();
+    if (uc instanceof JarURLConnection) {
+      uc.setUseCaches(true);
+      JarFile jarFile=((JarURLConnection)uc).getJarFile();
+      localRepositories.add(url);
+      addJarResource(jarFile,url);
+    }
+ else {
+      File file=new File(url.toURI());
+      ResourceEntry entry=new ResourceEntry();
+      entry.manifest=MANIFEST_UNKNOWN;
+      entry.source=url;
+      entry.codeBase=url;
+      entry.lastModified=file.lastModified();
+      entry.binaryContent=readBytes(new FileInputStream(file));
+      resourceEntries.put("/" + file.getName(),entry);
+    }
+  }
+ catch (  Exception e) {
+    Log.warn("Failed to load plugin resource: " + url.toExternalForm());
+  }
+}

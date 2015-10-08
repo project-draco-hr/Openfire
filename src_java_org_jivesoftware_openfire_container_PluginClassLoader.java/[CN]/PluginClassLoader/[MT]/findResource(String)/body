@@ -1,0 +1,17 @@
+{
+  if (Log.isDebugEnabled())   Log.debug("    findResource(" + name + ")");
+  URL url=null;
+  String path=nameToPath(name);
+  ResourceEntry entry=findResourceInternal(name,path,false);
+  if (entry != null) {
+    url=entry.source;
+  }
+  if (url == null) {
+    url=super.findResource(name);
+  }
+  if (Log.isDebugEnabled()) {
+    if (url != null)     Log.debug("    --> Returning '" + url.toString() + "'");
+ else     Log.debug("    --> Resource not found, returning null");
+  }
+  return (url);
+}

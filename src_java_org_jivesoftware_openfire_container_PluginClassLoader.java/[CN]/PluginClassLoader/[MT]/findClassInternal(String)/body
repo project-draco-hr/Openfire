@@ -1,0 +1,28 @@
+{
+  String path=binaryNameToPath(name,true);
+  ResourceEntry entry=findResourceInternal(name,path,true);
+  if (entry == null) {
+    return null;
+  }
+  Class<?> clazz=entry.loadedClass;
+  if (clazz != null)   return clazz;
+synchronized (getClassLoadingLock(name)) {
+    clazz=entry.loadedClass;
+    if (clazz != null)     return clazz;
+    if (entry.binaryContent == null) {
+      return null;
+    }
+    try {
+      clazz=defineClass(name,entry.binaryContent,0,entry.binaryContent.length,new CodeSource(entry.codeBase,entry.certificates));
+    }
+ catch (    UnsupportedClassVersionError ucve) {
+      throw new UnsupportedClassVersionError(ucve.getLocalizedMessage() + " " + name);
+    }
+    entry.loadedClass=clazz;
+    entry.binaryContent=null;
+    entry.codeBase=null;
+    entry.manifest=null;
+    entry.certificates=null;
+  }
+  return clazz;
+}

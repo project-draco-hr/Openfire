@@ -1,0 +1,18 @@
+{
+  try {
+    Enumeration<JarEntry> entries=jarFile.entries();
+    while (entries.hasMoreElements()) {
+      JarEntry jarEntry=entries.nextElement();
+      ResourceEntry entry=new ResourceEntry();
+      entry.certificates=jarEntry.getCertificates();
+      entry.manifest=jarFile.getManifest();
+      entry.lastModified=jarEntry.getTime();
+      entry.binaryContent=readBytes(jarFile.getInputStream(jarEntry));
+      entry.codeBase=codebase;
+      resourceEntries.put("/" + jarEntry.getName(),entry);
+    }
+  }
+ catch (  IOException e) {
+    Log.warn("Failed to load plugin lib resource: " + jarFile);
+  }
+}

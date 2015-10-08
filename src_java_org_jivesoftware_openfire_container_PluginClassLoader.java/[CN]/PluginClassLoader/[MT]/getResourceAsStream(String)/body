@@ -1,0 +1,29 @@
+{
+  if (Log.isDebugEnabled())   Log.debug("getResourceAsStream(" + name + ")");
+  InputStream stream=null;
+  stream=findLoadedResource(name);
+  if (stream != null) {
+    if (Log.isDebugEnabled())     Log.debug("  --> Returning stream from cache");
+    return (stream);
+  }
+  if (Log.isDebugEnabled())   Log.debug("  Searching local repositories");
+  URL url=findResource(name);
+  if (url != null) {
+    if (Log.isDebugEnabled())     Log.debug("  --> Returning stream from local");
+    stream=findLoadedResource(name);
+    try {
+      if (stream == null)       stream=url.openStream();
+    }
+ catch (    IOException e) {
+    }
+    if (stream != null)     return (stream);
+  }
+  if (Log.isDebugEnabled())   Log.debug("  Delegating to parent classloader unconditionally " + parent);
+  stream=parent.getResourceAsStream(name);
+  if (stream != null) {
+    if (Log.isDebugEnabled())     Log.debug("  --> Returning stream from parent");
+    return (stream);
+  }
+  if (Log.isDebugEnabled())   Log.debug("  --> Resource not found, returning null");
+  return (null);
+}
