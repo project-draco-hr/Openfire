@@ -1,0 +1,20 @@
+{
+  try {
+    logd("RECV: " + iq.toXML());
+    org.jivesoftware.smack.packet.IQ smackIQ=IQUtils.convert(iq);
+    org.jivesoftware.smack.packet.IQ resultSmackIQ=handleIQ(smackIQ);
+    IQ resultIQ;
+    if (resultSmackIQ == null) {
+      resultIQ=null;
+    }
+ else {
+      resultIQ=IQUtils.convert(resultSmackIQ);
+      logd("SENT: " + resultIQ.toXML());
+    }
+    return resultIQ;
+  }
+ catch (  Exception e) {
+    loge(e);
+    throw e;
+  }
+}
