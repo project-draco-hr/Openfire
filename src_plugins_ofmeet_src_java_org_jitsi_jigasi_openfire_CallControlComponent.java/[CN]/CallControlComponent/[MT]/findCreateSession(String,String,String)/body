@@ -1,12 +1,11 @@
 {
   Log.info("CallControlComponent - findCreateSession " + from + " "+ to+ " "+ destination);
   CallSession session=null;
-  String hostname=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
   String callerId=to;
   String confJID=null;
   Conference conference=null;
   boolean allowDirectSIP="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.allow.direct.sip","false"));
-  if (!allowDirectSIP || !registrations.containsKey(from)) {
+  if (!allowDirectSIP && !registrations.containsKey(from)) {
     Log.warn("CallControlComponent - call rejected from " + from + " "+ to);
     return null;
   }
@@ -20,6 +19,7 @@
     }
     if (confJID != null)     break;
   }
+  Log.info("CallControlComponent - findCreateSession conference looking for id " + confJID);
   if (confJID != null && conferences.containsKey(confJID)) {
     String confId=conferences.get(confJID);
     Log.info("CallControlComponent - findCreateSession conference id " + confJID + " "+ confId);
@@ -33,21 +33,8 @@
   if (conference != null) {
     Log.info("CallControlComponent - findCreateSession conference " + conference.getFocus());
     try {
-      MediaService mediaService=LibJitsi.getMediaService();
-      MediaStream mediaStream=mediaService.createMediaStream(null,org.jitsi.service.neomedia.MediaType.AUDIO,mediaService.createSrtpControl(SrtpControlType.MIKEY));
-      mediaStream.setName("rayo-" + System.currentTimeMillis());
-      Content content=conference.getOrCreateContent("audio");
-      boolean audioMixer="true".equals(JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer","false"));
-      if (audioMixer) {
-        mediaStream.setSSRCFactory(ssrcFactory);
-        mediaStream.setDevice(content.getMixer());
-      }
- else {
-        mediaStream.setRTPTranslator(content.getRTPTranslator());
-      }
-      content.createRtpChannel(null,null,null);
       String callId=Long.toHexString(System.currentTimeMillis());
-      session=new CallSession(mediaStream,hostname,this,callId,conference.getFocus(),confJID);
+      session=new CallSession(conference,hostName,this,callId,conference.getFocus(),confJID);
       session.jabberRemote=from;
       session.jabberLocal=to;
       callSessions.put(callId,session);
@@ -55,6 +42,9 @@
  catch (    Exception e) {
       Log.error("CallControlComponent findCreateSession",e);
     }
+  }
+ else {
+    Log.warn("conferennce not found " + confJID);
   }
   if (session != null) {
     long startTimestamp=System.currentTimeMillis();

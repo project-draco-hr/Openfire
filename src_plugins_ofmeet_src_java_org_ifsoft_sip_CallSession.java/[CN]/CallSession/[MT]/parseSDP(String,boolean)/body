@@ -19,8 +19,7 @@
             Log.error("unable to create video relay!",e);
           }
         }
-        int remotePort=media.getMediaPort();
-        String remoteParty=null;
+        remotePort=media.getMediaPort();
         if (md.getConnection() != null) {
           remoteParty=md.getConnection().getAddress();
         }
@@ -36,7 +35,7 @@
             int codec=Integer.parseInt(fields[0]);
             String name=fields[1].split("/")[0];
             int clockRate=Integer.parseInt(fields[1].split("/")[1]);
-            Log.debug("[[" + internalCallId + "]] Payload "+ codec+ " rate "+ clockRate+ " is mapped to "+ name);
+            Log.info("[[" + internalCallId + "]] Payload "+ codec+ " rate "+ clockRate+ " is mapped to "+ name);
             if (codec >= 96) {
               Payload bitRatePayload=getByName(name,clockRate);
               if (bitRatePayload != null && bitRatePayload instanceof VPayload) {
@@ -54,22 +53,14 @@
         }
       }
  else {
-        int remotePort=media.getMediaPort();
-        String remoteParty=null;
+        remotePort=media.getMediaPort();
         if (md.getConnection() != null) {
           remoteParty=md.getConnection().getAddress();
         }
  else {
           remoteParty=sd.getConnection().getAddress();
         }
-        InetAddress remoteAddr=InetAddress.getByName(remoteParty);
-        Log.info("CallSession parseSDP " + remoteAddr + " "+ remoteParty+ " "+ remotePort);
-        MediaService mediaService=LibJitsi.getMediaService();
-        mediaStream.setTarget(new MediaStreamTarget(new InetSocketAddress(remoteAddr,remotePort),new InetSocketAddress(remoteAddr,remotePort + 1)));
-        mediaStream.addDynamicRTPPayloadType((byte)111,mediaService.getFormatFactory().createMediaFormat("opus",48000,2));
-        mediaStream.addDynamicRTPPayloadType((byte)0,mediaService.getFormatFactory().createMediaFormat("PCMU",8000,1));
-        mediaStream.setFormat(mediaService.getFormatFactory().createMediaFormat("PCMU",8000,1));
-        mediaStream.setDirection(MediaDirection.SENDRECV);
+        Log.info("CallSession parseSDP " + remoteParty + " "+ remotePort);
         @SuppressWarnings("unchecked") Vector<String> codecs=(Vector<String>)media.getMediaFormats(false);
         for (        String codec : codecs) {
           int id=Integer.parseInt(codec);
@@ -94,7 +85,7 @@
             int codec=Integer.parseInt(fields[0]);
             String name=fields[1].split("/")[0];
             int clockRate=Integer.parseInt(fields[1].split("/")[1]);
-            Log.debug("[[" + internalCallId + "]] Payload "+ codec+ " rate "+ clockRate+ " is mapped to "+ name);
+            Log.info("[[" + internalCallId + "]] Payload "+ codec+ " rate "+ clockRate+ " is mapped to "+ name);
             if (codec >= 96) {
               Payload bitRatePayload=getByName(name,clockRate);
               if (bitRatePayload != null) {
@@ -110,6 +101,16 @@
           }
         }
       }
+    }
+    try {
+      InetAddress remoteAddr=InetAddress.getByName(remoteParty);
+      Log.info("CallSession buildSDP " + remoteAddr + " "+ remoteParty+ " "+ remotePort+ "\n"+ sd);
+      mediaStream.setTarget(new MediaStreamTarget(new InetSocketAddress(remoteAddr,remotePort),new InetSocketAddress(remoteAddr,remotePort + 1)));
+      mediaStream.setDirection(MediaDirection.SENDRECV);
+      mediaStream.start();
+    }
+ catch (    Exception e) {
+      Log.error("Error building SDP",e);
     }
     callControl.inviteEvent(true,callId);
   }

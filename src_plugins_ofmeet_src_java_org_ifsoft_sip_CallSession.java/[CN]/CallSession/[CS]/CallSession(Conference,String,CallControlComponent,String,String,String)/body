@@ -1,0 +1,36 @@
+{
+  Log.info("CallSession creation " + host);
+  this.callControl=callControl;
+  this.callId=callId;
+  this.focusJID=focusJID;
+  this.roomJID=roomJID;
+  internalCallId="CS" + String.format("%08x",nextInternalCallId++);
+  offerPayloads.add(PAYLOAD_PCMU);
+  answerPayloads.add(PAYLOAD_PCMU);
+  try {
+    MediaService mediaService=LibJitsi.getMediaService();
+    Content content=conference.getOrCreateContent("audio");
+    mediaStream=mediaService.createMediaStream(null,org.jitsi.service.neomedia.MediaType.AUDIO,null);
+    mediaStream.setName("ofmeet-" + System.currentTimeMillis());
+    boolean useAudioMixer=false;
+    String useAudioString=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.audio.mixer");
+    if (useAudioString != null)     useAudioMixer=useAudioString.equals("true");
+    if (useAudioMixer) {
+      mediaStream.setSSRCFactory(ssrcFactory);
+      mediaStream.setDevice(content.getMixer());
+    }
+ else {
+      mediaStream.setRTPTranslator(content.getRTPTranslator());
+    }
+    InetAddress bindAddr=InetAddress.getByName(host);
+    connector=new DefaultStreamConnector(bindAddr);
+    connector.getDataSocket();
+    connector.getControlSocket();
+    mediaStream.setConnector(connector);
+    mediaStream.addDynamicRTPPayloadType((byte)0,mediaService.getFormatFactory().createMediaFormat("PCMU",8000,1));
+    mediaStream.setFormat(mediaService.getFormatFactory().createMediaFormat("PCMU",8000,1));
+  }
+ catch (  Exception e) {
+    Log.error("CallSession failure",e);
+  }
+}
