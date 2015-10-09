@@ -1,0 +1,18 @@
+{
+  org.jivesoftware.smack.packet.IQ responseIQ=null;
+  if (iq != null) {
+    org.jivesoftware.smack.packet.IQ.Type type=iq.getType();
+    if (org.jivesoftware.smack.packet.IQ.Type.GET.equals(type) || org.jivesoftware.smack.packet.IQ.Type.SET.equals(type)) {
+      responseIQ=handleIQRequest(iq);
+      if (responseIQ != null) {
+        responseIQ.setFrom(iq.getTo());
+        responseIQ.setPacketID(iq.getPacketID());
+        responseIQ.setTo(iq.getFrom());
+      }
+    }
+ else     if (org.jivesoftware.smack.packet.IQ.Type.ERROR.equals(type) || org.jivesoftware.smack.packet.IQ.Type.RESULT.equals(type)) {
+      handleIQResponse(iq);
+    }
+  }
+  return responseIQ;
+}
