@@ -7,5 +7,9 @@
  else {
     context=new WebAppContext(contexts,pluginDir.getAbsoluteFile() + File.separator + "webapp","/");
   }
+  final List<ContainerInitializer> initializers=new ArrayList<>();
+  initializers.add(new ContainerInitializer(new JettyJasperInitializer(),null));
+  context.setAttribute("org.eclipse.jetty.containerInitializers",initializers);
+  context.setAttribute(InstanceManager.class.getName(),new SimpleInstanceManager());
   context.setWelcomeFiles(new String[]{"index.jsp"});
 }

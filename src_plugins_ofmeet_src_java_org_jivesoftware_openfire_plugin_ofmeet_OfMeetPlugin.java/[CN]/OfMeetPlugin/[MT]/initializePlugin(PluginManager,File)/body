@@ -69,8 +69,16 @@
     Log.info("OfMeet Plugin - Initialize websockets ");
     ServletContextHandler context=new ServletContextHandler(contexts,"/ofmeetws",ServletContextHandler.SESSIONS);
     context.addServlet(new ServletHolder(new XMPPServlet()),"/server");
+    final List<ContainerInitializer> initializers=new ArrayList<>();
+    initializers.add(new ContainerInitializer(new JettyJasperInitializer(),null));
+    context.setAttribute("org.eclipse.jetty.containerInitializers",initializers);
+    context.setAttribute(InstanceManager.class.getName(),new SimpleInstanceManager());
     WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath(),"/ofmeet");
     context2.setClassLoader(this.getClass().getClassLoader());
+    final List<ContainerInitializer> initializers2=new ArrayList<>();
+    initializers2.add(new ContainerInitializer(new JettyJasperInitializer(),null));
+    context2.setAttribute("org.eclipse.jetty.containerInitializers",initializers2);
+    context2.setAttribute(InstanceManager.class.getName(),new SimpleInstanceManager());
     context2.setWelcomeFiles(new String[]{"index.html"});
     String securityEnabled=JiveGlobals.getProperty("ofmeet.security.enabled","true");
     if ("true".equals(securityEnabled)) {
