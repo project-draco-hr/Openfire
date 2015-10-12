@@ -1,32 +1,12 @@
 {
-  if (connectionProvider == null) {
-synchronized (providerLock) {
-      if (connectionProvider == null) {
-        String className=JiveGlobals.getXMLProperty("connectionProvider.className");
-        if (className != null) {
-          try {
-            Class conClass=ClassUtils.forName(className);
-            setConnectionProvider((ConnectionProvider)conClass.newInstance());
-          }
- catch (          Exception e) {
-            Log.warn("Failed to create the " + "connection provider specified by connection" + "Provider.className. Using the default pool.",e);
-            setConnectionProvider(new DefaultConnectionProvider());
-          }
-        }
- else {
-          setConnectionProvider(new DefaultConnectionProvider());
-        }
-      }
-    }
-  }
-  Integer retryCnt=0;
-  Integer retryMax=10;
-  Integer retryWait=250;
-  Connection con=null;
+  ensureConnectionProvider();
+  Integer currentRetryCount=0;
+  Integer maxRetries=JiveGlobals.getIntProperty(SETTING_DATABASE_MAX_RETRIES,10);
+  Integer retryWait=JiveGlobals.getIntProperty(SETTING_DATABASE_RETRY_DELAY,250);
   SQLException lastException=null;
   do {
     try {
-      con=connectionProvider.getConnection();
+      Connection con=connectionProvider.getConnection();
       if (con != null) {
         if (!profilingEnabled) {
           return con;
@@ -38,15 +18,15 @@ synchronized (providerLock) {
     }
  catch (    SQLException e) {
       lastException=e;
-      Log.info("Unable to get a connection from the database pool " + "(attempt " + retryCnt + " out of "+ retryMax+ ").",e);
+      Log.info("Unable to get a connection from the database pool " + "(attempt " + currentRetryCount + " out of "+ maxRetries+ ").",e);
     }
     try {
       Thread.sleep(retryWait);
     }
  catch (    Exception e) {
     }
-    retryCnt++;
+    currentRetryCount++;
   }
- while (retryCnt <= retryMax);
-  throw new SQLException("ConnectionManager.getConnection() " + "failed to obtain a connection after " + retryCnt + " retries. "+ "The exception from the last attempt is as follows: "+ lastException);
+ while (currentRetryCount <= maxRetries);
+  throw new SQLException("ConnectionManager.getConnection() " + "failed to obtain a connection after " + currentRetryCount + " retries. "+ "The exception from the last attempt is as follows: "+ lastException);
 }
