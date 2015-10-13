@@ -2,6 +2,10 @@
   if (isValidBareJid(jid)) {
     return new JID(jid);
   }
+ else   if (isValidGroupName(jid)) {
+    GroupJID gjid=new GroupJID(jid);
+    return gjid.asBareJID();
+  }
  else {
     return XMPPServer.getInstance().createJID(jid,null);
   }
