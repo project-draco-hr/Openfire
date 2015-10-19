@@ -1,0 +1,22 @@
+{
+  Set<String> result=knownGroupNamesFromValues;
+  if (result == null) {
+synchronized (this) {
+      result=knownGroupNamesFromValues;
+      if (result == null) {
+        result=new HashSet<String>();
+        Iterator<V> iterator=values().iterator();
+        while (iterator.hasNext()) {
+          V key=iterator.next();
+          Group group=Group.resolveFrom(key);
+          if (group != null) {
+            result.add(group.getName());
+          }
+          ;
+        }
+        knownGroupNamesFromValues=result.isEmpty() ? null : result;
+      }
+    }
+  }
+  return result;
+}
