@@ -1,15 +1,7 @@
 {
-  if (groupsFromKeys == null) {
-    groupsFromKeys=new HashSet<Group>();
-    Iterator<K> iterator=keySet().iterator();
-    while (iterator.hasNext()) {
-      K key=iterator.next();
-      Group group=Group.resolveFrom(key);
-      if (group != null) {
-        groupsFromKeys.add(group);
-      }
-      ;
-    }
+  Set<Group> result=new HashSet<Group>();
+  for (  String groupName : getKnownGroupNamesFromKeys()) {
+    result.add(Group.resolveFrom(groupName));
   }
-  return groupsFromKeys;
+  return result;
 }

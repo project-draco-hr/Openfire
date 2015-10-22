@@ -1,14 +1,17 @@
 {
   boolean result=false;
-  if (groupsInList != null) {
+  if (knownGroupNamesInList != null) {
     Group group=Group.resolveFrom(item);
     if (group != null) {
       result=true;
       if (addOrRemove == ADD) {
-        groupsInList.add(group);
+        knownGroupNamesInList.add(group.getName());
       }
  else       if (addOrRemove == REMOVE) {
-        groupsInList.remove(group);
+        knownGroupNamesInList.remove(group.getName());
+        if (knownGroupNamesInList.isEmpty()) {
+          knownGroupNamesInList=null;
+        }
       }
     }
   }
