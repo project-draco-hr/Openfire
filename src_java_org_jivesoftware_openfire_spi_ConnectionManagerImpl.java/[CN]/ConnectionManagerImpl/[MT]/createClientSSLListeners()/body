@@ -18,7 +18,7 @@
       Log.debug("Throttling read buffer for connections from sslSocketAcceptor={} to max={} bytes",sslSocketAcceptor,maxBufferSize);
       final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
       final TrustStoreConfig trustStoreConfig=(TrustStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
-      final SSLContext sslContext=SSLContext.getInstance(algorithm);
+      final SSLContext sslContext=SSLConfig.getSSLContext();
       sslContext.init(identityStoreConfig.getKeyManagers(),trustStoreConfig.getTrustManagers(),new java.security.SecureRandom());
       SslFilter sslFilter=new SslFilter(sslContext);
       if (JiveGlobals.getProperty(ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,"disabled").equals("needed")) {

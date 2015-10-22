@@ -1,9 +1,8 @@
 {
   try {
-    String algorithm=JiveGlobals.getProperty(ConnectionSettings.Client.TLS_ALGORITHM,"TLS");
-    SSLContext sslcontent=SSLContext.getInstance(algorithm);
-    sslcontent.init(null,new TrustManager[]{new DummyTrustManager()},new java.security.SecureRandom());
-    factory=sslcontent.getSocketFactory();
+    final SSLContext sslContext=SSLConfig.getSSLContext();
+    sslContext.init(null,new TrustManager[]{new DummyTrustManager()},new java.security.SecureRandom());
+    factory=sslContext.getSocketFactory();
   }
  catch (  NoSuchAlgorithmException|KeyManagementException e) {
     Log.error(e.getMessage(),e);
