@@ -1,0 +1,13 @@
+{
+  if (purpose == null) {
+    throw new IllegalArgumentException("Argument 'purpose' cannot be null.");
+  }
+  final Set<Purpose> results=new HashSet<>();
+  final String location=getLocation(purpose);
+  for (  Map.Entry<Purpose,String> entry : locationByPurpose.entrySet()) {
+    if (entry.getValue().equalsIgnoreCase(location)) {
+      results.add(entry.getKey());
+    }
+  }
+  return results;
+}

@@ -1,0 +1,35 @@
+{
+  X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
+  if (certificate != null) {
+    Log.warn("Certificate already exists for alias: " + alias);
+    return false;
+  }
+  PrivateKey privKey=parsePrivateKey(pkInputStream,passPhrase);
+  Collection<X509Certificate> certs=parseCertificates(inputStream);
+  if (certs.isEmpty()) {
+    throw new Exception("No certificates were found");
+  }
+  List<X509Certificate> newCerts;
+  if (certs.size() == 1) {
+    newCerts=establishCertChain(keyStore,trustStore,certificate,certs.iterator().next());
+  }
+ else {
+    newCerts=validateReply(keyStore,trustStore,alias,certificate,certs);
+  }
+  if (newCerts == null) {
+    return false;
+  }
+  keyStore.setKeyEntry(alias,privKey,keyPassword.toCharArray(),newCerts.toArray(new X509Certificate[newCerts.size()]));
+  for (  CertificateEventListener listener : listeners) {
+    try {
+      listener.certificateCreated(keyStore,alias,newCerts.get(0));
+      if (newCerts.size() > 1) {
+        listener.certificateSigned(keyStore,alias,newCerts);
+      }
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return true;
+}

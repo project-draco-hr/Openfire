@@ -33,7 +33,7 @@
       authenticationSuccessful(session,hostname,null);
       return Status.authenticated;
     }
- else     if (verifyCertificates(session.getConnection().getPeerCertificates(),hostname)) {
+ else     if (verifyCertificates(session.getConnection().getPeerCertificates(),hostname,true)) {
       authenticationSuccessful(session,hostname,null);
       LocalIncomingServerSession s=(LocalIncomingServerSession)session;
       if (s != null) {
@@ -53,13 +53,9 @@
       authenticationFailed(session,Failure.NOT_AUTHORIZED);
       return Status.failed;
     }
-    X509Certificate trusted;
-    try {
-      trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-    }
- catch (    IOException e) {
-      trusted=null;
-    }
+    final KeyStore keyStore=SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE);
+    final KeyStore trustStore=SSLConfig.getStore(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+    final X509Certificate trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),keyStore,trustStore);
     if (trusted == null) {
       Log.debug("SASLAuthentication: EXTERNAL authentication requested, but EE cert untrusted.");
       authenticationFailed(session,Failure.NOT_AUTHORIZED);

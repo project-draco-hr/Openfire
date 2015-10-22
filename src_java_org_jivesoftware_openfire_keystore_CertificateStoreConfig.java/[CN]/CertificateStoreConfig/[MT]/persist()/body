@@ -1,0 +1,8 @@
+{
+  try (final FileOutputStream os=new FileOutputStream(canonicalPath)){
+    store.store(os,password);
+  }
+ catch (  NoSuchAlgorithmException|KeyStoreException|CertificateException|IOException ex) {
+    throw new CertificateStoreConfigException("Unable to save changes to store in location '" + canonicalPath + "'",ex);
+  }
+}

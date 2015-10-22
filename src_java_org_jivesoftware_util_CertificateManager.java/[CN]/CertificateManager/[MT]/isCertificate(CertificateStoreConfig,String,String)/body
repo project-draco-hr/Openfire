@@ -1,0 +1,19 @@
+{
+  for (Enumeration<String> aliases=storeConfig.getStore().aliases(); aliases.hasMoreElements(); ) {
+    X509Certificate certificate=(X509Certificate)storeConfig.getStore().getCertificate(aliases.nextElement());
+    if (!certificate.getPublicKey().getAlgorithm().equalsIgnoreCase(algorithm)) {
+      continue;
+    }
+    if ("*".equals(domain)) {
+      return true;
+    }
+ else {
+      for (      String identity : getServerIdentities(certificate)) {
+        if (identity.endsWith(domain)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}

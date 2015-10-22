@@ -1,12 +1,3 @@
 {
-  try {
-    X509Certificate trusted=CertificateManager.getEndEntityCertificate(chain,SSLConfig.getKeyStore(),SSLConfig.gets2sTrustStore());
-    if (trusted != null) {
-      return verifyCertificate(trusted,hostname);
-    }
-  }
- catch (  IOException e) {
-    Log.warn("Keystore issue while verifying certificate chain: {}",e.getMessage());
-  }
-  return false;
+  return verifyCertificates(chain,hostname,true);
 }

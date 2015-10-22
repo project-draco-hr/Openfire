@@ -1,0 +1,11 @@
+{
+  final Map<String,X509Certificate> results=new HashMap<>();
+  for (  final String alias : Collections.list(store.aliases())) {
+    final Certificate certificate=store.getCertificate(alias);
+    if (!(certificate instanceof X509Certificate)) {
+      continue;
+    }
+    results.put(alias,(X509Certificate)certificate);
+  }
+  return results;
+}

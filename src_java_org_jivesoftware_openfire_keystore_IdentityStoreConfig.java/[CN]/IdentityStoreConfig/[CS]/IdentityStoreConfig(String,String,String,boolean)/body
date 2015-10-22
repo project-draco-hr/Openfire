@@ -1,0 +1,10 @@
+{
+  super(path,password,type,createIfAbsent);
+  try {
+    keyFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm(),PROVIDER);
+    keyFactory.init(store,password.toCharArray());
+  }
+ catch (  UnrecoverableKeyException|NoSuchAlgorithmException|KeyStoreException ex) {
+    throw new CertificateStoreConfigException("Unable to load store of type '" + type + "' from location '"+ path+ "'",ex);
+  }
+}

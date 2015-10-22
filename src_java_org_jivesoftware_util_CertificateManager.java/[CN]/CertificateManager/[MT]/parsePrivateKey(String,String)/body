@@ -1,0 +1,18 @@
+{
+  if (pemRepresentation == null || pemRepresentation.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'pemRepresentation' cannot be null or an empty String.");
+  }
+  try (Reader reader=new StringReader(pemRepresentation.trim())){
+    final Object object=new PEMParser(reader).readObject();
+    final JcaPEMKeyConverter converter=new JcaPEMKeyConverter().setProvider("BC");
+    final KeyPair kp;
+    if (object instanceof PEMEncryptedKeyPair) {
+      final PEMDecryptorProvider decProv=new JcePEMDecryptorProviderBuilder().build(passPhrase.toCharArray());
+      kp=converter.getKeyPair(((PEMEncryptedKeyPair)object).decryptKeyPair(decProv));
+    }
+ else {
+      kp=converter.getKeyPair((PEMKeyPair)object);
+    }
+    return kp.getPrivate();
+  }
+ }

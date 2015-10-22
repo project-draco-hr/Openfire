@@ -1,0 +1,11 @@
+{
+  final KeyPairGenerator generator;
+  if (PROVIDER == null) {
+    generator=KeyPairGenerator.getInstance(algorithm);
+  }
+ else {
+    generator=KeyPairGenerator.getInstance(algorithm,PROVIDER);
+  }
+  generator.initialize(keySize,new SecureRandom());
+  return generator.generateKeyPair();
+}

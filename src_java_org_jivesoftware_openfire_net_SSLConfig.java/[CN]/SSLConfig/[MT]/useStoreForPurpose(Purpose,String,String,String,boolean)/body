@@ -1,0 +1,72 @@
+{
+  final String newPath=canonicalize(location);
+  final String oldPath=locationByPurpose.get(purpose);
+  final CertificateStoreConfig oldConfig=storesByLocation.get(oldPath);
+  if (oldPath.equalsIgnoreCase(newPath) && oldConfig.getPassword().equals(password) && oldConfig.getType().equals(storeType)) {
+    oldConfig.reload();
+    return;
+  }
+  final boolean isKnown=storesByLocation.containsKey(newPath);
+  final CertificateStoreConfig newConfig;
+  if (isKnown) {
+    newConfig=storesByLocation.get(newPath);
+  }
+ else {
+    if (purpose.isTrustStore()) {
+      newConfig=new TrustStoreConfig(newPath,password,storeType,createIfAbsent);
+    }
+ else {
+      newConfig=new IdentityStoreConfig(newPath,password,storeType,createIfAbsent);
+    }
+  }
+  locationByPurpose.replace(purpose,newConfig.getCanonicalPath());
+  storesByLocation.replace(newConfig.getCanonicalPath(),newConfig);
+  final Path locationToStore=Paths.get(newConfig.getPath());
+switch (purpose) {
+case SOCKETBASED_IDENTITYSTORE:
+    JiveGlobals.setProperty("xmpp.socket.ssl.keystore",locationToStore.toString());
+  JiveGlobals.setProperty("xmpp.socket.ssl.keypass",password);
+JiveGlobals.setProperty("xmpp.socket.ssl.storeType",storeType);
+break;
+case BOSHBASED_IDENTITYSTORE:
+JiveGlobals.setProperty("xmpp.bosh.ssl.keystore",locationToStore.toString());
+JiveGlobals.setProperty("xmpp.bosh.ssl.keypass",password);
+JiveGlobals.setProperty("xmpp.bosh.ssl.storeType",storeType);
+break;
+case ADMINISTRATIVE_IDENTITYSTORE:
+JiveGlobals.setProperty("admin.ssl.keystore",locationToStore.toString());
+JiveGlobals.setProperty("admin.ssl.keypass",password);
+JiveGlobals.setProperty("admin.ssl.storeType",storeType);
+break;
+case WEBADMIN_IDENTITYSTORE:
+JiveGlobals.setProperty("admin.web.ssl.keystore",locationToStore.toString());
+JiveGlobals.setProperty("admin.web.ssl.keypass",password);
+JiveGlobals.setProperty("admin.web.ssl.storeType",storeType);
+break;
+case SOCKETBASED_S2S_TRUSTSTORE:
+JiveGlobals.setProperty("xmpp.socket.ssl.truststore",locationToStore.toString());
+JiveGlobals.setProperty("xmpp.socket.ssl.trustpass",password);
+JiveGlobals.setProperty("xmpp.socket.ssl.storeType",storeType);
+break;
+case SOCKETBASED_C2S_TRUSTSTORE:
+JiveGlobals.setProperty("xmpp.socket.ssl.client.truststore",locationToStore.toString());
+JiveGlobals.setProperty("xmpp.socket.ssl.client.trustpass",password);
+JiveGlobals.setProperty("xmpp.socket.ssl.client.storeType",storeType);
+break;
+case BOSHBASED_C2S_TRUSTSTORE:
+JiveGlobals.setProperty("xmpp.bosh.ssl.client.truststore",locationToStore.toString());
+JiveGlobals.setProperty("xmpp.bosh.ssl.client.trustpass",password);
+JiveGlobals.setProperty("xmpp.bosh.ssl.storeType",storeType);
+break;
+case ADMINISTRATIVE_TRUSTSTORE:
+JiveGlobals.setProperty("admin.ssl.truststore",locationToStore.toString());
+JiveGlobals.setProperty("admin.ssl.trustpass",password);
+JiveGlobals.setProperty("admin.ssl.storeType",storeType);
+case WEBADMIN_TRUSTSTORE:
+JiveGlobals.setProperty("admin.web.ssl.truststore",locationToStore.toString());
+JiveGlobals.setProperty("admin.web.ssl.trustpass",password);
+JiveGlobals.setProperty("admin.web.ssl.storeType",storeType);
+default :
+throw new IllegalStateException("Unrecognized purpose: " + purpose);
+}
+}

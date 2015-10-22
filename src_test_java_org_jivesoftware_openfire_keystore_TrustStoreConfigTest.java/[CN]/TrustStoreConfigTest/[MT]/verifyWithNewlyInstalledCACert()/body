@@ -1,0 +1,9 @@
+{
+  final X509Certificate cert=generateTestSelfSignedCertificate(true);
+  final String pemCert=toPEM(cert);
+  final Collection<X509Certificate> chain=new HashSet<>();
+  chain.add(cert);
+  trustStoreConfig.installCertificate("new-cert",pemCert);
+  final boolean result=trustStoreConfig.canTrust(chain);
+  Assert.assertTrue(result);
+}

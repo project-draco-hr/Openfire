@@ -1,24 +1,31 @@
 {
-  boolean c2s=(remoteServer == null);
-  KeyStore ksKeys=SSLConfig.getKeyStore();
-  String keypass=SSLConfig.getKeyPassword();
-  KeyStore ksTrust=(c2s ? SSLConfig.getc2sTrustStore() : SSLConfig.gets2sTrustStore());
-  String trustpass=(c2s ? SSLConfig.getc2sTrustPassword() : SSLConfig.gets2sTrustPassword());
-  if (c2s)   Log.debug("NIOConnection: startTLS: using c2s");
- else   Log.debug("NIOConnection: startTLS: using s2s");
-  KeyManager[] km=SSLJiveKeyManagerFactory.getKeyManagers(ksKeys,keypass);
-  TrustManager[] tm=SSLJiveTrustManagerFactory.getTrustManagers(ksTrust,trustpass);
+  final boolean isClientToServer=(remoteServer == null);
+  Log.debug("StartTLS: using {}",isClientToServer ? "c2s" : "s2s");
+  final SSLConfig sslConfig=SSLConfig.getInstance();
+  final TrustStoreConfig storeConfig;
+  if (isClientToServer) {
+    storeConfig=(TrustStoreConfig)sslConfig.getStoreConfig(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+  }
+ else {
+    storeConfig=(TrustStoreConfig)sslConfig.getStoreConfig(Purpose.SOCKETBASED_S2S_TRUSTSTORE);
+  }
+  final TrustManager[] tm;
   if (clientMode || authentication == ClientAuth.needed || authentication == ClientAuth.wanted) {
-    if (c2s) {
+    final KeyStore ksTrust=storeConfig.getStore();
+    if (isClientToServer) {
       tm=new TrustManager[]{new ClientTrustManager(ksTrust)};
     }
  else {
       tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust,this)};
     }
   }
+ else {
+    tm=storeConfig.getTrustManagers();
+  }
   String algorithm=JiveGlobals.getProperty(ConnectionSettings.Client.TLS_ALGORITHM,"TLS");
   SSLContext tlsContext=SSLContext.getInstance(algorithm);
-  tlsContext.init(km,tm,null);
+  final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)sslConfig.getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
+  tlsContext.init(identityStoreConfig.getKeyManagers(),tm,null);
   SslFilter filter=new SslFilter(tlsContext);
   filter.setUseClientMode(clientMode);
   if (clientMode) {

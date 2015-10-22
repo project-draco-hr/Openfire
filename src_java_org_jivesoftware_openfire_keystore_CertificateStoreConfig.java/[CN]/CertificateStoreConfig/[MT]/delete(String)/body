@@ -1,0 +1,17 @@
+{
+  if (alias == null || alias.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'alias' cannot be null or an empty String.");
+  }
+  try {
+    if (!store.containsAlias(alias)) {
+      Log.info("Unable to delete certificate for alias '" + alias + "' from store, as the store does not contain a certificate for that alias.");
+      return;
+    }
+    store.deleteEntry(alias);
+    persist();
+  }
+ catch (  CertificateStoreConfigException|KeyStoreException e) {
+    reload();
+    throw new CertificateStoreConfigException("Unable to install a certificate into an identity store.",e);
+  }
+}
