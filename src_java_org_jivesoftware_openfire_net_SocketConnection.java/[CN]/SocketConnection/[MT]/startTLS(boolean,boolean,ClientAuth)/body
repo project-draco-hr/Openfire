@@ -1,0 +1,12 @@
+{
+  if (!secure) {
+    secure=true;
+    tlsStreamHandler=new TLSStreamHandler(this,socket,clientMode,remoteServer,session instanceof IncomingServerSession);
+    if (!clientMode) {
+      deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
+    }
+    tlsStreamHandler.start();
+    writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),StandardCharsets.UTF_8));
+    xmlSerializer=new XMLSocketWriter(writer,this);
+  }
+}
