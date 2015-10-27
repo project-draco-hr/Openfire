@@ -4,7 +4,7 @@
   FormField field;
   field=completedForm.getField("muc#roomconfig_roomadmins");
   boolean adminsSent=field != null;
-  List<JID> admins=new ArrayList<JID>();
+  List<JID> admins=new ArrayList<>();
   if (field != null) {
     for (    String value : field.getValues()) {
       if (value != null && value.trim().length() != 0) {
@@ -14,7 +14,7 @@
   }
   field=completedForm.getField("muc#roomconfig_roomowners");
   boolean ownersSent=field != null;
-  List<JID> owners=new ArrayList<JID>();
+  List<JID> owners=new ArrayList<>();
   if (field != null) {
     for (    String value : field.getValues()) {
       if (value != null && value.trim().length() != 0) {
@@ -25,7 +25,7 @@
   if (ownersSent && owners.isEmpty()) {
     throw new ConflictException();
   }
-  List<Presence> presences=new ArrayList<Presence>(admins.size() + owners.size());
+  List<Presence> presences=new ArrayList<>(admins.size() + owners.size());
   field=completedForm.getField("muc#roomconfig_roomname");
   if (field != null) {
     final String value=field.getFirstValue();
@@ -49,7 +49,7 @@
   }
   field=completedForm.getField("muc#roomconfig_presencebroadcast");
   if (field != null) {
-    values=new ArrayList<String>(field.getValues());
+    values=new ArrayList<>(field.getValues());
     room.setRolesToBroadcastPresence(values);
   }
   field=completedForm.getField("muc#roomconfig_publicroom");
@@ -139,7 +139,7 @@
   presences.addAll(room.addOwners(owners,senderRole));
   presences.addAll(room.addAdmins(admins,senderRole));
   if (ownersSent) {
-    List<JID> ownersToRemove=new ArrayList<JID>(room.owners);
+    List<JID> ownersToRemove=new ArrayList<>(room.owners);
     ownersToRemove.removeAll(admins);
     ownersToRemove.removeAll(owners);
     for (    JID jid : ownersToRemove) {
@@ -149,7 +149,7 @@
     }
   }
   if (adminsSent) {
-    List<JID> adminsToRemove=new ArrayList<JID>(room.admins);
+    List<JID> adminsToRemove=new ArrayList<>(room.admins);
     adminsToRemove.removeAll(admins);
     adminsToRemove.removeAll(owners);
     for (    JID jid : adminsToRemove) {

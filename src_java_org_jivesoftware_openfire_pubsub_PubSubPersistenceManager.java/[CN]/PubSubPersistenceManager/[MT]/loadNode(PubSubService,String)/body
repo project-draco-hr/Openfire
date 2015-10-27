@@ -2,14 +2,14 @@
   Connection con=null;
   PreparedStatement pstmt=null;
   ResultSet rs=null;
-  Map<String,Node> nodes=new HashMap<String,Node>();
+  Map<String,Node> nodes=new HashMap<>();
   try {
     con=DbConnectionManager.getConnection();
     pstmt=con.prepareStatement(LOAD_NODE);
     pstmt.setString(1,service.getServiceID());
     pstmt.setString(2,nodeId);
     rs=pstmt.executeQuery();
-    Map<String,String> parentMapping=new HashMap<String,String>();
+    Map<String,String> parentMapping=new HashMap<>();
     if (rs.next()) {
       loadNode(service,nodes,parentMapping,rs);
     }

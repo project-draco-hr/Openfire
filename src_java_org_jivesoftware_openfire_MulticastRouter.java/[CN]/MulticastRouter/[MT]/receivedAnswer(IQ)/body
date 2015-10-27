@@ -58,13 +58,13 @@
       sendToRemoteServer(domain,"");
     }
  else {
-      List<String> jids=new ArrayList<String>();
+      List<String> jids=new ArrayList<>();
       for (      Element item : items) {
         String jid=item.attributeValue("jid");
         jids.add(jid);
         roots.put(jid,domain);
       }
-      nodes.put(domain,new CopyOnWriteArrayList<String>(jids));
+      nodes.put(domain,new CopyOnWriteArrayList<>(jids));
       for (      Element item : items) {
         IQ iq=new IQ(IQ.Type.get);
         iq.setFrom(server.getServerInfo().getXMPPDomain());

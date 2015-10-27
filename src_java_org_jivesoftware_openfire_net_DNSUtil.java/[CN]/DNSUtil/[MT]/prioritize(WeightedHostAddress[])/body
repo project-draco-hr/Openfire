@@ -1,18 +1,18 @@
 {
-  final List<WeightedHostAddress> result=new LinkedList<WeightedHostAddress>();
-  SortedMap<Integer,Set<WeightedHostAddress>> byPriority=new TreeMap<Integer,Set<WeightedHostAddress>>();
+  final List<WeightedHostAddress> result=new LinkedList<>();
+  SortedMap<Integer,Set<WeightedHostAddress>> byPriority=new TreeMap<>();
   for (  final WeightedHostAddress record : records) {
     if (byPriority.containsKey(record.getPriority())) {
       byPriority.get(record.getPriority()).add(record);
     }
  else {
-      final Set<WeightedHostAddress> set=new HashSet<WeightedHostAddress>();
+      final Set<WeightedHostAddress> set=new HashSet<>();
       set.add(record);
       byPriority.put(record.getPriority(),set);
     }
   }
   for (  Map.Entry<Integer,Set<WeightedHostAddress>> weights : byPriority.entrySet()) {
-    List<WeightedHostAddress> zeroWeights=new LinkedList<WeightedHostAddress>();
+    List<WeightedHostAddress> zeroWeights=new LinkedList<>();
     int totalWeight=0;
     final Iterator<WeightedHostAddress> i=weights.getValue().iterator();
     while (i.hasNext()) {

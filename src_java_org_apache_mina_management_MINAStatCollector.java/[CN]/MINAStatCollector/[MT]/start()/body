@@ -1,7 +1,7 @@
 {
 synchronized (this) {
     if (worker != null && worker.isAlive())     throw new RuntimeException("Stat collecting already started");
-    polledSessions=new ConcurrentLinkedQueue<IoSession>();
+    polledSessions=new ConcurrentLinkedQueue<>();
     Map<Long,IoSession> sessions=service.getManagedSessions();
     if (sessions != null) {
       for (      IoSession ioSession : sessions.values()) {
