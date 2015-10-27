@@ -8,25 +8,25 @@
         private volatile boolean destroyed=false;
         @Override public void run(){
           XMPPServer.getInstance().addServerListener(new XMPPServerListener(){
-            public void serverStarted(){
+            @Override public void serverStarted(){
             }
-            public void serverStopping(){
+            @Override public void serverStopping(){
               destroyed=true;
             }
           }
 );
           ClusterManager.addListener(new ClusterEventListener(){
-            public void joinedCluster(){
+            @Override public void joinedCluster(){
             }
-            public void joinedCluster(            byte[] nodeID){
+            @Override public void joinedCluster(            byte[] nodeID){
             }
-            public void leftCluster(){
+            @Override public void leftCluster(){
               destroyed=true;
               ClusterManager.removeListener(this);
             }
-            public void leftCluster(            byte[] nodeID){
+            @Override public void leftCluster(            byte[] nodeID){
             }
-            public void markedAsSeniorClusterMember(){
+            @Override public void markedAsSeniorClusterMember(){
             }
           }
 );

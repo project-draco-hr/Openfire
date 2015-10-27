@@ -12,7 +12,7 @@
         securityProperties=new XMLProperties(home + File.separator + JIVE_SECURITY_FILENAME);
         setupPropertyEncryption();
         TaskEngine.getInstance().schedule(new TimerTask(){
-          public void run(){
+          @Override public void run(){
             for (            String propertyName : securityProperties.getAllPropertyNames()) {
               if (!propertyName.startsWith(ENCRYPTED_PROPERTY_NAME_PREFIX)) {
                 setPropertyEncrypted(propertyName,true);

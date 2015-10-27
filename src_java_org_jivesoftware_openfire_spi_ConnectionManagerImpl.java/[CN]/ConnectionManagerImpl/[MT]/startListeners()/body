@@ -5,7 +5,7 @@
   PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
   if (!pluginManager.isExecuted()) {
     pluginManager.addPluginManagerListener(new PluginManagerListener(){
-      public void pluginsMonitored(){
+      @Override public void pluginsMonitored(){
         XMPPServer.getInstance().getPluginManager().removePluginManagerListener(this);
         startListeners();
       }

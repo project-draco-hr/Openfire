@@ -1,10 +1,10 @@
 {
   return new Iterator<V>(){
     private final Iterator<DefaultCache.CacheObject<V>> it=cachedObjects.iterator();
-    public boolean hasNext(){
+    @Override public boolean hasNext(){
       return it.hasNext();
     }
-    public V next(){
+    @Override public V next(){
       if (it.hasNext()) {
         DefaultCache.CacheObject<V> object=it.next();
         if (object == null) {
@@ -18,7 +18,7 @@
         throw new NoSuchElementException();
       }
     }
-    public void remove(){
+    @Override public void remove(){
       throw new UnsupportedOperationException();
     }
   }

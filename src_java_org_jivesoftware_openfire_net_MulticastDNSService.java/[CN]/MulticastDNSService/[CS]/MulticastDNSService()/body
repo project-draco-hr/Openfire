@@ -1,21 +1,21 @@
 {
   super("Multicast DNS Service");
   PropertyEventDispatcher.addListener(new PropertyEventListener(){
-    public void propertySet(    String property,    Map params){
+    @Override public void propertySet(    String property,    Map params){
       if (property.equals("xmpp.component.socket.active") || property.equals(" xmpp.component.socket.port")) {
         stop();
         start();
       }
     }
-    public void propertyDeleted(    String property,    Map params){
+    @Override public void propertyDeleted(    String property,    Map params){
       if (property.equals("xmpp.component.socket.active") || property.equals(" xmpp.component.socket.port")) {
         stop();
         start();
       }
     }
-    public void xmlPropertySet(    String property,    Map params){
+    @Override public void xmlPropertySet(    String property,    Map params){
     }
-    public void xmlPropertyDeleted(    String property,    Map params){
+    @Override public void xmlPropertyDeleted(    String property,    Map params){
     }
   }
 );

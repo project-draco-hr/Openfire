@@ -6,7 +6,7 @@
   calendar.add(Calendar.DATE,maxDays * -1);
   final String oldestFile="jive.audit-" + dateFormat.format(calendar.getTime()) + "-000.log";
   FilenameFilter filter=new FilenameFilter(){
-    public boolean accept(    File dir,    String name){
+    @Override public boolean accept(    File dir,    String name){
       return name.startsWith("jive.audit-") && name.endsWith(".log") && name.compareTo(oldestFile) < 0;
     }
   }

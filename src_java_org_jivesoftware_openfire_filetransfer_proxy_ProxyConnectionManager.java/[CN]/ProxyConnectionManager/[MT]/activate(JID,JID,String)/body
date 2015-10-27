@@ -12,7 +12,7 @@ synchronized (connectionLock) {
   transfer.setTarget(target.toString());
   transfer.setSessionID(sid);
   transfer.setTransferFuture(executor.submit(new Runnable(){
-    public void run(){
+    @Override public void run(){
       try {
         transferManager.fireFileTransferStart(transfer.getSessionID(),true);
       }

@@ -3,7 +3,7 @@
   groupMetaCache=CacheFactory.createCache("Group Metadata Cache");
   initProvider();
   GroupEventDispatcher.addListener(new GroupEventListener(){
-    public void groupCreated(    Group group,    Map params){
+    @Override public void groupCreated(    Group group,    Map params){
       if (group.getProperties().get("sharedRoster.showInRoster") == null) {
         group.getProperties().put("sharedRoster.showInRoster","nobody");
         group.getProperties().put("sharedRoster.displayName","");
@@ -16,7 +16,7 @@
       evictCachedUsersForGroup(group);
       evictCachedPaginatedGroupNames();
     }
-    public void groupDeleting(    Group group,    Map params){
+    @Override public void groupDeleting(    Group group,    Map params){
       groupCache.remove(group.getName());
       groupMetaCache.remove(GROUP_COUNT_KEY);
       groupMetaCache.remove(GROUP_NAMES_KEY);
@@ -24,7 +24,7 @@
       evictCachedUsersForGroup(group);
       evictCachedPaginatedGroupNames();
     }
-    public void groupModified(    Group group,    Map params){
+    @Override public void groupModified(    Group group,    Map params){
       String type=(String)params.get("type");
       if (type != null) {
         if (type.equals("propertyModified") || type.equals("propertyDeleted") || type.equals("propertyAdded")) {
@@ -47,28 +47,28 @@
       }
       groupCache.put(group.getName(),group);
     }
-    public void memberAdded(    Group group,    Map params){
+    @Override public void memberAdded(    Group group,    Map params){
       groupCache.put(group.getName(),group);
       String member=(String)params.get("member");
       if (member != null) {
         groupMetaCache.remove(member);
       }
     }
-    public void memberRemoved(    Group group,    Map params){
+    @Override public void memberRemoved(    Group group,    Map params){
       groupCache.put(group.getName(),group);
       String member=(String)params.get("member");
       if (member != null) {
         groupMetaCache.remove(member);
       }
     }
-    public void adminAdded(    Group group,    Map params){
+    @Override public void adminAdded(    Group group,    Map params){
       groupCache.put(group.getName(),group);
       String member=(String)params.get("admin");
       if (member != null) {
         groupMetaCache.remove(member);
       }
     }
-    public void adminRemoved(    Group group,    Map params){
+    @Override public void adminRemoved(    Group group,    Map params){
       groupCache.put(group.getName(),group);
       String member=(String)params.get("admin");
       if (member != null) {
@@ -78,26 +78,26 @@
   }
 );
   UserEventDispatcher.addListener(new UserEventListener(){
-    public void userCreated(    User user,    Map<String,Object> params){
+    @Override public void userCreated(    User user,    Map<String,Object> params){
     }
-    public void userDeleting(    User user,    Map<String,Object> params){
+    @Override public void userDeleting(    User user,    Map<String,Object> params){
       deleteUser(user);
     }
-    public void userModified(    User user,    Map<String,Object> params){
+    @Override public void userModified(    User user,    Map<String,Object> params){
     }
   }
 );
   PropertyEventListener propListener=new PropertyEventListener(){
-    public void propertySet(    String property,    Map params){
+    @Override public void propertySet(    String property,    Map params){
       if ("provider.group.className".equals(property)) {
         initProvider();
       }
     }
-    public void propertyDeleted(    String property,    Map params){
+    @Override public void propertyDeleted(    String property,    Map params){
     }
-    public void xmlPropertySet(    String property,    Map params){
+    @Override public void xmlPropertySet(    String property,    Map params){
     }
-    public void xmlPropertyDeleted(    String property,    Map params){
+    @Override public void xmlPropertyDeleted(    String property,    Map params){
     }
   }
 ;

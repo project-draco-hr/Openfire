@@ -11,7 +11,7 @@
   }
   if (JiveGlobals.getBooleanProperty("xmpp.socket.jmx.sessions",false)) {
     acceptor.addListener(new IoServiceListener(){
-      public void sessionCreated(      IoSession session){
+      @Override public void sessionCreated(      IoSession session){
         try {
           IoSessionMBean mbean=new IoSessionMBean(session);
           MBeanServer mbs=ManagementFactory.getPlatformMBeanServer();
@@ -22,7 +22,7 @@
           Log.warn("Failed to register MINA session mbean (JMX): " + ex);
         }
       }
-      public void sessionDestroyed(      IoSession session){
+      @Override public void sessionDestroyed(      IoSession session){
         try {
           ObjectName name=new ObjectName(prefix + ":type=IoSession,name=" + session.getRemoteAddress().toString().replace(':','/'));
           ManagementFactory.getPlatformMBeanServer().unregisterMBean(name);
@@ -31,11 +31,11 @@
           Log.warn("Failed to unregister MINA session mbean (JMX): " + ex);
         }
       }
-      public void serviceActivated(      IoService service) throws Exception {
+      @Override public void serviceActivated(      IoService service) throws Exception {
       }
-      public void serviceDeactivated(      IoService service) throws Exception {
+      @Override public void serviceDeactivated(      IoService service) throws Exception {
       }
-      public void serviceIdle(      IoService service,      IdleStatus idleStatus) throws Exception {
+      @Override public void serviceIdle(      IoService service,      IdleStatus idleStatus) throws Exception {
       }
     }
 );

@@ -28,7 +28,7 @@
  else {
     if (!JiveGlobals.getBooleanProperty("route.all-resources",false)) {
       Collections.sort(highestPrioritySessions,new Comparator<ClientSession>(){
-        public int compare(        ClientSession o1,        ClientSession o2){
+        @Override public int compare(        ClientSession o1,        ClientSession o2){
           int thisVal=getShowValue(o1);
           int anotherVal=getShowValue(o2);
           return (thisVal < anotherVal ? -1 : (thisVal == anotherVal ? 0 : 1));
@@ -67,7 +67,7 @@
         }
       }
       Collections.sort(targets,new Comparator<ClientSession>(){
-        public int compare(        ClientSession o1,        ClientSession o2){
+        @Override public int compare(        ClientSession o1,        ClientSession o2){
           return o2.getLastActiveDate().compareTo(o1.getLastActiveDate());
         }
       }
