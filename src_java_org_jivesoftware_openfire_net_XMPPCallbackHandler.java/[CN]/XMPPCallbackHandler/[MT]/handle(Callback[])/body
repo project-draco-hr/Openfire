@@ -18,11 +18,8 @@
       try {
         ((PasswordCallback)callback).setPassword(AuthFactory.getPassword(name).toCharArray());
       }
- catch (      UserNotFoundException e) {
+ catch (      UserNotFoundException|UnsupportedOperationException e) {
         throw new IOException(e.toString());
-      }
-catch (      UnsupportedOperationException uoe) {
-        throw new IOException(uoe.toString());
       }
     }
  else     if (callback instanceof VerifyPasswordCallback) {

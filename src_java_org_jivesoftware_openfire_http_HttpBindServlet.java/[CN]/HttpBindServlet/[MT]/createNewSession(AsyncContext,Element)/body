@@ -9,10 +9,7 @@
       Log.info(new Date() + ": HTTP RECV(" + connection.getSession().getStreamID().getID()+ "): "+ rootNode.asXML());
     }
   }
- catch (  UnauthorizedException e) {
-    sendLegacyError(context,BoshBindingError.internalServerError,"Server has not finished initialization.");
-  }
-catch (  HttpBindException e) {
+ catch (  UnauthorizedException|HttpBindException e) {
     sendLegacyError(context,BoshBindingError.internalServerError,"Server has not finished initialization.");
   }
 }

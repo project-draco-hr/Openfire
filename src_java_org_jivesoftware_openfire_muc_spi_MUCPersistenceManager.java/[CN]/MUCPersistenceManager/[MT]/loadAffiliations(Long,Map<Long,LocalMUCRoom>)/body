@@ -39,13 +39,7 @@ default :
 Log.error("Unknown affiliation value " + affiliation + " for user "+ affiliationJID+ " in persistent room "+ room.getID());
 }
 }
- catch (ForbiddenException e) {
-Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
-}
-catch (ConflictException e) {
-Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
-}
-catch (NotAllowedException e) {
+ catch (ForbiddenException|ConflictException|NotAllowedException e) {
 Log.warn("An exception prevented affiliations to be added to the room with id " + roomID,e);
 }
 }
