@@ -38,13 +38,9 @@ if (c <= 0x7f) {
 result.append(String.valueOf(c));
 }
  else if (c >= 0x080) {
-try {
-byte[] utf8bytes=String.valueOf(c).getBytes("UTF8");
+byte[] utf8bytes=String.valueOf(c).getBytes(StandardCharsets.UTF_8);
 for (byte b : utf8bytes) {
 result.append(String.format("\\%02x",b));
-}
-}
- catch (UnsupportedEncodingException e) {
 }
 }
 }

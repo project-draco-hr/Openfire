@@ -5,7 +5,7 @@
       sendChallenge(session,new byte[0]);
       return Status.needResponse;
     }
-    hostname=new String(StringUtils.decodeBase64(hostname),CHARSET);
+    hostname=new String(StringUtils.decodeBase64(hostname),StandardCharsets.UTF_8);
     if (hostname.length() == 0) {
       hostname=null;
     }
@@ -44,7 +44,7 @@
   }
  else   if (session instanceof LocalClientSession) {
     Log.debug("SASLAuthentication: EXTERNAL authentication via SSL certs for c2s connection");
-    String username=new String(StringUtils.decodeBase64(doc.getTextTrim()),CHARSET);
+    String username=new String(StringUtils.decodeBase64(doc.getTextTrim()),StandardCharsets.UTF_8);
     String principal="";
     ArrayList<String> principals=new ArrayList<String>();
     Connection connection=session.getConnection();
