@@ -1,22 +1,22 @@
 {
-  return new Iterator(){
-    Iterator iter=properties.entrySet().iterator();
-    Map.Entry current=null;
+  return new Iterator<Map.Entry<String,String>>(){
+    Iterator<Map.Entry<String,String>> iter=properties.entrySet().iterator();
+    Map.Entry<String,String> current=null;
     public boolean hasNext(){
       return iter.hasNext();
     }
-    public Object next(){
-      current=(Map.Entry)iter.next();
+    public Map.Entry<String,String> next(){
+      current=iter.next();
       return current;
     }
     public void remove(){
       if (current == null) {
         throw new IllegalStateException();
       }
-      String key=(String)current.getKey();
+      String key=current.getKey();
       deleteProperty(key);
       iter.remove();
-      Map<String,Object> params=new HashMap<String,Object>();
+      Map<String,Object> params=new HashMap<>();
       params.put("type","propertyDeleted");
       params.put("propertyKey",key);
       UserEventDispatcher.dispatchEvent(User.this,UserEventDispatcher.EventType.user_modified,params);
