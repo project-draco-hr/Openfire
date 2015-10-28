@@ -8,18 +8,18 @@
   StringBuilder filter=new StringBuilder();
   filter.append("(&(");
   filter.append(MessageFormat.format(manager.getSearchFilter(),"*"));
-  filter.append(")");
+  filter.append(')');
   if (fields.size() > 1) {
     filter.append("(|");
   }
   for (  String field : fields) {
     String attribute=searchFields.get(field);
-    filter.append("(").append(attribute).append("=").append(LdapManager.sanitizeSearchFilter(query)).append("*)");
+    filter.append('(').append(attribute).append('=').append(LdapManager.sanitizeSearchFilter(query)).append("*)");
   }
   if (fields.size() > 1) {
-    filter.append(")");
+    filter.append(')');
   }
-  filter.append(")");
+  filter.append(')');
   List<String> userlist=manager.retrieveList(manager.getUsernameField(),filter.toString(),startIndex,numResults,manager.getUsernameSuffix(),true);
   return new UserCollection(userlist.toArray(new String[userlist.size()]));
 }
