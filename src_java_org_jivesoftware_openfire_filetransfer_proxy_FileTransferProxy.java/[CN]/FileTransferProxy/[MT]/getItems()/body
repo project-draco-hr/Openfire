@@ -1,9 +1,7 @@
 {
-  List<DiscoServerItem> items=new ArrayList<DiscoServerItem>();
   if (!isEnabled()) {
-    return items.iterator();
+    return Collections.emptyIterator();
   }
   final DiscoServerItem item=new DiscoServerItem(new JID(getServiceDomain()),"Socks 5 Bytestreams Proxy",null,null,this,this);
-  items.add(item);
-  return items.iterator();
+  return Collections.singleton(item).iterator();
 }
