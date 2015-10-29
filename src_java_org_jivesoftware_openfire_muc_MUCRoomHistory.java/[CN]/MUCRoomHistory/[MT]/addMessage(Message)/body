@@ -15,7 +15,7 @@
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
     for (Iterator<Message> it=getMessageHistory(); it.hasNext(); ) {
       Message message=it.next();
-      Element delayElement=message.getChildElement("x","jabber:x:delay");
+      Element delayElement=message.getChildElement("delay","urn:xmpp:delay");
       if (room.canAnyoneDiscoverJID()) {
         try {
           MUCRole role=room.getOccupant(message.getFrom().getResource());
@@ -30,22 +30,18 @@
     }
   }
   Element delayInformation=packetToAdd.addChildElement("delay","urn:xmpp:delay");
-  Element delayInformationOld=packetToAdd.addChildElement("x","jabber:x:delay");
   Date current=new Date();
   delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(current));
-  delayInformationOld.addAttribute("stamp",XMPPDateTimeFormat.formatOld(current));
   if (room.canAnyoneDiscoverJID()) {
     try {
       MUCRole role=room.getOccupant(packet.getFrom().getResource());
       delayInformation.addAttribute("from",role.getUserAddress().toString());
-      delayInformationOld.addAttribute("from",role.getUserAddress().toString());
     }
  catch (    UserNotFoundException e) {
     }
   }
  else {
     delayInformation.addAttribute("from",packet.getFrom().toString());
-    delayInformationOld.addAttribute("from",packet.getFrom().toString());
   }
   historyStrategy.addMessage(packetToAdd);
 }
