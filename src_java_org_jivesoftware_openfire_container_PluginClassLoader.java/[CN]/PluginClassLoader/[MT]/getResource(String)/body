@@ -1,0 +1,16 @@
+{
+  if (Log.isDebugEnabled())   Log.debug("getResource(" + name + ")");
+  URL url=null;
+  url=findResource(name);
+  if (url != null) {
+    if (Log.isDebugEnabled())     Log.debug("  --> Returning '" + url.toString() + "'");
+    return (url);
+  }
+  url=parent.getResource(name);
+  if (url != null) {
+    if (Log.isDebugEnabled())     Log.debug("  --> Returning '" + url.toString() + "'");
+    return (url);
+  }
+  if (Log.isDebugEnabled())   Log.debug("  --> Resource not found, returning null");
+  return (null);
+}

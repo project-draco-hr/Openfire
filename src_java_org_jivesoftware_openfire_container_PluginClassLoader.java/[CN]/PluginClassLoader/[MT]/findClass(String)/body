@@ -1,0 +1,41 @@
+{
+  if (Log.isDebugEnabled())   Log.debug("    findClass(" + name + ")");
+  Class<?> clazz=null;
+  try {
+    if (Log.isTraceEnabled())     Log.trace("      findClassInternal(" + name + ")");
+    try {
+      clazz=findClassInternal(name);
+    }
+ catch (    AccessControlException ace) {
+      Log.warn("PluginClassLoader.findClassInternal(" + name + ") security exception: "+ ace.getMessage(),ace);
+      throw new ClassNotFoundException(name,ace);
+    }
+catch (    RuntimeException e) {
+      if (Log.isTraceEnabled())       Log.trace("      -->RuntimeException Rethrown",e);
+      throw e;
+    }
+    if (clazz == null) {
+      try {
+        clazz=super.findClass(name);
+      }
+ catch (      AccessControlException ace) {
+        Log.warn("PluginClassLoader.findClassInternal(" + name + ") security exception: "+ ace.getMessage(),ace);
+        throw new ClassNotFoundException(name,ace);
+      }
+catch (      RuntimeException e) {
+        if (Log.isTraceEnabled())         Log.trace("      -->RuntimeException Rethrown",e);
+        throw e;
+      }
+    }
+    if (clazz == null) {
+      if (Log.isDebugEnabled())       Log.debug("    --> Returning ClassNotFoundException");
+      throw new ClassNotFoundException(name);
+    }
+  }
+ catch (  ClassNotFoundException e) {
+    if (Log.isTraceEnabled())     Log.trace("    --> Passing on ClassNotFoundException");
+    throw e;
+  }
+  if (Log.isTraceEnabled())   Log.debug("      Returning class " + clazz);
+  return (clazz);
+}
