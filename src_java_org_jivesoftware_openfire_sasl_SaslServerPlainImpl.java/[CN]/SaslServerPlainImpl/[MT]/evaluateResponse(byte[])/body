@@ -7,7 +7,7 @@
   }
   try {
     if (response.length != 0) {
-      String data=new String(response,"UTF8");
+      String data=new String(response,StandardCharsets.UTF_8);
       StringTokenizer tokens=new StringTokenizer(data,"\0");
       if (tokens.countTokens() > 2) {
         username=tokens.nextToken();
@@ -46,11 +46,7 @@
       return null;
     }
   }
- catch (  UnsupportedEncodingException e) {
-    aborted=true;
-    throw new SaslException("UTF8 not available on platform",e);
-  }
-catch (  UnsupportedCallbackException e) {
+ catch (  UnsupportedCallbackException e) {
     aborted=true;
     throw new SaslException("PLAIN authentication failed for: " + username,e);
   }
