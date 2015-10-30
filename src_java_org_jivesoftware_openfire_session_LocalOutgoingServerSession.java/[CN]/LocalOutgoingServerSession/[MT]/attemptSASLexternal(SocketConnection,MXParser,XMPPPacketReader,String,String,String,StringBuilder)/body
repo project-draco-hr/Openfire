@@ -4,7 +4,7 @@
   if (doExternalAuthentication(domain,connection,reader)) {
     log.debug("EXTERNAL SASL was successful.");
     connection.deliverRawText(openingStream.toString());
-    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),StandardCharsets.UTF_8));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
     }

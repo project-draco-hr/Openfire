@@ -49,7 +49,7 @@
     int soTimeout=socket.getSoTimeout();
     socket.setSoTimeout(5000);
     XMPPPacketReader reader=new XMPPPacketReader();
-    reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),CHARSET));
+    reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));
     XmlPullParser xpp=reader.getXPPParser();
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
