@@ -38,29 +38,15 @@
       contentType="text/html";
     }
     response.setContentType(contentType);
-    InputStream in=null;
-    ServletOutputStream out=null;
-    try {
-      in=new BufferedInputStream(new FileInputStream(file));
-      out=response.getOutputStream();
-      response.setContentLength((int)file.length());
-      byte[] buf=new byte[1024];
-      int len;
-      while ((len=in.read(buf)) != -1) {
-        out.write(buf,0,len);
+    try (InputStream in=new BufferedInputStream(new FileInputStream(file))){
+      try (ServletOutputStream out=response.getOutputStream()){
+        response.setContentLength((int)file.length());
+        byte[] buf=new byte[1024];
+        int len;
+        while ((len=in.read(buf)) != -1) {
+          out.write(buf,0,len);
+        }
       }
-    }
-  finally {
-      try {
-        in.close();
-      }
- catch (      Exception ignored) {
-      }
-      try {
-        out.close();
-      }
- catch (      Exception ignored) {
-      }
-    }
-  }
+     }
+   }
 }

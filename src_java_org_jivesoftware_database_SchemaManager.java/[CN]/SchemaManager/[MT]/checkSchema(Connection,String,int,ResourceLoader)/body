@@ -48,23 +48,15 @@
     Log.info(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
     System.out.println(LocaleUtils.getLocalizedString("upgrade.database.missing_schema",Arrays.asList(schemaKey)));
     String resourceName=schemaKey + "_" + DbConnectionManager.getDatabaseType()+ ".sql";
-    InputStream resource=resourceLoader.loadResource(resourceName);
-    if (resource == null) {
-      return false;
-    }
-    try {
+    try (InputStream resource=resourceLoader.loadResource(resourceName)){
+      if (resource == null) {
+        return false;
+      }
       executeSQLScript(con,resource,!schemaKey.equals("openfire") && !schemaKey.equals("wildfire"));
     }
  catch (    Exception e) {
       Log.error(e.getMessage(),e);
       return false;
-    }
- finally {
-      try {
-        resource.close();
-      }
- catch (      Exception e) {
-      }
     }
     Log.info(LocaleUtils.getLocalizedString("upgrade.database.success"));
     System.out.println(LocaleUtils.getLocalizedString("upgrade.database.success"));
@@ -84,32 +76,24 @@
       return false;
     }
     for (int i=currentVersion + 1; i <= requiredVersion; i++) {
-      InputStream resource=getUpgradeResource(resourceLoader,i,schemaKey);
-      try {
-        if (i == 21 && schemaKey.equals("openfire")) {
-          OF33.executeFix(con);
+      try (InputStream resource=getUpgradeResource(resourceLoader,i,schemaKey)){
+        try {
+          if (i == 21 && schemaKey.equals("openfire")) {
+            OF33.executeFix(con);
+          }
         }
-      }
- catch (      Exception e) {
-        Log.error(e.getMessage(),e);
-        return false;
-      }
-      if (resource == null) {
-        continue;
-      }
-      try {
+ catch (        Exception e) {
+          Log.error(e.getMessage(),e);
+          return false;
+        }
+        if (resource == null) {
+          continue;
+        }
         executeSQLScript(con,resource,!schemaKey.equals("openfire") && !schemaKey.equals("wildfire"));
       }
  catch (      Exception e) {
         Log.error(e.getMessage(),e);
         return false;
-      }
- finally {
-        try {
-          resource.close();
-        }
- catch (        Exception e) {
-        }
       }
     }
     Log.info(LocaleUtils.getLocalizedString("upgrade.database.success"));

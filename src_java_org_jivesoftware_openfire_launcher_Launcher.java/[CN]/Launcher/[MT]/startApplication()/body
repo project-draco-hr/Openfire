@@ -27,8 +27,7 @@
     SwingWorker inputWorker=new SwingWorker(){
       @Override public Object construct(){
         if (openfired != null) {
-          try {
-            InputStream in=openfired.getInputStream();
+          try (InputStream in=openfired.getInputStream()){
             int c;
             while ((c=in.read()) != -1) {
               try {
@@ -38,7 +37,6 @@
  catch (              BadLocationException e) {
               }
             }
-            in.close();
           }
  catch (          IOException e) {
             e.printStackTrace();
@@ -52,8 +50,7 @@
     SwingWorker errorWorker=new SwingWorker(){
       @Override public Object construct(){
         if (openfired != null) {
-          try {
-            InputStream in=openfired.getErrorStream();
+          try (InputStream in=openfired.getErrorStream()){
             int c;
             while ((c=in.read()) != -1) {
               try {
@@ -63,7 +60,6 @@
  catch (              BadLocationException e) {
               }
             }
-            in.close();
           }
  catch (          IOException e) {
             e.printStackTrace();

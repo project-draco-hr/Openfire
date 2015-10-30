@@ -10,11 +10,11 @@
   try {
     int statusCode=httpClient.executeMethod(getMethod);
     if (statusCode == 200) {
-      InputStream in=getMethod.getResponseBodyAsStream();
-      String pluginFilename=url.substring(url.lastIndexOf("/") + 1);
-      installed=XMPPServer.getInstance().getPluginManager().installPlugin(in,pluginFilename);
-      in.close();
-      if (installed) {
+      try (InputStream in=getMethod.getResponseBodyAsStream()){
+        String pluginFilename=url.substring(url.lastIndexOf("/") + 1);
+        installed=XMPPServer.getInstance().getPluginManager().installPlugin(in,pluginFilename);
+      }
+       if (installed) {
         for (        Update update : pluginUpdates) {
           if (update.getURL().equals(url)) {
             update.setDownloaded(true);
