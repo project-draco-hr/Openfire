@@ -3,19 +3,32 @@
     Log.error("Unable to save XML properties; no file specified");
     return;
   }
+  boolean error=false;
   File tempFile=new File(file.getParentFile(),file.getName() + ".tmp");
+  ;
   try (Writer writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile),"UTF-8"))){
     OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
     XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
     xmlWriter.write(document);
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+    error=true;
+  }
+  if (!error) {
     if (!file.delete()) {
       Log.error("Error deleting property file: " + file.getAbsolutePath());
       return;
     }
-    copy(tempFile,file);
-    tempFile.delete();
-  }
- catch (  Exception e) {
-    Log.error(e.getMessage(),e);
+    try {
+      copy(tempFile,file);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+      error=true;
+    }
+    if (!error) {
+      tempFile.delete();
+    }
   }
 }
