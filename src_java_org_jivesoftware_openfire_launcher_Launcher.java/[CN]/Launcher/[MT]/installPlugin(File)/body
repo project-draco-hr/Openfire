@@ -8,8 +8,8 @@
   dialog.getContentPane().add(bar,BorderLayout.CENTER);
   dialog.pack();
   dialog.setSize(225,55);
-  final SwingWorker installerThread=new SwingWorker(){
-    @Override public Object construct(){
+  final SwingWorker<File,Void> installerThread=new SwingWorker<File,Void>(){
+    @Override public File doInBackground(){
       File pluginsDir=new File(binDir.getParentFile(),"plugins");
       String tempName=plugin.getName() + ".part";
       File tempPluginsFile=new File(pluginsDir,tempName);
@@ -24,12 +24,12 @@
       }
       return realPluginsFile;
     }
-    @Override public void finished(){
+    @Override public void done(){
       dialog.setVisible(false);
     }
   }
 ;
-  installerThread.start();
+  installerThread.execute();
   dialog.setLocationRelativeTo(frame);
   dialog.setVisible(true);
 }
