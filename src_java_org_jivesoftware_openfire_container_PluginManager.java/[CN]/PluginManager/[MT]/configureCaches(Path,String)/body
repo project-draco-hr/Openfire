@@ -1,9 +1,9 @@
 {
-  File cacheConfig=new File(pluginDir,"cache-config.xml");
-  if (cacheConfig.exists()) {
+  Path cacheConfig=pluginDir.resolve("cache-config.xml");
+  if (Files.exists(cacheConfig)) {
     PluginCacheConfigurator configurator=new PluginCacheConfigurator();
     try {
-      configurator.setInputStream(new BufferedInputStream(new FileInputStream(cacheConfig)));
+      configurator.setInputStream(new BufferedInputStream(Files.newInputStream(cacheConfig)));
       configurator.configure(pluginName);
     }
  catch (    Exception e) {

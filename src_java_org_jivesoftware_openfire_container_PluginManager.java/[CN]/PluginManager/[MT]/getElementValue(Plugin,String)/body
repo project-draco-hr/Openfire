@@ -1,14 +1,14 @@
 {
-  File pluginDir=pluginDirs.get(plugin);
+  Path pluginDir=pluginDirs.get(plugin);
   if (pluginDir == null) {
     return null;
   }
   try {
-    File pluginConfig=new File(pluginDir,"plugin.xml");
-    if (pluginConfig.exists()) {
+    Path pluginConfig=pluginDir.resolve("plugin.xml");
+    if (Files.exists(pluginConfig)) {
       SAXReader saxReader=new SAXReader();
       saxReader.setEncoding("UTF-8");
-      Document pluginXML=saxReader.read(pluginConfig);
+      Document pluginXML=saxReader.read(pluginConfig.toFile());
       Element element=(Element)pluginXML.selectSingleNode(xpath);
       if (element != null) {
         return element.getTextTrim();

@@ -1,0 +1,37 @@
+{
+  try {
+    if (Files.isDirectory(dir)) {
+      Files.walkFileTree(dir,new SimpleFileVisitor<Path>(){
+        @Override public FileVisitResult visitFile(        Path file,        BasicFileAttributes attrs) throws IOException {
+          try {
+            Files.deleteIfExists(file);
+          }
+ catch (          IOException e) {
+            Log.debug("PluginManager: Plugin removal: could not delete: " + file);
+            throw e;
+          }
+          return FileVisitResult.CONTINUE;
+        }
+        @Override public FileVisitResult postVisitDirectory(        Path dir,        IOException exc) throws IOException {
+          try {
+            Files.deleteIfExists(dir);
+          }
+ catch (          IOException e) {
+            Log.debug("PluginManager: Plugin removal: could not delete: " + dir);
+            throw e;
+          }
+          return FileVisitResult.CONTINUE;
+        }
+      }
+);
+    }
+    boolean deleted=Files.notExists(dir) || Files.deleteIfExists(dir);
+    if (deleted) {
+      pluginFiles.remove(dir.getFileName().toString());
+    }
+    return deleted;
+  }
+ catch (  IOException e) {
+    return Files.notExists(dir);
+  }
+}
