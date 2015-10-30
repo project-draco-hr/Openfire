@@ -1,21 +1,7 @@
 {
-  FileInputStream fin=null;
-  FileOutputStream fout=null;
-  try {
-    fin=new FileInputStream(inFile);
-    fout=new FileOutputStream(outFile);
-    copy(fin,fout);
-  }
-  finally {
-    try {
-      if (fin != null)       fin.close();
+  try (FileInputStream fin=new FileInputStream(inFile)){
+    try (FileOutputStream fout=new FileOutputStream(outFile)){
+      copy(fin,fout);
     }
- catch (    IOException e) {
-    }
-    try {
-      if (fout != null)       fout.close();
-    }
- catch (    IOException e) {
-    }
-  }
-}
+   }
+ }

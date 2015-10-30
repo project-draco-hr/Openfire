@@ -8,8 +8,7 @@
     for (    List<?> item : altNames) {
       Integer type=(Integer)item.get(0);
       if (type == 0) {
-        try {
-          ASN1InputStream decoder=new ASN1InputStream((byte[])item.get(1));
+        try (ASN1InputStream decoder=new ASN1InputStream((byte[])item.get(1))){
           Object object=decoder.readObject();
           ASN1Sequence otherNameSeq=null;
           if (object != null && object instanceof ASN1Sequence) {
@@ -39,7 +38,6 @@
             if (identity != null && identity.length() > 0) {
               identities.add(identity);
             }
-            decoder.close();
           }
  catch (          IllegalArgumentException ex) {
             Log.debug("Cannot parse altName, likely because of unknown record format.",ex);

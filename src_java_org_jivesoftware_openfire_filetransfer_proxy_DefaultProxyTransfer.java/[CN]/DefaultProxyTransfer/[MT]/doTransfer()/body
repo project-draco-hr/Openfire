@@ -2,37 +2,17 @@
   if (!isActivatable()) {
     throw new IOException("Transfer missing party");
   }
-  InputStream in=null;
-  OutputStream out=null;
-  try {
-    in=getInputStream();
-    out=new ProxyOutputStream(getOutputStream());
-    final byte[] b=new byte[BUFFER_SIZE];
-    int count=0;
-    amountWritten=0;
-    do {
-      out.write(b,0,count);
-      amountWritten+=count;
-      count=in.read(b);
-    }
+  try (InputStream in=getInputStream()){
+    try (OutputStream out=new ProxyOutputStream(getOutputStream())){
+      final byte[] b=new byte[BUFFER_SIZE];
+      int count=0;
+      amountWritten=0;
+      do {
+        out.write(b,0,count);
+        amountWritten+=count;
+        count=in.read(b);
+      }
  while (count >= 0);
-  }
-  finally {
-    if (in != null) {
-      try {
-        in.close();
-      }
- catch (      Exception e) {
-        Log.error(e.getMessage(),e);
-      }
     }
-    if (out != null) {
-      try {
-        out.close();
-      }
- catch (      Exception e) {
-        Log.error(e.getMessage(),e);
-      }
-    }
-  }
-}
+   }
+ }

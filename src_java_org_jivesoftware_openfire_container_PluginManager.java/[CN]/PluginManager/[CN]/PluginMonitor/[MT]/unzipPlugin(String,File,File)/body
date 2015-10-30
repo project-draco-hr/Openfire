@@ -1,6 +1,5 @@
 {
-  try {
-    ZipFile zipFile=new JarFile(file);
+  try (ZipFile zipFile=new JarFile(file)){
     if (zipFile.getEntry("plugin.xml") == null) {
       return;
     }
@@ -15,19 +14,18 @@
       }
       if (!entry.isDirectory()) {
         entryFile.getParentFile().mkdirs();
-        FileOutputStream out=new FileOutputStream(entryFile);
-        InputStream zin=zipFile.getInputStream(entry);
-        byte[] b=new byte[512];
-        int len;
-        while ((len=zin.read(b)) != -1) {
-          out.write(b,0,len);
-        }
-        out.flush();
-        out.close();
-        zin.close();
-      }
+        try (FileOutputStream out=new FileOutputStream(entryFile)){
+          try (InputStream zin=zipFile.getInputStream(entry)){
+            byte[] b=new byte[512];
+            int len;
+            while ((len=zin.read(b)) != -1) {
+              out.write(b,0,len);
+            }
+            out.flush();
+          }
+         }
+       }
     }
-    zipFile.close();
   }
  catch (  Exception e) {
     Log.error(e.getMessage(),e);

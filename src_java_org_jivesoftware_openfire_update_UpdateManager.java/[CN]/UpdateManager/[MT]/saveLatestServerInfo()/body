@@ -6,7 +6,6 @@
     component.addAttribute("changelog",serverUpdate.getChangelog());
     component.addAttribute("url",serverUpdate.getURL());
   }
-  Writer writer=null;
   try {
     File file=new File(JiveGlobals.getHomeDirectory(),"conf");
     if (!file.exists()) {
@@ -16,22 +15,13 @@
     if (file.exists()) {
       file.delete();
     }
-    writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"));
-    OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
-    XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
-    xmlWriter.write(xmlResponse);
-  }
+    try (Writer writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"))){
+      OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
+      XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
+      xmlWriter.write(xmlResponse);
+    }
+   }
  catch (  Exception e) {
     Log.error(e.getMessage(),e);
-  }
- finally {
-    if (writer != null) {
-      try {
-        writer.close();
-      }
- catch (      IOException e1) {
-        Log.error(e1.getMessage(),e1);
-      }
-    }
   }
 }

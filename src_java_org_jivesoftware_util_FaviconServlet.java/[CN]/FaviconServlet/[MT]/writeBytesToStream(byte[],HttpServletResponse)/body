@@ -1,10 +1,8 @@
 {
   response.setContentType(CONTENT_TYPE);
-  try {
-    ServletOutputStream sos=response.getOutputStream();
+  try (ServletOutputStream sos=response.getOutputStream()){
     sos.write(bytes);
     sos.flush();
-    sos.close();
   }
  catch (  IOException e) {
   }
