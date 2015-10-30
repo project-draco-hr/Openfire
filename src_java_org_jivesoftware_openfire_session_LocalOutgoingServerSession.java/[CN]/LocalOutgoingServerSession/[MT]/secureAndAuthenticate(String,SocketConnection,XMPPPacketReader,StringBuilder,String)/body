@@ -27,7 +27,7 @@
       }
     }
     connection.deliverRawText(openingStream.toString());
-    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),StandardCharsets.UTF_8));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
     }
@@ -62,7 +62,7 @@
               connection.deliverRawText(openingStream.toString());
               ZInputStream in=new ZInputStream(connection.getTLSStreamHandler().getInputStream());
               in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
-              xpp.setInput(new InputStreamReader(in,CHARSET));
+              xpp.setInput(new InputStreamReader(in,StandardCharsets.UTF_8));
               for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
                 eventType=xpp.next();
               }

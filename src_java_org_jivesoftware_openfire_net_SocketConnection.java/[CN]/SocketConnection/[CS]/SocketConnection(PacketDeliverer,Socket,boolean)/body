@@ -5,10 +5,10 @@
   this.secure=isSecure;
   this.socket=socket;
   if (socket.getChannel() != null) {
-    writer=Channels.newWriter(ServerTrafficCounter.wrapWritableChannel(socket.getChannel()),CHARSET);
+    writer=Channels.newWriter(ServerTrafficCounter.wrapWritableChannel(socket.getChannel()),StandardCharsets.UTF_8.newEncoder(),-1);
   }
  else {
-    writer=new BufferedWriter(new OutputStreamWriter(ServerTrafficCounter.wrapOutputStream(socket.getOutputStream()),CHARSET));
+    writer=new BufferedWriter(new OutputStreamWriter(ServerTrafficCounter.wrapOutputStream(socket.getOutputStream()),StandardCharsets.UTF_8));
   }
   this.backupDeliverer=backupDeliverer;
   xmlSerializer=new XMLSocketWriter(writer,this);
