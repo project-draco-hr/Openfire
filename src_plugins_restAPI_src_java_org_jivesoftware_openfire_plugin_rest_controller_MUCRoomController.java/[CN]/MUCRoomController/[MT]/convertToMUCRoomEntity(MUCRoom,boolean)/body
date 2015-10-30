@@ -1,0 +1,47 @@
+{
+  MUCRoomEntity mucRoomEntity=new MUCRoomEntity(room.getNaturalLanguageName(),room.getName(),room.getDescription());
+  mucRoomEntity.setSubject(room.getSubject());
+  mucRoomEntity.setCanAnyoneDiscoverJID(room.canAnyoneDiscoverJID());
+  mucRoomEntity.setCanChangeNickname(room.canChangeNickname());
+  mucRoomEntity.setCanOccupantsChangeSubject(room.canOccupantsChangeSubject());
+  mucRoomEntity.setCanOccupantsInvite(room.canOccupantsInvite());
+  mucRoomEntity.setPublicRoom(room.isPublicRoom());
+  mucRoomEntity.setPassword(room.getPassword());
+  mucRoomEntity.setPersistent(room.isPersistent());
+  mucRoomEntity.setRegistrationEnabled(room.isRegistrationEnabled());
+  mucRoomEntity.setLogEnabled(room.isLogEnabled());
+  mucRoomEntity.setLoginRestrictedToNickname(room.isLoginRestrictedToNickname());
+  mucRoomEntity.setMaxUsers(room.getMaxUsers());
+  mucRoomEntity.setMembersOnly(room.isMembersOnly());
+  mucRoomEntity.setModerated(room.isModerated());
+  ConcurrentGroupList<JID> owners=new ConcurrentGroupList<JID>(room.getOwners());
+  ConcurrentGroupList<JID> admins=new ConcurrentGroupList<JID>(room.getAdmins());
+  ConcurrentGroupList<JID> members=new ConcurrentGroupList<JID>(room.getMembers());
+  ConcurrentGroupList<JID> outcasts=new ConcurrentGroupList<JID>(room.getOutcasts());
+  if (expand) {
+    for (    Group ownerGroup : owners.getGroups()) {
+      owners.addAllAbsent(ownerGroup.getAll());
+    }
+    for (    Group adminGroup : admins.getGroups()) {
+      admins.addAllAbsent(adminGroup.getAll());
+    }
+    for (    Group memberGroup : members.getGroups()) {
+      members.addAllAbsent(memberGroup.getAll());
+    }
+    for (    Group outcastGroup : outcasts.getGroups()) {
+      outcasts.addAllAbsent(outcastGroup.getAll());
+    }
+  }
+  mucRoomEntity.setOwners(MUCRoomUtils.convertJIDsToStringList(owners));
+  mucRoomEntity.setAdmins(MUCRoomUtils.convertJIDsToStringList(admins));
+  mucRoomEntity.setMembers(MUCRoomUtils.convertJIDsToStringList(members));
+  mucRoomEntity.setOutcasts(MUCRoomUtils.convertJIDsToStringList(outcasts));
+  mucRoomEntity.setOwnerGroups(MUCRoomUtils.convertGroupsToStringList(owners.getGroups()));
+  mucRoomEntity.setAdminGroups(MUCRoomUtils.convertGroupsToStringList(admins.getGroups()));
+  mucRoomEntity.setMemberGroups(MUCRoomUtils.convertGroupsToStringList(members.getGroups()));
+  mucRoomEntity.setOutcastGroups(MUCRoomUtils.convertGroupsToStringList(outcasts.getGroups()));
+  mucRoomEntity.setBroadcastPresenceRoles(room.getRolesToBroadcastPresence());
+  mucRoomEntity.setCreationDate(room.getCreationDate());
+  mucRoomEntity.setModificationDate(room.getModificationDate());
+  return mucRoomEntity;
+}
