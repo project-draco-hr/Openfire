@@ -3,8 +3,12 @@
   this.packets=new ArrayList<String>();
   for (  Packet packet : elements) {
     if (Namespace.NO_NAMESPACE.equals(packet.getElement().getNamespace())) {
-      packet.getElement().add(Namespace.get("jabber:client"));
+      StringBuilder packetXml=new StringBuilder(packet.toXML());
+      packetXml.insert(packetXml.indexOf(" ")," xmlns=\"jabber:client\"");
+      this.packets.add(packetXml.toString());
     }
-    this.packets.add(packet.toXML());
+ else {
+      this.packets.add(packet.toXML());
+    }
   }
 }
