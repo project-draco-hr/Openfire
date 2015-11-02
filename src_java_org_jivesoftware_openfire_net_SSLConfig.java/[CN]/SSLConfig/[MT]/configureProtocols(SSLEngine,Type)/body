@@ -1,0 +1,22 @@
+{
+  String enabledProtocols=JiveGlobals.getProperty(type.getPrefix() + "enabled.protocols");
+  while (enabledProtocols == null && type.getFallback() != null) {
+    type=type.getFallback();
+    enabledProtocols=JiveGlobals.getProperty(type.getPrefix() + "enabled.protocols");
+  }
+  if (enabledProtocols != null) {
+    final String[] protocols=enabledProtocols.split(",");
+    if (protocols != null && protocols.length > 0) {
+      sslEngine.setEnabledProtocols(protocols);
+    }
+  }
+ else {
+    final ArrayList<String> defaultEnabled=new ArrayList<>();
+    for (    String supported : sslEngine.getSupportedProtocols()) {
+      if (supported.toUpperCase().startsWith("TLS")) {
+        defaultEnabled.add(supported);
+      }
+    }
+    sslEngine.setEnabledProtocols(defaultEnabled.toArray(new String[defaultEnabled.size()]));
+  }
+}

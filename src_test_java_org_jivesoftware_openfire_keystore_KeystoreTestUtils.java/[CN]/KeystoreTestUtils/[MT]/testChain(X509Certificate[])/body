@@ -1,0 +1,17 @@
+{
+  X509CertSelector selector=new X509CertSelector();
+  selector.setCertificate(chain[0]);
+  Set<TrustAnchor> trustAnchors=new HashSet<TrustAnchor>();
+  trustAnchors.add(new TrustAnchor(chain[chain.length - 1],null));
+  PKIXBuilderParameters pkixParams=new PKIXBuilderParameters(trustAnchors,selector);
+  pkixParams.setRevocationEnabled(false);
+  Set<java.security.cert.Certificate> intermediateCerts=new HashSet<>();
+  for (int i=1; i < chain.length - 1; i++) {
+    intermediateCerts.add(chain[i]);
+  }
+  CertStore intermediateCertStore=CertStore.getInstance("Collection",new CollectionCertStoreParameters(intermediateCerts));
+  pkixParams.addCertStore(intermediateCertStore);
+  CertPathBuilder builder=CertPathBuilder.getInstance("PKIX");
+  PKIXCertPathBuilderResult result=(PKIXCertPathBuilderResult)builder.build(pkixParams);
+  return result;
+}

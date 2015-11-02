@@ -1,0 +1,26 @@
+{
+  String enabledCipherSuites=JiveGlobals.getProperty(type.getPrefix() + "enabled.ciphersuites");
+  while (enabledCipherSuites == null && type.getFallback() != null) {
+    type=type.getFallback();
+    enabledCipherSuites=JiveGlobals.getProperty(type.getPrefix() + "enabled.ciphersuites");
+  }
+  if (enabledCipherSuites != null) {
+    final String[] suites=enabledCipherSuites.split(",");
+    if (suites != null && suites.length > 0) {
+      sslEngine.setEnabledCipherSuites(suites);
+    }
+  }
+ else {
+    final ArrayList<String> defaultEnabled=new ArrayList<>();
+    for (    String supported : sslEngine.getSupportedCipherSuites()) {
+      if (supported.toUpperCase().endsWith("SHA")) {
+        continue;
+      }
+      if (supported.toUpperCase().endsWith("MD5")) {
+        continue;
+      }
+      defaultEnabled.add(supported);
+    }
+    sslEngine.setEnabledCipherSuites(defaultEnabled.toArray(new String[defaultEnabled.size()]));
+  }
+}

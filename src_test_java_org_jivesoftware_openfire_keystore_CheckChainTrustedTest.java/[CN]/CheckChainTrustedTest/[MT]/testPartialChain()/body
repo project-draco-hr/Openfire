@@ -1,0 +1,7 @@
+{
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(validChain[0].getSubjectX500Principal());
+  final X509Certificate[] chain=Arrays.copyOf(validChain,validChain.length - 1);
+  final CertPath result=trustManager.checkChainTrusted(selector,chain);
+  Assert.assertNotNull(result);
+}

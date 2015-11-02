@@ -4,7 +4,10 @@
     if (!storesByLocation.containsKey(location)) {
       final CertificateStoreConfig storeConfig;
       if (purpose.isTrustStore()) {
-        storeConfig=new TrustStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false);
+        final boolean acceptSelfSigned=false;
+        final boolean checkValidity=true;
+        ;
+        storeConfig=new TrustStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false,acceptSelfSigned,checkValidity);
       }
  else {
         storeConfig=new IdentityStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false);

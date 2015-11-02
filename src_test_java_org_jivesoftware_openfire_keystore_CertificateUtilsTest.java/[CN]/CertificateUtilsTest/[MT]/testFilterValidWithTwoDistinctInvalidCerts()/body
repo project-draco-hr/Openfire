@@ -1,0 +1,9 @@
+{
+  final X509Certificate invalidA=KeystoreTestUtils.generateExpiredCertificate();
+  final X509Certificate invalidB=KeystoreTestUtils.generateExpiredCertificate();
+  final Collection<X509Certificate> input=new ArrayList<>();
+  input.add(invalidA);
+  input.add(invalidB);
+  final Collection<X509Certificate> result=CertificateUtils.filterValid(input);
+  Assert.assertTrue(result.isEmpty());
+}

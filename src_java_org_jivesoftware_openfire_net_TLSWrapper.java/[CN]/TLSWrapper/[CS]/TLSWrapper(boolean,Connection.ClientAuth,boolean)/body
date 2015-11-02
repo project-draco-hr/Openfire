@@ -1,0 +1,18 @@
+{
+  try {
+    final SSLEngine sslEngine;
+    if (clientMode) {
+      sslEngine=SSLConfig.getClientModeSSLEngine(SSLConfig.Type.SOCKET_S2S);
+    }
+ else {
+      final SSLConfig.Type type=isPeerClient ? SSLConfig.Type.SOCKET_C2S : SSLConfig.Type.SOCKET_S2S;
+      sslEngine=SSLConfig.getServerModeSSLEngine(type,clientAuth);
+    }
+    final SSLSession sslSession=sslEngine.getSession();
+    netBuffSize=sslSession.getPacketBufferSize();
+    appBuffSize=sslSession.getApplicationBufferSize();
+  }
+ catch (  NoSuchAlgorithmException|KeyManagementException|KeyStoreException ex) {
+    Log.error("TLSHandler startup problem. SSLContext initialisation failed.",ex);
+  }
+}

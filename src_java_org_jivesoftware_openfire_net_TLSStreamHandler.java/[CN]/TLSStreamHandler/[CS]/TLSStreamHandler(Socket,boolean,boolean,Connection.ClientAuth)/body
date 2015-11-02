@@ -1,0 +1,37 @@
+{
+  wrapper=new TLSWrapper(clientMode,clientAuth,isPeerClient);
+  tlsEngine=wrapper.getTlsEngine();
+  reader=new TLSStreamReader(wrapper,socket);
+  writer=new TLSStreamWriter(wrapper,socket);
+  if (socket.getChannel() != null) {
+    rbc=socket.getChannel();
+    wbc=socket.getChannel();
+  }
+ else {
+    rbc=Channels.newChannel(socket.getInputStream());
+    wbc=Channels.newChannel(socket.getOutputStream());
+  }
+  initialHSStatus=HandshakeStatus.NEED_UNWRAP;
+  initialHSComplete=false;
+  netBBSize=tlsEngine.getSession().getPacketBufferSize();
+  appBBSize=tlsEngine.getSession().getApplicationBufferSize();
+  incomingNetBB=ByteBuffer.allocate(netBBSize);
+  outgoingNetBB=ByteBuffer.allocate(netBBSize);
+  outgoingNetBB.position(0);
+  outgoingNetBB.limit(0);
+  appBB=ByteBuffer.allocate(appBBSize);
+  if (clientMode) {
+    socket.setSoTimeout(0);
+    socket.setKeepAlive(true);
+    initialHSStatus=HandshakeStatus.NEED_WRAP;
+    tlsEngine.beginHandshake();
+  }
+ else   if (clientAuth == Connection.ClientAuth.needed) {
+    if (JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true) && JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_CHAIN_VERIFY,true) && !JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ACCEPT_SELFSIGNED_CERTS,false)) {
+      tlsEngine.setNeedClientAuth(true);
+    }
+ else {
+      tlsEngine.setWantClientAuth(true);
+    }
+  }
+}

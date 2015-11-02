@@ -1,0 +1,39 @@
+{
+  if (selector == null) {
+    throw new IllegalArgumentException("Argument 'selector' cannot be null");
+  }
+  if (chain == null || chain.length == 0) {
+    throw new IllegalArgumentException("Argument 'chain' cannot be null or an empty array.");
+  }
+  final Set<X509Certificate> trustedIssuers=new HashSet<>();
+  trustedIssuers.addAll(this.trustedIssuers);
+  if (acceptSelfSigned && chain.length == 1) {
+    final X509Certificate cert=chain[0];
+    if (cert.getSubjectDN().equals(cert.getIssuerDN())) {
+      trustedIssuers.add(cert);
+    }
+  }
+  final Set<X509Certificate> acceptedIssuers;
+  if (checkValidity) {
+    acceptedIssuers=CertificateUtils.filterValid(trustedIssuers);
+  }
+ else {
+    acceptedIssuers=trustedIssuers;
+  }
+  final Set<TrustAnchor> trustAnchors=CertificateUtils.toTrustAnchors(acceptedIssuers);
+  final CertStore certificates=CertStore.getInstance("Collection",new CollectionCertStoreParameters(Arrays.asList(chain)));
+  final PKIXBuilderParameters parameters=new PKIXBuilderParameters(trustAnchors,selector);
+  if (!checkValidity) {
+    final Date validPointInTime=CertificateUtils.findValidPointInTime(chain);
+    if (validPointInTime == null) {
+      Log.warn("The existing implementation is unable to fully ignore certificate validity periods for this chain, even though it is configured to do so. Certificate checks might fail because of expiration for end entity: " + chain[0]);
+    }
+ else {
+      parameters.setDate(validPointInTime);
+    }
+  }
+  parameters.addCertStore(certificates);
+  final CertPathBuilder pathBuilder=CertPathBuilder.getInstance("PKIX");
+  final CertPathBuilderResult result=pathBuilder.build(parameters);
+  return result.getCertPath();
+}

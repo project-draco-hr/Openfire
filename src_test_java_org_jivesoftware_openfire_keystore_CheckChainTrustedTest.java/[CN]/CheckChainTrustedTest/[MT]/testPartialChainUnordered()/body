@@ -1,0 +1,13 @@
+{
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(validChain[0].getSubjectX500Principal());
+  final List<X509Certificate> input=new ArrayList<>(Arrays.asList(validChain));
+  input.remove(input.size() - 1);
+  final List<X509Certificate> shuffled=new ArrayList<>(input);
+  while (input.equals(shuffled)) {
+    Collections.shuffle(shuffled);
+  }
+  final X509Certificate[] chain=shuffled.toArray(new X509Certificate[shuffled.size()]);
+  final CertPath result=trustManager.checkChainTrusted(selector,chain);
+  Assert.assertNotNull(result);
+}

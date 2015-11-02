@@ -1,0 +1,16 @@
+{
+  this.acceptSelfSigned=acceptSelfSigned;
+  this.checkValidity=checkValidity;
+  final Set<X509Certificate> trusted=new HashSet<>();
+  final Enumeration<String> aliases=trustStore.aliases();
+  while (aliases.hasMoreElements()) {
+    final String alias=aliases.nextElement();
+    if (trustStore.isCertificateEntry(alias)) {
+      final Certificate certificate=trustStore.getCertificate(alias);
+      if (certificate instanceof X509Certificate) {
+        trusted.add((X509Certificate)certificate);
+      }
+    }
+  }
+  trustedIssuers=Collections.unmodifiableSet(trusted);
+}

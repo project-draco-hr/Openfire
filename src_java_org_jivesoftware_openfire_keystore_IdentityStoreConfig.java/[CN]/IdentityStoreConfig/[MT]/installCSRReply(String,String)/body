@@ -12,7 +12,7 @@
     if (certificates.isEmpty()) {
       throw new CertificateStoreConfigException("No certificate was found in the input.");
     }
-    final List<X509Certificate> ordered=CertificateManager.order(certificates);
+    final List<X509Certificate> ordered=CertificateUtils.order(certificates);
     if (!isForThisDomain(ordered.get(0))) {
       throw new CertificateStoreConfigException("The supplied certificate chain does not cover the domain of this XMPP service.");
     }

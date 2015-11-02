@@ -1,7 +1,14 @@
 {
   if (!secure) {
     secure=true;
-    tlsStreamHandler=new TLSStreamHandler(this,socket,clientMode,remoteServer,session instanceof IncomingServerSession);
+    final ClientAuth clientAuth;
+    if (session instanceof IncomingServerSession) {
+      clientAuth=ClientAuth.needed;
+    }
+ else {
+      clientAuth=ClientAuth.wanted;
+    }
+    tlsStreamHandler=new TLSStreamHandler(socket,clientMode,isPeerClient,clientAuth);
     if (!clientMode) {
       deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
     }

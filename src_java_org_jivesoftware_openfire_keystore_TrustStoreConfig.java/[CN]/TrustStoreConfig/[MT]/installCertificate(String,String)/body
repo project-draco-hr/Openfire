@@ -22,7 +22,9 @@
     persist();
   }
  catch (  CertificateException|KeyStoreException|IOException e) {
-    reload();
     throw new CertificateStoreConfigException("Unable to install a certificate into a trust store.",e);
+  }
+ finally {
+    reload();
   }
 }
