@@ -1,7 +1,7 @@
 {
   try {
-    final SSLContext context=SSLConfig.getSSLContext(SSLConfig.Type.ADMIN);
-    context.init(null,new TrustManager[]{new ClearspaceX509TrustManager(host,manager.getProperties(),SSLConfig.getStore(Purpose.ADMINISTRATIVE_TRUSTSTORE))},null);
+    final SSLContext context=SSLConfig.getSSLContext(Purpose.ADMIN);
+    context.init(null,new TrustManager[]{new ClearspaceX509TrustManager(host,manager.getProperties(),SSLConfig.getTrustStore(Purpose.ADMIN))},null);
     return context;
   }
  catch (  Exception e) {

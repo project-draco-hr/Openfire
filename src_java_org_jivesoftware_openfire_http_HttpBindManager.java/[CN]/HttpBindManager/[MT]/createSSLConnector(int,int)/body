@@ -1,13 +1,13 @@
 {
   httpsConnector=null;
   try {
-    final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.BOSHBASED_IDENTITYSTORE);
+    final IdentityStoreConfig identityStoreConfig=SSLConfig.getInstance().getIdentityStoreConfig(Purpose.BOSH_C2S);
     final KeyStore keyStore=identityStoreConfig.getStore();
     if (securePort > 0 && identityStoreConfig.getStore().aliases().hasMoreElements()) {
       if (!identityStoreConfig.containsDomainCertificate("RSA")) {
         Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
       }
-      final CertificateStoreConfig trustStoreConfig=SSLConfig.getInstance().getStoreConfig(Purpose.BOSHBASED_C2S_TRUSTSTORE);
+      final TrustStoreConfig trustStoreConfig=SSLConfig.getInstance().getTrustStoreConfig(Purpose.BOSH_C2S);
       final SslContextFactory sslContextFactory=new SslContextFactory();
       sslContextFactory.setTrustStorePath(trustStoreConfig.getCanonicalPath());
       sslContextFactory.setTrustStorePassword(trustStoreConfig.getPassword());

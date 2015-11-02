@@ -1,19 +1,16 @@
 {
-  for (  Purpose purpose : Purpose.values()) {
-    final String location=getLocation(purpose);
-    if (!storesByLocation.containsKey(location)) {
-      final CertificateStoreConfig storeConfig;
-      if (purpose.isTrustStore()) {
-        final boolean acceptSelfSigned=false;
-        final boolean checkValidity=true;
-        ;
-        storeConfig=new TrustStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false,acceptSelfSigned,checkValidity);
-      }
- else {
-        storeConfig=new IdentityStoreConfig(getLocation(purpose),getPassword(purpose),getStoreType(purpose),false);
-      }
-      storesByLocation.put(location,storeConfig);
+  for (  final Purpose purpose : Purpose.values()) {
+    final String locationIdent=purpose.getIdentityStoreLocation();
+    locationByPurpose.put(purpose,locationIdent);
+    if (!identityStoresByLocation.containsKey(locationIdent)) {
+      final IdentityStoreConfig storeConfig=new IdentityStoreConfig(purpose.getIdentityStoreLocation(),purpose.getIdentityStorePassword(),purpose.getIdentityStoreType(),false);
+      identityStoresByLocation.put(locationIdent,storeConfig);
     }
-    locationByPurpose.put(purpose,location);
+    final String locationTrust=purpose.getTrustStoreLocation();
+    locationByPurpose.put(purpose,locationTrust);
+    if (!trustStoresByLocation.containsKey(locationTrust)) {
+      final TrustStoreConfig storeConfig=new TrustStoreConfig(purpose.getTrustStoreLocation(),purpose.getTrustStorePassword(),purpose.getTrustStoreType(),false,purpose.acceptSelfSigned(),purpose.verifyValidity());
+      trustStoresByLocation.put(locationTrust,storeConfig);
+    }
   }
 }

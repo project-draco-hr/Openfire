@@ -53,8 +53,8 @@
       authenticationFailed(session,Failure.NOT_AUTHORIZED);
       return Status.failed;
     }
-    final KeyStore keyStore=SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE);
-    final KeyStore trustStore=SSLConfig.getStore(Purpose.SOCKETBASED_C2S_TRUSTSTORE);
+    final KeyStore keyStore=SSLConfig.getIdentityStore(Purpose.SOCKET_C2S);
+    final KeyStore trustStore=SSLConfig.getTrustStore(Purpose.SOCKET_C2S);
     final X509Certificate trusted=CertificateManager.getEndEntityCertificate(connection.getPeerCertificates(),keyStore,trustStore);
     if (trusted == null) {
       Log.debug("SASLAuthentication: EXTERNAL authentication requested, but EE cert untrusted.");

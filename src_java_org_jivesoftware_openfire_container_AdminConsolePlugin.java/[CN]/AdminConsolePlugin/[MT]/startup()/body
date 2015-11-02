@@ -23,12 +23,12 @@
   }
   sslEnabled=false;
   try {
-    final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.WEBADMIN_IDENTITYSTORE);
+    final IdentityStoreConfig identityStoreConfig=SSLConfig.getInstance().getIdentityStoreConfig(Purpose.WEBADMIN);
     if (adminSecurePort > 0 && identityStoreConfig.getStore().aliases().hasMoreElements()) {
       if (!identityStoreConfig.containsDomainCertificate("RSA")) {
         Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
       }
-      final CertificateStoreConfig trustStoreConfig=SSLConfig.getInstance().getStoreConfig(Purpose.WEBADMIN_TRUSTSTORE);
+      final TrustStoreConfig trustStoreConfig=SSLConfig.getInstance().getTrustStoreConfig(Purpose.WEBADMIN);
       final SslContextFactory sslContextFactory=new SslContextFactory();
       sslContextFactory.setTrustStorePath(trustStoreConfig.getCanonicalPath());
       sslContextFactory.setTrustStorePassword(trustStoreConfig.getPassword());
