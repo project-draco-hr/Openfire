@@ -133,16 +133,7 @@
         System.exit(0);
       }
  else       if ("Hide/Show".equals(e.getActionCommand()) || "PressAction".equals(e.getActionCommand())) {
-        if (frame.isVisible()) {
-          frame.setVisible(false);
-          frame.setState(Frame.ICONIFIED);
-          showMenuItem.setLabel("Show");
-        }
- else {
-          frame.setVisible(true);
-          frame.setState(Frame.NORMAL);
-          showMenuItem.setLabel("Hide");
-        }
+        toggleVisibility(showMenuItem);
       }
     }
   }
@@ -159,6 +150,22 @@
   trayIcon=new TrayIcon(offIcon.getImage(),appName,menu);
   trayIcon.setImageAutoSize(true);
   trayIcon.addActionListener(actionListener);
+  trayIcon.addMouseListener(new MouseListener(){
+    @Override public void mouseClicked(    MouseEvent e){
+      if (e.getButton() == 1) {
+        toggleVisibility(showMenuItem);
+      }
+    }
+    @Override public void mousePressed(    MouseEvent e){
+    }
+    @Override public void mouseReleased(    MouseEvent e){
+    }
+    @Override public void mouseEntered(    MouseEvent e){
+    }
+    @Override public void mouseExited(    MouseEvent e){
+    }
+  }
+);
   if (tray != null) {
     tray.add(trayIcon);
   }
