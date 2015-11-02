@@ -1,0 +1,19 @@
+{
+  if (Log.isDebugEnabled())   Log.debug("    findResources(" + name + ")");
+  LinkedHashSet<URL> result=new LinkedHashSet<>();
+  String path=nameToPath(name);
+  Iterator<Entry<String,ResourceEntry>> iterator=resourceEntries.entrySet().iterator();
+  while (iterator.hasNext()) {
+    Entry<String,ResourceEntry> resource=iterator.next();
+    String loadedResourceName=resource.getKey();
+    if (loadedResourceName.endsWith(path)) {
+      loadedResourceName=pathToName(loadedResourceName);
+      result.add(findResource(loadedResourceName));
+    }
+  }
+  Enumeration<URL> parentResources=super.getResources(name);
+  while (parentResources.hasMoreElements()) {
+    result.add(parentResources.nextElement());
+  }
+  return Collections.enumeration(result);
+}
