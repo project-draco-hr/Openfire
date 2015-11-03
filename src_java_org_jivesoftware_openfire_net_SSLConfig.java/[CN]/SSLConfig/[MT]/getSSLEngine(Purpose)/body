@@ -1,7 +1,31 @@
 {
   final SSLContext sslContext=getSSLContext(purpose);
   final SSLEngine sslEngine=sslContext.createSSLEngine();
-  configureProtocols(sslEngine,purpose);
-  configureCipherSuites(sslEngine,purpose);
+  if (purpose.getProtocolsEnabled() != null && !purpose.getProtocolsEnabled().isEmpty()) {
+    sslEngine.setEnabledProtocols(purpose.getProtocolsEnabled().split(","));
+  }
+ else   if (purpose.getProtocolsDisabled() != null && !purpose.getProtocolsDisabled().isEmpty()) {
+    final List<String> disabled=Arrays.asList(purpose.getProtocolsDisabled());
+    final ArrayList<String> supported=new ArrayList<>();
+    for (    final String candidate : sslEngine.getSupportedProtocols()) {
+      if (!disabled.contains(candidate)) {
+        supported.add(candidate);
+      }
+    }
+    sslEngine.setEnabledProtocols(supported.toArray(new String[supported.size()]));
+  }
+  if (purpose.getCipherSuitesEnabled() != null && !purpose.getCipherSuitesEnabled().isEmpty()) {
+    sslEngine.setEnabledCipherSuites(purpose.getCipherSuitesEnabled().split(","));
+  }
+ else   if (purpose.getCipherSuitesDisabled() != null && !purpose.getCipherSuitesDisabled().isEmpty()) {
+    final List<String> disabled=Arrays.asList(purpose.getCipherSuitesDisabled());
+    final ArrayList<String> supported=new ArrayList<>();
+    for (    final String candidate : sslEngine.getSupportedCipherSuites()) {
+      if (!disabled.contains(candidate)) {
+        supported.add(candidate);
+      }
+    }
+    sslEngine.setEnabledCipherSuites(supported.toArray(new String[supported.size()]));
+  }
   return sslEngine;
 }

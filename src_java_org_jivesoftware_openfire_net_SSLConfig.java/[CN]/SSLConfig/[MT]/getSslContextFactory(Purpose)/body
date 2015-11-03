@@ -1,0 +1,18 @@
+{
+  final SslContextFactory sslContextFactory=new SslContextFactory();
+  sslContextFactory.setTrustStore(SSLConfig.getTrustStore(purpose));
+  sslContextFactory.setKeyStore(SSLConfig.getIdentityStore(purpose));
+  if (purpose.getProtocolsEnabled() != null) {
+    sslContextFactory.setIncludeProtocols(purpose.getProtocolsEnabled().split(","));
+  }
+  if (purpose.getProtocolsDisabled() != null) {
+    sslContextFactory.setExcludeProtocols(purpose.getProtocolsDisabled().split(","));
+  }
+  if (purpose.getCipherSuitesEnabled() != null) {
+    sslContextFactory.setIncludeCipherSuites(purpose.getCipherSuitesEnabled().split(","));
+  }
+  if (purpose.getCipherSuitesDisabled() != null) {
+    sslContextFactory.setExcludeCipherSuites(purpose.getCipherSuitesDisabled().split(","));
+  }
+  return sslContextFactory;
+}
