@@ -2,5 +2,9 @@
   if (purpose == null) {
     throw new IllegalArgumentException("Argument 'purpose' cannot be null.");
   }
-  return trustStoresByLocation.get(locationByPurpose.get(purpose));
+  final TrustStoreConfig config=trustStoresByLocation.get(trustStoreLocationByPurpose.get(purpose));
+  if (config == null) {
+    throw new IllegalStateException("Cannot retrieve trust store for " + purpose);
+  }
+  return config;
 }
