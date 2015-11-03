@@ -1,0 +1,24 @@
+{
+  File localFile1=paramFile.getParentFile();
+  String str1=paramJavaClass.getPackage();
+  int i=str1.split("\\.").length;
+  for (int j=0; j < i; j++) {
+    File localFile2=new File(localFile1,"javadocs.properties");
+    if (localFile2.exists()) {
+      Properties localProperties=new Properties();
+      try {
+        localProperties.load(new FileInputStream(localFile2));
+      }
+ catch (      IOException localIOException) {
+        localIOException.printStackTrace();
+      }
+      String str2=getTagName();
+      String str3=localProperties.getProperty(str2);
+      if (str3 != null) {
+        return shouldCopy(str3);
+      }
+    }
+    localFile1=localFile1.getParentFile();
+  }
+  return shouldCopyWithNoTag();
+}

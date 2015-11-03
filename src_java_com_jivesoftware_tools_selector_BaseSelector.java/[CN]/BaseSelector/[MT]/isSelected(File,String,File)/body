@@ -1,0 +1,23 @@
+{
+  if (paramString.endsWith(".java")) {
+    JavaSource[] arrayOfJavaSource=getSources(paramFile1);
+    for (int i=0; i < arrayOfJavaSource.length; i++) {
+      JavaSource localJavaSource=arrayOfJavaSource[i];
+      File localFile=new File(localJavaSource.getURL().getFile());
+      if ((localFile.equals(paramFile2)) && (localJavaSource.getClasses().length > 0)) {
+        JavaClass localJavaClass=localJavaSource.getClasses()[0];
+        String str=getTagName();
+        DocletTag localDocletTag=localJavaClass.getTagByName(str);
+        if (localDocletTag == null) {
+          return handleNoTag(localJavaClass,paramFile2);
+        }
+        System.out.println("Checking '" + str + "' tag for "+ paramString);
+        return shouldCopy(localDocletTag.getValue());
+      }
+    }
+  }
+ else   if ("javadocs.properties".equals(paramFile2.getName())) {
+    return false;
+  }
+  return true;
+}
