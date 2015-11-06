@@ -25,7 +25,7 @@
   if (auth == null) {
     throw new WebApplicationException(Status.UNAUTHORIZED);
   }
-  if (plugin.isHttpBasicAuth()) {
+  if ("basic".equals(plugin.getHttpAuth())) {
     String[] usernameAndPassword=BasicAuth.decode(auth);
     if (usernameAndPassword == null || usernameAndPassword.length != 2) {
       throw new WebApplicationException(Status.UNAUTHORIZED);

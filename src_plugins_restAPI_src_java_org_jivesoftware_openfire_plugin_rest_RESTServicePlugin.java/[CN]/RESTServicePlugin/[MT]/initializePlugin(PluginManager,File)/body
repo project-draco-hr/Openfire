@@ -4,8 +4,9 @@
     secret=StringUtils.randomString(16);
     setSecret(secret);
   }
+  customAuthFilterClassName=JiveGlobals.getProperty("plugin.restapi.customAuthFilter","");
   enabled=JiveGlobals.getBooleanProperty("plugin.restapi.enabled",false);
-  httpBasicAuth=JiveGlobals.getBooleanProperty("plugin.restapi.httpAuth.enabled",false);
+  httpAuth=JiveGlobals.getProperty("plugin.restapi.httpAuth","basic");
   allowedIPs=StringUtils.stringToCollection(JiveGlobals.getProperty("plugin.restapi.allowedIPs",""));
   PropertyEventDispatcher.addListener(this);
 }
