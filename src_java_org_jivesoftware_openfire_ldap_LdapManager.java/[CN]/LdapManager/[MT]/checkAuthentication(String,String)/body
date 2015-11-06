@@ -52,7 +52,7 @@
       }
       StartTlsResponse tls=(StartTlsResponse)ctx.extendedOperation(new StartTlsRequest());
       try {
-        SSLSession session=tls.negotiate();
+        SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
         ctx.setTlsResponse(tls);
         ctx.setSslSession(session);
         if (debug) {
@@ -113,7 +113,7 @@
           }
           StartTlsResponse tls=(StartTlsResponse)ctx.extendedOperation(new StartTlsRequest());
           try {
-            SSLSession session=tls.negotiate();
+            SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
             ctx.setTlsResponse(tls);
             ctx.setSslSession(session);
             if (debug) {

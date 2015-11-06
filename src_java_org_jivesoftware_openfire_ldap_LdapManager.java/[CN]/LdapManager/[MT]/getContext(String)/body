@@ -70,7 +70,7 @@
     }
     StartTlsResponse tls=(StartTlsResponse)context.extendedOperation(new StartTlsRequest());
     try {
-      SSLSession session=tls.negotiate();
+      SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
       context.setTlsResponse(tls);
       context.setSslSession(session);
       if (debug) {
