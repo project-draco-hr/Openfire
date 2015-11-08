@@ -28,6 +28,12 @@
         boolean autojoin=Boolean.valueOf(bookmark.getProperty("autojoin"));
         conferenceElement.addAttribute("autojoin",Boolean.toString(autojoin));
         conferenceElement.addAttribute("jid",bookmark.getValue());
+        boolean nameasnick=Boolean.valueOf(bookmark.getProperty("nameasnick"));
+        if (nameasnick) {
+          User currentUser=userManager.getUser(jid.getNode());
+          Element nick=conferenceElement.addElement("nick");
+          nick.addText(currentUser.getName());
+        }
       }
       appendSharedElement(conferenceElement);
     }
