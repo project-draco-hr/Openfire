@@ -32,7 +32,7 @@
 catch (          ServiceUnavailableException e) {
             sendErrorPacket(packet,PacketError.Condition.service_unavailable);
           }
-catch (          UserAlreadyExistsException e) {
+catch (          UserAlreadyExistsException|ConflictException e) {
             sendErrorPacket(packet,PacketError.Condition.conflict);
           }
 catch (          RoomLockedException e) {
@@ -43,9 +43,6 @@ catch (          ForbiddenException e) {
           }
 catch (          RegistrationRequiredException e) {
             sendErrorPacket(packet,PacketError.Condition.registration_required);
-          }
-catch (          ConflictException e) {
-            sendErrorPacket(packet,PacketError.Condition.conflict);
           }
 catch (          NotAcceptableException e) {
             sendErrorPacket(packet,PacketError.Condition.not_acceptable);

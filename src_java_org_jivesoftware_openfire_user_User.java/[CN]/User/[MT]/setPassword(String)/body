@@ -8,13 +8,7 @@
     params.put("type","passwordModified");
     UserEventDispatcher.dispatchEvent(this,UserEventDispatcher.EventType.user_modified,params);
   }
- catch (  UserNotFoundException e) {
-    Log.error(e.getMessage(),e);
-  }
-catch (  ConnectionException e) {
-    Log.error(e.getMessage(),e);
-  }
-catch (  InternalUnauthenticatedException e) {
+ catch (  UserNotFoundException|ConnectionException|InternalUnauthenticatedException e) {
     Log.error(e.getMessage(),e);
   }
 }

@@ -112,11 +112,7 @@
         Log.debug("ClientTrustManager: Trusted CA: " + trustedCert.getSubjectDN());
       }
     }
- catch (    CertPathBuilderException e) {
-      Log.debug("ClientTrustManager:",e);
-      throw new CertificateException("certificate path failed: " + e.getMessage());
-    }
-catch (    CertPathValidatorException e) {
+ catch (    CertPathBuilderException|CertPathValidatorException e) {
       Log.debug("ClientTrustManager:",e);
       throw new CertificateException("certificate path failed: " + e.getMessage());
     }
