@@ -24,8 +24,8 @@
       }
     }
     final SimpleAttributeSet styles=new SimpleAttributeSet();
-    SwingWorker inputWorker=new SwingWorker(){
-      @Override public Object construct(){
+    SwingWorker<String,Void> inputWorker=new SwingWorker<String,Void>(){
+      @Override public String doInBackground(){
         if (openfired != null) {
           try (InputStream in=openfired.getInputStream()){
             int c;
@@ -46,9 +46,9 @@
       }
     }
 ;
-    inputWorker.start();
-    SwingWorker errorWorker=new SwingWorker(){
-      @Override public Object construct(){
+    inputWorker.execute();
+    SwingWorker<String,Void> errorWorker=new SwingWorker<String,Void>(){
+      @Override public String doInBackground(){
         if (openfired != null) {
           try (InputStream in=openfired.getErrorStream()){
             int c;
@@ -69,7 +69,7 @@
       }
     }
 ;
-    errorWorker.start();
+    errorWorker.execute();
     if (freshStart) {
       try {
         Thread.sleep(1000);
