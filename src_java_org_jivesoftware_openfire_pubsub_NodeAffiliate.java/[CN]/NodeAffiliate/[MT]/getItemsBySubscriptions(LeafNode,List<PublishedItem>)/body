@@ -1,24 +1,24 @@
 {
-  Map<PublishedItem,List<NodeSubscription>> subsByItem=new HashMap<PublishedItem,List<NodeSubscription>>();
+  Map<PublishedItem,List<NodeSubscription>> subsByItem=new HashMap<>();
   Collection<NodeSubscription> subscriptions=getSubscriptions();
   for (  PublishedItem publishedItem : publishedItems) {
     for (    NodeSubscription subscription : subscriptions) {
       if (subscription.canSendPublicationEvent(leafNode,publishedItem)) {
         List<NodeSubscription> nodeSubscriptions=subsByItem.get(publishedItem);
         if (nodeSubscriptions == null) {
-          nodeSubscriptions=new ArrayList<NodeSubscription>();
+          nodeSubscriptions=new ArrayList<>();
           subsByItem.put(publishedItem,nodeSubscriptions);
         }
         nodeSubscriptions.add(subscription);
       }
     }
   }
-  Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=new HashMap<List<NodeSubscription>,List<PublishedItem>>();
+  Map<List<NodeSubscription>,List<PublishedItem>> itemsBySubs=new HashMap<>();
   List<PublishedItem> affectedSubscriptions;
   for (  PublishedItem publishedItem : subsByItem.keySet()) {
     affectedSubscriptions=itemsBySubs.get(subsByItem.get(publishedItem));
     if (affectedSubscriptions == null) {
-      List<PublishedItem> items=new ArrayList<PublishedItem>(publishedItems.size());
+      List<PublishedItem> items=new ArrayList<>(publishedItems.size());
       items.add(publishedItem);
       itemsBySubs.put(subsByItem.get(publishedItem),items);
     }

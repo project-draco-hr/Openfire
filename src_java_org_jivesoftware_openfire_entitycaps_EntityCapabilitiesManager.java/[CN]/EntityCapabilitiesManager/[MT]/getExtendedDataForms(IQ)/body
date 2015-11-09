@@ -1,5 +1,5 @@
 {
-  List<String> results=new ArrayList<String>();
+  List<String> results=new ArrayList<>();
   Element query=packet.getChildElement();
   Iterator<Element> extensionIterator=query.elementIterator(QName.get("x","jabber:x:data"));
   if (extensionIterator != null) {
@@ -7,7 +7,7 @@
       Element extensionElement=extensionIterator.next();
       final StringBuilder formType=new StringBuilder();
       Iterator<Element> fieldIterator=extensionElement.elementIterator("field");
-      List<String> vars=new ArrayList<String>();
+      List<String> vars=new ArrayList<>();
       while (fieldIterator != null && fieldIterator.hasNext()) {
         final Element fieldElement=fieldIterator.next();
         if (fieldElement.attributeValue("var").equals("FORM_TYPE")) {
@@ -19,7 +19,7 @@
           var.append(fieldElement.attributeValue("var"));
           var.append('<');
           Iterator<Element> valIter=fieldElement.elementIterator("value");
-          List<String> values=new ArrayList<String>();
+          List<String> values=new ArrayList<>();
           while (valIter != null && valIter.hasNext()) {
             Element value=valIter.next();
             values.add(value.getText());

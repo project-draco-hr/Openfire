@@ -21,7 +21,7 @@ synchronized (this) {
     }
     result=properties.put(key,value);
   }
-  Map<String,Object> params=new HashMap<String,Object>();
+  Map<String,Object> params=new HashMap<>();
   params.put("value",value);
   PropertyEventDispatcher.dispatchEvent(key,PropertyEventDispatcher.EventType.property_set,params);
   CacheFactory.doClusterTask(PropertyClusterEventTask.createPutTask(key,value));
