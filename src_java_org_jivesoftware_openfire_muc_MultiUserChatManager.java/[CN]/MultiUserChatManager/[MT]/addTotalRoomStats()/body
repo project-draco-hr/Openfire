@@ -1,25 +1,25 @@
 {
   Statistic statistic=new Statistic(){
-    public String getName(){
+    @Override public String getName(){
       return LocaleUtils.getLocalizedString("muc.stats.active_group_chats.name");
     }
-    public Type getStatType(){
+    @Override public Type getStatType(){
       return Type.count;
     }
-    public String getDescription(){
+    @Override public String getDescription(){
       return LocaleUtils.getLocalizedString("muc.stats.active_group_chats.desc");
     }
-    public String getUnits(){
+    @Override public String getUnits(){
       return LocaleUtils.getLocalizedString("muc.stats.active_group_chats.units");
     }
-    public double sample(){
+    @Override public double sample(){
       double rooms=0;
       for (      MultiUserChatService service : getMultiUserChatServices()) {
         rooms+=service.getNumberChatRooms();
       }
       return rooms;
     }
-    public boolean isPartialSample(){
+    @Override public boolean isPartialSample(){
       return false;
     }
   }

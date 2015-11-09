@@ -19,7 +19,7 @@ synchronized (this) {
       }
     }
     File[] jars=pluginDirectory.listFiles(new FileFilter(){
-      public boolean accept(      File pathname){
+      @Override public boolean accept(      File pathname){
         String fileName=pathname.getName().toLowerCase();
         return (fileName.endsWith(".jar") || fileName.endsWith(".war"));
       }
@@ -51,13 +51,13 @@ synchronized (this) {
       }
     }
     File[] dirs=pluginDirectory.listFiles(new FileFilter(){
-      public boolean accept(      File pathname){
+      @Override public boolean accept(      File pathname){
         return pathname.isDirectory();
       }
     }
 );
     Arrays.sort(dirs,new Comparator<File>(){
-      public int compare(      File file1,      File file2){
+      @Override public int compare(      File file1,      File file2){
         if (file1.getName().equals("admin")) {
           return -1;
         }

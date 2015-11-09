@@ -14,7 +14,7 @@ synchronized (itemsPending) {
   }
   if (firstPass && itemsPending.size() > MAX_ITEMS_FLUSH) {
     TaskEngine.getInstance().submit(new Runnable(){
-      public void run(){
+      @Override public void run(){
         flushPendingItems(false);
       }
     }

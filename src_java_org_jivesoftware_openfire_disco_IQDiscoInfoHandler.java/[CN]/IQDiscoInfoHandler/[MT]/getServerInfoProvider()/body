@@ -1,7 +1,7 @@
 {
   return new DiscoInfoProvider(){
     final ArrayList<Element> identities=new ArrayList<Element>();
-    public Iterator<Element> getIdentities(    String name,    String node,    JID senderJID){
+    @Override public Iterator<Element> getIdentities(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getIdentities(name,node,senderJID);
       }
@@ -29,7 +29,7 @@ synchronized (identities) {
         }
       }
     }
-    public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
+    @Override public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getFeatures(name,node,senderJID);
       }
@@ -40,7 +40,7 @@ synchronized (identities) {
         return userFeatures.iterator();
       }
     }
-    public boolean hasInfo(    String name,    String node,    JID senderJID){
+    @Override public boolean hasInfo(    String name,    String node,    JID senderJID){
       if (node != null) {
         if (serverNodeProviders.get(node) != null) {
           return serverNodeProviders.get(node).hasInfo(name,node,senderJID);
@@ -54,7 +54,7 @@ synchronized (identities) {
         return false;
       }
     }
-    public DataForm getExtendedInfo(    String name,    String node,    JID senderJID){
+    @Override public DataForm getExtendedInfo(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getExtendedInfo(name,node,senderJID);
       }
