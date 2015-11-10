@@ -1,9 +1,8 @@
 {
-  String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-03.xml");
-  InputStream in=new FileInputStream(filename);
-  AdminConsole.addModel("test3",in);
-  in.close();
-  boolean found=false;
+  try (InputStream in=getClass().getResourceAsStream("/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-03.xml")){
+    AdminConsole.addModel("test3",in);
+  }
+   boolean found=false;
   for (  Object o : AdminConsole.getModel().selectNodes("//tab")) {
     Element tab=(Element)o;
     if ("server".equals(tab.attributeValue("id"))) {
