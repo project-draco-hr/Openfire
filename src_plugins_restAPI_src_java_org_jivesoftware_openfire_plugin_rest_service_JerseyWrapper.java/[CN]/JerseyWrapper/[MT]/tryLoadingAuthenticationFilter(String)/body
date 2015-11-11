@@ -1,0 +1,13 @@
+{
+  try {
+    if (customAuthFilterClassName != null) {
+      Class.forName(customAuthFilterClassName,false,JerseyWrapper.class.getClassLoader());
+      loadingStatusMessage=null;
+    }
+  }
+ catch (  ClassNotFoundException e) {
+    loadingStatusMessage="No custom auth filter found for restAPI plugin with name " + customAuthFilterClassName;
+  }
+  if (customAuthFilterClassName == null || customAuthFilterClassName.isEmpty())   loadingStatusMessage="Classname field can't be empty!";
+  return loadingStatusMessage;
+}
