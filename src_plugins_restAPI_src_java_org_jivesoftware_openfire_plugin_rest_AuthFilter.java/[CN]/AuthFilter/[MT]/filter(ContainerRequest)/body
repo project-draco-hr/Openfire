@@ -2,6 +2,9 @@
   if (!plugin.isEnabled()) {
     throw new WebApplicationException(Status.FORBIDDEN);
   }
+  if ("OPTIONS".equals(containerRequest.getMethod())) {
+    return containerRequest;
+  }
   if ("restapi/v1/userservice".equals(containerRequest.getPath())) {
     return containerRequest;
   }
