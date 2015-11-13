@@ -1,3 +1,18 @@
 {
-  close(false);
+synchronized (this) {
+    if (isClosed()) {
+      return;
+    }
+    if (session != null) {
+      session.setStatus(Session.STATUS_CLOSED);
+    }
+  }
+  try {
+    closeVirtualConnection();
+  }
+ catch (  Exception e) {
+    Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
+  }
+  closed=true;
+  notifyCloseListeners();
 }

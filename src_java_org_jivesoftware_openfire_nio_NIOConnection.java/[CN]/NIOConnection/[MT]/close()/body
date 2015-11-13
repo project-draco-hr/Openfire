@@ -1,3 +1,25 @@
 {
-  close(false);
+synchronized (this) {
+    if (state == State.CLOSED || state == State.CLOSING) {
+      return;
+    }
+    state=State.CLOSING;
+  }
+  try {
+    deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
+  }
+ catch (  Exception e) {
+    Log.error("Failed to deliver stream close tag: " + e.getMessage());
+  }
+  if (session != null) {
+    session.setStatus(Session.STATUS_CLOSED);
+  }
+  try {
+    ioSession.close(true);
+  }
+ catch (  Exception e) {
+    Log.error("Exception while closing MINA session",e);
+  }
+  state=State.CLOSED;
+  notifyCloseListeners();
 }
