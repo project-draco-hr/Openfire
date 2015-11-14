@@ -1,4 +1,5 @@
 {
+  this.componentManager=componentManager;
   Log.info("PluginImpl initializePlugin " + pluginDirectory);
   String enableRecording=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.media.record","false");
   String recordingPath=JiveGlobals.getProperty("org.jitsi.videobridge.ofmeet.recording.path",pluginDirectory.getAbsolutePath() + File.separator + "recordings");
@@ -26,7 +27,6 @@
   if (maxVal != null)   setIntProperty(DefaultStreamConnector.MAX_PORT_NUMBER_PROPERTY_NAME,maxVal);
   if (minVal != null)   setIntProperty(DefaultStreamConnector.MIN_PORT_NUMBER_PROPERTY_NAME,minVal);
   checkNatives(pluginDirectory);
-  ComponentManager componentManager=ComponentManagerFactory.getComponentManager();
   String subdomain="ofmeet-jitsi-videobridge";
   PluginImpl.component=new ComponentImpl();
   boolean added=false;
