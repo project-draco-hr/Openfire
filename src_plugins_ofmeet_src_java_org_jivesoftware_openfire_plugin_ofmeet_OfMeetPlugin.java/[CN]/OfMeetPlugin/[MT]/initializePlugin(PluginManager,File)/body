@@ -1,16 +1,26 @@
 {
+  componentManager=ComponentManagerFactory.getComponentManager();
   ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
   this.manager=manager;
   this.pluginDirectory=pluginDirectory;
   self=this;
   try {
-    Log.info("OfMeet Plugin - Initialize jitsi videobridge ");
-    jitsiPlugin=new PluginImpl();
-    jitsiPlugin.initializePlugin(manager,pluginDirectory);
-    Log.info("OfMeet Plugin - Initialize SIP gateway ");
-    jigasiPlugin=new JigasiPlugin();
-    jigasiPlugin.initializePlugin(manager,pluginDirectory);
-    Log.info("OfMeet Plugin - Initialize jitsi conference focus");
+    try {
+      Log.info("OfMeet Plugin - Initialize jitsi videobridge ");
+      jitsiPlugin=new PluginImpl();
+      jitsiPlugin.initializePlugin(componentManager,manager,pluginDirectory);
+    }
+ catch (    Exception e1) {
+      Log.error("Could NOT Initialize jitsi videobridge",e1);
+    }
+    try {
+      Log.info("OfMeet Plugin - Initialize SIP gateway ");
+      jigasiPlugin=new JigasiPlugin();
+      jigasiPlugin.initializePlugin(componentManager,manager,pluginDirectory);
+    }
+ catch (    Exception e1) {
+      Log.error("Could NOT Initialize jitsi videobridge",e1);
+    }
     String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
     String userName="focus";
     String focusUserJid=userName + "@" + domain;
@@ -35,8 +45,9 @@
     }
     new Timer().schedule(new TimerTask(){
       @Override public void run(){
+        Log.info("OfMeet Plugin - Initialize jitsi conference focus");
         jicofoPlugin=new JicofoPlugin();
-        jicofoPlugin.initializePlugin(manager,pluginDirectory);
+        jicofoPlugin.initializePlugin(componentManager,manager,pluginDirectory);
       }
     }
 ,5000);
@@ -59,6 +70,7 @@
     ServletContextHandler context=new ServletContextHandler(contexts,"/ofmeetws",ServletContextHandler.SESSIONS);
     context.addServlet(new ServletHolder(new XMPPServlet()),"/server");
     WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath(),"/ofmeet");
+    context2.setClassLoader(this.getClass().getClassLoader());
     context2.setWelcomeFiles(new String[]{"index.html"});
     String securityEnabled=JiveGlobals.getProperty("ofmeet.security.enabled","true");
     if ("true".equals(securityEnabled)) {
@@ -67,6 +79,6 @@
     }
   }
  catch (  Exception e) {
-    Log.error("Could NOT start open fire meetings");
+    Log.error("Could NOT start open fire meetings",e);
   }
 }
