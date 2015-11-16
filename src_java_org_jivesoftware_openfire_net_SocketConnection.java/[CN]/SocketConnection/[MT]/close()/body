@@ -1,30 +1,3 @@
 {
-synchronized (this) {
-    if (isClosed()) {
-      return;
-    }
-    if (session != null) {
-      session.setStatus(Session.STATUS_CLOSED);
-    }
-  }
-  boolean allowedToWrite=false;
-  try {
-    requestWriting();
-    allowedToWrite=true;
-    writeStarted();
-    writer.write("</stream:stream>");
-    if (flashClient) {
-      writer.write('\0');
-    }
-    writer.flush();
-  }
- catch (  Exception e) {
-    Log.error("Failed to deliver stream close tag: " + e.getMessage());
-  }
-  writeFinished();
-  if (allowedToWrite) {
-    releaseWriting();
-  }
-  closeConnection();
-  notifyCloseListeners();
+  close(false);
 }

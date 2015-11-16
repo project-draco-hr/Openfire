@@ -1,25 +1,20 @@
 {
-synchronized (this) {
-    if (state == State.CLOSED || state == State.CLOSING) {
-      return;
+  if (state.compareAndSet(State.OPEN,State.CLOSED)) {
+    if (session != null) {
+      session.setStatus(Session.STATUS_CLOSED);
     }
-    state=State.CLOSING;
+    try {
+      deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
+    }
+ catch (    Exception e) {
+      Log.error("Failed to deliver stream close tag: " + e.getMessage());
+    }
+    try {
+      ioSession.close(true);
+    }
+ catch (    Exception e) {
+      Log.error("Exception while closing MINA session",e);
+    }
+    notifyCloseListeners();
   }
-  try {
-    deliverRawText(flashClient ? "</flash:stream>" : "</stream:stream>");
-  }
- catch (  Exception e) {
-    Log.error("Failed to deliver stream close tag: " + e.getMessage());
-  }
-  if (session != null) {
-    session.setStatus(Session.STATUS_CLOSED);
-  }
-  try {
-    ioSession.close(true);
-  }
- catch (  Exception e) {
-    Log.error("Exception while closing MINA session",e);
-  }
-  state=State.CLOSED;
-  notifyCloseListeners();
 }
