@@ -3,7 +3,7 @@
     return groupIDCache.get(groupname);
   }
   try {
-    groupname=URLUTF8Encoder.encode(groupname);
+    groupname=URLEncoder.encode(groupname,"UTF-8");
     String path=ClearspaceGroupProvider.URL_PREFIX + "groups/" + groupname;
     Element element=executeRequest(org.jivesoftware.openfire.clearspace.ClearspaceManager.HttpType.GET,path);
     Long id=Long.valueOf(WSUtils.getElementText(element.selectSingleNode("return"),"ID"));
