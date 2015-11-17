@@ -2,23 +2,23 @@
   try {
     File classesDir=new File(directory,"classes");
     if (classesDir.exists()) {
-      addResource(classesDir.toURI().toURL(),"/");
+      addURL(classesDir.toURI().toURL());
     }
     File databaseDir=new File(directory,"database");
     if (databaseDir.exists()) {
-      addResource(databaseDir.toURI().toURL(),"/");
+      addURL(databaseDir.toURI().toURL());
     }
     File i18nDir=new File(directory,"i18n");
     if (i18nDir.exists()) {
-      addResource(i18nDir.toURI().toURL(),"/");
+      addURL(i18nDir.toURI().toURL());
     }
     File webDir=new File(directory,"web");
     if (webDir.exists()) {
-      addResource(webDir.toURI().toURL(),"/");
+      addURL(webDir.toURI().toURL());
     }
     File libDir=new File(directory,"lib");
     File[] jars=libDir.listFiles(new FilenameFilter(){
-      @Override public boolean accept(      File dir,      String name){
+      public boolean accept(      File dir,      String name){
         return name.endsWith(".jar") || name.endsWith(".zip");
       }
     }
@@ -29,11 +29,11 @@
           String jarFileUri=jars[i].toURI().toString() + "!/";
           if (developmentMode) {
             if (!jars[i].getName().equals("plugin-" + directory.getName() + ".jar")) {
-              addResource(new URL("jar","",-1,jarFileUri),"/");
+              addURLFile(new URL("jar","",-1,jarFileUri));
             }
           }
  else {
-            addResource(new URL("jar","",-1,jarFileUri),"/");
+            addURLFile(new URL("jar","",-1,jarFileUri));
           }
         }
       }

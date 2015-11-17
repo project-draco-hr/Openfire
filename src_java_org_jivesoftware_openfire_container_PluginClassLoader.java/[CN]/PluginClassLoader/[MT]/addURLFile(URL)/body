@@ -1,3 +1,14 @@
 {
-  addResource(file,"/");
+  try {
+    URLConnection uc=file.openConnection();
+    if (uc instanceof JarURLConnection) {
+      uc.setUseCaches(true);
+      ((JarURLConnection)uc).getManifest();
+      cachedJarFiles.add((JarURLConnection)uc);
+    }
+  }
+ catch (  Exception e) {
+    Log.warn("Failed to cache plugin JAR file: " + file.toExternalForm());
+  }
+  addURL(file);
 }

@@ -1,3 +1,11 @@
 {
-  resourceEntries.clear();
+  for (  JarURLConnection url : cachedJarFiles) {
+    try {
+      Log.info("Unloading plugin JAR file " + url.getJarFile().getName());
+      url.getJarFile().close();
+    }
+ catch (    Exception e) {
+      Log.error("Failed to unload JAR file",e);
+    }
+  }
 }
