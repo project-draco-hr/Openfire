@@ -10,18 +10,12 @@
   maxDays=JiveGlobals.getIntProperty("xmpp.audit.days",MAX_DAYS);
   logTimeout=JiveGlobals.getIntProperty("xmpp.audit.logtimeout",DEFAULT_LOG_TIMEOUT);
   logDir=JiveGlobals.getProperty("xmpp.audit.logdir",JiveGlobals.getHomeDirectory() + File.separator + "logs");
-  String ignoreString=JiveGlobals.getProperty("xmpp.audit.ignore","");
-  StringTokenizer tokenizer=new StringTokenizer(ignoreString,", ");
-  while (tokenizer.hasMoreTokens()) {
-    String username=tokenizer.nextToken();
-    ignoreList.add(username);
-  }
+  processIgnoreString(JiveGlobals.getProperty("xmpp.audit.ignore",""));
   auditor=new AuditorImpl(this);
   auditor.setMaxValues(maxTotalSize,maxFileSize,maxDays);
   auditor.setLogDir(logDir);
   auditor.setLogTimeout(logTimeout);
   interceptor=new AuditorInterceptor();
-  if (enabled) {
-    InterceptorManager.getInstance().addInterceptor(interceptor);
-  }
+  processEnabled(enabled);
+  PropertyEventDispatcher.addListener(this);
 }

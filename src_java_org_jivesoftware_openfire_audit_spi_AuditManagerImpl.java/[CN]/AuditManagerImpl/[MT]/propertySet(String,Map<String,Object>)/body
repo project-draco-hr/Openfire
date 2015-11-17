@@ -1,0 +1,48 @@
+{
+  String value=(String)params.get("value");
+switch (property) {
+case "xmpp.audit.active":
+    enabled=Boolean.parseBoolean(value);
+  processEnabled(enabled);
+break;
+case "xmpp.audit.message":
+auditMessage=Boolean.parseBoolean(value);
+break;
+case "xmpp.audit.presence":
+auditPresence=Boolean.parseBoolean(value);
+break;
+case "xmpp.audit.iq":
+auditIQ=Boolean.parseBoolean(value);
+break;
+case "xmpp.audit.xpath":
+auditXPath=Boolean.parseBoolean(value);
+break;
+case "xmpp.audit.totalsize":
+maxTotalSize=parseIntegerOrDefault(value,MAX_TOTAL_SIZE);
+auditor.setMaxValues(maxTotalSize,maxFileSize,maxDays);
+break;
+case "xmpp.audit.filesize":
+maxFileSize=parseIntegerOrDefault(value,MAX_FILE_SIZE);
+auditor.setMaxValues(maxTotalSize,maxFileSize,maxDays);
+break;
+case "xmpp.audit.days":
+maxDays=validateMaxDays(parseIntegerOrDefault(value,MAX_DAYS));
+auditor.setMaxValues(maxTotalSize,maxFileSize,maxDays);
+break;
+case "xmpp.audit.logtimeout":
+logTimeout=parseIntegerOrDefault(value,DEFAULT_LOG_TIMEOUT);
+auditor.setLogTimeout(logTimeout);
+break;
+case "xmpp.audit.logdir":
+File d=null;
+if (value != null && !"".equals(value.trim())) {
+d=new File(value);
+}
+logDir=(d == null || !d.exists() || !d.canRead() || !d.canWrite() || !d.isDirectory()) ? JiveGlobals.getHomeDirectory() + File.separator + "logs" : value;
+auditor.setLogDir(logDir);
+break;
+case "xmpp.audit.ignore":
+processIgnoreString(value);
+break;
+}
+}
