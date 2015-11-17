@@ -1,14 +1,3 @@
 {
-  char[] chars=hex.toCharArray();
-  byte[] bytes=new byte[chars.length / 2];
-  int byteCount=0;
-  for (int i=0; i < chars.length; i+=2) {
-    int newByte=0x00;
-    newByte|=hexCharToByte(chars[i]);
-    newByte<<=4;
-    newByte|=hexCharToByte(chars[i + 1]);
-    bytes[byteCount]=(byte)newByte;
-    byteCount++;
-  }
-  return bytes;
+  return DatatypeConverter.parseHexBinary(hex);
 }
