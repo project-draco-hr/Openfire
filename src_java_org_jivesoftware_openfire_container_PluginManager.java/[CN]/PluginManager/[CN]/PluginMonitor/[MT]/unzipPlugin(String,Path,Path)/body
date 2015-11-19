@@ -1,0 +1,26 @@
+{
+  try (ZipFile zipFile=new JarFile(file.toFile())){
+    if (zipFile.getEntry("plugin.xml") == null) {
+      return;
+    }
+    Files.createDirectory(dir);
+    Files.setLastModifiedTime(dir,Files.getLastModifiedTime(file));
+    Log.debug("PluginManager: Extracting plugin: " + pluginName);
+    for (Enumeration e=zipFile.entries(); e.hasMoreElements(); ) {
+      JarEntry entry=(JarEntry)e.nextElement();
+      Path entryFile=dir.resolve(entry.getName());
+      if (entry.getName().toLowerCase().endsWith("manifest.mf")) {
+        continue;
+      }
+      if (!entry.isDirectory()) {
+        Files.createDirectories(entryFile.getParent());
+        try (InputStream zin=zipFile.getInputStream(entry)){
+          Files.copy(zin,entryFile,StandardCopyOption.REPLACE_EXISTING);
+        }
+       }
+    }
+  }
+ catch (  Exception e) {
+    Log.error(e.getMessage(),e);
+  }
+}

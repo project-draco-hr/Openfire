@@ -12,14 +12,14 @@
         unloadPlugin(childPlugin);
       }
     }
-    File webXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web.xml");
-    if (webXML.exists()) {
+    Path webXML=pluginDirectory.resolve(pluginName).resolve("web").resolve("WEB-INF").resolve("web.xml");
+    if (Files.exists(webXML)) {
       AdminConsole.removeModel(pluginName);
-      PluginServlet.unregisterServlets(webXML);
+      PluginServlet.unregisterServlets(webXML.toFile());
     }
-    File customWebXML=new File(pluginDirectory,pluginName + File.separator + "web"+ File.separator+ "WEB-INF"+ File.separator+ "web-custom.xml");
-    if (customWebXML.exists()) {
-      PluginServlet.unregisterServlets(customWebXML);
+    Path customWebXML=pluginDirectory.resolve(pluginName).resolve("web").resolve("WEB-INF").resolve("web-custom.xml");
+    if (Files.exists(customWebXML)) {
+      PluginServlet.unregisterServlets(customWebXML.toFile());
     }
     try {
       plugin.destroyPlugin();
@@ -29,7 +29,7 @@
     }
   }
   plugins.remove(pluginName);
-  File pluginFile=pluginDirs.remove(plugin);
+  Path pluginFile=pluginDirs.remove(plugin);
   PluginClassLoader pluginLoader=classloaders.remove(plugin);
   if (pluginLoader != null) {
     pluginLoader.unloadJarFiles();
@@ -37,7 +37,7 @@
  else {
     Log.warn("No plugin loader found for " + pluginName);
   }
-  File dir=new File(pluginDirectory,pluginName);
+  Path dir=pluginDirectory.resolve(pluginName);
   try {
     Thread.sleep(2000);
     System.gc();
@@ -51,7 +51,7 @@
  catch (  InterruptedException e) {
     Log.error(e.getMessage(),e);
   }
-  if (plugin != null && !dir.exists()) {
+  if (plugin != null && Files.notExists(dir)) {
     PluginCacheRegistry.getInstance().unregisterCaches(pluginName);
     if (childPluginMap.containsKey(plugin)) {
       String parentPluginName=childPluginMap.get(plugin);

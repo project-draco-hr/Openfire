@@ -1,21 +1,21 @@
 {
-  if (XMPPServer.getInstance().isSetupMode() && !(pluginDir.getName().equals("admin"))) {
+  if (XMPPServer.getInstance().isSetupMode() && !(pluginDir.getFileName().toString().equals("admin"))) {
     return;
   }
-  Log.debug("PluginManager: Loading plugin " + pluginDir.getName());
+  Log.debug("PluginManager: Loading plugin " + pluginDir.getFileName().toString());
   Plugin plugin;
   try {
-    File pluginConfig=new File(pluginDir,"plugin.xml");
-    if (pluginConfig.exists()) {
+    Path pluginConfig=pluginDir.resolve("plugin.xml");
+    if (Files.exists(pluginConfig)) {
       SAXReader saxReader=new SAXReader();
       saxReader.setEncoding("UTF-8");
-      Document pluginXML=saxReader.read(pluginConfig);
+      Document pluginXML=saxReader.read(pluginConfig.toFile());
       Element minServerVersion=(Element)pluginXML.selectSingleNode("/plugin/minServerVersion");
       if (minServerVersion != null) {
         Version requiredVersion=new Version(minServerVersion.getTextTrim());
         Version currentVersion=XMPPServer.getInstance().getServerInfo().getVersion();
         if (requiredVersion.isNewerThan(currentVersion)) {
-          String msg="Ignoring plugin " + pluginDir.getName() + ": requires "+ "server version "+ requiredVersion;
+          String msg="Ignoring plugin " + pluginDir.getFileName() + ": requires "+ "server version "+ requiredVersion;
           Log.warn(msg);
           System.out.println(msg);
           return;
@@ -23,33 +23,33 @@
       }
       PluginClassLoader pluginLoader;
       Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
-      String pluginName=pluginDir.getName();
+      String pluginName=pluginDir.getFileName().toString();
       String webRootKey=pluginName + ".webRoot";
       String classesDirKey=pluginName + ".classes";
       String webRoot=System.getProperty(webRootKey);
       String classesDir=System.getProperty(classesDirKey);
       if (webRoot != null) {
-        final File compilationClassesDir=new File(pluginDir,"classes");
-        if (!compilationClassesDir.exists()) {
-          compilationClassesDir.mkdir();
+        final Path compilationClassesDir=pluginDir.resolve("classes");
+        if (Files.notExists(compilationClassesDir)) {
+          Files.createDirectory(compilationClassesDir);
         }
-        compilationClassesDir.deleteOnExit();
+        compilationClassesDir.toFile().deleteOnExit();
       }
       if (parentPluginNode != null) {
         String parentPlugin=parentPluginNode.getTextTrim();
         if (plugins.containsKey(parentPlugin)) {
           pluginLoader=classloaders.get(getPlugin(parentPlugin));
-          pluginLoader.addDirectory(pluginDir,classesDir != null);
+          pluginLoader.addDirectory(pluginDir.toFile(),classesDir != null);
         }
  else {
           if (pluginName.compareTo(parentPlugin) < 0) {
-            File file=new File(pluginDir.getParentFile(),parentPlugin + ".jar");
-            if (file.exists()) {
+            Path file=pluginDir.getParent().resolve(parentPlugin + ".jar");
+            if (Files.exists(file)) {
               return;
             }
  else {
-              file=new File(pluginDir.getParentFile(),parentPlugin + ".war");
-              if (file.exists()) {
+              file=pluginDir.getParent().resolve(parentPlugin + ".war");
+              if (Files.exists(file)) {
                 return;
               }
  else {
@@ -70,7 +70,7 @@
       }
  else {
         pluginLoader=new PluginClassLoader();
-        pluginLoader.addDirectory(pluginDir,classesDir != null);
+        pluginLoader.addDirectory(pluginDir.toFile(),classesDir != null);
       }
       PluginDevEnvironment dev=null;
       if (webRoot != null || classesDir != null) {
@@ -78,22 +78,22 @@
         System.out.println("Plugin " + pluginName + " is running in development mode.");
         Log.info("Plugin " + pluginName + " is running in development mode.");
         if (webRoot != null) {
-          File webRootDir=new File(webRoot);
-          if (!webRootDir.exists()) {
-            webRootDir=new File(pluginDir,webRoot);
+          Path webRootDir=Paths.get(webRoot);
+          if (Files.notExists(webRootDir)) {
+            webRootDir=pluginDir.resolve(webRoot);
           }
-          if (webRootDir.exists()) {
-            dev.setWebRoot(webRootDir);
+          if (Files.exists(webRootDir)) {
+            dev.setWebRoot(webRootDir.toFile());
           }
         }
         if (classesDir != null) {
-          File classes=new File(classesDir);
-          if (!classes.exists()) {
-            classes=new File(pluginDir,classesDir);
+          Path classes=Paths.get(classesDir);
+          if (Files.notExists(classes)) {
+            classes=pluginDir.resolve(classesDir);
           }
-          if (classes.exists()) {
-            dev.setClassesDir(classes);
-            pluginLoader.addURLFile(classes.getAbsoluteFile().toURI().toURL());
+          if (Files.exists(classes)) {
+            dev.setClassesDir(classes.toFile());
+            pluginLoader.addURLFile(classes.toUri().toURL());
           }
         }
       }
@@ -125,13 +125,13 @@
         Log.error(pluginName + " - " + LocaleUtils.getLocalizedString("upgrade.database.failure"));
         System.out.println(pluginName + " - " + LocaleUtils.getLocalizedString("upgrade.database.failure"));
       }
-      File webXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web.xml");
-      if (webXML.exists()) {
-        PluginServlet.registerServlets(this,plugin,webXML);
+      Path webXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web.xml");
+      if (Files.exists(webXML)) {
+        PluginServlet.registerServlets(this,plugin,webXML.toFile());
       }
-      File customWebXML=new File(pluginDir,"web" + File.separator + "WEB-INF"+ File.separator+ "web-custom.xml");
-      if (customWebXML.exists()) {
-        PluginServlet.registerServlets(this,plugin,customWebXML);
+      Path customWebXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web-custom.xml");
+      if (Files.exists(customWebXML)) {
+        PluginServlet.registerServlets(this,plugin,customWebXML.toFile());
       }
       if (dev != null) {
         pluginDevelopment.put(plugin,dev);
@@ -139,7 +139,7 @@
       configureCaches(pluginDir,pluginName);
       ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(pluginLoader);
-      plugin.initializePlugin(this,pluginDir);
+      plugin.initializePlugin(this,pluginDir.toFile());
       Thread.currentThread().setContextClassLoader(oldLoader);
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {

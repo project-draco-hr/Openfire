@@ -4,20 +4,14 @@
     return false;
   }
   try {
-    byte[] b=new byte[1024];
-    int len;
     int index=pluginFilename.lastIndexOf(File.separator);
     if (index != -1) {
       pluginFilename=pluginFilename.substring(index + 1);
     }
-    String absolutePath=pluginDirectory + File.separator + pluginFilename;
-    try (OutputStream out=new FileOutputStream(absolutePath + ".part")){
-      while ((len=in.read(b)) != -1) {
-        out.write(b,0,len);
-      }
-    }
-     new File(absolutePath).delete();
-    new File(absolutePath + ".part").renameTo(new File(absolutePath));
+    Path absolutePath=pluginDirectory.resolve(pluginFilename);
+    Path partFile=pluginDirectory.resolve(pluginFilename + ".part");
+    Files.copy(in,partFile,StandardCopyOption.REPLACE_EXISTING);
+    Files.move(partFile,absolutePath,StandardCopyOption.REPLACE_EXISTING);
     pluginMonitor.run();
   }
  catch (  IOException e) {
