@@ -1,0 +1,34 @@
+{
+  String value=(String)params.get("value");
+switch (property) {
+case "jdbcAuthProvider.acceptPreHashedPassword":
+    acceptPreHashedPassword=Boolean.parseBoolean(value);
+  Log.debug("jdbcAuthProvider.acceptPreHashedPassword configured to: {}",acceptPreHashedPassword);
+break;
+case "jdbcAuthProvider.passwordSQL":
+passwordSQL=value;
+Log.debug("jdbcAuthProvider.passwordSQL configured to: {}",passwordSQL);
+break;
+case "jdbcAuthProvider.setPasswordSQL":
+setPasswordSQL=value;
+Log.debug("jdbcAuthProvider.setPasswordSQL configured to: {}",setPasswordSQL);
+break;
+case "jdbcAuthProvider.allowUpdate":
+allowUpdate=Boolean.parseBoolean(value);
+Log.debug("jdbcAuthProvider.allowUpdate configured to: {}",allowUpdate);
+break;
+case "jdbcAuthProvider.passwordType":
+setPasswordTypes(value);
+Log.debug("jdbcAuthProvider.passwordType configured to: {}",Arrays.toString(passwordTypes.toArray()));
+break;
+case "jdbcAuthProvider.bcrypt.cost":
+try {
+bcryptCost=Integer.parseInt(value);
+}
+ catch (NumberFormatException e) {
+bcryptCost=-1;
+}
+Log.debug("jdbcAuthProvider.bcrypt.cost configured to: {}",bcryptCost);
+break;
+}
+}

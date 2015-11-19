@@ -5,7 +5,11 @@
   JiveGlobals.migrateProperty("jdbcAuthProvider.passwordType");
   JiveGlobals.migrateProperty("jdbcAuthProvider.setPasswordSQL");
   JiveGlobals.migrateProperty("jdbcAuthProvider.allowUpdate");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.bcrypt.cost");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.useConnectionProvider");
+  JiveGlobals.migrateProperty("jdbcAuthProvider.acceptPreHashedPassword");
   useConnectionProvider=JiveGlobals.getBooleanProperty("jdbcAuthProvider.useConnectionProvider");
+  acceptPreHashedPassword=JiveGlobals.getBooleanProperty("jdbcAuthProvider.acceptPreHashedPassword");
   if (!useConnectionProvider) {
     String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
     try {
@@ -20,11 +24,7 @@
   passwordSQL=JiveGlobals.getProperty("jdbcAuthProvider.passwordSQL");
   setPasswordSQL=JiveGlobals.getProperty("jdbcAuthProvider.setPasswordSQL");
   allowUpdate=JiveGlobals.getBooleanProperty("jdbcAuthProvider.allowUpdate",false);
-  passwordType=PasswordType.plain;
-  try {
-    passwordType=PasswordType.valueOf(JiveGlobals.getProperty("jdbcAuthProvider.passwordType","plain"));
-  }
- catch (  IllegalArgumentException iae) {
-    Log.error(iae.getMessage(),iae);
-  }
+  setPasswordTypes(JiveGlobals.getProperty("jdbcAuthProvider.passwordType","plain"));
+  bcryptCost=JiveGlobals.getIntProperty("jdbcAuthProvider.bcrypt.cost",-1);
+  PropertyEventDispatcher.addListener(this);
 }
