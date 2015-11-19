@@ -1,14 +1,3 @@
 {
-  if (enabled == isClientSSLListenerEnabled()) {
-    return;
-  }
-  if (enabled) {
-    JiveGlobals.setProperty(ConnectionSettings.Client.ENABLE_OLD_SSLPORT,"true");
-    createClientSSLListeners();
-    startClientSSLListeners(localIPAddress);
-  }
- else {
-    JiveGlobals.setProperty(ConnectionSettings.Client.ENABLE_OLD_SSLPORT,"false");
-    stopClientSSLListeners();
-  }
+  enable(ConnectionType.SOCKET_C2S,true,enabled);
 }

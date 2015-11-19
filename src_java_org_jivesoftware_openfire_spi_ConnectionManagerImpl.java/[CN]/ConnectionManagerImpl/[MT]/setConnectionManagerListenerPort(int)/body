@@ -1,11 +1,3 @@
 {
-  if (port == getConnectionManagerListenerPort()) {
-    return;
-  }
-  JiveGlobals.setProperty(ConnectionSettings.Multiplex.PORT,String.valueOf(port));
-  stopConnectionManagerListener();
-  if (isConnectionManagerListenerEnabled()) {
-    createConnectionManagerListener();
-    startConnectionManagerListener(localIPAddress);
-  }
+  setPort(ConnectionType.CONNECTION_MANAGER,false,port);
 }

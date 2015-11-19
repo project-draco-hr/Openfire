@@ -23,12 +23,14 @@
   }
   sslEnabled=false;
   try {
-    final IdentityStoreConfig identityStoreConfig=SSLConfig.getInstance().getIdentityStoreConfig(Purpose.WEBADMIN);
-    if (adminSecurePort > 0 && identityStoreConfig.getStore().aliases().hasMoreElements()) {
-      if (!identityStoreConfig.containsDomainCertificate("RSA")) {
+    final IdentityStore identityStore=CertificateStoreManager.getIdentityStore(ConnectionType.WEBADMIN);
+    if (adminSecurePort > 0 && !identityStore.getAllCertificates().isEmpty()) {
+      if (!identityStore.containsDomainCertificate("RSA")) {
         Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
       }
-      final SslContextFactory sslContextFactory=SSLConfig.getSslContextFactory(Purpose.WEBADMIN);
+      final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+      final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.WEBADMIN,true);
+      final SslContextFactory sslContextFactory=configuration.getSslContextFactory();
       final ServerConnector httpsConnector;
       if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {
         httpsConnector=new HTTPSPDYServerConnector(adminServer,sslContextFactory);

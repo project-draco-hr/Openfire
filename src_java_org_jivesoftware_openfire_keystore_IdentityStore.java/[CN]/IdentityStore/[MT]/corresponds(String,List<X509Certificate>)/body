@@ -1,0 +1,24 @@
+{
+  if (!store.containsAlias(alias)) {
+    return false;
+  }
+  final Key key=store.getKey(alias,configuration.getPassword());
+  if (key == null) {
+    return false;
+  }
+  if (!(key instanceof PrivateKey)) {
+    return false;
+  }
+  final Certificate certificate=store.getCertificate(alias);
+  if (certificate == null) {
+    return false;
+  }
+  if (!(certificate instanceof X509Certificate)) {
+    return false;
+  }
+  final X509Certificate x509Certificate=(X509Certificate)certificate;
+  if (!x509Certificate.getSerialNumber().equals(certificates.get(0).getSerialNumber())) {
+    return false;
+  }
+  return true;
+}

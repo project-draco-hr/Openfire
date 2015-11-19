@@ -1,0 +1,34 @@
+{
+  if (sslContextFactory != null) {
+    return sslContextFactory;
+  }
+  try {
+    sslContextFactory=new SslContextFactory();
+    sslContextFactory.setTrustStore(trustStore.getStore());
+    sslContextFactory.setTrustStorePassword(new String(trustStoreConfiguration.getPassword()));
+    sslContextFactory.setKeyStore(identityStore.getStore());
+    sslContextFactory.setKeyStorePassword(new String(identityStoreConfiguration.getPassword()));
+    sslContextFactory.setIncludeProtocols(getEncryptionProtocolsEnabled().toArray(new String[getEncryptionProtocolsEnabled().size()]));
+    sslContextFactory.setExcludeProtocols(getEncryptionProtocolsDisabled().toArray(new String[getEncryptionProtocolsDisabled().size()]));
+    sslContextFactory.setIncludeCipherSuites(getCipherSuitesEnabled().toArray(new String[getCipherSuitesEnabled().size()]));
+    sslContextFactory.setExcludeCipherSuites(getCipherSuitesDisabled().toArray(new String[getCipherSuitesDisabled().size()]));
+switch (clientAuth) {
+case disabled:
+      sslContextFactory.setNeedClientAuth(false);
+    sslContextFactory.setWantClientAuth(false);
+  break;
+case wanted:
+sslContextFactory.setNeedClientAuth(false);
+sslContextFactory.setWantClientAuth(true);
+break;
+case needed:
+sslContextFactory.setNeedClientAuth(true);
+break;
+}
+return sslContextFactory;
+}
+ catch (RuntimeException ex) {
+sslContextFactory=null;
+throw ex;
+}
+}

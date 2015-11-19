@@ -1,0 +1,10 @@
+{
+  ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  try {
+    return connectionManager.getListener(type,getTLSPolicy().equals(Connection.TLSPolicy.legacyMode));
+  }
+ catch (  RuntimeException ex) {
+    Log.warn("A connection listener for '{}' is not available. Using fallback: '{}'.",type,type.getFallback());
+    return getConnectionListener(type.getFallback());
+  }
+}

@@ -1,0 +1,20 @@
+{
+  if (!isEnabled()) {
+    Log.debug("Not starting: disabled by configuration.");
+    return;
+  }
+  if (connectionAcceptor != null) {
+    if (!connectionAcceptor.isIdle()) {
+      Log.warn("Unable to start: it appears to have already been started (and it is currently serving connections)! To restart, first stop this listener explicitly.");
+      return;
+    }
+ else {
+      Log.warn("Stopping (in order to restart) an instance that has already been started, but is idle. This start would have failed if the listener was not idle. The implementation should have called stop() or restart() first, to ensure a clean restart!");
+      connectionAcceptor.stop();
+    }
+  }
+  Log.debug("Starting...");
+  connectionAcceptor=new ConnectionAcceptor(generateConnectionConfiguration());
+  connectionAcceptor.start();
+  Log.info("Started.");
+}

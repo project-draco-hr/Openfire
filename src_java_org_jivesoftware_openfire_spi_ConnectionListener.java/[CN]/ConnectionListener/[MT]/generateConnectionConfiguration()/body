@@ -1,0 +1,25 @@
+{
+  final int maxThreadPoolSize=JiveGlobals.getIntProperty(maxPoolSizePropertyName,16);
+  final int maxBufferSize;
+  if (maxReadBufferPropertyName != null) {
+    maxBufferSize=JiveGlobals.getIntProperty(maxReadBufferPropertyName,10 * 1024 * 1024);
+  }
+ else {
+    maxBufferSize=-1;
+  }
+  Connection.ClientAuth clientAuth;
+  if (clientAuthPolicyPropertyName == null) {
+    clientAuth=Connection.ClientAuth.wanted;
+  }
+ else {
+    try {
+      final String value=JiveGlobals.getProperty(clientAuthPolicyPropertyName,Connection.ClientAuth.wanted.name());
+      clientAuth=Connection.ClientAuth.valueOf(value);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.warn("Invalid client auth value. A default will be used.",e);
+      clientAuth=Connection.ClientAuth.wanted;
+    }
+  }
+  return new ConnectionConfiguration(getType(),maxThreadPoolSize,maxBufferSize,clientAuth,getBindAddress(),getPort(),getTLSPolicy(),identityStoreConfiguration,trustStoreConfiguration,acceptSelfSignedCertificates(),verifyCertificateValidity(),getEncryptionProtocolsEnabled(),getEncryptionProtocolsDisabled(),getCipherSuitesEnabled(),getCipherSuitesDisabled());
+}

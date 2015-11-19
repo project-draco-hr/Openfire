@@ -1,0 +1,17 @@
+{
+  try {
+    final SSLEngine sslEngine;
+    if (clientMode) {
+      sslEngine=configuration.createClientModeSSLEngine();
+    }
+ else {
+      sslEngine=configuration.createServerModeSSLEngine();
+    }
+    final SSLSession sslSession=sslEngine.getSession();
+    netBuffSize=sslSession.getPacketBufferSize();
+    appBuffSize=sslSession.getApplicationBufferSize();
+  }
+ catch (  NoSuchAlgorithmException|KeyManagementException|KeyStoreException|UnrecoverableKeyException ex) {
+    Log.error("TLSHandler startup problem. SSLContext initialisation failed.",ex);
+  }
+}

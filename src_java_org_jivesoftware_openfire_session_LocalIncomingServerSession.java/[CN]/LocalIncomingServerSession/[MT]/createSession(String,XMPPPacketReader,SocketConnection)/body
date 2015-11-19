@@ -27,7 +27,7 @@
       Connection.TLSPolicy tlsPolicy=ServerDialback.isEnabled() ? Connection.TLSPolicy.optional : Connection.TLSPolicy.required;
       boolean hasCertificates=false;
       try {
-        hasCertificates=SSLConfig.getIdentityStore(Purpose.SOCKET_S2S).size() > 0;
+        hasCertificates=CertificateStoreManager.getIdentityStore(ConnectionType.SOCKET_S2S).getStore().size() > 0;
       }
  catch (      Exception e) {
         Log.error(e.getMessage(),e);

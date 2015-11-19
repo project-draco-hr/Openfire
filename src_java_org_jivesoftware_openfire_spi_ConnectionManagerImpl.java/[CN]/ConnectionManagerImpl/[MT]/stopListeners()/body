@@ -1,0 +1,16 @@
+{
+  for (  final ConnectionListener listener : getListeners()) {
+    try {
+      listener.stop();
+    }
+ catch (    RuntimeException ex) {
+      Log.error("An exception occurred while stopping listener " + listener,ex);
+    }
+  }
+  try {
+    HttpBindManager.getInstance().stop();
+  }
+ catch (  RuntimeException ex) {
+    Log.error("An exception occurred while stopping HTTP Bind listener ",ex);
+  }
+}

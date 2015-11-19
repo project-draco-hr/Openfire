@@ -1,9 +1,11 @@
 {
+  final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.SOCKET_C2S,false);
   IQ options=new IQ(IQ.Type.set);
   Element child=options.setChildElement("configuration","http://jabber.org/protocol/connectionmanager");
-  if (LocalClientSession.getTLSPolicy() != Connection.TLSPolicy.disabled) {
+  if (configuration.getTlsPolicy() != Connection.TLSPolicy.disabled) {
     Element tls=child.addElement("starttls","urn:ietf:params:xml:ns:xmpp-tls");
-    if (LocalClientSession.getTLSPolicy() == Connection.TLSPolicy.required) {
+    if (configuration.getTlsPolicy() == Connection.TLSPolicy.required) {
       tls.addElement("required");
     }
   }

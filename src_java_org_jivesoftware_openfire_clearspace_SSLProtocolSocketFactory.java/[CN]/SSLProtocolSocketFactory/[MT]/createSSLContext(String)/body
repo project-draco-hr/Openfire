@@ -1,11 +1,11 @@
 {
   try {
-    final SSLContext context=SSLConfig.getSSLContext(Purpose.ADMIN);
-    context.init(null,new TrustManager[]{new ClearspaceX509TrustManager(host,manager.getProperties(),SSLConfig.getTrustStore(Purpose.ADMIN))},null);
+    final SSLContext context=SSLContext.getInstance("TLSv1");
+    context.init(null,new TrustManager[]{new ClearspaceX509TrustManager(host,manager.getProperties(),CertificateStoreManager.getTrustStore(ConnectionType.ADMIN).getStore())},null);
     return context;
   }
  catch (  Exception e) {
-    Log.error(e.getMessage(),e);
+    Log.error("An exception occurred while trying to create an SSL Context for host: '" + host + "'",e);
     throw new HttpClientError(e.toString());
   }
 }

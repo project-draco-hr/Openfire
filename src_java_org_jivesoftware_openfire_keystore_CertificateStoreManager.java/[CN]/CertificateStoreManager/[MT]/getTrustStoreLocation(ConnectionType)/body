@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "truststore";
+  final String defaultValue="resources" + File.separator + "security"+ File.separator+ "truststore";
+  if (type.getFallback() == null) {
+    return JiveGlobals.getProperty(propertyName,defaultValue).trim();
+  }
+ else {
+    return JiveGlobals.getProperty(propertyName,getTrustStoreLocation(type.getFallback())).trim();
+  }
+}

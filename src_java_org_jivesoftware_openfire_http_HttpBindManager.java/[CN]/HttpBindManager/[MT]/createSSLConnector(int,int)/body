@@ -1,13 +1,14 @@
 {
   httpsConnector=null;
   try {
-    final IdentityStoreConfig identityStoreConfig=SSLConfig.getInstance().getIdentityStoreConfig(Purpose.BOSH_C2S);
-    final KeyStore keyStore=identityStoreConfig.getStore();
-    if (securePort > 0 && identityStoreConfig.getStore().aliases().hasMoreElements()) {
-      if (!identityStoreConfig.containsDomainCertificate("RSA")) {
+    final IdentityStore identityStore=CertificateStoreManager.getIdentityStore(ConnectionType.BOSH_C2S);
+    if (securePort > 0 && identityStore.getStore().aliases().hasMoreElements()) {
+      if (!identityStore.containsDomainCertificate("RSA")) {
         Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
       }
-      final SslContextFactory sslContextFactory=SSLConfig.getSslContextFactory(Purpose.BOSH_C2S);
+      final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+      final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.BOSH_C2S,true);
+      final SslContextFactory sslContextFactory=configuration.getSslContextFactory();
       final HttpConfiguration httpsConfig=new HttpConfiguration();
       httpsConfig.setSecureScheme("https");
       httpsConfig.setSecurePort(securePort);

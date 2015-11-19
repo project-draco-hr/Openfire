@@ -10,7 +10,7 @@
   }
  else {
     try {
-      final KeyStore keyStore=SSLConfig.getIdentityStore(Purpose.SOCKET_S2S);
+      final KeyStore keyStore=CertificateStoreManager.getIdentityStore(ConnectionType.SOCKET_S2S).getStore();
       usingSelfSigned=CertificateManager.isSelfSignedCertificate(keyStore,(X509Certificate)chain[0]);
     }
  catch (    KeyStoreException ex) {

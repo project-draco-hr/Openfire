@@ -1,0 +1,19 @@
+{
+  if (!secure) {
+    secure=true;
+    final ClientAuth clientAuth;
+    if (session instanceof IncomingServerSession) {
+      clientAuth=ClientAuth.needed;
+    }
+ else {
+      clientAuth=ClientAuth.wanted;
+    }
+    tlsStreamHandler=new TLSStreamHandler(socket,getConfiguration(),clientMode);
+    if (!clientMode) {
+      deliverRawText("<proceed xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
+    }
+    tlsStreamHandler.start();
+    writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),CHARSET));
+    xmlSerializer=new XMLSocketWriter(writer,this);
+  }
+}

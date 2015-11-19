@@ -1,0 +1,23 @@
+{
+  final Set<ConnectionListener> result=new HashSet<>();
+switch (type) {
+case SOCKET_C2S:
+    result.add(clientListener);
+  result.add(clientSslListener);
+break;
+case SOCKET_S2S:
+result.add(serverListener);
+break;
+case COMPONENT:
+result.add(componentListener);
+result.add(componentSslListener);
+break;
+case CONNECTION_MANAGER:
+result.add(connectionManagerListener);
+result.add(connectionManagerSslListener);
+break;
+default :
+throw new IllegalStateException("Unknown connection type: " + type);
+}
+return result;
+}

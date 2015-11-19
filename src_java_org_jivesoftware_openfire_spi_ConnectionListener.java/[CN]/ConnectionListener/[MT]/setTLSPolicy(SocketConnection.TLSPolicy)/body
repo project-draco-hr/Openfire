@@ -1,0 +1,18 @@
+{
+  final Connection.TLSPolicy oldPolicy=getTLSPolicy();
+  if (oldPolicy.equals(policy)) {
+    Log.debug("Ignoring TLS Policy change request (to '{}'): listener already in this state.",policy);
+    return;
+  }
+  if (Connection.TLSPolicy.legacyMode.equals(policy)) {
+    Log.warn("Ignoring TLS Policy change request (to '{}'): You cannot reconfigure an existing connection (from '{}') into legacy mode!",policy,oldPolicy);
+    return;
+  }
+  if (Connection.TLSPolicy.legacyMode.equals(oldPolicy)) {
+    Log.warn("Ignoring TLS Policy change request (to '{}'): You cannot reconfigure an existing connection that is in legacy mode!",policy);
+    return;
+  }
+  Log.debug("Changing TLS Policy from '{}' to '{}'.",oldPolicy,policy);
+  JiveGlobals.setProperty(tlsPolicyPropertyName,policy.toString());
+  restart();
+}

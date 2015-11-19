@@ -54,12 +54,12 @@
   if (!connection.isSecure()) {
     boolean hasCertificates=false;
     try {
-      hasCertificates=SSLConfig.getIdentityStore(Purpose.SOCKET_C2S).size() > 0;
+      hasCertificates=connection.getConfiguration().getIdentityStore().getAllCertificates().size() > 0;
     }
  catch (    Exception e) {
       Log.error(e.getMessage(),e);
     }
-    Connection.TLSPolicy tlsPolicy=getTLSPolicy();
+    Connection.TLSPolicy tlsPolicy=connection.getConfiguration().getTlsPolicy();
     if (Connection.TLSPolicy.required == tlsPolicy && !hasCertificates) {
       Log.error("Client session rejected. TLS is required but no certificates " + "were created.");
       return null;

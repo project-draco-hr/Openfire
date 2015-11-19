@@ -1,0 +1,42 @@
+{
+  final String prefix=IoServiceMBean.class.getPackage().getName();
+  try {
+    final IoServiceMBean mbean=new IoServiceMBean(acceptor);
+    final MBeanServer mbs=ManagementFactory.getPlatformMBeanServer();
+    final ObjectName name=new ObjectName(prefix + ":type=SocketAcceptor,name=" + suffix);
+    mbs.registerMBean(mbean,name);
+  }
+ catch (  JMException ex) {
+    Log.warn("Failed to register MINA acceptor mbean (JMX): " + ex);
+  }
+  if (JiveGlobals.getBooleanProperty("xmpp.socket.jmx.sessions",false)) {
+    acceptor.addListener(new IoServiceListener(){
+      private ObjectName getObjectNameForSession(      IoSession session) throws MalformedObjectNameException {
+        return new ObjectName(prefix + ":type=IoSession,name=" + session.getRemoteAddress().toString().replace(':','/'));
+      }
+      public void sessionCreated(      IoSession session){
+        try {
+          ManagementFactory.getPlatformMBeanServer().registerMBean(new IoSessionMBean(session),getObjectNameForSession(session));
+        }
+ catch (        JMException ex) {
+          Log.warn("Failed to register MINA session mbean (JMX): " + ex);
+        }
+      }
+      public void sessionDestroyed(      IoSession session){
+        try {
+          ManagementFactory.getPlatformMBeanServer().unregisterMBean(getObjectNameForSession(session));
+        }
+ catch (        JMException ex) {
+          Log.warn("Failed to unregister MINA session mbean (JMX): " + ex);
+        }
+      }
+      public void serviceActivated(      IoService service) throws Exception {
+      }
+      public void serviceDeactivated(      IoService service) throws Exception {
+      }
+      public void serviceIdle(      IoService service,      IdleStatus idleStatus) throws Exception {
+      }
+    }
+);
+  }
+}

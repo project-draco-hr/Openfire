@@ -1,11 +1,3 @@
 {
-  if (port == getClientSSLListenerPort()) {
-    return;
-  }
-  JiveGlobals.setProperty(ConnectionSettings.Client.OLD_SSLPORT,String.valueOf(port));
-  stopClientSSLListeners();
-  if (isClientSSLListenerEnabled()) {
-    createClientSSLListeners();
-    startClientSSLListeners(localIPAddress);
-  }
+  setPort(ConnectionType.SOCKET_C2S,true,port);
 }

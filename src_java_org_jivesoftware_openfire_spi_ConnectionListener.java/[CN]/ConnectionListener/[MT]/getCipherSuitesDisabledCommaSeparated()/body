@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "ciphersuites.disabled";
+  final String defaultValue="";
+  if (type.getFallback() == null) {
+    return JiveGlobals.getProperty(propertyName,defaultValue).trim();
+  }
+ else {
+    return JiveGlobals.getProperty(propertyName,getConnectionListener(type.getFallback()).getCipherSuitesDisabledCommaSeparated()).trim();
+  }
+}

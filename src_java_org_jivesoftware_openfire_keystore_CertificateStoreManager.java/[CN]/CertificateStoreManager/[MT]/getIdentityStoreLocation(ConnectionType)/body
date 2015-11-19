@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "keystore";
+  final String defaultValue="resources" + File.separator + "security"+ File.separator+ "keystore";
+  if (type.getFallback() == null) {
+    return JiveGlobals.getProperty(propertyName,defaultValue).trim();
+  }
+ else {
+    return JiveGlobals.getProperty(propertyName,getIdentityStoreLocation(type.getFallback())).trim();
+  }
+}

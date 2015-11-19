@@ -1,11 +1,3 @@
 {
-  if (port == getServerListenerPort()) {
-    return;
-  }
-  JiveGlobals.setProperty(ConnectionSettings.Server.PORT,String.valueOf(port));
-  stopServerListener();
-  if (isServerListenerEnabled()) {
-    createServerListener(localIPAddress);
-    startServerListener();
-  }
+  setPort(ConnectionType.SOCKET_S2S,false,port);
 }

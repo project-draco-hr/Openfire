@@ -1,0 +1,31 @@
+{
+  if (type == null) {
+    throw new IllegalArgumentException("Argument 'type' cannot be null.");
+  }
+  if (configuration == null) {
+    throw new IllegalArgumentException("Argument 'configuration' cannot be null.");
+  }
+  final CertificateStoreManager manager=getInstance();
+  final CertificateStoreConfiguration oldConfig=manager.typeToIdentityStore.get(type);
+  if (oldConfig == null || !oldConfig.equals(configuration)) {
+    if (!manager.identityStores.containsKey(configuration)) {
+      final IdentityStore store=new IdentityStore(configuration,true);
+      manager.identityStores.put(configuration,store);
+    }
+    manager.typeToIdentityStore.put(type,configuration);
+    if (oldConfig != null && !manager.typeToIdentityStore.containsValue(oldConfig)) {
+      manager.identityStores.remove(oldConfig);
+    }
+    final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+    for (    ConnectionListener connectionListener : connectionManager.getListeners(type)) {
+      try {
+        connectionListener.setIdentityStoreConfiguration(configuration);
+      }
+ catch (      RuntimeException e) {
+        Log.warn("An exception occurred while trying to update the identity store configuration for connection type '" + type + "'",e);
+      }
+    }
+  }
+  JiveGlobals.setProperty(type.getPrefix() + "keystore",configuration.getFile().getPath());
+  JiveGlobals.setProperty(type.getPrefix() + "keypass",new String(configuration.getPassword()));
+}

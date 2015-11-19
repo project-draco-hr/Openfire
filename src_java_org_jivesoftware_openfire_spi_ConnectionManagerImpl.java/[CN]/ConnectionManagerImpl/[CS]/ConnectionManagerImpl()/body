@@ -1,4 +1,17 @@
 {
   super("Connection Manager");
-  ports=new ArrayList<>(4);
+  InetAddress bindAddress=null;
+  try {
+    bindAddress=getListenAddress();
+  }
+ catch (  UnknownHostException e) {
+    Log.warn("Unable to resolve bind address: ",e);
+  }
+  clientListener=new ConnectionListener(ConnectionType.SOCKET_C2S,ConnectionSettings.Client.PORT,DEFAULT_PORT,ConnectionSettings.Client.SOCKET_ACTIVE,ConnectionSettings.Client.MAX_THREADS,ConnectionSettings.Client.MAX_READ_BUFFER,ConnectionSettings.Client.TLS_POLICY,ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.SOCKET_C2S),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.SOCKET_C2S));
+  clientSslListener=new ConnectionListener(ConnectionType.SOCKET_C2S,ConnectionSettings.Client.OLD_SSLPORT,DEFAULT_SSL_PORT,ConnectionSettings.Client.ENABLE_OLD_SSLPORT,ConnectionSettings.Client.MAX_THREADS_SSL,ConnectionSettings.Client.MAX_READ_BUFFER_SSL,Connection.TLSPolicy.legacyMode.name(),ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.SOCKET_C2S),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.SOCKET_C2S));
+  serverListener=new ConnectionListener(ConnectionType.SOCKET_S2S,ConnectionSettings.Server.PORT,DEFAULT_SERVER_PORT,ConnectionSettings.Server.SOCKET_ACTIVE,"xmpp.server.processing.threads",null,ConnectionSettings.Server.TLS_POLICY,ConnectionSettings.Server.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.SOCKET_S2S),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.SOCKET_S2S));
+  componentListener=new ConnectionListener(ConnectionType.COMPONENT,ConnectionSettings.Component.PORT,DEFAULT_COMPONENT_PORT,ConnectionSettings.Component.SOCKET_ACTIVE,ConnectionSettings.Component.MAX_THREADS,null,ConnectionSettings.Component.TLS_POLICY,ConnectionSettings.Component.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.COMPONENT),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.COMPONENT));
+  componentSslListener=new ConnectionListener(ConnectionType.COMPONENT,ConnectionSettings.Component.OLD_SSLPORT,DEFAULT_COMPONENT_SSL_PORT,ConnectionSettings.Component.ENABLE_OLD_SSLPORT,ConnectionSettings.Component.MAX_THREADS_SSL,null,Connection.TLSPolicy.legacyMode.name(),ConnectionSettings.Component.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.COMPONENT),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.COMPONENT));
+  connectionManagerListener=new ConnectionListener(ConnectionType.CONNECTION_MANAGER,ConnectionSettings.Multiplex.PORT,DEFAULT_MULTIPLEX_PORT,ConnectionSettings.Multiplex.SOCKET_ACTIVE,ConnectionSettings.Multiplex.MAX_THREADS,null,ConnectionSettings.Multiplex.TLS_POLICY,ConnectionSettings.Multiplex.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.CONNECTION_MANAGER),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.CONNECTION_MANAGER));
+  connectionManagerSslListener=new ConnectionListener(ConnectionType.CONNECTION_MANAGER,ConnectionSettings.Multiplex.OLD_SSLPORT,DEFAULT_MULTIPLEX_SSL_PORT,ConnectionSettings.Multiplex.ENABLE_OLD_SSLPORT,ConnectionSettings.Multiplex.MAX_THREADS_SSL,null,Connection.TLSPolicy.legacyMode.name(),ConnectionSettings.Multiplex.AUTH_PER_CLIENTCERT_POLICY,bindAddress,CertificateStoreManager.getIdentityStoreConfiguration(ConnectionType.CONNECTION_MANAGER),CertificateStoreManager.getTrustStoreConfiguration(ConnectionType.CONNECTION_MANAGER));
 }

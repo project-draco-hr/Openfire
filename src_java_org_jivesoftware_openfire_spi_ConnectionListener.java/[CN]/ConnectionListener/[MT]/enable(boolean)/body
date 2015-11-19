@@ -1,0 +1,14 @@
+{
+  final boolean isRunning=connectionAcceptor != null;
+  if (enable == isRunning) {
+    Log.debug("Ignoring enable({}): listener already in this state.",enable);
+    return;
+  }
+  JiveGlobals.setProperty(isEnabledPropertyName,Boolean.toString(enable));
+  if (isRunning) {
+    start();
+  }
+ else {
+    stop();
+  }
+}

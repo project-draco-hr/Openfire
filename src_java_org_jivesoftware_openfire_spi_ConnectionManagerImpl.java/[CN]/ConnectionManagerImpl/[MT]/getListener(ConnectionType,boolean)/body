@@ -1,0 +1,29 @@
+{
+switch (type) {
+case SOCKET_C2S:
+    if (startInSslMode) {
+      return clientSslListener;
+    }
+ else {
+      return clientListener;
+    }
+case SOCKET_S2S:
+  return serverListener;
+case COMPONENT:
+if (startInSslMode) {
+  return componentSslListener;
+}
+ else {
+  return componentListener;
+}
+case CONNECTION_MANAGER:
+if (startInSslMode) {
+return connectionManagerSslListener;
+}
+ else {
+return connectionManagerListener;
+}
+default :
+throw new IllegalStateException("Unknown connection type: " + type);
+}
+}
