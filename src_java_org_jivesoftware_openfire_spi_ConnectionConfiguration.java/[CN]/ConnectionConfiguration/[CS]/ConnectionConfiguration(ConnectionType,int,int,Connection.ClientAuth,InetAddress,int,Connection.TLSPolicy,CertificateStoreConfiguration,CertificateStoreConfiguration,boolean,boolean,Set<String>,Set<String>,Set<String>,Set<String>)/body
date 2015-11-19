@@ -16,10 +16,17 @@
   this.trustStoreConfiguration=trustStoreConfiguration;
   this.acceptSelfSignedCertificates=acceptSelfSignedCertificates;
   this.verifyCertificateValidity=verifyCertificateValidity;
-  this.encryptionProtocolsEnabled=Collections.unmodifiableSet(encryptionProtocolsEnabled);
+  final Set<String> protocolsEnabled=new HashSet<>();
+  protocolsEnabled.addAll(encryptionProtocolsEnabled);
+  protocolsEnabled.removeAll(encryptionProtocolsDisabled);
+  this.encryptionProtocolsEnabled=Collections.unmodifiableSet(protocolsEnabled);
   this.encryptionProtocolsDisabled=Collections.unmodifiableSet(encryptionProtocolsDisabled);
-  this.cipherSuitesEnabled=Collections.unmodifiableSet(cipherSuitesEnabled);
+  final Set<String> suitesEnabled=new HashSet<>();
+  suitesEnabled.addAll(cipherSuitesEnabled);
+  suitesEnabled.removeAll(cipherSuitesDisabled);
+  this.cipherSuitesEnabled=Collections.unmodifiableSet(suitesEnabled);
   this.cipherSuitesDisabled=Collections.unmodifiableSet(cipherSuitesDisabled);
   this.identityStore=CertificateStoreManager.getIdentityStore(type);
   this.trustStore=CertificateStoreManager.getTrustStore(type);
+  this.Log=LoggerFactory.getLogger(this.getClass().getName() + "[" + port+ "-"+ type+ "]");
 }

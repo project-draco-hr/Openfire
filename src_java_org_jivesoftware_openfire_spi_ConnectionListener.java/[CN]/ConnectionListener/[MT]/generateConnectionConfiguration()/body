@@ -1,5 +1,12 @@
 {
-  final int maxThreadPoolSize=JiveGlobals.getIntProperty(maxPoolSizePropertyName,16);
+  final int defaultMaxPoolSize=16;
+  final int maxThreadPoolSize;
+  if (maxPoolSizePropertyName == null) {
+    maxThreadPoolSize=defaultMaxPoolSize;
+  }
+ else {
+    maxThreadPoolSize=JiveGlobals.getIntProperty(maxPoolSizePropertyName,defaultMaxPoolSize);
+  }
   final int maxBufferSize;
   if (maxReadBufferPropertyName != null) {
     maxBufferSize=JiveGlobals.getIntProperty(maxReadBufferPropertyName,10 * 1024 * 1024);
@@ -9,11 +16,11 @@
   }
   Connection.ClientAuth clientAuth;
   if (clientAuthPolicyPropertyName == null) {
-    clientAuth=Connection.ClientAuth.wanted;
+    clientAuth=Connection.ClientAuth.disabled;
   }
  else {
     try {
-      final String value=JiveGlobals.getProperty(clientAuthPolicyPropertyName,Connection.ClientAuth.wanted.name());
+      final String value=JiveGlobals.getProperty(clientAuthPolicyPropertyName,Connection.ClientAuth.disabled.name());
       clientAuth=Connection.ClientAuth.valueOf(value);
     }
  catch (    IllegalArgumentException e) {

@@ -4,6 +4,10 @@
     Log.debug("Ignoring TLS Policy change request (to '{}'): listener already in this state.",policy);
     return;
   }
+  final Connection.TLSPolicy hardcoded=getHardcodedTLSPolicy();
+  if (hardcoded != null) {
+    throw new IllegalArgumentException("The TLS Policy for this listener is hardcoded (to '" + hardcoded + "'). It cannot be changed.");
+  }
   if (Connection.TLSPolicy.legacyMode.equals(policy)) {
     Log.warn("Ignoring TLS Policy change request (to '{}'): You cannot reconfigure an existing connection (from '{}') into legacy mode!",policy,oldPolicy);
     return;

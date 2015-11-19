@@ -2,15 +2,20 @@
   if (sslContextFactory != null) {
     return sslContextFactory;
   }
+  Log.info("Creating new SslContextFactory instance");
   try {
     sslContextFactory=new SslContextFactory();
     sslContextFactory.setTrustStore(trustStore.getStore());
     sslContextFactory.setTrustStorePassword(new String(trustStoreConfiguration.getPassword()));
     sslContextFactory.setKeyStore(identityStore.getStore());
     sslContextFactory.setKeyStorePassword(new String(identityStoreConfiguration.getPassword()));
-    sslContextFactory.setIncludeProtocols(getEncryptionProtocolsEnabled().toArray(new String[getEncryptionProtocolsEnabled().size()]));
+    if (getEncryptionProtocolsEnabled() != null && !getEncryptionProtocolsEnabled().isEmpty()) {
+      sslContextFactory.setIncludeProtocols(getEncryptionProtocolsEnabled().toArray(new String[getEncryptionProtocolsEnabled().size()]));
+    }
     sslContextFactory.setExcludeProtocols(getEncryptionProtocolsDisabled().toArray(new String[getEncryptionProtocolsDisabled().size()]));
-    sslContextFactory.setIncludeCipherSuites(getCipherSuitesEnabled().toArray(new String[getCipherSuitesEnabled().size()]));
+    if (getCipherSuitesEnabled() != null && !getCipherSuitesEnabled().isEmpty()) {
+      sslContextFactory.setIncludeCipherSuites(getCipherSuitesEnabled().toArray(new String[getCipherSuitesEnabled().size()]));
+    }
     sslContextFactory.setExcludeCipherSuites(getCipherSuitesDisabled().toArray(new String[getCipherSuitesDisabled().size()]));
 switch (clientAuth) {
 case disabled:
