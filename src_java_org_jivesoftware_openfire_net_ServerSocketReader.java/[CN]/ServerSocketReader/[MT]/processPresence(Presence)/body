@@ -1,17 +1,12 @@
 {
   try {
     packetReceived(packet);
-    threadPool.execute(new Runnable(){
-      @Override public void run(){
-        try {
-          ServerSocketReader.super.processPresence(packet);
-        }
- catch (        UnauthorizedException e) {
-          Log.error("Error processing packet",e);
-        }
-      }
+    try {
+      super.processPresence(packet);
     }
-);
+ catch (    UnauthorizedException e) {
+      Log.error("Error processing packet",e);
+    }
   }
  catch (  PacketRejectedException e) {
     Log.debug("Presence rejected: " + packet.toXML(),e);
