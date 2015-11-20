@@ -4,7 +4,7 @@
     for (int i=0; i < lastIndex; i++) {
       plainText=hashPassword(plainText,passwordTypes.get(i));
     }
-    return BCrypt.checkpw(plainText,hashed);
+    return OpenBSDBCrypt.checkPassword(hashed,plainText.toCharArray());
   }
   return hashPassword(plainText).equals(hashed);
 }

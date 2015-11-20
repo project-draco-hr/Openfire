@@ -9,8 +9,10 @@ return StringUtils.hash(password,"SHA-256");
 case sha512:
 return StringUtils.hash(password,"SHA-512");
 case bcrypt:
-String salt=bcryptCost > 0 ? BCrypt.gensalt(bcryptCost) : BCrypt.gensalt();
-return BCrypt.hashpw(password,salt);
+byte[] salt=new byte[16];
+new SecureRandom().nextBytes(salt);
+int cost=(bcryptCost < 4 || bcryptCost > 31) ? DEFAULT_BCRYPT_COST : bcryptCost;
+return OpenBSDBCrypt.generate(password.toCharArray(),salt,cost);
 case plain:
 default :
 return password;
