@@ -10,9 +10,7 @@
       if (!ioSession.isConnected()) {
         throw new IOException("Connection reset/closed by peer");
       }
-      XMLWriter xmlSerializer=new XMLWriter(new ByteBufferWriter(buffer,encoder.get()),new OutputFormat());
-      xmlSerializer.write(packet.getElement());
-      xmlSerializer.flush();
+      buffer.putString(packet.getElement().asXML(),encoder.get());
       if (flashClient) {
         buffer.put((byte)'\0');
       }
