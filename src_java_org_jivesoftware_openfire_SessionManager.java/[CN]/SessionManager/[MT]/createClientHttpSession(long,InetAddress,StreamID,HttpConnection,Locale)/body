@@ -1,0 +1,13 @@
+{
+  if (serverName == null) {
+    throw new UnauthorizedException("Server not initialized");
+  }
+  PacketDeliverer backupDeliverer=server.getPacketDeliverer();
+  HttpSession session=new HttpSession(backupDeliverer,serverName,address,id,rid,connection,language);
+  Connection conn=session.getConnection();
+  conn.init(session);
+  conn.registerCloseListener(clientSessionListener,session);
+  localSessionManager.getPreAuthenticatedSessions().put(session.getAddress().getResource(),session);
+  connectionsCounter.incrementAndGet();
+  return session;
+}
