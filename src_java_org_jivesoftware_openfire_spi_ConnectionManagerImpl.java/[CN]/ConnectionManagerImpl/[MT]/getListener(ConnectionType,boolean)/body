@@ -7,14 +7,21 @@ case SOCKET_C2S:
  else {
       return clientListener;
     }
+case BOSH_C2S:
+  if (startInSslMode) {
+    return boshSslListener;
+  }
+ else {
+    return boshListener;
+  }
 case SOCKET_S2S:
-  return serverListener;
+return serverListener;
 case COMPONENT:
 if (startInSslMode) {
-  return componentSslListener;
+return componentSslListener;
 }
  else {
-  return componentListener;
+return componentListener;
 }
 case CONNECTION_MANAGER:
 if (startInSslMode) {
