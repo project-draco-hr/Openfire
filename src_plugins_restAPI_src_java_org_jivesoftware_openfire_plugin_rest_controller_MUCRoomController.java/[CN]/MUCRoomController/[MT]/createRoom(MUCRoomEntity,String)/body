@@ -30,6 +30,9 @@
   room.setMaxUsers(mucRoomEntity.getMaxUsers());
   room.setMembersOnly(mucRoomEntity.isMembersOnly());
   room.setModerated(mucRoomEntity.isModerated());
+  if (ClusterManager.isClusteringStarted()) {
+    CacheFactory.doClusterTask(new RoomUpdatedEvent((LocalMUCRoom)room));
+  }
   if (mucRoomEntity.getBroadcastPresenceRoles() != null) {
     room.setRolesToBroadcastPresence(mucRoomEntity.getBroadcastPresenceRoles());
   }
