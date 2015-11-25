@@ -14,19 +14,5 @@
  else {
     maxBufferSize=-1;
   }
-  Connection.ClientAuth clientAuth;
-  if (clientAuthPolicyPropertyName == null) {
-    clientAuth=Connection.ClientAuth.disabled;
-  }
- else {
-    try {
-      final String value=JiveGlobals.getProperty(clientAuthPolicyPropertyName,Connection.ClientAuth.disabled.name());
-      clientAuth=Connection.ClientAuth.valueOf(value);
-    }
- catch (    IllegalArgumentException e) {
-      Log.warn("Invalid client auth value. A default will be used.",e);
-      clientAuth=Connection.ClientAuth.wanted;
-    }
-  }
-  return new ConnectionConfiguration(getType(),maxThreadPoolSize,maxBufferSize,clientAuth,getBindAddress(),getPort(),getTLSPolicy(),identityStoreConfiguration,trustStoreConfiguration,acceptSelfSignedCertificates(),verifyCertificateValidity(),getEncryptionProtocolsEnabled(),getEncryptionProtocolsDisabled(),getCipherSuitesEnabled(),getCipherSuitesDisabled());
+  return new ConnectionConfiguration(getType(),isEnabled(),maxThreadPoolSize,maxBufferSize,getClientAuth(),getBindAddress(),getPort(),getTLSPolicy(),identityStoreConfiguration,trustStoreConfiguration,acceptSelfSignedCertificates(),verifyCertificateValidity(),getEncryptionProtocolsEnabled(),getEncryptionProtocolsDisabled(),getCipherSuitesEnabled(),getCipherSuitesDisabled());
 }

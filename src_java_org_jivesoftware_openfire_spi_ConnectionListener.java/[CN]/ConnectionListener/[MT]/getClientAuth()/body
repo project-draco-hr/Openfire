@@ -1,0 +1,17 @@
+{
+  Connection.ClientAuth clientAuth;
+  if (clientAuthPolicyPropertyName == null) {
+    clientAuth=Connection.ClientAuth.disabled;
+  }
+ else {
+    final String value=JiveGlobals.getProperty(clientAuthPolicyPropertyName,Connection.ClientAuth.disabled.name());
+    try {
+      clientAuth=Connection.ClientAuth.valueOf(value);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.error("Error parsing property value of '{}' into a valid ClientAUth. Offending value: '{}'.",value,clientAuthPolicyPropertyName,e);
+      clientAuth=Connection.ClientAuth.disabled;
+    }
+  }
+  return clientAuth;
+}
