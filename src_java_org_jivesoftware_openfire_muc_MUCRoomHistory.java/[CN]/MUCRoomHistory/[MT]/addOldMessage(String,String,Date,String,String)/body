@@ -11,16 +11,12 @@
     message.setFrom(room.getRole().getRoleAddress());
   }
   Element delayInformation=message.addChildElement("delay","urn:xmpp:delay");
-  Element delayInformationOld=message.addChildElement("x","jabber:x:delay");
   delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(sentDate));
-  delayInformationOld.addAttribute("stamp",XMPPDateTimeFormat.formatOld(sentDate));
   if (room.canAnyoneDiscoverJID()) {
     delayInformation.addAttribute("from",senderJID);
-    delayInformationOld.addAttribute("from",senderJID);
   }
  else {
     delayInformation.addAttribute("from",room.getRole().getRoleAddress().toString());
-    delayInformationOld.addAttribute("from",room.getRole().getRoleAddress().toString());
   }
   historyStrategy.addMessage(message);
 }
