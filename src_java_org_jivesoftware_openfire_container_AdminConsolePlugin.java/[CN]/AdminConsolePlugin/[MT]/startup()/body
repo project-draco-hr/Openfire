@@ -33,7 +33,7 @@
           Log.warn("Admin console: Using RSA certificates but they are not valid for the hosted domain");
         }
         final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
-        final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.WEBADMIN,true);
+        final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.WEBADMIN,true).generateConnectionConfiguration();
         final SslContextFactory sslContextFactory=new EncryptionArtifactFactory(configuration).getSslContextFactory();
         final ServerConnector httpsConnector;
         if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {

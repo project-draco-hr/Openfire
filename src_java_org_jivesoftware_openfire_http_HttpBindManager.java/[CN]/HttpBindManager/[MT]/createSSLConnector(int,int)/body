@@ -7,7 +7,7 @@
         Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
       }
       final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
-      final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.BOSH_C2S,true);
+      final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.BOSH_C2S,true).generateConnectionConfiguration();
       final SslContextFactory sslContextFactory=new EncryptionArtifactFactory(configuration).getSslContextFactory();
       final HttpConfiguration httpsConfig=new HttpConfiguration();
       httpsConfig.setSecureScheme("https");
