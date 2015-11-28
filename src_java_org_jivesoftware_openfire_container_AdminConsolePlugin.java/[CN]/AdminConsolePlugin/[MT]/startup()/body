@@ -34,7 +34,7 @@
         }
         final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
         final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.WEBADMIN,true);
-        final SslContextFactory sslContextFactory=configuration.getSslContextFactory();
+        final SslContextFactory sslContextFactory=new EncryptionArtifactFactory(configuration).getSslContextFactory();
         final ServerConnector httpsConnector;
         if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {
           httpsConnector=new HTTPSPDYServerConnector(adminServer,sslContextFactory);

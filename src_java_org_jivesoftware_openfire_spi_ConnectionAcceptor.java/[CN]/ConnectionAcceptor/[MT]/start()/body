@@ -18,7 +18,7 @@
     filterChain.addAfter(ConnectionManagerImpl.EXECUTOR_FILTER_NAME,ConnectionManagerImpl.XMPP_CODEC_FILTER_NAME,new ProtocolCodecFilter(new XMPPCodecFactory()));
     filterChain.addAfter(ConnectionManagerImpl.XMPP_CODEC_FILTER_NAME,ConnectionManagerImpl.CAPACITY_FILTER_NAME,new StalledSessionsFilter());
     if (configuration.getTlsPolicy() == Connection.TLSPolicy.legacyMode) {
-      final SslFilter sslFilter=configuration.createServerModeSslFilter();
+      final SslFilter sslFilter=encryptionArtifactFactory.createServerModeSslFilter();
       filterChain.addAfter(ConnectionManagerImpl.EXECUTOR_FILTER_NAME,ConnectionManagerImpl.TLS_FILTER_NAME,sslFilter);
     }
     if (configuration.getMaxBufferSize() > 0) {

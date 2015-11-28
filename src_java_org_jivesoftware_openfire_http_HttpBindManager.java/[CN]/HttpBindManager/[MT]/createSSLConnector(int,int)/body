@@ -8,7 +8,7 @@
       }
       final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
       final ConnectionConfiguration configuration=connectionManager.getConfiguration(ConnectionType.BOSH_C2S,true);
-      final SslContextFactory sslContextFactory=configuration.getSslContextFactory();
+      final SslContextFactory sslContextFactory=new EncryptionArtifactFactory(configuration).getSslContextFactory();
       final HttpConfiguration httpsConfig=new HttpConfiguration();
       httpsConfig.setSecureScheme("https");
       httpsConfig.setSecurePort(securePort);

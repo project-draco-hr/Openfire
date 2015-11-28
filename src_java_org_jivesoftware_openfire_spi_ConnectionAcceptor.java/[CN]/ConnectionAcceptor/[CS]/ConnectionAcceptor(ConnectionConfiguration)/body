@@ -3,6 +3,7 @@
     throw new IllegalArgumentException("Argument 'configuation' cannot be null");
   }
   this.configuration=configuration;
+  this.encryptionArtifactFactory=new EncryptionArtifactFactory(configuration);
   this.name=configuration.getType().toString().toLowerCase() + (configuration.getTlsPolicy() == Connection.TLSPolicy.legacyMode ? "_ssl" : "");
   Log=LoggerFactory.getLogger(ConnectionAcceptor.class.getName() + "[" + name+ "]");
 switch (configuration.getType()) {

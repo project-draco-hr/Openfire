@@ -1,11 +1,12 @@
 {
   try {
+    final EncryptionArtifactFactory factory=new EncryptionArtifactFactory(configuration);
     final SSLEngine sslEngine;
     if (clientMode) {
-      sslEngine=configuration.createClientModeSSLEngine();
+      sslEngine=factory.createClientModeSSLEngine();
     }
  else {
-      sslEngine=configuration.createServerModeSSLEngine();
+      sslEngine=factory.createServerModeSSLEngine();
     }
     final SSLSession sslSession=sslEngine.getSession();
     netBuffSize=sslSession.getPacketBufferSize();
