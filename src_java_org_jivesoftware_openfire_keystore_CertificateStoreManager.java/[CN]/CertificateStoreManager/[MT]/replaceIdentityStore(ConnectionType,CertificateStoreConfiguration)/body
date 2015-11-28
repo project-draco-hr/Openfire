@@ -5,16 +5,15 @@
   if (configuration == null) {
     throw new IllegalArgumentException("Argument 'configuration' cannot be null.");
   }
-  final CertificateStoreManager manager=getInstance();
-  final CertificateStoreConfiguration oldConfig=manager.typeToIdentityStore.get(type);
+  final CertificateStoreConfiguration oldConfig=typeToIdentityStore.get(type);
   if (oldConfig == null || !oldConfig.equals(configuration)) {
-    if (!manager.identityStores.containsKey(configuration)) {
+    if (!identityStores.containsKey(configuration)) {
       final IdentityStore store=new IdentityStore(configuration,true);
-      manager.identityStores.put(configuration,store);
+      identityStores.put(configuration,store);
     }
-    manager.typeToIdentityStore.put(type,configuration);
-    if (oldConfig != null && !manager.typeToIdentityStore.containsValue(oldConfig)) {
-      manager.identityStores.remove(oldConfig);
+    typeToIdentityStore.put(type,configuration);
+    if (oldConfig != null && !typeToIdentityStore.containsValue(oldConfig)) {
+      identityStores.remove(oldConfig);
     }
     final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
     for (    ConnectionListener connectionListener : connectionManager.getListeners(type)) {

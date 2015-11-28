@@ -27,7 +27,8 @@
   suitesEnabled.removeAll(cipherSuitesDisabled);
   this.cipherSuitesEnabled=Collections.unmodifiableSet(suitesEnabled);
   this.cipherSuitesDisabled=Collections.unmodifiableSet(cipherSuitesDisabled);
-  this.identityStore=CertificateStoreManager.getIdentityStore(type);
-  this.trustStore=CertificateStoreManager.getTrustStore(type);
+  final CertificateStoreManager certificateStoreManager=XMPPServer.getInstance().getCertificateStoreManager();
+  this.identityStore=certificateStoreManager.getIdentityStore(type);
+  this.trustStore=certificateStoreManager.getTrustStore(type);
   this.Log=LoggerFactory.getLogger(this.getClass().getName() + "[" + port+ "-"+ type+ "]");
 }

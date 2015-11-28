@@ -1,26 +1,3 @@
 {
-  for (  ConnectionType type : ConnectionType.values()) {
-    try {
-      final CertificateStoreConfiguration identityStoreConfiguration=getIdentityStoreConfiguration(type);
-      typeToIdentityStore.put(type,identityStoreConfiguration);
-      if (!identityStores.containsKey(identityStoreConfiguration)) {
-        final IdentityStore store=new IdentityStore(identityStoreConfiguration,false);
-        identityStores.put(identityStoreConfiguration,store);
-      }
-    }
- catch (    CertificateStoreConfigException|IOException e) {
-      Log.warn("Unable to instantiate identity store for type '" + type + "'",e);
-    }
-    try {
-      final CertificateStoreConfiguration trustStoreConfiguration=getTrustStoreConfiguration(type);
-      typeToTrustStore.put(type,trustStoreConfiguration);
-      if (!trustStores.containsKey(trustStoreConfiguration)) {
-        final TrustStore store=new TrustStore(trustStoreConfiguration,false);
-        trustStores.put(trustStoreConfiguration,store);
-      }
-    }
- catch (    CertificateStoreConfigException|IOException e) {
-      Log.warn("Unable to instantiate trust store for type '" + type + "'",e);
-    }
-  }
+  super("Certificate Store Manager");
 }
