@@ -3,7 +3,7 @@ switch (getType()) {
 case SOCKET_S2S:
 case BOSH_C2S:
 case WEBADMIN:
-    Log.debug("Not starting a (NIO-based) connection acceptor, as connections of type " + getType() + " depend on another IO technology.");
+    Log.debug("Not starting a (MINA-based) connection acceptor, as connections of type " + getType() + " depend on another IO technology.");
   return;
 default :
 }
@@ -22,7 +22,7 @@ if (!connectionAcceptor.isIdle()) {
 }
 }
 Log.debug("Starting...");
-connectionAcceptor=new ConnectionAcceptor(generateConnectionConfiguration());
+connectionAcceptor=new MINAConnectionAcceptor(generateConnectionConfiguration());
 connectionAcceptor.start();
 Log.info("Started.");
 }
