@@ -51,15 +51,16 @@
   }
   connection.setLanaguage(language);
   connection.setXMPPVersion(majorVersion,minorVersion);
+  final ConnectionConfiguration connectionConfiguration=connection.getConfiguration();
   if (!connection.isSecure()) {
     boolean hasCertificates=false;
     try {
-      hasCertificates=connection.getConfiguration().getIdentityStore().getAllCertificates().size() > 0;
+      hasCertificates=connectionConfiguration.getIdentityStore().getAllCertificates().size() > 0;
     }
  catch (    Exception e) {
       Log.error(e.getMessage(),e);
     }
-    Connection.TLSPolicy tlsPolicy=connection.getConfiguration().getTlsPolicy();
+    Connection.TLSPolicy tlsPolicy=connectionConfiguration.getTlsPolicy();
     if (Connection.TLSPolicy.required == tlsPolicy && !hasCertificates) {
       Log.error("Client session rejected. TLS is required but no certificates " + "were created.");
       return null;
@@ -69,7 +70,7 @@
  else {
     connection.setTlsPolicy(Connection.TLSPolicy.disabled);
   }
-  connection.setCompressionPolicy(getCompressionPolicy());
+  connection.setCompressionPolicy(connectionConfiguration.getCompressionPolicy());
   LocalClientSession session=SessionManager.getInstance().createClientSession(connection);
   StringBuilder sb=new StringBuilder(200);
   sb.append("<?xml version='1.0' encoding='");

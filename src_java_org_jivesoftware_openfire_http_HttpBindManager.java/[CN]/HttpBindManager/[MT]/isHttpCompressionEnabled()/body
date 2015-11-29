@@ -1,3 +1,5 @@
 {
-  return isCompressionEnabled;
+  final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.BOSH_C2S,true).generateConnectionConfiguration();
+  return configuration.getCompressionPolicy() == null || configuration.getCompressionPolicy().equals(Connection.CompressionPolicy.optional);
 }
