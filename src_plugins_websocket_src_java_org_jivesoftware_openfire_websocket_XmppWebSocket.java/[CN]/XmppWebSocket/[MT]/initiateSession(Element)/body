@@ -1,6 +1,7 @@
 {
   String host=stanza.attributeValue("to");
   StreamError streamError=null;
+  Locale language=Locale.forLanguageTag(stanza.attributeValue(QName.get("lang",XMLConstants.XML_NS_URI),"en"));
   if (STREAM_FOOTER.equals(stanza.getName())) {
     closeStream(null);
   }
@@ -20,11 +21,11 @@
     Log.warn("Closing session due to incorrect hostname in stream header. Host: " + host);
   }
  else {
-    xmppSession=SessionManager.getInstance().createClientSession(wsConnection);
+    xmppSession=SessionManager.getInstance().createClientSession(wsConnection,language);
     xmppSession.setSessionData("ws",Boolean.TRUE);
   }
   if (streamError == null) {
-    openStream(stanza.attributeValue("lang","en"),stanza.attributeValue("from"));
+    openStream(language.toLanguageTag(),stanza.attributeValue("from"));
     configureStream();
   }
  else {

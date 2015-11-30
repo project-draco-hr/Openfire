@@ -1,0 +1,11 @@
+{
+  if (serverName == null) {
+    throw new IllegalStateException("Server not initialized");
+  }
+  LocalClientSession session=new LocalClientSession(serverName,conn,id,language);
+  conn.init(session);
+  conn.registerCloseListener(clientSessionListener,session);
+  localSessionManager.getPreAuthenticatedSessions().put(session.getAddress().getResource(),session);
+  connectionsCounter.incrementAndGet();
+  return session;
+}

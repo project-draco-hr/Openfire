@@ -22,12 +22,12 @@
       return null;
     }
   }
-  String language="en";
+  Locale language=Locale.forLanguageTag("en");
   int majorVersion=0;
   int minorVersion=0;
   for (int i=0; i < xpp.getAttributeCount(); i++) {
     if ("lang".equals(xpp.getAttributeName(i))) {
-      language=xpp.getAttributeValue(i);
+      language=Locale.forLanguageTag(xpp.getAttributeValue(i));
     }
     if ("version".equals(xpp.getAttributeName(i))) {
       try {
@@ -49,7 +49,6 @@
       minorVersion=MINOR_VERSION;
     }
   }
-  connection.setLanaguage(language);
   connection.setXMPPVersion(majorVersion,minorVersion);
   final ConnectionConfiguration connectionConfiguration=connection.getConfiguration();
   if (!connection.isSecure()) {
@@ -71,7 +70,7 @@
     connection.setTlsPolicy(Connection.TLSPolicy.disabled);
   }
   connection.setCompressionPolicy(connectionConfiguration.getCompressionPolicy());
-  LocalClientSession session=SessionManager.getInstance().createClientSession(connection);
+  LocalClientSession session=SessionManager.getInstance().createClientSession(connection,language);
   StringBuilder sb=new StringBuilder(200);
   sb.append("<?xml version='1.0' encoding='");
   sb.append(CHARSET);

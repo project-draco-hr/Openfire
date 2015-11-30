@@ -1,5 +1,5 @@
 {
-  String language=rootNode.attributeValue("xml:lang");
+  String language=rootNode.attributeValue(QName.get("lang",XMLConstants.XML_NS_URI));
   if (language == null || "".equals(language)) {
     language="en";
   }
@@ -9,7 +9,7 @@
   if (version == null || "".equals(version)) {
     version="1.5";
   }
-  HttpSession session=createSession(connection.getRequestId(),address,connection);
+  HttpSession session=createSession(connection.getRequestId(),address,connection,Locale.forLanguageTag(language));
   session.setWait(Math.min(wait,getMaxWait()));
   session.setHold(hold);
   session.setSecure(connection.isSecure());
@@ -23,7 +23,6 @@
     session.setDefaultInactivityTimeout(getInactivityTimeout());
   }
   session.resetInactivityTimeout();
-  session.setLanguage(language);
   String[] versionString=version.split("\\.");
   session.setMajorVersion(Integer.parseInt(versionString[0]));
   session.setMinorVersion(Integer.parseInt(versionString[1]));
