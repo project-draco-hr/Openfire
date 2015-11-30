@@ -93,19 +93,13 @@
     }
   }
  catch (  SSLHandshakeException e) {
-    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "):"+ e.toString());
-    if (connection != null) {
-      connection.close();
-    }
-  }
-catch (  XmlPullParserException e) {
-    Log.warn("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.toString());
+    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "):",e);
     if (connection != null) {
       connection.close();
     }
   }
 catch (  Exception e) {
-    Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "): "+ e.toString());
+    Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
     if (connection != null) {
       connection.close();
     }
