@@ -6,8 +6,8 @@
   if (session instanceof LocalIncomingServerSession) {
     if (session.isSecure()) {
       LocalIncomingServerSession svr=(LocalIncomingServerSession)session;
-      final KeyStore keyStore=SSLConfig.getStore(Purpose.SOCKETBASED_IDENTITYSTORE);
-      final KeyStore trustStore=SSLConfig.getStore(Purpose.SOCKETBASED_S2S_TRUSTSTORE);
+      final KeyStore keyStore=svr.getConnection().getConfiguration().getIdentityStore().getStore();
+      final KeyStore trustStore=svr.getConnection().getConfiguration().getTrustStore().getStore();
       final X509Certificate trusted=CertificateManager.getEndEntityCertificate(svr.getConnection().getPeerCertificates(),keyStore,trustStore);
       boolean haveTrustedCertificate=trusted != null;
       if (trusted != null && svr.getDefaultIdentity() != null) {
