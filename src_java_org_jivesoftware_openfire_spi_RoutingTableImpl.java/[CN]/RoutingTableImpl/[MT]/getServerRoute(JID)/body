@@ -1,5 +1,5 @@
 {
-  OutgoingServerSession session=(OutgoingServerSession)localRoutingTable.getRoute(jid.getDomain());
+  RoutableChannelHandler session=localRoutingTable.getRoute(jid.getDomain());
   if (session == null) {
     RemoteSessionLocator locator=server.getRemoteSessionLocator();
     if (locator != null) {
@@ -9,5 +9,9 @@
       }
     }
   }
-  return session;
+ else {
+    LocalOutgoingServerProxy proxy=(LocalOutgoingServerProxy)session;
+    session=proxy.getSession();
+  }
+  return (OutgoingServerSession)session;
 }

@@ -1,0 +1,25 @@
+{
+  String address=route.getDomain();
+  try {
+    ServerSession s=(ServerSession)destination;
+    ServerSession old=this.getServerRoute(route);
+    if (s == old) {
+      return;
+    }
+    if (old == null) {
+      return;
+    }
+    destination=new LocalOutgoingServerProxy(route,s);
+  }
+ catch (  Exception e) {
+  }
+  localRoutingTable.addRoute(address,destination);
+  Lock lock=CacheFactory.getLock(address,serversCache);
+  try {
+    lock.lock();
+    serversCache.put(address,server.getNodeID().toByteArray());
+  }
+  finally {
+    lock.unlock();
+  }
+}
