@@ -5,12 +5,18 @@
   if (chain == null || chain.length == 0) {
     throw new IllegalArgumentException("Argument 'chain' cannot be null or an empty array.");
   }
+  Log.debug("Attempting to verify a chain of {} certificates.",chain.length);
   final Set<X509Certificate> trustedIssuers=new HashSet<>();
   trustedIssuers.addAll(this.trustedIssuers);
   if (acceptSelfSigned && chain.length == 1) {
+    Log.debug("Attempting to accept the self-signed certificate of this chain of length one, as instructed by configuration.");
     final X509Certificate cert=chain[0];
     if (cert.getSubjectDN().equals(cert.getIssuerDN())) {
+      Log.debug("Chain of one appears to be self-signed. Adding it to the set of trusted issuers.");
       trustedIssuers.add(cert);
+    }
+ else {
+      Log.debug("Chain of one is not self-signed. Not adding it to the set of trusted issuers.");
     }
   }
   final Set<X509Certificate> acceptedIssuers;
@@ -24,6 +30,7 @@
   final CertStore certificates=CertStore.getInstance("Collection",new CollectionCertStoreParameters(Arrays.asList(chain)));
   final PKIXBuilderParameters parameters=new PKIXBuilderParameters(trustAnchors,selector);
   if (!checkValidity) {
+    Log.debug("Attempting to ignore any validity (expiry) issues, as instructed by configuration.");
     final Date validPointInTime=CertificateUtils.findValidPointInTime(chain);
     if (validPointInTime == null) {
       Log.warn("The existing implementation is unable to fully ignore certificate validity periods for this chain, even though it is configured to do so. Certificate checks might fail because of expiration for end entity: " + chain[0]);
