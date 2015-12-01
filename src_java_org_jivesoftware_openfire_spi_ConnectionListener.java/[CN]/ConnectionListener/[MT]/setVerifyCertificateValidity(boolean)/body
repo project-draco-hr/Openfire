@@ -1,0 +1,10 @@
+{
+  final boolean oldValue=verifyCertificateValidity();
+  JiveGlobals.setProperty(type.getPrefix() + "certificate.verify.validity",Boolean.toString(verify));
+  if (oldValue == verify) {
+    Log.debug("Ignoring certificate validity verification configuration change request (to '{}'): listener already in this state.",verify);
+    return;
+  }
+  Log.debug("Changing certificate validity verification configuration from '{}' to '{}'.",oldValue,verify);
+  restart();
+}
