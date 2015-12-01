@@ -4,7 +4,7 @@
       return tlsStreamHandler.getSSLSession().getPeerCertificates();
     }
  catch (    SSLPeerUnverifiedException e) {
-      Log.warn("Error retrieving client certificates of: " + tlsStreamHandler.getSSLSession(),e);
+      Log.debug("Peer certificates have not been verified - there are no certificates to return for: {}",tlsStreamHandler.getSSLSession().getPeerHost(),e);
     }
   }
   return new Certificate[0];
