@@ -1,6 +1,5 @@
 {
 switch (getType()) {
-case SOCKET_S2S:
 case BOSH_C2S:
 case WEBADMIN:
     Log.debug("Not starting a (MINA-based) connection acceptor, as connections of type " + getType() + " depend on another IO technology.");
@@ -22,7 +21,12 @@ if (!connectionAcceptor.isIdle()) {
 }
 }
 Log.debug("Starting...");
+if (getType() == ConnectionType.SOCKET_S2S) {
+connectionAcceptor=new LegacyConnectionAcceptor(generateConnectionConfiguration());
+}
+ else {
 connectionAcceptor=new MINAConnectionAcceptor(generateConnectionConfiguration());
+}
 connectionAcceptor.start();
 Log.info("Started.");
 }

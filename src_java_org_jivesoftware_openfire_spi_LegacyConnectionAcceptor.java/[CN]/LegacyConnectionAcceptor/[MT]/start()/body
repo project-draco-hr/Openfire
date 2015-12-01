@@ -1,0 +1,27 @@
+{
+  if (socketAcceptThread != null) {
+    Log.warn("Unable to start acceptor (it is already started!)");
+    return;
+  }
+  if (configuration.getMaxThreadPoolSize() > 1) {
+    Log.warn("Configuration allows for up to " + configuration.getMaxThreadPoolSize() + " threads, although implementation is limited to exactly one.");
+  }
+  try {
+    socketAcceptThread=new SocketAcceptThread(configuration.getPort(),configuration.getBindAddress());
+    socketAcceptThread.setDaemon(true);
+    socketAcceptThread.setPriority(Thread.MAX_PRIORITY);
+    socketAcceptThread.start();
+  }
+ catch (  Exception e) {
+    System.err.println("Error starting " + configuration.getPort() + ": "+ e.getMessage());
+    Log.error("Error starting: " + configuration.getPort(),e);
+    if (socketAcceptThread != null) {
+      try {
+        socketAcceptThread.shutdown();
+      }
+  finally {
+        socketAcceptThread=null;
+      }
+    }
+  }
+}
