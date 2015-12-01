@@ -17,8 +17,30 @@
     }
   }
  else {
-    OutgoingSessionPromise.getInstance().process(packet);
-    routed=true;
+    boolean retry=false;
+    final String domain=jid.getDomain();
+synchronized (domain.intern()) {
+      if (serversCache.get(jid.getDomain()) == null) {
+        RoutableChannelHandler route=localRoutingTable.getRoute(jid.getDomain());
+        if (route == null) {
+          LocalOutgoingServerProxy proxy=new LocalOutgoingServerProxy(jid.getDomain());
+          try {
+            proxy.process(packet);
+            addServerRoute(new JID(jid.getDomain()),proxy);
+          }
+ catch (          UnauthorizedException e) {
+            Log.error("Unable to route packet through new route: {}",packet.toXML(),e);
+          }
+        }
+        routed=true;
+      }
+ else {
+        retry=true;
+      }
+    }
+    if (retry) {
+      routed=routeToRemoteDomain(jid,packet,routed);
+    }
   }
   return routed;
 }
