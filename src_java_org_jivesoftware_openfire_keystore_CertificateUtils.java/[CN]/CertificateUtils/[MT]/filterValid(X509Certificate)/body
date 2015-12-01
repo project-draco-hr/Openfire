@@ -1,0 +1,18 @@
+{
+  final Set<X509Certificate> results=new HashSet<>();
+  if (certificates != null) {
+    for (    X509Certificate certificate : certificates) {
+      if (certificate == null) {
+        continue;
+      }
+      try {
+        certificate.checkValidity();
+      }
+ catch (      CertificateExpiredException|CertificateNotYetValidException e) {
+        continue;
+      }
+      results.add(certificate);
+    }
+  }
+  return results;
+}

@@ -1,0 +1,21 @@
+{
+  Date earliestNotAfter=null;
+  Date latestNotBefore=null;
+  for (  final X509Certificate certificate : chain) {
+    if (certificate == null)     continue;
+    final Date notAfter=certificate.getNotAfter();
+    if (earliestNotAfter == null || (notAfter != null && notAfter.before(earliestNotAfter))) {
+      earliestNotAfter=notAfter;
+    }
+    final Date notBefore=certificate.getNotBefore();
+    if (latestNotBefore == null || (notBefore != null && notBefore.after(latestNotBefore))) {
+      latestNotBefore=notBefore;
+    }
+  }
+  if (latestNotBefore != null && earliestNotAfter != null && latestNotBefore.before(earliestNotAfter)) {
+    return latestNotBefore;
+  }
+ else {
+    return null;
+  }
+}

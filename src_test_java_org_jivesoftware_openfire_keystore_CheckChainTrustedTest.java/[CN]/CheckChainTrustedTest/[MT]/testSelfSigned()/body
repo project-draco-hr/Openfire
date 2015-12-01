@@ -1,0 +1,19 @@
+{
+  final X509Certificate[] chain=new X509Certificate[]{KeystoreTestUtils.generateSelfSignedCertificate()};
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(chain[0].getSubjectX500Principal());
+  CertPath result=null;
+  CertPathBuilderException exception=null;
+  try {
+    result=trustManager.checkChainTrusted(selector,chain);
+  }
+ catch (  CertPathBuilderException ex) {
+    exception=ex;
+  }
+  if (acceptSelfSigned) {
+    Assert.assertNotNull("Self-signed certificates are accepted. Validation should have succeeded.",result);
+  }
+ else {
+    Assert.assertNotNull("Self-signed certificates are not accepted. Validation should have thrown an exception.",exception);
+  }
+}

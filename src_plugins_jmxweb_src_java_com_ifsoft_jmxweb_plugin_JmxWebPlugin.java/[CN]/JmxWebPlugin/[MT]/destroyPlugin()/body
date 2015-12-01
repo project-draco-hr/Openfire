@@ -1,12 +1,20 @@
 {
   Log.info("[" + NAME + "] destroy "+ NAME+ " plugin resources");
-  database.stop();
-  JmxHelper.unregister(OBJECTNAME_DATABASEPOOL);
-  client.stop();
-  JmxHelper.unregister(OBJECTNAME_CORE_CLIENT_THREADPOOL);
-  packetCounter.stop();
-  JmxHelper.unregister(OBJECTNAME_PACKET_COUNTER);
-  openfire.stop();
-  JmxHelper.unregister(OBJECTNAME_OPENFIRE);
+  if (database != null) {
+    database.stop();
+    JmxHelper.unregister(OBJECTNAME_DATABASEPOOL);
+  }
+  if (client != null) {
+    client.stop();
+    JmxHelper.unregister(OBJECTNAME_CORE_CLIENT_THREADPOOL);
+  }
+  if (packetCounter != null) {
+    packetCounter.stop();
+    JmxHelper.unregister(OBJECTNAME_PACKET_COUNTER);
+  }
+  if (openfire != null) {
+    openfire.stop();
+    JmxHelper.unregister(OBJECTNAME_OPENFIRE);
+  }
   Log.info("[" + NAME + "]  plugin fully destroyed.");
 }

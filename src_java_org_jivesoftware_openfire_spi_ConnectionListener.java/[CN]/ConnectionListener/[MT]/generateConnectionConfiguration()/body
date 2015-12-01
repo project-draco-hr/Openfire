@@ -1,0 +1,18 @@
+{
+  final int defaultMaxPoolSize=16;
+  final int maxThreadPoolSize;
+  if (maxPoolSizePropertyName == null) {
+    maxThreadPoolSize=defaultMaxPoolSize;
+  }
+ else {
+    maxThreadPoolSize=JiveGlobals.getIntProperty(maxPoolSizePropertyName,defaultMaxPoolSize);
+  }
+  final int maxBufferSize;
+  if (maxReadBufferPropertyName != null) {
+    maxBufferSize=JiveGlobals.getIntProperty(maxReadBufferPropertyName,10 * 1024 * 1024);
+  }
+ else {
+    maxBufferSize=-1;
+  }
+  return new ConnectionConfiguration(getType(),isEnabled(),maxThreadPoolSize,maxBufferSize,getClientAuth(),getBindAddress(),getPort(),getTLSPolicy(),identityStoreConfiguration,trustStoreConfiguration,acceptSelfSignedCertificates(),verifyCertificateValidity(),getEncryptionProtocolsEnabled(),getEncryptionProtocolsDisabled(),getCipherSuitesEnabled(),getCipherSuitesDisabled(),getCompressionPolicy());
+}

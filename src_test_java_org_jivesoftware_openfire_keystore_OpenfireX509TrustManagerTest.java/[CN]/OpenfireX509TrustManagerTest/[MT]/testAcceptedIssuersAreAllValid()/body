@@ -1,0 +1,7 @@
+{
+  final X509Certificate[] result=systemUnderTest.getAcceptedIssuers();
+  Assert.assertEquals(2,result.length);
+  Assert.assertTrue(Arrays.asList(result).contains(getLast(validChain)));
+  Assert.assertTrue(Arrays.asList(result).contains(getLast(expiredIntChain)));
+  Assert.assertFalse(Arrays.asList(result).contains(getLast(expiredRootChain)));
+}

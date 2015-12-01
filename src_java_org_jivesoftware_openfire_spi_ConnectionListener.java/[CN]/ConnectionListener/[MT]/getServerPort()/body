@@ -1,0 +1,22 @@
+{
+  if (connectionAcceptor == null) {
+    return null;
+  }
+  final int port=getPort();
+  final String name=getBindAddress().getHostName();
+  final String address=getBindAddress().getHostAddress();
+  final boolean isSecure=getTLSPolicy() != Connection.TLSPolicy.disabled;
+  final String algorithm=null;
+switch (type) {
+case SOCKET_C2S:
+    return new ServerPort(port,name,address,isSecure,algorithm,ServerPort.Type.client);
+case SOCKET_S2S:
+  return new ServerPort(port,name,address,isSecure,algorithm,ServerPort.Type.server);
+case COMPONENT:
+return new ServerPort(port,name,address,isSecure,algorithm,ServerPort.Type.component);
+case CONNECTION_MANAGER:
+return new ServerPort(port,name,address,isSecure,algorithm,ServerPort.Type.connectionManager);
+default :
+throw new IllegalStateException("Unrecognized type: " + type);
+}
+}

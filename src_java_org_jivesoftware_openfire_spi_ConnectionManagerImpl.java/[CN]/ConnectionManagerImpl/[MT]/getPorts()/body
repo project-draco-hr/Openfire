@@ -1,3 +1,9 @@
 {
-  return ports;
+  final Set<ServerPort> result=new LinkedHashSet<>();
+  for (  ConnectionListener listener : getListeners()) {
+    if (listener.getServerPort() != null) {
+      result.add(listener.getServerPort());
+    }
+  }
+  return result;
 }

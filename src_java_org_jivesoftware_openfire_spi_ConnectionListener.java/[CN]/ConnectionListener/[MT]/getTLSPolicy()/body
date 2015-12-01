@@ -1,0 +1,18 @@
+{
+  final Connection.TLSPolicy hardcoded=getHardcodedTLSPolicy();
+  if (hardcoded != null) {
+    return hardcoded;
+  }
+ else {
+    final String policyName=JiveGlobals.getProperty(tlsPolicyPropertyName,Connection.TLSPolicy.optional.toString());
+    Connection.TLSPolicy tlsPolicy;
+    try {
+      tlsPolicy=Connection.TLSPolicy.valueOf(policyName);
+    }
+ catch (    IllegalArgumentException e) {
+      Log.error("Error parsing property value of '{}' into a valid TLS_POLICY. Offending value: '{}'.",policyName,tlsPolicyPropertyName,e);
+      tlsPolicy=Connection.TLSPolicy.optional;
+    }
+    return tlsPolicy;
+  }
+}

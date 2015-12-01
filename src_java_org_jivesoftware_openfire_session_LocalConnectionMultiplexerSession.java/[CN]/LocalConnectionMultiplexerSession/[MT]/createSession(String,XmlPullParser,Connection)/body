@@ -36,8 +36,8 @@
     connection.close();
     return null;
   }
-  connection.setTlsPolicy(tlsPolicy);
-  connection.setCompressionPolicy(compressionPolicy);
+  connection.setTlsPolicy(connection.getConfiguration().getTlsPolicy());
+  connection.setCompressionPolicy(connection.getConfiguration().getCompressionPolicy());
   ((MultiplexerPacketDeliverer)connection.getPacketDeliverer()).setConnectionManagerDomain(address.getDomain());
   LocalConnectionMultiplexerSession session=SessionManager.getInstance().createMultiplexerSession(connection,address);
   session.setAddress(address);
@@ -58,9 +58,9 @@
     connection.deliverRawText(sb.toString());
     sb=new StringBuilder(490);
     sb.append("<stream:features>");
-    if (tlsPolicy != Connection.TLSPolicy.disabled) {
+    if (connection.getTlsPolicy() != Connection.TLSPolicy.disabled) {
       sb.append("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
-      if (tlsPolicy == Connection.TLSPolicy.required) {
+      if (connection.getTlsPolicy() == Connection.TLSPolicy.required) {
         sb.append("<required/>");
       }
       sb.append("</starttls>");

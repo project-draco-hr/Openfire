@@ -1,3 +1,10 @@
 {
-  restartClientSSLListeners();
+  for (  final ConnectionListener listener : getListeners()) {
+    try {
+      listener.restart();
+    }
+ catch (    RuntimeException ex) {
+      Log.error("An exception occurred while restarting listener " + listener + ". The reason for restart was a certificate store change.",ex);
+    }
+  }
 }

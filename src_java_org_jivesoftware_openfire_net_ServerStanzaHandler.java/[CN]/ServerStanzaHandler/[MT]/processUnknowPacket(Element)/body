@@ -1,0 +1,13 @@
+{
+  if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
+    if (!((LocalIncomingServerSession)session).validateSubsequentDomain(doc)) {
+      throw new UnauthorizedException("Failed to validate domain when using piggyback.");
+    }
+    return true;
+  }
+ else   if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
+    ((LocalIncomingServerSession)session).verifyReceivedKey(doc);
+    return true;
+  }
+  return false;
+}

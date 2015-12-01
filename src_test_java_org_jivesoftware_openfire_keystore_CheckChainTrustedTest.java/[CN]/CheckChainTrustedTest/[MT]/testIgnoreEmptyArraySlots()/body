@@ -1,0 +1,8 @@
+{
+  final CertSelector selector=new X509CertSelector();
+  final List<X509Certificate> copy=new ArrayList<>(Arrays.asList(validChain));
+  copy.add(1,null);
+  final X509Certificate[] chain=copy.toArray(new X509Certificate[copy.size()]);
+  final CertPath result=trustManager.checkChainTrusted(selector,chain);
+  Assert.assertNotNull(result);
+}

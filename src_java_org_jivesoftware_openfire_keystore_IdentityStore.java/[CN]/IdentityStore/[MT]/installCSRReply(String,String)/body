@@ -1,0 +1,28 @@
+{
+  if (alias == null || alias.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'alias' cannot be null or an empty String.");
+  }
+  if (pemCertificates == null || pemCertificates.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'pemCertificates' cannot be null or an empty String.");
+  }
+  alias=alias.trim();
+  pemCertificates=pemCertificates.trim();
+  try {
+    final Collection<X509Certificate> certificates=CertificateManager.parseCertificates(pemCertificates);
+    if (certificates.isEmpty()) {
+      throw new CertificateStoreConfigException("No certificate was found in the input.");
+    }
+    final List<X509Certificate> ordered=CertificateUtils.order(certificates);
+    if (!isForThisDomain(ordered.get(0))) {
+      throw new CertificateStoreConfigException("The supplied certificate chain does not cover the domain of this XMPP service.");
+    }
+    if (!corresponds(alias,ordered)) {
+      throw new IllegalArgumentException("The provided CSR reply does not match an existing certificate in the store under the provided alias '" + alias + "'.");
+    }
+    store.setKeyEntry(alias,store.getKey(alias,configuration.getPassword()),configuration.getPassword(),ordered.toArray(new X509Certificate[ordered.size()]));
+  }
+ catch (  RuntimeException|IOException|CertificateException|UnrecoverableKeyException|KeyStoreException|NoSuchAlgorithmException e) {
+    reload();
+    throw new CertificateStoreConfigException("Unable to install a singing reply into an identity store.",e);
+  }
+}

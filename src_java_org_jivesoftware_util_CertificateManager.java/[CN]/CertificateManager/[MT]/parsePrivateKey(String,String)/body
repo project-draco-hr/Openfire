@@ -2,6 +2,9 @@
   if (pemRepresentation == null || pemRepresentation.trim().isEmpty()) {
     throw new IllegalArgumentException("Argument 'pemRepresentation' cannot be null or an empty String.");
   }
+  if (passPhrase == null) {
+    passPhrase="";
+  }
   try (Reader reader=new StringReader(pemRepresentation.trim())){
     final Object object=new PEMParser(reader).readObject();
     final JcaPEMKeyConverter converter=new JcaPEMKeyConverter().setProvider("BC");
@@ -9,6 +12,20 @@
     if (object instanceof PEMEncryptedKeyPair) {
       final PEMDecryptorProvider decProv=new JcePEMDecryptorProviderBuilder().build(passPhrase.toCharArray());
       kp=converter.getKeyPair(((PEMEncryptedKeyPair)object).decryptKeyPair(decProv));
+    }
+ else     if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
+      try {
+        final PKCS8EncryptedPrivateKeyInfo encryptedInfo=(PKCS8EncryptedPrivateKeyInfo)object;
+        final InputDecryptorProvider provider=new JceOpenSSLPKCS8DecryptorProviderBuilder().build(passPhrase.toCharArray());
+        final PrivateKeyInfo privateKeyInfo=encryptedInfo.decryptPrivateKeyInfo(provider);
+        return converter.getPrivateKey(privateKeyInfo);
+      }
+ catch (      PKCSException|OperatorCreationException e) {
+        throw new IOException("Unable to decrypt private key.",e);
+      }
+    }
+ else     if (object instanceof PrivateKeyInfo) {
+      return converter.getPrivateKey((PrivateKeyInfo)object);
     }
  else {
       kp=converter.getKeyPair((PEMKeyPair)object);

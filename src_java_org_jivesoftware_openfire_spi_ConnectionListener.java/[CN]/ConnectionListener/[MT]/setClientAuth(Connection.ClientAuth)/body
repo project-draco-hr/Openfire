@@ -1,0 +1,10 @@
+{
+  final Connection.ClientAuth oldValue=getClientAuth();
+  if (oldValue.equals(clientAuth)) {
+    Log.debug("Ignoring client auth configuration change request (to '{}'): listener already in this state.",clientAuth);
+    return;
+  }
+  Log.debug("Changing client auth configuration from '{}' to '{}'.",oldValue,clientAuth);
+  JiveGlobals.setProperty(tlsPolicyPropertyName,clientAuth.toString());
+  restart();
+}

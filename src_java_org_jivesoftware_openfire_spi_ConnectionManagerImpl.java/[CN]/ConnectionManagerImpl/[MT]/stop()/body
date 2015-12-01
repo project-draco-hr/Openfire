@@ -1,12 +1,6 @@
 {
-  super.stop();
-  stopClientListeners();
-  stopClientSSLListeners();
-  stopComponentListener();
-  stopConnectionManagerListener();
-  stopServerListener();
-  HttpBindManager.getInstance().stop();
-  SocketSendingTracker.getInstance().shutdown();
   CertificateManager.removeListener(this);
-  serverName=null;
+  SocketSendingTracker.getInstance().shutdown();
+  stopListeners();
+  super.stop();
 }

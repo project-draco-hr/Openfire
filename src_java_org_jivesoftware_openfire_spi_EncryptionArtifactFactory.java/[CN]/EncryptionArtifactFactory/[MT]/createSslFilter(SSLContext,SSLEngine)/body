@@ -1,0 +1,13 @@
+{
+  final SslFilter filter=new SslFilter(sslContext);
+  filter.setUseClientMode(sslEngine.getUseClientMode());
+  filter.setEnabledProtocols(sslEngine.getEnabledProtocols());
+  filter.setEnabledCipherSuites(sslEngine.getEnabledCipherSuites());
+  if (sslEngine.getNeedClientAuth()) {
+    filter.setNeedClientAuth(true);
+  }
+ else   if (sslEngine.getWantClientAuth()) {
+    filter.setWantClientAuth(true);
+  }
+  return filter;
+}

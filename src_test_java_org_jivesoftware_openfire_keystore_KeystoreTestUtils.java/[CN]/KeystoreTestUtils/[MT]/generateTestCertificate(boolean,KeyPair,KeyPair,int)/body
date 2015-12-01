@@ -1,0 +1,22 @@
+{
+  final X500Name subject=new X500Name("CN=MyName" + subjectKeyPair.getPublic().hashCode());
+  final X500Name issuer=new X500Name("CN=MyName" + issuerKeyPair.getPublic().hashCode());
+  final Date notBefore;
+  final Date notAfter;
+  if (isValid) {
+    notBefore=new Date(System.currentTimeMillis() - (1000L * 60 * 60* 24* 30));
+    notAfter=new Date(System.currentTimeMillis() + (1000L * 60 * 60* 24* 99));
+  }
+ else {
+    notBefore=new Date(System.currentTimeMillis() - (1000L * 60 * 60* 24* 40));
+    notAfter=new Date(System.currentTimeMillis() - (1000L * 60 * 60* 24* 10));
+  }
+  final BigInteger serial=BigInteger.valueOf(Math.abs(new SecureRandom().nextInt()));
+  final X509v3CertificateBuilder builder=new JcaX509v3CertificateBuilder(issuer,serial,notBefore,notAfter,subject,subjectKeyPair.getPublic());
+  if (indexAwayFromEndEntity > 0) {
+    builder.addExtension(Extension.basicConstraints,true,new BasicConstraints(indexAwayFromEndEntity - 1));
+  }
+  final ContentSigner contentSigner=new JcaContentSignerBuilder("SHA1withRSA").build(issuerKeyPair.getPrivate());
+  final X509CertificateHolder certificateHolder=builder.build(contentSigner);
+  return new JcaX509CertificateConverter().setProvider("BC").getCertificate(certificateHolder);
+}

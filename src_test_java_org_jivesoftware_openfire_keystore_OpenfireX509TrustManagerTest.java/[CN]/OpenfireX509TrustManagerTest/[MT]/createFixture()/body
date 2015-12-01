@@ -1,0 +1,18 @@
+{
+  final String tempDir=System.getProperty("java.io.tmpdir");
+  location=tempDir + (tempDir.endsWith(File.separator) ? "" : File.separator) + UUID.randomUUID();
+  trustStore=KeyStore.getInstance(KeyStore.getDefaultType());
+  final String password="TS%WV@# aSG 4";
+  trustStore.load(null,password.toCharArray());
+  validChain=KeystoreTestUtils.generateValidCertificateChain();
+  expiredIntChain=KeystoreTestUtils.generateCertificateChainWithExpiredIntermediateCert();
+  expiredRootChain=KeystoreTestUtils.generateCertificateChainWithExpiredRootCert();
+  untrustedCAChain=KeystoreTestUtils.generateValidCertificateChain();
+  trustStore.setCertificateEntry(getLast(validChain).getSubjectDN().getName(),getLast(validChain));
+  trustStore.setCertificateEntry(getLast(expiredIntChain).getSubjectDN().getName(),getLast(expiredIntChain));
+  trustStore.setCertificateEntry(getLast(expiredRootChain).getSubjectDN().getName(),getLast(expiredRootChain));
+  try (FileOutputStream fos=new FileOutputStream(location)){
+    trustStore.store(fos,password.toCharArray());
+  }
+   systemUnderTest=new OpenfireX509TrustManager(trustStore,false,true);
+}

@@ -1,0 +1,43 @@
+{
+  if (socketAcceptor != null) {
+    Log.warn("Unable to start acceptor (it is already started!)");
+    return;
+  }
+  try {
+    final int initialSize=(configuration.getMaxThreadPoolSize() / 4) + 1;
+    final ExecutorFilter executorFilter=new ExecutorFilter(initialSize,configuration.getMaxThreadPoolSize(),60,TimeUnit.SECONDS);
+    final ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
+    final ThreadFactory threadFactory=new DelegatingThreadFactory(name + "-thread-",eventExecutor.getThreadFactory());
+    eventExecutor.setThreadFactory(threadFactory);
+    socketAcceptor=buildSocketAcceptor();
+    if (JMXManager.isEnabled()) {
+      configureJMX(socketAcceptor,name);
+    }
+    final DefaultIoFilterChainBuilder filterChain=socketAcceptor.getFilterChain();
+    filterChain.addFirst(ConnectionManagerImpl.EXECUTOR_FILTER_NAME,executorFilter);
+    filterChain.addAfter(ConnectionManagerImpl.EXECUTOR_FILTER_NAME,ConnectionManagerImpl.XMPP_CODEC_FILTER_NAME,new ProtocolCodecFilter(new XMPPCodecFactory()));
+    filterChain.addAfter(ConnectionManagerImpl.XMPP_CODEC_FILTER_NAME,ConnectionManagerImpl.CAPACITY_FILTER_NAME,new StalledSessionsFilter());
+    if (configuration.getTlsPolicy() == Connection.TLSPolicy.legacyMode) {
+      final SslFilter sslFilter=encryptionArtifactFactory.createServerModeSslFilter();
+      filterChain.addAfter(ConnectionManagerImpl.EXECUTOR_FILTER_NAME,ConnectionManagerImpl.TLS_FILTER_NAME,sslFilter);
+    }
+    if (configuration.getMaxBufferSize() > 0) {
+      socketAcceptor.getSessionConfig().setMaxReadBufferSize(configuration.getMaxBufferSize());
+      Log.debug("Throttling read buffer for connections to max={} bytes",configuration.getMaxBufferSize());
+    }
+    socketAcceptor.setHandler(connectionHandler);
+    socketAcceptor.bind(new InetSocketAddress(configuration.getBindAddress(),configuration.getPort()));
+  }
+ catch (  Exception e) {
+    System.err.println("Error starting " + configuration.getPort() + ": "+ e.getMessage());
+    Log.error("Error starting: " + configuration.getPort(),e);
+    if (socketAcceptor != null) {
+      try {
+        socketAcceptor.unbind();
+      }
+  finally {
+        socketAcceptor=null;
+      }
+    }
+  }
+}

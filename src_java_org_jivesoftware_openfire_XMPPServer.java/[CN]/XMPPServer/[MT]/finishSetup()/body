@@ -11,12 +11,22 @@
       }
     }
     JiveGlobals.setProperty("sasl.scram-sha-1.iteration-count",Integer.toString(ScramUtils.DEFAULT_ITERATION_COUNT));
+    CertificateStoreManager certificateStoreManager=null;
     try {
-      final IdentityStoreConfig storeConfig=(IdentityStoreConfig)SSLConfig.getInstance().getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
-      storeConfig.ensureDomainCertificates("DSA","RSA");
+      certificateStoreManager=new CertificateStoreManager();
+      certificateStoreManager.initialize(this);
+      certificateStoreManager.start();
+      final IdentityStore identityStore=certificateStoreManager.getIdentityStore(ConnectionType.SOCKET_C2S);
+      identityStore.ensureDomainCertificates("DSA","RSA");
     }
  catch (    Exception e) {
       logger.error("Error generating self-signed certificates",e);
+    }
+ finally {
+      if (certificateStoreManager != null) {
+        certificateStoreManager.stop();
+        certificateStoreManager.destroy();
+      }
     }
     AdminManager.getInstance().getAdminAccounts();
     Thread finishSetup=new Thread(){

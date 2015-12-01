@@ -1,0 +1,30 @@
+{
+  if (type == null) {
+    throw new IllegalArgumentException("Argument 'type' cannot be null.");
+  }
+  if (configuration == null) {
+    throw new IllegalArgumentException("Argument 'configuration' cannot be null.");
+  }
+  final CertificateStoreConfiguration oldConfig=typeToTrustStore.get(type);
+  if (oldConfig == null || !oldConfig.equals(configuration)) {
+    if (!trustStores.containsKey(configuration)) {
+      final TrustStore store=new TrustStore(configuration,true);
+      trustStores.put(configuration,store);
+    }
+    typeToTrustStore.put(type,configuration);
+    if (oldConfig != null && !typeToTrustStore.containsValue(oldConfig)) {
+      trustStores.remove(oldConfig);
+    }
+    final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+    for (    ConnectionListener connectionListener : connectionManager.getListeners(type)) {
+      try {
+        connectionListener.setTrustStoreConfiguration(configuration);
+      }
+ catch (      RuntimeException e) {
+        Log.warn("An exception occurred while trying to update the trust store configuration for connection type '" + type + "'",e);
+      }
+    }
+  }
+  JiveGlobals.setProperty(type.getPrefix() + "truststore",configuration.getFile().getPath());
+  JiveGlobals.setProperty(type.getPrefix() + "trustpass",new String(configuration.getPassword()));
+}

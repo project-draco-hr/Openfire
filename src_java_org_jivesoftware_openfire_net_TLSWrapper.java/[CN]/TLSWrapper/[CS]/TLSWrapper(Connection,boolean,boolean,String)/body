@@ -1,33 +1,3 @@
 {
-  final boolean isClientToServer=(remoteServer == null);
-  try {
-    final SSLConfig sslConfig=SSLConfig.getInstance();
-    final Purpose purpose=(isClientToServer ? Purpose.SOCKETBASED_C2S_TRUSTSTORE : Purpose.SOCKETBASED_S2S_TRUSTSTORE);
-    final TrustStoreConfig trustStoreConfig=(TrustStoreConfig)sslConfig.getStoreConfig(purpose);
-    final TrustManager[] tm;
-    if (clientMode || needClientAuth) {
-      final KeyStore ksTrust=trustStoreConfig.getStore();
-      if (isClientToServer) {
-        tm=new TrustManager[]{new ClientTrustManager(ksTrust)};
-      }
- else {
-        tm=new TrustManager[]{new ServerTrustManager(remoteServer,ksTrust,connection)};
-      }
-    }
- else {
-      tm=trustStoreConfig.getTrustManagers();
-    }
-    final IdentityStoreConfig identityStoreConfig=(IdentityStoreConfig)sslConfig.getStoreConfig(Purpose.SOCKETBASED_IDENTITYSTORE);
-    final String algorithm=JiveGlobals.getProperty("xmpp.socket.ssl.algorithm","TLS");
-    final SSLContext tlsContext=SSLContext.getInstance(algorithm);
-    tlsContext.init(identityStoreConfig.getKeyManagers(),tm,null);
-    tlsEngine=tlsContext.createSSLEngine();
-    tlsEngine.setUseClientMode(clientMode);
-    SSLSession sslSession=tlsEngine.getSession();
-    netBuffSize=sslSession.getPacketBufferSize();
-    appBuffSize=sslSession.getApplicationBufferSize();
-  }
- catch (  NoSuchAlgorithmException|KeyManagementException ex) {
-    Log.error("TLSHandler startup problem. SSLContext initialisation failed.",ex);
-  }
+  this(connection.getConfiguration(),clientMode);
 }

@@ -1,0 +1,30 @@
+{
+  if (alias == null || alias.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'alias' cannot be null or an empty String.");
+  }
+  if (pemRepresentation == null) {
+    throw new IllegalArgumentException("Argument 'pemRepresentation' cannot be null.");
+  }
+  alias=alias.trim();
+  try {
+    if (store.containsAlias(alias)) {
+      throw new CertificateStoreConfigException("Certificate already exists for alias: " + alias);
+    }
+    final Collection<X509Certificate> certificates=CertificateManager.parseCertificates(pemRepresentation);
+    if (certificates.isEmpty()) {
+      throw new CertificateStoreConfigException("No certificate was found in the input.");
+    }
+    if (certificates.size() != 1) {
+      throw new CertificateStoreConfigException("More than one certificate was found in the input.");
+    }
+    final X509Certificate certificate=certificates.iterator().next();
+    store.setCertificateEntry(alias,certificate);
+    persist();
+  }
+ catch (  CertificateException|KeyStoreException|IOException e) {
+    throw new CertificateStoreConfigException("Unable to install a certificate into a trust store.",e);
+  }
+ finally {
+    reload();
+  }
+}

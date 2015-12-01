@@ -1,0 +1,25 @@
+{
+  if (configuration == null) {
+    throw new IllegalArgumentException("Argument 'configuration' cannot be null.");
+  }
+  this.configuration=configuration;
+  try {
+    final File file=configuration.getFile();
+    if (createIfAbsent && !file.exists()) {
+      try (final FileOutputStream os=new FileOutputStream(file.getPath())){
+        store=KeyStore.getInstance(configuration.getType());
+        store.load(null,configuration.getPassword());
+        store.store(os,configuration.getPassword());
+      }
+     }
+ else {
+      try (final FileInputStream is=new FileInputStream(file)){
+        store=KeyStore.getInstance(configuration.getType());
+        store.load(is,configuration.getPassword());
+      }
+     }
+  }
+ catch (  IOException|KeyStoreException|NoSuchAlgorithmException|CertificateException ex) {
+    throw new CertificateStoreConfigException("Unable to load store of type '" + configuration.getType() + "' from file '"+ configuration.getFile()+ "'",ex);
+  }
+}

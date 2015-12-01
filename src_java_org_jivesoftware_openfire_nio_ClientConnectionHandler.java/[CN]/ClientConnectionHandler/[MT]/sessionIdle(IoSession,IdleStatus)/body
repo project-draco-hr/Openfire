@@ -7,7 +7,7 @@
     if (entity != null) {
       final IQ pingRequest=new IQ(Type.get);
       pingRequest.setChildElement("ping",IQPingHandler.NAMESPACE);
-      pingRequest.setFrom(serverName);
+      pingRequest.setFrom(XMPPServer.getInstance().getServerInfo().getXMPPDomain());
       pingRequest.setTo(entity);
       final Connection connection=(Connection)session.getAttribute(CONNECTION);
       if (Log.isDebugEnabled()) {

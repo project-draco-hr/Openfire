@@ -1,0 +1,8 @@
+{
+  try (final FileInputStream is=new FileInputStream(configuration.getFile())){
+    store.load(is,configuration.getPassword());
+  }
+ catch (  IOException|NoSuchAlgorithmException|CertificateException ex) {
+    throw new CertificateStoreConfigException("Unable to reload store in '" + configuration.getFile() + "'",ex);
+  }
+}

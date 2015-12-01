@@ -1,12 +1,14 @@
 {
   String xmppBoshSslPort="0";
   String xmppBoshPort="0";
-  String xmppPort=String.valueOf(XMPPServer.getInstance().getConnectionManager().getClientListenerPort());
+  final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.SOCKET_C2S,false).generateConnectionConfiguration();
+  String xmppPort=String.valueOf(configuration.getPort());
   if (JiveGlobals.getBooleanProperty(HttpBindManager.HTTP_BIND_ENABLED,HttpBindManager.HTTP_BIND_ENABLED_DEFAULT)) {
     int boshSslPort=HttpBindManager.getInstance().getHttpBindSecurePort();
     int boshPort=HttpBindManager.getInstance().getHttpBindUnsecurePort();
     try {
-      if (HttpBindManager.getInstance().isHttpsBindActive() && LocalClientSession.getTLSPolicy() != org.jivesoftware.openfire.Connection.TLSPolicy.disabled) {
+      if (HttpBindManager.getInstance().isHttpsBindActive() && configuration.getTlsPolicy() != org.jivesoftware.openfire.Connection.TLSPolicy.disabled) {
         xmppBoshSslPort=String.valueOf(boshSslPort);
       }
     }
