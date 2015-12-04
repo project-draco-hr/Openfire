@@ -12,7 +12,7 @@
       throw new UserNotFoundException();
     }
   }
-  byte[] saltShaker=new byte[32];
+  byte[] saltShaker=new byte[24];
   random.nextBytes(saltShaker);
   String salt=DatatypeConverter.printBase64Binary(saltShaker);
   int iterations=JiveGlobals.getIntProperty("sasl.scram-sha-1.iteration-count",ScramUtils.DEFAULT_ITERATION_COUNT);
