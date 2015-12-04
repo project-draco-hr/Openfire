@@ -3,6 +3,7 @@
     String saltshaker=UserManager.getUserProvider().loadUser(username).getSalt();
     byte[] salt;
     if (saltshaker == null) {
+      Log.debug("No salt found, so resetting password.");
       String password=AuthFactory.getPassword(username);
       AuthFactory.setPassword(username,password);
       salt=DatatypeConverter.parseBase64Binary(UserManager.getUserProvider().loadUser(username).getSalt());
@@ -13,6 +14,7 @@
     return salt;
   }
  catch (  UserNotFoundException|UnsupportedOperationException|ConnectionException|InternalUnauthenticatedException e) {
+    Log.warn("Exception in SCRAM.getSalt():",e);
     byte[] salt=new byte[32];
     random.nextBytes(salt);
     return salt;
