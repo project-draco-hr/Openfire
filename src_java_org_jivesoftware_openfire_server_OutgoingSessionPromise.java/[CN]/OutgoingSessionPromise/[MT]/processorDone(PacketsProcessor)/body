@@ -1,0 +1,10 @@
+{
+synchronized (packetsProcessor.getDomain().intern()) {
+    if (packetsProcessor.isDone()) {
+      packetsProcessors.remove(packetsProcessor.getDomain());
+    }
+ else {
+      threadPool.execute(packetsProcessor);
+    }
+  }
+}

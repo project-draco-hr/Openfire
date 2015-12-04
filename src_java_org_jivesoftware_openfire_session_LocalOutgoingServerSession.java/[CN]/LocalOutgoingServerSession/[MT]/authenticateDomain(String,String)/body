@@ -1,15 +1,15 @@
 {
   if (hostname == null || hostname.length() == 0 || hostname.trim().indexOf(' ') > -1) {
-    return null;
+    return false;
   }
   try {
     if (!RemoteServerManager.canAccess(hostname)) {
-      return null;
+      return false;
     }
     OutgoingServerSession session;
     SessionManager sessionManager=SessionManager.getInstance();
     if (sessionManager == null) {
-      return null;
+      return false;
     }
     session=sessionManager.getOutgoingServerSession(hostname);
     if (session == null) {
@@ -34,20 +34,20 @@
         session.addAuthenticatedDomain(domain);
         session.addHostname(hostname);
         sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
-        return session;
+        return true;
       }
  else {
         Log.warn("Fail to connect to {} for {}",hostname,domain);
-        return null;
+        return false;
       }
     }
     if (session.getAuthenticatedDomains().contains(domain) && session.getHostnames().contains(hostname)) {
-      return session;
+      return true;
     }
-    if (session.authenticateSubdomain(domain,hostname))     return session;
+    return session.authenticateSubdomain(domain,hostname);
   }
  catch (  Exception e) {
     Log.error("Error authenticating domain with remote server: " + hostname,e);
   }
-  return null;
+  return false;
 }
