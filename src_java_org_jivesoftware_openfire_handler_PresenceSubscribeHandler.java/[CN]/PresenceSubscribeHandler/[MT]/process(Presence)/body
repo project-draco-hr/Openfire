@@ -58,7 +58,7 @@
         }
         if (type == Presence.Type.subscribed) {
           JID prober=localServer.isLocal(recipientJID) ? recipientJID.asBareJID() : recipientJID;
-          if (presenceManager.canProbePresence(prober,senderJID.toString())) {
+          if (presenceManager.canProbePresence(prober,senderJID.getNode())) {
             presenceManager.probePresence(prober,senderJID);
             PresenceEventDispatcher.subscribedToPresence(recipientJID,senderJID);
           }
