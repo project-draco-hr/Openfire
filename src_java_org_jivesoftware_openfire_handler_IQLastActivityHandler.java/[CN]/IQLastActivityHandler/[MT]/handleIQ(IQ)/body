@@ -1,39 +1,40 @@
 {
   IQ reply=IQ.createResultIQ(packet);
-  Element lastActivity=reply.setChildElement("query","jabber:iq:last");
+  Element lastActivity=reply.setChildElement("query",NAMESPACE);
   String sender=packet.getFrom().getNode();
-  String username=packet.getTo() == null ? null : packet.getTo().getNode();
   if (sender == null) {
     reply.setError(PacketError.Condition.forbidden);
     return reply;
   }
-  if (username == null) {
+  if (packet.getTo() != null && packet.getTo().getNode() == null && XMPPServer.getInstance().isLocal(packet.getTo())) {
     long uptime=XMPPServer.getInstance().getServerInfo().getLastStarted().getTime();
     long lastActivityTime=(System.currentTimeMillis() - uptime) / 1000;
     lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
     return reply;
   }
+  String username=packet.getTo() == null ? packet.getFrom().getNode() : packet.getTo().getNode();
   try {
-    RosterItem item=rosterManager.getRoster(username).getRosterItem(packet.getFrom());
-    if (item.getSubStatus() == RosterItem.SUB_FROM || item.getSubStatus() == RosterItem.SUB_BOTH) {
-      if (sessionManager.getSessions(username).isEmpty()) {
-        User user=UserManager.getInstance().getUser(username);
-        long lastActivityTime=presenceManager.getLastActivity(user);
-        if (lastActivityTime > -1) {
-          lastActivityTime=lastActivityTime / 1000;
+    if (username != null) {
+      if (presenceManager.canProbePresence(packet.getFrom(),username)) {
+        if (sessionManager.getSessions(username).isEmpty()) {
+          User user=UserManager.getInstance().getUser(username);
+          long lastActivityTime=presenceManager.getLastActivity(user);
+          if (lastActivityTime > -1) {
+            lastActivityTime=lastActivityTime / 1000;
+          }
+          lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
+          String lastStatus=presenceManager.getLastPresenceStatus(user);
+          if (lastStatus != null && lastStatus.length() > 0) {
+            lastActivity.setText(lastStatus);
+          }
         }
-        lastActivity.addAttribute("seconds",String.valueOf(lastActivityTime));
-        String lastStatus=presenceManager.getLastPresenceStatus(user);
-        if (lastStatus != null && lastStatus.length() > 0) {
-          lastActivity.setText(lastStatus);
+ else {
+          lastActivity.addAttribute("seconds","0");
         }
       }
  else {
-        lastActivity.addAttribute("seconds","0");
+        reply.setError(PacketError.Condition.forbidden);
       }
-    }
- else {
-      reply.setError(PacketError.Condition.forbidden);
     }
   }
  catch (  UserNotFoundException e) {
