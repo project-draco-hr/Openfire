@@ -1,0 +1,23 @@
+{
+  final String name=threadNamePrefix + threadNumber.incrementAndGet();
+  final Thread thread;
+  if (delegate != null) {
+    thread=delegate.newThread(runnable);
+    thread.setName(name);
+  }
+ else {
+    if (stackSize != null) {
+      thread=new Thread(threadGroup,runnable,name,stackSize);
+    }
+ else {
+      thread=new Thread(threadGroup,runnable,name);
+    }
+  }
+  if (daemon != null && thread.isDaemon() != daemon) {
+    thread.setDaemon(daemon);
+  }
+  if (priority != null && thread.getPriority() != priority) {
+    thread.setPriority(priority);
+  }
+  return thread;
+}

@@ -7,7 +7,7 @@
     final int initialSize=(configuration.getMaxThreadPoolSize() / 4) + 1;
     final ExecutorFilter executorFilter=new ExecutorFilter(initialSize,configuration.getMaxThreadPoolSize(),60,TimeUnit.SECONDS);
     final ThreadPoolExecutor eventExecutor=(ThreadPoolExecutor)executorFilter.getExecutor();
-    final ThreadFactory threadFactory=new DelegatingThreadFactory(name + "-thread-",eventExecutor.getThreadFactory());
+    final ThreadFactory threadFactory=new NamedThreadFactory(name + "-thread-",eventExecutor.getThreadFactory(),true,null);
     eventExecutor.setThreadFactory(threadFactory);
     socketAcceptor=buildSocketAcceptor();
     if (JMXManager.isEnabled()) {
