@@ -9,18 +9,15 @@
     strategyType=type;
     strategyMaxNumber=maxNumber;
   }
-  boolean subjectChange=false;
-  if (packet.getSubject() != null && packet.getSubject().length() > 0) {
-    subjectChange=true;
+  boolean subjectChange=isSubjectChangeRequest(packet);
+  if (subjectChange) {
     roomSubject=packet;
   }
-  if (strategyType == Type.none) {
-    if (subjectChange) {
-      history.clear();
-      history.add(packet);
-    }
+  if (strategyType == Type.none && subjectChange) {
+    history.clear();
+    history.add(packet);
   }
- else   if (strategyType == Type.all) {
+ else   if (strategyType == Type.all || subjectChange) {
     history.add(packet);
   }
  else   if (strategyType == Type.number) {

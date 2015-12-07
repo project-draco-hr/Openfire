@@ -1,16 +1,11 @@
 {
   if ((canOccupantsChangeSubject() && role.getRole().compareTo(MUCRole.Role.visitor) < 0) || MUCRole.Role.moderator == role.getRole()) {
-    if (packet.getSubject().equals(subject)) {
-      return;
-    }
     subject=packet.getSubject();
     MUCPersistenceManager.updateRoomSubject(this);
     packet.setFrom(role.getRoleAddress());
     send(packet);
     MUCEventDispatcher.roomSubjectChanged(getJID(),role.getUserAddress(),subject);
-    if (!"local-only".equals(packet.getID())) {
-      CacheFactory.doClusterTask(new RoomUpdatedEvent(this));
-    }
+    CacheFactory.doClusterTask(new RoomUpdatedEvent(this));
   }
  else {
     throw new ForbiddenException();
