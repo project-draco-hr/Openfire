@@ -42,23 +42,10 @@
           pluginLoader.addDirectory(pluginDir.toFile(),classesDir != null);
         }
  else {
-          if (pluginName.compareTo(parentPlugin) < 0) {
-            Path file=pluginDir.getParent().resolve(parentPlugin + ".jar");
-            if (Files.exists(file)) {
-              return;
-            }
- else {
-              file=pluginDir.getParent().resolve(parentPlugin + ".war");
-              if (Files.exists(file)) {
-                return;
-              }
- else {
-                String msg="Ignoring plugin " + pluginName + ": parent plugin "+ parentPlugin+ " not present.";
-                Log.warn(msg);
-                System.out.println(msg);
-                return;
-              }
-            }
+          final Set<String> plugins=new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+          plugins.addAll(Arrays.asList(pluginDir.getParent().toFile().list()));
+          if (plugins.contains(parentPlugin + ".jar") || plugins.contains(parentPlugin + ".war")) {
+            return;
           }
  else {
             String msg="Ignoring plugin " + pluginName + ": parent plugin "+ parentPlugin+ " not present.";
@@ -110,6 +97,12 @@
       pluginDirs.put(plugin,pluginDir);
       if (parentPluginNode != null) {
         String parentPlugin=parentPluginNode.getTextTrim();
+        for (        Map.Entry<String,Plugin> entry : plugins.entrySet()) {
+          if (entry.getKey().equalsIgnoreCase(parentPlugin)) {
+            parentPlugin=entry.getKey();
+            break;
+          }
+        }
         List<String> childrenPlugins=parentPluginMap.get(plugins.get(parentPlugin));
         if (childrenPlugins == null) {
           childrenPlugins=new ArrayList<>();
