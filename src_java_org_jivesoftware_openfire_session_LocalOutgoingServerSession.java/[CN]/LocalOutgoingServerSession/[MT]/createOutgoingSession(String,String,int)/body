@@ -93,13 +93,13 @@
     }
   }
  catch (  SSLHandshakeException e) {
-    Log.debug("LocalOutgoingServerSession: Handshake error while creating secured outgoing session to remote " + "server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ "):",e);
+    Log.info("STARTTLS negotiation (with {} at {}:{}) failed.",hostname,realHostname,realPort,e);
     if (connection != null) {
-      connection.close();
+      connection.forceClose();
     }
   }
 catch (  Exception e) {
-    Log.error("Error creating secured outgoing session to remote server: " + hostname + "(DNS lookup: "+ realHostname+ ":"+ realPort+ ")",e);
+    Log.warn("An exception occurred while creating an encrypted session (with {} at {}:{})",hostname,realHostname,realPort,e);
     if (connection != null) {
       connection.close();
     }
