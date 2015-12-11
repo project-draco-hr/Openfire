@@ -4,7 +4,7 @@
     if (Log.isDebugEnabled()) {
       Log.debug("Closing connection: " + this + " that started sending data at: "+ new Date(writeTimestamp));
     }
-    close(true);
+    forceClose();
     return true;
   }
  else {
@@ -12,7 +12,7 @@
       if (Log.isDebugEnabled()) {
         Log.debug("Closing connection that has been idle: " + this);
       }
-      close(true);
+      forceClose();
       return true;
     }
   }
