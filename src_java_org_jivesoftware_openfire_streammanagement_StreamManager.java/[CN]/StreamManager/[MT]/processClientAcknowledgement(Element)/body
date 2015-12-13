@@ -1,21 +1,27 @@
 {
   if (isEnabled()) {
-    if (ack.attribute("h") != null) {
-      long count=Long.valueOf(ack.attributeValue("h"));
-      Deque<UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
-      long i=getClientProcessedStanzas();
-      if (count < i) {
-        if (i > mask) {
-          while (count < i) {
-            count+=mask + 1;
+synchronized (this) {
+      if (ack.attribute("h") != null) {
+        long count=Long.valueOf(ack.attributeValue("h"));
+        Deque<UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
+        long i=getClientProcessedStanzas();
+        Log.debug("Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
+        if (count < i) {
+          Log.debug("Maybe rollover");
+          if (i > mask) {
+            while (count < i) {
+              Log.debug("Rolling...");
+              count+=mask + 1;
+            }
           }
         }
+        while (i < count) {
+          unacknowledgedStanzas.removeFirst();
+          i++;
+          Log.debug("In Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
+        }
+        setClientProcessedStanzas(count);
       }
-      while (i < count) {
-        unacknowledgedStanzas.removeFirst();
-        i++;
-      }
-      setClientProcessedStanzas(count);
     }
   }
 }
