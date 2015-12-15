@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "ciphersuites";
+  final String defaultValue="";
+  if (type.getFallback() == null) {
+    return JiveGlobals.getProperty(propertyName,defaultValue);
+  }
+ else {
+    return JiveGlobals.getProperty(propertyName,getConnectionListener(type.getFallback()).getEncryptionCipherSuitesCommaSeparated());
+  }
+}

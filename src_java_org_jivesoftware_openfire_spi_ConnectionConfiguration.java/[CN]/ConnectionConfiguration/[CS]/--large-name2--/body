@@ -1,0 +1,26 @@
+{
+  if (maxThreadPoolSize <= 0) {
+    throw new IllegalArgumentException("Argument 'maxThreadPoolSize' must be equal to or greater than one.");
+  }
+  if (clientAuth == null) {
+    throw new IllegalArgumentException("Argument 'clientAuth' cannot be null.");
+  }
+  this.enabled=enabled;
+  this.tlsPolicy=tlsPolicy;
+  this.type=type;
+  this.maxThreadPoolSize=maxThreadPoolSize;
+  this.maxBufferSize=maxBufferSize;
+  this.clientAuth=clientAuth;
+  this.bindAddress=bindAddress;
+  this.port=port;
+  this.identityStoreConfiguration=identityStoreConfiguration;
+  this.trustStoreConfiguration=trustStoreConfiguration;
+  this.acceptSelfSignedCertificates=acceptSelfSignedCertificates;
+  this.verifyCertificateValidity=verifyCertificateValidity;
+  this.encryptionProtocols=Collections.unmodifiableSet(encryptionProtocols);
+  this.encryptionCipherSuites=Collections.unmodifiableSet(encryptionCipherSuites);
+  this.compressionPolicy=compressionPolicy;
+  final CertificateStoreManager certificateStoreManager=XMPPServer.getInstance().getCertificateStoreManager();
+  this.identityStore=certificateStoreManager.getIdentityStore(type);
+  this.trustStore=certificateStoreManager.getTrustStore(type);
+}
