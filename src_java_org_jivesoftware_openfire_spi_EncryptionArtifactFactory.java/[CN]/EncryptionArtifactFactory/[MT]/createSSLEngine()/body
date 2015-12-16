@@ -1,33 +1,13 @@
 {
   final SSLContext sslContext=getSSLContext();
   final SSLEngine sslEngine=sslContext.createSSLEngine();
-  final Set<String> protocolsEnabled=configuration.getEncryptionProtocolsEnabled();
-  if (!protocolsEnabled.isEmpty()) {
-    sslEngine.setEnabledProtocols(protocolsEnabled.toArray(new String[protocolsEnabled.size()]));
+  final Set<String> protocols=configuration.getEncryptionProtocols();
+  if (!protocols.isEmpty()) {
+    sslEngine.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
   }
- else {
-    final Set<String> disabled=configuration.getEncryptionProtocolsDisabled();
-    final ArrayList<String> supported=new ArrayList<>();
-    for (    final String candidate : sslEngine.getSupportedProtocols()) {
-      if (!disabled.contains(candidate)) {
-        supported.add(candidate);
-      }
-    }
-    sslEngine.setEnabledProtocols(supported.toArray(new String[supported.size()]));
-  }
-  final Set<String> cipherSuitesEnabled=configuration.getCipherSuitesEnabled();
-  if (!cipherSuitesEnabled.isEmpty()) {
-    sslEngine.setEnabledCipherSuites(cipherSuitesEnabled.toArray(new String[cipherSuitesEnabled.size()]));
-  }
- else {
-    final Set<String> disabled=configuration.getCipherSuitesDisabled();
-    final ArrayList<String> supported=new ArrayList<>();
-    for (    final String candidate : sslEngine.getSupportedCipherSuites()) {
-      if (!disabled.contains(candidate)) {
-        supported.add(candidate);
-      }
-    }
-    sslEngine.setEnabledCipherSuites(supported.toArray(new String[supported.size()]));
+  final Set<String> cipherSuites=configuration.getEncryptionCipherSuites();
+  if (!cipherSuites.isEmpty()) {
+    sslEngine.setEnabledCipherSuites(cipherSuites.toArray(new String[cipherSuites.size()]));
   }
   return sslEngine;
 }

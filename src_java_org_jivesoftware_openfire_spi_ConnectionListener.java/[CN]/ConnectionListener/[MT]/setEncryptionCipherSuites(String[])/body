@@ -1,0 +1,19 @@
+{
+  if (cipherSuites == null) {
+    cipherSuites=new String[0];
+  }
+  final String oldValue=getEncryptionCipherSuitesCommaSeparated();
+  final StringBuilder csv=new StringBuilder();
+  for (  String cipherSuite : cipherSuites) {
+    csv.append(cipherSuite);
+    csv.append(',');
+  }
+  final String newValue=csv.length() > 0 ? csv.substring(0,csv.length() - 1) : "";
+  JiveGlobals.setProperty(type.getPrefix() + "ciphersuites",newValue);
+  if (oldValue.equals(newValue)) {
+    Log.debug("Ignoring cipher suite configuration change request (to '{}'): listener already in this state.",newValue);
+    return;
+  }
+  Log.debug("Changing cipher suite configuration from '{}' to '{}'.",oldValue,newValue);
+  restart();
+}

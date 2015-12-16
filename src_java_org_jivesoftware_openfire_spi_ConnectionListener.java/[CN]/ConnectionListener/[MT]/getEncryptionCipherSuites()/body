@@ -1,0 +1,16 @@
+{
+  final Set<String> result=new LinkedHashSet<>();
+  final String csv=getEncryptionCipherSuitesCommaSeparated();
+  if (csv.isEmpty()) {
+    try {
+      result.addAll(EncryptionArtifactFactory.getDefaultCipherSuites());
+    }
+ catch (    Exception ex) {
+      Log.error("An error occurred while obtaining the default encryption cipher suite setting.",ex);
+    }
+  }
+ else {
+    result.addAll(Arrays.asList(csv.split("\\s*,\\s*")));
+  }
+  return result;
+}

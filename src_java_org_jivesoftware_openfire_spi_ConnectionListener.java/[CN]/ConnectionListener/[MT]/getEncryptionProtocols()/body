@@ -1,0 +1,16 @@
+{
+  final Set<String> result=new LinkedHashSet<>();
+  final String csv=getEncryptionProtocolsCommaSeparated();
+  if (csv.isEmpty()) {
+    try {
+      result.addAll(EncryptionArtifactFactory.getDefaultProtocols());
+    }
+ catch (    Exception ex) {
+      Log.error("An error occurred while obtaining the default encryption protocol setting.",ex);
+    }
+  }
+ else {
+    result.addAll(Arrays.asList(csv.split("\\s*,\\s*")));
+  }
+  return result;
+}
