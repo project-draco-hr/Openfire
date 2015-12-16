@@ -7,20 +7,18 @@
   if (!xpp.getNamespace(xpp.getPrefix()).equals(ETHERX_NAMESPACE) && !(isFlashClient && xpp.getNamespace(xpp.getPrefix()).equals(FLASH_NAMESPACE))) {
     throw new XmlPullParserException(LocaleUtils.getLocalizedString("admin.error.bad-namespace"));
   }
-  if (!allowedIPs.isEmpty()) {
+  if (!isAllowed(connection)) {
     String hostAddress="Unknown";
     try {
       hostAddress=connection.getHostAddress();
     }
  catch (    UnknownHostException e) {
     }
-    if (!isAllowed(connection)) {
-      Log.debug("LocalClientSession: Closed connection to client attempting to connect from: " + hostAddress);
-      StreamError error=new StreamError(StreamError.Condition.not_authorized);
-      connection.deliverRawText(error.toXML());
-      connection.close();
-      return null;
-    }
+    Log.debug("LocalClientSession: Closed connection to client attempting to connect from: " + hostAddress);
+    StreamError error=new StreamError(StreamError.Condition.not_authorized);
+    connection.deliverRawText(error.toXML());
+    connection.close();
+    return null;
   }
   Locale language=Locale.forLanguageTag("en");
   int majorVersion=0;
