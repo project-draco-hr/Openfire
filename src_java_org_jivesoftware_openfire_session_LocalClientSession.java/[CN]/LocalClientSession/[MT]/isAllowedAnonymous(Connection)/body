@@ -1,0 +1,15 @@
+{
+  if (!allowedAnonymIPs.isEmpty()) {
+    boolean forbidAccess=false;
+    try {
+      if (!allowedAnonymIPs.contains(connection.getHostAddress())) {
+        forbidAccess=!isAddressInRange(connection.getAddress(),allowedAnonymIPs);
+      }
+    }
+ catch (    UnknownHostException e) {
+      forbidAccess=true;
+    }
+    return !forbidAccess;
+  }
+  return true;
+}

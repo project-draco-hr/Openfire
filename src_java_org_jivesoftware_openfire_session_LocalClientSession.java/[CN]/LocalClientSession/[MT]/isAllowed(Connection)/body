@@ -3,13 +3,7 @@
     boolean forbidAccess=false;
     try {
       if (!allowedIPs.contains(connection.getHostAddress())) {
-        byte[] address=connection.getAddress();
-        String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
-        String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
-        String range3=(address[0] & 0xff) + ".*.*.*";
-        if (!allowedIPs.contains(range1) && !allowedIPs.contains(range2) && !allowedIPs.contains(range3)) {
-          forbidAccess=true;
-        }
+        forbidAccess=!isAddressInRange(connection.getAddress(),allowedIPs);
       }
     }
  catch (    UnknownHostException e) {
