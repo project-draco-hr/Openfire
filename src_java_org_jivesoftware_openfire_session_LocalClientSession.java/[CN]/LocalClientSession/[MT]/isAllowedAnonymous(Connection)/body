@@ -1,15 +1,13 @@
 {
-  if (!allowedAnonymIPs.isEmpty()) {
-    boolean forbidAccess=false;
-    try {
-      if (!allowedAnonymIPs.contains(connection.getHostAddress())) {
-        forbidAccess=!isAddressInRange(connection.getAddress(),allowedAnonymIPs);
-      }
+  try {
+    final String hostAddress=connection.getHostAddress();
+    final byte[] address=connection.getAddress();
+    if (blockedIPs.contains(hostAddress) || isAddressInRange(address,blockedIPs)) {
+      return false;
     }
- catch (    UnknownHostException e) {
-      forbidAccess=true;
-    }
-    return !forbidAccess;
+    return allowedAnonymIPs.isEmpty() || allowedAnonymIPs.contains(hostAddress) || isAddressInRange(address,allowedAnonymIPs);
   }
-  return true;
+ catch (  UnknownHostException e) {
+    return false;
+  }
 }
