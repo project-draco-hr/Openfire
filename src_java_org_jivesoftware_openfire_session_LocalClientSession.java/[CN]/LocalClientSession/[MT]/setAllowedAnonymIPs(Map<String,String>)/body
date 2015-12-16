@@ -1,17 +1,3 @@
 {
-  allowedAnonymIPs=allowed;
-  if (allowedAnonymIPs.isEmpty()) {
-    JiveGlobals.deleteProperty(ConnectionSettings.Client.LOGIN_ANONYM_ALLOWED);
-  }
- else {
-    StringBuilder buf=new StringBuilder();
-    Iterator<String> iter=allowedAnonymIPs.keySet().iterator();
-    if (iter.hasNext()) {
-      buf.append(iter.next());
-    }
-    while (iter.hasNext()) {
-      buf.append(", ").append(iter.next());
-    }
-    JiveGlobals.setProperty(ConnectionSettings.Client.LOGIN_ANONYM_ALLOWED,buf.toString());
-  }
+  setWhitelistedAnonymousIPs(allowed.keySet());
 }
