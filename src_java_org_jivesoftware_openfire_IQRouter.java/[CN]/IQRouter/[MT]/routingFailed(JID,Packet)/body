@@ -1,10 +1,7 @@
 {
-  IQ iq=(IQ)packet;
-  if (IQ.Type.result != iq.getType() && IQ.Type.error != iq.getType()) {
-    Log.info("Packet sent to unreachable address " + packet.toXML());
+  Log.debug("IQ sent to unreachable address: " + packet.toXML());
+  final IQ iq=(IQ)packet;
+  if (iq.isRequest()) {
     sendErrorPacket(iq,PacketError.Condition.service_unavailable);
-  }
- else {
-    Log.warn("Error or result packet could not be delivered " + packet.toXML());
   }
 }

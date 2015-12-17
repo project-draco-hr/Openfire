@@ -1,12 +1,8 @@
 {
-  if (serverName.equals(recipient.getDomain()) && recipient.getResource() != null && userManager.isRegisteredUser(recipient.getNode())) {
-    Message msg=(Message)packet;
-    if (msg.getType().equals(Message.Type.chat)) {
-      routingTable.routePacket(recipient.asBareJID(),packet,false);
-    }
- else {
-      messageStrategy.storeOffline((Message)packet);
-    }
+  log.debug("Message sent to unreachable address: " + packet.toXML());
+  final Message msg=(Message)packet;
+  if (msg.getType().equals(Message.Type.chat) && serverName.equals(recipient.getDomain()) && recipient.getResource() != null && routingTable.hasClientRoute(recipient.asBareJID())) {
+    routingTable.routePacket(recipient.asBareJID(),packet,false);
   }
  else {
     messageStrategy.storeOffline((Message)packet);
