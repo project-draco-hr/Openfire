@@ -1,7 +1,12 @@
 {
   final Element messageElement;
   final long secs;
-  secs=(message.getTime().getTime() - conversation.getStart().getTime()) / 1000;
+  if (previousMessage == null) {
+    secs=(message.getTime().getTime() - conversation.getStart().getTime()) / 1000;
+  }
+ else {
+    secs=(message.getTime().getTime() - previousMessage.getTime().getTime()) / 1000;
+  }
   messageElement=parentElement.addElement(message.getDirection().toString());
   messageElement.addAttribute("secs",Long.toString(secs));
   if (message.getWithJid() != null) {
