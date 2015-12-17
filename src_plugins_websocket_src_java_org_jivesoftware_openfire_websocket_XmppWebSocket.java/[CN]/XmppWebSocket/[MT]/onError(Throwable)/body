@@ -2,7 +2,9 @@
   Log.error("Error detected; session: " + wsSession,error);
   closeStream(new StreamError(StreamError.Condition.internal_server_error));
   try {
-    wsSession.disconnect();
+    if (wsSession != null) {
+      wsSession.disconnect();
+    }
   }
  catch (  Exception e) {
     Log.error("Error disconnecting websocket",e);
