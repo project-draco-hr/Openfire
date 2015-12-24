@@ -1,11 +1,19 @@
 {
-  Message message=new Message();
-  message.setFrom(role.getRoleAddress());
-  message.setTo(to);
-  Element frag=message.addChildElement("x","http://jabber.org/protocol/muc#user");
-  frag.addElement("decline").addAttribute("from",sender.toBareJID());
-  if (reason != null && reason.length() > 0) {
-    frag.element("decline").addElement("reason").setText(reason);
-  }
-  router.route(message);
+  if (((MultiUserChatServiceImpl)mucService).getMUCDelegate() != null) {
+switch (((MultiUserChatServiceImpl)mucService).getMUCDelegate().sendingInvitationRejection(this,to,sender,reason)) {
+case HANDLED_BY_DELEGATE:
+      return;
+case HANDLED_BY_OPENFIRE:
+    break;
+}
+}
+Message message=new Message();
+message.setFrom(role.getRoleAddress());
+message.setTo(to);
+Element frag=message.addChildElement("x","http://jabber.org/protocol/muc#user");
+frag.addElement("decline").addAttribute("from",sender.toBareJID());
+if (reason != null && reason.length() > 0) {
+frag.element("decline").addElement("reason").setText(reason);
+}
+router.route(message);
 }
