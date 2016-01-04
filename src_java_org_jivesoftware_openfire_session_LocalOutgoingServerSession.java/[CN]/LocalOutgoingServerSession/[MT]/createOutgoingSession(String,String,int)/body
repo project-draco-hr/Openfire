@@ -1,11 +1,6 @@
 {
   final Logger log=LoggerFactory.getLogger(Log.getName() + "[Create outgoing session for: " + localDomain+ " to "+ remoteDomain+ "]");
   log.debug("Creating new session...");
-  String localDomainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
-  boolean useTLS=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ENABLED,true);
-  RemoteServerConfiguration configuration=RemoteServerManager.getConfiguration(remoteDomain);
-  if (configuration != null) {
-  }
   log.debug("Creating plain socket connection to a host that belongs to the remote XMPP domain.");
   final Socket socket=SocketUtil.createSocketToXmppDomain(remoteDomain,port);
   if (socket == null) {
@@ -21,7 +16,7 @@
     openingStream.append(" xmlns:db=\"jabber:server:dialback\"");
     openingStream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
     openingStream.append(" xmlns=\"jabber:server\"");
-    openingStream.append(" from=\"").append(localDomainName).append("\"");
+    openingStream.append(" from=\"").append(XMPPServer.getInstance().getServerInfo().getXMPPDomain()).append("\"");
     openingStream.append(" to=\"").append(remoteDomain).append("\"");
     openingStream.append(" version=\"1.0\">");
     connection.deliverRawText(openingStream.toString());
@@ -43,6 +38,7 @@
       Element features=reader.parseDocument().getRootElement();
       if (features != null) {
         log.debug("Check if both us as well as the remote server have enabled STARTTLS and/or dialback ...");
+        final boolean useTLS=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ENABLED,true);
         if (useTLS && features.element("starttls") != null) {
           log.debug("Both us and the remote server support the STARTTLS feature. Secure and authenticate the connection with TLS & SASL...");
           LocalOutgoingServerSession answer=secureAndAuthenticate(remoteDomain,connection,reader,openingStream,localDomain);
