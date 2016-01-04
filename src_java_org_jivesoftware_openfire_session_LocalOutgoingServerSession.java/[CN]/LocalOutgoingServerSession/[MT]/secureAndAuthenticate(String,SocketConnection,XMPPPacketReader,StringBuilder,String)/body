@@ -1,13 +1,13 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Secure/Authenticate connection to: " + domain+ " ("+ hostname+ ")]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Secure/Authenticate connection for: " + localDomain+ " to: "+ remoteDomain+ "]");
   Element features;
-  log.debug("Securing and authenticating connection...");
+  log.debug("Securing and authenticating connection ...");
   log.debug("Indicating we want TLS and wait for response.");
   connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
   MXParser xpp=reader.getXPPParser();
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
-    log.debug("Recevied 'proceed' from remote server. Negotiating TLS...");
+    log.debug("Received 'proceed' from remote server. Negotiating TLS...");
     try {
       connection.startTLS(true);
     }
@@ -16,7 +16,7 @@
       throw e;
     }
     log.debug("TLS negotiation was successful. Connection secured. Proceeding with authentication...");
-    if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname,true)) {
+    if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),remoteDomain,true)) {
       if (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned()) {
         log.debug("SASL authentication failed. Will continue with dialback.");
       }
@@ -72,15 +72,15 @@
               }
             }
  else {
-              log.debug("Stream compression was rejected by " + hostname);
+              log.debug("Stream compression was rejected by " + remoteDomain);
             }
           }
  else {
-            log.debug("Stream compression found but zlib method is not supported by " + hostname);
+            log.debug("Stream compression found but zlib method is not supported by " + remoteDomain);
           }
         }
  else {
-          log.debug("Stream compression not supported by " + hostname);
+          log.debug("Stream compression not supported by " + remoteDomain);
         }
       }
       boolean saslEXTERNALoffered=false;
@@ -101,7 +101,7 @@
       LocalOutgoingServerSession result=null;
       if (saslEXTERNALoffered) {
         log.debug("Trying to authenticate with EXTERNAL SASL.");
-        result=attemptSASLexternal(connection,xpp,reader,domain,hostname,id,openingStream);
+        result=attemptSASLexternal(connection,xpp,reader,localDomain,remoteDomain,id,openingStream);
         if (result == null) {
           log.debug("Failed to authenticate with EXTERNAL SASL.");
         }
@@ -111,7 +111,7 @@
       }
       if (result == null) {
         log.debug("Trying to authenticate with dialback.");
-        result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
+        result=attemptDialbackOverTLS(connection,reader,localDomain,remoteDomain,id);
         if (result == null) {
           log.debug("Failed to authenticate with dialback.");
         }

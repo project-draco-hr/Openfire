@@ -1,0 +1,34 @@
+{
+  Log.debug("Creating a socket connection to XMPP domain '{}' ...",xmppDomain);
+  Log.debug("Use DNS to resolve remote hosts for the provided XMPP domain '{}' (default port: {}) ...",xmppDomain,port);
+  final List<DNSUtil.HostAddress> remoteHosts=DNSUtil.resolveXMPPDomain(xmppDomain,port);
+  Log.debug("Found {} host(s) for XMPP domain '{}'.",remoteHosts.size(),xmppDomain);
+  Socket socket=null;
+  final int socketTimeout=RemoteServerManager.getSocketTimeout();
+  for (  DNSUtil.HostAddress remoteHost : remoteHosts) {
+    final String realHostname=remoteHost.getHost();
+    final int realPort=remoteHost.getPort();
+    try {
+      socket=new Socket();
+      Log.debug("Trying to create socket connection to XMPP domain '{}' using remote host: {}:{} (blocks up to {} ms) ...",xmppDomain,realHostname,realPort,socketTimeout);
+      socket.connect(new InetSocketAddress(realHostname,realPort),socketTimeout);
+      Log.debug("Successfully created socket connection to XMPP domain '{}' using remote host: {}:{}!",xmppDomain,realHostname,realPort);
+      return socket;
+    }
+ catch (    Exception e) {
+      Log.debug("An exception occurred while trying to create a socket connection to XMPP domain '{}' using remote host {}:{}",xmppDomain,realHostname,realPort,e);
+      Log.warn("Unable to create a socket connection to XMPP domain '{}' using remote host: {}:{}. Cause: {} (a full stacktrace is logged on debug level)",xmppDomain,realHostname,realPort,e.getMessage());
+      try {
+        if (socket != null) {
+          socket.close();
+          socket=null;
+        }
+      }
+ catch (      IOException ex) {
+        Log.debug("An additional exception occurred while trying to close a socket when creating a connection to {}:{} failed.",realHostname,realPort,ex);
+      }
+    }
+  }
+  Log.warn("Unable to create a socket connection to XMPP domain '{}': Unable to connect to any of its remote hosts.",xmppDomain);
+  return null;
+}

@@ -1,42 +1,15 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Create outgoing session to: " + domain+ " ("+ hostname+ ":"+ port+ ")]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Create outgoing session for: " + localDomain+ " to "+ remoteDomain+ "]");
   log.debug("Creating new session...");
   String localDomainName=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
   boolean useTLS=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_ENABLED,true);
-  RemoteServerConfiguration configuration=RemoteServerManager.getConfiguration(hostname);
+  RemoteServerConfiguration configuration=RemoteServerManager.getConfiguration(remoteDomain);
   if (configuration != null) {
   }
-  String realHostname=null;
-  int realPort=port;
-  Socket socket=null;
-  log.debug("Get a list of real hostnames to connect to using DNS lookup of the specified hostname.");
-  List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(hostname,port);
-  for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
-    try {
-      socket=new Socket();
-      DNSUtil.HostAddress address=it.next();
-      realHostname=address.getHost();
-      realPort=address.getPort();
-      log.debug("Trying to create plain socket connection to: {}:{} ...",realHostname,realPort);
-      socket.connect(new InetSocketAddress(realHostname,realPort),RemoteServerManager.getSocketTimeout());
-      log.debug("Plain socket connection to {}:{} successful!",realHostname,realPort);
-      break;
-    }
- catch (    Exception e) {
-      log.debug("An exception occurred while trying to create a plain socket connection to: {}:{}",realHostname,realPort,e);
-      log.warn("Unable to create plain socket connection to: {}:{}. Cause: {} (a full stacktrace is logged on debug level)",realHostname,realPort,e.getMessage());
-      try {
-        if (socket != null) {
-          socket.close();
-        }
-      }
- catch (      IOException ex) {
-        log.debug("Additional exception while trying to close socket when connection to remote server failed.",ex);
-      }
-    }
-  }
-  if (!socket.isConnected()) {
-    log.info("Unable to create new session: Cannot create a plain socket connection with any applicable host.");
+  log.debug("Creating plain socket connection to a host that belongs to the remote XMPP domain.");
+  final Socket socket=SocketUtil.createSocketToXmppDomain(remoteDomain,port);
+  if (socket == null) {
+    log.info("Unable to create new session: Cannot create a plain socket connection with any applicable remote host.");
     return null;
   }
   SocketConnection connection=null;
@@ -49,7 +22,7 @@
     openingStream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
     openingStream.append(" xmlns=\"jabber:server\"");
     openingStream.append(" from=\"").append(localDomainName).append("\"");
-    openingStream.append(" to=\"").append(hostname).append("\"");
+    openingStream.append(" to=\"").append(remoteDomain).append("\"");
     openingStream.append(" version=\"1.0\">");
     connection.deliverRawText(openingStream.toString());
     int soTimeout=socket.getSoTimeout();
@@ -66,13 +39,13 @@
     if (serverVersion != null && decodeVersion(serverVersion)[0] >= 1) {
       log.debug("The remote server is XMPP 1.0 compliant (or at least reports to be).");
       socket.setSoTimeout(soTimeout);
-      log.debug("Processing stream features of the remote server...");
+      log.debug("Processing stream features of the remote domain...");
       Element features=reader.parseDocument().getRootElement();
       if (features != null) {
         log.debug("Check if both us as well as the remote server have enabled STARTTLS and/or dialback ...");
         if (useTLS && features.element("starttls") != null) {
           log.debug("Both us and the remote server support the STARTTLS feature. Secure and authenticate the connection with TLS & SASL...");
-          LocalOutgoingServerSession answer=secureAndAuthenticate(hostname,connection,reader,openingStream,domain);
+          LocalOutgoingServerSession answer=secureAndAuthenticate(remoteDomain,connection,reader,openingStream,localDomain);
           if (answer != null) {
             log.debug("Successfully secured/authenticated the connection with TLS/SASL)!");
             log.debug("Successfully created new session!");
@@ -82,14 +55,14 @@
         }
  else         if (ServerDialback.isEnabled() && features.element("dialback") != null) {
           log.debug("Both us and the remote server support the 'dialback' feature. Authenticate the connection with dialback...");
-          ServerDialback method=new ServerDialback(connection,domain);
+          ServerDialback method=new ServerDialback(connection,localDomain);
           OutgoingServerSocketReader newSocketReader=new OutgoingServerSocketReader(reader);
-          if (method.authenticateDomain(newSocketReader,domain,hostname,id)) {
+          if (method.authenticateDomain(newSocketReader,localDomain,remoteDomain,id)) {
             log.debug("Successfully authenticated the connection with dialback!");
             StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-            LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,newSocketReader,streamID);
+            LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,newSocketReader,streamID);
             connection.init(session);
-            session.setAddress(new JID(null,hostname,null));
+            session.setAddress(new JID(null,remoteDomain,null));
             log.debug("Successfully created new session!");
             return session;
           }
@@ -111,20 +84,20 @@
     }
   }
  catch (  SSLHandshakeException e) {
-    log.info("STARTTLS negotiation (with {}:{}) failed. Closing connection (without sending any data such as <failure/> or </stream>).",realHostname,realPort,e);
+    log.info("STARTTLS negotiation failed. Closing connection (without sending any data such as <failure/> or </stream>).",e);
     if (connection != null) {
       connection.forceClose();
     }
   }
 catch (  Exception e) {
-    log.warn("An exception occurred while creating an encrypted session (with {}:{}). Closing connection.",realHostname,realPort,e);
+    log.warn("An exception occurred while creating an encrypted session. Closing connection.",e);
     if (connection != null) {
       connection.close();
     }
   }
   if (ServerDialback.isEnabled()) {
     log.debug("Unable to create a new session. Going to try connecting using server dialback as a fallback.");
-    final LocalOutgoingServerSession outgoingSession=new ServerDialback().createOutgoingSession(domain,hostname,port);
+    final LocalOutgoingServerSession outgoingSession=new ServerDialback().createOutgoingSession(localDomain,remoteDomain,port);
     if (outgoingSession != null) {
       log.debug("Successfully created new session (using dialback as a fallback)!");
       return outgoingSession;

@@ -1,13 +1,13 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Authenticate domain: " + domain+ " (id "+ id+ ") with hostname: "+ hostname+ "]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Authenticate locate domain: " + localDomain+ " to remote: "+ remoteDomain+ " (id: "+ id+ ")]");
   log.debug("Authenticating domain ...");
   String key=AuthFactory.createDigest(id,getSecretkey());
 synchronized (socketReader) {
     log.debug("Sending dialback key and wait for the validation response...");
     StringBuilder sb=new StringBuilder();
     sb.append("<db:result");
-    sb.append(" from=\"").append(domain).append("\"");
-    sb.append(" to=\"").append(hostname).append("\">");
+    sb.append(" from=\"").append(localDomain).append("\"");
+    sb.append(" to=\"").append(remoteDomain).append("\">");
     sb.append(key);
     sb.append("</db:result>");
     connection.deliverRawText(sb.toString());
