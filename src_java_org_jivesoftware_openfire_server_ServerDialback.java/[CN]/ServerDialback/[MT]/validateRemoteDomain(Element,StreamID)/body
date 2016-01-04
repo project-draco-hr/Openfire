@@ -2,7 +2,7 @@
   StringBuilder sb;
   String recipient=doc.attributeValue("to");
   String remoteDomain=doc.attributeValue("from");
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Validate domain:" + recipient+ "(id "+ streamID+ ") for: "+ remoteDomain+ "]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Acting as Receiving Server: Validate domain:" + recipient+ "(id "+ streamID+ ") for OS: "+ remoteDomain+ "]");
   log.debug("Validating domain...");
   if (!RemoteServerManager.canAccess(remoteDomain)) {
     connection.deliverRawText(new StreamError(StreamError.Condition.policy_violation).toXML());
