@@ -1,30 +1,31 @@
 {
-  final Logger log=LoggerFactory.getLogger(LocalOutgoingServerSession.class.getName() + "['" + hostname+ "']");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Secure/Authenticate connection to: " + domain+ " ("+ hostname+ ")]");
   Element features;
-  log.debug("Indicating we want TLS to " + hostname);
+  log.debug("Securing and authenticating connection...");
+  log.debug("Indicating we want TLS and wait for response.");
   connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
   MXParser xpp=reader.getXPPParser();
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
-    log.debug("Negotiating TLS...");
+    log.debug("Recevied 'proceed' from remote server. Negotiating TLS...");
     try {
       connection.startTLS(true);
     }
  catch (    Exception e) {
-      log.debug("Got an exception whilst negotiating TLS: " + e.getMessage());
+      log.debug("TLS negotiation failed: " + e.getMessage());
       throw e;
     }
-    log.debug("TLS negotiation was successful.");
+    log.debug("TLS negotiation was successful. Connection secured. Proceeding with authentication...");
     if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname,true)) {
-      log.debug("X.509/PKIX failure on outbound session");
       if (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned()) {
-        log.debug("Will continue with dialback.");
+        log.debug("SASL authentication failed. Will continue with dialback.");
       }
  else {
-        log.warn("No TLS auth, but TLS auth required.");
+        log.warn("Unable to authenticated the connection: SASL authentication failed (and dialback is not available).");
         return null;
       }
     }
+    log.debug("TLS negotiation was successful so initiate a new stream.");
     connection.deliverRawText(openingStream.toString());
     xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),StandardCharsets.UTF_8));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
@@ -96,24 +97,44 @@
         }
       }
       final boolean dialbackOffered=features.element("dialback") != null;
-      log.debug("Offering dialback functionality: {}",dialbackOffered);
-      log.debug("Offering EXTERNAL SASL: {}",saslEXTERNALoffered);
+      log.debug("Remote server is offering dialback: {}, EXTERNAL SASL:",dialbackOffered,saslEXTERNALoffered);
       LocalOutgoingServerSession result=null;
       if (saslEXTERNALoffered) {
+        log.debug("Trying to authenticate with EXTERNAL SASL.");
         result=attemptSASLexternal(connection,xpp,reader,domain,hostname,id,openingStream);
+        if (result == null) {
+          log.debug("Failed to authenticate with EXTERNAL SASL.");
+        }
+ else {
+          log.debug("Successfully authenticated with EXTERNAL SASL.");
+        }
       }
       if (result == null) {
+        log.debug("Trying to authenticate with dialback.");
         result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
+        if (result == null) {
+          log.debug("Failed to authenticate with dialback.");
+        }
+ else {
+          log.debug("Successfully authenticated with dialback.");
+        }
       }
-      return result;
+      if (result != null) {
+        log.debug("Successfully secured and authenticated connection!");
+        return result;
+      }
+ else {
+        log.warn("Unable to secure and authenticate connection: Exhausted all options.");
+        return null;
+      }
     }
  else {
-      log.debug("Cannot create outgoing server session, as neither SASL mechanisms nor SERVER DIALBACK were offered by " + hostname);
+      log.debug("Failed to secure and authenticate connection: neither SASL mechanisms nor SERVER DIALBACK were offered by the remote host.");
       return null;
     }
   }
  else {
-    log.debug("Error, <proceed> was not received!");
+    log.debug("Failed to secure and authenticate connection: <proceed> was not received!");
     return null;
   }
 }

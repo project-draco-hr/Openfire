@@ -1,7 +1,9 @@
 {
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Authenticate domain: " + domain+ " (id "+ id+ ") with hostname: "+ hostname+ "]");
+  log.debug("Authenticating domain ...");
   String key=AuthFactory.createDigest(id,getSecretkey());
-  Log.debug("ServerDialback: OS - Sent dialback key to host: " + hostname + " id: "+ id+ " from domain: "+ domain);
 synchronized (socketReader) {
+    log.debug("Sending dialback key and wait for the validation response...");
     StringBuilder sb=new StringBuilder();
     sb.append("<db:result");
     sb.append(" from=\"").append(domain).append("\"");
@@ -13,21 +15,26 @@ synchronized (socketReader) {
       while (true) {
         Element doc=socketReader.getElement(RemoteServerManager.getSocketTimeout(),TimeUnit.MILLISECONDS);
         if (doc == null) {
-          Log.debug("ServerDialback: OS - Time out waiting for answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain);
+          log.debug("Failed to authenticate domain: Time out waiting for validation response.");
           return false;
         }
  else         if ("db".equals(doc.getNamespacePrefix()) && "result".equals(doc.getName())) {
-          boolean success="valid".equals(doc.attributeValue("type"));
-          Log.debug("ServerDialback: OS - Validation " + (success ? "GRANTED" : "FAILED") + " from: "+ hostname+ " id: "+ id+ " for domain: "+ domain);
-          return success;
+          if ("valid".equals(doc.attributeValue("type"))) {
+            log.debug("Authenticated succeeded!");
+            return true;
+          }
+ else {
+            log.debug("Failed to authenticate domain: the validation response was received, but did not grant authentication.");
+            return false;
+          }
         }
  else {
-          Log.warn("ServerDialback: OS - Ignoring unexpected answer in validation from: " + hostname + " id: "+ id+ " for domain: "+ domain+ " answer:"+ doc.asXML());
+          log.warn("Ignoring unexpected answer while waiting for dialback validation: " + doc.asXML());
         }
       }
     }
  catch (    InterruptedException e) {
-      Log.debug("ServerDialback: OS - Validation FAILED from: " + hostname + " id: "+ id+ " for domain: "+ domain,e);
+      log.debug("Failed to authenticate domain: An interrupt was received while waiting for validation response (is Openfire shutting down?)");
       return false;
     }
   }

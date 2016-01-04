@@ -1,4 +1,6 @@
 {
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Verify key with AS: " + hostname+ " for: "+ recipient+ " (id "+ streamID+ ")]");
+  log.debug("Verifying key ...");
   XMPPPacketReader reader;
   Writer writer=null;
   socket.setSoTimeout(RemoteServerManager.getSocketTimeout());
@@ -12,7 +14,6 @@
   }
   finally {
     try {
-      Log.debug("ServerDialback: RS - Closing connection to Authoritative Server: " + hostname);
       StringBuilder sb=new StringBuilder();
       sb.append("</stream:stream>");
       writer.write(sb.toString());
@@ -22,5 +23,18 @@
  catch (    IOException ioe) {
     }
   }
-  return result;
+switch (result) {
+case valid:
+    log.debug("Successfully verified key!");
+  break;
+case invalid:
+log.debug("Unable to verify key: AS reports that the key is invalid.");
+break;
+default :
+case decline:
+case error:
+log.debug("Unable to verify key: An error occurred.");
+break;
+}
+return result;
 }
