@@ -1,6 +1,8 @@
 {
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Verify key with AS: " + hostname+ " for: "+ recipient+ " (id "+ streamID+ ")]");
   VerifyResult result=VerifyResult.error;
   TLSStreamHandler tlsStreamHandler;
+  log.debug("Send the Authoritative Server a stream header and wait for answer.");
   StringBuilder stream=new StringBuilder();
   stream.append("<stream:stream");
   stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
@@ -19,13 +21,15 @@
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();
   }
+  log.debug("Got a response. Check if the remote server is XMPP 1.0 compliant...");
   if ((xpp.getAttributeValue("","version") != null) && (xpp.getAttributeValue("","version").equals("1.0"))) {
+    log.debug("The remote server is XMPP 1.0 compliant (or at least reports to be).");
     Document doc;
     try {
       doc=reader.parseDocument();
     }
  catch (    DocumentException e) {
-      Log.warn("XML Error!",e);
+      log.warn("Unable to verify key: XML Error!",e);
       return VerifyResult.error;
     }
     Element features=doc.getRootElement();
@@ -37,24 +41,26 @@
         doc=reader.parseDocument();
       }
  catch (      DocumentException e) {
-        Log.warn("XML Error!",e);
+        log.warn("Unable to verify key: XML Error!",e);
         return VerifyResult.error;
       }
       if (!doc.getRootElement().getName().equals("proceed")) {
-        Log.warn("Got {} instead of proceed for starttls",doc.getRootElement().getName());
-        Log.debug("Like this: {}",doc.asXML());
+        log.warn("Unable to verify key: Got {} instead of proceed for starttls",doc.getRootElement().getName());
+        log.debug("Like this: {}",doc.asXML());
         return VerifyResult.error;
       }
+      log.debug("Negotiating TLS with AS... ");
       final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
       tlsStreamHandler=new TLSStreamHandler(socket,connectionManager.getListener(ConnectionType.SOCKET_S2S,false).generateConnectionConfiguration(),true);
       tlsStreamHandler.start();
       writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),StandardCharsets.UTF_8));
       reader.getXPPParser().setInput(new InputStreamReader(tlsStreamHandler.getInputStream(),StandardCharsets.UTF_8));
+      log.debug("Successfully negotiated TLS with AS... ");
       return sendVerifyKey(key,streamID,recipient,hostname,writer,reader,socket);
     }
   }
   if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
-    Log.debug("ServerDialback: RS - Asking AS to verify dialback key for id" + streamID);
+    log.debug("Request for verification of the key and wait for response");
     StringBuilder sb=new StringBuilder();
     sb.append("<db:verify");
     sb.append(" from=\"").append(recipient).append("\"");
@@ -83,24 +89,24 @@
           throw new RemoteConnectionFailedException("Invalid From");
         }
  else         if ("valid".equals(doc.attributeValue("type"))) {
-          Log.debug("ServerDialback: RS - Key was VERIFIED by the Authoritative Server for: {}",hostname);
+          log.debug("Key was VERIFIED by the Authoritative Server.");
           result=VerifyResult.valid;
         }
  else         if ("invalid".equals(doc.attributeValue("type"))) {
-          Log.debug("ServerDialback: RS - Key was NOT VERIFIED by the Authoritative Server for: {}",hostname);
+          log.debug("Key was NOT VERIFIED by the Authoritative Server.");
           result=VerifyResult.invalid;
         }
  else {
-          Log.debug("ServerDialback: RS - Key was ERRORED by the Authoritative Server for: {}",hostname);
+          log.debug("Key was ERRORED by the Authoritative Server.");
           result=VerifyResult.error;
         }
       }
  else {
-        Log.debug("ServerDialback: db:verify answer was: " + doc.asXML());
+        log.debug("db:verify answer was: " + doc.asXML());
       }
     }
  catch (    DocumentException|RuntimeException e) {
-      Log.error("An error occured connecting to the Authoritative Server",e);
+      log.error("An error occurred while connecting to the Authoritative Server:",e);
       throw new RemoteConnectionFailedException("Error connecting to the Authoritative Server");
     }
   }

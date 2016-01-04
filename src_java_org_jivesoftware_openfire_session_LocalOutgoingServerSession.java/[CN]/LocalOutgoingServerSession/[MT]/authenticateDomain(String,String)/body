@@ -1,23 +1,32 @@
 {
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Authenticate domain: " + domain+ " (hostname: "+ hostname+ ")]");
+  log.debug("Authenticating... ");
   if (hostname == null || hostname.length() == 0 || hostname.trim().indexOf(' ') > -1) {
+    log.warn("Unable to authenticate a domain when an empty hostname is provided!");
     return false;
   }
   try {
     if (!RemoteServerManager.canAccess(hostname)) {
+      log.info("Unable to authenticate: Hostname is not accessible according to our configuration (typical causes: server federation is disabled, or hostname is blacklisted).");
       return false;
     }
+    log.debug("Searching for a pre-existing session to this hostname... If one exists, it will be re-used to authenticate this domain.");
     OutgoingServerSession session;
     SessionManager sessionManager=SessionManager.getInstance();
     if (sessionManager == null) {
+      log.warn("Unable to authenticate: the SessionManager instance is not available. This should not occur unless Openfire is starting up or shutting down.");
       return false;
     }
     session=sessionManager.getOutgoingServerSession(hostname);
     if (session == null) {
+      log.debug("There is no pre-existing session to this hostname.");
+      log.debug("Searching for pre-existing sessions to other hostnames that previously authenticated this domain... If one exists, it will be re-used to authenticate this domain.");
       for (      IncomingServerSession incomingSession : sessionManager.getIncomingServerSessions(hostname)) {
         for (        String otherHostname : incomingSession.getValidatedDomains()) {
           session=sessionManager.getOutgoingServerSession(otherHostname);
           if (session != null) {
             if (session.isUsingServerDialback()) {
+              log.debug("A session to the same remote server but with different hostname ('{}') was found. This session will be re-used.",otherHostname);
               break;
             }
  else {
@@ -26,28 +35,44 @@
           }
         }
       }
+      if (session == null) {
+        log.debug("There are no pre-existing session to other hostnames for this domain.");
+      }
     }
     if (session == null) {
+      log.debug("Creating new authenticated session...");
       int port=RemoteServerManager.getPortForServer(hostname);
       session=createOutgoingSession(domain,hostname,port);
       if (session != null) {
+        log.debug("Created a new session.");
         session.addAuthenticatedDomain(domain);
         session.addHostname(hostname);
         sessionManager.outgoingServerSessionCreated((LocalOutgoingServerSession)session);
+        log.debug("Authentication successful.");
         return true;
       }
  else {
-        Log.warn("Fail to connect to {} for {}",hostname,domain);
+        log.warn("Unable to authenticate: Fail to create new session.");
         return false;
       }
     }
+    log.debug("A session already exists. The session was established using server dialback so it is possible to do piggybacking to authenticate more domains.");
     if (session.getAuthenticatedDomains().contains(domain) && session.getHostnames().contains(hostname)) {
+      log.debug("Authentication successful (domain was already authenticated in the pre-existing session).");
       return true;
     }
-    return session.authenticateSubdomain(domain,hostname);
+    if (session.authenticateSubdomain(domain,hostname)) {
+      log.debug("Authentication successful (domain authentication was added using a pre-existing session).");
+      return true;
+    }
+ else {
+      log.warn("Unable to authenticate: Unable to add authentication to pre-exising session.");
+      return false;
+    }
   }
  catch (  Exception e) {
-    Log.error("Error authenticating domain with remote server: " + hostname,e);
+    log.error("An exception occurred while authenticating domain with remote server!",e);
   }
+  log.warn("Unable to authenticate: exhausted session (re-)usage options.");
   return false;
 }

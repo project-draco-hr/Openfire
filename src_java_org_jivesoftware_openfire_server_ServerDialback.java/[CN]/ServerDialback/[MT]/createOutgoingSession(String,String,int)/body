@@ -1,24 +1,29 @@
 {
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Create Outgoing Session from: " + localDomain+ " to: "+ remoteDomain+ " (port: "+ port+ ")]");
+  log.debug("Creating new outgoing session...");
   String hostname=null;
   int realPort=port;
   try {
     Socket socket=new Socket();
+    log.debug("Get a list of real hostnames to connect to using DNS lookup of the specified hostname.");
     List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(remoteDomain,port);
     for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
       try {
         DNSUtil.HostAddress address=it.next();
         hostname=address.getHost();
         realPort=address.getPort();
-        Log.debug("ServerDialback: OS - Trying to connect to " + remoteDomain + ":"+ port+ "(DNS lookup: "+ hostname+ ":"+ realPort+ ")");
+        log.debug("Trying to create plain socket connection to: {}:{} ...",hostname,realPort);
         socket.connect(new InetSocketAddress(hostname,realPort),RemoteServerManager.getSocketTimeout());
-        Log.debug("ServerDialback: OS - Connection to " + remoteDomain + ":"+ port+ " successful");
+        log.debug("Plain socket connection to {}:{} successful!",hostname,realPort);
         break;
       }
  catch (      Exception e) {
-        Log.warn("Error trying to connect to remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ":"+ realPort+ ")",e);
+        log.debug("An exception occurred while trying to create a plain socket connection to: {}:{}",hostname,realPort,e);
+        log.warn("Unable to create plain socket connection to: {}:{}. Cause: {} (a full stacktrace is logged on debug level)",hostname,realPort,e.getMessage());
       }
     }
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
+    log.debug("Send the stream header and wait for response...");
     StringBuilder stream=new StringBuilder();
     stream.append("<stream:stream");
     stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
@@ -37,38 +42,38 @@
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
     }
+    log.debug("Got a response. Check if the remote server supports dialback...");
     if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
+      log.debug("Dialback seems to be supported by the remote server.");
       socket.setSoTimeout(soTimeout);
       String id=xpp.getAttributeValue("","id");
       OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
       if (authenticateDomain(socketReader,localDomain,remoteDomain,id)) {
+        log.debug("Successfully authenticated the connection with dialback.");
         StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
         LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,socketReader,streamID);
         connection.init(session);
         session.setAddress(new JID(null,remoteDomain,null));
+        log.debug("Successfully created new outgoing session!");
         return session;
       }
  else {
+        log.debug("Failed to authenticate the connection with dialback.");
         connection.close();
       }
     }
  else {
-      Log.debug("ServerDialback: OS - Invalid namespace in packet: " + xpp.getText());
+      log.debug("Error! Invalid namespace in packet: '{}'. Closing connection.",xpp.getText());
       connection.deliverRawText(new StreamError(StreamError.Condition.invalid_namespace).toXML());
       connection.close();
     }
   }
- catch (  IOException e) {
-    Log.debug("ServerDialback: Error connecting to the remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ":"+ realPort+ ")",e);
+ catch (  Exception e) {
+    log.error("An exception occurred while creating outgoing session to remote server:",e);
     if (connection != null) {
       connection.close();
     }
   }
-catch (  Exception e) {
-    Log.error("Error creating outgoing session to remote server: " + remoteDomain + "(DNS lookup: "+ hostname+ ")",e);
-    if (connection != null) {
-      connection.close();
-    }
-  }
+  log.warn("Unable to create a new outgoing session");
   return null;
 }

@@ -3,7 +3,8 @@
   String verifyTO=doc.attributeValue("to");
   String key=doc.getTextTrim();
   String id=doc.attributeValue("id");
-  Log.debug("ServerDialback: AS - Verifying key for host: " + verifyFROM + " id: "+ id);
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Verify key for RS: " + verifyFROM+ " (id "+ id+ ")]");
+  log.debug("Verifying key... ");
   String expectedKey=AuthFactory.createDigest(id,getSecretkey());
   boolean verified=expectedKey.equals(key);
   StringBuilder sb=new StringBuilder();
@@ -14,6 +15,6 @@
   sb.append(verified ? "valid" : "invalid");
   sb.append("\" id=\"").append(id).append("\"/>");
   connection.deliverRawText(sb.toString());
-  Log.debug("ServerDialback: AS - Key was: " + (verified ? "VALID" : "INVALID") + " for host: "+ verifyFROM+ " id: "+ id);
+  log.debug("Verification successful! Key was: " + (verified ? "VALID" : "INVALID"));
   return verified;
 }
