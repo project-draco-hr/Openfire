@@ -14,7 +14,7 @@
       Log.warn("Error setting SAXReader feature",e);
     }
     Document doc=saxReader.read(webXML);
-    List classes=doc.selectNodes("//servlet");
+    List classes=doc.getRootElement().elements("servlet");
     Map<String,Class> classMap=new HashMap<>();
     for (int i=0; i < classes.size(); i++) {
       Element servletElement=(Element)classes.get(i);
@@ -22,7 +22,7 @@
       String className=servletElement.element("servlet-class").getTextTrim();
       classMap.put(name,manager.loadClass(plugin,className));
     }
-    List names=doc.selectNodes("//servlet-mapping");
+    List names=doc.getRootElement().elements("servlet-mapping");
     for (int i=0; i < names.size(); i++) {
       Element nameElement=(Element)names.get(i);
       String name=nameElement.element("servlet-name").getTextTrim();
