@@ -19,7 +19,7 @@
         sslConnector=new HTTPSPDYServerConnector(httpBindServer,sslContextFactory);
       }
  else {
-        sslConnector=new ServerConnector(httpBindServer,null,null,null,-1,bindThreads,new SslConnectionFactory(sslContextFactory,"http/1.1"),new HttpConnectionFactory(httpsConfig));
+        sslConnector=new ServerConnector(httpBindServer,new SslConnectionFactory(sslContextFactory,"http/1.1"),new HttpConnectionFactory(httpsConfig));
       }
       sslConnector.setHost(getBindInterface());
       sslConnector.setPort(securePort);

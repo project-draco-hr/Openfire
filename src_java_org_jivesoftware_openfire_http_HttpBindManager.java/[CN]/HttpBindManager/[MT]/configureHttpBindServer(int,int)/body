@@ -1,14 +1,14 @@
 {
-  int bindThreads=JiveGlobals.getIntProperty(HTTP_BIND_THREADS,HTTP_BIND_THREADS_DEFAULT);
-  final QueuedThreadPool tp=new QueuedThreadPool();
+  final int processingThreads=JiveGlobals.getIntProperty(HTTP_BIND_THREADS,HTTP_BIND_THREADS_DEFAULT);
+  final QueuedThreadPool tp=new QueuedThreadPool(processingThreads);
   tp.setName("Jetty-QTP-BOSH");
   httpBindServer=new Server(tp);
   if (JMXManager.isEnabled()) {
     JMXManager jmx=JMXManager.getInstance();
     httpBindServer.addBean(jmx.getContainer());
   }
-  createConnector(port,bindThreads);
-  createSSLConnector(securePort,bindThreads);
+  createConnector(port);
+  createSSLConnector(securePort);
   if (httpConnector == null && httpsConnector == null) {
     httpBindServer=null;
     return;
