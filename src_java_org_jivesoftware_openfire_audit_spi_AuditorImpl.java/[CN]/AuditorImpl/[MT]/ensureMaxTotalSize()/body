@@ -6,6 +6,10 @@
   }
 ;
   File[] files=baseFolder.listFiles(filter);
+  if (files == null) {
+    Log.debug("Path '{}' does not denote a directory, or an IO exception occured while trying to list its content.",baseFolder);
+    return;
+  }
   long totalLength=0;
   for (  File file : files) {
     totalLength=totalLength + file.length();
@@ -24,7 +28,9 @@
       if (fileToDelete.equals(currentAuditFile)) {
         close();
       }
-      fileToDelete.delete();
+      if (!fileToDelete.delete()) {
+        Log.warn("Unable to delete file '{}' as part of regular log rotation based on size of files (Openfire failed to clean up after itself)!",fileToDelete);
+      }
     }
   }
 }

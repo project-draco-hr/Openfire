@@ -16,6 +16,8 @@
     if (fileToDelete.equals(currentAuditFile)) {
       close();
     }
-    fileToDelete.delete();
+    if (!fileToDelete.delete()) {
+      Log.warn("Unable to delete file '{}' as part of regular log rotation based on age of file. (Openfire failed to clean up after itself)!",fileToDelete);
+    }
   }
 }
