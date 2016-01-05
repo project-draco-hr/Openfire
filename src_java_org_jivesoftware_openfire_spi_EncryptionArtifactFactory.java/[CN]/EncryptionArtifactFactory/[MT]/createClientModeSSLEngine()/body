@@ -1,5 +1,15 @@
 {
   final SSLEngine sslEngine=createSSLEngine();
   sslEngine.setUseClientMode(true);
+  String[] protocols=sslEngine.getEnabledProtocols();
+  if (this.configuration.getEncryptionProtocols().contains("SSLv2Hello")) {
+    Set<String> set=new HashSet<>();
+    for (    String s : protocols) {
+      if (!s.equals("SSLv2Hello")) {
+        set.add(s);
+      }
+    }
+    sslEngine.setEnabledProtocols(set.toArray(new String[set.size()]));
+  }
   return sslEngine;
 }
