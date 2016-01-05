@@ -21,7 +21,7 @@
   for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
     eventType=xpp.next();
   }
-  log.debug("Got a response. Check if the remote server is XMPP 1.0 compliant...");
+  log.debug("Got a response.");
   if ((xpp.getAttributeValue("","version") != null) && (xpp.getAttributeValue("","version").equals("1.0"))) {
     log.debug("The remote server is XMPP 1.0 compliant (or at least reports to be).");
     Document doc;
@@ -34,7 +34,7 @@
     }
     Element features=doc.getRootElement();
     Element starttls=features.element("starttls");
-    if (starttls != null) {
+    if (!skipTLS && starttls != null) {
       writer.write("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
       writer.flush();
       try {
@@ -56,7 +56,7 @@
       writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),StandardCharsets.UTF_8));
       reader.getXPPParser().setInput(new InputStreamReader(tlsStreamHandler.getInputStream(),StandardCharsets.UTF_8));
       log.debug("Successfully negotiated TLS with AS... ");
-      return sendVerifyKey(key,streamID,recipient,remoteDomain,writer,reader,socket);
+      return sendVerifyKey(key,streamID,recipient,remoteDomain,writer,reader,socket,skipTLS);
     }
   }
   if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
