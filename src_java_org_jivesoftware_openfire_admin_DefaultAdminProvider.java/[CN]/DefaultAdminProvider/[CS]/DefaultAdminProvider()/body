@@ -3,22 +3,18 @@
   convertXMLToProvider();
   PropertyEventListener propListener=new PropertyEventListener(){
     @Override public void propertySet(    String property,    Map params){
-      Log.debug("DefaultAdminProvider: Property was set: " + property);
       if ("admin.authorizedJIDs".equals(property)) {
         AdminManager.getInstance().refreshAdminAccounts();
       }
     }
     @Override public void propertyDeleted(    String property,    Map params){
-      Log.debug("DefaultAdminProvider: Property was deleted: " + property);
       if ("admin.authorizedJIDs".equals(property)) {
         AdminManager.getInstance().refreshAdminAccounts();
       }
     }
     @Override public void xmlPropertySet(    String property,    Map params){
-      Log.debug("DefaultAdminProvider: XML Property was set: " + property);
     }
     @Override public void xmlPropertyDeleted(    String property,    Map params){
-      Log.debug("DefaultAdminProvider: XML Property was deleted: " + property);
     }
   }
 ;
