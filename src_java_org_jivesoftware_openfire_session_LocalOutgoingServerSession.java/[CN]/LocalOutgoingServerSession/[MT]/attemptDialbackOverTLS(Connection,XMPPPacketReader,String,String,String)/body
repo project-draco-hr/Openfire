@@ -1,15 +1,15 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Dialback over TLS for: " + domain+ " ("+ hostname+ ") Stream ID: "+ id+ "]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Dialback over TLS for: " + localDomain+ " to: "+ remoteDomain+ " (Stream ID: "+ id+ ")]");
   if (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned()) {
     log.debug("Trying to connecting using dialback over TLS.");
-    ServerDialback method=new ServerDialback(connection,domain);
+    ServerDialback method=new ServerDialback(connection,localDomain);
     OutgoingServerSocketReader newSocketReader=new OutgoingServerSocketReader(reader);
-    if (method.authenticateDomain(newSocketReader,domain,hostname,id)) {
+    if (method.authenticateDomain(newSocketReader,localDomain,remoteDomain,id)) {
       log.debug("Dialback over TLS was successful.");
       StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-      LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,newSocketReader,streamID);
+      LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,newSocketReader,streamID);
       connection.init(session);
-      session.setAddress(new JID(null,hostname,null));
+      session.setAddress(new JID(null,remoteDomain,null));
       return session;
     }
  else {

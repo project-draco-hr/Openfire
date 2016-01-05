@@ -1,13 +1,13 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Secure/Authenticate connection to: " + domain+ " ("+ hostname+ ")]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Secure/Authenticate connection for: " + localDomain+ " to: "+ remoteDomain+ "]");
   Element features;
-  log.debug("Securing and authenticating connection...");
+  log.debug("Securing and authenticating connection ...");
   log.debug("Indicating we want TLS and wait for response.");
   connection.deliverRawText("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
   MXParser xpp=reader.getXPPParser();
   Element proceed=reader.parseDocument().getRootElement();
   if (proceed != null && proceed.getName().equals("proceed")) {
-    log.debug("Recevied 'proceed' from remote server. Negotiating TLS...");
+    log.debug("Received 'proceed' from remote server. Negotiating TLS...");
     try {
       connection.startTLS(true);
     }
@@ -16,7 +16,7 @@
       throw e;
     }
     log.debug("TLS negotiation was successful. Connection secured. Proceeding with authentication...");
-    if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),hostname,true)) {
+    if (!SASLAuthentication.verifyCertificates(connection.getPeerCertificates(),remoteDomain,true)) {
       if (ServerDialback.isEnabled() || ServerDialback.isEnabledForSelfSigned()) {
         log.debug("SASL authentication failed. Will continue with dialback.");
       }
@@ -34,65 +34,14 @@
     String id=xpp.getAttributeValue("","id");
     features=reader.parseDocument().getRootElement();
     if (features != null) {
-      final Connection.CompressionPolicy compressionPolicy=connection.getConfiguration().getCompressionPolicy();
-      if (Connection.CompressionPolicy.optional == compressionPolicy) {
-        Element compression=features.element("compression");
-        if (compression != null) {
-          boolean zlibSupported=false;
-          Iterator it=compression.elementIterator("method");
-          while (it.hasNext()) {
-            Element method=(Element)it.next();
-            if ("zlib".equals(method.getTextTrim())) {
-              zlibSupported=true;
-            }
-          }
-          if (zlibSupported) {
-            log.debug("Suppressing request to perform compression; unsupported in this version.");
-            zlibSupported=false;
-          }
-          if (zlibSupported) {
-            log.debug("Requesting stream compression (zlib).");
-            connection.deliverRawText("<compress xmlns='http://jabber.org/protocol/compress'><method>zlib</method></compress>");
-            Element answer=reader.parseDocument().getRootElement();
-            if ("compressed".equals(answer.getName())) {
-              connection.addCompression();
-              connection.startCompression();
-              log.debug("Stream compression was successful.");
-              connection.deliverRawText(openingStream.toString());
-              ZInputStream in=new ZInputStream(connection.getTLSStreamHandler().getInputStream());
-              in.setFlushMode(JZlib.Z_PARTIAL_FLUSH);
-              xpp.setInput(new InputStreamReader(in,StandardCharsets.UTF_8));
-              for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
-                eventType=xpp.next();
-              }
-              features=reader.parseDocument().getRootElement();
-              if (features == null) {
-                log.debug("Error, EXTERNAL SASL was not offered.");
-                return null;
-              }
-            }
- else {
-              log.debug("Stream compression was rejected by " + hostname);
-            }
-          }
- else {
-            log.debug("Stream compression found but zlib method is not supported by " + hostname);
-          }
-        }
- else {
-          log.debug("Stream compression not supported by " + hostname);
-        }
-      }
       boolean saslEXTERNALoffered=false;
-      if (features != null) {
-        if (features.element("mechanisms") != null) {
-          Iterator<Element> it=features.element("mechanisms").elementIterator();
-          while (it.hasNext()) {
-            Element mechanism=it.next();
-            if ("EXTERNAL".equals(mechanism.getTextTrim())) {
-              saslEXTERNALoffered=true;
-              break;
-            }
+      if (features.element("mechanisms") != null) {
+        Iterator<Element> it=features.element("mechanisms").elementIterator();
+        while (it.hasNext()) {
+          Element mechanism=it.next();
+          if ("EXTERNAL".equals(mechanism.getTextTrim())) {
+            saslEXTERNALoffered=true;
+            break;
           }
         }
       }
@@ -101,7 +50,7 @@
       LocalOutgoingServerSession result=null;
       if (saslEXTERNALoffered) {
         log.debug("Trying to authenticate with EXTERNAL SASL.");
-        result=attemptSASLexternal(connection,xpp,reader,domain,hostname,id,openingStream);
+        result=attemptSASLexternal(connection,xpp,reader,localDomain,remoteDomain,id,openingStream);
         if (result == null) {
           log.debug("Failed to authenticate with EXTERNAL SASL.");
         }
@@ -111,7 +60,7 @@
       }
       if (result == null) {
         log.debug("Trying to authenticate with dialback.");
-        result=attemptDialbackOverTLS(connection,reader,domain,hostname,id);
+        result=attemptDialbackOverTLS(connection,reader,localDomain,remoteDomain,id);
         if (result == null) {
           log.debug("Failed to authenticate with dialback.");
         }

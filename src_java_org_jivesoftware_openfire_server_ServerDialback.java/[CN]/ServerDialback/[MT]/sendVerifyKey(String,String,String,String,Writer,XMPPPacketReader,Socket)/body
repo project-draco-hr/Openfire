@@ -1,5 +1,5 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Verify key with AS: " + hostname+ " for: "+ recipient+ " (id "+ streamID+ ")]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Acting as Receiving Server: Verify key with AS: " + remoteDomain+ " for OS: "+ recipient+ " (id "+ streamID+ ")]");
   VerifyResult result=VerifyResult.error;
   TLSStreamHandler tlsStreamHandler;
   log.debug("Send the Authoritative Server a stream header and wait for answer.");
@@ -9,7 +9,7 @@
   stream.append(" xmlns=\"jabber:server\"");
   stream.append(" xmlns:db=\"jabber:server:dialback\"");
   stream.append(" to=\"");
-  stream.append(hostname);
+  stream.append(remoteDomain);
   stream.append("\"");
   stream.append(" from=\"");
   stream.append(recipient);
@@ -56,7 +56,7 @@
       writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),StandardCharsets.UTF_8));
       reader.getXPPParser().setInput(new InputStreamReader(tlsStreamHandler.getInputStream(),StandardCharsets.UTF_8));
       log.debug("Successfully negotiated TLS with AS... ");
-      return sendVerifyKey(key,streamID,recipient,hostname,writer,reader,socket);
+      return sendVerifyKey(key,streamID,recipient,remoteDomain,writer,reader,socket);
     }
   }
   if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
@@ -64,7 +64,7 @@
     StringBuilder sb=new StringBuilder();
     sb.append("<db:verify");
     sb.append(" from=\"").append(recipient).append("\"");
-    sb.append(" to=\"").append(hostname).append("\"");
+    sb.append(" to=\"").append(remoteDomain).append("\"");
     sb.append(" id=\"").append(streamID).append("\">");
     sb.append(key);
     sb.append("</db:verify>");
@@ -83,7 +83,7 @@
           writer.flush();
           throw new RemoteConnectionFailedException("Host unknown");
         }
- else         if (!hostname.equals(doc.attributeValue("from"))) {
+ else         if (!remoteDomain.equals(doc.attributeValue("from"))) {
           writer.write(new StreamError(StreamError.Condition.invalid_from).toXML());
           writer.flush();
           throw new RemoteConnectionFailedException("Invalid From");

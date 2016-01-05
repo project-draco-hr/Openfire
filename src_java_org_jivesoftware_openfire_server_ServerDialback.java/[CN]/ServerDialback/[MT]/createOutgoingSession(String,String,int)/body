@@ -1,26 +1,13 @@
 {
-  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Create Outgoing Session from: " + localDomain+ " to: "+ remoteDomain+ " (port: "+ port+ ")]");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Acting as Originating Server: Create Outgoing Session from: " + localDomain+ " to RS at: "+ remoteDomain+ " (port: "+ port+ ")]");
   log.debug("Creating new outgoing session...");
   String hostname=null;
   int realPort=port;
   try {
-    Socket socket=new Socket();
-    log.debug("Get a list of real hostnames to connect to using DNS lookup of the specified hostname.");
-    List<DNSUtil.HostAddress> hosts=DNSUtil.resolveXMPPDomain(remoteDomain,port);
-    for (Iterator<DNSUtil.HostAddress> it=hosts.iterator(); it.hasNext(); ) {
-      try {
-        DNSUtil.HostAddress address=it.next();
-        hostname=address.getHost();
-        realPort=address.getPort();
-        log.debug("Trying to create plain socket connection to: {}:{} ...",hostname,realPort);
-        socket.connect(new InetSocketAddress(hostname,realPort),RemoteServerManager.getSocketTimeout());
-        log.debug("Plain socket connection to {}:{} successful!",hostname,realPort);
-        break;
-      }
- catch (      Exception e) {
-        log.debug("An exception occurred while trying to create a plain socket connection to: {}:{}",hostname,realPort,e);
-        log.warn("Unable to create plain socket connection to: {}:{}. Cause: {} (a full stacktrace is logged on debug level)",hostname,realPort,e.getMessage());
-      }
+    final Socket socket=SocketUtil.createSocketToXmppDomain(remoteDomain,port);
+    if (socket == null) {
+      log.info("Unable to create new outgoing session: Cannot create a plain socket connection with any applicable remote host.");
+      return null;
     }
     connection=new SocketConnection(XMPPServer.getInstance().getPacketDeliverer(),socket,false);
     log.debug("Send the stream header and wait for response...");
