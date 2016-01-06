@@ -1,12 +1,14 @@
 {
   if (isEnabled()) {
+    final long requestFrequency=JiveGlobals.getLongProperty("stream.management.requestFrequency",5);
+    final boolean requestAck;
 synchronized (this) {
-      this.serverSentStanzas++;
       final long x=1 + (unacknowledgedServerStanzas.isEmpty() ? clientProcessedStanzas : unacknowledgedServerStanzas.getLast().x);
       unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(x,packet.createCopy()));
-      Log.debug("Added stanza of type {} to collection of unacknowledged stanzas (x={}). Collection size is now {} / {}",packet.getElement().getName(),x,serverSentStanzas,unacknowledgedServerStanzas.size());
+      requestAck=unacknowledgedServerStanzas.size() >= requestFrequency;
+      Log.debug("Added stanza of type {} to collection of unacknowledged stanzas (x={}). Collection size is now {} / {}",packet.getElement().getName(),x,unacknowledgedServerStanzas.size());
     }
-    if (serverSentStanzas % JiveGlobals.getLongProperty("stream.management.requestFrequency",5) == 0) {
+    if (requestAck) {
       sendServerRequest();
     }
   }
