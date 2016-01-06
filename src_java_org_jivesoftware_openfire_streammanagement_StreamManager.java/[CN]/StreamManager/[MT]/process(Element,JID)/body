@@ -1,0 +1,23 @@
+{
+switch (element.getName()) {
+case "enable":
+    if (isEnabled()) {
+      return;
+    }
+  if (onBehalfOf.getResource() == null) {
+    sendUnexpectedError();
+    return;
+  }
+setNamespace(element.getNamespace().getStringValue());
+setEnabled(true);
+break;
+case "r":
+sendServerAcknowledgement();
+break;
+case "a":
+processClientAcknowledgement(element);
+break;
+default :
+sendUnexpectedError();
+}
+}
