@@ -1,26 +1,24 @@
 {
   if (isEnabled()) {
     if (ack.attribute("h") != null) {
-      long count=Long.valueOf(ack.attributeValue("h"));
+      final long h=Long.valueOf(ack.attributeValue("h"));
 synchronized (this) {
-        Log.debug("Ack: h={} mine={} length={}",count,clientProcessedStanzas,unacknowledgedServerStanzas.size());
-        if (count < clientProcessedStanzas) {
-          Log.debug("Maybe rollover");
-          if (clientProcessedStanzas > mask) {
-            while (count < clientProcessedStanzas) {
-              Log.debug("Rolling...");
-              count+=mask + 1;
-            }
+        if (!unacknowledgedServerStanzas.isEmpty() && h > unacknowledgedServerStanzas.getLast().x) {
+          Log.warn("Client acknowledges stanzas that we didn't sent! Client Ack h: {}, our last stanza: {}",h,unacknowledgedServerStanzas.getLast().x);
+          clientProcessedStanzas=h;
+        }
+        Log.debug("Before processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
+        while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getFirst().x <= h) {
+          unacknowledgedServerStanzas.removeFirst();
+        }
+        final boolean clientHadRollOver=h < 10000 && unacknowledgedServerStanzas.getLast().x > mask - 10000;
+        if (clientHadRollOver) {
+          Log.info("Client rolled over 'h'. Purging high-numbered unacklowledged stanzas.");
+          while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - 10000) {
+            unacknowledgedServerStanzas.removeLast();
           }
         }
-        while (clientProcessedStanzas < count) {
-          unacknowledgedServerStanzas.removeFirst();
-          clientProcessedStanzas++;
-          Log.debug("In Ack: h={} mine={} length={}",count,clientProcessedStanzas,unacknowledgedServerStanzas.size());
-        }
-        if (count >= clientProcessedStanzas) {
-          clientProcessedStanzas=count;
-        }
+        Log.debug("After processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
       }
     }
   }

@@ -2,8 +2,9 @@
   if (isEnabled()) {
 synchronized (this) {
       this.serverSentStanzas++;
-      unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(new Date(),packet.createCopy()));
-      Log.debug("Added stanza of type {}, now {} / {}",packet.getClass().getName(),serverSentStanzas,unacknowledgedServerStanzas.size());
+      final long x=1 + (unacknowledgedServerStanzas.isEmpty() ? clientProcessedStanzas : unacknowledgedServerStanzas.getLast().x);
+      unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(x,packet.createCopy()));
+      Log.debug("Added stanza of type {} to collection of unacknowledged stanzas (x={}). Collection size is now {} / {}",packet.getElement().getName(),x,serverSentStanzas,unacknowledgedServerStanzas.size());
     }
     if (serverSentStanzas % JiveGlobals.getLongProperty("stream.management.requestFrequency",5) == 0) {
       sendServerRequest();
