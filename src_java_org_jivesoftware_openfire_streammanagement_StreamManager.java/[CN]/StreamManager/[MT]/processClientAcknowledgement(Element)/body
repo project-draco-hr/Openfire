@@ -1,8 +1,8 @@
 {
   if (isEnabled()) {
+    if (ack.attribute("h") != null) {
+      long count=Long.valueOf(ack.attributeValue("h"));
 synchronized (this) {
-      if (ack.attribute("h") != null) {
-        long count=Long.valueOf(ack.attributeValue("h"));
         Log.debug("Ack: h={} mine={} length={}",count,clientProcessedStanzas,unacknowledgedServerStanzas.size());
         if (count < clientProcessedStanzas) {
           Log.debug("Maybe rollover");
