@@ -1,26 +1,26 @@
 {
   if (isEnabled()) {
+    if (ack.attribute("h") != null) {
+      final long h=Long.valueOf(ack.attributeValue("h"));
+      Log.debug("Received acknowledgement from client: h={}",h);
 synchronized (this) {
-      if (ack.attribute("h") != null) {
-        long count=Long.valueOf(ack.attributeValue("h"));
-        Deque<UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
-        long i=getClientProcessedStanzas();
-        Log.debug("Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
-        if (count < i) {
-          Log.debug("Maybe rollover");
-          if (i > mask) {
-            while (count < i) {
-              Log.debug("Rolling...");
-              count+=mask + 1;
-            }
+        if (!unacknowledgedServerStanzas.isEmpty() && h > unacknowledgedServerStanzas.getLast().x) {
+          Log.warn("Client acknowledges stanzas that we didn't sent! Client Ack h: {}, our last stanza: {}",h,unacknowledgedServerStanzas.getLast().x);
+        }
+        clientProcessedStanzas=h;
+        Log.trace("Before processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
+        while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getFirst().x <= h) {
+          unacknowledgedServerStanzas.removeFirst();
+        }
+        final int maxUnacked=getMaximumUnacknowledgedStanzas();
+        final boolean clientHadRollOver=h < maxUnacked && !unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked;
+        if (clientHadRollOver) {
+          Log.info("Client rolled over 'h'. Purging high-numbered unacknowledged stanzas.");
+          while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked) {
+            unacknowledgedServerStanzas.removeLast();
           }
         }
-        while (i < count) {
-          unacknowledgedStanzas.removeFirst();
-          i++;
-          Log.debug("In Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
-        }
-        setClientProcessedStanzas(count);
+        Log.trace("After processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
       }
     }
   }

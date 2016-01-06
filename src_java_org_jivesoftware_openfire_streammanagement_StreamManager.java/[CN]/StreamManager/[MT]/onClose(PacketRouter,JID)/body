@@ -1,17 +1,14 @@
 {
-  if (isEnabled()) {
-    setEnabled(false);
 synchronized (this) {
-      Deque<StreamManager.UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
-      if (!unacknowledgedStanzas.isEmpty()) {
-        for (        StreamManager.UnackedPacket unacked : unacknowledgedStanzas) {
-          if (unacked.packet instanceof Message) {
-            Message m=(Message)unacked.packet;
-            if (m.getExtension("delay","urn:xmpp:delay") == null) {
-              Element delayInformation=m.addChildElement("delay","urn:xmpp:delay");
-              delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(unacked.timestamp));
-              delayInformation.addAttribute("from",serverAddress.toBareJID());
-            }
+    if (isEnabled()) {
+      namespace=null;
+      for (      StreamManager.UnackedPacket unacked : unacknowledgedServerStanzas) {
+        if (unacked.packet instanceof Message) {
+          Message m=(Message)unacked.packet;
+          if (m.getExtension("delay","urn:xmpp:delay") == null) {
+            Element delayInformation=m.addChildElement("delay","urn:xmpp:delay");
+            delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(unacked.timestamp));
+            delayInformation.addAttribute("from",serverAddress.toBareJID());
           }
           router.route(unacked.packet);
         }

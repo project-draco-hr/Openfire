@@ -65,22 +65,9 @@
     }
   }
  else   if (isStreamManagementStanza(doc)) {
-switch (tag) {
-case "enable":
-      session.enableStreamMangement(doc);
-    break;
-case "r":
-  session.getStreamManager().sendServerAcknowledgement();
-break;
-case "a":
-session.getStreamManager().processClientAcknowledgement(doc);
-break;
-default :
-process(doc);
-break;
-}
-}
+    session.getStreamManager().process(doc,session.getAddress());
+  }
  else {
-process(doc);
-}
+    process(doc);
+  }
 }
