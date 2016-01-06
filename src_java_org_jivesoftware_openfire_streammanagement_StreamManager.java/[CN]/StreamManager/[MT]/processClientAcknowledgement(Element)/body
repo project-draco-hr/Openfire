@@ -11,10 +11,11 @@ synchronized (this) {
         while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getFirst().x <= h) {
           unacknowledgedServerStanzas.removeFirst();
         }
-        final boolean clientHadRollOver=h < 10000 && !unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - 10000;
+        final int maxUnacked=getMaximumUnacknowledgedStanzas();
+        final boolean clientHadRollOver=h < maxUnacked && !unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked;
         if (clientHadRollOver) {
-          Log.info("Client rolled over 'h'. Purging high-numbered unacklowledged stanzas.");
-          while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - 10000) {
+          Log.info("Client rolled over 'h'. Purging high-numbered unacknowledged stanzas.");
+          while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked) {
             unacknowledgedServerStanzas.removeLast();
           }
         }

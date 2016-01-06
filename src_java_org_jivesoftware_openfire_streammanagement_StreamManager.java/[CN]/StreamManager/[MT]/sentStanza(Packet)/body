@@ -1,14 +1,20 @@
 {
   if (isEnabled()) {
     final long requestFrequency=JiveGlobals.getLongProperty("stream.management.requestFrequency",5);
-    final boolean requestAck;
+    final int size;
 synchronized (this) {
       final long x=1 + (unacknowledgedServerStanzas.isEmpty() ? clientProcessedStanzas : unacknowledgedServerStanzas.getLast().x);
       unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(x,packet.createCopy()));
-      requestAck=unacknowledgedServerStanzas.size() >= requestFrequency;
-      Log.debug("Added stanza of type {} to collection of unacknowledged stanzas (x={}). Collection size is now {} / {}",packet.getElement().getName(),x,unacknowledgedServerStanzas.size());
+      size=unacknowledgedServerStanzas.size();
+      Log.debug("Added stanza of type {} to collection of unacknowledged stanzas (x={}). Collection size is now {}.",packet.getElement().getName(),x,size);
+      if (size > getMaximumUnacknowledgedStanzas()) {
+        Log.warn("To many stanzas go unacknowledged for this connection. Clearing queue and disabling functionality.");
+        namespace=null;
+        unacknowledgedServerStanzas.clear();
+        return;
+      }
     }
-    if (requestAck) {
+    if (size >= requestFrequency) {
       sendServerRequest();
     }
   }
