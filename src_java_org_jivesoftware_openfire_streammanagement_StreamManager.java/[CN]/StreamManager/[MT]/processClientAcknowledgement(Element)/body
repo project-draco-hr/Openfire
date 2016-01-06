@@ -3,9 +3,8 @@
 synchronized (this) {
       if (ack.attribute("h") != null) {
         long count=Long.valueOf(ack.attributeValue("h"));
-        Deque<UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
         long i=getClientProcessedStanzas();
-        Log.debug("Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
+        Log.debug("Ack: h={} mine={} length={}",count,i,unacknowledgedServerStanzas.size());
         if (count < i) {
           Log.debug("Maybe rollover");
           if (i > mask) {
@@ -16,9 +15,9 @@ synchronized (this) {
           }
         }
         while (i < count) {
-          unacknowledgedStanzas.removeFirst();
+          unacknowledgedServerStanzas.removeFirst();
           i++;
-          Log.debug("In Ack: h={} mine={} length={}",count,i,unacknowledgedStanzas.size());
+          Log.debug("In Ack: h={} mine={} length={}",count,i,unacknowledgedServerStanzas.size());
         }
         setClientProcessedStanzas(count);
       }

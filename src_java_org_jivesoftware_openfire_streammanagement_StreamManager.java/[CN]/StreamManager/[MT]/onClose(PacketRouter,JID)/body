@@ -2,9 +2,8 @@
   if (isEnabled()) {
     setEnabled(false);
 synchronized (this) {
-      Deque<StreamManager.UnackedPacket> unacknowledgedStanzas=getUnacknowledgedServerStanzas();
-      if (!unacknowledgedStanzas.isEmpty()) {
-        for (        StreamManager.UnackedPacket unacked : unacknowledgedStanzas) {
+      if (!unacknowledgedServerStanzas.isEmpty()) {
+        for (        StreamManager.UnackedPacket unacked : unacknowledgedServerStanzas) {
           if (unacked.packet instanceof Message) {
             Message m=(Message)unacked.packet;
             if (m.getExtension("delay","urn:xmpp:delay") == null) {

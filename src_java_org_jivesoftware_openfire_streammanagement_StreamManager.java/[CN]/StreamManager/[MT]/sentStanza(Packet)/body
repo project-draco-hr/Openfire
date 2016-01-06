@@ -2,8 +2,8 @@
   if (isEnabled()) {
 synchronized (this) {
       incrementServerSentStanzas();
-      getUnacknowledgedServerStanzas().addLast(new StreamManager.UnackedPacket(new Date(),packet.createCopy()));
-      Log.debug("Added stanza of type {}, now {} / {}",packet.getClass().getName(),getServerSentStanzas(),getUnacknowledgedServerStanzas().size());
+      unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(new Date(),packet.createCopy()));
+      Log.debug("Added stanza of type {}, now {} / {}",packet.getClass().getName(),getServerSentStanzas(),unacknowledgedServerStanzas.size());
     }
     if (getServerSentStanzas() % JiveGlobals.getLongProperty("stream.management.requestFrequency",5) == 0) {
       sendServerRequest();
