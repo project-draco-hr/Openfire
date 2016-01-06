@@ -6,8 +6,8 @@
 synchronized (this) {
         if (!unacknowledgedServerStanzas.isEmpty() && h > unacknowledgedServerStanzas.getLast().x) {
           Log.warn("Client acknowledges stanzas that we didn't sent! Client Ack h: {}, our last stanza: {}",h,unacknowledgedServerStanzas.getLast().x);
-          clientProcessedStanzas=h;
         }
+        clientProcessedStanzas=h;
         Log.trace("Before processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
         while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getFirst().x <= h) {
           unacknowledgedServerStanzas.removeFirst();
