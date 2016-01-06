@@ -29,7 +29,7 @@
   }
   service.shutdown();
   try {
-    service.awaitTermination(500,TimeUnit.MILLISECONDS);
+    service.awaitTermination(JiveGlobals.getIntProperty("xmpp.muc.await-termination-millis",500),TimeUnit.MILLISECONDS);
     Log.debug("Successfully notified all {} local users about the imminent destruction of chat service '{}'",users.size(),chatServiceName);
   }
  catch (  InterruptedException e) {
