@@ -1,7 +1,18 @@
 {
   log.debug("Message sent to unreachable address: " + packet.toXML());
   final Message msg=(Message)packet;
-  if (msg.getType().equals(Message.Type.chat) && serverName.equals(recipient.getDomain()) && recipient.getResource() != null && routingTable.hasClientRoute(recipient.asBareJID())) {
+  boolean storeOffline=true;
+  if (msg.getType().equals(Message.Type.chat) && serverName.equals(recipient.getDomain()) && recipient.getResource() != null) {
+    for (    JID address : routingTable.getRoutes(recipient.asBareJID(),packet.getFrom())) {
+      ClientSession session=routingTable.getClientRoute(address);
+      if (session != null && session.isInitialized()) {
+        if (session.getPresence().getPriority() >= 1) {
+          storeOffline=false;
+        }
+      }
+    }
+  }
+  if (!storeOffline) {
     routingTable.routePacket(recipient.asBareJID(),packet,false);
   }
  else {
