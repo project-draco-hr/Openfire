@@ -1,5 +1,7 @@
 {
   MUCRoom room=rooms.remove(roomName);
+  Log.info("removing chat room:" + roomName + "|"+ room.getClass().getName());
+  if (room instanceof LocalMUCRoom)   GroupEventDispatcher.removeListener((LocalMUCRoom)room);
   if (room != null) {
     totalChatTime+=room.getChatLength();
     if (notify) {
