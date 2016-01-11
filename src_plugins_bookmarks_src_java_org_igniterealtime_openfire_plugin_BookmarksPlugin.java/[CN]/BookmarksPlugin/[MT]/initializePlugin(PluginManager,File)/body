@@ -1,0 +1,22 @@
+{
+  System.out.println("Starting Bookmarks Plugin");
+  boolean foundIncompatiblePlugin=false;
+  try {
+    if (checkForEnterprisePlugin()) {
+      System.out.println("Enterprise plugin found. Stopping Bookmarks Plugin.");
+      foundIncompatiblePlugin=true;
+    }
+    if (checkForIncompatibleClientControlPlugin()) {
+      System.out.println("ClientControl plugin v1.3.1 or earlier found. Stopping Bookmarks Plugin.");
+      foundIncompatiblePlugin=true;
+    }
+  }
+ catch (  Exception ex) {
+    Log.warn("An exception occurred while determining if there are incompatible plugins. Assuming everything is OK.",ex);
+  }
+  if (foundIncompatiblePlugin) {
+    throw new IllegalStateException("This plugin cannot run next to the Enterprise plugin (any version) or the ClientControl plugin v1.3.1 or earlier.");
+  }
+  bookmarkInterceptor=new BookmarkInterceptor();
+  bookmarkInterceptor.start();
+}
