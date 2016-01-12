@@ -33,7 +33,7 @@
       newAffiliation=MUCRole.Affiliation.admin;
     }
  else     if (outcasts.includes(occupantJID)) {
-      newAffiliation=MUCRole.Affiliation.none;
+      newAffiliation=MUCRole.Affiliation.outcast;
       newRole=MUCRole.Role.none;
       kickMember=true;
       isOutcast=true;
@@ -54,7 +54,7 @@
     Log.info("New affiliation: " + newAffiliation);
     try {
       List<Presence> thisOccupant=changeOccupantAffiliation(senderRole,occupantJID,newAffiliation,newRole);
-      if (isMembersOnly() && kickMember) {
+      if (kickMember) {
         for (        Presence presence : thisOccupant) {
           presence.setType(Presence.Type.unavailable);
           presence.setStatus(null);
