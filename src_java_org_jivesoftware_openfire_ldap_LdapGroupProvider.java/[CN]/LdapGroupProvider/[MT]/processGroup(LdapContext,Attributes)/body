@@ -2,8 +2,10 @@
   XMPPServer server=XMPPServer.getInstance();
   String serverName=server.getServerInfo().getXMPPDomain();
   Pattern pattern=Pattern.compile("(?i)(^" + manager.getUsernameField() + "=)([^,]+)(.+)");
+  boolean isAD=manager.getUsernameField().equals("sAMAccountName");
+  String[] returningAttributes=isAD ? new String[]{"distinguishedName",manager.getUsernameField()} : new String[]{manager.getUsernameField()};
   SearchControls searchControls=new SearchControls();
-  searchControls.setReturningAttributes(new String[]{"distinguishedName",manager.getUsernameField()});
+  searchControls.setReturningAttributes(returningAttributes);
   if (manager.isSubTreeSearch()) {
     searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
   }
@@ -50,8 +52,14 @@
               while (usrAnswer.hasMoreElements()) {
                 searchResult=(SearchResult)usrAnswer.nextElement();
                 Attributes attrs=searchResult.getAttributes();
-                Attribute userdnAttr=attrs.get("distinguishedName");
-                if (username.equals((String)userdnAttr.get())) {
+                if (isAD) {
+                  Attribute userdnAttr=attrs.get("distinguishedName");
+                  if (username.equals((String)userdnAttr.get())) {
+                    username=(String)attrs.get(manager.getUsernameField()).get();
+                    break;
+                  }
+                }
+ else {
                   username=(String)attrs.get(manager.getUsernameField()).get();
                   break;
                 }
