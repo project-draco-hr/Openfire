@@ -1,0 +1,8 @@
+{
+  Message message=new Message();
+  message.setType(Message.Type.chat);
+  message.setThread("1234");
+  PacketExtension chatState=new PacketExtension("composing","http://jabber.org/protocol/chatstates");
+  message.addExtension(chatState);
+  assertFalse(OfflineMessageStore.shouldStoreMessage(message));
+}
