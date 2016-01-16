@@ -6,22 +6,32 @@
   random.setSeed((new Date().getTime()));
   random.nextBytes(serno);
   BigInteger serial=(new java.math.BigInteger(serno)).abs();
-  X509V3CertificateGenerator certGenerator=new X509V3CertificateGenerator();
-  certGenerator.reset();
-  certGenerator.setSerialNumber(serial);
-  certGenerator.setIssuerDN(new X509Name(issuerDN));
-  certGenerator.setNotBefore(new Date(System.currentTimeMillis()));
-  certGenerator.setNotAfter(new Date(System.currentTimeMillis() + days * (1000L * 60 * 60* 24)));
-  certGenerator.setSubjectDN(new X509Name(subjectDN));
-  certGenerator.setPublicKey(pubKey);
-  certGenerator.setSignatureAlgorithm(signAlgoritm);
+  X500NameBuilder subjectBuilder=new X500NameBuilder();
+  subjectBuilder.addRDN(BCStyle.CN,subjectDN);
+  X500NameBuilder issuerBuilder=new X500NameBuilder();
+  issuerBuilder.addRDN(BCStyle.CN,issuerDN);
+  JcaX509v3CertificateBuilder certBuilder=new JcaX509v3CertificateBuilder(issuerBuilder.build(),serial,new Date(),new Date(System.currentTimeMillis() + days * (1000L * 60 * 60* 24)),subjectBuilder.build(),pubKey);
   boolean critical=subjectDN == null || "".equals(subjectDN.trim());
-  ASN1Sequence othernameSequence=new DERSequence(new ASN1Encodable[]{new DERObjectIdentifier("1.3.6.1.5.5.7.8.5"),new DERTaggedObject(true,0,new DERUTF8String(domain))});
+  ASN1Sequence othernameSequence=new DERSequence(new ASN1Encodable[]{new ASN1ObjectIdentifier("1.3.6.1.5.5.7.8.5"),new DERTaggedObject(true,0,new DERUTF8String(domain))});
   GeneralName othernameGN=new GeneralName(GeneralName.otherName,othernameSequence);
   GeneralNames subjectAltNames=new GeneralNames(new GeneralName[]{othernameGN});
-  certGenerator.addExtension(X509Extensions.SubjectAlternativeName,critical,subjectAltNames);
-  X509Certificate cert=certGenerator.generateX509Certificate(privKey,"BC",new SecureRandom());
-  cert.checkValidity(new Date());
-  cert.verify(pubKey);
-  return cert;
+  certBuilder.addExtension(Extension.subjectAlternativeName,critical,subjectAltNames);
+  JcaX509ExtensionUtils utils=new JcaX509ExtensionUtils();
+  certBuilder.addExtension(Extension.subjectKeyIdentifier,false,utils.createSubjectKeyIdentifier(pubKey));
+  certBuilder.addExtension(Extension.authorityKeyIdentifier,false,utils.createAuthorityKeyIdentifier(pubKey));
+  try {
+    ContentSigner signer=new JcaContentSignerBuilder(signAlgoritm).build(privKey);
+    X509CertificateHolder cert=certBuilder.build(signer);
+    if (!cert.isValidOn(new Date())) {
+      throw new GeneralSecurityException("Certificate validity not valid");
+    }
+    ContentVerifierProvider verifierProvider=new JcaContentVerifierProviderBuilder().build(pubKey);
+    if (!cert.isSignatureValid(verifierProvider)) {
+      throw new GeneralSecurityException("Certificate signature not valid");
+    }
+    return new JcaX509CertificateConverter().getCertificate(cert);
+  }
+ catch (  OperatorCreationException|CertException e) {
+    throw new GeneralSecurityException(e);
+  }
 }

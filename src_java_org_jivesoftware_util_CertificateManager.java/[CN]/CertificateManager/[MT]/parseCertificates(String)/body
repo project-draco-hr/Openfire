@@ -1,10 +1,5 @@
 {
-  if (pemRepresentation == null || pemRepresentation.trim().isEmpty()) {
-    throw new IllegalArgumentException("Argument 'pemRepresentation' cannot be null or an empty String.");
-  }
   final String pem=pemRepresentation.replaceAll("(?m) +$","").replaceAll("(?m)^ +","");
-  try (InputStream inputStream=new ByteArrayInputStream(pem.getBytes())){
-    final CertificateFactory certificateFactory=CertificateFactory.getInstance("X509");
-    return (Collection<X509Certificate>)certificateFactory.generateCertificates(inputStream);
-  }
- }
+  ByteArrayInputStream input=new ByteArrayInputStream(pem.getBytes(StandardCharsets.UTF_8));
+  return parseCertificates(input);
+}

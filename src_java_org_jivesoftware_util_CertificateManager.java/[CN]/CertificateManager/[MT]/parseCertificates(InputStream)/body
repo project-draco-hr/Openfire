@@ -1,4 +1,4 @@
 {
-  final java.util.Scanner s=new java.util.Scanner(pemRepresentation).useDelimiter("\\A");
-  return parseCertificates(s.hasNext() ? s.next() : "");
+  final CertificateFactory certificateFactory=CertificateFactory.getInstance("X509");
+  return (Collection<X509Certificate>)certificateFactory.generateCertificates(pemRepresentation);
 }
