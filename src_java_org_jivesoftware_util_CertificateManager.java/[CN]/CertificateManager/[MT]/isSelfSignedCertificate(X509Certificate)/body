@@ -1,10 +1,9 @@
 {
   try {
-    JcaX509CertificateHolder certificateHolder=new JcaX509CertificateHolder(certificate);
-    ContentVerifierProvider verifier=new JcaContentVerifierProviderBuilder().setProvider("BC").build(certificate.getPublicKey());
-    return certificateHolder.isSignatureValid(verifier);
+    certificate.verify(certificate.getPublicKey());
+    return true;
   }
- catch (  CertException|CertificateEncodingException|OperatorCreationException e) {
-    return certificate.getSubjectDN().equals(certificate.getIssuerDN());
+ catch (  GeneralSecurityException e) {
+    return false;
   }
 }
