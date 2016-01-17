@@ -1,4 +1,10 @@
 {
-  final CertificateFactory certificateFactory=CertificateFactory.getInstance("X509");
+  CertificateFactory certificateFactory;
+  try {
+    certificateFactory=CertificateFactory.getInstance("X509","BC");
+  }
+ catch (  NoSuchProviderException e) {
+    certificateFactory=CertificateFactory.getInstance("X509");
+  }
   return (Collection<X509Certificate>)certificateFactory.generateCertificates(pemRepresentation);
 }

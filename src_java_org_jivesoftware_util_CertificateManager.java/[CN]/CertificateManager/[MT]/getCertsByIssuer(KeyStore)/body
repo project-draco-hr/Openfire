@@ -1,5 +1,5 @@
 {
-  Map<Principal,List<X509Certificate>> answer=new HashMap<>();
+  Map<String,List<X509Certificate>> answer=new HashMap<>();
   Enumeration<String> aliases=ks.aliases();
   while (aliases.hasMoreElements()) {
     String alias=aliases.nextElement();
@@ -16,7 +16,7 @@
           vec.add(cert);
         }
       }
-      answer.put(subjectDN,vec);
+      answer.put(subjectDN.getName(),vec);
     }
   }
   return answer;
