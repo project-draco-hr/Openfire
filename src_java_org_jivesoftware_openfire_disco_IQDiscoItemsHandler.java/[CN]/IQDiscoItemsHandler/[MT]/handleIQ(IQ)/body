@@ -5,7 +5,7 @@
     reply.setError(PacketError.Condition.feature_not_implemented);
     return reply;
   }
-  DiscoItemsProvider itemsProvider=getProvider(packet.getTo() == null ? XMPPServer.getInstance().getServerInfo().getXMPPDomain() : packet.getTo().getDomain());
+  DiscoItemsProvider itemsProvider=getProvider(packet.getTo() == null ? packet.getFrom().getNode() : packet.getTo().getNode() != null ? packet.getTo().getNode() : packet.getTo().getDomain());
   if (itemsProvider != null) {
     String name=packet.getTo() == null ? null : packet.getTo().getNode();
     if (name == null || name.trim().length() == 0) {
