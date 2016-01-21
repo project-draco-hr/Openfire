@@ -3,12 +3,19 @@
   state=State.stopped;
   Hazelcast.shutdownAll();
   cluster=null;
-  while (!clusterListener.isDone()) {
-    try {
-      Thread.sleep(100);
+  if (clusterListener != null) {
+    while (!clusterListener.isDone()) {
+      try {
+        Thread.sleep(100);
+      }
+ catch (      InterruptedException e) {
+      }
     }
- catch (    InterruptedException e) {
-    }
+    hazelcast.getLifecycleService().removeLifecycleListener(lifecycleListener);
+    cluster.removeMembershipListener(membershipListener);
+    lifecycleListener=null;
+    membershipListener=null;
+    clusterListener=null;
   }
   XMPPServer.getInstance().setNodeID(null);
   XMPPServer.getInstance().getRoutingTable().setRemotePacketRouter(null);
