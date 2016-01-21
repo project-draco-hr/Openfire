@@ -44,12 +44,16 @@ if (underQuota(message)) {
 store(message);
 }
  else {
+Log.debug("Unable to store, as user is over storage quota. Bouncing message instead: " + message.toXML());
 bounce(message);
 }
 break;
 case store_and_drop:
 if (underQuota(message)) {
 store(message);
+}
+ else {
+Log.debug("Unable to store, as user is over storage quota. Silently dropping message: " + message.toXML());
 }
 break;
 case drop:
