@@ -1,11 +1,11 @@
 {
-  String streamID=session.getStreamID().getID();
+  StreamID streamID=session.getStreamID();
   ConnectionMultiplexerSession multiplexerSession=multiplexerManager.getMultiplexerSession(connectionManagerName,streamID);
   if (multiplexerSession != null) {
     StringBuilder sb=new StringBuilder(200 + text.length());
     sb.append("<route from=\"").append(serverName);
     sb.append("\" to=\"").append(connectionManagerName);
-    sb.append("\" streamid=\"").append(streamID).append("\">");
+    sb.append("\" streamid=\"").append(streamID.getID()).append("\">");
     sb.append(text);
     sb.append("</route>");
     multiplexerSession.deliverRawText(sb.toString());
