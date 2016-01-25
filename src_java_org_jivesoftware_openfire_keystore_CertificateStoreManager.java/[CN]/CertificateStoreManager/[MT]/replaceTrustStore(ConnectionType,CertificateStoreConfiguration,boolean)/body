@@ -8,7 +8,7 @@
   final CertificateStoreConfiguration oldConfig=typeToTrustStore.get(type);
   if (oldConfig == null || !oldConfig.equals(configuration)) {
     if (!trustStores.containsKey(configuration)) {
-      final TrustStore store=new TrustStore(configuration,true);
+      final TrustStore store=new TrustStore(configuration,createIfAbsent);
       trustStores.put(configuration,store);
     }
     typeToTrustStore.put(type,configuration);

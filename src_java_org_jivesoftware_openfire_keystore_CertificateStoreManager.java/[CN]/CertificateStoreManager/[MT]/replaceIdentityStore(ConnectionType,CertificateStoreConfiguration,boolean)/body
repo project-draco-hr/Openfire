@@ -8,7 +8,7 @@
   final CertificateStoreConfiguration oldConfig=typeToIdentityStore.get(type);
   if (oldConfig == null || !oldConfig.equals(configuration)) {
     if (!identityStores.containsKey(configuration)) {
-      final IdentityStore store=new IdentityStore(configuration,true);
+      final IdentityStore store=new IdentityStore(configuration,createIfAbsent);
       identityStores.put(configuration,store);
     }
     typeToIdentityStore.put(type,configuration);
