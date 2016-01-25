@@ -18,7 +18,7 @@
     final String pemCSR=CertificateManager.createSigningRequest((X509Certificate)certificate,(PrivateKey)key);
     return pemCSR;
   }
- catch (  IOException|NoSuchProviderException|SignatureException|InvalidKeyException|KeyStoreException|UnrecoverableKeyException|NoSuchAlgorithmException e) {
+ catch (  IOException|KeyStoreException|UnrecoverableKeyException|NoSuchAlgorithmException|OperatorCreationException e) {
     throw new CertificateStoreConfigException("Cannot generate CSR for alias '" + alias + "'",e);
   }
 }

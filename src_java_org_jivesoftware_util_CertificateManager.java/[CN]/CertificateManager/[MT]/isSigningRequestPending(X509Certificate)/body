@@ -1,8 +1,7 @@
 {
-  if (!isSelfSignedCertificate(keyStore,alias)) {
+  if (!isSelfSignedCertificate(certificate)) {
     return false;
   }
-  X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
   Matcher matcher=valuesPattern.matcher(certificate.getIssuerDN().toString());
   return matcher.find() && matcher.find();
 }

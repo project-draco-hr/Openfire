@@ -4,7 +4,7 @@
     Log.warn("Certificate not found for alias: " + alias);
     return false;
   }
-  PrivateKey privKey=(PrivateKey)keyStore.getKey(alias,keyPassword.toCharArray());
+  PrivateKey privKey=(PrivateKey)keyStore.getKey(alias,keyPassword);
   Collection<X509Certificate> certs=parseCertificates(inputStream);
   if (certs.isEmpty()) {
     throw new Exception("Reply has no certificates");
@@ -19,7 +19,7 @@
   if (newCerts == null) {
     return false;
   }
-  keyStore.setKeyEntry(alias,privKey,keyPassword.toCharArray(),newCerts.toArray(new X509Certificate[newCerts.size()]));
+  keyStore.setKeyEntry(alias,privKey,keyPassword,newCerts.toArray(new X509Certificate[newCerts.size()]));
   for (  CertificateEventListener listener : listeners) {
     try {
       listener.certificateSigned(keyStore,alias,newCerts);
