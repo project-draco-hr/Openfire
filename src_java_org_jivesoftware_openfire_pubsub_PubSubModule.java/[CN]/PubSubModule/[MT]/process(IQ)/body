@@ -8,14 +8,26 @@
     namespace=childElement.getNamespaceURI();
   }
   if ("http://jabber.org/protocol/disco#info".equals(namespace)) {
-    IQ reply=XMPPServer.getInstance().getIQDiscoInfoHandler().handleIQ(iq);
-    router.route(reply);
+    if (iqDiscoInfoHandler != null) {
+      IQ reply=iqDiscoInfoHandler.handleIQ(iq);
+      router.route(reply);
+    }
+ else {
+      sendServiceUnavailablePacket(iq);
+      return;
+    }
   }
  else   if ("http://jabber.org/protocol/disco#items".equals(namespace)) {
-    IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
-    router.route(reply);
+    if (iqDiscoItemsHandler != null) {
+      IQ reply=iqDiscoItemsHandler.handleIQ(iq);
+      router.route(reply);
+    }
+ else {
+      sendServiceUnavailablePacket(iq);
+      return;
+    }
   }
  else {
-    engine.sendErrorPacket(iq,PacketError.Condition.service_unavailable,null);
+    sendServiceUnavailablePacket(iq);
   }
 }
