@@ -1,8 +1,10 @@
 {
-  UpdatePresence request=new UpdatePresence(this,newPresence.createCopy(),occupantRole.getNickname());
-  CacheFactory.doClusterTask(request);
-  request=new UpdatePresence(this,newPresence.createCopy(),occupantRole.getNickname());
-  request.setOriginator(true);
-  request.run();
-  broadcastPresence(occupantRole.getPresence().createCopy(),false);
+  final String occupantNickName=occupantRole.getNickname();
+  final UpdatePresence localUpdateRequest=new UpdatePresence(this,newPresence.createCopy(),occupantNickName);
+  localUpdateRequest.setOriginator(true);
+  localUpdateRequest.run();
+  final Presence updatedPresence=occupantRole.getPresence().createCopy();
+  final UpdatePresence clusterUpdateRequest=new UpdatePresence(this,updatedPresence,occupantNickName);
+  CacheFactory.doClusterTask(clusterUpdateRequest);
+  broadcastPresence(updatedPresence,false);
 }
