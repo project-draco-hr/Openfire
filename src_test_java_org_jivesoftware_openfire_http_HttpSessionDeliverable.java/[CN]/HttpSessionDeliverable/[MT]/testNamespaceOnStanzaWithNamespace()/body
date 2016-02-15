@@ -1,0 +1,11 @@
+{
+  final Message message=new Message();
+  message.getElement().setQName(QName.get("message","unit:test:preexisting:namespace"));
+  message.setTo("unittest@example.org/test");
+  message.addChildElement("unittest","unit:test:namespace");
+  final List<Packet> packets=new ArrayList<>();
+  packets.add(message);
+  final HttpSession.Deliverable deliverable=new HttpSession.Deliverable(packets);
+  final String result=deliverable.getDeliverable();
+  assertEquals("<message xmlns=\"unit:test:preexisting:namespace\" to=\"unittest@example.org/test\"><unittest xmlns=\"unit:test:namespace\"/></message>",result);
+}
