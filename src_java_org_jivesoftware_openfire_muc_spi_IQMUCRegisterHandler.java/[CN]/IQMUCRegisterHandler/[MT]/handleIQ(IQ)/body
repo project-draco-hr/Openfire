@@ -11,7 +11,7 @@
     reply.setError(PacketError.Condition.item_not_found);
     return reply;
   }
- else   if (!room.isRegistrationEnabled()) {
+ else   if (!room.isRegistrationEnabled() || (packet.getFrom() != null && MUCRole.Affiliation.outcast == room.getAffiliation(packet.getFrom().asBareJID()))) {
     reply=IQ.createResultIQ(packet);
     reply.setChildElement(packet.getChildElement().createCopy());
     reply.setError(PacketError.Condition.not_allowed);
