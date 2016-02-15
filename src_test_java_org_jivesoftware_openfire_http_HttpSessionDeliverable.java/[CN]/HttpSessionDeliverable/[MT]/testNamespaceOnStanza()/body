@@ -1,0 +1,10 @@
+{
+  final Message message=new Message();
+  message.setTo("unittest@example.org/test");
+  message.addChildElement("unittest","unit:test:namespace");
+  final List<Packet> packets=new ArrayList<>();
+  packets.add(message);
+  final HttpSession.Deliverable deliverable=new HttpSession.Deliverable(packets);
+  final String result=deliverable.getDeliverable();
+  assertEquals("<message to=\"unittest@example.org/test\" xmlns=\"jabber:client\"><unittest xmlns=\"unit:test:namespace\"/></message>",result);
+}
