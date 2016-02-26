@@ -1,7 +1,12 @@
 {
-  if (!(session instanceof ClientSession) && !(session instanceof IncomingServerSession)) {
+  if (session instanceof ClientSession) {
+    return getSASLMechanismsElement((ClientSession)session).asXML();
+  }
+ else   if (session instanceof LocalIncomingServerSession) {
+    return getSASLMechanismsElement((LocalIncomingServerSession)session).asXML();
+  }
+ else {
+    Log.debug("Unable to determine SASL mechanisms that are applicable to session '{}'. Unrecognized session type.",session);
     return "";
   }
-  Element mechs=getSASLMechanismsElement(session);
-  return mechs.asXML();
 }

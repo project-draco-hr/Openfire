@@ -1,6 +1,13 @@
 {
-  if (checkPolicy(props)) {
-    return myMechs;
+  final Set<String> result=new HashSet<>();
+  for (  final Mechanism mechanism : allMechanisms) {
+    if (mechanism.allowsAnonymous && props.containsKey(Sasl.POLICY_NOANONYMOUS) && Boolean.parseBoolean((String)props.get(Sasl.POLICY_NOANONYMOUS))) {
+      continue;
+    }
+    if (mechanism.isPlaintext && props.containsKey(Sasl.POLICY_NOPLAINTEXT) && Boolean.parseBoolean((String)props.get(Sasl.POLICY_NOPLAINTEXT))) {
+      continue;
+    }
+    result.add(mechanism.name);
   }
-  return new String[]{};
+  return result.toArray(new String[result.size()]);
 }
