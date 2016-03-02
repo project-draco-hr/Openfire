@@ -1,13 +1,15 @@
 {
+  Log.info("Shutting down. Unloading all installed plugins...");
   if (executor != null) {
     executor.shutdown();
   }
-  for (  Plugin plugin : plugins.values()) {
+  for (  Map.Entry<String,Plugin> plugin : plugins.entrySet()) {
     try {
-      plugin.destroyPlugin();
+      plugin.getValue().destroyPlugin();
+      Log.info("Unloaded plugin '{}'.",plugin.getKey());
     }
  catch (    Exception e) {
-      Log.error(e.getMessage(),e);
+      Log.error("An exception occurred while trying to unload plugin '{}':",plugin.getKey(),e);
     }
   }
   plugins.clear();

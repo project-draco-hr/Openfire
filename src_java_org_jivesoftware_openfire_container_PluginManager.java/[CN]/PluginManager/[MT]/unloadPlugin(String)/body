@@ -1,5 +1,5 @@
 {
-  Log.debug("PluginManager: Unloading plugin " + pluginName);
+  Log.debug("Unloading plugin '{}'...",pluginName);
   Plugin plugin=plugins.get(pluginName);
   if (plugin != null) {
     pluginDevelopment.remove(plugin);
@@ -7,7 +7,7 @@
       String[] childPlugins=parentPluginMap.get(plugin).toArray(new String[parentPluginMap.get(plugin).size()]);
       parentPluginMap.remove(plugin);
       for (      String childPlugin : childPlugins) {
-        Log.debug("Unloading child plugin: " + childPlugin);
+        Log.debug("Unloading child plugin: '{}'.",childPlugin);
         childPluginMap.remove(plugins.get(childPlugin));
         unloadPlugin(childPlugin);
       }
@@ -23,9 +23,10 @@
     }
     try {
       plugin.destroyPlugin();
+      Log.debug("Destroyed plugin '{}'.",pluginName);
     }
  catch (    Exception e) {
-      Log.error(e.getMessage(),e);
+      Log.error("An exception occurred while unloading plugin '{}':",pluginName,e);
     }
   }
   plugins.remove(pluginName);
@@ -35,7 +36,7 @@
     pluginLoader.unloadJarFiles();
   }
  else {
-    Log.warn("No plugin loader found for " + pluginName);
+    Log.warn("No plugin loader found for '{}'.",pluginName);
   }
   Path dir=pluginDirectory.resolve(pluginName);
   try {
@@ -43,13 +44,13 @@
     System.gc();
     int count=0;
     while (!deleteDir(dir) && count++ < 5) {
-      Log.warn("Error unloading plugin " + pluginName + ". "+ "Will attempt again momentarily.");
+      Log.warn("Error unloading plugin '{}'. Will attempt again momentarily.",pluginName);
       Thread.sleep(8000);
       System.gc();
     }
   }
  catch (  InterruptedException e) {
-    Log.error(e.getMessage(),e);
+    Log.debug("Stopped waiting for plugin '{}' to be fully unloaded.",pluginName,e);
   }
   if (plugin != null && Files.notExists(dir)) {
     PluginCacheRegistry.getInstance().unregisterCaches(pluginName);
@@ -67,8 +68,10 @@
       unloadPlugin(parentPluginName);
     }
     firePluginDestroyedEvent(pluginName,plugin);
+    Log.info("Successfully unloaded plugin '{}'.",pluginName);
   }
  else   if (plugin != null) {
+    Log.info("Restore references since we failed to remove the plugin '{}'.",pluginName);
     plugins.put(pluginName,plugin);
     pluginDirs.put(plugin,pluginFile);
     classloaders.put(plugin,pluginLoader);
