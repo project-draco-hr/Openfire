@@ -18,7 +18,7 @@ synchronized (this) {
         }
       }
     }
-    Set<String> jarSet=new HashSet<String>();
+    Set<String> jarSet=new HashSet<>();
     try (DirectoryStream<Path> directoryStream=Files.newDirectoryStream(pluginDirectory,new DirectoryStream.Filter<Path>(){
       @Override public boolean accept(      Path pathname) throws IOException {
         String fileName=pathname.getFileName().toString().toLowerCase();
@@ -75,7 +75,7 @@ synchronized (this) {
       }
     }
 );
-    List<String> toDelete=new ArrayList<String>();
+    List<String> toDelete=new ArrayList<>();
     for (    Path pluginDir : dirs) {
       String pluginName=pluginDir.getFileName().toString();
       if (pluginName.equals("admin")) {
@@ -83,6 +83,7 @@ synchronized (this) {
       }
       if (!jarSet.contains(pluginName + ".jar")) {
         if (!jarSet.contains(pluginName + ".war")) {
+          Log.info("Plugin '{}' was removed from the file system.",pluginName);
           toDelete.add(pluginName);
         }
       }
@@ -90,10 +91,15 @@ synchronized (this) {
     for (    String pluginName : toDelete) {
       unloadPlugin(pluginName);
     }
+    boolean somethingChanged=false;
     for (    Path dirFile : dirs) {
       if (Files.exists(dirFile) && !plugins.containsKey(dirFile.getFileName().toString())) {
+        somethingChanged=true;
         loadPlugin(dirFile);
       }
+    }
+    if (somethingChanged) {
+      Log.info("Finished processing all plugins.");
     }
     if (!XMPPServer.getInstance().isSetupMode()) {
       executed=true;
@@ -101,7 +107,7 @@ synchronized (this) {
     firePluginsMonitored();
   }
  catch (  Throwable e) {
-    Log.error(e.getMessage(),e);
+    Log.error("An unexpected exception occurred:",e);
   }
 synchronized (this) {
     running=false;

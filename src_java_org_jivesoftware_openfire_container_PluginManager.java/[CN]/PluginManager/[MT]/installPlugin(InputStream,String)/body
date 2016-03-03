@@ -1,6 +1,10 @@
 {
-  if (in == null || pluginFilename == null || pluginFilename.length() < 1) {
-    Log.error("Error installing plugin: Input stream was null or pluginFilename was null or had no length.");
+  if (pluginFilename == null || pluginFilename.isEmpty()) {
+    Log.error("Error installing plugin: pluginFilename was null or empty.");
+    return false;
+  }
+  if (in == null) {
+    Log.error("Error installing plugin '{}': Input stream was null.",pluginFilename);
     return false;
   }
   try {
@@ -15,7 +19,7 @@
     pluginMonitor.run();
   }
  catch (  IOException e) {
-    Log.error("Error installing new version of plugin: " + pluginFilename,e);
+    Log.error("An exception occurred while installing new version of plugin '{}':",pluginFilename,e);
     return false;
   }
   return true;

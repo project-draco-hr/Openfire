@@ -2,7 +2,8 @@
   if (XMPPServer.getInstance().isSetupMode() && !(pluginDir.getFileName().toString().equals("admin"))) {
     return;
   }
-  Log.debug("PluginManager: Loading plugin " + pluginDir.getFileName().toString());
+  String pluginName=pluginDir.getFileName().toString();
+  Log.debug("Loading plugin '{}'...",pluginName);
   Plugin plugin;
   try {
     Path pluginConfig=pluginDir.resolve("plugin.xml");
@@ -15,15 +16,12 @@
         Version requiredVersion=new Version(minServerVersion.getTextTrim());
         Version currentVersion=XMPPServer.getInstance().getServerInfo().getVersion();
         if (requiredVersion.isNewerThan(currentVersion)) {
-          String msg="Ignoring plugin " + pluginDir.getFileName() + ": requires "+ "server version "+ requiredVersion;
-          Log.warn(msg);
-          System.out.println(msg);
+          Log.warn("Ignoring plugin '{}': requires server version {}. Current server version is {}.",pluginName,requiredVersion,currentVersion);
           return;
         }
       }
       PluginClassLoader pluginLoader;
       Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
-      String pluginName=pluginDir.getFileName().toString();
       String webRootKey=pluginName + ".webRoot";
       String classesDirKey=pluginName + ".classes";
       String webRoot=System.getProperty(webRootKey);
@@ -48,9 +46,7 @@
             return;
           }
  else {
-            String msg="Ignoring plugin " + pluginName + ": parent plugin "+ parentPlugin+ " not present.";
-            Log.warn(msg);
-            System.out.println(msg);
+            Log.warn("Ignoring plugin '{}': parent plugin '{}' not present.",pluginName,parentPlugin);
             return;
           }
         }
@@ -62,8 +58,7 @@
       PluginDevEnvironment dev=null;
       if (webRoot != null || classesDir != null) {
         dev=new PluginDevEnvironment();
-        System.out.println("Plugin " + pluginName + " is running in development mode.");
-        Log.info("Plugin " + pluginName + " is running in development mode.");
+        Log.info("Plugin '{}' is running in development mode.",pluginName);
         if (webRoot != null) {
           Path webRootDir=Paths.get(webRoot);
           if (Files.notExists(webRootDir)) {
@@ -115,8 +110,7 @@
         classloaders.put(plugin,pluginLoader);
       }
       if (!DbConnectionManager.getSchemaManager().checkPluginSchema(plugin)) {
-        Log.error(pluginName + " - " + LocaleUtils.getLocalizedString("upgrade.database.failure"));
-        System.out.println(pluginName + " - " + LocaleUtils.getLocalizedString("upgrade.database.failure"));
+        Log.error("Error while loading plugin '{}': {}",pluginName,LocaleUtils.getLocalizedString("upgrade.database.failure"));
       }
       Path webXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web.xml");
       if (Files.exists(webXML)) {
@@ -133,6 +127,7 @@
       ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(pluginLoader);
       plugin.initializePlugin(this,pluginDir.toFile());
+      Log.debug("Initialized plugin '{}'.",pluginName);
       Thread.currentThread().setContextClassLoader(oldLoader);
       Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
       if (adminElement != null) {
@@ -170,10 +165,11 @@
       firePluginCreatedEvent(pluginName,plugin);
     }
  else {
-      Log.warn("Plugin " + pluginDir + " could not be loaded: no plugin.xml file found");
+      Log.warn("Plugin '{}' could not be loaded: no plugin.xml file found.",pluginName);
     }
   }
  catch (  Throwable e) {
-    Log.error("Error loading plugin: " + pluginDir,e);
+    Log.error("An exception occurred while loading plugin '{}':",pluginName,e);
   }
+  Log.info("Successfully loaded plugin '{}'.",pluginName);
 }
