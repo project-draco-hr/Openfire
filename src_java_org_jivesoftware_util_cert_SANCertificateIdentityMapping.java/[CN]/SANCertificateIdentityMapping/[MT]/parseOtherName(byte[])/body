@@ -1,0 +1,41 @@
+{
+  try (ASN1InputStream decoder=new ASN1InputStream(item)){
+    Object object=decoder.readObject();
+    ASN1Sequence otherNameSeq=null;
+    if (object != null && object instanceof ASN1Sequence) {
+      otherNameSeq=(ASN1Sequence)object;
+    }
+ else {
+      return null;
+    }
+    ASN1ObjectIdentifier objectId=(ASN1ObjectIdentifier)otherNameSeq.getObjectAt(0);
+    Log.debug("Parsing otherName for subject alternative names: " + objectId.toString());
+    if (!OTHERNAME_XMPP_OID.equals(objectId.getId())) {
+      Log.debug("Ignoring non-XMPP otherName, " + objectId.getId());
+      return null;
+    }
+    try {
+      final String identity;
+      ASN1Encodable o=otherNameSeq.getObjectAt(1);
+      if (o instanceof DERTaggedObject) {
+        ASN1TaggedObject ato=DERTaggedObject.getInstance(o);
+        Log.debug("... processing DERTaggedObject: " + ato.toString());
+        identity=ato.toString().substring(ato.toString().lastIndexOf(']') + 1).trim();
+      }
+ else {
+        DERUTF8String derStr=DERUTF8String.getInstance(o);
+        identity=derStr.getString();
+      }
+      if (identity != null && identity.length() > 0) {
+        return identity;
+      }
+    }
+ catch (    IllegalArgumentException ex) {
+      Log.debug("Cannot parse altName, likely because of unknown record format.",ex);
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error decoding subjectAltName",e);
+  }
+  return null;
+}
