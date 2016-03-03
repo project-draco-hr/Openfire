@@ -20,7 +20,9 @@
     Element comp=child.addElement("compression","http://jabber.org/features/compress");
     comp.addElement("method").setText("zlib");
   }
-  child.addElement("auth","http://jabber.org/features/iq-auth");
+  if (XMPPServer.getInstance().getIQRouter().supports("jabber:iq:auth")) {
+    child.addElement("auth","http://jabber.org/features/iq-auth");
+  }
   if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
     child.addElement("register","http://jabber.org/features/iq-register");
   }

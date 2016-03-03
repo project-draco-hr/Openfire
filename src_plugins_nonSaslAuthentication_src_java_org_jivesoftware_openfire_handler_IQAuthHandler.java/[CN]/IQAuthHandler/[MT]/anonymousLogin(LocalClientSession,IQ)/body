@@ -1,6 +1,6 @@
 {
   IQ response=IQ.createResultIQ(packet);
-  if (anonymousAllowed) {
+  if (JiveGlobals.getBooleanProperty("xmpp.auth.anonymous")) {
     boolean forbidAccess=!LocalClientSession.isAllowedAnonymous(session.getConnection());
     if (forbidAccess) {
       response.setChildElement(packet.getChildElement().createCopy());

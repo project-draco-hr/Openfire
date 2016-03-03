@@ -7,7 +7,9 @@
     sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
   }
   if (getAuthToken() == null) {
-    sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
+    if (XMPPServer.getInstance().getIQRouter().supports("jabber:iq:auth")) {
+      sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
+    }
     if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
       sb.append("<register xmlns=\"http://jabber.org/features/iq-register\"/>");
     }
