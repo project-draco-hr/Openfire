@@ -28,11 +28,13 @@
   }
   username=username.toLowerCase();
   AuthToken token=null;
-  if (password != null && AuthFactory.isPlainSupported()) {
-    token=AuthFactory.authenticate(username,password);
-  }
- else   if (digest != null && AuthFactory.isDigestSupported()) {
-    token=AuthFactory.authenticate(username,session.getStreamID().toString(),digest);
+  if (AuthFactory.supportsPasswordRetrieval()) {
+    if (password != null) {
+      token=AuthFactory.authenticate(username,password);
+    }
+ else     if (digest != null) {
+      token=authenticate(username,session.getStreamID().toString(),digest);
+    }
   }
   if (token == null) {
     throw new UnauthorizedException();

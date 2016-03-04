@@ -13,11 +13,6 @@
   try {
     Class c=ClassUtils.forName(primaryClass);
     primaryProvider=(AuthProvider)c.newInstance();
-    if (!primaryProvider.isPlainSupported()) {
-      Log.error("Provider " + primaryClass + " must support plain authentication. "+ "Authentication disabled.");
-      primaryProvider=null;
-      return;
-    }
     Log.debug("Primary auth provider: " + primaryClass);
   }
  catch (  Exception e) {
@@ -29,12 +24,6 @@
     try {
       Class c=ClassUtils.forName(secondaryClass);
       secondaryProvider=(AuthProvider)c.newInstance();
-      if (!secondaryProvider.isPlainSupported()) {
-        Log.error("Provider " + secondaryClass + " must support plain authentication. "+ "Authentication disabled.");
-        primaryProvider=null;
-        secondaryProvider=null;
-        return;
-      }
       Log.debug("Secondary auth provider: " + secondaryClass);
     }
  catch (    Exception e) {
@@ -46,13 +35,6 @@
     try {
       Class c=ClassUtils.forName(tertiaryClass);
       tertiaryProvider=(AuthProvider)c.newInstance();
-      if (!tertiaryProvider.isPlainSupported()) {
-        Log.error("Provider " + tertiaryClass + " must support plain authentication. "+ "Authentication disabled.");
-        primaryProvider=null;
-        secondaryProvider=null;
-        tertiaryProvider=null;
-        return;
-      }
       Log.debug("Tertiary auth provider: " + tertiaryClass);
     }
  catch (    Exception e) {

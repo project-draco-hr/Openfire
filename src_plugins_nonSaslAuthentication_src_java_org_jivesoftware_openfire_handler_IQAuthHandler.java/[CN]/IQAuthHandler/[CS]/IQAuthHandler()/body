@@ -3,10 +3,8 @@
   info=new IQHandlerInfo("query","jabber:iq:auth");
   probeResponse=DocumentHelper.createElement(QName.get("query","jabber:iq:auth"));
   probeResponse.addElement("username");
-  if (AuthFactory.isPlainSupported()) {
+  if (AuthFactory.supportsPasswordRetrieval()) {
     probeResponse.addElement("password");
-  }
-  if (AuthFactory.isDigestSupported()) {
     probeResponse.addElement("digest");
   }
   probeResponse.addElement("resource");

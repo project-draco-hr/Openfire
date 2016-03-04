@@ -1,8 +1,9 @@
 {
-  if (passwordTypes.size() != 1 || passwordTypes.get(0) != PasswordType.plain) {
-    throw new UnsupportedOperationException("Digest authentication not supported for " + "password type " + passwordTypes.get(0));
-  }
   if (username == null || token == null || digest == null) {
+    throw new UnauthorizedException();
+  }
+  if (LockOutManager.getInstance().isAccountDisabled(username)) {
+    LockOutManager.getInstance().recordFailedLogin(username);
     throw new UnauthorizedException();
   }
   username=username.trim().toLowerCase();
@@ -16,16 +17,15 @@
       throw new UnauthorizedException();
     }
   }
-  String password;
   try {
-    password=getPasswordValue(username);
+    String password=AuthFactory.getPassword(username);
+    String anticipatedDigest=AuthFactory.createDigest(token,password);
+    if (!digest.equalsIgnoreCase(anticipatedDigest)) {
+      throw new UnauthorizedException();
+    }
   }
  catch (  UserNotFoundException unfe) {
     throw new UnauthorizedException();
   }
-  String anticipatedDigest=AuthFactory.createDigest(token,password);
-  if (!digest.equalsIgnoreCase(anticipatedDigest)) {
-    throw new UnauthorizedException();
-  }
-  createUser(username);
+  return new AuthToken(username);
 }
