@@ -1,0 +1,22 @@
+{
+  try {
+    final String identity;
+    ASN1Encodable o=otherNameSeq.getObjectAt(1);
+    if (o instanceof DERTaggedObject) {
+      ASN1TaggedObject ato=DERTaggedObject.getInstance(o);
+      Log.debug("... processing DERTaggedObject: " + ato.toString());
+      identity=ato.toString().substring(ato.toString().lastIndexOf(']') + 1).trim();
+    }
+ else {
+      DERUTF8String derStr=DERUTF8String.getInstance(o);
+      identity=derStr.getString();
+    }
+    if (identity != null && identity.length() > 0) {
+      return identity;
+    }
+  }
+ catch (  IllegalArgumentException ex) {
+    Log.debug("Cannot parse id-on-xmppAddr otherName, likely because of unknown record format.",ex);
+  }
+  return null;
+}
