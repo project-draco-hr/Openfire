@@ -3,36 +3,15 @@
   JiveGlobals.migrateProperty("sasl.gssapi.debug");
   JiveGlobals.migrateProperty("sasl.gssapi.config");
   JiveGlobals.migrateProperty("sasl.gssapi.useSubjectCredsOnly");
-  mechanisms=new HashSet<>();
-  String available=JiveGlobals.getProperty("sasl.mechs");
-  if (available == null) {
-    mechanisms.add("ANONYMOUS");
-    mechanisms.add("PLAIN");
-    mechanisms.add("DIGEST-MD5");
-    mechanisms.add("CRAM-MD5");
-    mechanisms.add("SCRAM-SHA-1");
-    mechanisms.add("JIVE-SHAREDSECRET");
-  }
- else {
-    StringTokenizer st=new StringTokenizer(available," ,\t\n\r\f");
-    while (st.hasMoreTokens()) {
-      String mech=st.nextToken().toUpperCase();
-      if (mech.equals("ANONYMOUS") || mech.equals("PLAIN") || mech.equals("DIGEST-MD5")|| mech.equals("CRAM-MD5")|| mech.equals("SCRAM-SHA-1")|| mech.equals("GSSAPI")|| mech.equals("EXTERNAL")|| mech.equals("JIVE-SHAREDSECRET")) {
-        Log.debug("SASLAuthentication: Added " + mech + " to mech list");
-        mechanisms.add(mech);
-      }
+  final String configuration=JiveGlobals.getProperty("sasl.mechs","ANONYMOUS,PLAIN,DIGEST-MD5,CRAM-MD5,SCRAM-SHA-1,JIVE-SHAREDSECRET");
+  final StringTokenizer st=new StringTokenizer(configuration," ,\t\n\r\f");
+  while (st.hasMoreTokens()) {
+    final String mech=st.nextToken().toUpperCase();
+    try {
+      addSupportedMechanism(mech);
     }
-    if (mechanisms.contains("GSSAPI")) {
-      if (JiveGlobals.getProperty("sasl.gssapi.config") != null) {
-        System.setProperty("java.security.krb5.debug",JiveGlobals.getProperty("sasl.gssapi.debug","false"));
-        System.setProperty("java.security.auth.login.config",JiveGlobals.getProperty("sasl.gssapi.config"));
-        System.setProperty("javax.security.auth.useSubjectCredsOnly",JiveGlobals.getProperty("sasl.gssapi.useSubjectCredsOnly","false"));
-      }
- else {
-        Log.debug("SASLAuthentication: Removed GSSAPI from mech list");
-        mechanisms.remove("GSSAPI");
-      }
+ catch (    Exception ex) {
+      Log.warn("An exception occurred while trying to add support for SASL Mechanism '{}':",mech,ex);
     }
   }
-  Security.addProvider(new org.jivesoftware.openfire.sasl.SaslProvider());
 }

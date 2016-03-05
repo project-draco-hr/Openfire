@@ -1,0 +1,18 @@
+{
+  if (isComplete()) {
+    throw new IllegalStateException("Authentication exchange already completed.");
+  }
+  if (response == null || response.length == 0) {
+    return new byte[0];
+  }
+  complete=true;
+  final StringTokenizer tokens=new StringTokenizer(new String(response,StandardCharsets.UTF_8),"\0");
+  tokens.nextToken();
+  final String secretDigest=tokens.nextToken();
+  if (authenticateSharedSecret(secretDigest)) {
+    return null;
+  }
+ else {
+    throw new SaslException("Authentication failed");
+  }
+}

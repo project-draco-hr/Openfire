@@ -1,0 +1,18 @@
+{
+  final Element result=DocumentHelper.createElement(new QName("mechanisms",new Namespace("",SASL_NAMESPACE)));
+  if (session.isSecure()) {
+    final Connection connection=session.getConnection();
+    final KeyStore keyStore=connection.getConfiguration().getIdentityStore().getStore();
+    final KeyStore trustStore=session.getConnection().getConfiguration().getTrustStore().getStore();
+    final X509Certificate trusted=CertificateManager.getEndEntityCertificate(session.getConnection().getPeerCertificates(),keyStore,trustStore);
+    boolean haveTrustedCertificate=trusted != null;
+    if (trusted != null && session.getDefaultIdentity() != null) {
+      haveTrustedCertificate=verifyCertificate(trusted,session.getDefaultIdentity());
+    }
+    if (haveTrustedCertificate) {
+      final Element mechanism=result.addElement("mechanism");
+      mechanism.setText("EXTERNAL");
+    }
+  }
+  return result;
+}

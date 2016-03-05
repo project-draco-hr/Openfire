@@ -1,149 +1,84 @@
 {
-  Status status;
-  String mechanism;
-  if (doc.getNamespace().asXML().equals(SASL_NAMESPACE)) {
-    ElementType type=ElementType.valueof(doc.getName());
-switch (type) {
+  try {
+    if (!doc.getNamespaceURI().equals(SASL_NAMESPACE)) {
+      throw new IllegalStateException("Unexpected data received while negotiating SASL authentication. Name of the offending root element: " + doc.getName() + " Namespace: "+ doc.getNamespaceURI());
+    }
+switch (ElementType.valueOfCaseInsensitive(doc.getName())) {
 case ABORT:
-      authenticationFailed(session,Failure.ABORTED);
-    status=Status.failed;
-  break;
+      throw new SaslFailureException(Failure.ABORTED);
 case AUTH:
-mechanism=doc.attributeValue("mechanism");
-if (mechanism == null) {
-authenticationFailed(session,Failure.INVALID_MECHANISM);
-status=Status.failed;
-break;
+    if (doc.attributeValue("mechanism") == null) {
+      throw new SaslFailureException(Failure.INVALID_MECHANISM,"Peer did not specify a mechanism.");
+    }
+  final String mechanismName=doc.attributeValue("mechanism").toUpperCase();
+if (!mechanisms.contains(mechanismName)) {
+  throw new SaslFailureException(Failure.INVALID_MECHANISM,"The configuration of Openfire does not contain or allow the mechanism.");
 }
-session.setSessionData("SaslMechanism",mechanism);
-if (mechanism.equalsIgnoreCase("ANONYMOUS") && mechanisms.contains("ANONYMOUS")) {
-status=doAnonymousAuthentication(session);
+final Map<String,Object> props=new HashMap<>();
+props.put(LocalClientSession.class.getCanonicalName(),session);
+props.put(Sasl.POLICY_NOANONYMOUS,!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed());
+SaslServer saslServer=Sasl.createSaslServer(mechanismName,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
+if (saslServer == null) {
+throw new SaslFailureException(Failure.INVALID_MECHANISM,"There is no provider that can provide a SASL server for the desired mechanism and properties.");
 }
- else if (mechanism.equalsIgnoreCase("EXTERNAL")) {
-status=doExternalAuthentication(session,doc);
+session.setSessionData("SaslServer",saslServer);
+if (mechanismName.equals("DIGEST-MD5")) {
+doc.setText("");
 }
- else if (mechanisms.contains(mechanism)) {
-try {
-Map<String,String> props=new TreeMap<>();
-props.put(Sasl.QOP,"auth");
-if (mechanism.equals("GSSAPI")) {
-props.put(Sasl.SERVER_AUTH,"TRUE");
-}
-SaslServer ss=Sasl.createSaslServer(mechanism,"xmpp",session.getServerName(),props,new XMPPCallbackHandler());
-if (ss == null) {
-authenticationFailed(session,Failure.INVALID_MECHANISM);
-return Status.failed;
-}
-byte[] token=new byte[0];
-String value=doc.getTextTrim();
-if (value.length() > 0) {
-if (!BASE64_ENCODED.matcher(value).matches()) {
-  authenticationFailed(session,Failure.INCORRECT_ENCODING);
-  return Status.failed;
-}
-token=StringUtils.decodeBase64(value);
-if (token == null) {
-  token=new byte[0];
-}
-}
-if (mechanism.equals("DIGEST-MD5")) {
-token=new byte[0];
-}
-byte[] challenge=ss.evaluateResponse(token);
-if (ss.isComplete()) {
-authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
-status=Status.authenticated;
-}
- else {
-sendChallenge(session,challenge);
-status=Status.needResponse;
-}
-session.setSessionData("SaslServer",ss);
-}
- catch (SaslException e) {
-Log.info("User Login Failed. " + e.getMessage());
-authenticationFailed(session,Failure.NOT_AUTHORIZED);
-status=Status.failed;
-}
-}
- else {
-Log.warn("Client wants to do a MECH we don't support: '" + mechanism + "'");
-authenticationFailed(session,Failure.INVALID_MECHANISM);
-status=Status.failed;
-}
-break;
 case RESPONSE:
-mechanism=(String)session.getSessionData("SaslMechanism");
-if (mechanism.equalsIgnoreCase("EXTERNAL")) {
-status=doExternalAuthentication(session,doc);
+saslServer=(SaslServer)session.getSessionData("SaslServer");
+if (saslServer == null) {
+throw new IllegalStateException("A SaslServer instance was not initialized and/or stored on the session.");
 }
- else if (mechanism.equalsIgnoreCase("JIVE-SHAREDSECRET")) {
-status=doSharedSecretAuthentication(session,doc);
+final String encoded=doc.getTextTrim();
+final byte[] decoded;
+if (encoded == null || encoded.isEmpty()) {
+decoded=new byte[0];
 }
- else if (mechanisms.contains(mechanism)) {
-SaslServer ss=(SaslServer)session.getSessionData("SaslServer");
-if (ss != null) {
-boolean ssComplete=ss.isComplete();
-String response=doc.getTextTrim();
-if (response.length() > 0) {
-if (!BASE64_ENCODED.matcher(response).matches()) {
-authenticationFailed(session,Failure.INCORRECT_ENCODING);
+ else {
+if (!BASE64_ENCODED.matcher(encoded).matches()) {
+throw new SaslFailureException(Failure.INCORRECT_ENCODING);
+}
+decoded=StringUtils.decodeBase64(encoded);
+}
+final byte[] challenge=saslServer.evaluateResponse(decoded);
+if (!saslServer.isComplete()) {
+sendChallenge(session,challenge);
+return Status.needResponse;
+}
+if (session instanceof IncomingServerSession) {
+final boolean verify=JiveGlobals.getBooleanProperty(ConnectionSettings.Server.TLS_CERTIFICATE_VERIFY,true);
+if (verify && verifyCertificates(session.getConnection().getPeerCertificates(),saslServer.getAuthorizationID(),true)) {
+((LocalIncomingServerSession)session).tlsAuth();
+}
+ else {
+throw new SaslFailureException(Failure.NOT_AUTHORIZED,"Server-to-Server certificate verification failed.");
+}
+}
+authenticationSuccessful(session,saslServer.getAuthorizationID(),challenge);
+session.removeSessionData("SaslServer");
+return Status.authenticated;
+default :
+throw new IllegalStateException("Unexpected data received while negotiating SASL authentication. Name of the offending root element: " + doc.getName() + " Namespace: "+ doc.getNamespaceURI());
+}
+}
+ catch (SaslException ex) {
+Log.debug("SASL negotiation failed for session: {}",session,ex);
+final Failure failure;
+if (ex instanceof SaslFailureException && ((SaslFailureException)ex).getFailure() != null) {
+failure=((SaslFailureException)ex).getFailure();
+}
+ else {
+failure=Failure.NOT_AUTHORIZED;
+}
+authenticationFailed(session,failure);
+session.removeSessionData("SaslServer");
 return Status.failed;
 }
-}
-try {
-if (ssComplete) {
-authenticationSuccessful(session,ss.getAuthorizationID(),null);
-status=Status.authenticated;
-}
- else {
-byte[] data=StringUtils.decodeBase64(response);
-if (data == null) {
-data=new byte[0];
-}
-byte[] challenge=ss.evaluateResponse(data);
-if (ss.isComplete()) {
-authenticationSuccessful(session,ss.getAuthorizationID(),challenge);
-status=Status.authenticated;
-}
- else {
-sendChallenge(session,challenge);
-status=Status.needResponse;
-}
-}
-}
- catch (SaslException e) {
-Log.debug("SASLAuthentication: SaslException",e);
+catch (Exception ex) {
+Log.warn("An unexpected exception occurred during SASL negotiation. Affected session: {}",session,ex);
 authenticationFailed(session,Failure.NOT_AUTHORIZED);
-status=Status.failed;
-}
-}
- else {
-Log.error("SaslServer is null, should be valid object instead.");
-authenticationFailed(session,Failure.NOT_AUTHORIZED);
-status=Status.failed;
-}
-}
- else {
-Log.warn("Client responded to a MECH we don't support: '" + mechanism + "'");
-authenticationFailed(session,Failure.INVALID_MECHANISM);
-status=Status.failed;
-}
-break;
-default :
-authenticationFailed(session,Failure.NOT_AUTHORIZED);
-status=Status.failed;
-break;
-}
-}
- else {
-Log.debug("SASLAuthentication: Unknown namespace sent in auth element: " + doc.asXML());
-authenticationFailed(session,Failure.MALFORMED_REQUEST);
-status=Status.failed;
-}
-if (status == Status.failed || status == Status.authenticated) {
 session.removeSessionData("SaslServer");
-session.removeSessionData("SaslMechanism");
+return Status.failed;
 }
-return status;
 }
