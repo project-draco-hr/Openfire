@@ -2,10 +2,9 @@
   final String subjectCommonName="MySubjectCommonName";
   final String subjectAltNameXmppAddr="MySubjectAltNameXmppAddr";
   final X509v3CertificateBuilder builder=new JcaX509v3CertificateBuilder(new X500Name("CN=MyIssuer"),BigInteger.valueOf(Math.abs(new SecureRandom().nextInt())),new Date(System.currentTimeMillis() - (1000L * 60 * 60* 24* 30)),new Date(System.currentTimeMillis() + (1000L * 60 * 60* 24* 99)),new X500Name("CN=" + subjectCommonName),subjectKeyPair.getPublic());
-  final DERTaggedObject derTaggedDomainName=new DERTaggedObject(0,new DERUTF8String(subjectAltNameXmppAddr));
-  final DLSequence otherName=new DLSequence(new ASN1Encodable[]{XMPP_ADDR_OID,derTaggedDomainName});
-  final GeneralNames generalNames=new GeneralNames(new GeneralName(GeneralName.otherName,otherName));
-  builder.addExtension(Extension.subjectAlternativeName,false,generalNames);
+  final DERSequence otherName=new DERSequence(new ASN1Encodable[]{XMPP_ADDR_OID,new DERUTF8String(subjectAltNameXmppAddr)});
+  final GeneralNames subjectAltNames=new GeneralNames(new GeneralName(GeneralName.otherName,otherName));
+  builder.addExtension(Extension.subjectAlternativeName,true,subjectAltNames);
   final X509CertificateHolder certificateHolder=builder.build(contentSigner);
   final X509Certificate cert=new JcaX509CertificateConverter().getCertificate(certificateHolder);
   final List<String> serverIdentities=CertificateManager.getServerIdentities(cert);
