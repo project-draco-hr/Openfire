@@ -5,12 +5,12 @@
   }
 switch (mechanism.toUpperCase()) {
 case "PLAIN":
-    if (cbh != null) {
+    if (cbh == null) {
       Log.debug("Unable to instantiate {} SaslServer: A callbackHandler with support for Password, Name, and AuthorizeCallback required.",mechanism);
       return null;
     }
   return new SaslServerPlainImpl(protocol,serverName,props,cbh);
-case "SCRAM_SHA_1":
+case "SCRAM-SHA-1":
 return new ScramSha1SaslServer();
 case "ANONYMOUS":
 if (!props.containsKey(LocalSession.class.getCanonicalName())) {
