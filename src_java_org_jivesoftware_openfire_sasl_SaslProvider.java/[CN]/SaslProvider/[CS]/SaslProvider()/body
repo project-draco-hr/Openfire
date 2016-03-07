@@ -1,5 +1,7 @@
 {
-  super("JiveSoftware",1.0,"JiveSoftware SASL provider v1.0, implementing server mechanisms for: PLAIN, SCRAM-SHA-1");
-  put("SaslServerFactory.PLAIN","org.jivesoftware.openfire.sasl.SaslServerFactoryImpl");
-  put("SaslServerFactory.SCRAM-SHA-1","org.jivesoftware.openfire.sasl.SaslServerFactoryImpl");
+  super("JiveSoftware",1.1,"JiveSoftware Openfire SASL provider v1.1");
+  final SaslServerFactoryImpl serverFactory=new SaslServerFactoryImpl();
+  for (  final String name : serverFactory.getMechanismNames(null)) {
+    put("SaslServerFactory." + name,serverFactory.getClass().getCanonicalName());
+  }
 }
