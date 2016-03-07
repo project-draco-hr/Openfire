@@ -1,0 +1,72 @@
+{
+  if (username == null || username.trim().length() == 0) {
+    throw new UnauthorizedException("Invalid username (empty or null).");
+  }
+  try {
+    Stringprep.nodeprep(username);
+  }
+ catch (  StringprepException e) {
+    throw new UnauthorizedException("Invalid username: " + username,e);
+  }
+  String resource=iq.elementText("resource");
+  if (resource != null) {
+    try {
+      resource=JID.resourceprep(resource);
+    }
+ catch (    StringprepException e) {
+      throw new UnauthorizedException("Invalid resource: " + resource,e);
+    }
+  }
+ else {
+    IQ response=IQ.createResultIQ(packet);
+    response.setChildElement(packet.getChildElement().createCopy());
+    response.setError(PacketError.Condition.not_acceptable);
+    return response;
+  }
+  if (!JiveGlobals.getBooleanProperty("xmpp.auth.iqauth",true)) {
+    throw new UnauthorizedException();
+  }
+  username=username.toLowerCase();
+  AuthToken token=null;
+  if (AuthFactory.supportsPasswordRetrieval()) {
+    if (password != null) {
+      token=AuthFactory.authenticate(username,password);
+    }
+ else     if (digest != null) {
+      token=authenticate(username,session.getStreamID().toString(),digest);
+    }
+  }
+  if (token == null) {
+    throw new UnauthorizedException();
+  }
+  ClientSession oldSession=routingTable.getClientRoute(new JID(username,serverName,resource,true));
+  if (oldSession != null) {
+    try {
+      int conflictLimit=sessionManager.getConflictKickLimit();
+      if (conflictLimit == SessionManager.NEVER_KICK) {
+        IQ response=IQ.createResultIQ(packet);
+        response.setChildElement(packet.getChildElement().createCopy());
+        response.setError(PacketError.Condition.forbidden);
+        return response;
+      }
+      int conflictCount=oldSession.incrementConflictCount();
+      if (conflictCount > conflictLimit) {
+        StreamError error=new StreamError(StreamError.Condition.conflict);
+        oldSession.deliverRawText(error.toXML());
+        oldSession.close();
+      }
+ else {
+        IQ response=IQ.createResultIQ(packet);
+        response.setChildElement(packet.getChildElement().createCopy());
+        response.setError(PacketError.Condition.forbidden);
+        return response;
+      }
+    }
+ catch (    Exception e) {
+      Log.error("Error during login",e);
+    }
+  }
+  session.setAuthToken(token,resource);
+  packet.setFrom(session.getAddress());
+  return IQ.createResultIQ(packet);
+}

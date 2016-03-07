@@ -1,0 +1,31 @@
+{
+  if (username == null || token == null || digest == null) {
+    throw new UnauthorizedException();
+  }
+  if (LockOutManager.getInstance().isAccountDisabled(username)) {
+    LockOutManager.getInstance().recordFailedLogin(username);
+    throw new UnauthorizedException();
+  }
+  username=username.trim().toLowerCase();
+  if (username.contains("@")) {
+    int index=username.indexOf("@");
+    String domain=username.substring(index + 1);
+    if (domain.equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
+      username=username.substring(0,index);
+    }
+ else {
+      throw new UnauthorizedException();
+    }
+  }
+  try {
+    String password=AuthFactory.getPassword(username);
+    String anticipatedDigest=AuthFactory.createDigest(token,password);
+    if (!digest.equalsIgnoreCase(anticipatedDigest)) {
+      throw new UnauthorizedException();
+    }
+  }
+ catch (  UserNotFoundException unfe) {
+    throw new UnauthorizedException();
+  }
+  return new AuthToken(username);
+}

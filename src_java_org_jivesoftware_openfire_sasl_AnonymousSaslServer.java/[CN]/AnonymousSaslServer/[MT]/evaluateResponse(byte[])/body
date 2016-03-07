@@ -3,7 +3,7 @@
     throw new IllegalStateException("Authentication exchange already completed.");
   }
   complete=true;
-  if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
+  if (!JiveGlobals.getBooleanProperty("xmpp.auth.anonymous")) {
     throw new SaslException("Authentication failed");
   }
   final boolean forbidAccess=!LocalClientSession.isAllowedAnonymous(session.getConnection());
