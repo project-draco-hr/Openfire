@@ -1,0 +1,14 @@
+{
+  final String subjectCommonName="MySubjectCommonName";
+  final String subjectAltNameDnsSrv="MySubjectAltNameXmppAddr";
+  final X509v3CertificateBuilder builder=new JcaX509v3CertificateBuilder(new X500Name("CN=MyIssuer"),BigInteger.valueOf(Math.abs(new SecureRandom().nextInt())),new Date(System.currentTimeMillis() - (1000L * 60 * 60* 24* 30)),new Date(System.currentTimeMillis() + (1000L * 60 * 60* 24* 99)),new X500Name("CN=" + subjectCommonName),subjectKeyPair.getPublic());
+  final DERSequence otherName=new DERSequence(new ASN1Encodable[]{DNS_SRV_OID,new DERUTF8String("_xmpp-server." + subjectAltNameDnsSrv)});
+  final GeneralNames subjectAltNames=new GeneralNames(new GeneralName(GeneralName.otherName,otherName));
+  builder.addExtension(Extension.subjectAlternativeName,true,subjectAltNames);
+  final X509CertificateHolder certificateHolder=builder.build(contentSigner);
+  final X509Certificate cert=new JcaX509CertificateConverter().getCertificate(certificateHolder);
+  final List<String> serverIdentities=CertificateManager.getServerIdentities(cert);
+  assertEquals(1,serverIdentities.size());
+  assertTrue(serverIdentities.contains(subjectAltNameDnsSrv));
+  assertFalse(serverIdentities.contains(subjectCommonName));
+}

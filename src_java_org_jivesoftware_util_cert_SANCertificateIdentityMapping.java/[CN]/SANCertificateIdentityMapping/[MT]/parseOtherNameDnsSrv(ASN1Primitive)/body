@@ -1,0 +1,13 @@
+{
+  final String value=((ASN1String)srvName).getString();
+  if (value.toLowerCase().startsWith("_xmpp-server.")) {
+    return value.substring("_xmpp-server.".length());
+  }
+ else   if (value.toLowerCase().startsWith("_xmpp-client.")) {
+    return value.substring("_xmpp-client.".length());
+  }
+ else {
+    Log.debug("srvName value '{}' of id-on-dnsSRV record is neither _xmpp-server nor _xmpp-client. It is being ignored.",value);
+    return null;
+  }
+}
