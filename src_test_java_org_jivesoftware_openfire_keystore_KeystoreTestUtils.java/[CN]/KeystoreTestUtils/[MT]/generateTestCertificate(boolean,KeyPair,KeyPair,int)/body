@@ -1,6 +1,6 @@
 {
-  final X500Name subject=new X500Name("CN=MyName" + subjectKeyPair.getPublic().hashCode());
-  final X500Name issuer=new X500Name("CN=MyName" + issuerKeyPair.getPublic().hashCode());
+  final X500Name subject=new X500Name("CN=" + Base64.encodeBytes(subjectKeyPair.getPublic().getEncoded(),Base64.URL_SAFE));
+  final X500Name issuer=new X500Name("CN=" + Base64.encodeBytes(issuerKeyPair.getPublic().getEncoded(),Base64.URL_SAFE));
   final Date notBefore;
   final Date notAfter;
   if (isValid) {
