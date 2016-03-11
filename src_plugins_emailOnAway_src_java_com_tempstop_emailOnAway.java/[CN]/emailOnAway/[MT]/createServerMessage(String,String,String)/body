@@ -3,6 +3,11 @@
   message.setTo(to);
   message.setFrom(from);
   message.setSubject("I'm away");
-  message.setBody("I'm currently away.  Your message has been forwarded to my service email address (" + emailTo + ").");
+  if (JiveGlobals.getBooleanProperty("plugin.emailonaway.showemail",false)) {
+    message.setBody("I'm currently away. Your message has been forwarded to my service email address (" + emailTo + ").");
+  }
+ else {
+    message.setBody("I'm currently away. Your message has been forwarded to my service email address.");
+  }
   return message;
 }
