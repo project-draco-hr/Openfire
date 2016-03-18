@@ -11,9 +11,6 @@
       buffer.flip();
       ioSessionLock.lock();
       try {
-        if (!ioSession.isConnected()) {
-          throw new IOException("Connection reset/closed by peer");
-        }
         ioSession.write(buffer);
       }
   finally {
