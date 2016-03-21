@@ -7,9 +7,6 @@
     IoBuffer buffer=IoBuffer.allocate(4096);
     buffer.setAutoExpand(true);
     try {
-      if (!ioSession.isConnected()) {
-        throw new IOException("Connection reset/closed by peer");
-      }
       buffer.putString(packet.getElement().asXML(),encoder.get());
       if (flashClient) {
         buffer.put((byte)'\0');
