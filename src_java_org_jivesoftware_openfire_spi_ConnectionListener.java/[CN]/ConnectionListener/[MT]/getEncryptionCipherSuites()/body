@@ -12,5 +12,11 @@
  else {
     result.addAll(Arrays.asList(csv.split("\\s*,\\s*")));
   }
+  try {
+    result.retainAll(EncryptionArtifactFactory.getSupportedCipherSuites());
+  }
+ catch (  Exception ex) {
+    Log.warn("An error occurred while obtaining the supported encryption cipher suites.",ex);
+  }
   return result;
 }

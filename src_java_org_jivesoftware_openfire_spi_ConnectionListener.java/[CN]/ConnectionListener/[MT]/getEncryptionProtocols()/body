@@ -12,5 +12,11 @@
  else {
     result.addAll(Arrays.asList(csv.split("\\s*,\\s*")));
   }
+  try {
+    result.retainAll(EncryptionArtifactFactory.getSupportedProtocols());
+  }
+ catch (  Exception ex) {
+    Log.error("An error occurred while obtaining the supported encryption protocols.",ex);
+  }
   return result;
 }
