@@ -1,4 +1,5 @@
 {
   ClusterTask task=getRemoteSessionTask(RemoteSessionTask.Operation.isSecure);
-  return (Boolean)doSynchronousClusterTask(task);
+  final Object clusterTaskResult=doSynchronousClusterTask(task);
+  return clusterTaskResult == null ? false : (Boolean)clusterTaskResult;
 }
