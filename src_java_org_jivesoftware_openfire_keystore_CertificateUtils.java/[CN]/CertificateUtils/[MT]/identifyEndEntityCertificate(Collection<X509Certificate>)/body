@@ -1,7 +1,12 @@
 {
-  final List<X509Certificate> ordered=order(chain);
-  if (ordered.isEmpty()) {
+  if (chain.isEmpty()) {
     throw new CertificateException();
   }
-  return ordered.get(0);
+  try {
+    return order(chain).get(0);
+  }
+ catch (  CertificateException ex) {
+    Log.warn("Unable to order the provided chain. As a fallback, the end entity certificate is assumed to be the first certificate of the input.",ex);
+    return chain.iterator().next();
+  }
 }
