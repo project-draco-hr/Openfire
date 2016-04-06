@@ -1,17 +1,14 @@
 {
-  JiveGlobals.migrateProperty("sasl.mechs");
-  JiveGlobals.migrateProperty("sasl.gssapi.debug");
-  JiveGlobals.migrateProperty("sasl.gssapi.config");
-  JiveGlobals.migrateProperty("sasl.gssapi.useSubjectCredsOnly");
   final String configuration=JiveGlobals.getProperty("sasl.mechs","ANONYMOUS,PLAIN,DIGEST-MD5,CRAM-MD5,SCRAM-SHA-1,JIVE-SHAREDSECRET,GSSAPI");
   final StringTokenizer st=new StringTokenizer(configuration," ,\t\n\r\f");
+  mechanisms=new HashSet<>();
   while (st.hasMoreTokens()) {
-    final String mech=st.nextToken().toUpperCase();
+    final String mechanism=st.nextToken().toUpperCase();
     try {
-      addSupportedMechanism(mech);
+      addSupportedMechanism(mechanism);
     }
  catch (    Exception ex) {
-      Log.warn("An exception occurred while trying to add support for SASL Mechanism '{}':",mech,ex);
+      Log.warn("An exception occurred while trying to add support for SASL Mechanism '{}':",mechanism,ex);
     }
   }
 }
