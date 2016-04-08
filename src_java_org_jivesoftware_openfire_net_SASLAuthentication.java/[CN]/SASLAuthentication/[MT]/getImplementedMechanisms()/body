@@ -1,0 +1,9 @@
+{
+  final Set<String> result=new HashSet<>();
+  final Enumeration<SaslServerFactory> saslServerFactories=Sasl.getSaslServerFactories();
+  while (saslServerFactories.hasMoreElements()) {
+    final SaslServerFactory saslServerFactory=saslServerFactories.nextElement();
+    Collections.addAll(result,saslServerFactory.getMechanismNames(null));
+  }
+  return result;
+}
