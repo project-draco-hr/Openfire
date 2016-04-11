@@ -1,0 +1,8 @@
+{
+  final VCardProvider provider=VCardManager.getProvider();
+  if (provider != null && !(provider instanceof DelegateVCardProvider)) {
+    JiveGlobals.setProperty("provider.vcard.className",DelegateVCardProvider.class.getCanonicalName());
+    final DelegateVCardProvider delegateVCardProvider=(DelegateVCardProvider)VCardManager.getProvider();
+    delegateVCardProvider.setDelegate(provider);
+  }
+}
