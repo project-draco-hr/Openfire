@@ -1,0 +1,21 @@
+{
+  UserProvider nonReadOnly=null;
+  for (  final UserProvider provider : getUserProviders()) {
+    try {
+      provider.loadUser(username);
+      return provider;
+    }
+ catch (    UserNotFoundException unfe) {
+      if (Log.isDebugEnabled()) {
+        Log.debug("User {} not found by UserProvider {}",username,provider.getClass().getName());
+      }
+      if (nonReadOnly == null && !provider.isReadOnly()) {
+        nonReadOnly=provider;
+      }
+    }
+  }
+  if (nonReadOnly == null) {
+    throw new UnsupportedOperationException();
+  }
+  return nonReadOnly;
+}

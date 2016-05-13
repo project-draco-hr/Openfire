@@ -1,24 +1,3 @@
 {
-  boolean isUnsupported=false;
-  for (  UserProvider provider : userproviders) {
-    try {
-      provider.setName(username,name);
-      return;
-    }
- catch (    UnsupportedOperationException uoe) {
-      Log.warn("UserProvider.setName is not supported by this UserProvider: " + provider.getClass().getName());
-      isUnsupported=true;
-    }
-catch (    UserNotFoundException unfe) {
-      if (Log.isDebugEnabled()) {
-        Log.debug("User " + username + " not found by UserProvider "+ provider.getClass().getName());
-      }
-    }
-  }
-  if (isUnsupported) {
-    throw new UnsupportedOperationException();
-  }
- else {
-    throw new UserNotFoundException();
-  }
+  getUserProvider(username).setEmail(username,name);
 }

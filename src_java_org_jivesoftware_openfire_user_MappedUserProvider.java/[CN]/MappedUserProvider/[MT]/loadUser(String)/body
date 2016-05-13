@@ -1,0 +1,10 @@
+{
+  final UserProvider userProvider;
+  try {
+    userProvider=getUserProvider(username);
+  }
+ catch (  RuntimeException e) {
+    throw new UserNotFoundException("Unable to identify user provider for username " + username,e);
+  }
+  return userProvider.loadUser(username);
+}

@@ -1,0 +1,17 @@
+{
+  int supportSearch=getUserProviders().size();
+  final Set<String> result=new HashSet<>();
+  for (  final UserProvider provider : getUserProviders()) {
+    try {
+      result.addAll(provider.getSearchFields());
+    }
+ catch (    UnsupportedOperationException uoe) {
+      Log.warn("getSearchFields is not supported by this UserProvider: " + provider.getClass().getName());
+      supportSearch--;
+    }
+  }
+  if (supportSearch == 0) {
+    throw new UnsupportedOperationException("None of the backing providers support this operation.");
+  }
+  return result;
+}

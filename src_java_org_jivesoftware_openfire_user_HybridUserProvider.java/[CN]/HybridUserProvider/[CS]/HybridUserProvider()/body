@@ -2,44 +2,19 @@
   JiveGlobals.migrateProperty("hybridUserProvider.primaryProvider.className");
   JiveGlobals.migrateProperty("hybridUserProvider.secondaryProvider.className");
   JiveGlobals.migrateProperty("hybridUserProvider.tertiaryProvider.className");
-  userproviders=new ArrayList<>();
-  String primaryClass=JiveGlobals.getProperty("hybridUserProvider.primaryProvider.className");
-  if (primaryClass == null) {
-    Log.error("A primary UserProvider must be specified via openfire.xml or the system properties");
-    return;
+  final UserProvider primary=instantiate("hybridUserProvider.primaryProvider.className");
+  if (primary != null) {
+    userProviders.add(primary);
   }
-  try {
-    Class c=ClassUtils.forName(primaryClass);
-    UserProvider primaryProvider=(UserProvider)c.newInstance();
-    userproviders.add(primaryProvider);
-    Log.debug("Primary user provider: " + primaryClass);
+  final UserProvider secondary=instantiate("hybridUserProvider.secondaryProvider.className");
+  if (secondary != null) {
+    userProviders.add(secondary);
   }
- catch (  Exception e) {
-    Log.error("Unable to load primary user provider: " + primaryClass + ". Users in this provider will be disabled.",e);
-    return;
+  final UserProvider tertiary=instantiate("hybridUserProvider.tertiaryProvider.className");
+  if (tertiary != null) {
+    userProviders.add(tertiary);
   }
-  String secondaryClass=JiveGlobals.getProperty("hybridUserProvider.secondaryProvider.className");
-  if (secondaryClass != null) {
-    try {
-      Class c=ClassUtils.forName(secondaryClass);
-      UserProvider secondaryProvider=(UserProvider)c.newInstance();
-      userproviders.add(secondaryProvider);
-      Log.debug("Secondary user provider: " + secondaryClass);
-    }
- catch (    Exception e) {
-      Log.error("Unable to load secondary user provider: " + secondaryClass,e);
-    }
-  }
-  String tertiaryClass=JiveGlobals.getProperty("hybridUserProvider.tertiaryProvider.className");
-  if (tertiaryClass != null) {
-    try {
-      Class c=ClassUtils.forName(tertiaryClass);
-      UserProvider tertiaryProvider=(UserProvider)c.newInstance();
-      userproviders.add(tertiaryProvider);
-      Log.debug("Tertiary user provider: " + tertiaryClass);
-    }
- catch (    Exception e) {
-      Log.error("Unable to load tertiary user provider: " + tertiaryClass,e);
-    }
+  if (userProviders.isEmpty()) {
+    Log.error("At least one UserProvider must be specified via openfire.xml or the system properties!");
   }
 }

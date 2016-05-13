@@ -1,0 +1,18 @@
+{
+  final String className=JiveGlobals.getProperty(propertyName);
+  if (className == null) {
+    Log.debug("Property '{}' is undefined. Skipping.",propertyName);
+    return null;
+  }
+  Log.debug("About to to instantiate an UserProvider '{}' based on the value of property '{}'.",className,propertyName);
+  try {
+    final Class c=ClassUtils.forName(className);
+    final UserProvider provider=(UserProvider)c.newInstance();
+    Log.debug("Instantiated UserProvider '{}'",className);
+    return provider;
+  }
+ catch (  Exception e) {
+    Log.error("Unable to load UserProvider '{}'. Users in this provider will be disabled.",className,e);
+    return null;
+  }
+}
