@@ -18,6 +18,7 @@ final String fqhn=JiveGlobals.getProperty("xmpp.fqdn",XMPPServer.getInstance().g
 final Map<String,Object> props=new HashMap<>();
 props.put(LocalSession.class.getCanonicalName(),session);
 props.put(Sasl.POLICY_NOANONYMOUS,Boolean.toString(!JiveGlobals.getBooleanProperty("xmpp.auth.anonymous")));
+props.put("com.sun.security.sasl.digest.realm",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
 SaslServer saslServer=Sasl.createSaslServer(mechanismName,"xmpp",fqhn,props,new XMPPCallbackHandler());
 if (saslServer == null) {
 throw new SaslFailureException(Failure.INVALID_MECHANISM,"There is no provider that can provide a SASL server for the desired mechanism and properties.");
