@@ -37,7 +37,7 @@
       OutgoingServerSocketReader socketReader=new OutgoingServerSocketReader(reader);
       if (authenticateDomain(socketReader,localDomain,remoteDomain,id)) {
         log.debug("Successfully authenticated the connection with dialback.");
-        StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
+        StreamID streamID=BasicStreamIDFactory.createStreamID(id);
         LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,socketReader,streamID);
         connection.init(session);
         session.setAddress(new JID(null,remoteDomain,null));

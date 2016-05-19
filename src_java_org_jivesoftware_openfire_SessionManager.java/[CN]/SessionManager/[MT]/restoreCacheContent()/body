@@ -6,13 +6,13 @@
     multiplexerSessionsCache.put(address,server.getNodeID().toByteArray());
   }
   for (  LocalIncomingServerSession session : localSessionManager.getIncomingServerSessions()) {
-    String streamID=session.getStreamID().getID();
+    StreamID streamID=session.getStreamID();
     incomingServerSessionsCache.put(streamID,server.getNodeID().toByteArray());
     for (    String hostname : session.getValidatedDomains()) {
       Lock lock=CacheFactory.getLock(hostname,hostnameSessionsCache);
       try {
         lock.lock();
-        List<String> streamIDs=hostnameSessionsCache.get(hostname);
+        List<StreamID> streamIDs=hostnameSessionsCache.get(hostname);
         if (streamIDs == null) {
           streamIDs=new ArrayList<>();
         }

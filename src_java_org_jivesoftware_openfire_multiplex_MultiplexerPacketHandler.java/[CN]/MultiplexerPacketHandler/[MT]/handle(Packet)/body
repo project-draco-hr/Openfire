@@ -8,12 +8,13 @@
     }
  else     if (iq.getType() == IQ.Type.set) {
       Element child=iq.getChildElement();
-      String streamID=child.attributeValue("id");
-      if (streamID == null) {
+      String streamIDValue=child.attributeValue("id");
+      if (streamIDValue == null) {
         Element extraError=DocumentHelper.createElement(QName.get("id-required","http://jabber.org/protocol/connectionmanager#errors"));
         sendErrorPacket(iq,PacketError.Condition.bad_request,extraError);
       }
  else       if ("session".equals(child.getName())) {
+        StreamID streamID=BasicStreamIDFactory.createStreamID(streamIDValue);
         Element create=child.element("create");
         if (create != null) {
           Element hostElement=create.element("host");
