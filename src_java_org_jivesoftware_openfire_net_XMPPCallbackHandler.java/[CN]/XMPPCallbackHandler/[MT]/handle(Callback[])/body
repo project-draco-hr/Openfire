@@ -3,10 +3,7 @@
   String name=null;
   for (  Callback callback : callbacks) {
     if (callback instanceof RealmCallback) {
-      realm=((RealmCallback)callback).getText();
-      if (realm == null) {
-        realm=((RealmCallback)callback).getDefaultText();
-      }
+      ((RealmCallback)callback).setText(XMPPServer.getInstance().getServerInfo().getXMPPDomain());
     }
  else     if (callback instanceof NameCallback) {
       name=((NameCallback)callback).getName();
