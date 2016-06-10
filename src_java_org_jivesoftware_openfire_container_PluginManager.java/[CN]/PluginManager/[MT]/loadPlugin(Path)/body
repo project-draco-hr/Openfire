@@ -1,14 +1,19 @@
 {
   final String pluginName=pluginDir.getFileName().toString();
   if (XMPPServer.getInstance().isSetupMode() && !(pluginName.equals("admin"))) {
-    return;
+    return false;
+  }
+  if (failureToLoadCount.containsKey(pluginName) && failureToLoadCount.get(pluginName) > JiveGlobals.getIntProperty("plugins.loading.retries",5)) {
+    Log.debug("The unloaded file for plugin '{}' is silently ignored, as it has failed to load repeatedly.",pluginName);
+    return false;
   }
   Log.debug("Loading plugin '{}'...",pluginName);
   try {
     final Path pluginConfig=pluginDir.resolve("plugin.xml");
     if (!Files.exists(pluginConfig)) {
       Log.warn("Plugin '{}' could not be loaded: no plugin.xml file found.",pluginName);
-      return;
+      failureToLoadCount.put(pluginName,Integer.MAX_VALUE);
+      return false;
     }
     final SAXReader saxReader=new SAXReader();
     saxReader.setEncoding("UTF-8");
@@ -19,7 +24,8 @@
       final Version currentVersion=XMPPServer.getInstance().getServerInfo().getVersion();
       if (requiredVersion.isNewerThan(currentVersion)) {
         Log.warn("Ignoring plugin '{}': requires server version {}. Current server version is {}.",pluginName,requiredVersion,currentVersion);
-        return;
+        failureToLoadCount.put(pluginName,Integer.MAX_VALUE);
+        return false;
       }
     }
     final String devModeClassesDir=System.getProperty(pluginName + ".classes");
@@ -40,7 +46,12 @@
       }
       if (parentPlugin == null) {
         Log.info("Unable to load plugin '{}': parent plugin '{}' has not been loaded.",pluginName,parentPluginNode.getTextTrim());
-        return;
+        Integer count=failureToLoadCount.get(pluginName);
+        if (count == null) {
+          count=0;
+        }
+        failureToLoadCount.put(pluginName,++count);
+        return false;
       }
       pluginLoader=classloaders.get(parentPlugin);
     }
@@ -120,8 +131,15 @@
     }
     firePluginCreatedEvent(pluginName,plugin);
     Log.info("Successfully loaded plugin '{}'.",pluginName);
+    return true;
   }
  catch (  Throwable e) {
     Log.error("An exception occurred while loading plugin '{}':",pluginName,e);
+    Integer count=failureToLoadCount.get(pluginName);
+    if (count == null) {
+      count=0;
+    }
+    failureToLoadCount.put(pluginName,++count);
+    return false;
   }
 }

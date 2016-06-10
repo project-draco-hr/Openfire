@@ -89,8 +89,9 @@ synchronized (PluginMonitor.this) {
               for (              final Path path : hierarchy) {
                 final String pluginName=PluginMetadataHelper.getCanonicalName(path);
                 if (pluginManager.getPlugin(pluginName) == null) {
-                  pluginManager.loadPlugin(path);
-                  loaded++;
+                  if (pluginManager.loadPlugin(path)) {
+                    loaded++;
+                  }
                 }
               }
               return loaded;
