@@ -1,5 +1,10 @@
 {
-  for (  PluginListener listener : pluginListeners) {
-    listener.pluginDestroyed(name,plugin);
+  for (  final PluginListener listener : pluginListeners) {
+    try {
+      listener.pluginDestroyed(name,plugin);
+    }
+ catch (    Exception ex) {
+      Log.warn("An exception was thrown when one of the pluginManagerListeners was notified of a 'destroyed' event for plugin '{}'!",name,ex);
+    }
   }
 }

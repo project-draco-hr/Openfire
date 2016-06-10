@@ -1,8 +1,6 @@
 {
   Log.info("Shutting down. Unloading all installed plugins...");
-  if (executor != null) {
-    executor.shutdown();
-  }
+  pluginMonitor.stop();
   for (  Map.Entry<String,Plugin> plugin : plugins.entrySet()) {
     try {
       plugin.getValue().destroyPlugin();
@@ -14,9 +12,7 @@
   }
   plugins.clear();
   pluginDirs.clear();
-  pluginFiles.clear();
   classloaders.clear();
   pluginDevelopment.clear();
   childPluginMap.clear();
-  pluginMonitor=null;
 }

@@ -1,12 +1,3 @@
 {
-  String versionString=getElementValue(plugin,"/plugin/databaseVersion");
-  if (versionString != null) {
-    try {
-      return Integer.parseInt(versionString.trim());
-    }
- catch (    NumberFormatException nfe) {
-      Log.error("Unable to parse the database version for plugin '{}'.",getName(plugin),nfe);
-    }
-  }
-  return -1;
+  return PluginMetadataHelper.getDatabaseVersion(plugin);
 }

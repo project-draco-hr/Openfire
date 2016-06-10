@@ -1,0 +1,21 @@
+{
+  if (pluginDir == null) {
+    return null;
+  }
+  try {
+    final Path pluginConfig=pluginDir.resolve("plugin.xml");
+    if (Files.exists(pluginConfig)) {
+      final SAXReader saxReader=new SAXReader();
+      saxReader.setEncoding("UTF-8");
+      final Document pluginXML=saxReader.read(pluginConfig.toFile());
+      final Element element=(Element)pluginXML.selectSingleNode(xpath);
+      if (element != null) {
+        return element.getTextTrim();
+      }
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Unable to get element value '{}' from plugin.xml of plugin in '{}':",xpath,pluginDir,e);
+  }
+  return null;
+}

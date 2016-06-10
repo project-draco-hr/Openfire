@@ -1,0 +1,11 @@
+{
+  final Future<?> future=executor.submit(new MonitorTask());
+  if (blockUntilDone) {
+    try {
+      future.get();
+    }
+ catch (    Exception e) {
+      Log.warn("An exception occurred while waiting for a check of the plugin directory to complete.",e);
+    }
+  }
+}

@@ -1,175 +1,127 @@
 {
-  if (XMPPServer.getInstance().isSetupMode() && !(pluginDir.getFileName().toString().equals("admin"))) {
+  final String pluginName=pluginDir.getFileName().toString();
+  if (XMPPServer.getInstance().isSetupMode() && !(pluginName.equals("admin"))) {
     return;
   }
-  String pluginName=pluginDir.getFileName().toString();
   Log.debug("Loading plugin '{}'...",pluginName);
-  Plugin plugin;
   try {
-    Path pluginConfig=pluginDir.resolve("plugin.xml");
-    if (Files.exists(pluginConfig)) {
-      SAXReader saxReader=new SAXReader();
-      saxReader.setEncoding("UTF-8");
-      Document pluginXML=saxReader.read(pluginConfig.toFile());
-      Element minServerVersion=(Element)pluginXML.selectSingleNode("/plugin/minServerVersion");
-      if (minServerVersion != null) {
-        Version requiredVersion=new Version(minServerVersion.getTextTrim());
-        Version currentVersion=XMPPServer.getInstance().getServerInfo().getVersion();
-        if (requiredVersion.isNewerThan(currentVersion)) {
-          Log.warn("Ignoring plugin '{}': requires server version {}. Current server version is {}.",pluginName,requiredVersion,currentVersion);
-          return;
-        }
-      }
-      PluginClassLoader pluginLoader;
-      Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
-      String webRootKey=pluginName + ".webRoot";
-      String classesDirKey=pluginName + ".classes";
-      String webRoot=System.getProperty(webRootKey);
-      String classesDir=System.getProperty(classesDirKey);
-      if (webRoot != null) {
-        final Path compilationClassesDir=pluginDir.resolve("classes");
-        if (Files.notExists(compilationClassesDir)) {
-          Files.createDirectory(compilationClassesDir);
-        }
-        compilationClassesDir.toFile().deleteOnExit();
-      }
-      if (parentPluginNode != null) {
-        String parentPlugin=parentPluginNode.getTextTrim();
-        if (plugins.containsKey(parentPlugin)) {
-          pluginLoader=classloaders.get(getPlugin(parentPlugin));
-          pluginLoader.addDirectory(pluginDir.toFile(),classesDir != null);
-        }
- else {
-          final Set<String> plugins=new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-          plugins.addAll(Arrays.asList(pluginDir.getParent().toFile().list()));
-          if (plugins.contains(parentPlugin + ".jar") || plugins.contains(parentPlugin + ".war")) {
-            return;
-          }
- else {
-            Log.warn("Ignoring plugin '{}': parent plugin '{}' not present.",pluginName,parentPlugin);
-            return;
-          }
-        }
-      }
- else {
-        pluginLoader=new PluginClassLoader();
-        pluginLoader.addDirectory(pluginDir.toFile(),classesDir != null);
-      }
-      PluginDevEnvironment dev=null;
-      if (webRoot != null || classesDir != null) {
-        dev=new PluginDevEnvironment();
-        Log.info("Plugin '{}' is running in development mode.",pluginName);
-        if (webRoot != null) {
-          Path webRootDir=Paths.get(webRoot);
-          if (Files.notExists(webRootDir)) {
-            webRootDir=pluginDir.resolve(webRoot);
-          }
-          if (Files.exists(webRootDir)) {
-            dev.setWebRoot(webRootDir.toFile());
-          }
-        }
-        if (classesDir != null) {
-          Path classes=Paths.get(classesDir);
-          if (Files.notExists(classes)) {
-            classes=pluginDir.resolve(classesDir);
-          }
-          if (Files.exists(classes)) {
-            dev.setClassesDir(classes.toFile());
-            pluginLoader.addURLFile(classes.toUri().toURL());
-          }
-        }
-      }
-      String className=pluginXML.selectSingleNode("/plugin/class").getText().trim();
-      plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
-      if (parentPluginNode != null) {
-        String parentPlugin=parentPluginNode.getTextTrim();
-        if (plugins.containsKey(parentPlugin)) {
-          pluginLoader=classloaders.get(getPlugin(parentPlugin));
-          classloaders.put(plugin,pluginLoader);
-        }
-      }
-      plugins.put(pluginName,plugin);
-      pluginDirs.put(plugin,pluginDir);
-      if (parentPluginNode != null) {
-        String parentPlugin=parentPluginNode.getTextTrim();
-        for (        Map.Entry<String,Plugin> entry : plugins.entrySet()) {
-          if (entry.getKey().equalsIgnoreCase(parentPlugin)) {
-            parentPlugin=entry.getKey();
-            break;
-          }
-        }
-        List<String> childrenPlugins=parentPluginMap.get(plugins.get(parentPlugin));
-        if (childrenPlugins == null) {
-          childrenPlugins=new ArrayList<>();
-          parentPluginMap.put(plugins.get(parentPlugin),childrenPlugins);
-        }
-        childrenPlugins.add(pluginName);
-        childPluginMap.put(plugin,parentPlugin);
-      }
- else {
-        classloaders.put(plugin,pluginLoader);
-      }
-      if (!DbConnectionManager.getSchemaManager().checkPluginSchema(plugin)) {
-        Log.error("Error while loading plugin '{}': {}",pluginName,LocaleUtils.getLocalizedString("upgrade.database.failure"));
-      }
-      Path webXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web.xml");
-      if (Files.exists(webXML)) {
-        PluginServlet.registerServlets(this,plugin,webXML.toFile());
-      }
-      Path customWebXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web-custom.xml");
-      if (Files.exists(customWebXML)) {
-        PluginServlet.registerServlets(this,plugin,customWebXML.toFile());
-      }
-      if (dev != null) {
-        pluginDevelopment.put(plugin,dev);
-      }
-      configureCaches(pluginDir,pluginName);
-      ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(pluginLoader);
-      plugin.initializePlugin(this,pluginDir.toFile());
-      Log.debug("Initialized plugin '{}'.",pluginName);
-      Thread.currentThread().setContextClassLoader(oldLoader);
-      Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
-      if (adminElement != null) {
-        Element appName=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/appname");
-        if (appName != null) {
-          appName.addAttribute("plugin",pluginName);
-        }
-        Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
-        if (imageEl != null) {
-          imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
-          imageEl.addAttribute("plugin",pluginName);
-        }
-        imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/login-image");
-        if (imageEl != null) {
-          imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
-          imageEl.addAttribute("plugin",pluginName);
-        }
-        List urls=adminElement.selectNodes("//@url");
-        for (        Object url : urls) {
-          Attribute attr=(Attribute)url;
-          attr.setValue("plugins/" + pluginName + "/"+ attr.getValue());
-        }
-        String[] elementNames=new String[]{"tab","sidebar","item"};
-        for (        String elementName : elementNames) {
-          List values=adminElement.selectNodes("//" + elementName);
-          for (          Object value : values) {
-            Element element=(Element)value;
-            if (element.attribute("name") != null || element.attribute("value") != null) {
-              element.addAttribute("plugin",pluginName);
-            }
-          }
-        }
-        AdminConsole.addModel(pluginName,adminElement);
-      }
-      firePluginCreatedEvent(pluginName,plugin);
-    }
- else {
+    final Path pluginConfig=pluginDir.resolve("plugin.xml");
+    if (!Files.exists(pluginConfig)) {
       Log.warn("Plugin '{}' could not be loaded: no plugin.xml file found.",pluginName);
+      return;
     }
+    final SAXReader saxReader=new SAXReader();
+    saxReader.setEncoding("UTF-8");
+    final Document pluginXML=saxReader.read(pluginConfig.toFile());
+    final Element minServerVersion=(Element)pluginXML.selectSingleNode("/plugin/minServerVersion");
+    if (minServerVersion != null) {
+      final Version requiredVersion=new Version(minServerVersion.getTextTrim());
+      final Version currentVersion=XMPPServer.getInstance().getServerInfo().getVersion();
+      if (requiredVersion.isNewerThan(currentVersion)) {
+        Log.warn("Ignoring plugin '{}': requires server version {}. Current server version is {}.",pluginName,requiredVersion,currentVersion);
+        return;
+      }
+    }
+    final String devModeClassesDir=System.getProperty(pluginName + ".classes");
+    final String devModewebRoot=System.getProperty(pluginName + ".webRoot");
+    final boolean devMode=devModewebRoot != null || devModeClassesDir != null;
+    final PluginDevEnvironment dev=(devMode ? configurePluginDevEnvironment(pluginDir,devModeClassesDir,devModewebRoot) : null);
+    final PluginClassLoader pluginLoader;
+    String parentPluginName=null;
+    Plugin parentPlugin=null;
+    final Element parentPluginNode=(Element)pluginXML.selectSingleNode("/plugin/parentPlugin");
+    if (parentPluginNode != null) {
+      for (      final Map.Entry<String,Plugin> entry : plugins.entrySet()) {
+        if (entry.getKey().equalsIgnoreCase(parentPluginNode.getTextTrim())) {
+          parentPluginName=entry.getKey();
+          parentPlugin=entry.getValue();
+          break;
+        }
+      }
+      if (parentPlugin == null) {
+        Log.info("Unable to load plugin '{}': parent plugin '{}' has not been loaded.",pluginName,parentPluginNode.getTextTrim());
+        return;
+      }
+      pluginLoader=classloaders.get(parentPlugin);
+    }
+ else {
+      pluginLoader=new PluginClassLoader();
+    }
+    pluginLoader.addDirectory(pluginDir.toFile(),devMode);
+    if (dev != null && dev.getClassesDir() != null) {
+      pluginLoader.addURLFile(dev.getClassesDir().toURI().toURL());
+    }
+    final String className=pluginXML.selectSingleNode("/plugin/class").getText().trim();
+    final Plugin plugin=(Plugin)pluginLoader.loadClass(className).newInstance();
+    classloaders.put(plugin,pluginLoader);
+    plugins.put(pluginName,plugin);
+    pluginDirs.put(plugin,pluginDir);
+    if (dev != null) {
+      pluginDevelopment.put(plugin,dev);
+    }
+    if (parentPlugin != null) {
+      List<String> childrenPlugins=parentPluginMap.get(parentPlugin);
+      if (childrenPlugins == null) {
+        childrenPlugins=new ArrayList<>();
+        parentPluginMap.put(parentPlugin,childrenPlugins);
+      }
+      childrenPlugins.add(pluginName);
+      childPluginMap.put(plugin,parentPluginName);
+    }
+    if (!DbConnectionManager.getSchemaManager().checkPluginSchema(plugin)) {
+      Log.error("Error while loading plugin '{}': {}",pluginName,LocaleUtils.getLocalizedString("upgrade.database.failure"));
+    }
+    final Path webXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web.xml");
+    if (Files.exists(webXML)) {
+      PluginServlet.registerServlets(this,plugin,webXML.toFile());
+    }
+    final Path customWebXML=pluginDir.resolve("web").resolve("WEB-INF").resolve("web-custom.xml");
+    if (Files.exists(customWebXML)) {
+      PluginServlet.registerServlets(this,plugin,customWebXML.toFile());
+    }
+    configureCaches(pluginDir,pluginName);
+    final ClassLoader oldLoader=Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(pluginLoader);
+    plugin.initializePlugin(this,pluginDir.toFile());
+    Log.debug("Initialized plugin '{}'.",pluginName);
+    Thread.currentThread().setContextClassLoader(oldLoader);
+    final Element adminElement=(Element)pluginXML.selectSingleNode("/plugin/adminconsole");
+    if (adminElement != null) {
+      final Element appName=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/appname");
+      if (appName != null) {
+        appName.addAttribute("plugin",pluginName);
+      }
+      Element imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/logo-image");
+      if (imageEl != null) {
+        imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
+        imageEl.addAttribute("plugin",pluginName);
+      }
+      imageEl=(Element)adminElement.selectSingleNode("/plugin/adminconsole/global/login-image");
+      if (imageEl != null) {
+        imageEl.setText("plugins/" + pluginName + "/"+ imageEl.getText());
+        imageEl.addAttribute("plugin",pluginName);
+      }
+      final List urls=adminElement.selectNodes("//@url");
+      for (      final Object url : urls) {
+        final Attribute attr=(Attribute)url;
+        attr.setValue("plugins/" + pluginName + "/"+ attr.getValue());
+      }
+      final String[] elementNames=new String[]{"tab","sidebar","item"};
+      for (      final String elementName : elementNames) {
+        final List values=adminElement.selectNodes("//" + elementName);
+        for (        final Object value : values) {
+          final Element element=(Element)value;
+          if (element.attribute("name") != null || element.attribute("value") != null) {
+            element.addAttribute("plugin",pluginName);
+          }
+        }
+      }
+      AdminConsole.addModel(pluginName,adminElement);
+    }
+    firePluginCreatedEvent(pluginName,plugin);
+    Log.info("Successfully loaded plugin '{}'.",pluginName);
   }
  catch (  Throwable e) {
     Log.error("An exception occurred while loading plugin '{}':",pluginName,e);
   }
-  Log.info("Successfully loaded plugin '{}'.",pluginName);
 }

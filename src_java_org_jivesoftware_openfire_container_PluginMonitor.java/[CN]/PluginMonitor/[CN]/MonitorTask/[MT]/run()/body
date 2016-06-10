@@ -1,0 +1,124 @@
+{
+synchronized (PluginMonitor.this) {
+    try {
+      final Path pluginsDirectory=pluginManager.getPluginsDirectory();
+      if (!Files.isDirectory(pluginsDirectory) || !Files.isReadable(pluginsDirectory)) {
+        Log.error("Unable to process plugins. The plugins directory does not exist (or is no directory): {}",pluginsDirectory);
+        return;
+      }
+      final Set<String> jarSet=new HashSet<>();
+      try (final DirectoryStream<Path> ds=Files.newDirectoryStream(pluginsDirectory,new DirectoryStream.Filter<Path>(){
+        @Override public boolean accept(        final Path path) throws IOException {
+          if (Files.isDirectory(path)) {
+            return false;
+          }
+          final String fileName=path.getFileName().toString().toLowerCase();
+          return (fileName.endsWith(".jar") || fileName.endsWith(".war"));
+        }
+      }
+)){
+        for (        final Path jarFile : ds) {
+          final String fileName=jarFile.getFileName().toString();
+          final String pluginName=fileName.substring(0,fileName.length() - 4).toLowerCase();
+          jarSet.add(pluginName);
+          final Path dir=pluginsDirectory.resolve(pluginName);
+          if (Files.exists(dir) && Files.getLastModifiedTime(jarFile).toMillis() > Files.getLastModifiedTime(dir).toMillis()) {
+            if (pluginManager.isExecuted()) {
+              int count=0;
+              while (!PluginManager.deleteDir(dir) && count++ < 5) {
+                Thread.sleep(1000);
+              }
+            }
+ else {
+              pluginManager.unloadPlugin(pluginName);
+            }
+          }
+          if (Files.notExists(dir)) {
+            unzipPlugin(pluginName,jarFile,dir);
+          }
+        }
+      }
+       try (final DirectoryStream<Path> ds=Files.newDirectoryStream(pluginsDirectory,new DirectoryStream.Filter<Path>(){
+        @Override public boolean accept(        final Path path) throws IOException {
+          if (!Files.isDirectory(path)) {
+            return false;
+          }
+          final String pluginName=PluginMetadataHelper.getCanonicalName(path);
+          return !pluginName.equals("admin") && !jarSet.contains(pluginName);
+        }
+      }
+)){
+        for (        final Path path : ds) {
+          final String pluginName=PluginMetadataHelper.getCanonicalName(path);
+          Log.info("Plugin '{}' was removed from the file system.",pluginName);
+          pluginManager.unloadPlugin(pluginName);
+        }
+      }
+       try (final DirectoryStream<Path> ds=Files.newDirectoryStream(pluginsDirectory,new DirectoryStream.Filter<Path>(){
+        @Override public boolean accept(        final Path path) throws IOException {
+          return Files.isDirectory(path);
+        }
+      }
+)){
+        final Set<Path> devPlugins=new HashSet<>();
+        final String devPluginDirs=System.getProperty("pluginDirs");
+        if (devPluginDirs != null) {
+          final StringTokenizer st=new StringTokenizer(devPluginDirs,",");
+          while (st.hasMoreTokens()) {
+            try {
+              final String devPluginDir=st.nextToken().trim();
+              final Path devPluginPath=Paths.get(devPluginDir);
+              if (Files.exists(devPluginPath) && Files.isDirectory(devPluginPath)) {
+                devPlugins.add(devPluginPath);
+              }
+ else {
+                Log.error("Unable to load a dev plugin as its path (as supplied in the 'pluginDirs' system property) does not exist, or is not a directory. Offending path: [{}] (parsed from raw value [{}])",devPluginPath,devPluginDir);
+              }
+            }
+ catch (            InvalidPathException ex) {
+              Log.error("Unable to load a dev plugin as an invalid path was added to the 'pluginDirs' system property.",ex);
+            }
+          }
+        }
+        final Deque<List<Path>> dirs=sortPluginDirs(ds,devPlugins);
+        final Collection<Callable<Integer>> parallelProcesses=new ArrayList<>();
+        for (        final List<Path> hierarchy : dirs) {
+          parallelProcesses.add(new Callable<Integer>(){
+            @Override public Integer call() throws Exception {
+              int loaded=0;
+              for (              final Path path : hierarchy) {
+                final String pluginName=PluginMetadataHelper.getCanonicalName(path);
+                if (pluginManager.getPlugin(pluginName) == null) {
+                  pluginManager.loadPlugin(path);
+                  loaded++;
+                }
+              }
+              return loaded;
+            }
+          }
+);
+        }
+        final int parallelProcessMax=JiveGlobals.getIntProperty("plugins.loading.max-parallel",4);
+        final int parallelProcessCount=(pluginManager.isExecuted() ? 1 : parallelProcessMax);
+        final ExecutorService executorService=Executors.newFixedThreadPool(parallelProcessCount);
+        try {
+          final List<Future<Integer>> futures=executorService.invokeAll(parallelProcesses);
+          int pluginsLoaded=0;
+          for (          Future<Integer> future : futures) {
+            pluginsLoaded+=future.get();
+          }
+          if (pluginsLoaded > 0 && !XMPPServer.getInstance().isSetupMode()) {
+            Log.info("Finished processing all plugins.");
+          }
+        }
+  finally {
+          executorService.shutdown();
+        }
+        pluginManager.firePluginsMonitored();
+      }
+     }
+ catch (    Throwable e) {
+      Log.error("An unexpected exception occurred:",e);
+    }
+  }
+}

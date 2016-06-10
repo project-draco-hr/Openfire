@@ -1,5 +1,13 @@
 {
-  for (  PluginManagerListener listener : pluginManagerListeners) {
-    listener.pluginsMonitored();
+  if (!XMPPServer.getInstance().isSetupMode()) {
+    executed=true;
+  }
+  for (  final PluginManagerListener listener : pluginManagerListeners) {
+    try {
+      listener.pluginsMonitored();
+    }
+ catch (    Exception ex) {
+      Log.warn("An exception was thrown when one of the pluginManagerListeners was notified of a 'monitored' event!",ex);
+    }
   }
 }

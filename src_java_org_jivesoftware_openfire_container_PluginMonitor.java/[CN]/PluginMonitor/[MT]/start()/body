@@ -1,0 +1,12 @@
+{
+  if (executor != null) {
+    executor.shutdown();
+  }
+  executor=new ScheduledThreadPoolExecutor(1);
+  if (Boolean.getBoolean("developmentMode")) {
+    executor.scheduleWithFixedDelay(new MonitorTask(),0,5,TimeUnit.SECONDS);
+  }
+ else {
+    executor.scheduleWithFixedDelay(new MonitorTask(),0,20,TimeUnit.SECONDS);
+  }
+}
