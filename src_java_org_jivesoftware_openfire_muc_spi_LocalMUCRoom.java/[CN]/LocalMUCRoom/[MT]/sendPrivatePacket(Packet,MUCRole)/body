@@ -1,15 +1,26 @@
 {
-  String resource=packet.getTo().getResource();
-  List<MUCRole> occupants=occupantsByNickname.get(resource.toLowerCase());
-  if (occupants == null || occupants.size() == 0) {
-    throw new NotFoundException();
-  }
-  for (  MUCRole occupant : occupants) {
-    packet.setFrom(senderRole.getRoleAddress());
-    occupant.send(packet);
-    if (packet instanceof Message) {
-      Message message=(Message)packet;
-      MUCEventDispatcher.privateMessageRecieved(occupant.getUserAddress(),senderRole.getUserAddress(),message);
-    }
-  }
+switch (senderRole.getRole()) {
+case none:
+    throw new ForbiddenException();
+default :
+case visitor:
+  if (canSendPrivateMessage.equals("participants"))   throw new ForbiddenException();
+case participant:
+if (canSendPrivateMessage.equals("moderators")) throw new ForbiddenException();
+case moderator:
+if (canSendPrivateMessage.equals("none")) throw new ForbiddenException();
+}
+String resource=packet.getTo().getResource();
+List<MUCRole> occupants=occupantsByNickname.get(resource.toLowerCase());
+if (occupants == null || occupants.size() == 0) {
+throw new NotFoundException();
+}
+for (MUCRole occupant : occupants) {
+packet.setFrom(senderRole.getRoleAddress());
+occupant.send(packet);
+if (packet instanceof Message) {
+Message message=(Message)packet;
+MUCEventDispatcher.privateMessageRecieved(occupant.getUserAddress(),senderRole.getUserAddress(),message);
+}
+}
 }

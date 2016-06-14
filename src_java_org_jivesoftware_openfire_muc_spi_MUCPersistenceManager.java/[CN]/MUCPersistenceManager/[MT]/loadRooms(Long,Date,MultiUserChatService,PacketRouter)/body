@@ -49,16 +49,31 @@
         room.setLoginRestrictedToNickname(resultSet.getInt(20) == 1);
         room.setChangeNickname(resultSet.getInt(21) == 1);
         room.setRegistrationEnabled(resultSet.getInt(22) == 1);
-        room.setPersistent(true);
-        rooms.put(room.getID(),room);
-      }
- catch (      SQLException e) {
-        Log.error("A database exception prevented one particular MUC room to be loaded from the database.",e);
-      }
-    }
-  }
+switch (resultSet.getInt(23)) {
+default :
+case 0:
+          room.setCanSendPrivateMessage("anyone");
+        break;
+case 1:
+      room.setCanSendPrivateMessage("participants");
+    break;
+case 2:
+  room.setCanSendPrivateMessage("moderators");
+break;
+case 3:
+room.setCanSendPrivateMessage("none");
+break;
+}
+room.setPersistent(true);
+rooms.put(room.getID(),room);
+}
+ catch (SQLException e) {
+Log.error("A database exception prevented one particular MUC room to be loaded from the database.",e);
+}
+}
+}
   finally {
-    DbConnectionManager.closeConnection(resultSet,statement,connection);
-  }
-  return rooms;
+DbConnectionManager.closeConnection(resultSet,statement,connection);
+}
+return rooms;
 }

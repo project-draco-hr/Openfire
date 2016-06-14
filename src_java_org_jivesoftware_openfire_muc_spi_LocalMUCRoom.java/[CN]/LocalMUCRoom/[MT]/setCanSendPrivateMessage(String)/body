@@ -1,0 +1,16 @@
+{
+  if (role == null) {
+    role="(null)";
+  }
+switch (role.toLowerCase()) {
+case "none":
+case "moderators":
+case "participants":
+case "anyone":
+    this.canSendPrivateMessage=role.toLowerCase();
+  break;
+default :
+Log.warn("Illegal value for muc#roomconfig_allowpm: '{}'. Defaulting to 'anyone'",role.toLowerCase());
+this.canSendPrivateMessage="anyone";
+}
+}
