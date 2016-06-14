@@ -21,47 +21,77 @@
       pstmt.setInt(14,(room.isLoginRestrictedToNickname() ? 1 : 0));
       pstmt.setInt(15,(room.canChangeNickname() ? 1 : 0));
       pstmt.setInt(16,(room.isRegistrationEnabled() ? 1 : 0));
-      pstmt.setLong(17,room.getID());
-      pstmt.executeUpdate();
-    }
+switch (room.canSendPrivateMessage()) {
+default :
+case "anyone":
+        pstmt.setInt(17,0);
+      break;
+case "participants":
+    pstmt.setInt(17,1);
+  break;
+case "moderators":
+pstmt.setInt(17,2);
+break;
+case "none":
+pstmt.setInt(17,3);
+break;
+}
+pstmt.setLong(18,room.getID());
+pstmt.executeUpdate();
+}
  else {
-      pstmt=con.prepareStatement(ADD_ROOM);
-      pstmt.setLong(1,XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServiceID(room.getMUCService().getServiceName()));
-      pstmt.setLong(2,room.getID());
-      pstmt.setString(3,StringUtils.dateToMillis(room.getCreationDate()));
-      pstmt.setString(4,StringUtils.dateToMillis(room.getModificationDate()));
-      pstmt.setString(5,room.getName());
-      pstmt.setString(6,room.getNaturalLanguageName());
-      pstmt.setString(7,room.getDescription());
-      pstmt.setString(8,StringUtils.dateToMillis(room.getLockedDate()));
-      Date emptyDate=room.getEmptyDate();
-      if (emptyDate == null) {
-        pstmt.setString(9,null);
-      }
+pstmt=con.prepareStatement(ADD_ROOM);
+pstmt.setLong(1,XMPPServer.getInstance().getMultiUserChatManager().getMultiUserChatServiceID(room.getMUCService().getServiceName()));
+pstmt.setLong(2,room.getID());
+pstmt.setString(3,StringUtils.dateToMillis(room.getCreationDate()));
+pstmt.setString(4,StringUtils.dateToMillis(room.getModificationDate()));
+pstmt.setString(5,room.getName());
+pstmt.setString(6,room.getNaturalLanguageName());
+pstmt.setString(7,room.getDescription());
+pstmt.setString(8,StringUtils.dateToMillis(room.getLockedDate()));
+Date emptyDate=room.getEmptyDate();
+if (emptyDate == null) {
+pstmt.setString(9,null);
+}
  else {
-        pstmt.setString(9,StringUtils.dateToMillis(emptyDate));
-      }
-      pstmt.setInt(10,(room.canOccupantsChangeSubject() ? 1 : 0));
-      pstmt.setInt(11,room.getMaxUsers());
-      pstmt.setInt(12,(room.isPublicRoom() ? 1 : 0));
-      pstmt.setInt(13,(room.isModerated() ? 1 : 0));
-      pstmt.setInt(14,(room.isMembersOnly() ? 1 : 0));
-      pstmt.setInt(15,(room.canOccupantsInvite() ? 1 : 0));
-      pstmt.setString(16,room.getPassword());
-      pstmt.setInt(17,(room.canAnyoneDiscoverJID() ? 1 : 0));
-      pstmt.setInt(18,(room.isLogEnabled() ? 1 : 0));
-      pstmt.setString(19,room.getSubject());
-      pstmt.setInt(20,marshallRolesToBroadcast(room));
-      pstmt.setInt(21,(room.isLoginRestrictedToNickname() ? 1 : 0));
-      pstmt.setInt(22,(room.canChangeNickname() ? 1 : 0));
-      pstmt.setInt(23,(room.isRegistrationEnabled() ? 1 : 0));
-      pstmt.executeUpdate();
-    }
-  }
- catch (  SQLException sqle) {
-    Log.error(sqle.getMessage(),sqle);
-  }
+pstmt.setString(9,StringUtils.dateToMillis(emptyDate));
+}
+pstmt.setInt(10,(room.canOccupantsChangeSubject() ? 1 : 0));
+pstmt.setInt(11,room.getMaxUsers());
+pstmt.setInt(12,(room.isPublicRoom() ? 1 : 0));
+pstmt.setInt(13,(room.isModerated() ? 1 : 0));
+pstmt.setInt(14,(room.isMembersOnly() ? 1 : 0));
+pstmt.setInt(15,(room.canOccupantsInvite() ? 1 : 0));
+pstmt.setString(16,room.getPassword());
+pstmt.setInt(17,(room.canAnyoneDiscoverJID() ? 1 : 0));
+pstmt.setInt(18,(room.isLogEnabled() ? 1 : 0));
+pstmt.setString(19,room.getSubject());
+pstmt.setInt(20,marshallRolesToBroadcast(room));
+pstmt.setInt(21,(room.isLoginRestrictedToNickname() ? 1 : 0));
+pstmt.setInt(22,(room.canChangeNickname() ? 1 : 0));
+pstmt.setInt(23,(room.isRegistrationEnabled() ? 1 : 0));
+switch (room.canSendPrivateMessage()) {
+default :
+case "anyone":
+pstmt.setInt(24,0);
+break;
+case "participants":
+pstmt.setInt(24,1);
+break;
+case "moderators":
+pstmt.setInt(24,2);
+break;
+case "none":
+pstmt.setInt(24,3);
+break;
+}
+pstmt.executeUpdate();
+}
+}
+ catch (SQLException sqle) {
+Log.error(sqle.getMessage(),sqle);
+}
  finally {
-    DbConnectionManager.closeConnection(pstmt,con);
-  }
+DbConnectionManager.closeConnection(pstmt,con);
+}
 }
