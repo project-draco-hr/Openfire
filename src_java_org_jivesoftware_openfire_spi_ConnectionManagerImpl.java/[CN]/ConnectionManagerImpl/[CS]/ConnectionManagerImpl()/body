@@ -1,11 +1,21 @@
 {
   super("Connection Manager");
   InetAddress bindAddress=null;
+  InetAddress adminConsoleBindAddress=null;
   try {
     bindAddress=getListenAddress();
   }
  catch (  UnknownHostException e) {
     Log.warn("Unable to resolve bind address: ",e);
+  }
+  try {
+    adminConsoleBindAddress=getAdminConsoleListenAddress();
+    if (adminConsoleBindAddress == null) {
+      adminConsoleBindAddress=bindAddress;
+    }
+  }
+ catch (  UnknownHostException e) {
+    Log.warn("Unable to resolve admin console bind address: ",e);
   }
   final CertificateStoreManager certificateStoreManager=XMPPServer.getInstance().getCertificateStoreManager();
   clientListener=new ConnectionListener(ConnectionType.SOCKET_C2S,ConnectionSettings.Client.PORT,DEFAULT_PORT,ConnectionSettings.Client.SOCKET_ACTIVE,ConnectionSettings.Client.MAX_THREADS,ConnectionSettings.Client.MAX_READ_BUFFER,ConnectionSettings.Client.TLS_POLICY,ConnectionSettings.Client.AUTH_PER_CLIENTCERT_POLICY,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.SOCKET_C2S),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.SOCKET_C2S),ConnectionSettings.Client.COMPRESSION_SETTINGS);
@@ -17,6 +27,6 @@
   componentSslListener=new ConnectionListener(ConnectionType.COMPONENT,ConnectionSettings.Component.OLD_SSLPORT,DEFAULT_COMPONENT_SSL_PORT,ConnectionSettings.Component.ENABLE_OLD_SSLPORT,ConnectionSettings.Component.MAX_THREADS_SSL,null,Connection.TLSPolicy.legacyMode.name(),ConnectionSettings.Component.AUTH_PER_CLIENTCERT_POLICY,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.COMPONENT),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.COMPONENT),ConnectionSettings.Component.COMPRESSION_SETTINGS);
   connectionManagerListener=new ConnectionListener(ConnectionType.CONNECTION_MANAGER,ConnectionSettings.Multiplex.PORT,DEFAULT_MULTIPLEX_PORT,ConnectionSettings.Multiplex.SOCKET_ACTIVE,ConnectionSettings.Multiplex.MAX_THREADS,null,ConnectionSettings.Multiplex.TLS_POLICY,ConnectionSettings.Multiplex.AUTH_PER_CLIENTCERT_POLICY,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.CONNECTION_MANAGER),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.CONNECTION_MANAGER),ConnectionSettings.Multiplex.COMPRESSION_SETTINGS);
   connectionManagerSslListener=new ConnectionListener(ConnectionType.CONNECTION_MANAGER,ConnectionSettings.Multiplex.OLD_SSLPORT,DEFAULT_MULTIPLEX_SSL_PORT,ConnectionSettings.Multiplex.ENABLE_OLD_SSLPORT,ConnectionSettings.Multiplex.MAX_THREADS_SSL,null,Connection.TLSPolicy.legacyMode.name(),ConnectionSettings.Multiplex.AUTH_PER_CLIENTCERT_POLICY,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.CONNECTION_MANAGER),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.CONNECTION_MANAGER),ConnectionSettings.Multiplex.COMPRESSION_SETTINGS);
-  webAdminListener=new ConnectionListener(ConnectionType.WEBADMIN,"adminConsole.port",9090,null,"adminConsole.serverThreads",null,Connection.TLSPolicy.disabled.name(),null,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.WEBADMIN),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.WEBADMIN),null);
-  webAdminSslListener=new ConnectionListener(ConnectionType.WEBADMIN,"adminConsole.securePort",9091,null,"adminConsole.serverThreads",null,Connection.TLSPolicy.legacyMode.name(),null,bindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.WEBADMIN),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.WEBADMIN),null);
+  webAdminListener=new ConnectionListener(ConnectionType.WEBADMIN,"adminConsole.port",9090,null,"adminConsole.serverThreads",null,Connection.TLSPolicy.disabled.name(),null,adminConsoleBindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.WEBADMIN),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.WEBADMIN),null);
+  webAdminSslListener=new ConnectionListener(ConnectionType.WEBADMIN,"adminConsole.securePort",9091,null,"adminConsole.serverThreads",null,Connection.TLSPolicy.legacyMode.name(),null,adminConsoleBindAddress,certificateStoreManager.getIdentityStoreConfiguration(ConnectionType.WEBADMIN),certificateStoreManager.getTrustStoreConfiguration(ConnectionType.WEBADMIN),null);
 }
