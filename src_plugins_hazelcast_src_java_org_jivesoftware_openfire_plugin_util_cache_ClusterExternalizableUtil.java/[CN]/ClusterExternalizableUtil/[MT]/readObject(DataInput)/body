@@ -25,6 +25,11 @@
     return new Date(in.readLong());
   }
  else   if (type == 9) {
+    byte[] buf=new byte[in.readInt()];
+    in.readFully(buf);
+    return buf;
+  }
+ else   if (type == 10) {
     int len=in.readInt();
     byte[] buf=new byte[len];
     in.readFully(buf);
