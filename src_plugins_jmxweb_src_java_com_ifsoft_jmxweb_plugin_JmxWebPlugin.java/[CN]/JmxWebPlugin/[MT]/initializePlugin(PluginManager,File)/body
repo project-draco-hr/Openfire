@@ -67,4 +67,10 @@
  catch (  Exception e) {
     Log.error("Error initializing JmxWeb Plugin",e);
   }
+  if (JiveGlobals.getBooleanProperty("jmxweb.email.monitoring",true)) {
+    Log.info("[" + NAME + "] starting email monitoring");
+    emailScheduler=new EmailScheduler();
+    emailScheduler.startMonitoring();
+    Log.info("[" + NAME + "] started monitoring");
+  }
 }
