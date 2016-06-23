@@ -41,9 +41,17 @@
     try {
       Log.info("[" + NAME + "] starting jolokia");
       WebAppContext context=new WebAppContext(contexts,pluginDirectory.getPath(),"/jolokia");
+      final List<ContainerInitializer> initializers=new ArrayList<>();
+      initializers.add(new ContainerInitializer(new JasperInitializer(),null));
+      context.setAttribute("org.eclipse.jetty.containerInitializers",initializers);
+      context.setAttribute(InstanceManager.class.getName(),new SimpleInstanceManager());
       context.setWelcomeFiles(new String[]{"index.html"});
       Log.info("[" + NAME + "] starting hawtio");
       WebAppContext context2=new WebAppContext(contexts,pluginDirectory.getPath() + "/hawtio","/hawtio");
+      final List<ContainerInitializer> initializers2=new ArrayList<>();
+      initializers2.add(new ContainerInitializer(new JasperInitializer(),null));
+      context2.setAttribute("org.eclipse.jetty.containerInitializers",initializers2);
+      context2.setAttribute(InstanceManager.class.getName(),new SimpleInstanceManager());
       context2.setWelcomeFiles(new String[]{"index.html"});
       if (JiveGlobals.getBooleanProperty("xmpp.jmx.secure",true)) {
         SecurityHandler securityHandler=basicAuth("jmxweb");

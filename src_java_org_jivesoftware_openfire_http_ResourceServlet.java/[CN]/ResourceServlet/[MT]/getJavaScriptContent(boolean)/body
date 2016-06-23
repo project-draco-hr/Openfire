@@ -4,34 +4,15 @@
     writer.write(getJavaScriptFile(file));
   }
   if (compress) {
-    ByteArrayOutputStream baos=null;
-    GZIPOutputStream gzos=null;
-    try {
-      baos=new ByteArrayOutputStream();
-      gzos=new GZIPOutputStream(baos);
-      gzos.write(writer.toString().getBytes());
-      gzos.finish();
-      gzos.flush();
-      gzos.close();
-      return baos.toByteArray();
-    }
-  finally {
-      try {
-        if (gzos != null) {
-          gzos.close();
-        }
+    try (ByteArrayOutputStream baos=new ByteArrayOutputStream()){
+      try (GZIPOutputStream gzos=new GZIPOutputStream(baos)){
+        gzos.write(writer.toString().getBytes());
+        gzos.finish();
+        gzos.flush();
+        return baos.toByteArray();
       }
- catch (      Exception ignored) {
-      }
-      try {
-        if (baos != null) {
-          baos.close();
-        }
-      }
- catch (      Exception ignored) {
-      }
-    }
-  }
+     }
+   }
  else {
     return writer.toString().getBytes();
   }

@@ -5,6 +5,7 @@
     if (localOnly.contains(cache.getName()))     continue;
     CacheWrapper cacheWrapper=((CacheWrapper)cache);
     Cache standaloneCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
+    standaloneCache.putAll(cache);
     cacheWrapper.setWrappedCache(standaloneCache);
   }
   log.info("Clustering stopped; cache migration complete");

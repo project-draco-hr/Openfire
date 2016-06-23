@@ -1,0 +1,14 @@
+{
+  if (name == null || name.isEmpty() || pattern == null || pattern.isEmpty()) {
+    throw new IllegalArgumentException("Arguments cannot be null or empty.");
+  }
+  final String needle=name.toLowerCase();
+  final String hayStack=pattern.toLowerCase();
+  if (needle.equals(hayStack)) {
+    return true;
+  }
+  if (hayStack.startsWith("*.")) {
+    return needle.endsWith(hayStack.substring(2));
+  }
+  return false;
+}

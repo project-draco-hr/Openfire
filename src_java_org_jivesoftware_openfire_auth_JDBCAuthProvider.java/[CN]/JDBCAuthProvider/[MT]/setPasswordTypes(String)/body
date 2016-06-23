@@ -1,0 +1,24 @@
+{
+  Collection<String> passwordTypeStringList=StringUtils.stringToCollection(passwordTypeProperty);
+  List<PasswordType> passwordTypeList=new ArrayList<>(passwordTypeStringList.size());
+  Iterator<String> it=passwordTypeStringList.iterator();
+  while (it.hasNext()) {
+    try {
+      PasswordType type=PasswordType.valueOf(it.next().toLowerCase());
+      passwordTypeList.add(type);
+      if (type == PasswordType.bcrypt) {
+        if (it.hasNext()) {
+          Log.warn("The jdbcAuthProvider.passwordType setting in invalid.  Bcrypt must be the final hashType if a series is given.  Ignoring all hash types beyond bcrypt: {}",passwordTypeProperty);
+        }
+        break;
+      }
+    }
+ catch (    IllegalArgumentException iae) {
+    }
+  }
+  if (passwordTypeList.isEmpty()) {
+    Log.warn("The jdbcAuthProvider.passwordType setting is not set or contains invalid values.  Setting the type to 'plain'");
+    passwordTypeList.add(PasswordType.plain);
+  }
+  passwordTypes=passwordTypeList;
+}

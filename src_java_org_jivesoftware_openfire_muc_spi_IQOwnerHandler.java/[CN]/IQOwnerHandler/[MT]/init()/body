@@ -2,7 +2,7 @@
   Element element=DocumentHelper.createElement(QName.get("query","http://jabber.org/protocol/muc#owner"));
   configurationForm=new DataForm(DataForm.Type.form);
   configurationForm.setTitle(LocaleUtils.getLocalizedString("muc.form.conf.title"));
-  List<String> params=new ArrayList<String>();
+  List<String> params=new ArrayList<>();
   params.add(room.getName());
   configurationForm.addInstruction(LocaleUtils.getLocalizedString("muc.form.conf.instruction",params));
   configurationForm.addField("FORM_TYPE",null,Type.hidden).addValue("http://jabber.org/protocol/muc#roomconfig");
@@ -32,6 +32,11 @@
   final FormField whois=configurationForm.addField("muc#roomconfig_whois",LocaleUtils.getLocalizedString("muc.form.conf.owner_whois"),Type.list_single);
   whois.addOption(LocaleUtils.getLocalizedString("muc.form.conf.moderator"),"moderators");
   whois.addOption(LocaleUtils.getLocalizedString("muc.form.conf.anyone"),"anyone");
+  final FormField allowpm=configurationForm.addField("muc#roomconfig_allowpm",LocaleUtils.getLocalizedString("muc.form.conf.owner_allowpm"),Type.list_single);
+  allowpm.addOption(LocaleUtils.getLocalizedString("muc.form.conf.anyone"),"anyone");
+  allowpm.addOption(LocaleUtils.getLocalizedString("muc.form.conf.moderator"),"moderators");
+  allowpm.addOption(LocaleUtils.getLocalizedString("muc.form.conf.participant"),"participants");
+  allowpm.addOption(LocaleUtils.getLocalizedString("muc.form.conf.none"),"none");
   configurationForm.addField("muc#roomconfig_enablelogging",LocaleUtils.getLocalizedString("muc.form.conf.owner_enablelogging"),Type.boolean_type);
   configurationForm.addField("x-muc#roomconfig_reservednick",LocaleUtils.getLocalizedString("muc.form.conf.owner_reservednick"),Type.boolean_type);
   configurationForm.addField("x-muc#roomconfig_canchangenick",LocaleUtils.getLocalizedString("muc.form.conf.owner_canchangenick"),Type.boolean_type);

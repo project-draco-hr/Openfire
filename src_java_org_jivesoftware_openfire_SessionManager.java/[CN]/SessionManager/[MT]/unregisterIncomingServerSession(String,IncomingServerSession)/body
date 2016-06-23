@@ -1,11 +1,11 @@
 {
-  String streamID=session.getStreamID().getID();
+  StreamID streamID=session.getStreamID();
   localSessionManager.removeIncomingServerSessions(streamID);
   incomingServerSessionsCache.remove(streamID);
   Lock lock=CacheFactory.getLock(hostname,hostnameSessionsCache);
   try {
     lock.lock();
-    List<String> streamIDs=hostnameSessionsCache.get(hostname);
+    List<StreamID> streamIDs=hostnameSessionsCache.get(hostname);
     if (streamIDs != null) {
       streamIDs.remove(streamID);
       if (streamIDs.isEmpty()) {
@@ -24,7 +24,7 @@
     lock.lock();
     Set<String> validatedDomains=validatedDomainsCache.get(streamID);
     if (validatedDomains == null) {
-      validatedDomains=new HashSet<String>();
+      validatedDomains=new HashSet<>();
     }
     validatedDomains.remove(hostname);
     if (!validatedDomains.isEmpty()) {

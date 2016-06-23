@@ -1,7 +1,4 @@
 {
-  if (isSocketStarted || sessionManager == null || deliverer == null || router == null || serverName == null) {
-    return;
-  }
   PluginManager pluginManager=XMPPServer.getInstance().getPluginManager();
   if (!pluginManager.isExecuted()) {
     pluginManager.addPluginManagerListener(new PluginManagerListener(){
@@ -13,19 +10,18 @@
 );
     return;
   }
-  isSocketStarted=true;
-  try {
-    localIPAddress=InetAddress.getLocalHost().getHostAddress();
-  }
- catch (  UnknownHostException e) {
-    if (localIPAddress == null) {
-      localIPAddress="Unknown";
+  for (  final ConnectionListener listener : getListeners()) {
+    try {
+      listener.start();
+    }
+ catch (    RuntimeException ex) {
+      Log.error("An exception occurred while starting listener " + listener,ex);
     }
   }
-  startServerListener();
-  startConnectionManagerListener(localIPAddress);
-  startComponentListener();
-  startClientListeners(localIPAddress);
-  startClientSSLListeners(localIPAddress);
-  startHTTPBindListeners();
+  try {
+    HttpBindManager.getInstance().start();
+  }
+ catch (  RuntimeException ex) {
+    Log.error("An exception occurred while starting HTTP Bind listener ",ex);
+  }
 }

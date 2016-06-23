@@ -1,0 +1,13 @@
+{
+  try {
+    final String hostAddress=connection.getHostAddress();
+    final byte[] address=connection.getAddress();
+    if (blockedIPs.contains(hostAddress) || isAddressInRange(address,blockedIPs)) {
+      return false;
+    }
+    return allowedAnonymIPs.isEmpty() || allowedAnonymIPs.contains(hostAddress) || isAddressInRange(address,allowedAnonymIPs);
+  }
+ catch (  UnknownHostException e) {
+    return false;
+  }
+}

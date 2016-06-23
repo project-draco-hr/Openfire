@@ -1,0 +1,10 @@
+{
+  final boolean oldValue=verifyCertificateValidity();
+  JiveGlobals.setProperty(type.getPrefix() + "certificate.accept-selfsigned",Boolean.toString(accept));
+  if (oldValue == accept) {
+    Log.debug("Ignoring self-signed certificate acceptance policy change request (to '{}'): listener already in this state.",accept);
+    return;
+  }
+  Log.debug("Changing self-signed certificate acceptance policy from '{}' to '{}'.",oldValue,accept);
+  restart();
+}

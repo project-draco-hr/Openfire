@@ -7,11 +7,16 @@
     return false;
   }
   try {
-    socketReader.connection.startTLS(false,"IMPLEMENT_ME",Connection.ClientAuth.disabled);
+    socketReader.connection.startTLS(false);
   }
- catch (  IOException e) {
-    Log.error("Error while negotiating TLS: " + socketReader.connection,e);
-    socketReader.connection.deliverRawText("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\">");
+ catch (  SSLHandshakeException e) {
+    Log.info("STARTTLS negotiation (with: {}) failed.",socketReader.connection,e);
+    socketReader.connection.forceClose();
+    return false;
+  }
+catch (  IOException|RuntimeException e) {
+    Log.warn("An exception occurred while performing STARTTLS negotiation (with: {})",socketReader.connection,e);
+    socketReader.connection.deliverRawText("<failure xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
     socketReader.connection.close();
     return false;
   }

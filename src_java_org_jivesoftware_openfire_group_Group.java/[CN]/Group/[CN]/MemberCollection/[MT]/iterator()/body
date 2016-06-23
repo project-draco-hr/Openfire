@@ -2,14 +2,14 @@
   return new Iterator<JID>(){
     Iterator<JID> iter=users.iterator();
     JID current=null;
-    public boolean hasNext(){
+    @Override public boolean hasNext(){
       return iter.hasNext();
     }
-    public JID next(){
+    @Override public JID next(){
       current=iter.next();
       return current;
     }
-    public void remove(){
+    @Override public void remove(){
       if (current == null) {
         throw new IllegalStateException();
       }
@@ -20,12 +20,12 @@
       iter.remove();
       provider.deleteMember(name,user);
       if (adminCollection) {
-        Map<String,String> params=new HashMap<String,String>();
+        Map<String,String> params=new HashMap<>();
         params.put("admin",user.toString());
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.admin_removed,params);
       }
  else {
-        Map<String,String> params=new HashMap<String,String>();
+        Map<String,String> params=new HashMap<>();
         params.put("member",user.toString());
         GroupEventDispatcher.dispatchEvent(Group.this,GroupEventDispatcher.EventType.member_removed,params);
       }

@@ -1,7 +1,7 @@
 {
   SystemTray tray=null;
   try {
-    tray=SystemTray.getDefaultSystemTray();
+    tray=SystemTray.getSystemTray();
   }
  catch (  Throwable e) {
     System.err.println("Error loading system tray library, system tray support disabled.");
@@ -64,21 +64,21 @@
   toolbar.add(quitButton,new GridBagConstraints(3,0,1,1,0.0,0.0,GridBagConstraints.WEST,GridBagConstraints.NONE,new Insets(5,5,5,5),0,0));
   mainPanel.add(cardPanel,BorderLayout.CENTER);
   mainPanel.add(toolbar,BorderLayout.SOUTH);
-  JPopupMenu menu=new JPopupMenu(appName + " Menu");
-  final JMenuItem showMenuItem=new JMenuItem("Hide");
+  PopupMenu menu=new PopupMenu(appName + " Menu");
+  final MenuItem showMenuItem=new MenuItem("Hide");
   showMenuItem.setActionCommand("Hide/Show");
   menu.add(showMenuItem);
-  final JMenuItem startMenuItem=new JMenuItem("Start");
+  final MenuItem startMenuItem=new MenuItem("Start");
   startMenuItem.setActionCommand("Start");
   menu.add(startMenuItem);
-  final JMenuItem stopMenuItem=new JMenuItem("Stop");
+  final MenuItem stopMenuItem=new MenuItem("Stop");
   stopMenuItem.setActionCommand("Stop");
   menu.add(stopMenuItem);
-  final JMenuItem browserMenuItem=new JMenuItem("Launch Admin");
+  final MenuItem browserMenuItem=new MenuItem("Launch Admin");
   browserMenuItem.setActionCommand("Launch Admin");
   menu.add(browserMenuItem);
   menu.addSeparator();
-  final JMenuItem quitMenuItem=new JMenuItem("Quit");
+  final MenuItem quitMenuItem=new MenuItem("Quit");
   quitMenuItem.setActionCommand("Quit");
   menu.add(quitMenuItem);
   browserButton.setEnabled(false);
@@ -86,7 +86,7 @@
   browserMenuItem.setEnabled(false);
   stopMenuItem.setEnabled(false);
   ActionListener actionListener=new ActionListener(){
-    public void actionPerformed(    ActionEvent e){
+    @Override public void actionPerformed(    ActionEvent e){
       if ("Start".equals(e.getActionCommand())) {
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         startButton.setEnabled(false);
@@ -95,7 +95,7 @@
         stopMenuItem.setEnabled(true);
         startApplication();
         frame.setIconImage(onIcon.getImage());
-        trayIcon.setIcon(onIcon);
+        trayIcon.setImage(onIcon.getImage());
         Thread thread=new Thread(){
           @Override public void run(){
             try {
@@ -116,7 +116,7 @@
  else       if ("Stop".equals(e.getActionCommand())) {
         stopApplication();
         frame.setIconImage(offIcon.getImage());
-        trayIcon.setIcon(offIcon);
+        trayIcon.setImage(offIcon.getImage());
         frame.setCursor(Cursor.getDefaultCursor());
         browserButton.setEnabled(false);
         startButton.setEnabled(true);
@@ -133,16 +133,7 @@
         System.exit(0);
       }
  else       if ("Hide/Show".equals(e.getActionCommand()) || "PressAction".equals(e.getActionCommand())) {
-        if (frame.isVisible()) {
-          frame.setVisible(false);
-          frame.setState(Frame.ICONIFIED);
-          showMenuItem.setText("Show");
-        }
- else {
-          frame.setVisible(true);
-          frame.setState(Frame.NORMAL);
-          showMenuItem.setText("Hide");
-        }
+        toggleVisibility(showMenuItem);
       }
     }
   }
@@ -156,11 +147,27 @@
   stopMenuItem.addActionListener(actionListener);
   startMenuItem.addActionListener(actionListener);
   showMenuItem.addActionListener(actionListener);
-  trayIcon=new TrayIcon(offIcon,appName,menu);
-  trayIcon.setIconAutoSize(true);
+  trayIcon=new TrayIcon(offIcon.getImage(),appName,menu);
+  trayIcon.setImageAutoSize(true);
   trayIcon.addActionListener(actionListener);
+  trayIcon.addMouseListener(new MouseListener(){
+    @Override public void mouseClicked(    MouseEvent e){
+      if (e.getButton() == 1) {
+        toggleVisibility(showMenuItem);
+      }
+    }
+    @Override public void mousePressed(    MouseEvent e){
+    }
+    @Override public void mouseReleased(    MouseEvent e){
+    }
+    @Override public void mouseEntered(    MouseEvent e){
+    }
+    @Override public void mouseExited(    MouseEvent e){
+    }
+  }
+);
   if (tray != null) {
-    tray.addTrayIcon(trayIcon);
+    tray.add(trayIcon);
   }
   frame.addWindowListener(new WindowAdapter(){
     @Override public void windowClosing(    WindowEvent e){
@@ -169,7 +176,7 @@
     }
     @Override public void windowIconified(    WindowEvent e){
       frame.setVisible(false);
-      showMenuItem.setText("Show");
+      showMenuItem.setLabel("Show");
     }
   }
 );

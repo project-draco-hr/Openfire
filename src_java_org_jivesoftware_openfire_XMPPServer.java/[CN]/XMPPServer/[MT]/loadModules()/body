@@ -1,35 +1,52 @@
 {
-  FileReader in=null;
-  try {
-    File modulesXml=new File(JiveGlobals.getHomeDirectory(),"conf/modules.xml");
-    logger.info("Loading modules from " + modulesXml.getAbsolutePath());
-    SAXReader xmlReader=new SAXReader();
-    xmlReader.setEncoding("UTF-8");
-    in=new FileReader(modulesXml);
-    Document document=xmlReader.read(in);
-    Element root=document.getRootElement();
-    Iterator<Node> itr=root.nodeIterator();
-    while (itr.hasNext()) {
-      Node n=itr.next();
-      if (n.getNodeType() == Element.ELEMENT_NODE && "module".equals(n.getName())) {
-        Element module=(Element)n;
-        logger.debug("Loading module " + module.attributeValue("implementation") + " to interface "+ module.attributeValue("interface"));
-        loadModule(module.attributeValue("interface"),module.attributeValue("implementation"));
-      }
-    }
-  }
- catch (  Exception e) {
-    e.printStackTrace();
-    logger.error(LocaleUtils.getLocalizedString("admin.error"),e);
-  }
- finally {
-    if (in != null) {
-      try {
-        in.close();
-      }
- catch (      IOException e) {
-      }
-    }
-  }
+  loadModule(RoutingTableImpl.class.getName());
+  loadModule(AuditManagerImpl.class.getName());
+  loadModule(RosterManager.class.getName());
+  loadModule(PrivateStorage.class.getName());
+  loadModule(PresenceManagerImpl.class.getName());
+  loadModule(SessionManager.class.getName());
+  loadModule(PacketRouterImpl.class.getName());
+  loadModule(IQRouter.class.getName());
+  loadModule(MessageRouter.class.getName());
+  loadModule(PresenceRouter.class.getName());
+  loadModule(MulticastRouter.class.getName());
+  loadModule(PacketTransporterImpl.class.getName());
+  loadModule(PacketDelivererImpl.class.getName());
+  loadModule(TransportHandler.class.getName());
+  loadModule(OfflineMessageStrategy.class.getName());
+  loadModule(OfflineMessageStore.class.getName());
+  loadModule(VCardManager.class.getName());
+  loadModule(IQBindHandler.class.getName());
+  loadModule(IQSessionEstablishmentHandler.class.getName());
+  loadModule(IQPingHandler.class.getName());
+  loadModule(IQPrivateHandler.class.getName());
+  loadModule(IQRegisterHandler.class.getName());
+  loadModule(IQRosterHandler.class.getName());
+  loadModule(IQEntityTimeHandler.class.getName());
+  loadModule(IQvCardHandler.class.getName());
+  loadModule(IQVersionHandler.class.getName());
+  loadModule(IQLastActivityHandler.class.getName());
+  loadModule(PresenceSubscribeHandler.class.getName());
+  loadModule(PresenceUpdateHandler.class.getName());
+  loadModule(IQOfflineMessagesHandler.class.getName());
+  loadModule(IQPEPHandler.class.getName());
+  loadModule(IQPEPOwnerHandler.class.getName());
+  loadModule(MulticastDNSService.class.getName());
+  loadModule(IQSharedGroupHandler.class.getName());
+  loadModule(AdHocCommandHandler.class.getName());
+  loadModule(IQPrivacyHandler.class.getName());
+  loadModule(DefaultFileTransferManager.class.getName());
+  loadModule(FileTransferProxy.class.getName());
+  loadModule(MediaProxyService.class.getName());
+  loadModule(PubSubModule.class.getName());
+  loadModule(IQDiscoInfoHandler.class.getName());
+  loadModule(IQDiscoItemsHandler.class.getName());
+  loadModule(UpdateManager.class.getName());
+  loadModule(FlashCrossDomainHandler.class.getName());
+  loadModule(InternalComponentManager.class.getName());
+  loadModule(MultiUserChatManager.class.getName());
+  loadModule(IQMessageCarbonsHandler.class.getName());
+  loadModule(CertificateStoreManager.class.getName());
+  loadModule(ConnectionManagerImpl.class.getName());
   componentManager=getComponentManager();
 }

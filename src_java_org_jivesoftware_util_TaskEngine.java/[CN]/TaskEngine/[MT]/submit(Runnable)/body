@@ -1,3 +1,11 @@
 {
-  return executor.submit(task);
+  try {
+    return executor.submit(task);
+  }
+ catch (  Throwable t) {
+    Log.warn("Failed to schedule task; will retry using caller's thread: {0}",t.getMessage());
+    FutureTask<?> result=new FutureTask<>(task,null);
+    result.run();
+    return result;
+  }
 }

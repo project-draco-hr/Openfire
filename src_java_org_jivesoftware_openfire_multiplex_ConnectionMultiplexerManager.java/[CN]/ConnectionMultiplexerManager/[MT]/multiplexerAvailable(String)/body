@@ -1,10 +1,10 @@
 {
-  Map<String,LocalClientSession> sessions=sessionsByManager.get(connectionManagerName);
+  Map<StreamID,LocalClientSession> sessions=sessionsByManager.get(connectionManagerName);
   if (sessions == null) {
 synchronized (connectionManagerName.intern()) {
       sessions=sessionsByManager.get(connectionManagerName);
       if (sessions == null) {
-        sessions=new ConcurrentHashMap<String,LocalClientSession>();
+        sessions=new ConcurrentHashMap<>();
         sessionsByManager.put(connectionManagerName,sessions);
       }
     }

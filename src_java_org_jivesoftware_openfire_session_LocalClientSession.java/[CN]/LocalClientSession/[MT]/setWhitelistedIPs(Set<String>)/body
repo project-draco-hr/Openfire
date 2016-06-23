@@ -1,0 +1,20 @@
+{
+  if (allowed == null) {
+    throw new NullPointerException();
+  }
+  allowedIPs=allowed;
+  if (allowedIPs.isEmpty()) {
+    JiveGlobals.deleteProperty(ConnectionSettings.Client.LOGIN_ALLOWED);
+  }
+ else {
+    StringBuilder buf=new StringBuilder();
+    Iterator<String> iter=allowedIPs.iterator();
+    if (iter.hasNext()) {
+      buf.append(iter.next());
+    }
+    while (iter.hasNext()) {
+      buf.append(", ").append(iter.next());
+    }
+    JiveGlobals.setProperty(ConnectionSettings.Client.LOGIN_ALLOWED,buf.toString());
+  }
+}

@@ -1,0 +1,13 @@
+{
+  Presence updatedPresence=changeOccupantRole(jid,MUCRole.Role.none);
+  if (updatedPresence != null) {
+    Element frag=updatedPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+    frag.addElement("status").addAttribute("code","307");
+    if (reason != null && reason.trim().length() > 0) {
+      frag.element("item").addElement("reason").setText(reason);
+    }
+    kickPresence(updatedPresence,actorJID,actorNickname);
+    broadcastPresence(updatedPresence,false);
+  }
+  return updatedPresence;
+}

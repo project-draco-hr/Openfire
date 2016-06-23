@@ -38,10 +38,10 @@
         Collection<String> jids=usersSessions.get(route.toBareJID());
         if (jids == null) {
           if (ClusterManager.isClusteringStarted()) {
-            jids=new HashSet<String>();
+            jids=new HashSet<>();
           }
  else {
-            jids=new ConcurrentHashSet<String>();
+            jids=Collections.newSetFromMap(new ConcurrentHashMap<String,Boolean>());
           }
         }
         jids.add(route.toString());

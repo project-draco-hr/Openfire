@@ -32,7 +32,9 @@
     return;
   }
   if (stanza.equals("</stream:stream>")) {
-    session.close();
+    if (session != null) {
+      session.close();
+    }
     return;
   }
   if (stanza.startsWith("<?xml")) {
@@ -63,6 +65,9 @@
     if (compressClient(doc)) {
       waitingCompressionACK=true;
     }
+  }
+ else   if (isStreamManagementStanza(doc)) {
+    session.getStreamManager().process(doc,session.getAddress());
   }
  else {
     process(doc);

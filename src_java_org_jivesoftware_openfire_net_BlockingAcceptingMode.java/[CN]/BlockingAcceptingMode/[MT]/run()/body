@@ -4,7 +4,7 @@
       Socket sock=serverSocket.accept();
       if (sock != null) {
         Log.debug("Connect " + sock.toString());
-        SocketReader reader=connManager.createSocketReader(sock,false,serverPort,true);
+        SocketReader reader=createServerSocketReader(sock,false,true);
         Thread thread=new Thread(reader,reader.getName());
         thread.setDaemon(true);
         thread.setPriority(Thread.NORM_PRIORITY);

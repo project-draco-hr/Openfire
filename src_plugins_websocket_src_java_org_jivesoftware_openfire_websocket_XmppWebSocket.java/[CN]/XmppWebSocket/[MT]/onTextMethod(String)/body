@@ -1,0 +1,21 @@
+{
+  XMPPPacketReader reader=null;
+  try {
+    reader=readerPool.borrowObject();
+    Document doc=reader.read(new StringReader(stanza));
+    if (xmppSession == null) {
+      initiateSession(doc.getRootElement());
+    }
+ else {
+      processStanza(doc.getRootElement());
+    }
+  }
+ catch (  Exception ex) {
+    Log.error("Failed to process XMPP stanza",ex);
+  }
+ finally {
+    if (reader != null) {
+      readerPool.returnObject(reader);
+    }
+  }
+}

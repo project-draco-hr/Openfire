@@ -1,9 +1,8 @@
 {
-  String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-01.xml");
-  InputStream in=new FileInputStream(filename);
-  AdminConsole.addModel("test1",in);
-  in.close();
-  String name=AdminConsole.getAppName();
+  try (InputStream in=getClass().getResourceAsStream("/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-01.xml")){
+    AdminConsole.addModel("test1",in);
+  }
+   String name=AdminConsole.getAppName();
   assertEquals("Foo Bar",name);
   String img=AdminConsole.getLogoImage();
   assertEquals("foo.gif",img);

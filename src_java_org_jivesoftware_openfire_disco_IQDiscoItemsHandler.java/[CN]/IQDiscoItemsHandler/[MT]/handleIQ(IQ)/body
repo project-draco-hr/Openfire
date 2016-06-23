@@ -5,7 +5,7 @@
     reply.setError(PacketError.Condition.feature_not_implemented);
     return reply;
   }
-  DiscoItemsProvider itemsProvider=getProvider(packet.getTo() == null ? XMPPServer.getInstance().getServerInfo().getXMPPDomain() : packet.getTo().getDomain());
+  DiscoItemsProvider itemsProvider=getProvider(packet.getTo() == null ? packet.getFrom().getNode() : packet.getTo().getNode() != null ? packet.getTo().getNode() : packet.getTo().getDomain());
   if (itemsProvider != null) {
     String name=packet.getTo() == null ? null : packet.getTo().getNode();
     if (name == null || name.trim().length() == 0) {
@@ -25,11 +25,11 @@
           return reply;
         }
         final List<DiscoItem> rsmResults;
-        final List<DiscoItem> allItems=new ArrayList<DiscoItem>();
+        final List<DiscoItem> allItems=new ArrayList<>();
         while (itemsItr.hasNext()) {
           allItems.add(itemsItr.next());
         }
-        final ResultSet<DiscoItem> rs=new ResultSetImpl<DiscoItem>(allItems);
+        final ResultSet<DiscoItem> rs=new ResultSetImpl<>(allItems);
         try {
           rsmResults=rs.applyRSMDirectives(rsmElement);
         }

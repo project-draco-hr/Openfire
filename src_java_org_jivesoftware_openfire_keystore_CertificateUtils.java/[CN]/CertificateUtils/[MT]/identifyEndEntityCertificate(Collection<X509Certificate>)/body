@@ -1,0 +1,12 @@
+{
+  if (chain.isEmpty()) {
+    throw new CertificateException();
+  }
+  try {
+    return order(chain).get(0);
+  }
+ catch (  CertificateException ex) {
+    Log.warn("Unable to order the provided chain. As a fallback, the end entity certificate is assumed to be the first certificate of the input.",ex);
+    return chain.iterator().next();
+  }
+}

@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "certificate.verify.validity";
+  final boolean defaultValue=true;
+  if (type.getFallback() == null) {
+    return JiveGlobals.getBooleanProperty(propertyName,defaultValue);
+  }
+ else {
+    return JiveGlobals.getBooleanProperty(propertyName,getConnectionListener(type.getFallback()).acceptSelfSignedCertificates());
+  }
+}

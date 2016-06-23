@@ -9,12 +9,15 @@ case chat:
     Object item=it.next();
     if (item instanceof Element) {
       Element el=(Element)item;
+      if (Namespace.NO_NAMESPACE.equals(el.getNamespace())) {
+        continue;
+      }
       if (!el.getNamespaceURI().equals("http://jabber.org/protocol/chatstates") && !(el.getQName().equals(QName.get("rtt","urn:xmpp:rtt:0")))) {
         return true;
       }
     }
   }
-return false;
+return message.getBody() != null && !message.getBody().isEmpty();
 case groupchat:
 case headline:
 return false;

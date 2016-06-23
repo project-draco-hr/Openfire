@@ -1,12 +1,12 @@
 {
-  this.pluginDirectory=pluginDir;
-  plugins=new ConcurrentHashMap<String,Plugin>();
-  pluginDirs=new HashMap<Plugin,File>();
-  pluginFiles=new HashMap<String,File>();
-  classloaders=new HashMap<Plugin,PluginClassLoader>();
-  pluginDevelopment=new HashMap<Plugin,PluginDevEnvironment>();
-  parentPluginMap=new HashMap<Plugin,List<String>>();
-  childPluginMap=new HashMap<Plugin,String>();
-  devPlugins=new HashSet<String>();
+  this.pluginDirectory=pluginDir.toPath();
+  plugins=new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+  pluginDirs=new HashMap<>();
+  pluginFiles=new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+  classloaders=new HashMap<>();
+  pluginDevelopment=new HashMap<>();
+  parentPluginMap=new HashMap<>();
+  childPluginMap=new HashMap<>();
+  devPlugins=new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
   pluginMonitor=new PluginMonitor();
 }

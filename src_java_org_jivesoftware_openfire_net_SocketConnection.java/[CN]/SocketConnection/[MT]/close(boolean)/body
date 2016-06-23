@@ -1,41 +1,29 @@
 {
-  boolean wasClosed=false;
-synchronized (this) {
-    if (!isClosed()) {
+  if (state.compareAndSet(State.OPEN,State.CLOSED)) {
+    if (session != null) {
+      session.setStatus(Session.STATUS_CLOSED);
+    }
+    if (!force) {
+      boolean allowedToWrite=false;
       try {
-        if (session != null) {
-          session.setStatus(Session.STATUS_CLOSED);
+        requestWriting();
+        allowedToWrite=true;
+        writeStarted();
+        writer.write("</stream:stream>");
+        if (flashClient) {
+          writer.write('\0');
         }
-        if (!peerIsKnownToBeDisconnected) {
-          boolean allowedToWrite=false;
-          try {
-            requestWriting();
-            allowedToWrite=true;
-            writeStarted();
-            writer.write("</stream:stream>");
-            if (flashClient) {
-              writer.write('\0');
-            }
-            writer.flush();
-          }
- catch (          IOException e) {
-          }
- finally {
-            writeFinished();
-            if (allowedToWrite) {
-              releaseWriting();
-            }
-          }
-        }
+        writer.flush();
       }
  catch (      Exception e) {
-        Log.error(LocaleUtils.getLocalizedString("admin.error.close") + "\n" + this.toString(),e);
+        Log.debug("Failed to deliver stream close tag: " + e.getMessage());
       }
-      closeConnection();
-      wasClosed=true;
+      writeFinished();
+      if (allowedToWrite) {
+        releaseWriting();
+      }
     }
-  }
-  if (wasClosed) {
+    closeConnection();
     notifyCloseListeners();
   }
 }

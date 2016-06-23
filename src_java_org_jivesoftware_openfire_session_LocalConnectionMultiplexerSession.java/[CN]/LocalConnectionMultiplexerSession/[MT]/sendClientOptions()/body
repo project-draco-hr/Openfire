@@ -1,9 +1,11 @@
 {
+  final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+  final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.SOCKET_C2S,false).generateConnectionConfiguration();
   IQ options=new IQ(IQ.Type.set);
   Element child=options.setChildElement("configuration","http://jabber.org/protocol/connectionmanager");
-  if (LocalClientSession.getTLSPolicy() != Connection.TLSPolicy.disabled) {
+  if (configuration.getTlsPolicy() != Connection.TLSPolicy.disabled) {
     Element tls=child.addElement("starttls","urn:ietf:params:xml:ns:xmpp-tls");
-    if (LocalClientSession.getTLSPolicy() == Connection.TLSPolicy.required) {
+    if (configuration.getTlsPolicy() == Connection.TLSPolicy.required) {
       tls.addElement("required");
     }
   }
@@ -14,11 +16,13 @@
       sasl.addElement("mechanism").setText(mechanism);
     }
   }
-  if (LocalClientSession.getCompressionPolicy() == Connection.CompressionPolicy.optional) {
+  if (configuration.getCompressionPolicy() == Connection.CompressionPolicy.optional) {
     Element comp=child.addElement("compression","http://jabber.org/features/compress");
     comp.addElement("method").setText("zlib");
   }
-  child.addElement("auth","http://jabber.org/features/iq-auth");
+  if (XMPPServer.getInstance().getIQRouter().supports("jabber:iq:auth")) {
+    child.addElement("auth","http://jabber.org/features/iq-auth");
+  }
   if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
     child.addElement("register","http://jabber.org/features/iq-register");
   }

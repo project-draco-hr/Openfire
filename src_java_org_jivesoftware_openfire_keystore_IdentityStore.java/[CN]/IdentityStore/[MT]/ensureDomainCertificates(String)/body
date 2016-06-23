@@ -1,0 +1,9 @@
+{
+  for (  String algorithm : algorithms) {
+    Log.debug("Verifying that a domain certificate ({} algorithm) is available in this store.",algorithm);
+    if (!containsDomainCertificate(algorithm)) {
+      Log.debug("Store does not contain a domain certificate ({} algorithm). A self-signed certificate will be generated.",algorithm);
+      addSelfSignedDomainCertificate(algorithm);
+    }
+  }
+}

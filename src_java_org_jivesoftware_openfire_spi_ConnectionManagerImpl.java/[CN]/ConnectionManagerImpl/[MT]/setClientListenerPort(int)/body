@@ -1,11 +1,3 @@
 {
-  if (port == getClientListenerPort()) {
-    return;
-  }
-  JiveGlobals.setProperty(ConnectionSettings.Client.PORT,String.valueOf(port));
-  stopClientListeners();
-  if (isClientListenerEnabled()) {
-    createClientListeners();
-    startClientListeners(localIPAddress);
-  }
+  setPort(ConnectionType.SOCKET_C2S,false,port);
 }

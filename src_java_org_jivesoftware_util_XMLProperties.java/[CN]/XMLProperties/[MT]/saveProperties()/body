@@ -4,11 +4,8 @@
     return;
   }
   boolean error=false;
-  File tempFile=null;
-  Writer writer=null;
-  try {
-    tempFile=new File(file.getParentFile(),file.getName() + ".tmp");
-    writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempFile),"UTF-8"));
+  Path tempFile=file.getParent().resolve(file.getFileName() + ".tmp");
+  try (Writer writer=Files.newBufferedWriter(tempFile,StandardCharsets.UTF_8)){
     OutputFormat prettyPrinter=OutputFormat.createPrettyPrint();
     XMLWriter xmlWriter=new XMLWriter(writer,prettyPrinter);
     xmlWriter.write(document);
@@ -17,31 +14,28 @@
     Log.error(e.getMessage(),e);
     error=true;
   }
- finally {
-    if (writer != null) {
-      try {
-        writer.close();
-      }
- catch (      IOException e1) {
-        Log.error(e1.getMessage(),e1);
-        error=true;
-      }
-    }
-  }
   if (!error) {
-    if (!file.delete()) {
-      Log.error("Error deleting property file: " + file.getAbsolutePath());
+    try {
+      Files.deleteIfExists(file);
+    }
+ catch (    IOException e) {
+      Log.error("Error deleting property file: " + file);
       return;
     }
     try {
-      copy(tempFile,file);
+      Files.copy(tempFile,file,StandardCopyOption.REPLACE_EXISTING);
     }
  catch (    Exception e) {
       Log.error(e.getMessage(),e);
       error=true;
     }
     if (!error) {
-      tempFile.delete();
+      try {
+        Files.deleteIfExists(tempFile);
+      }
+ catch (      IOException e) {
+        Log.error("Error deleting temp file: " + tempFile);
+      }
     }
   }
 }

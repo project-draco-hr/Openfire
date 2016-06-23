@@ -1,7 +1,5 @@
 {
-  BufferedReader in=null;
-  try {
-    in=new BufferedReader(new InputStreamReader(resource));
+  try (BufferedReader in=new BufferedReader(new InputStreamReader(resource))){
     boolean done=false;
     while (!done) {
       StringBuilder command=new StringBuilder();
@@ -12,7 +10,7 @@
           break;
         }
         if (isSQLCommandPart(line)) {
-          command.append(" ").append(line);
+          command.append(' ').append(line);
         }
         if (line.trim().endsWith(";")) {
           break;
@@ -41,14 +39,4 @@
       }
     }
   }
-  finally {
-    if (in != null) {
-      try {
-        in.close();
-      }
- catch (      Exception e) {
-        Log.error(e.getMessage(),e);
-      }
-    }
-  }
-}
+ }

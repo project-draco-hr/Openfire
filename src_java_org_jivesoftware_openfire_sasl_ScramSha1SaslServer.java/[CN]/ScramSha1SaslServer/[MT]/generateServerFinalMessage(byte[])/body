@@ -1,0 +1,38 @@
+{
+  String clientFinalMessage=new String(response,StandardCharsets.US_ASCII);
+  Matcher m=CLIENT_FINAL_MESSAGE.matcher(clientFinalMessage);
+  if (!m.matches()) {
+    throw new SaslException("Invalid client final message");
+  }
+  String clientFinalMessageWithoutProof=m.group(1);
+  String clientNonce=m.group(3);
+  String proof=m.group(4);
+  if (!nonce.equals(clientNonce)) {
+    throw new SaslException("Client final message has incorrect nonce value");
+  }
+  try {
+    String authMessage=clientFirstMessageBare + "," + serverFirstMessage+ ","+ clientFinalMessageWithoutProof;
+    byte[] storedKey=getStoredKey(username);
+    if (storedKey == null) {
+      throw new SaslException("No stored key for user '" + username + "'");
+    }
+    byte[] serverKey=getServerKey(username);
+    if (serverKey == null) {
+      throw new SaslException("No server key for user '" + username + "'");
+    }
+    byte[] clientSignature=ScramUtils.computeHmac(storedKey,authMessage);
+    byte[] serverSignature=ScramUtils.computeHmac(serverKey,authMessage);
+    byte[] clientKey=clientSignature.clone();
+    byte[] decodedProof=DatatypeConverter.parseBase64Binary(proof);
+    for (int i=0; i < clientKey.length; i++) {
+      clientKey[i]^=decodedProof[i];
+    }
+    if (!Arrays.equals(storedKey,MessageDigest.getInstance("SHA-1").digest(clientKey))) {
+      throw new SaslException("Authentication failed");
+    }
+    return ("v=" + DatatypeConverter.printBase64Binary(serverSignature)).getBytes(StandardCharsets.US_ASCII);
+  }
+ catch (  UserNotFoundException|NoSuchAlgorithmException e) {
+    throw new SaslException(e.getMessage(),e);
+  }
+}

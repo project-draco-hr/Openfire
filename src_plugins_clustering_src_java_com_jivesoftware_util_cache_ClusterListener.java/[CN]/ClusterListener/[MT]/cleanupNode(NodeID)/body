@@ -59,7 +59,8 @@
   }
   Set<String> incomingSessions=lookupJIDList(key,incomingServerSessionsCache.getName());
   if (!incomingSessions.isEmpty()) {
-    for (    String streamID : new ArrayList<String>(incomingSessions)) {
+    for (    String streamIDValue : new ArrayList<>(incomingSessions)) {
+      StreamID streamID=BasicStreamIDFactory.createStreamID(streamIDValue);
       IncomingServerSession session=sessionLocator.getIncomingServerSession(key.toByteArray(),streamID);
       for (      String hostname : session.getValidatedDomains()) {
         manager.unregisterIncomingServerSession(hostname,session);

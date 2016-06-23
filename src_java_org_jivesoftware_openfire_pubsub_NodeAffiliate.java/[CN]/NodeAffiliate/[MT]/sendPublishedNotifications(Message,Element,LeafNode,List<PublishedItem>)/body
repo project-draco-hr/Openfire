@@ -5,7 +5,7 @@
       Element items=event.addElement("items");
       items.addAttribute("node",getNode().getNodeID());
       for (      PublishedItem publishedItem : itemsBySubs.get(nodeSubscriptions)) {
-        if (getNode().getNodeID().indexOf("@") >= 0) {
+        if (getNode().getNodeID().contains("@")) {
           items.addAttribute("node",publishedItem.getNodeID());
         }
         Element item=items.addElement("item");
@@ -24,7 +24,7 @@
     }
   }
  else {
-    List<NodeSubscription> affectedSubscriptions=new ArrayList<NodeSubscription>();
+    List<NodeSubscription> affectedSubscriptions=new ArrayList<>();
     for (    NodeSubscription subscription : getSubscriptions()) {
       if (subscription.canSendPublicationEvent(leafNode,null)) {
         affectedSubscriptions.add(subscription);

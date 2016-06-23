@@ -1,6 +1,13 @@
 {
   Log.trace("Data can be written to [" + remoteAddress + "]");
-  context.getResponse().setContentLength(data.length);
-  context.getResponse().getOutputStream().write(data);
-  context.complete();
+  ServletOutputStream servletOutputStream=context.getResponse().getOutputStream();
+  while (servletOutputStream.isReady()) {
+    if (!written) {
+      written=true;
+      servletOutputStream.write(data);
+    }
+ else {
+      context.complete();
+    }
+  }
 }

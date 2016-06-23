@@ -1,12 +1,15 @@
 {
   String senderDomain=packet.getFrom().getDomain();
+  boolean processed=true;
   if (!getAuthenticatedDomains().contains(senderDomain)) {
-synchronized (senderDomain.intern()) {
+synchronized (("Auth::" + senderDomain).intern()) {
       if (!getAuthenticatedDomains().contains(senderDomain) && !authenticateSubdomain(senderDomain,packet.getTo().getDomain())) {
-        returnErrorToSender(packet);
-        return false;
+        processed=false;
       }
     }
   }
-  return true;
+  if (!processed) {
+    returnErrorToSender(packet);
+  }
+  return processed;
 }

@@ -5,27 +5,28 @@
   if ("true".equals(JiveGlobals.getXMLProperty("setup"))) {
     name=JiveGlobals.getProperty("xmpp.domain").toLowerCase();
     xmppServerInfo.setXMPPDomain(name);
-    for (    String propName : (List<String>)JiveGlobals.getXMLPropertyNames()) {
+    for (    String propName : JiveGlobals.getXMLPropertyNames()) {
       if (JiveGlobals.getProperty(propName) == null) {
         JiveGlobals.setProperty(propName,JiveGlobals.getXMLProperty(propName));
       }
     }
+    JiveGlobals.setProperty("sasl.scram-sha-1.iteration-count",Integer.toString(ScramUtils.DEFAULT_ITERATION_COUNT));
+    CertificateStoreManager certificateStoreManager=null;
     try {
-      KeyStore ksKeys=SSLConfig.getKeyStore();
-      boolean dsaFound=CertificateManager.isDSACertificate(ksKeys,name);
-      boolean rsaFound=CertificateManager.isRSACertificate(ksKeys,name);
-      if (!dsaFound) {
-        CertificateManager.createDSACert(ksKeys,SSLConfig.getKeyPassword(),name + "_dsa","cn=" + name,"cn=" + name,"*." + name);
-      }
-      if (!rsaFound) {
-        CertificateManager.createRSACert(ksKeys,SSLConfig.getKeyPassword(),name + "_rsa","cn=" + name,"cn=" + name,"*." + name);
-      }
-      if (!dsaFound || !rsaFound) {
-        SSLConfig.saveStores();
-      }
+      certificateStoreManager=new CertificateStoreManager();
+      certificateStoreManager.initialize(this);
+      certificateStoreManager.start();
+      final IdentityStore identityStore=certificateStoreManager.getIdentityStore(ConnectionType.SOCKET_C2S);
+      identityStore.ensureDomainCertificates("DSA","RSA");
     }
  catch (    Exception e) {
       logger.error("Error generating self-signed certificates",e);
+    }
+ finally {
+      if (certificateStoreManager != null) {
+        certificateStoreManager.stop();
+        certificateStoreManager.destroy();
+      }
     }
     AdminManager.getInstance().getAdminAccounts();
     Thread finishSetup=new Thread(){

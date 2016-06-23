@@ -1,0 +1,16 @@
+{
+  if (isComplete()) {
+    throw new IllegalStateException("Authentication exchange already completed.");
+  }
+  if (response == null || response.length == 0) {
+    return new byte[0];
+  }
+  complete=true;
+  final String requestedId=new String(response,StandardCharsets.UTF_8);
+  final String defaultIdentity=session.getDefaultIdentity();
+  if (!requestedId.equals(defaultIdentity)) {
+    throw new SaslException("From '" + requestedId + "' does not equal authzid '"+ defaultIdentity+ "'");
+  }
+  authorizationID=requestedId;
+  return null;
+}

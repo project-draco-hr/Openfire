@@ -1,6 +1,6 @@
 {
   return new DiscoItemsProvider(){
-    public Iterator<DiscoItem> getItems(    String name,    String node,    JID senderJID){
+    @Override public Iterator<DiscoItem> getItems(    String name,    String node,    JID senderJID){
       if (node != null) {
         if (serverNodeProviders.get(node) != null) {
           return serverNodeProviders.get(node).getItems(name,node,senderJID);
@@ -8,7 +8,7 @@
         return null;
       }
       if (name == null) {
-        List<DiscoItem> answer=new ArrayList<DiscoItem>();
+        List<DiscoItem> answer=new ArrayList<>();
         for (        ClusteredServerItem item : serverItems.values()) {
           answer.add(new DiscoItem(item.element));
         }
@@ -19,7 +19,7 @@
         if (itemsProviders.isEmpty()) {
           return null;
         }
-        List<DiscoItem> answer=new ArrayList<DiscoItem>();
+        List<DiscoItem> answer=new ArrayList<>();
         for (        UserItemsProvider itemsProvider : itemsProviders) {
           Iterator<Element> itemsItr=itemsProvider.getUserItems(name,senderJID);
           if (itemsItr != null) {

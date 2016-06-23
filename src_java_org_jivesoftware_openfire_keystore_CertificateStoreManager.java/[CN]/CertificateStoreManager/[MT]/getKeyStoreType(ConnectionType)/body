@@ -1,0 +1,10 @@
+{
+  final String propertyName=type.getPrefix() + "storeType";
+  final String defaultValue="jks";
+  if (type.getFallback() == null) {
+    return JiveGlobals.getProperty(propertyName,defaultValue).trim();
+  }
+ else {
+    return JiveGlobals.getProperty(propertyName,getKeyStoreType(type.getFallback())).trim();
+  }
+}

@@ -1,0 +1,30 @@
+{
+  final int keySize;
+  final String signAlgorithm;
+switch (algorithm.toUpperCase()) {
+case "RSA":
+    keySize=JiveGlobals.getIntProperty("cert.rsa.keysize",2048);
+  signAlgorithm="SHA256WITHRSAENCRYPTION";
+break;
+case "DSA":
+keySize=JiveGlobals.getIntProperty("cert.dsa.keysize",1024);
+signAlgorithm="SHA256withDSA";
+break;
+default :
+throw new IllegalArgumentException("Unsupported algorithm '" + algorithm + "'. Use 'RSA' or 'DSA'.");
+}
+final String name=JiveGlobals.getProperty("xmpp.domain").toLowerCase();
+final String alias=name + "_" + algorithm.toLowerCase();
+final int validityInDays=5 * 365;
+Log.info("Generating a new private key and corresponding self-signed certificate for domain name '{}', using the {} algorithm (sign-algorithm: {} with a key size of {} bits). Certificate will be valid for {} days.",name,algorithm,signAlgorithm,keySize,validityInDays);
+try {
+final KeyPair keyPair=generateKeyPair(algorithm.toUpperCase(),keySize);
+final X509Certificate cert=CertificateManager.createX509V3Certificate(keyPair,validityInDays,name,name,name,signAlgorithm);
+store.setKeyEntry(alias,keyPair.getPrivate(),configuration.getPassword(),new X509Certificate[]{cert});
+persist();
+}
+ catch (CertificateStoreConfigException|IOException|GeneralSecurityException ex) {
+reload();
+throw new CertificateStoreConfigException("Unable to generate new self-signed " + algorithm + " certificate.",ex);
+}
+}

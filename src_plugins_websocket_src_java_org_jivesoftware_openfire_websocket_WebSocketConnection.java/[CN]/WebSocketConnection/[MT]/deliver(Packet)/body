@@ -1,0 +1,17 @@
+{
+  final String xml;
+  if (Namespace.NO_NAMESPACE.equals(packet.getElement().getNamespace())) {
+    StringBuilder packetXml=new StringBuilder(packet.toXML());
+    packetXml.insert(packetXml.indexOf(" ")," xmlns=\"jabber:client\"");
+    xml=packetXml.toString();
+  }
+ else {
+    xml=packet.toXML();
+  }
+  if (validate()) {
+    deliverRawText(xml);
+  }
+ else {
+    getPacketDeliverer().deliver(packet);
+  }
+}

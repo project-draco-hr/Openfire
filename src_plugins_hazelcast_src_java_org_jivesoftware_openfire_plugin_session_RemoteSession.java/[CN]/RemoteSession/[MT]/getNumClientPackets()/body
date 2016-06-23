@@ -1,4 +1,5 @@
 {
   ClusterTask task=getRemoteSessionTask(RemoteSessionTask.Operation.getNumClientPackets);
-  return (Long)doSynchronousClusterTask(task);
+  final Object clusterTaskResult=doSynchronousClusterTask(task);
+  return clusterTaskResult == null ? -1 : (Long)clusterTaskResult;
 }

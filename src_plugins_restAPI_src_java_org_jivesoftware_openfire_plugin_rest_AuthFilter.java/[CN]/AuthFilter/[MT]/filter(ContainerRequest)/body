@@ -2,6 +2,9 @@
   if (!plugin.isEnabled()) {
     throw new WebApplicationException(Status.FORBIDDEN);
   }
+  if ("OPTIONS".equals(containerRequest.getMethod())) {
+    return containerRequest;
+  }
   if ("restapi/v1/userservice".equals(containerRequest.getPath())) {
     return containerRequest;
   }
@@ -25,7 +28,7 @@
   if (auth == null) {
     throw new WebApplicationException(Status.UNAUTHORIZED);
   }
-  if (plugin.isHttpBasicAuth()) {
+  if ("basic".equals(plugin.getHttpAuth())) {
     String[] usernameAndPassword=BasicAuth.decode(auth);
     if (usernameAndPassword == null || usernameAndPassword.length != 2) {
       throw new WebApplicationException(Status.UNAUTHORIZED);

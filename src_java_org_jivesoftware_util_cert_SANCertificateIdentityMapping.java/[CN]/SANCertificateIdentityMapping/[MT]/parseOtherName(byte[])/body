@@ -1,0 +1,29 @@
+{
+  if (item == null || item.length == 0) {
+    return null;
+  }
+  try (final ASN1InputStream decoder=new ASN1InputStream(item)){
+    final ASN1Primitive object=decoder.readObject();
+    final ASN1Sequence otherNameSeq=(ASN1Sequence)object;
+    final ASN1ObjectIdentifier typeId=(ASN1ObjectIdentifier)otherNameSeq.getObjectAt(0);
+    final ASN1TaggedObject taggedValue=(ASN1TaggedObject)otherNameSeq.getObjectAt(1);
+    final int tagNo=taggedValue.getTagNo();
+    if (tagNo != 0) {
+      throw new IllegalArgumentException("subjectAltName 'otherName' sequence's second object is expected to be a tagged value of which the tag number is 0. The tag number that was detected: " + tagNo);
+    }
+    final ASN1Primitive value=taggedValue.getObject();
+switch (typeId.getId()) {
+case OTHERNAME_SRV_OID:
+      return parseOtherNameDnsSrv(value);
+case OTHERNAME_XMPP_OID:
+    return parseOtherNameXmppAddr(value);
+default :
+  Log.debug("Ignoring subjectAltName 'otherName' type-id '{}' that's neither id-on-xmppAddr nor id-on-dnsSRV.",typeId.getId());
+return null;
+}
+}
+ catch (Exception e) {
+Log.warn("Unable to parse a byte array (of length {}) as a subjectAltName 'otherName'. It is ignored.",item.length,e);
+return null;
+}
+}

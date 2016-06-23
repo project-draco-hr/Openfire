@@ -1,0 +1,119 @@
+{
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Acting as Receiving Server: Verify key with AS: " + remoteDomain+ " for OS: "+ recipient+ " (id "+ streamID+ ")]");
+  VerifyResult result=VerifyResult.error;
+  TLSStreamHandler tlsStreamHandler;
+  log.debug("Send the Authoritative Server a stream header and wait for answer.");
+  StringBuilder stream=new StringBuilder();
+  stream.append("<stream:stream");
+  stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
+  stream.append(" xmlns=\"jabber:server\"");
+  stream.append(" xmlns:db=\"jabber:server:dialback\"");
+  stream.append(" to=\"");
+  stream.append(remoteDomain);
+  stream.append("\"");
+  stream.append(" from=\"");
+  stream.append(recipient);
+  stream.append("\"");
+  stream.append(" version=\"1.0\">");
+  writer.write(stream.toString());
+  writer.flush();
+  XmlPullParser xpp=reader.getXPPParser();
+  for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
+    eventType=xpp.next();
+  }
+  log.debug("Got a response.");
+  if ((xpp.getAttributeValue("","version") != null) && (xpp.getAttributeValue("","version").equals("1.0"))) {
+    log.debug("The remote server is XMPP 1.0 compliant (or at least reports to be).");
+    Document doc;
+    try {
+      doc=reader.parseDocument();
+    }
+ catch (    DocumentException e) {
+      log.warn("Unable to verify key: XML Error!",e);
+      return VerifyResult.error;
+    }
+    Element features=doc.getRootElement();
+    Element starttls=features.element("starttls");
+    if (!skipTLS && starttls != null) {
+      writer.write("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>");
+      writer.flush();
+      try {
+        doc=reader.parseDocument();
+      }
+ catch (      DocumentException e) {
+        log.warn("Unable to verify key: XML Error!",e);
+        return VerifyResult.error;
+      }
+      if (!doc.getRootElement().getName().equals("proceed")) {
+        log.warn("Unable to verify key: Got {} instead of proceed for starttls",doc.getRootElement().getName());
+        log.debug("Like this: {}",doc.asXML());
+        return VerifyResult.error;
+      }
+      log.debug("Negotiating TLS with AS... ");
+      final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+      tlsStreamHandler=new TLSStreamHandler(socket,connectionManager.getListener(ConnectionType.SOCKET_S2S,false).generateConnectionConfiguration(),true);
+      tlsStreamHandler.start();
+      writer=new BufferedWriter(new OutputStreamWriter(tlsStreamHandler.getOutputStream(),StandardCharsets.UTF_8));
+      reader.getXPPParser().setInput(new InputStreamReader(tlsStreamHandler.getInputStream(),StandardCharsets.UTF_8));
+      log.debug("Successfully negotiated TLS with AS... ");
+      return sendVerifyKey(key,streamID,recipient,remoteDomain,writer,reader,socket,skipTLS);
+    }
+  }
+  if ("jabber:server:dialback".equals(xpp.getNamespace("db"))) {
+    log.debug("Request for verification of the key and wait for response");
+    StringBuilder sb=new StringBuilder();
+    sb.append("<db:verify");
+    sb.append(" from=\"").append(recipient).append("\"");
+    sb.append(" to=\"").append(remoteDomain).append("\"");
+    sb.append(" id=\"").append(streamID.getID()).append("\">");
+    sb.append(key);
+    sb.append("</db:verify>");
+    writer.write(sb.toString());
+    writer.flush();
+    try {
+      Element doc=reader.parseDocument().getRootElement();
+      if ("db".equals(doc.getNamespacePrefix()) && "verify".equals(doc.getName())) {
+        if (doc.attributeValue("id") == null || !streamID.equals(BasicStreamIDFactory.createStreamID(doc.attributeValue("id")))) {
+          writer.write(new StreamError(StreamError.Condition.invalid_id).toXML());
+          writer.flush();
+          throw new RemoteConnectionFailedException("Invalid ID");
+        }
+ else         if (isHostUnknown(doc.attributeValue("to"))) {
+          writer.write(new StreamError(StreamError.Condition.host_unknown).toXML());
+          writer.flush();
+          throw new RemoteConnectionFailedException("Host unknown");
+        }
+ else         if (!remoteDomain.equals(doc.attributeValue("from"))) {
+          writer.write(new StreamError(StreamError.Condition.invalid_from).toXML());
+          writer.flush();
+          throw new RemoteConnectionFailedException("Invalid From");
+        }
+ else         if ("valid".equals(doc.attributeValue("type"))) {
+          log.debug("Key was VERIFIED by the Authoritative Server.");
+          result=VerifyResult.valid;
+        }
+ else         if ("invalid".equals(doc.attributeValue("type"))) {
+          log.debug("Key was NOT VERIFIED by the Authoritative Server.");
+          result=VerifyResult.invalid;
+        }
+ else {
+          log.debug("Key was ERRORED by the Authoritative Server.");
+          result=VerifyResult.error;
+        }
+      }
+ else {
+        log.debug("db:verify answer was: " + doc.asXML());
+      }
+    }
+ catch (    DocumentException|RuntimeException e) {
+      log.error("An error occurred while connecting to the Authoritative Server:",e);
+      throw new RemoteConnectionFailedException("Error connecting to the Authoritative Server");
+    }
+  }
+ else {
+    writer.write(new StreamError(StreamError.Condition.invalid_namespace).toXML());
+    writer.flush();
+    throw new RemoteConnectionFailedException("Invalid namespace");
+  }
+  return result;
+}

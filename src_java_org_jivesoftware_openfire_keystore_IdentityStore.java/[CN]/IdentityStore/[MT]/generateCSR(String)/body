@@ -1,0 +1,24 @@
+{
+  if (alias == null || alias.trim().isEmpty()) {
+    throw new IllegalArgumentException("Argument 'alias' cannot be null or an empty String.");
+  }
+  alias=alias.trim();
+  try {
+    if (!store.containsAlias(alias)) {
+      throw new CertificateStoreConfigException("Cannot generate CSR for alias '" + alias + "': the alias does not exist in the store.");
+    }
+    final Certificate certificate=store.getCertificate(alias);
+    if (certificate == null || (!(certificate instanceof X509Certificate))) {
+      throw new CertificateStoreConfigException("Cannot generate CSR for alias '" + alias + "': there is no corresponding certificate in the store, or it is not an X509 certificate.");
+    }
+    final Key key=store.getKey(alias,configuration.getPassword());
+    if (key == null || (!(key instanceof PrivateKey))) {
+      throw new CertificateStoreConfigException("Cannot generate CSR for alias '" + alias + "': there is no corresponding key in the store, or it is not a private key.");
+    }
+    final String pemCSR=CertificateManager.createSigningRequest((X509Certificate)certificate,(PrivateKey)key);
+    return pemCSR;
+  }
+ catch (  IOException|KeyStoreException|UnrecoverableKeyException|NoSuchAlgorithmException|OperatorCreationException e) {
+    throw new CertificateStoreConfigException("Cannot generate CSR for alias '" + alias + "'",e);
+  }
+}

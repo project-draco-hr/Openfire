@@ -2,8 +2,10 @@
   XMPPServer server=XMPPServer.getInstance();
   String serverName=server.getServerInfo().getXMPPDomain();
   Pattern pattern=Pattern.compile("(?i)(^" + manager.getUsernameField() + "=)([^,]+)(.+)");
+  boolean isAD=manager.getUsernameField().equals("sAMAccountName");
+  String[] returningAttributes=isAD ? new String[]{"distinguishedName",manager.getUsernameField()} : new String[]{manager.getUsernameField()};
   SearchControls searchControls=new SearchControls();
-  searchControls.setReturningAttributes(new String[]{manager.getUsernameField()});
+  searchControls.setReturningAttributes(returningAttributes);
   if (manager.isSubTreeSearch()) {
     searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
   }
@@ -24,7 +26,7 @@
  catch (  Exception e) {
     description="";
   }
-  Set<JID> members=new TreeSet<JID>();
+  Set<JID> members=new TreeSet<>();
   Attribute memberField=a.get(manager.getGroupMemberField());
   if (memberField != null) {
     NamingEnumeration ne=memberField.getAll();
@@ -41,14 +43,26 @@
             StringBuilder userFilter=new StringBuilder();
             userFilter.append("(&(");
             userFilter.append(ldapName.get(ldapName.size() - 1));
-            userFilter.append(")");
+            userFilter.append(')');
             userFilter.append(MessageFormat.format(manager.getSearchFilter(),"*"));
-            userFilter.append(")");
+            userFilter.append(')');
             NamingEnumeration usrAnswer=ctx.search("",userFilter.toString(),searchControls);
             if (usrAnswer != null && usrAnswer.hasMoreElements()) {
-              Attribute usernameAttr=((SearchResult)usrAnswer.next()).getAttributes().get(manager.getUsernameField());
-              if (usernameAttr != null) {
-                username=(String)usernameAttr.get();
+              SearchResult searchResult=null;
+              while (usrAnswer.hasMoreElements()) {
+                searchResult=(SearchResult)usrAnswer.nextElement();
+                Attributes attrs=searchResult.getAttributes();
+                if (isAD) {
+                  Attribute userdnAttr=attrs.get("distinguishedName");
+                  if (username.equals((String)userdnAttr.get())) {
+                    username=(String)attrs.get(manager.getUsernameField()).get();
+                    break;
+                  }
+                }
+ else {
+                  username=(String)attrs.get(manager.getUsernameField()).get();
+                  break;
+                }
               }
             }
             usrAnswer.close();

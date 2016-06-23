@@ -1,5 +1,5 @@
 {
-  List<String> streamIDs;
+  List<StreamID> streamIDs;
   Lock lock=CacheFactory.getLock(hostname,hostnameSessionsCache);
   try {
     lock.lock();
@@ -12,8 +12,8 @@
     return Collections.emptyList();
   }
  else {
-    List<IncomingServerSession> sessions=new ArrayList<IncomingServerSession>();
-    for (    String streamID : streamIDs) {
+    List<IncomingServerSession> sessions=new ArrayList<>();
+    for (    StreamID streamID : streamIDs) {
       IncomingServerSession session=localSessionManager.getIncomingServerSession(streamID);
       RemoteSessionLocator locator=server.getRemoteSessionLocator();
       if (session == null && locator != null) {

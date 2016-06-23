@@ -28,6 +28,10 @@
   }
 ;
   taskEngine.scheduleAtFixedRate(archiveTask,JiveConstants.MINUTE,JiveConstants.MINUTE);
+  if (JiveGlobals.getProperty("conversation.maxTimeDebug") != null) {
+    Log.info("Monitoring plugin max time value deleted. Must be left over from stalled userCreation plugin run.");
+    JiveGlobals.deleteProperty("conversation.maxTimeDebug");
+  }
   cleanupTask=new TimerTask(){
     @Override public void run(){
       for (      String key : conversations.keySet()) {

@@ -1,0 +1,15 @@
+{
+  int length=4;
+  final KeyPairGenerator keyPairGenerator=KeyPairGenerator.getInstance("RSA");
+  keyPairGenerator.initialize(512);
+  KeyPair subjectKeyPair=keyPairGenerator.generateKeyPair();
+  KeyPair issuerKeyPair=subjectKeyPair;
+  final X509Certificate[] result=new X509Certificate[length];
+  for (int i=length - 1; i >= 0; i--) {
+    boolean isValid=(i != 1);
+    result[i]=generateTestCertificate(isValid,issuerKeyPair,subjectKeyPair,i);
+    issuerKeyPair=subjectKeyPair;
+    subjectKeyPair=keyPairGenerator.generateKeyPair();
+  }
+  return result;
+}

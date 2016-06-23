@@ -8,15 +8,15 @@
     SAXReader saxReader=new SAXReader(false);
     saxReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false);
     Document doc=saxReader.read(webXML);
-    List names=doc.selectNodes("//servlet-mapping");
+    List names=doc.getRootElement().elements("servlet-mapping");
     for (int i=0; i < names.size(); i++) {
       Element nameElement=(Element)names.get(i);
       String url=nameElement.element("url-pattern").getTextTrim();
-      GenericServlet servlet=servlets.get(pluginName + url);
+      GenericServlet servlet=servlets.get((pluginName + url).toLowerCase());
       if (servlet != null) {
         servlet.destroy();
       }
-      servlets.remove(pluginName + url);
+      servlets.remove((pluginName + url).toLowerCase());
       servlet=null;
     }
   }

@@ -1,5 +1,5 @@
 {
-  String streamID=session.getStreamID().getID();
+  StreamID streamID=session.getStreamID();
   if (multiplexerManager.getClientSession(connectionManagerName,streamID) == null) {
   }
  else {
@@ -9,7 +9,7 @@
       closeRequest.setFrom(serverName);
       closeRequest.setTo(connectionManagerName);
       Element child=closeRequest.setChildElement("session","http://jabber.org/protocol/connectionmanager");
-      child.addAttribute("id",streamID);
+      child.addAttribute("id",streamID.getID());
       child.addElement("close");
       multiplexerSession.process(closeRequest);
     }

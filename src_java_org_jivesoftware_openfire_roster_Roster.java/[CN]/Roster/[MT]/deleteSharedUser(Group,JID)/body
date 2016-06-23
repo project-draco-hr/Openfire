@@ -12,7 +12,7 @@
       item.removeSharedGroup(sharedGroup);
       if (item.isOnlyShared()) {
         Collection<Group> userGroups=GroupManager.getInstance().getGroups(getUserJID());
-        Collection<Group> sharedGroups=new ArrayList<Group>();
+        Collection<Group> sharedGroups=new ArrayList<>();
         sharedGroups.addAll(item.getSharedGroups());
         if (rosterManager.hasMutualVisibility(getUsername(),userGroups,deletedUser,sharedGroups)) {
           item.setSubStatus(RosterItem.SUB_BOTH);
@@ -23,6 +23,10 @@
  else {
           item.setSubStatus(RosterItem.SUB_TO);
         }
+        RosterEventDispatcher.contactUpdated(this,item);
+      }
+ else {
+        RosterEventDispatcher.contactDeleted(this,item);
       }
       broadcast(item,false);
     }

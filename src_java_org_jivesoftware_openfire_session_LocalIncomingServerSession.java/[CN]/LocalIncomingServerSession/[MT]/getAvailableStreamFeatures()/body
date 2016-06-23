@@ -10,13 +10,9 @@
   }
  else {
     try {
-      usingSelfSigned=CertificateManager.isSelfSignedCertificate(SSLConfig.getKeyStore(),(X509Certificate)chain[0]);
+      usingSelfSigned=CertificateManager.isSelfSignedCertificate((X509Certificate)chain[0]);
     }
  catch (    KeyStoreException ex) {
-      Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
-      usingSelfSigned=true;
-    }
-catch (    IOException ex) {
       Log.warn("Exception occurred while trying to determine whether local certificate is self-signed. Proceeding as if it is.",ex);
       usingSelfSigned=true;
     }

@@ -12,16 +12,18 @@ synchronized (this) {
       con=DbConnectionManager.getConnection();
       pstmt=con.prepareStatement(INSERT_MESSAGE);
       ArchivedMessage message;
+      int msgCount=getArchivedMessageCount();
       int count=0;
       while ((message=messageQueue.poll()) != null) {
-        pstmt.setLong(1,message.getConversationID());
-        pstmt.setString(2,message.getFromJID().toBareJID());
-        pstmt.setString(3,message.getFromJID().getResource());
-        pstmt.setString(4,message.getToJID().toBareJID());
-        pstmt.setString(5,message.getToJID().getResource());
-        pstmt.setLong(6,message.getSentDate().getTime());
-        DbConnectionManager.setLargeTextField(pstmt,7,message.getBody());
-        DbConnectionManager.setLargeTextField(pstmt,8,message.getStanza());
+        pstmt.setInt(1,++msgCount);
+        pstmt.setLong(2,message.getConversationID());
+        pstmt.setString(3,message.getFromJID().toBareJID());
+        pstmt.setString(4,message.getFromJID().getResource());
+        pstmt.setString(5,message.getToJID().toBareJID());
+        pstmt.setString(6,message.getToJID().getResource());
+        pstmt.setLong(7,message.getSentDate().getTime());
+        DbConnectionManager.setLargeTextField(pstmt,8,message.getBody());
+        DbConnectionManager.setLargeTextField(pstmt,9,message.getStanza());
         if (DbConnectionManager.isBatchUpdatesSupported()) {
           pstmt.addBatch();
         }

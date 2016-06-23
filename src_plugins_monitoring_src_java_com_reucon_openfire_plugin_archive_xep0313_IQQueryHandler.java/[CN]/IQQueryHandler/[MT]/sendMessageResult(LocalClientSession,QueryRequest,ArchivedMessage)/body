@@ -15,6 +15,9 @@
   Document stanza;
   try {
     stanza=DocumentHelper.parseText(archivedMessage.getStanza());
+    if (stanza.getRootElement().getNamespaceURI() == null || stanza.getRootElement().getNamespaceURI().isEmpty()) {
+      stanza.getRootElement().setQName(QName.get(stanza.getRootElement().getName(),"jabber:client"));
+    }
     forwarded.add(stanza.getRootElement());
   }
  catch (  DocumentException e) {

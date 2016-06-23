@@ -20,14 +20,14 @@
       openingStream.append(" version=\"1.0\">");
     }
  else {
-      openingStream.append(">");
+      openingStream.append('>');
     }
     connection.deliverRawText(openingStream.toString());
     if (serverVersion[0] >= 1) {
       Connection.TLSPolicy tlsPolicy=ServerDialback.isEnabled() ? Connection.TLSPolicy.optional : Connection.TLSPolicy.required;
       boolean hasCertificates=false;
       try {
-        hasCertificates=SSLConfig.getKeyStore().size() > 0;
+        hasCertificates=XMPPServer.getInstance().getCertificateStoreManager().getIdentityStore(ConnectionType.SOCKET_S2S).getStore().size() > 0;
       }
  catch (      Exception e) {
         Log.error(e.getMessage(),e);
@@ -38,9 +38,7 @@
       }
       connection.setTlsPolicy(hasCertificates ? tlsPolicy : Connection.TLSPolicy.disabled);
     }
-    String policyName=JiveGlobals.getProperty(ConnectionSettings.Server.COMPRESSION_SETTINGS,Connection.CompressionPolicy.disabled.toString());
-    Connection.CompressionPolicy compressionPolicy=Connection.CompressionPolicy.valueOf(policyName);
-    connection.setCompressionPolicy(compressionPolicy);
+    connection.setCompressionPolicy(connection.getConfiguration().getCompressionPolicy());
     StringBuilder sb=new StringBuilder();
     if (serverVersion[0] >= 1) {
       sb.append("<stream:features>");

@@ -1,5 +1,5 @@
 {
-  List<OfflineMessage> messages=new ArrayList<OfflineMessage>();
+  List<OfflineMessage> messages=new ArrayList<>();
   SAXReader xmlReader=null;
   Connection con=null;
   PreparedStatement pstmt=null;
@@ -22,14 +22,20 @@
         if (matcher.find()) {
           msgXML=matcher.replaceAll("");
         }
-        message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+        try {
+          message=new OfflineMessage(creationDate,xmlReader.read(new StringReader(msgXML)).getRootElement());
+        }
+ catch (        DocumentException de) {
+          Log.error("Failed to route packet (offline message): " + msgXML,de);
+          continue;
+        }
       }
-      Element delay=message.addChildElement("delay","urn:xmpp:delay");
-      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
-      delay.addAttribute("stamp",XMPPDateTimeFormat.format(creationDate));
-      delay=message.addChildElement("x","jabber:x:delay");
-      delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
-      delay.addAttribute("stamp",XMPPDateTimeFormat.formatOld(creationDate));
+      Element delaytest=message.getChildElement("delay","urn:xmpp:delay");
+      if (delaytest == null) {
+        Element delay=message.addChildElement("delay","urn:xmpp:delay");
+        delay.addAttribute("from",XMPPServer.getInstance().getServerInfo().getXMPPDomain());
+        delay.addAttribute("stamp",XMPPDateTimeFormat.format(creationDate));
+      }
       messages.add(message);
     }
     if (delete && !messages.isEmpty()) {

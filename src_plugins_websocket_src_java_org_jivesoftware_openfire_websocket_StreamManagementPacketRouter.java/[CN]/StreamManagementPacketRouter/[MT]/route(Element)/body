@@ -1,0 +1,11 @@
+{
+  if (StreamManager.NAMESPACE_V3.equals(wrappedElement.getNamespace().getStringValue())) {
+    session.getStreamManager().process(wrappedElement,session.getAddress());
+  }
+ else {
+    super.route(wrappedElement);
+    if (isUnsolicitedAckExpected()) {
+      session.getStreamManager().sendServerAcknowledgement();
+    }
+  }
+}

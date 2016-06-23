@@ -1,13 +1,13 @@
 {
   if (!usingServerDialback) {
-    addAuthenticatedDomain(domain);
-    addHostname(hostname);
+    addAuthenticatedDomain(localDomain);
+    addHostname(remoteDomain);
     return true;
   }
-  ServerDialback method=new ServerDialback(getConnection(),domain);
-  if (method.authenticateDomain(socketReader,domain,hostname,getStreamID().getID())) {
-    addAuthenticatedDomain(domain);
-    addHostname(hostname);
+  ServerDialback method=new ServerDialback(getConnection(),localDomain);
+  if (method.authenticateDomain(socketReader,localDomain,remoteDomain,getStreamID().getID())) {
+    addAuthenticatedDomain(localDomain);
+    addHostname(remoteDomain);
     return true;
   }
   return false;

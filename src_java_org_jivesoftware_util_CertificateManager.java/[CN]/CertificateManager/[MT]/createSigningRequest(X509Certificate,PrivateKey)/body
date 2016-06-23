@@ -1,25 +1,12 @@
 {
-  StringBuilder sb=new StringBuilder();
-  String subject=cert.getSubjectDN().getName();
-  X509Name xname=new X509Name(subject);
-  PublicKey pubKey=cert.getPublicKey();
-  String signatureAlgorithm="DSA".equals(pubKey.getAlgorithm()) ? "SHA1withDSA" : "SHA1WITHRSAENCRYPTION";
-  PKCS10CertificationRequest csr=new PKCS10CertificationRequest(signatureAlgorithm,xname,pubKey,null,privKey);
-  ByteArrayOutputStream baos=new ByteArrayOutputStream();
-  DEROutputStream deros=new DEROutputStream(baos);
-  deros.writeObject(csr.toASN1Primitive());
-  String sTmp=new String(org.bouncycastle.util.encoders.Base64.encode(baos.toByteArray()));
-  sb.append("-----BEGIN NEW CERTIFICATE REQUEST-----\n");
-  for (int iCnt=0; iCnt < sTmp.length(); iCnt+=CERT_REQ_LINE_LENGTH) {
-    int iLineLength;
-    if ((iCnt + CERT_REQ_LINE_LENGTH) > sTmp.length()) {
-      iLineLength=sTmp.length() - iCnt;
-    }
- else {
-      iLineLength=CERT_REQ_LINE_LENGTH;
-    }
-    sb.append(sTmp.substring(iCnt,iCnt + iLineLength)).append("\n");
-  }
-  sb.append("-----END NEW CERTIFICATE REQUEST-----\n");
-  return sb.toString();
+  JcaPKCS10CertificationRequestBuilder csrBuilder=new JcaPKCS10CertificationRequestBuilder(cert.getSubjectX500Principal(),cert.getPublicKey());
+  String signatureAlgorithm="SHA256WITH" + cert.getPublicKey().getAlgorithm();
+  ContentSigner signer=new JcaContentSignerBuilder(signatureAlgorithm).build(privKey);
+  PKCS10CertificationRequest csr=csrBuilder.build(signer);
+  StringWriter string=new StringWriter();
+  PemWriter pemWriter=new PemWriter(string);
+  PemObjectGenerator objGen=new MiscPEMGenerator(csr);
+  pemWriter.writeObject(objGen);
+  pemWriter.close();
+  return string.toString();
 }

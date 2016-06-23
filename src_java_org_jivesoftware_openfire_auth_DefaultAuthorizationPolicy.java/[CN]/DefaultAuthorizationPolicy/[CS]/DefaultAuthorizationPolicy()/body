@@ -1,5 +1,6 @@
 {
-  approvedRealms=new Vector<String>();
+  approvedRealms=new Vector<>();
+  proxyAuth=false;
   String realmList=JiveGlobals.getProperty("sasl.approvedRealms");
   if (realmList != null) {
     StringTokenizer st=new StringTokenizer(realmList," ,\t\n\r\f");
@@ -7,4 +8,5 @@
       approvedRealms.add(st.nextToken());
     }
   }
+  proxyAuth=JiveGlobals.getBooleanProperty("sasl.proxyAuth",false);
 }

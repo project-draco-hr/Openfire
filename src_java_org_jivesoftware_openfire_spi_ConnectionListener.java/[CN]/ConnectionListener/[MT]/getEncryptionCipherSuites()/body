@@ -1,0 +1,22 @@
+{
+  final Set<String> result=new LinkedHashSet<>();
+  final String csv=getEncryptionCipherSuitesCommaSeparated();
+  if (csv.isEmpty()) {
+    try {
+      result.addAll(EncryptionArtifactFactory.getDefaultCipherSuites());
+    }
+ catch (    Exception ex) {
+      Log.error("An error occurred while obtaining the default encryption cipher suite setting.",ex);
+    }
+  }
+ else {
+    result.addAll(Arrays.asList(csv.split("\\s*,\\s*")));
+  }
+  try {
+    result.retainAll(EncryptionArtifactFactory.getSupportedCipherSuites());
+  }
+ catch (  Exception ex) {
+    Log.warn("An error occurred while obtaining the supported encryption cipher suites.",ex);
+  }
+  return result;
+}

@@ -1,0 +1,12 @@
+{
+  final long oldPort=getPort();
+  if (port == oldPort) {
+    Log.debug("Ignoring port change request (to '{}'): listener already in this state.",port);
+    return;
+  }
+  Log.debug("Changing port from '{}' to '{}'.",oldPort,port);
+  if (tcpPortPropertyName != null) {
+    JiveGlobals.setProperty(tcpPortPropertyName,String.valueOf(port));
+  }
+  restart();
+}

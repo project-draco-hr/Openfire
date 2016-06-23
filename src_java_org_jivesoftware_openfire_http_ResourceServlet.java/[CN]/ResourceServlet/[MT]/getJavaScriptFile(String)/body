@@ -1,46 +1,19 @@
 {
   StringBuilder sb=new StringBuilder();
-  InputStream in=null;
-  InputStreamReader isr=null;
-  BufferedReader br=null;
-  try {
-    in=getResourceAsStream(path);
+  try (InputStream in=getResourceAsStream(path)){
     if (in == null) {
       Log.error("Unable to find javascript file: '" + path + "' in classpath");
       return "";
     }
-    isr=new InputStreamReader(in,"ISO-8859-1");
-    br=new BufferedReader(isr);
-    String line;
-    while ((line=br.readLine()) != null) {
-      sb.append(line.trim()).append('\n');
+    try (BufferedReader br=new BufferedReader(new InputStreamReader(in,"ISO-8859-1"))){
+      String line;
+      while ((line=br.readLine()) != null) {
+        sb.append(line.trim()).append('\n');
+      }
     }
-  }
+   }
  catch (  Exception e) {
     Log.error("Error loading JavaScript file: '" + path + "'.",e);
-  }
- finally {
-    try {
-      if (br != null) {
-        br.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
-    try {
-      if (isr != null) {
-        isr.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
-    try {
-      if (in != null) {
-        in.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
   }
   return sb.toString();
 }

@@ -8,13 +8,13 @@
     element=element.element(propName[i]);
   }
   String childName=propName[propName.length - 1];
-  List<Element> toRemove=new ArrayList<Element>();
+  List<Element> toRemove=new ArrayList<>();
   Iterator<Element> iter=element.elementIterator(childName);
   while (iter.hasNext()) {
     toRemove.add(iter.next());
   }
   for (iter=toRemove.iterator(); iter.hasNext(); ) {
-    element.remove((Element)iter.next());
+    element.remove(iter.next());
   }
   for (  String value : values) {
     Element childElement=element.addElement(childName);
@@ -39,7 +39,7 @@
     }
   }
   saveProperties();
-  Map<String,Object> params=new HashMap<String,Object>();
+  Map<String,Object> params=new HashMap<>();
   params.put("value",values);
   PropertyEventDispatcher.dispatchEvent(name,PropertyEventDispatcher.EventType.xml_property_set,params);
 }

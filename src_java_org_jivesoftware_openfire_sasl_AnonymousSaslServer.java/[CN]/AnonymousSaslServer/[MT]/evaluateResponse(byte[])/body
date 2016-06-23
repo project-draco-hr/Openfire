@@ -1,0 +1,14 @@
+{
+  if (isComplete()) {
+    throw new IllegalStateException("Authentication exchange already completed.");
+  }
+  complete=true;
+  if (!JiveGlobals.getBooleanProperty("xmpp.auth.anonymous")) {
+    throw new SaslException("Authentication failed");
+  }
+  final boolean forbidAccess=!LocalClientSession.isAllowedAnonymous(session.getConnection());
+  if (forbidAccess) {
+    throw new SaslException("Authentication failed");
+  }
+  return null;
+}

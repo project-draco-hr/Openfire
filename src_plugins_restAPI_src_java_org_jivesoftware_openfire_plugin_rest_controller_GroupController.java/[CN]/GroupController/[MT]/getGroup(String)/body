@@ -7,5 +7,7 @@
     throw new ServiceException("Could not find group",groupName,ExceptionType.GROUP_NOT_FOUND,Response.Status.NOT_FOUND,e);
   }
   GroupEntity groupEntity=new GroupEntity(group.getName(),group.getDescription());
+  groupEntity.setAdmins(MUCRoomUtils.convertJIDsToStringList(group.getAdmins()));
+  groupEntity.setMembers(MUCRoomUtils.convertJIDsToStringList(group.getMembers()));
   return groupEntity;
 }

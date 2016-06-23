@@ -27,17 +27,7 @@
   try {
     AuthFactory.authenticate(user.getUsername(),password);
   }
- catch (  UnauthorizedException e) {
-    note.addAttribute("type","error");
-    note.setText("Authentication failed.");
-    return;
-  }
-catch (  ConnectionException e) {
-    note.addAttribute("type","error");
-    note.setText("Authentication failed.");
-    return;
-  }
-catch (  InternalUnauthenticatedException e) {
+ catch (  UnauthorizedException|ConnectionException|InternalUnauthenticatedException e) {
     note.addAttribute("type","error");
     note.setText("Authentication failed.");
     return;

@@ -1,0 +1,13 @@
+{
+  try {
+    if (keyManagerFactory == null) {
+      keyManagerFactory=KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      keyManagerFactory.init(configuration.getIdentityStore().getStore(),configuration.getIdentityStoreConfiguration().getPassword());
+    }
+    return keyManagerFactory.getKeyManagers();
+  }
+ catch (  UnrecoverableKeyException|NoSuchAlgorithmException|KeyStoreException|RuntimeException ex) {
+    keyManagerFactory=null;
+    throw ex;
+  }
+}

@@ -6,7 +6,7 @@
     }
     org.xmpp.packet.Roster.Ask ask=getAskStatus(item.getAskStatus());
     org.xmpp.packet.Roster.Subscription sub=org.xmpp.packet.Roster.Subscription.valueOf(item.getSubStatus().getName());
-    List<String> groups=new ArrayList<String>(item.getGroups());
+    List<String> groups=new ArrayList<>(item.getGroups());
     if (groups.contains(null)) {
       Log.warn("A group is null in roster item: " + item.getJid() + " of user: "+ getUsername());
     }
@@ -19,7 +19,7 @@
         Log.warn("Found shared group: " + sharedGroup.getName() + " with no displayName");
       }
     }
-    if (item.getSubStatus() != RosterItem.SUB_NONE || item.getRecvStatus() != RosterItem.RECV_SUBSCRIBE) {
+    if (item.getSubStatus() != RosterItem.SUB_NONE || item.getRecvStatus() != RosterItem.RECV_SUBSCRIBE && !isSubscriptionRejected(item)) {
       roster.addItem(item.getJid(),item.getNickname(),ask,sub,groups);
     }
   }

@@ -1,0 +1,23 @@
+{
+  this.file=file;
+  if (Files.notExists(file)) {
+    Path tempFile;
+    tempFile=file.getParent().resolve(file.getFileName() + ".tmp");
+    if (Files.exists(tempFile)) {
+      Log.error("WARNING: " + file.getFileName() + " was not found, but temp file from "+ "previous write operation was. Attempting automatic recovery."+ " Please check file for data consistency.");
+      Files.move(tempFile,file,StandardCopyOption.REPLACE_EXISTING);
+    }
+ else {
+      throw new NoSuchFileException("XML properties file does not exist: " + file.getFileName());
+    }
+  }
+  if (!Files.isReadable(file)) {
+    throw new IOException("XML properties file must be readable: " + file.getFileName());
+  }
+  if (!Files.isWritable(file)) {
+    throw new IOException("XML properties file must be writable: " + file.getFileName());
+  }
+  try (Reader reader=Files.newBufferedReader(file,StandardCharsets.UTF_8)){
+    buildDoc(reader);
+  }
+ }

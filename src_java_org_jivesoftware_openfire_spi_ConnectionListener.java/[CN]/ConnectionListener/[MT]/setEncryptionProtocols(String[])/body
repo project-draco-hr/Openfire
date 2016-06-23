@@ -1,0 +1,19 @@
+{
+  if (protocols == null) {
+    protocols=new String[0];
+  }
+  final String oldValue=getEncryptionProtocolsCommaSeparated();
+  final StringBuilder csv=new StringBuilder();
+  for (  String protocol : protocols) {
+    csv.append(protocol);
+    csv.append(',');
+  }
+  final String newValue=csv.length() > 0 ? csv.substring(0,csv.length() - 1) : "";
+  JiveGlobals.setProperty(type.getPrefix() + "protocols",newValue);
+  if (oldValue.equals(newValue)) {
+    Log.debug("Ignoring protocol configuration change request (to '{}'): listener already in this state.",newValue);
+    return;
+  }
+  Log.debug("Changing protocol configuration from '{}' to '{}'.",oldValue,newValue);
+  restart();
+}

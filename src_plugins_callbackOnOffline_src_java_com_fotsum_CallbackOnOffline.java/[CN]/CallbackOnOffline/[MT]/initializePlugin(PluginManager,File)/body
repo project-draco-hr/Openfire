@@ -1,0 +1,16 @@
+{
+  debug=JiveGlobals.getBooleanProperty("plugin.callback_on_offline.debug",false);
+  if (debug) {
+    Log.debug("initialize CallbackOnOffline plugin. Start.");
+  }
+  interceptorManager=InterceptorManager.getInstance();
+  presenceManager=XMPPServer.getInstance().getPresenceManager();
+  userManager=XMPPServer.getInstance().getUserManager();
+  client=ClientBuilder.newClient();
+  url=getProperty("plugin.callback_on_offline.url","http://localhost:8080/user/offline/callback/url");
+  token=getProperty("plugin.callback_on_offline.token",UUID.randomUUID().toString());
+  interceptorManager.addInterceptor(this);
+  if (debug) {
+    Log.debug("initialize CallbackOnOffline plugin. Finish.");
+  }
+}

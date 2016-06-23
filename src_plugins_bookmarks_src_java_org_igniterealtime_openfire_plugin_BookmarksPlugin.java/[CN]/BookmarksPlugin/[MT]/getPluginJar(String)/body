@@ -1,0 +1,16 @@
+{
+  File pluginDir=new File(JiveGlobals.getHomeDirectory(),"plugins");
+  File[] jars=pluginDir.listFiles(new FileFilter(){
+    public boolean accept(    File pathname){
+      return pathname.getName().equalsIgnoreCase(pluginName + ".jar");
+    }
+  }
+);
+  final File jar;
+  if (jars.length > 0) {
+    return new JarFile(jars[0]);
+  }
+ else {
+    return null;
+  }
+}

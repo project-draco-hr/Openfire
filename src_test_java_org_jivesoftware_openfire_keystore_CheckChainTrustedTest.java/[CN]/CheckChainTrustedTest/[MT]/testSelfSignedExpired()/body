@@ -1,0 +1,26 @@
+{
+  final X509Certificate[] chain=new X509Certificate[]{KeystoreTestUtils.generateExpiredSelfSignedCertificate()};
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(chain[0].getSubjectX500Principal());
+  CertPath result=null;
+  CertPathBuilderException exception=null;
+  try {
+    result=trustManager.checkChainTrusted(selector,chain);
+  }
+ catch (  CertPathBuilderException ex) {
+    exception=ex;
+  }
+  if (acceptSelfSigned && !checkValidity) {
+    Assert.assertNotNull("Certificate validity is not checked, and self-signed certificates are accepted. Validation should have succeeded.",result);
+  }
+ else {
+    final StringBuilder sb=new StringBuilder();
+    if (checkValidity) {
+      sb.append("Certificate validity is checked. ");
+    }
+    if (!acceptSelfSigned) {
+      sb.append("Self-signed certificates are not accepted. ");
+    }
+    Assert.assertNotNull(sb.toString() + "Validation should have thrown an exception.",exception);
+  }
+}

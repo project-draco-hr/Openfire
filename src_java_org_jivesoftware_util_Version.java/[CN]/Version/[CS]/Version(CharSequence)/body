@@ -1,0 +1,46 @@
+{
+  if (source != null) {
+    Matcher matcher=PATTERN.matcher(source);
+    if (matcher.matches()) {
+      major=Integer.parseInt(matcher.group(1));
+      minor=Integer.parseInt(matcher.group(2));
+      micro=Integer.parseInt(matcher.group(3));
+      String status=matcher.group(4);
+      if (status != null) {
+switch (status.toLowerCase()) {
+case "rc":
+          this.status=ReleaseStatus.Release_Candidate;
+        break;
+case "beta":
+      this.status=ReleaseStatus.Beta;
+    break;
+case "alpha":
+  this.status=ReleaseStatus.Alpha;
+break;
+default :
+this.status=ReleaseStatus.Release;
+}
+}
+ else {
+this.status=ReleaseStatus.Release;
+}
+String statusVersion=matcher.group(5);
+if (statusVersion != null) {
+this.statusVersion=Integer.parseInt(statusVersion);
+}
+ else {
+this.statusVersion=-1;
+}
+}
+ else {
+this.major=this.minor=this.micro=0;
+this.statusVersion=-1;
+this.status=ReleaseStatus.Release;
+}
+}
+ else {
+this.major=this.minor=this.micro=0;
+this.statusVersion=-1;
+this.status=ReleaseStatus.Release;
+}
+}

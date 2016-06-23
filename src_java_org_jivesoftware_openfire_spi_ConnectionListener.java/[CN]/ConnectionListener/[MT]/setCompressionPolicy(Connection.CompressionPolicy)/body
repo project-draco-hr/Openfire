@@ -1,0 +1,10 @@
+{
+  final Connection.CompressionPolicy oldPolicy=getCompressionPolicy();
+  if (oldPolicy.equals(policy)) {
+    Log.debug("Ignoring Compression Policy change request (to '{}'): listener already in this state.",policy);
+    return;
+  }
+  Log.debug("Changing Compression Policy from '{}' to '{}'.",oldPolicy,policy);
+  JiveGlobals.setProperty(compressionPolicyPropertyName,policy.toString());
+  restart();
+}

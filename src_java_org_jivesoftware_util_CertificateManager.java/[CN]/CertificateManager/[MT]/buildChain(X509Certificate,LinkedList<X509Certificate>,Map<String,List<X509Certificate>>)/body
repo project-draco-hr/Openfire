@@ -1,0 +1,26 @@
+{
+  Principal subject=certificate.getSubjectDN();
+  Principal issuer=certificate.getIssuerDN();
+  if (subject.equals(issuer)) {
+    answer.addFirst(certificate);
+    return true;
+  }
+  List<X509Certificate> issuerCerts=knownCerts.get(issuer.getName());
+  if (issuerCerts == null || issuerCerts.isEmpty()) {
+    return false;
+  }
+  for (  X509Certificate issuerCert : issuerCerts) {
+    PublicKey publickey=issuerCert.getPublicKey();
+    try {
+      certificate.verify(publickey);
+      if (!buildChain(issuerCert,answer,knownCerts)) {
+        return false;
+      }
+    }
+ catch (    Exception exception) {
+      return false;
+    }
+  }
+  answer.addFirst(certificate);
+  return true;
+}

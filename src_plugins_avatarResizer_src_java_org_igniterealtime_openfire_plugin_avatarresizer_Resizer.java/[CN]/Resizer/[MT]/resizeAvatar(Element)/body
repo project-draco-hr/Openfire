@@ -1,0 +1,29 @@
+{
+  if (vCardElement == null) {
+    return;
+  }
+  if (vCardElement.element("PHOTO") == null) {
+    return;
+  }
+  if (vCardElement.element("PHOTO").element("BINVAL") == null || vCardElement.element("PHOTO").element("TYPE") == null) {
+    return;
+  }
+  final Element element=vCardElement.element("PHOTO").element("BINVAL");
+  if (element.getTextTrim() == null || element.getTextTrim().isEmpty()) {
+    return;
+  }
+  final String type=vCardElement.element("PHOTO").element("TYPE").getTextTrim();
+  final Iterator it=ImageIO.getImageWritersByMIMEType(type);
+  if (!it.hasNext()) {
+    Log.debug("Cannot resize avatar. No writers available for MIME type {}.",type);
+    return;
+  }
+  final ImageWriter iw=(ImageWriter)it.next();
+  final byte[] original=Base64.decode(element.getTextTrim());
+  final int targetDimension=JiveGlobals.getIntProperty("avatar.resize.targetdimension",96);
+  final byte[] resized=cropAndShrink(original,targetDimension,iw);
+  if (resized != null) {
+    Log.debug("Replacing original avatar in vcard with a resized variant.");
+    vCardElement.element("PHOTO").element("BINVAL").setText(Base64.encodeBytes(resized));
+  }
+}

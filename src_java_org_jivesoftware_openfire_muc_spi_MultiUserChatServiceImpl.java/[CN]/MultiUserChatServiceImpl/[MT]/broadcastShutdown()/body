@@ -1,0 +1,39 @@
+{
+  Log.debug("Notifying all local users about the imminent destruction of chat service '{}'",chatServiceName);
+  if (users.isEmpty()) {
+    return;
+  }
+  final ExecutorService service=Executors.newFixedThreadPool(Math.min(users.size(),10));
+  for (  final LocalMUCUser user : users.values()) {
+    service.submit(new Runnable(){
+      @Override public void run(){
+        try {
+          for (          final LocalMUCRole role : user.getRoles()) {
+            final MUCRoom room=role.getChatRoom();
+            final Presence presence=room.createPresence(Presence.Type.unavailable);
+            presence.setFrom(role.getRoleAddress());
+            final Element fragment=presence.addChildElement("x","http://jabber.org/protocol/muc#user");
+            final Element item=fragment.addElement("item");
+            item.addAttribute("affiliation","none");
+            item.addAttribute("role","none");
+            fragment.addElement("status").addAttribute("code","332");
+            role.send(presence);
+          }
+        }
+ catch (        Exception e) {
+          Log.debug("Unable to inform {} about the imminent destruction of chat service '{}'",user.getAddress(),chatServiceName,e);
+        }
+      }
+    }
+);
+  }
+  service.shutdown();
+  try {
+    service.awaitTermination(JiveGlobals.getIntProperty("xmpp.muc.await-termination-millis",500),TimeUnit.MILLISECONDS);
+    Log.debug("Successfully notified all {} local users about the imminent destruction of chat service '{}'",users.size(),chatServiceName);
+  }
+ catch (  InterruptedException e) {
+    Log.debug("Interrupted while waiting for all users to be notified of shutdown of chat service '{}'. Shutting down immediately.",chatServiceName);
+  }
+  service.shutdownNow();
+}

@@ -1,12 +1,12 @@
 {
   if (openfired != null) {
     try {
-      Writer out=new OutputStreamWriter(new BufferedOutputStream(openfired.getOutputStream()));
-      out.write("exit\n");
-      out.close();
-      final Thread waiting=Thread.currentThread();
+      try (Writer out=new OutputStreamWriter(new BufferedOutputStream(openfired.getOutputStream()))){
+        out.write("exit\n");
+      }
+       final Thread waiting=Thread.currentThread();
       Thread waiter=new Thread(){
-        public void run(){
+        @Override public void run(){
           try {
             openfired.waitFor();
             waiting.interrupt();

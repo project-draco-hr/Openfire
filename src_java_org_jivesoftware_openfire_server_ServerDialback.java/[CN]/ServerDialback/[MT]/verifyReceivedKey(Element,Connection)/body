@@ -2,9 +2,10 @@
   String verifyFROM=doc.attributeValue("from");
   String verifyTO=doc.attributeValue("to");
   String key=doc.getTextTrim();
-  String id=doc.attributeValue("id");
-  Log.debug("ServerDialback: AS - Verifying key for host: " + verifyFROM + " id: "+ id);
-  String expectedKey=AuthFactory.createDigest(id,getSecretkey());
+  StreamID streamID=BasicStreamIDFactory.createStreamID(doc.attributeValue("id"));
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[Acting as Authoritative Server: Verify key sent by RS: " + verifyFROM+ " (id "+ streamID+ ")]");
+  log.debug("Verifying key... ");
+  String expectedKey=AuthFactory.createDigest(streamID.getID(),getSecretkey());
   boolean verified=expectedKey.equals(key);
   StringBuilder sb=new StringBuilder();
   sb.append("<db:verify");
@@ -12,8 +13,8 @@
   sb.append(" to=\"").append(verifyFROM).append("\"");
   sb.append(" type=\"");
   sb.append(verified ? "valid" : "invalid");
-  sb.append("\" id=\"").append(id).append("\"/>");
+  sb.append("\" id=\"").append(streamID.getID()).append("\"/>");
   connection.deliverRawText(sb.toString());
-  Log.debug("ServerDialback: AS - Key was: " + (verified ? "VALID" : "INVALID") + " for host: "+ verifyFROM+ " id: "+ id);
+  log.debug("Verification successful! Key was: " + (verified ? "VALID" : "INVALID"));
   return verified;
 }

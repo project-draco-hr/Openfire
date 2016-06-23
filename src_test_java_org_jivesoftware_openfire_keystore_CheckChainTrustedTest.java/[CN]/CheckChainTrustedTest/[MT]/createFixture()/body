@@ -1,0 +1,11 @@
+{
+  trustStore=KeyStore.getInstance(KeyStore.getDefaultType());
+  trustStore.load(null,null);
+  validChain=KeystoreTestUtils.generateValidCertificateChain();
+  trustStore.setCertificateEntry(getLast(validChain).getSubjectDN().getName(),getLast(validChain));
+  expiredIntChain=KeystoreTestUtils.generateCertificateChainWithExpiredIntermediateCert();
+  trustStore.setCertificateEntry(getLast(expiredIntChain).getSubjectDN().getName(),getLast(expiredIntChain));
+  expiredRootChain=KeystoreTestUtils.generateCertificateChainWithExpiredRootCert();
+  trustStore.setCertificateEntry(getLast(expiredRootChain).getSubjectDN().getName(),getLast(expiredRootChain));
+  trustManager=new OpenfireX509TrustManager(trustStore,acceptSelfSigned,checkValidity);
+}

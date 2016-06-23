@@ -1,0 +1,11 @@
+{
+  final X509Certificate endEntityCert=CertificateUtils.identifyEndEntityCertificate(Arrays.asList(chain));
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setCertificate(endEntityCert);
+  try {
+    checkChainTrusted(selector,chain);
+  }
+ catch (  InvalidAlgorithmParameterException|NoSuchAlgorithmException|CertPathBuilderException ex) {
+    throw new CertificateException(ex);
+  }
+}

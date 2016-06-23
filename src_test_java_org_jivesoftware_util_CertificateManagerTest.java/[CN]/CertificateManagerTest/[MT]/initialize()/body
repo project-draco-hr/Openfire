@@ -1,0 +1,7 @@
+{
+  keyPairGenerator=KeyPairGenerator.getInstance("RSA");
+  keyPairGenerator.initialize(512);
+  subjectKeyPair=keyPairGenerator.generateKeyPair();
+  issuerKeyPair=keyPairGenerator.generateKeyPair();
+  contentSigner=new JcaContentSignerBuilder("SHA1withRSA").build(issuerKeyPair.getPrivate());
+}

@@ -1,18 +1,18 @@
 {
-  final Logger log=LoggerFactory.getLogger(LocalOutgoingServerSession.class.getName() + "['" + hostname+ "']");
+  final Logger log=LoggerFactory.getLogger(Log.getName() + "[EXTERNAL SASL for: " + localDomain+ " to: "+ remoteDomain+ " (Stream ID: "+ id+ ")]");
   log.debug("Starting EXTERNAL SASL.");
-  if (doExternalAuthentication(domain,connection,reader)) {
+  if (doExternalAuthentication(localDomain,connection,reader)) {
     log.debug("EXTERNAL SASL was successful.");
     connection.deliverRawText(openingStream.toString());
-    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),CHARSET));
+    xpp.setInput(new InputStreamReader(connection.getTLSStreamHandler().getInputStream(),StandardCharsets.UTF_8));
     for (int eventType=xpp.getEventType(); eventType != XmlPullParser.START_TAG; ) {
       eventType=xpp.next();
     }
     id=xpp.getAttributeValue("","id");
     StreamID streamID=new BasicStreamIDFactory().createStreamID(id);
-    LocalOutgoingServerSession session=new LocalOutgoingServerSession(domain,connection,new OutgoingServerSocketReader(reader),streamID);
+    LocalOutgoingServerSession session=new LocalOutgoingServerSession(localDomain,connection,new OutgoingServerSocketReader(reader),streamID);
     connection.init(session);
-    session.setAddress(new JID(null,hostname,null));
+    session.setAddress(new JID(null,remoteDomain,null));
     session.usingServerDialback=false;
     return session;
   }

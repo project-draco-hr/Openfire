@@ -6,7 +6,7 @@
   calendar.add(Calendar.DATE,maxDays * -1);
   final String oldestFile="jive.audit-" + dateFormat.format(calendar.getTime()) + "-000.log";
   FilenameFilter filter=new FilenameFilter(){
-    public boolean accept(    File dir,    String name){
+    @Override public boolean accept(    File dir,    String name){
       return name.startsWith("jive.audit-") && name.endsWith(".log") && name.compareTo(oldestFile) < 0;
     }
   }
@@ -16,6 +16,8 @@
     if (fileToDelete.equals(currentAuditFile)) {
       close();
     }
-    fileToDelete.delete();
+    if (!fileToDelete.delete()) {
+      Log.warn("Unable to delete file '{}' as part of regular log rotation based on age of file. (Openfire failed to clean up after itself)!",fileToDelete);
+    }
   }
 }

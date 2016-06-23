@@ -1,0 +1,13 @@
+{
+  final SSLContext sslContext=getSSLContext();
+  final SSLEngine sslEngine=sslContext.createSSLEngine();
+  final Set<String> protocols=configuration.getEncryptionProtocols();
+  if (!protocols.isEmpty()) {
+    sslEngine.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
+  }
+  final Set<String> cipherSuites=configuration.getEncryptionCipherSuites();
+  if (!cipherSuites.isEmpty()) {
+    sslEngine.setEnabledCipherSuites(cipherSuites.toArray(new String[cipherSuites.size()]));
+  }
+  return sslEngine;
+}

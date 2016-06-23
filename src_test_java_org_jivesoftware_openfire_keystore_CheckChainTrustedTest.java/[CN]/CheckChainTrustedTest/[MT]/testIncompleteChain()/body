@@ -1,0 +1,8 @@
+{
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(validChain[0].getSubjectX500Principal());
+  final List<X509Certificate> copy=new ArrayList<>(Arrays.asList(validChain));
+  copy.remove(1);
+  final X509Certificate[] chain=copy.toArray(new X509Certificate[copy.size()]);
+  trustManager.checkChainTrusted(selector,chain);
+}

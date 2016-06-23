@@ -7,7 +7,7 @@
     }
   }
  else   if ("pubsub#leaf_node_association_whitelist".equals(field.getVariable()) || "pubsub#children_association_whitelist".equals(field.getVariable())) {
-    associationTrusted=new ArrayList<JID>();
+    associationTrusted=new ArrayList<>();
     for (    String value : field.getValues()) {
       try {
         addAssociationTrusted(new JID(value));
@@ -22,7 +22,7 @@
   }
  else   if ("pubsub#children".endsWith(field.getVariable())) {
     values=field.getValues();
-    ArrayList<Node> childrenNodes=new ArrayList<Node>(values.size());
+    ArrayList<Node> childrenNodes=new ArrayList<>(values.size());
     for (    String nodeId : values) {
       Node childNode=service.getNode(nodeId);
       if (childNode == null) {
@@ -30,7 +30,7 @@
       }
       childrenNodes.add(childNode);
     }
-    ArrayList<Node> toRemove=new ArrayList<Node>(nodes.values());
+    ArrayList<Node> toRemove=new ArrayList<>(nodes.values());
     toRemove.removeAll(childrenNodes);
     for (    Node node : toRemove) {
       removeChildNode(node);

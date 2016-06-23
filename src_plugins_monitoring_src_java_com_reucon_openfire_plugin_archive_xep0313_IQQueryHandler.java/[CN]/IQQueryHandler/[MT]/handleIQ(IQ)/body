@@ -15,12 +15,12 @@
       return buildForbiddenResponse(packet);
     }
   }
-  sendAcknowledgementResult(packet,session);
   final QueryRequest queryRequest=new QueryRequest(packet.getChildElement(),archiveJid);
   Collection<ArchivedMessage> archivedMessages=retrieveMessages(queryRequest);
   for (  ArchivedMessage archivedMessage : archivedMessages) {
     sendMessageResult(session,queryRequest,archivedMessage);
   }
   sendFinalMessage(session,queryRequest);
+  sendAcknowledgementResult(packet,session);
   return null;
 }

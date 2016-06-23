@@ -1,13 +1,13 @@
 {
-  if ((packet.getFrom() == null || packet.getFrom().toString().length() == 0 || packet.getFrom().equals(room.getRole().getRoleAddress())) && packet.getSubject() == null) {
+  boolean isSubjectChangeRequest=isSubjectChangeRequest(packet);
+  JID fromJID=packet.getFrom();
+  if (!isSubjectChangeRequest && (fromJID == null || fromJID.toString().length() == 0 || fromJID.equals(room.getRole().getRoleAddress()))) {
     return;
   }
-  if (!historyStrategy.isHistoryEnabled()) {
-    if (packet.getSubject() == null || packet.getSubject().trim().length() == 0) {
-      return;
-    }
+  if (!isSubjectChangeRequest && !historyStrategy.isHistoryEnabled()) {
+    return;
   }
-  if ((packet.getSubject() == null || "".equals(packet.getSubject().trim())) && (packet.getBody() == null || "".equals(packet.getBody().trim()))) {
+  if (!isSubjectChangeRequest && (packet.getBody() == null || packet.getBody().trim().length() == 0)) {
     return;
   }
   Message packetToAdd=packet.createCopy();
@@ -15,7 +15,7 @@
     isNonAnonymousRoom=room.canAnyoneDiscoverJID();
     for (Iterator<Message> it=getMessageHistory(); it.hasNext(); ) {
       Message message=it.next();
-      Element delayElement=message.getChildElement("x","jabber:x:delay");
+      Element delayElement=message.getChildElement("delay","urn:xmpp:delay");
       if (room.canAnyoneDiscoverJID()) {
         try {
           MUCRole role=room.getOccupant(message.getFrom().getResource());
@@ -30,22 +30,18 @@
     }
   }
   Element delayInformation=packetToAdd.addChildElement("delay","urn:xmpp:delay");
-  Element delayInformationOld=packetToAdd.addChildElement("x","jabber:x:delay");
   Date current=new Date();
   delayInformation.addAttribute("stamp",XMPPDateTimeFormat.format(current));
-  delayInformationOld.addAttribute("stamp",XMPPDateTimeFormat.formatOld(current));
   if (room.canAnyoneDiscoverJID()) {
     try {
       MUCRole role=room.getOccupant(packet.getFrom().getResource());
       delayInformation.addAttribute("from",role.getUserAddress().toString());
-      delayInformationOld.addAttribute("from",role.getUserAddress().toString());
     }
  catch (    UserNotFoundException e) {
     }
   }
  else {
     delayInformation.addAttribute("from",packet.getFrom().toString());
-    delayInformationOld.addAttribute("from",packet.getFrom().toString());
   }
   historyStrategy.addMessage(packetToAdd);
 }

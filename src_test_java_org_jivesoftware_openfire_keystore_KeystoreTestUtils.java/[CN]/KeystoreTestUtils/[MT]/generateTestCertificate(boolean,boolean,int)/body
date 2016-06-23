@@ -1,0 +1,15 @@
+{
+  final KeyPairGenerator keyPairGenerator=KeyPairGenerator.getInstance("RSA");
+  keyPairGenerator.initialize(512);
+  final KeyPair subjectKeyPair;
+  final KeyPair issuerKeyPair;
+  if (isSelfSigned) {
+    subjectKeyPair=keyPairGenerator.generateKeyPair();
+    issuerKeyPair=subjectKeyPair;
+  }
+ else {
+    subjectKeyPair=keyPairGenerator.generateKeyPair();
+    issuerKeyPair=keyPairGenerator.generateKeyPair();
+  }
+  return generateTestCertificate(isValid,issuerKeyPair,subjectKeyPair,indexAwayFromEndEntity);
+}

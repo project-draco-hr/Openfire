@@ -7,7 +7,9 @@
     sb.append("<compression xmlns=\"http://jabber.org/features/compress\"><method>zlib</method></compression>");
   }
   if (getAuthToken() == null) {
-    sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
+    if (XMPPServer.getInstance().getIQRouter().supports("jabber:iq:auth")) {
+      sb.append("<auth xmlns=\"http://jabber.org/features/iq-auth\"/>");
+    }
     if (XMPPServer.getInstance().getIQRegisterHandler().isInbandRegEnabled()) {
       sb.append("<register xmlns=\"http://jabber.org/features/iq-register\"/>");
     }
@@ -15,6 +17,10 @@
  else {
     sb.append("<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"/>");
     sb.append("<session xmlns=\"urn:ietf:params:xml:ns:xmpp-session\"><optional/></session>");
+    if (JiveGlobals.getBooleanProperty(StreamManager.SM_ACTIVE,true)) {
+      sb.append(String.format("<sm xmlns='%s'/>",StreamManager.NAMESPACE_V2));
+      sb.append(String.format("<sm xmlns='%s'/>",StreamManager.NAMESPACE_V3));
+    }
   }
   return sb.toString();
 }

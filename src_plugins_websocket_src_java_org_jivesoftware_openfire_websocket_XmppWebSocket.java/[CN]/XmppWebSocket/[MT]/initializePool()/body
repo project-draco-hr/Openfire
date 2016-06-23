@@ -1,0 +1,9 @@
+{
+  if (readerPool == null) {
+    readerPool=new GenericObjectPool<XMPPPacketReader>(new XMPPPPacketReaderFactory());
+    readerPool.setMaxTotal(-1);
+    readerPool.setBlockWhenExhausted(false);
+    readerPool.setTestOnReturn(true);
+    readerPool.setTimeBetweenEvictionRunsMillis(JiveConstants.MINUTE);
+  }
+}

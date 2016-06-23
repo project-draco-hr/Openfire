@@ -1,5 +1,5 @@
 {
-  List<JID> affectedOccupants=new ArrayList<JID>();
+  List<JID> affectedOccupants=new ArrayList<>();
   if (GroupJID.isGroup(affiliationJID)) {
     try {
       Group group=GroupManager.getInstance().getGroup(affiliationJID);
@@ -20,7 +20,7 @@
   }
   MUCRole.Role newRole;
   MUCRole.Affiliation newAffiliation;
-  List<Presence> updatedPresences=new ArrayList<Presence>();
+  List<Presence> updatedPresences=new ArrayList<>();
   for (  JID occupantJID : affectedOccupants) {
     Log.info("Applying affiliation change for " + occupantJID);
     boolean kickMember=false, isOutcast=false;
@@ -33,7 +33,7 @@
       newAffiliation=MUCRole.Affiliation.admin;
     }
  else     if (outcasts.includes(occupantJID)) {
-      newAffiliation=MUCRole.Affiliation.none;
+      newAffiliation=MUCRole.Affiliation.outcast;
       newRole=MUCRole.Role.none;
       kickMember=true;
       isOutcast=true;
@@ -49,12 +49,12 @@
     }
  else {
       newRole=isModerated() ? MUCRole.Role.visitor : MUCRole.Role.participant;
-      newAffiliation=MUCRole.Affiliation.member;
+      newAffiliation=MUCRole.Affiliation.none;
     }
     Log.info("New affiliation: " + newAffiliation);
     try {
       List<Presence> thisOccupant=changeOccupantAffiliation(senderRole,occupantJID,newAffiliation,newRole);
-      if (isMembersOnly() && kickMember) {
+      if (kickMember) {
         for (        Presence presence : thisOccupant) {
           presence.setType(Presence.Type.unavailable);
           presence.setStatus(null);
@@ -63,7 +63,7 @@
             x.element("item").addElement("reason").setText(reason);
           }
           x.addElement("status").addAttribute("code",isOutcast ? "301" : "321");
-          kickPresence(presence,senderRole.getUserAddress());
+          kickPresence(presence,senderRole.getUserAddress(),senderRole.getNickname());
         }
       }
       updatedPresences.addAll(thisOccupant);

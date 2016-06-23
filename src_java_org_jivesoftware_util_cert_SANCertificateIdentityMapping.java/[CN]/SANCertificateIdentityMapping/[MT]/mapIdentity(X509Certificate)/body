@@ -1,0 +1,35 @@
+{
+  List<String> identities=new ArrayList<>();
+  try {
+    Collection<List<?>> altNames=certificate.getSubjectAlternativeNames();
+    if (altNames == null) {
+      return Collections.emptyList();
+    }
+    for (    List<?> item : altNames) {
+      final Integer type=(Integer)item.get(0);
+      final Object value=item.get(1);
+      final String result;
+switch (type) {
+case 0:
+        result=parseOtherName((byte[])value);
+      break;
+case 2:
+    result=(String)value;
+  break;
+case 6:
+result=(String)value;
+break;
+default :
+result=null;
+break;
+}
+if (result != null) {
+identities.add(result);
+}
+}
+}
+ catch (CertificateParsingException e) {
+Log.error("Error parsing SubjectAltName in certificate: " + certificate.getSubjectDN(),e);
+}
+return identities;
+}

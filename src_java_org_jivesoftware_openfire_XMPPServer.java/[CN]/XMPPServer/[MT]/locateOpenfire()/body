@@ -14,15 +14,11 @@
     try {
       openfireHome=verifyHome("..",jiveConfigName).getCanonicalFile();
     }
- catch (    FileNotFoundException fe) {
-    }
-catch (    IOException ie) {
+ catch (    IOException ie) {
     }
   }
   if (openfireHome == null) {
-    InputStream in=null;
-    try {
-      in=getClass().getResourceAsStream("/openfire_init.xml");
+    try (InputStream in=getClass().getResourceAsStream("/openfire_init.xml")){
       if (in != null) {
         SAXReader reader=new SAXReader();
         Document doc=reader.read(in);
@@ -40,17 +36,6 @@ catch (    IOException ie) {
  catch (    Exception e) {
       System.err.println("Error loading openfire_init.xml to find home.");
       e.printStackTrace();
-    }
- finally {
-      try {
-        if (in != null) {
-          in.close();
-        }
-      }
- catch (      Exception e) {
-        System.err.println("Could not close open connection");
-        e.printStackTrace();
-      }
     }
   }
   if (openfireHome == null) {

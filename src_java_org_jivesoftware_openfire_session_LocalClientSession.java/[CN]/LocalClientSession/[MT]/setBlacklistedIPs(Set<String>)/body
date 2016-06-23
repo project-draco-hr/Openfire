@@ -1,0 +1,20 @@
+{
+  if (blocked == null) {
+    throw new NullPointerException();
+  }
+  blockedIPs=blocked;
+  if (blockedIPs.isEmpty()) {
+    JiveGlobals.deleteProperty(ConnectionSettings.Client.LOGIN_BLOCKED);
+  }
+ else {
+    StringBuilder buf=new StringBuilder();
+    Iterator<String> iter=blocked.iterator();
+    if (iter.hasNext()) {
+      buf.append(iter.next());
+    }
+    while (iter.hasNext()) {
+      buf.append(", ").append(iter.next());
+    }
+    JiveGlobals.setProperty(ConnectionSettings.Client.LOGIN_BLOCKED,buf.toString());
+  }
+}

@@ -122,14 +122,14 @@
     String nick;
     String target;
     boolean hasAffiliation;
-    List<Presence> presences=new ArrayList<Presence>(itemsList.size());
+    List<Presence> presences=new ArrayList<>(itemsList.size());
     for (    Object anItem : itemsList) {
       try {
         item=(Element)anItem;
         affiliation=item.attributeValue("affiliation");
         hasAffiliation=affiliation != null;
         target=(hasAffiliation ? affiliation : item.attributeValue("role"));
-        List<JID> jids=new ArrayList<JID>();
+        List<JID> jids=new ArrayList<>();
         nick=item.attributeValue("nick");
         if (hasJID) {
           jids.add(GroupJID.fromString(item.attributeValue("jid")));
@@ -161,7 +161,7 @@
             boolean hadAffiliation=room.getAffiliation(jid) != MUCRole.Affiliation.none;
             presences.addAll(room.addMember(jid,nick,senderRole));
             if (!skipInvite && !hadAffiliation && room.isMembersOnly()) {
-              List<JID> invitees=new ArrayList<JID>();
+              List<JID> invitees=new ArrayList<>();
               if (GroupJID.isGroup(jid)) {
                 try {
                   Group group=GroupManager.getInstance().getGroup(jid);
@@ -192,7 +192,7 @@
               if (MUCRole.Role.moderator != senderRole.getRole()) {
                 throw new ForbiddenException();
               }
-              presences.add(room.kickOccupant(jid,senderRole.getUserAddress(),item.elementTextTrim("reason")));
+              presences.add(room.kickOccupant(jid,senderRole.getUserAddress(),senderRole.getNickname(),item.elementTextTrim("reason")));
             }
           }
  else {

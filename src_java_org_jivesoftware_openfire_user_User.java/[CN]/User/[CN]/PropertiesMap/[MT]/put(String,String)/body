@@ -1,0 +1,23 @@
+{
+  Map<String,Object> eventParams=new HashMap<>();
+  String answer;
+  String keyString=key;
+synchronized (getName() + keyString.intern()) {
+    if (properties.containsKey(keyString)) {
+      String originalValue=properties.get(keyString);
+      answer=properties.put(keyString,value);
+      updateProperty(keyString,value);
+      eventParams.put("type","propertyModified");
+      eventParams.put("propertyKey",key);
+      eventParams.put("originalValue",originalValue);
+    }
+ else {
+      answer=properties.put(keyString,value);
+      insertProperty(keyString,value);
+      eventParams.put("type","propertyAdded");
+      eventParams.put("propertyKey",key);
+    }
+  }
+  UserEventDispatcher.dispatchEvent(User.this,UserEventDispatcher.EventType.user_modified,eventParams);
+  return answer;
+}

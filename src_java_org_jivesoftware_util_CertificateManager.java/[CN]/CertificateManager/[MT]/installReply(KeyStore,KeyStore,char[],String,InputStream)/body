@@ -1,0 +1,32 @@
+{
+  X509Certificate certificate=(X509Certificate)keyStore.getCertificate(alias);
+  if (certificate == null) {
+    Log.warn("Certificate not found for alias: " + alias);
+    return false;
+  }
+  PrivateKey privKey=(PrivateKey)keyStore.getKey(alias,keyPassword);
+  Collection<X509Certificate> certs=parseCertificates(inputStream);
+  if (certs.isEmpty()) {
+    throw new Exception("Reply has no certificates");
+  }
+  List<X509Certificate> newCerts;
+  if (certs.size() == 1) {
+    newCerts=establishCertChain(keyStore,trustStore,null,certs.iterator().next());
+  }
+ else {
+    newCerts=validateReply(keyStore,trustStore,alias,null,certs);
+  }
+  if (newCerts == null) {
+    return false;
+  }
+  keyStore.setKeyEntry(alias,privKey,keyPassword,newCerts.toArray(new X509Certificate[newCerts.size()]));
+  for (  CertificateEventListener listener : listeners) {
+    try {
+      listener.certificateSigned(keyStore,alias,newCerts);
+    }
+ catch (    Exception e) {
+      Log.error(e.getMessage(),e);
+    }
+  }
+  return true;
+}

@@ -1,4 +1,5 @@
 {
+  XMPPServer.getInstance().addServerListener(this);
   userTimeoutTask=new UserTimeoutTask();
   TaskEngine.getInstance().schedule(userTimeoutTask,user_timeout,user_timeout);
   logConversationTask=new LogConversationTask();
@@ -8,7 +9,7 @@
   XMPPServer.getInstance().getIQDiscoItemsHandler().addServerItemsProvider(this);
   XMPPServer.getInstance().getIQDiscoInfoHandler().setServerNodeInfoProvider(this.getServiceDomain(),this);
   XMPPServer.getInstance().getServerItemsProviders().add(this);
-  ArrayList<String> params=new ArrayList<String>();
+  ArrayList<String> params=new ArrayList<>();
   params.clear();
   params.add(getServiceDomain());
   Log.info(LocaleUtils.getLocalizedString("startup.starting.muc",params));

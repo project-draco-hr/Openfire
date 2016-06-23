@@ -1,0 +1,80 @@
+{
+  if (selector == null) {
+    throw new IllegalArgumentException("Argument 'selector' cannot be null");
+  }
+  if (chain == null || chain.length == 0) {
+    throw new IllegalArgumentException("Argument 'chain' cannot be null or an empty array.");
+  }
+  Log.debug("Attempting to verify a chain of {} certificates.",chain.length);
+  final Set<X509Certificate> trustedIssuers=new HashSet<>();
+  trustedIssuers.addAll(this.trustedIssuers);
+  if (acceptSelfSigned && chain.length == 1) {
+    Log.debug("Attempting to accept the self-signed certificate of this chain of length one, as instructed by configuration.");
+    final X509Certificate cert=chain[0];
+    if (cert.getSubjectDN().equals(cert.getIssuerDN())) {
+      Log.debug("Chain of one appears to be self-signed. Adding it to the set of trusted issuers.");
+      trustedIssuers.add(cert);
+    }
+ else {
+      Log.debug("Chain of one is not self-signed. Not adding it to the set of trusted issuers.");
+    }
+  }
+  final Set<X509Certificate> acceptedIssuers;
+  if (checkValidity) {
+    acceptedIssuers=CertificateUtils.filterValid(trustedIssuers);
+  }
+ else {
+    acceptedIssuers=trustedIssuers;
+  }
+  final Set<TrustAnchor> trustAnchors=CertificateUtils.toTrustAnchors(acceptedIssuers);
+  final CertStore certificates=CertStore.getInstance("Collection",new CollectionCertStoreParameters(Arrays.asList(chain)));
+  final PKIXBuilderParameters parameters=new PKIXBuilderParameters(trustAnchors,selector);
+  if (!checkValidity) {
+    Log.debug("Attempting to ignore any validity (expiry) issues, as instructed by configuration.");
+    final Date validPointInTime=CertificateUtils.findValidPointInTime(chain);
+    if (validPointInTime == null) {
+      Log.warn("The existing implementation is unable to fully ignore certificate validity periods for this chain, even though it is configured to do so. Certificate checks might fail because of expiration for end entity: " + chain[0]);
+    }
+ else {
+      parameters.setDate(validPointInTime);
+    }
+  }
+  parameters.addCertStore(certificates);
+  parameters.setRevocationEnabled(false);
+  Log.debug("Validating chain with {} certificates, using {} trust anchors.",chain.length,trustAnchors.size());
+  CertPathBuilder pathBuilder;
+  try {
+    pathBuilder=CertPathBuilder.getInstance("PKIX","BC");
+  }
+ catch (  NoSuchProviderException e) {
+    Log.warn("Unable to use the BC provider! Trying to use a fallback provider.",e);
+    pathBuilder=CertPathBuilder.getInstance("PKIX");
+  }
+  try {
+    final CertPathBuilderResult result=pathBuilder.build(parameters);
+    return result.getCertPath();
+  }
+ catch (  CertPathBuilderException ex) {
+    try {
+      Log.debug("** Accepted Issuers (trust anchors, \"root CA's\"):");
+      for (      X509Certificate acceptedIssuer : acceptedIssuers) {
+        Log.debug("   - " + acceptedIssuer.getSubjectDN() + "/"+ acceptedIssuer.getIssuerDN());
+      }
+      Log.debug("** Chain to be validated:");
+      Log.debug("   length: " + chain.length);
+      for (int i=0; i < chain.length; i++) {
+        Log.debug(" Certificate[{}] (valid from {} to {}):",i,chain[i].getNotBefore(),chain[i].getNotAfter());
+        Log.debug("   subjectDN: " + chain[i].getSubjectDN());
+        Log.debug("   issuerDN: " + chain[i].getIssuerDN());
+        for (        X509Certificate acceptedIssuer : acceptedIssuers) {
+          if (acceptedIssuer.getIssuerDN().equals(chain[i].getIssuerDN())) {
+            Log.debug("Found accepted issuer with same DN: " + acceptedIssuer.getIssuerDN());
+          }
+        }
+      }
+    }
+  finally {
+      throw ex;
+    }
+  }
+}

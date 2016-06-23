@@ -6,10 +6,11 @@
       Log.debug("LdapManager: Warning: Using unencrypted connection to LDAP service!");
     }
   }
-  Hashtable<String,Object> env=new Hashtable<String,Object>();
+  Hashtable<String,Object> env=new Hashtable<>();
   env.put(Context.INITIAL_CONTEXT_FACTORY,initialContextFactory);
   env.put(Context.PROVIDER_URL,getProviderURL(baseDN));
   if (sslEnabled) {
+    env.put("java.naming.ldap.factory.socket","org.jivesoftware.util.SimpleSSLSocketFactory");
     env.put(Context.SECURITY_PROTOCOL,"ssl");
   }
   if (adminDN != null) {
@@ -42,6 +43,15 @@
  else {
     env.put("com.sun.jndi.ldap.connect.pool","false");
   }
+  if (connTimeout > 0) {
+    env.put("com.sun.jndi.ldap.connect.timeout",String.valueOf(connTimeout));
+  }
+ else {
+    env.put("com.sun.jndi.ldap.connect.timeout","10000");
+  }
+  if (readTimeout > 0) {
+    env.put("com.sun.jndi.ldap.read.timeout",String.valueOf(readTimeout));
+  }
   if (followReferrals) {
     env.put(Context.REFERRAL,"follow");
   }
@@ -61,7 +71,7 @@
     }
     StartTlsResponse tls=(StartTlsResponse)context.extendedOperation(new StartTlsRequest());
     try {
-      SSLSession session=tls.negotiate();
+      SSLSession session=tls.negotiate(new org.jivesoftware.util.SimpleSSLSocketFactory());
       context.setTlsResponse(tls);
       context.setSslSession(session);
       if (debug) {

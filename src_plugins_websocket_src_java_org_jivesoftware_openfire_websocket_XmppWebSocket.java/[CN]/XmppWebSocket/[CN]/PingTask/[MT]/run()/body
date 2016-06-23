@@ -1,0 +1,25 @@
+{
+  if (!isWebSocketOpen()) {
+    TaskEngine.getInstance().cancelScheduledTask(pingTask);
+  }
+ else {
+    long idleTime=System.currentTimeMillis() - JiveConstants.MINUTE;
+    if (xmppSession.getLastActiveDate().getTime() >= idleTime) {
+      return;
+    }
+    try {
+      wsSession.getRemote().sendPing(null);
+      lastPingFailed=false;
+    }
+ catch (    IOException ioe) {
+      Log.error("Failed to ping remote peer: " + wsSession,ioe);
+      if (lastPingFailed) {
+        closeSession();
+        TaskEngine.getInstance().cancelScheduledTask(pingTask);
+      }
+ else {
+        lastPingFailed=true;
+      }
+    }
+  }
+}

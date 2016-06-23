@@ -1,21 +1,13 @@
 {
-  if (!allowedIPs.isEmpty()) {
-    boolean forbidAccess=false;
-    try {
-      if (!allowedIPs.containsKey(connection.getHostAddress())) {
-        byte[] address=connection.getAddress();
-        String range1=(address[0] & 0xff) + "." + (address[1] & 0xff)+ "."+ (address[2] & 0xff)+ ".*";
-        String range2=(address[0] & 0xff) + "." + (address[1] & 0xff)+ ".*.*";
-        String range3=(address[0] & 0xff) + ".*.*.*";
-        if (!allowedIPs.containsKey(range1) && !allowedIPs.containsKey(range2) && !allowedIPs.containsKey(range3)) {
-          forbidAccess=true;
-        }
-      }
+  try {
+    final String hostAddress=connection.getHostAddress();
+    final byte[] address=connection.getAddress();
+    if (blockedIPs.contains(hostAddress) || isAddressInRange(address,blockedIPs)) {
+      return false;
     }
- catch (    UnknownHostException e) {
-      forbidAccess=true;
-    }
-    return !forbidAccess;
+    return allowedIPs.isEmpty() || allowedIPs.contains(hostAddress) || isAddressInRange(address,allowedIPs);
   }
-  return true;
+ catch (  UnknownHostException e) {
+    return false;
+  }
 }

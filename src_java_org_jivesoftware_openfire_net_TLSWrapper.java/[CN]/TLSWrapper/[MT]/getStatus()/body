@@ -1,25 +1,20 @@
 {
-  TLSStatus status=null;
   if (tlsEngineResult != null && tlsEngineResult.getStatus() == Status.BUFFER_UNDERFLOW) {
-    status=TLSStatus.UNDERFLOW;
+    return TLSStatus.UNDERFLOW;
   }
  else {
     if (tlsEngineResult != null && tlsEngineResult.getStatus() == Status.CLOSED) {
-      status=TLSStatus.CLOSED;
+      return TLSStatus.CLOSED;
     }
  else {
 switch (tlsEngine.getHandshakeStatus()) {
 case NEED_WRAP:
-        status=TLSStatus.NEED_WRITE;
-      break;
+        return TLSStatus.NEED_WRITE;
 case NEED_UNWRAP:
-    status=TLSStatus.NEED_READ;
-  break;
+      return TLSStatus.NEED_READ;
 default :
-status=TLSStatus.OK;
-break;
+    return TLSStatus.OK;
 }
 }
 }
-return status;
 }

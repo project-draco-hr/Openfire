@@ -1,0 +1,8 @@
+{
+  Element reply=stanza.createCopy();
+  reply.addAttribute("type","error");
+  reply.addAttribute("to",stanza.attributeValue("from"));
+  reply.addAttribute("from",stanza.attributeValue("to"));
+  reply.add(new PacketError(condition).getElement());
+  deliver(reply.asXML());
+}

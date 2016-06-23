@@ -4,6 +4,7 @@
     if (localOnly.contains(cache.getName()))     continue;
     CacheWrapper cacheWrapper=((CacheWrapper)cache);
     Cache clusteredCache=cacheFactoryStrategy.createCache(cacheWrapper.getName());
+    clusteredCache.putAll(cache);
     cacheWrapper.setWrappedCache(clusteredCache);
   }
   clusteringStarting=false;

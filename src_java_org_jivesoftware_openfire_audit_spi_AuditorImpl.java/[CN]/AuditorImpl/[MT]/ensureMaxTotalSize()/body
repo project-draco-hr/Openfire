@@ -1,19 +1,23 @@
 {
   FilenameFilter filter=new FilenameFilter(){
-    public boolean accept(    File dir,    String name){
+    @Override public boolean accept(    File dir,    String name){
       return name.startsWith("jive.audit-") && name.endsWith(".log");
     }
   }
 ;
   File[] files=baseFolder.listFiles(filter);
+  if (files == null) {
+    Log.debug("Path '{}' does not denote a directory, or an IO exception occured while trying to list its content.",baseFolder);
+    return;
+  }
   long totalLength=0;
   for (  File file : files) {
     totalLength=totalLength + file.length();
   }
   if (totalLength > maxTotalSize) {
-    List<File> sortedFiles=new ArrayList<File>(Arrays.asList(files));
+    List<File> sortedFiles=new ArrayList<>(Arrays.asList(files));
     Collections.sort(sortedFiles,new Comparator<File>(){
-      public int compare(      File o1,      File o2){
+      @Override public int compare(      File o1,      File o2){
         return o1.getName().compareTo(o2.getName());
       }
     }
@@ -24,7 +28,9 @@
       if (fileToDelete.equals(currentAuditFile)) {
         close();
       }
-      fileToDelete.delete();
+      if (!fileToDelete.delete()) {
+        Log.warn("Unable to delete file '{}' as part of regular log rotation based on size of files (Openfire failed to clean up after itself)!",fileToDelete);
+      }
     }
   }
 }

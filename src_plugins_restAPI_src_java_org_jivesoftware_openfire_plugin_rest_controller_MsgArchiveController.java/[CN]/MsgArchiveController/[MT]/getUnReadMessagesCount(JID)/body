@@ -1,0 +1,23 @@
+{
+  int messageCount=0;
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  try {
+    con=DbConnectionManager.getConnection();
+    pstmt=con.prepareStatement(USER_MESSAGE_COUNT);
+    pstmt.setString(1,jid.toBareJID());
+    pstmt.setString(2,jid.getNode());
+    rs=pstmt.executeQuery();
+    if (rs.next()) {
+      messageCount=rs.getInt(1);
+    }
+  }
+ catch (  SQLException sqle) {
+    LOG.error(sqle.getMessage(),sqle);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+  return messageCount;
+}

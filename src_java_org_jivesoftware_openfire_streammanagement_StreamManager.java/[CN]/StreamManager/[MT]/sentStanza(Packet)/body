@@ -1,0 +1,22 @@
+{
+  if (isEnabled()) {
+    final long requestFrequency=JiveGlobals.getLongProperty("stream.management.requestFrequency",5);
+    final int size;
+synchronized (this) {
+      final long x=1 + (unacknowledgedServerStanzas.isEmpty() ? clientProcessedStanzas : unacknowledgedServerStanzas.getLast().x);
+      unacknowledgedServerStanzas.addLast(new StreamManager.UnackedPacket(x,packet.createCopy()));
+      size=unacknowledgedServerStanzas.size();
+      Log.trace("Added stanza of type '{}' to collection of unacknowledged stanzas (x={}). Collection size is now {}.",packet.getElement().getName(),x,size);
+      if (size > getMaximumUnacknowledgedStanzas()) {
+        Log.warn("To many stanzas go unacknowledged for this connection. Clearing queue and disabling functionality.");
+        namespace=null;
+        unacknowledgedServerStanzas.clear();
+        return;
+      }
+    }
+    if (size % requestFrequency == 0) {
+      Log.debug("Requesting acknowledgement from peer, as we have {} or more unacknowledged stanzas.",requestFrequency);
+      sendServerRequest();
+    }
+  }
+}

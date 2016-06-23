@@ -2,7 +2,7 @@
   boolean compress=false;
   boolean javascript=request.getRequestURI().endsWith("scripts/");
   if (!disableCompression) {
-    if (request.getHeader("accept-encoding") != null && request.getHeader("accept-encoding").indexOf("gzip") != -1) {
+    if (request.getHeader("accept-encoding") != null && request.getHeader("accept-encoding").contains("gzip")) {
       compress=true;
     }
  else     if (request.getHeader("---------------") != null) {
@@ -26,8 +26,6 @@
     response.setHeader("Expires","1");
     compress=false;
   }
-  OutputStream out=null;
-  InputStream in=null;
   try {
     byte[] content;
     String cacheKey=String.valueOf(compress + " " + javascript);
@@ -42,32 +40,18 @@
     if (compress) {
       response.setHeader("Content-Encoding","gzip");
     }
-    in=new ByteArrayInputStream(content);
-    out=response.getOutputStream();
-    byte[] buf=new byte[128 * 1024];
-    int len;
-    while ((len=in.read(buf)) != -1) {
-      out.write(buf,0,len);
-    }
-    out.flush();
-  }
+    try (ByteArrayInputStream in=new ByteArrayInputStream(content)){
+      try (OutputStream out=response.getOutputStream()){
+        byte[] buf=new byte[128 * 1024];
+        int len;
+        while ((len=in.read(buf)) != -1) {
+          out.write(buf,0,len);
+        }
+        out.flush();
+      }
+     }
+   }
  catch (  IOException e) {
     Log.error(e.getMessage(),e);
-  }
- finally {
-    try {
-      if (in != null) {
-        in.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
-    try {
-      if (out != null) {
-        out.close();
-      }
-    }
- catch (    Exception ignored) {
-    }
   }
 }

@@ -1,0 +1,39 @@
+{
+  if (sslContextFactory != null) {
+    return sslContextFactory;
+  }
+  Log.info("Creating new SslContextFactory instance");
+  try {
+    sslContextFactory=new SslContextFactory();
+    sslContextFactory.setTrustStore(configuration.getTrustStore().getStore());
+    sslContextFactory.setTrustStorePassword(new String(configuration.getTrustStore().getConfiguration().getPassword()));
+    sslContextFactory.setKeyStore(configuration.getIdentityStore().getStore());
+    sslContextFactory.setKeyStorePassword(new String(configuration.getIdentityStore().getConfiguration().getPassword()));
+    final Set<String> protocols=configuration.getEncryptionProtocols();
+    if (!protocols.isEmpty()) {
+      sslContextFactory.setIncludeProtocols(protocols.toArray(new String[protocols.size()]));
+    }
+    final Set<String> cipherSuites=configuration.getEncryptionCipherSuites();
+    if (!cipherSuites.isEmpty()) {
+      sslContextFactory.setIncludeCipherSuites(cipherSuites.toArray(new String[cipherSuites.size()]));
+    }
+switch (configuration.getClientAuth()) {
+case disabled:
+      sslContextFactory.setNeedClientAuth(false);
+    sslContextFactory.setWantClientAuth(false);
+  break;
+case wanted:
+sslContextFactory.setNeedClientAuth(false);
+sslContextFactory.setWantClientAuth(true);
+break;
+case needed:
+sslContextFactory.setNeedClientAuth(true);
+break;
+}
+return sslContextFactory;
+}
+ catch (RuntimeException ex) {
+sslContextFactory=null;
+throw ex;
+}
+}

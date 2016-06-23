@@ -2,12 +2,6 @@
   if (value == null) {
     return null;
   }
-  byte[] bytes=null;
-  try {
-    bytes=value.getBytes("UTF-8");
-  }
- catch (  UnsupportedEncodingException uee) {
-    bytes=value.getBytes();
-  }
+  byte[] bytes=value.getBytes(StandardCharsets.UTF_8);
   return Base64.encodeBytes(cipher(bytes,getKey(),Cipher.ENCRYPT_MODE));
 }

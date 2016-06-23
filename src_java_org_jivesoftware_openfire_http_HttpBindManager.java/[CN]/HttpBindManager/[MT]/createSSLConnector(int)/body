@@ -1,0 +1,32 @@
+{
+  httpsConnector=null;
+  try {
+    final IdentityStore identityStore=XMPPServer.getInstance().getCertificateStoreManager().getIdentityStore(ConnectionType.BOSH_C2S);
+    if (securePort > 0 && identityStore.getStore().aliases().hasMoreElements()) {
+      if (!identityStore.containsDomainCertificate("RSA")) {
+        Log.warn("HTTP binding: Using RSA certificates but they are not valid for " + "the hosted domain");
+      }
+      final ConnectionManagerImpl connectionManager=((ConnectionManagerImpl)XMPPServer.getInstance().getConnectionManager());
+      final ConnectionConfiguration configuration=connectionManager.getListener(ConnectionType.BOSH_C2S,true).generateConnectionConfiguration();
+      final SslContextFactory sslContextFactory=new EncryptionArtifactFactory(configuration).getSslContextFactory();
+      final HttpConfiguration httpsConfig=new HttpConfiguration();
+      httpsConfig.setSecureScheme("https");
+      httpsConfig.setSecurePort(securePort);
+      configureProxiedConnector(httpsConfig);
+      httpsConfig.addCustomizer(new SecureRequestCustomizer());
+      final ServerConnector sslConnector;
+      if ("npn".equals(JiveGlobals.getXMLProperty("spdy.protocol",""))) {
+        sslConnector=new HTTPSPDYServerConnector(httpBindServer,sslContextFactory);
+      }
+ else {
+        sslConnector=new ServerConnector(httpBindServer,new SslConnectionFactory(sslContextFactory,"http/1.1"),new HttpConnectionFactory(httpsConfig));
+      }
+      sslConnector.setHost(getBindInterface());
+      sslConnector.setPort(securePort);
+      httpsConnector=sslConnector;
+    }
+  }
+ catch (  Exception e) {
+    Log.error("Error creating SSL connector for Http bind",e);
+  }
+}

@@ -2,6 +2,8 @@
   this.logDir=logDir;
   baseFolder=new File(logDir);
   if (!baseFolder.exists()) {
-    baseFolder.mkdir();
+    if (!baseFolder.mkdir()) {
+      Log.error("Unable to create log directory: {}",baseFolder);
+    }
   }
 }

@@ -1,0 +1,13 @@
+{
+  if (onBehalfOf.getResource() == null) {
+    sendUnexpectedError();
+    return;
+  }
+synchronized (this) {
+    if (isEnabled()) {
+      return;
+    }
+    this.namespace=namespace;
+  }
+  connection.deliverRawText(String.format("<enabled xmlns='%s'/>",namespace));
+}

@@ -23,8 +23,8 @@
       state=cluster != null ? State.started : State.stopped;
       XMPPServer.getInstance().setNodeID(NodeID.getInstance(getClusterMemberID()));
       clusterListener=new ClusterListener(cluster);
-      hazelcast.getLifecycleService().addLifecycleListener(clusterListener);
-      cluster.addMembershipListener(clusterListener);
+      lifecycleListener=hazelcast.getLifecycleService().addLifecycleListener(clusterListener);
+      membershipListener=cluster.addMembershipListener(clusterListener);
       break;
     }
  catch (    Exception e) {

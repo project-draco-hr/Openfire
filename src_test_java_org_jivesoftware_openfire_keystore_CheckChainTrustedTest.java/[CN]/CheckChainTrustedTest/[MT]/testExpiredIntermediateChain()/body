@@ -1,0 +1,19 @@
+{
+  final X509CertSelector selector=new X509CertSelector();
+  selector.setSubject(expiredIntChain[0].getSubjectX500Principal());
+  final X509Certificate[] chain=expiredIntChain;
+  CertPath result=null;
+  CertPathBuilderException exception=null;
+  try {
+    result=trustManager.checkChainTrusted(selector,chain);
+  }
+ catch (  CertPathBuilderException ex) {
+    exception=ex;
+  }
+  if (checkValidity) {
+    Assert.assertNotNull("Certificate validity is enforced. Validation should have thrown an exception.",exception);
+  }
+ else {
+    Assert.assertNotNull("Certificate validity is not checked. Validation should have succeeded.",result);
+  }
+}

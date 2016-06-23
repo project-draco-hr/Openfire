@@ -1,15 +1,23 @@
 {
   boolean result=false;
-  Set<Group> groupSet=(keyOrValue == KEYS) ? groupsFromKeys : groupsFromValues;
+  Set<String> groupSet=(keyOrValue == KEYS) ? knownGroupNamesFromKeys : knownGroupNamesFromValues;
   if (groupSet != null) {
     Group group=Group.resolveFrom(item);
     if (group != null) {
       result=true;
       if (addOrRemove == ADD) {
-        groupSet.add(group);
+        groupSet.add(group.getName());
       }
  else       if (addOrRemove == REMOVE) {
-        groupSet.remove(group);
+        groupSet.remove(group.getName());
+        if (groupSet.isEmpty()) {
+          if (keyOrValue == KEYS) {
+            knownGroupNamesFromKeys=null;
+          }
+ else {
+            knownGroupNamesFromValues=null;
+          }
+        }
       }
     }
   }

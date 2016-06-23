@@ -1,0 +1,26 @@
+{
+  if (certificate != null) {
+    PublicKey publickey=certificate.getPublicKey();
+    PublicKey publickey1=certReply.getPublicKey();
+    if (!publickey.equals(publickey1)) {
+      throw new Exception("Public keys in reply and keystore don't match");
+    }
+    if (certReply.equals(certificate)) {
+      throw new Exception("Certificate reply and certificate in keystore are identical");
+    }
+  }
+  Map<String,List<X509Certificate>> knownCerts=new Hashtable<>();
+  if (keyStore.size() > 0) {
+    knownCerts.putAll(getCertsByIssuer(keyStore));
+  }
+  if (trustStore.size() > 0) {
+    knownCerts.putAll(getCertsByIssuer(trustStore));
+  }
+  LinkedList<X509Certificate> answer=new LinkedList<>();
+  if (buildChain(certReply,answer,knownCerts)) {
+    return answer;
+  }
+ else {
+    throw new Exception("Failed to establish chain from reply");
+  }
+}

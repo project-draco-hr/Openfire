@@ -1,3 +1,8 @@
 {
-  mechanisms.remove(mechanism);
+  if (mechanismName == null || mechanismName.isEmpty()) {
+    throw new IllegalArgumentException("Argument 'mechanism' must cannot be null or an empty string.");
+  }
+  if (mechanisms.remove(mechanismName.toUpperCase())) {
+    Log.info("Support removed for the '{}' SASL mechanism.",mechanismName.toUpperCase());
+  }
 }

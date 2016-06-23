@@ -1,21 +1,21 @@
 {
   Statistic statistic=new Statistic(){
-    public String getName(){
+    @Override public String getName(){
       return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.name");
     }
-    public Type getStatType(){
+    @Override public Type getStatType(){
       return Type.rate;
     }
-    public String getDescription(){
+    @Override public String getDescription(){
       return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.description");
     }
-    public String getUnits(){
+    @Override public String getUnits(){
       return LocaleUtils.getLocalizedString("server_bytes.stats.outgoing.label");
     }
-    public double sample(){
+    @Override public double sample(){
       return outgoingCounter.getAndSet(0) / 1024d;
     }
-    public boolean isPartialSample(){
+    @Override public boolean isPartialSample(){
       return true;
     }
   }

@@ -1,0 +1,21 @@
+{
+  final int processorCount=JiveGlobals.getIntProperty("xmpp.processor.count",Runtime.getRuntime().availableProcessors());
+  final NioSocketAcceptor socketAcceptor=new NioSocketAcceptor(processorCount);
+  socketAcceptor.setReuseAddress(true);
+  socketAcceptor.setBacklog(JiveGlobals.getIntProperty("xmpp.socket.backlog",50));
+  final SocketSessionConfig socketSessionConfig=socketAcceptor.getSessionConfig();
+  final int receiveBuffer=JiveGlobals.getIntProperty("xmpp.socket.buffer.receive",-1);
+  if (receiveBuffer > 0) {
+    socketSessionConfig.setReceiveBufferSize(receiveBuffer);
+  }
+  final int sendBuffer=JiveGlobals.getIntProperty("xmpp.socket.buffer.send",-1);
+  if (sendBuffer > 0) {
+    socketSessionConfig.setSendBufferSize(sendBuffer);
+  }
+  final int linger=JiveGlobals.getIntProperty("xmpp.socket.linger",-1);
+  if (linger > 0) {
+    socketSessionConfig.setSoLinger(linger);
+  }
+  socketSessionConfig.setTcpNoDelay(JiveGlobals.getBooleanProperty("xmpp.socket.tcp-nodelay",socketSessionConfig.isTcpNoDelay()));
+  return socketAcceptor;
+}

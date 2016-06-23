@@ -1,11 +1,11 @@
 {
   return new DiscoInfoProvider(){
-    final ArrayList<Element> identities=new ArrayList<Element>();
-    public Iterator<Element> getIdentities(    String name,    String node,    JID senderJID){
+    final ArrayList<Element> identities=new ArrayList<>();
+    @Override public Iterator<Element> getIdentities(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getIdentities(name,node,senderJID);
       }
-      if (name == null) {
+      if (name != null && name.equals(XMPPServer.getInstance().getServerInfo().getXMPPDomain())) {
 synchronized (identities) {
           if (identities.isEmpty()) {
             Element identity=DocumentHelper.createElement("identity");
@@ -29,18 +29,13 @@ synchronized (identities) {
         }
       }
     }
-    public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
+    @Override public Iterator<String> getFeatures(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getFeatures(name,node,senderJID);
       }
-      if (name == null) {
-        return new HashSet<String>(serverFeatures.keySet()).iterator();
-      }
- else {
-        return userFeatures.iterator();
-      }
+      return new HashSet<>(serverFeatures.keySet()).iterator();
     }
-    public boolean hasInfo(    String name,    String node,    JID senderJID){
+    @Override public boolean hasInfo(    String name,    String node,    JID senderJID){
       if (node != null) {
         if (serverNodeProviders.get(node) != null) {
           return serverNodeProviders.get(node).hasInfo(name,node,senderJID);
@@ -54,7 +49,7 @@ synchronized (identities) {
         return false;
       }
     }
-    public DataForm getExtendedInfo(    String name,    String node,    JID senderJID){
+    @Override public DataForm getExtendedInfo(    String name,    String node,    JID senderJID){
       if (node != null && serverNodeProviders.get(node) != null) {
         return serverNodeProviders.get(node).getExtendedInfo(name,node,senderJID);
       }

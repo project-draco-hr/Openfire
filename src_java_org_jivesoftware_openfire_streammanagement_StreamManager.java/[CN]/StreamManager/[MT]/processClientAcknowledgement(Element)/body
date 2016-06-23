@@ -1,0 +1,27 @@
+{
+  if (isEnabled()) {
+    if (ack.attribute("h") != null) {
+      final long h=Long.valueOf(ack.attributeValue("h"));
+      Log.debug("Received acknowledgement from client: h={}",h);
+synchronized (this) {
+        if (!unacknowledgedServerStanzas.isEmpty() && h > unacknowledgedServerStanzas.getLast().x) {
+          Log.warn("Client acknowledges stanzas that we didn't send! Client Ack h: {}, our last stanza: {}",h,unacknowledgedServerStanzas.getLast().x);
+        }
+        clientProcessedStanzas=h;
+        Log.trace("Before processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
+        while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getFirst().x <= h) {
+          unacknowledgedServerStanzas.removeFirst();
+        }
+        final int maxUnacked=getMaximumUnacknowledgedStanzas();
+        final boolean clientHadRollOver=h < maxUnacked && !unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked;
+        if (clientHadRollOver) {
+          Log.info("Client rolled over 'h'. Purging high-numbered unacknowledged stanzas.");
+          while (!unacknowledgedServerStanzas.isEmpty() && unacknowledgedServerStanzas.getLast().x > mask - maxUnacked) {
+            unacknowledgedServerStanzas.removeLast();
+          }
+        }
+        Log.trace("After processing client Ack (h={}): {} unacknowledged stanzas.",h,unacknowledgedServerStanzas.size());
+      }
+    }
+  }
+}

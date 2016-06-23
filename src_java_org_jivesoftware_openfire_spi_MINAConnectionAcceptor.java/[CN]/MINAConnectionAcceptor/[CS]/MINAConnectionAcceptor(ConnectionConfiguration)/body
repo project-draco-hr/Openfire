@@ -1,0 +1,22 @@
+{
+  super(configuration);
+  this.name=configuration.getType().toString().toLowerCase() + (configuration.getTlsPolicy() == Connection.TLSPolicy.legacyMode ? "_ssl" : "");
+  Log=LoggerFactory.getLogger(MINAConnectionAcceptor.class.getName() + "[" + name+ "]");
+switch (configuration.getType()) {
+case SOCKET_S2S:
+    connectionHandler=new ServerConnectionHandler(configuration);
+  break;
+case SOCKET_C2S:
+connectionHandler=new ClientConnectionHandler(configuration);
+break;
+case COMPONENT:
+connectionHandler=new ComponentConnectionHandler(configuration);
+break;
+case CONNECTION_MANAGER:
+connectionHandler=new MultiplexerConnectionHandler(configuration);
+break;
+default :
+throw new IllegalStateException("This implementation does not support the connection type as defined in the provided configuration: " + configuration.getType());
+}
+this.encryptionArtifactFactory=new EncryptionArtifactFactory(configuration);
+}

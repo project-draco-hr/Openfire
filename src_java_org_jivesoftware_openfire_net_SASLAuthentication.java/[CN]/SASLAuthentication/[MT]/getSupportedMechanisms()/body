@@ -1,22 +1,52 @@
 {
-  Set<String> answer=new HashSet<String>(mechanisms);
-  for (Iterator<String> it=answer.iterator(); it.hasNext(); ) {
-    String mech=it.next();
-    if (mech.equals("CRAM-MD5") || mech.equals("DIGEST-MD5")) {
+  final Set<String> implementedMechanisms=getImplementedMechanisms();
+  final Set<String> answer=new HashSet<>(mechanisms);
+  for (final Iterator<String> it=answer.iterator(); it.hasNext(); ) {
+    final String mechanism=it.next();
+    if (!implementedMechanisms.contains(mechanism)) {
+      Log.trace("Cannot support '{}' as there's no implementation available.",mechanism);
+      it.remove();
+      continue;
+    }
+switch (mechanism) {
+case "CRAM-MD5":
+case "DIGEST-MD5":
       if (!AuthFactory.supportsPasswordRetrieval()) {
+        Log.trace("Cannot support '{}' as the AuthFactory that's in used does not support password retrieval.",mechanism);
         it.remove();
       }
-    }
- else     if (mech.equals("ANONYMOUS")) {
-      if (!XMPPServer.getInstance().getIQAuthHandler().isAnonymousAllowed()) {
-        it.remove();
-      }
-    }
- else     if (mech.equals("JIVE-SHAREDSECRET")) {
-      if (!isSharedSecretAllowed()) {
-        it.remove();
-      }
-    }
+    break;
+case "SCRAM-SHA-1":
+  if (!AuthFactory.supportsPasswordRetrieval() && !AuthFactory.supportsScram()) {
+    Log.trace("Cannot support '{}' as the AuthFactory that's in used does not support password retrieval nor SCRAM.",mechanism);
+    it.remove();
   }
-  return answer;
+break;
+case "ANONYMOUS":
+if (!JiveGlobals.getBooleanProperty("xmpp.auth.anonymous")) {
+Log.trace("Cannot support '{}' as it has been disabled by configuration.",mechanism);
+it.remove();
+}
+break;
+case "JIVE-SHAREDSECRET":
+if (!JiveSharedSecretSaslServer.isSharedSecretAllowed()) {
+Log.trace("Cannot support '{}' as it has been disabled by configuration.",mechanism);
+it.remove();
+}
+break;
+case "GSSAPI":
+final String gssapiConfig=JiveGlobals.getProperty("sasl.gssapi.config");
+if (gssapiConfig != null) {
+System.setProperty("java.security.krb5.debug",JiveGlobals.getProperty("sasl.gssapi.debug","false"));
+System.setProperty("java.security.auth.login.config",gssapiConfig);
+System.setProperty("javax.security.auth.useSubjectCredsOnly",JiveGlobals.getProperty("sasl.gssapi.useSubjectCredsOnly","false"));
+}
+ else {
+Log.trace("Cannot support '{}' as the 'sasl.gssapi.config' property has not been defined.",mechanism);
+it.remove();
+}
+break;
+}
+}
+return answer;
 }

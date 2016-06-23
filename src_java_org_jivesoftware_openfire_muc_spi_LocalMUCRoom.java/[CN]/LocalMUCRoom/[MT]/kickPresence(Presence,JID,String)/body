@@ -1,0 +1,19 @@
+{
+  List<MUCRole> occupants=new ArrayList<>(occupantsByNickname.get(kickPresence.getFrom().getResource().toLowerCase()));
+  for (  MUCRole kickedRole : occupants) {
+    if (actorJID != null && actorJID.toString().length() > 0) {
+      Element frag=kickPresence.getChildElement("x","http://jabber.org/protocol/muc#user");
+      Element actor=frag.element("item").addElement("actor");
+      actor.addAttribute("jid",actorJID.toBareJID());
+      if (nick != null) {
+        actor.addAttribute("nick",nick);
+      }
+    }
+    kickedRole.send(kickPresence);
+    OccupantLeftEvent event=new OccupantLeftEvent(this,kickedRole);
+    event.setOriginator(true);
+    event.run();
+    event=new OccupantLeftEvent(this,kickedRole);
+    CacheFactory.doClusterTask(event);
+  }
+}

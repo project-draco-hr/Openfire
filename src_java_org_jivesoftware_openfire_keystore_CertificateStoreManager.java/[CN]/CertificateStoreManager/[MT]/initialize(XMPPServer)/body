@@ -1,0 +1,29 @@
+{
+  super.initialize(server);
+  for (  ConnectionType type : ConnectionType.values()) {
+    try {
+      Log.debug("(identity store for connection type '{}') Initializing store...",type);
+      final CertificateStoreConfiguration identityStoreConfiguration=getIdentityStoreConfiguration(type);
+      if (!identityStores.containsKey(identityStoreConfiguration)) {
+        final IdentityStore store=new IdentityStore(identityStoreConfiguration,false);
+        identityStores.put(identityStoreConfiguration,store);
+      }
+      typeToIdentityStore.put(type,identityStoreConfiguration);
+    }
+ catch (    CertificateStoreConfigException|IOException e) {
+      Log.warn("(identity store for connection type '{}') Unable to instantiate store ",type,e);
+    }
+    try {
+      Log.debug("(trust store for connection type '{}') Initializing store...",type);
+      final CertificateStoreConfiguration trustStoreConfiguration=getTrustStoreConfiguration(type);
+      if (!trustStores.containsKey(trustStoreConfiguration)) {
+        final TrustStore store=new TrustStore(trustStoreConfiguration,false);
+        trustStores.put(trustStoreConfiguration,store);
+      }
+      typeToTrustStore.put(type,trustStoreConfiguration);
+    }
+ catch (    CertificateStoreConfigException|IOException e) {
+      Log.warn("(trust store for connection type '{}') Unable to instantiate store ",type,e);
+    }
+  }
+}

@@ -34,7 +34,7 @@
     room.setCanAnyoneDiscoverJID(rs.getInt(15) == 1);
     room.setLogEnabled(rs.getInt(16) == 1);
     room.setSubject(rs.getString(17));
-    List<String> rolesToBroadcast=new ArrayList<String>();
+    List<String> rolesToBroadcast=new ArrayList<>();
     String roles=StringUtils.zeroPadString(Integer.toBinaryString(rs.getInt(18)),3);
     if (roles.charAt(0) == '1') {
       rolesToBroadcast.add("moderator");
@@ -49,44 +49,59 @@
     room.setLoginRestrictedToNickname(rs.getInt(19) == 1);
     room.setChangeNickname(rs.getInt(20) == 1);
     room.setRegistrationEnabled(rs.getInt(21) == 1);
-    room.setPersistent(true);
-    DbConnectionManager.fastcloseStmt(rs,pstmt);
-    if (room.isLogEnabled()) {
-      pstmt=con.prepareStatement(LOAD_HISTORY);
-      int reloadLimitDays=JiveGlobals.getIntProperty(MUC_HISTORY_RELOAD_LIMIT,2);
-      long from=System.currentTimeMillis() - (BigInteger.valueOf(86400000).multiply(BigInteger.valueOf(reloadLimitDays))).longValue();
-      pstmt.setString(1,StringUtils.dateToMillis(new Date(from)));
-      pstmt.setLong(2,room.getID());
-      rs=pstmt.executeQuery();
-      while (rs.next()) {
-        String senderJID=rs.getString(1);
-        String nickname=rs.getString(2);
-        Date sentDate=new Date(Long.parseLong(rs.getString(3).trim()));
-        String subject=rs.getString(4);
-        String body=rs.getString(5);
-        room.getRoomHistory().addOldMessage(senderJID,nickname,sentDate,subject,body);
-      }
-    }
-    DbConnectionManager.fastcloseStmt(rs,pstmt);
-    if (!room.getRoomHistory().hasChangedSubject() && room.getSubject() != null && room.getSubject().length() > 0) {
-      room.getRoomHistory().addOldMessage(room.getRole().getRoleAddress().toString(),null,room.getModificationDate(),room.getSubject(),null);
-    }
-    pstmt=con.prepareStatement(LOAD_AFFILIATIONS);
-    pstmt.setLong(1,room.getID());
-    rs=pstmt.executeQuery();
-    while (rs.next()) {
-      JID affiliationJID=GroupJID.fromString(rs.getString(1));
-      MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(2));
-      try {
+switch (rs.getInt(22)) {
+default :
+case 0:
+      room.setCanSendPrivateMessage("anyone");
+    break;
+case 1:
+  room.setCanSendPrivateMessage("participants");
+break;
+case 2:
+room.setCanSendPrivateMessage("moderators");
+break;
+case 3:
+room.setCanSendPrivateMessage("none");
+break;
+}
+room.setPersistent(true);
+DbConnectionManager.fastcloseStmt(rs,pstmt);
+if (room.isLogEnabled()) {
+pstmt=con.prepareStatement(LOAD_HISTORY);
+int reloadLimitDays=JiveGlobals.getIntProperty(MUC_HISTORY_RELOAD_LIMIT,2);
+long from=System.currentTimeMillis() - (BigInteger.valueOf(86400000).multiply(BigInteger.valueOf(reloadLimitDays))).longValue();
+pstmt.setString(1,StringUtils.dateToMillis(new Date(from)));
+pstmt.setLong(2,room.getID());
+rs=pstmt.executeQuery();
+while (rs.next()) {
+String senderJID=rs.getString(1);
+String nickname=rs.getString(2);
+Date sentDate=new Date(Long.parseLong(rs.getString(3).trim()));
+String subject=rs.getString(4);
+String body=rs.getString(5);
+room.getRoomHistory().addOldMessage(senderJID,nickname,sentDate,subject,body);
+}
+}
+DbConnectionManager.fastcloseStmt(rs,pstmt);
+if (!room.getRoomHistory().hasChangedSubject() && room.getSubject() != null && room.getSubject().length() > 0) {
+room.getRoomHistory().addOldMessage(room.getRole().getRoleAddress().toString(),null,room.getModificationDate(),room.getSubject(),null);
+}
+pstmt=con.prepareStatement(LOAD_AFFILIATIONS);
+pstmt.setLong(1,room.getID());
+rs=pstmt.executeQuery();
+while (rs.next()) {
+JID affiliationJID=GroupJID.fromString(rs.getString(1));
+MUCRole.Affiliation affiliation=MUCRole.Affiliation.valueOf(rs.getInt(2));
+try {
 switch (affiliation) {
 case owner:
-          room.addOwner(affiliationJID,room.getRole());
-        break;
+room.addOwner(affiliationJID,room.getRole());
+break;
 case admin:
-      room.addAdmin(affiliationJID,room.getRole());
-    break;
+room.addAdmin(affiliationJID,room.getRole());
+break;
 case outcast:
-  room.addOutcast(affiliationJID,null,room.getRole());
+room.addOutcast(affiliationJID,null,room.getRole());
 break;
 default :
 Log.error("Unkown affiliation value " + affiliation + " for user "+ affiliationJID.toBareJID()+ " in persistent room "+ room.getID());

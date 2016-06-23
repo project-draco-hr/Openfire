@@ -1,7 +1,7 @@
 {
   IQ response=IQ.createResultIQ(requestPacket);
   response.setTo(subdomain);
-  Element query=new DefaultElement("query");
+  Element query=new DefaultElement(QName.get("query","jabber:iq:roster"));
   for (  RosterItem i : items) {
     String jid=i.getJid().toString();
     if (!jid.equals(subdomain) && jid.contains(subdomain)) {
@@ -18,7 +18,6 @@
       query.add(item);
     }
   }
-  query.addNamespace("","jabber:iq:roster");
   response.setChildElement(query);
   dispatchPacket(response);
 }

@@ -33,7 +33,30 @@
       modificationDate=parseLDAPDate((String)modificationDateField.get());
     }
     username=JID.escapeNode(username);
-    return new User(username,name,email,creationDate,modificationDate);
+    Attribute authPassword=attrs.get("authPassword");
+    User user=new User(username,name,email,creationDate,modificationDate);
+    if (authPassword != null) {
+      NamingEnumeration values=authPassword.getAll();
+      while (values.hasMore()) {
+        Attribute authPasswordValue=(Attribute)values.next();
+        String[] parts=((String)authPasswordValue.get()).split("$");
+        String[] authInfo=parts[1].split(":");
+        String[] authValue=parts[2].split(":");
+        String scheme=parts[0].trim();
+        if ("SCRAM-SHA-1".equals(scheme)) {
+          int iterations=Integer.valueOf(authInfo[0].trim());
+          String salt=authInfo[1].trim();
+          String storedKey=authValue[0].trim();
+          String serverKey=authValue[1].trim();
+          user.setSalt(salt);
+          user.setStoredKey(storedKey);
+          user.setServerKey(serverKey);
+          user.setIterations(iterations);
+          break;
+        }
+      }
+    }
+    return user;
   }
  catch (  Exception e) {
     throw new UserNotFoundException(e);

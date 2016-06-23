@@ -1,15 +1,7 @@
 {
-  if (groupsInList == null) {
-    groupsInList=new HashSet<Group>();
-    Iterator<T> iterator=iterator();
-    while (iterator.hasNext()) {
-      T listItem=iterator.next();
-      Group group=Group.resolveFrom(listItem);
-      if (group != null) {
-        groupsInList.add(group);
-      }
-      ;
-    }
+  Set<Group> result=new HashSet<>();
+  for (  String groupName : getKnownGroupNamesInList()) {
+    result.add(Group.resolveFrom(groupName));
   }
-  return groupsInList;
+  return result;
 }

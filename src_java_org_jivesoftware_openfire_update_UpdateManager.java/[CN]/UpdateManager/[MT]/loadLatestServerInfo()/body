@@ -8,9 +8,7 @@
     Log.warn("Cannot retrieve server updates. File must be readable: " + file.getName());
     return;
   }
-  FileReader reader=null;
-  try {
-    reader=new FileReader(file);
+  try (FileReader reader=new FileReader(file)){
     SAXReader xmlReader=new SAXReader();
     xmlReader.setEncoding("UTF-8");
     xmlResponse=xmlReader.read(reader);
@@ -18,15 +16,6 @@
  catch (  Exception e) {
     Log.error("Error reading server-update.xml",e);
     return;
-  }
- finally {
-    if (reader != null) {
-      try {
-        reader.close();
-      }
- catch (      Exception e) {
-      }
-    }
   }
   Element openfire=xmlResponse.getRootElement().element("openfire");
   if (openfire != null) {

@@ -1,5 +1,11 @@
 {
+  Log.info("Starting instance");
+  this.sessionManager=SessionManager.getInstance();
+  final int maxClientPoolSize=JiveGlobals.getIntProperty("xmpp.client.processing.threads",8);
+  final int maxPoolSize=JiveGlobals.getIntProperty("xmpp.httpbind.worker.threads",maxClientPoolSize);
+  final int keepAlive=JiveGlobals.getIntProperty("xmpp.httpbind.worker.timeout",60);
+  sendPacketPool=new ThreadPoolExecutor(getCorePoolSize(maxPoolSize),maxPoolSize,keepAlive,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(),new NamedThreadFactory("httpbind-worker-",true,null,Thread.currentThread().getThreadGroup(),null));
+  sendPacketPool.prestartCoreThread();
   inactivityTask=new HttpSessionReaper();
   TaskEngine.getInstance().schedule(inactivityTask,30 * JiveConstants.SECOND,30 * JiveConstants.SECOND);
-  sendPacketPool.prestartCoreThread();
 }

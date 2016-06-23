@@ -3,18 +3,18 @@
   this.server=server;
   this.routingTable=server.getRoutingTable();
   RosterEventDispatcher.addListener(new RosterEventListener(){
-    public void rosterLoaded(    Roster roster){
+    @Override public void rosterLoaded(    Roster roster){
     }
-    public boolean addingContact(    Roster roster,    RosterItem item,    boolean persistent){
+    @Override public boolean addingContact(    Roster roster,    RosterItem item,    boolean persistent){
       return true;
     }
-    public void contactAdded(    Roster roster,    RosterItem item){
+    @Override public void contactAdded(    Roster roster,    RosterItem item){
       rosterCache.put(roster.getUsername(),roster);
     }
-    public void contactUpdated(    Roster roster,    RosterItem item){
+    @Override public void contactUpdated(    Roster roster,    RosterItem item){
       rosterCache.put(roster.getUsername(),roster);
     }
-    public void contactDeleted(    Roster roster,    RosterItem item){
+    @Override public void contactDeleted(    Roster roster,    RosterItem item){
       rosterCache.put(roster.getUsername(),roster);
     }
   }

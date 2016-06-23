@@ -1,24 +1,13 @@
 {
-  if (state != State.RUNNING) {
-    if (backupDeliverer == null) {
-      Log.error("Failed to deliver packet: " + packet.toXML());
-      throw new IllegalStateException("Connection closed");
-    }
-    PacketDeliverer backup=backupDeliverer;
-    backupDeliverer=null;
-    backup.deliver(packet);
+  if (isClosed()) {
+    backupDeliverer.deliver(packet);
   }
  else {
     boolean errorDelivering=false;
     IoBuffer buffer=IoBuffer.allocate(4096);
     buffer.setAutoExpand(true);
     try {
-      if (!ioSession.isConnected()) {
-        throw new IOException("Connection reset/closed by peer");
-      }
-      XMLWriter xmlSerializer=new XMLWriter(new ByteBufferWriter(buffer,encoder.get()),new OutputFormat());
-      xmlSerializer.write(packet.getElement());
-      xmlSerializer.flush();
+      buffer.putString(packet.getElement().asXML(),encoder.get());
       if (flashClient) {
         buffer.put((byte)'\0');
       }

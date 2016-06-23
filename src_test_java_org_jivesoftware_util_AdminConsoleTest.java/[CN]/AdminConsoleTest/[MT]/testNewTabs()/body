@@ -1,9 +1,8 @@
 {
-  String filename=TestUtils.prepareFilename("./resources/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-02.xml");
-  InputStream in=new FileInputStream(filename);
-  AdminConsole.addModel("test2",in);
-  in.close();
-  Collection tabs=AdminConsole.getModel().selectNodes("//tab");
+  try (InputStream in=getClass().getResourceAsStream("/org/jivesoftware/admin/AdminConsoleTest.admin-sidebar-02.xml")){
+    AdminConsole.addModel("test2",in);
+  }
+   Collection tabs=AdminConsole.getModel().selectNodes("//tab");
   assertNotNull(tabs);
   assertTrue(tabs.size() > 0);
   boolean found=false;

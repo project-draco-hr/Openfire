@@ -1,0 +1,29 @@
+{
+  final Connection.CompressionPolicy defaultPolicy;
+switch (getType()) {
+case COMPONENT:
+case CONNECTION_MANAGER:
+case SOCKET_S2S:
+    defaultPolicy=Connection.CompressionPolicy.disabled;
+  break;
+case SOCKET_C2S:
+case BOSH_C2S:
+case WEBADMIN:
+default :
+defaultPolicy=Connection.CompressionPolicy.optional;
+break;
+}
+if (compressionPolicyPropertyName == null) {
+return defaultPolicy;
+}
+ else {
+final String policyName=JiveGlobals.getProperty(compressionPolicyPropertyName,defaultPolicy.toString());
+try {
+return Connection.CompressionPolicy.valueOf(policyName);
+}
+ catch (IllegalArgumentException e) {
+Log.error("Error parsing property value of '{}' into a valid Compression Policy. Offending value: '{}'.",tlsPolicyPropertyName,policyName,e);
+return defaultPolicy;
+}
+}
+}

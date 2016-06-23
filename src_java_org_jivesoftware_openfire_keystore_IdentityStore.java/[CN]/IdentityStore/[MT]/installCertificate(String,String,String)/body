@@ -1,0 +1,16 @@
+{
+  final String domain=XMPPServer.getInstance().getServerInfo().getXMPPDomain();
+  int index=1;
+  String alias=domain + "_" + index;
+  try {
+    while (store.containsAlias(alias)) {
+      index=index + 1;
+      alias=domain + "_" + index;
+    }
+  }
+ catch (  KeyStoreException e) {
+    throw new CertificateStoreConfigException("Unable to install a certificate into an identity store.",e);
+  }
+  installCertificate(alias,pemCertificates,pemPrivateKey,passPhrase);
+  return alias;
+}

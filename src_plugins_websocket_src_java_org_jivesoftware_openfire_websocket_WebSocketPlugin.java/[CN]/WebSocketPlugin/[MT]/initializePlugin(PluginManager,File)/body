@@ -1,0 +1,16 @@
+{
+  if (Boolean.valueOf(JiveGlobals.getBooleanProperty(HttpBindManager.HTTP_BIND_ENABLED,true))) {
+    Log.info(String.format("Initializing websocket plugin"));
+    try {
+      ContextHandlerCollection contexts=HttpBindManager.getInstance().getContexts();
+      contextHandler=new ServletContextHandler(contexts,"/ws",ServletContextHandler.SESSIONS);
+      contextHandler.addServlet(new ServletHolder(this),"/*");
+    }
+ catch (    Exception e) {
+      Log.error("Failed to start websocket plugin",e);
+    }
+  }
+ else {
+    Log.warn("Failed to start websocket plugin; http-bind is disabled");
+  }
+}

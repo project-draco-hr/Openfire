@@ -1,17 +1,12 @@
 {
   try {
     packetReceived(packet);
-    threadPool.execute(new Runnable(){
-      public void run(){
-        try {
-          ServerSocketReader.super.processMessage(packet);
-        }
- catch (        UnauthorizedException e) {
-          Log.error("Error processing packet",e);
-        }
-      }
+    try {
+      ServerSocketReader.super.processMessage(packet);
     }
-);
+ catch (    UnauthorizedException e) {
+      Log.error("Error processing packet",e);
+    }
   }
  catch (  PacketRejectedException e) {
     Log.debug("Message rejected: " + packet.toXML(),e);
