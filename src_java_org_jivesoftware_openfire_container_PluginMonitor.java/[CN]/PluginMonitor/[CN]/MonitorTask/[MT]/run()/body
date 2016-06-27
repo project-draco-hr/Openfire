@@ -99,6 +99,9 @@ synchronized (PluginMonitor.this) {
           }
 );
         }
+        if (pluginManager.getPlugin("admin") == null) {
+          pluginManager.loadPlugin(dirs.getFirst().get(0));
+        }
         final int parallelProcessMax=JiveGlobals.getIntProperty("plugins.loading.max-parallel",4);
         final int parallelProcessCount=(pluginManager.isExecuted() ? 1 : parallelProcessMax);
         final ExecutorService executorService=Executors.newFixedThreadPool(parallelProcessCount);
