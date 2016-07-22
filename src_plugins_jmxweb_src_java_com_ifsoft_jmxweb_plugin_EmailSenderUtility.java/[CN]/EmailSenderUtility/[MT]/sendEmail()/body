@@ -1,0 +1,70 @@
+{
+  ByteArrayOutputStream outputStream=null;
+  try {
+    String host=JiveGlobals.getProperty("mail.smtp.host","localhost");
+    String port=JiveGlobals.getProperty("mail.smtp.port","25");
+    String username=JiveGlobals.getProperty("mail.smtp.username");
+    String password=JiveGlobals.getProperty("mail.smtp.password");
+    String debugEnabled=JiveGlobals.getProperty("mail.debug");
+    boolean sslEnabled=JiveGlobals.getBooleanProperty("mail.smtp.ssl",true);
+    Properties props=new Properties();
+    props.put("mail.smtp.host",host);
+    props.put("mail.smtp.auth",port);
+    props.setProperty("mail.smtp.sendpartial","true");
+    props.setProperty("mail.debug",debugEnabled);
+    if (sslEnabled) {
+      Security.setProperty("ssl.SocketFactory.provider",SSL_FACTORY);
+      props.setProperty("mail.smtp.socketFactory.class",SSL_FACTORY);
+      props.setProperty("mail.smtp.socketFactory.fallback","true");
+    }
+    if (username != null) {
+      props.put("mail.smtp.auth","true");
+    }
+    Session session=Session.getInstance(props);
+    outputStream=new ByteArrayOutputStream();
+    createPdfAttachment(outputStream);
+    byte[] bytes=outputStream.toByteArray();
+    ByteArrayDataSource dataSource=new ByteArrayDataSource(bytes,"application/pdf");
+    MimeBodyPart pdfBodyPart=new MimeBodyPart();
+    pdfBodyPart.setDataHandler(new DataHandler(dataSource));
+    pdfBodyPart.setFileName("ResultSummary.pdf");
+    MimeMultipart multipart=new MimeMultipart();
+    multipart.addBodyPart(pdfBodyPart);
+    MimeMessage msg=new MimeMessage(session);
+    DefaultAdminProvider defaultAdminProvider=new DefaultAdminProvider();
+    java.util.List<JID> adminList=defaultAdminProvider.getAdmins();
+    java.util.List<String> adminListEmails=new ArrayList<String>();
+    UserManager manager=UserManager.getInstance();
+    Log.info("Number of Admins " + adminList.size());
+    for (int i=0; i < adminList.size(); i++) {
+      User user;
+      try {
+        user=manager.getUser(adminList.get(i).getNode().toString());
+        Log.info("Admin Emails: " + user.getEmail());
+        adminListEmails.add(user.getEmail());
+      }
+ catch (      Exception ex) {
+        continue;
+      }
+    }
+    InternetAddress[] recipients=new InternetAddress[adminListEmails.size()];
+    for (int i=0; i < adminListEmails.size(); i++) {
+      recipients[i]=new InternetAddress(adminListEmails.get(i).toString());
+    }
+    msg.setFrom(new InternetAddress("no-reply@openfire.org","Openfire Admin"));
+    msg.setRecipients(javax.mail.Message.RecipientType.TO,recipients);
+    msg.setSubject("MONITORING REPORT - " + new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date()));
+    msg.setContent(multipart);
+    if (username != null) {
+      URLName url=new URLName("smtp",host,Integer.parseInt(port),"",username,password);
+      Transport transport=new com.sun.mail.smtp.SMTPTransport(session,url);
+      transport.connect(host,Integer.parseInt(port),username,password);
+      transport.sendMessage(msg,msg.getRecipients(MimeMessage.RecipientType.TO));
+    }
+ else     Transport.send(msg);
+  }
+ catch (  Exception e) {
+    e.printStackTrace();
+    System.out.println("Could not send email");
+  }
+}

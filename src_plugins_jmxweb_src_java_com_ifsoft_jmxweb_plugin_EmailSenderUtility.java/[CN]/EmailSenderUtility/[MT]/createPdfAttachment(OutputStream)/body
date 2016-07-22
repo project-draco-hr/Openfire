@@ -1,0 +1,44 @@
+{
+  Document document=new Document();
+  PdfWriter.getInstance(document,outputStream);
+  document.open();
+  document.addTitle("Monitoring Report");
+  document.addSubject("PDF Document");
+  document.addKeywords("iText, email");
+  document.addAuthor("JMX");
+  document.addCreator("JMX");
+  Timestamp stamp=new Timestamp(System.currentTimeMillis());
+  Date date=new Date(stamp.getTime());
+  HttpClient httpClient=new HttpClient();
+  String monData=httpClient.getMemoryData();
+  Log.info("Monitoring Data JSON:" + monData);
+  Map outNode=new Genson().deserialize(monData,Map.class);
+  Map requestNode=(Map)outNode.get("request");
+  Map valueNode=(Map)outNode.get("value");
+  HashMap<String,String> monitoringData=new HashMap<String,String>();
+  monitoringData.put("Current Date",date.toString());
+  monitoringData.put("Report Date",outNode.get("timestamp").toString());
+  monitoringData.put("Maximum Heap Memory",valueNode.get("max").toString());
+  monitoringData.put("Committed Heap Memory",valueNode.get("committed").toString());
+  monitoringData.put("Init Heap Memory",valueNode.get("init").toString());
+  monitoringData.put("Used Heap Memory",valueNode.get("used").toString());
+  Font boldFont=new Font(Font.FontFamily.TIMES_ROMAN,18,Font.BOLD);
+  PdfPTable table=new PdfPTable(2);
+  table.setSpacingBefore(5);
+  table.addCell(new Phrase("Monitor",boldFont));
+  table.addCell(new Phrase("Value",boldFont));
+  for (  Map.Entry<String,String> entry : monitoringData.entrySet()) {
+    table.addCell(entry.getKey());
+    System.out.println(entry.getKey());
+    if (entry.getValue() != "" && entry.getValue() != null) {
+      table.addCell(entry.getValue());
+      System.out.println(entry.getValue());
+    }
+ else {
+      table.addCell("NOT AVAILABLE");
+    }
+  }
+  table.setHorizontalAlignment(Element.ALIGN_CENTER);
+  document.add(table);
+  document.close();
+}
