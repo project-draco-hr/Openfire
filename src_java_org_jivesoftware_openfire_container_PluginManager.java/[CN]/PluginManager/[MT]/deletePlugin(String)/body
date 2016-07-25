@@ -1,0 +1,26 @@
+{
+  Log.debug("Deleting plugin '{}'...",pluginName);
+  try (final DirectoryStream<Path> ds=Files.newDirectoryStream(getPluginsDirectory(),new DirectoryStream.Filter<Path>(){
+    @Override public boolean accept(    final Path path) throws IOException {
+      if (Files.isDirectory(path)) {
+        return false;
+      }
+      final String fileName=path.getFileName().toString().toLowerCase();
+      return (fileName.equals(pluginName + ".jar") || fileName.equals(pluginName + ".war"));
+    }
+  }
+)){
+    for (    final Path pluginFile : ds) {
+      try {
+        Files.delete(pluginFile);
+        pluginMonitor.runNow(true);
+      }
+ catch (      IOException ex) {
+        Log.warn("Unable to delete plugin '{}', as the plugin jar/war file cannot be deleted. File path: {}",pluginName,pluginFile,ex);
+      }
+    }
+  }
+ catch (  Throwable e) {
+    Log.error("An unexpected exception occurred while deleting plugin '{}'.",pluginName,e);
+  }
+}

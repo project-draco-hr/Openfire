@@ -1,0 +1,34 @@
+{
+  final Map<String,Set<Path>> byParent=new HashMap<>();
+  for (  final Iterable<Path> iterable : dirs) {
+    for (    final Path dir : iterable) {
+      final String parent=PluginMetadataHelper.getParentPlugin(dir);
+      if (!byParent.containsKey(parent)) {
+        byParent.put(parent,new HashSet<Path>());
+      }
+      byParent.get(parent).add(dir);
+    }
+  }
+  final Node root=new Node();
+  populateTree(root,byParent);
+  for (  Map.Entry<String,Set<Path>> entry : byParent.entrySet()) {
+    if (!entry.getValue().isEmpty()) {
+      for (      final Path path : entry.getValue()) {
+        final String name=PluginMetadataHelper.getCanonicalName(path);
+        Log.warn("Unable to load plugin '{}' as its defined parent plugin '{}' is not installed.",name,entry.getKey());
+      }
+    }
+  }
+  final Deque<List<Path>> result=new ArrayDeque<>();
+  for (  final Node noParentPlugin : root.children) {
+    final List<Path> hierarchy=new ArrayList<>();
+    walkTree(noParentPlugin,hierarchy);
+    if (noParentPlugin.getName().equals("admin")) {
+      result.addFirst(hierarchy);
+    }
+ else {
+      result.addLast(hierarchy);
+    }
+  }
+  return result;
+}

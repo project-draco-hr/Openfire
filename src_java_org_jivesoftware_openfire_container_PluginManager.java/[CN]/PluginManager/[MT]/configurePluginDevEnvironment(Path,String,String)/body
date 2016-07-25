@@ -1,0 +1,29 @@
+{
+  final String pluginName=pluginDir.getFileName().toString();
+  final Path compilationClassesDir=pluginDir.resolve("classes");
+  if (Files.notExists(compilationClassesDir)) {
+    Files.createDirectory(compilationClassesDir);
+  }
+  compilationClassesDir.toFile().deleteOnExit();
+  final PluginDevEnvironment dev=new PluginDevEnvironment();
+  Log.info("Plugin '{}' is running in development mode.",pluginName);
+  if (webRoot != null) {
+    Path webRootDir=Paths.get(webRoot);
+    if (Files.notExists(webRootDir)) {
+      webRootDir=pluginDir.resolve(webRoot);
+    }
+    if (Files.exists(webRootDir)) {
+      dev.setWebRoot(webRootDir.toFile());
+    }
+  }
+  if (classesDir != null) {
+    Path classes=Paths.get(classesDir);
+    if (Files.notExists(classes)) {
+      classes=pluginDir.resolve(classesDir);
+    }
+    if (Files.exists(classes)) {
+      dev.setClassesDir(classes.toFile());
+    }
+  }
+  return dev;
+}

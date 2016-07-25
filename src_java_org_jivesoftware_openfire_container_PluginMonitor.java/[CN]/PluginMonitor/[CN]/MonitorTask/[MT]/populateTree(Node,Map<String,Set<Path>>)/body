@@ -1,0 +1,14 @@
+{
+  final String parentName=parent.path == null ? null : PluginMetadataHelper.getCanonicalName(parent.path);
+  final Set<Path> children=byParent.remove(parentName);
+  if (children != null) {
+    for (    final Path child : children) {
+      final Node node=new Node();
+      node.path=child;
+      if (!parent.children.add(node)) {
+        Log.warn("Detected plugin duplicates for name: '{}'. Only one plugin will be loaded.",node.getName());
+      }
+      populateTree(node,byParent);
+    }
+  }
+}

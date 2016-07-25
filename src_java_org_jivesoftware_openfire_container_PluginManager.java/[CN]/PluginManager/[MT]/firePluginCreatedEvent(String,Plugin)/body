@@ -1,5 +1,10 @@
 {
-  for (  PluginListener listener : pluginListeners) {
-    listener.pluginCreated(name,plugin);
+  for (  final PluginListener listener : pluginListeners) {
+    try {
+      listener.pluginCreated(name,plugin);
+    }
+ catch (    Exception ex) {
+      Log.warn("An exception was thrown when one of the pluginManagerListeners was notified of a 'created' event for plugin '{}'!",name,ex);
+    }
   }
 }
