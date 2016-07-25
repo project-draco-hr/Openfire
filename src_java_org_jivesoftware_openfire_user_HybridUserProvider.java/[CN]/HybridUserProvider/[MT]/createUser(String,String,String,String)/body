@@ -1,16 +1,9 @@
 {
-  User returnvalue=null;
-  for (  UserProvider provider : userproviders) {
+  for (  final UserProvider provider : getUserProviders()) {
     if (provider.isReadOnly()) {
       continue;
     }
-    returnvalue=provider.createUser(username,password,name,email);
-    if (returnvalue != null) {
-      break;
-    }
+    return provider.createUser(username,password,name,email);
   }
-  if (returnvalue == null) {
-    throw new UnsupportedOperationException();
-  }
-  return returnvalue;
+  throw new UnsupportedOperationException();
 }

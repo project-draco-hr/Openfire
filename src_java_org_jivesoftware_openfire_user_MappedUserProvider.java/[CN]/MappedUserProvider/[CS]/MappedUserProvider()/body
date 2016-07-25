@@ -1,0 +1,14 @@
+{
+  JiveGlobals.migrateProperty(PROPERTY_MAPPER_CLASSNAME);
+  final String mapperClass=JiveGlobals.getProperty(PROPERTY_MAPPER_CLASSNAME);
+  if (mapperClass == null) {
+    throw new IllegalStateException("A mapper must be specified via openfire.xml or the system properties.");
+  }
+  try {
+    final Class c=ClassUtils.forName(mapperClass);
+    mapper=(UserProviderMapper)c.newInstance();
+  }
+ catch (  Exception e) {
+    throw new IllegalStateException("Unable to create new instance of UserProviderMapper class: " + mapperClass,e);
+  }
+}

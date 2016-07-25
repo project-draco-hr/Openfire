@@ -1,0 +1,17 @@
+{
+  final List<User> userList=new ArrayList<>();
+  int totalUserCount=0;
+  for (  final UserProvider provider : getUserProviders()) {
+    final int providerStartIndex=Math.max((startIndex - totalUserCount),0);
+    totalUserCount+=provider.getUserCount();
+    if (startIndex >= totalUserCount) {
+      continue;
+    }
+    final int providerResultMax=numResults - userList.size();
+    userList.addAll(provider.getUsers(providerStartIndex,providerResultMax));
+    if (userList.size() >= numResults) {
+      break;
+    }
+  }
+  return userList;
+}

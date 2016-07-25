@@ -1,0 +1,19 @@
+{
+  final List<User> userList=new ArrayList<>();
+  int supportSearch=getUserProviders().size();
+  for (  final UserProvider provider : getUserProviders()) {
+    try {
+      final Set<String> supportedFields=new HashSet<>(fields);
+      supportedFields.retainAll(provider.getSearchFields());
+      userList.addAll(provider.findUsers(supportedFields,query));
+    }
+ catch (    UnsupportedOperationException uoe) {
+      Log.warn("UserProvider.findUsers is not supported by this UserProvider: {}. Its users are not returned as part of search queries.",provider.getClass().getName());
+      supportSearch--;
+    }
+  }
+  if (supportSearch == 0) {
+    throw new UnsupportedOperationException("None of the backing providers support this operation.");
+  }
+  return userList;
+}

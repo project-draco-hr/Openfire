@@ -1,0 +1,12 @@
+{
+  JiveGlobals.migrateProperty(PROPERTY_ADMINPROVIDER_CLASSNAME);
+  JiveGlobals.migrateProperty(PROPERTY_USERPROVIDER_CLASSNAME);
+  adminProvider=UserMultiProvider.instantiate(PROPERTY_ADMINPROVIDER_CLASSNAME);
+  if (adminProvider == null) {
+    throw new IllegalStateException("A class name for the admin provider must be specified via openfire.xml or the system properties using property: " + PROPERTY_ADMINPROVIDER_CLASSNAME);
+  }
+  userProvider=UserMultiProvider.instantiate(PROPERTY_USERPROVIDER_CLASSNAME);
+  if (userProvider == null) {
+    throw new IllegalStateException("A class name for the user provider must be specified via openfire.xml or the system properties using property: " + PROPERTY_USERPROVIDER_CLASSNAME);
+  }
+}

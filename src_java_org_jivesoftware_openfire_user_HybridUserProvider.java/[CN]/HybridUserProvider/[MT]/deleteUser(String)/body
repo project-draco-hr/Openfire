@@ -1,13 +1,11 @@
 {
-  boolean isDeleted=false;
-  for (  UserProvider provider : userproviders) {
+  if (isReadOnly()) {
+    throw new UnsupportedOperationException();
+  }
+  for (  final UserProvider provider : getUserProviders()) {
     if (provider.isReadOnly()) {
       continue;
     }
     provider.deleteUser(username);
-    isDeleted=true;
-  }
-  if (!isDeleted) {
-    throw new UnsupportedOperationException();
   }
 }
