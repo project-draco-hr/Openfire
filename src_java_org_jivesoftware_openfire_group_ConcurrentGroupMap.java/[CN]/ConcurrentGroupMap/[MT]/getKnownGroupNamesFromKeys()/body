@@ -5,7 +5,7 @@ synchronized (this) {
       result=knownGroupNamesFromKeys;
       if (result == null) {
         result=new HashSet<>();
-        Iterator<K> iterator=keySet().iterator();
+        Iterator<K> iterator=((ConcurrentMap)this).keySet().iterator();
         while (iterator.hasNext()) {
           K key=iterator.next();
           Group group=Group.resolveFrom(key);
