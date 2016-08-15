@@ -3,23 +3,26 @@
   proxyServiceName=JiveGlobals.getProperty("xmpp.proxy.service","proxy");
   routingTable=server.getRoutingTable();
   router=server.getPacketRouter();
-  String interfaceName=JiveGlobals.getXMLProperty("network.interface");
-  bindInterface=null;
-  if (interfaceName != null) {
-    if (interfaceName.trim().length() > 0) {
-      try {
-        bindInterface=InetAddress.getByName(interfaceName);
-      }
- catch (      UnknownHostException e) {
-        Log.error("Error binding to network.interface",e);
-      }
+  final String hardCodedProxyIP=JiveGlobals.getProperty("xmpp.proxy.externalip");
+  final String interfaceName=JiveGlobals.getXMLProperty("network.interface");
+  if (hardCodedProxyIP != null && !hardCodedProxyIP.trim().isEmpty()) {
+    try {
+      bindInterface=InetAddress.getByName(hardCodedProxyIP.trim());
+    }
+ catch (    UnknownHostException e) {
+      Log.error("Error binding to xmpp.proxy.externalip '{}'",interfaceName,e);
     }
   }
-  try {
-    proxyIP=JiveGlobals.getProperty("xmpp.proxy.externalip",(bindInterface != null ? bindInterface.getHostAddress() : InetAddress.getLocalHost().getHostAddress()));
+ else   if (interfaceName != null && !interfaceName.trim().isEmpty()) {
+    try {
+      bindInterface=InetAddress.getByName(interfaceName.trim());
+    }
+ catch (    UnknownHostException e) {
+      Log.error("Error binding to network.interface '{}'",interfaceName,e);
+    }
   }
- catch (  UnknownHostException e) {
-    Log.error("Couldn't discover local host",e);
+ else {
+    bindInterface=null;
   }
   connectionManager=new ProxyConnectionManager(getFileTransferManager(server));
 }

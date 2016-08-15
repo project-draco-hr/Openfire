@@ -1,0 +1,22 @@
+{
+  final Set<InetAddress> result=new HashSet<>();
+  if (bindInterface != null) {
+    result.add(bindInterface);
+  }
+ else {
+    try {
+      final Enumeration<NetworkInterface> networkInterfaces=NetworkInterface.getNetworkInterfaces();
+      while (networkInterfaces.hasMoreElements()) {
+        final NetworkInterface networkInterface=networkInterfaces.nextElement();
+        final Enumeration<InetAddress> inetAddresses=networkInterface.getInetAddresses();
+        while (inetAddresses.hasMoreElements()) {
+          result.add(inetAddresses.nextElement());
+        }
+      }
+    }
+ catch (    SocketException e) {
+      Log.error("Error determining all addresses for this server",e);
+    }
+  }
+  return result;
+}

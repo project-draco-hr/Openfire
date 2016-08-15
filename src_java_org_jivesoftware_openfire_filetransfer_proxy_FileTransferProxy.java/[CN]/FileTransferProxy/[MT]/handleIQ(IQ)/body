@@ -21,14 +21,16 @@
     if (packet.getType() == IQ.Type.get) {
       IQ reply=IQ.createResultIQ(packet);
       Element newChild=reply.setChildElement("query",FileTransferManager.NAMESPACE_BYTESTREAMS);
-      Element response=newChild.addElement("streamhost");
-      response.addAttribute("jid",getServiceDomain());
-      response.addAttribute("host",proxyIP);
-      response.addAttribute("port",String.valueOf(connectionManager.getProxyPort()));
+      for (      InetAddress address : getAddresses()) {
+        Element response=newChild.addElement("streamhost");
+        response.addAttribute("jid",getServiceDomain());
+        response.addAttribute("host",address.getHostAddress());
+        response.addAttribute("port",String.valueOf(connectionManager.getProxyPort()));
+      }
       router.route(reply);
       return true;
     }
- else     if (packet.getType() == IQ.Type.set && childElement != null) {
+ else     if (packet.getType() == IQ.Type.set) {
       String sid=childElement.attributeValue("sid");
       JID from=packet.getFrom();
       JID to=new JID(childElement.elementTextTrim("activate"));
