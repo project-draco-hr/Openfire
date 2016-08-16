@@ -22,9 +22,20 @@
         return;
       }
     }
-    JID recipient=packet.getTo();
-    String roomName=recipient != null ? recipient.getNode() : null;
-    getChatUser(packet.getFrom(),roomName).process(packet);
+    if (packet.getTo().getNode() == null) {
+      if (packet instanceof IQ && ((IQ)packet).isRequest()) {
+        final IQ reply=IQ.createResultIQ((IQ)packet);
+        reply.setChildElement(((IQ)packet).getChildElement().createCopy());
+        reply.setError(PacketError.Condition.feature_not_implemented);
+        router.route(reply);
+      }
+      Log.debug("Ignoring stanza addressed at conference service: {}",packet.toXML());
+    }
+ else {
+      JID recipient=packet.getTo();
+      String roomName=recipient != null ? recipient.getNode() : null;
+      getChatUser(packet.getFrom(),roomName).process(packet);
+    }
   }
  catch (  Exception e) {
     Log.error(LocaleUtils.getLocalizedString("admin.error"),e);

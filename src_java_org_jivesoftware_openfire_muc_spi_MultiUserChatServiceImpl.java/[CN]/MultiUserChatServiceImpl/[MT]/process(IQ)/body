@@ -26,6 +26,9 @@
     IQ reply=XMPPServer.getInstance().getIQDiscoItemsHandler().handleIQ(iq);
     router.route(reply);
   }
+ else   if ("urn:xmpp:ping".equals(namespace)) {
+    router.route(IQ.createResultIQ(iq));
+  }
  else {
     return false;
   }
