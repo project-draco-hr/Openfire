@@ -8,7 +8,7 @@ synchronized (username.intern()) {
       flag=lockOutCache.get(username);
       if (flag == null) {
         flag=provider.getDisabledStatus(username);
-        lockOutCache.put(username,flag);
+        if (flag != null)         lockOutCache.put(username,flag);
       }
     }
   }
