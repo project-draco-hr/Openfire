@@ -3,7 +3,10 @@
   JID recipient=packet.getTo();
   String group=recipient.getNode();
   if (group == null) {
-    Log.info(LocaleUtils.getLocalizedString("muc.error.not-supported") + " " + packet.toString());
+    if (packet.isRequest()) {
+      sendErrorPacket(packet,PacketError.Condition.feature_not_implemented);
+    }
+    Log.warn(LocaleUtils.getLocalizedString("muc.error.not-supported") + " " + packet.toString());
   }
  else {
     MUCRole role=roles.get(group);
