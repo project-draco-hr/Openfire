@@ -1,0 +1,11 @@
+{
+  final SMPPSession session=new SMPPSession();
+  try {
+    session.connectAndBind(host,port,new BindParameter(BindType.BIND_TX,systemId,password,systemType,receiveTon,receiveNpi,null));
+    final String messageId=session.submitShortMessage(serviceType,sourceTon,sourceNpi,sourceAddress,destinationTon,destinationNpi,destinationAddress,esm,protocolId,priorityFlag,scheduleDeliveryTime,validityPeriod,registeredDelivery,replaceIfPresentFlag,dataCoding,smDefaultMsgId,message);
+    Log.debug("Message submitted, message_id is '{}'.",messageId);
+  }
+  finally {
+    session.unbindAndClose();
+  }
+}
