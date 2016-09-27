@@ -1,0 +1,62 @@
+{
+  Log.debug("importUser");
+  List<RosterItem> rosterItems=new ArrayList<RosterItem>();
+  List<OfflineMessage> offlineMessages=new ArrayList<OfflineMessage>();
+  Element vCardElement=null;
+  String userName=user.attributeValue(NAME_NAME);
+  String password=user.attributeValue(PASSWORD_NAME);
+  Iterator<Element> userElements=user.elementIterator();
+  while (userElements.hasNext()) {
+    Element userElement=userElements.next();
+    String nameElement=userElement.getName();
+    if (OFFLINE_MESSAGES_ELEMENT_NAME.equals(nameElement)) {
+      importOffLineMessages(userElement,offlineMessages);
+    }
+ else     if (QUERY_ELEMENT_NAME.equals(nameElement) && JABBER_IQ_ROSTER_NS.equals(userElement.getNamespaceURI())) {
+      importUserRoster(userElement,rosterItems,previousDomain);
+    }
+ else     if (V_CARD_NAME.equals(nameElement) && VCARD_TEMP_NS.equals(userElement.getNamespaceURI())) {
+      vCardElement=userElement;
+    }
+  }
+  if (userName != null) {
+    try {
+      userName=Stringprep.nodeprep(userName);
+      if (!isUserProviderReadOnly && (password != null)) {
+        userManager.createUser(userName,password,userName,null);
+      }
+      if (!isUserProviderReadOnly && vCardElement != null) {
+        try {
+          vCardManager.setVCard(userName,vCardElement);
+        }
+ catch (        Exception e) {
+          Log.warn("Error updating VCard:" + userName + ":"+ e.getMessage());
+          Log.debug("",e);
+        }
+      }
+      userManager.getUser(userName);
+      for (      RosterItem ri : rosterItems) {
+        rosterItemProvider.createItem(userName,ri);
+      }
+      for (      OfflineMessage offlineMessage : offlineMessages) {
+        offlineMessagesStore.addMessage(offlineMessage);
+      }
+    }
+ catch (    StringprepException se) {
+      Log.info("Invalid username " + userName);
+      invalidUsers.add(userName);
+    }
+catch (    UserAlreadyExistsException e) {
+      Log.info("User already exists " + userName);
+      invalidUsers.add(userName);
+    }
+catch (    UserNotFoundException e) {
+      Log.info("User not found " + userName);
+      invalidUsers.add(userName);
+    }
+catch (    Exception e) {
+      Log.warn("Error updating User:" + userName + ":"+ e.getLocalizedMessage());
+      invalidUsers.add(userName);
+    }
+  }
+}

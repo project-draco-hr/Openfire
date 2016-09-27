@@ -1,0 +1,16 @@
+{
+  URL url=this.getClass().getResource("test-openfire.xml");
+  File f=new File(url.getFile());
+  JiveGlobals.setConfigName(f.getName());
+  JiveGlobals.setHomeDirectory(f.getParent());
+  JiveGlobals.setProperty("provider.user.className","org.jivesoftware.openfire.plugin.TestUserProvider");
+  offlineMessagesStore=new TestOfflineMessageStore();
+  vCardManager=new TestVCardManager();
+  privateStorage=null;
+  userManager=UserManager.getInstance();
+  rosterItemProvider=new TestRosterItemProvider();
+  List<User> l=new ArrayList<>(userManager.getUsers());
+  for (  User user : l) {
+    userManager.deleteUser(user);
+  }
+}

@@ -1,0 +1,21 @@
+{
+  Log.debug("importOffLineMessages");
+  Iterator<Element> messageIter=userElement.elementIterator(MESSAGE_ELEMENT_NAME);
+  while (messageIter.hasNext()) {
+    Element msgElement=messageIter.next();
+    String creationDateStr=null;
+    if (msgElement.element(DELAY_ELEMENT_NAME) != null) {
+      creationDateStr=msgElement.element(DELAY_ELEMENT_NAME).attributeValue(STAMP_NAME);
+    }
+    Date creationDate=null;
+    try {
+      if (creationDateStr != null) {
+        creationDate=dateformater.parse(creationDateStr);
+      }
+    }
+ catch (    ParseException e) {
+      Log.warn("Date not parsable:" + e.getLocalizedMessage());
+    }
+    offlineMessages.add(new OfflineMessage(creationDate,msgElement));
+  }
+}

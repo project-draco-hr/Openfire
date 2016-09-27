@@ -1,0 +1,14 @@
+{
+  List<String> invalidUsers=new ArrayList<String>();
+  Element hosts=document.getRootElement();
+  Iterator<Element> hostsIter=hosts.elementIterator(HOST_ELEMENT_NAME);
+  while (hostsIter.hasNext()) {
+    Element host=hostsIter.next();
+    Iterator<Element> usersIter=host.elementIterator(USER_ELEMENT_NAME);
+    while (usersIter.hasNext()) {
+      Element user=usersIter.next();
+      importUser(user,previousDomain,isUserProviderReadOnly,invalidUsers);
+    }
+  }
+  return invalidUsers;
+}

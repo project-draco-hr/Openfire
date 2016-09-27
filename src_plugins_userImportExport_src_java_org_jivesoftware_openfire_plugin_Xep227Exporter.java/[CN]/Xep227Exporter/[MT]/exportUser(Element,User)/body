@@ -1,0 +1,16 @@
+{
+  String userName=user.getUsername();
+  userElement.addAttribute(NAME_NAME,userName);
+  try {
+    String pw=AuthFactory.getPassword(userName);
+    userElement.addAttribute(PASSWORD_NAME,pw);
+  }
+ catch (  UserNotFoundException e) {
+    Log.info("User " + userName + " not found, setting their password to their username");
+    userElement.addAttribute(PASSWORD_NAME,userName);
+  }
+catch (  UnsupportedOperationException e) {
+    Log.info("Unable to retrieve " + userName + " password, setting their password to their username");
+    userElement.addAttribute(PASSWORD_NAME,userName);
+  }
+}

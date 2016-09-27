@@ -1,0 +1,20 @@
+{
+  logger.finest("testImportIncludeUser");
+  InExporter testobject=new Xep227Exporter("serverName",offlineMessagesStore,vCardManager,privateStorage,userManager,rosterItemProvider);
+  String IMPORT_FILE_NAME="/test-export-xinclude/xep227.xml";
+  URL streamurl=this.getClass().getResource(IMPORT_FILE_NAME);
+  assertNotNull(streamurl);
+  logger.fine("testImportIncludeUser:" + streamurl.getFile());
+  InputStream stream=new FileInputStream(streamurl.getFile());
+  assertTrue("Invalid input",testobject.validate(stream));
+  stream.close();
+  String previousDomain=null;
+  boolean isUserProviderReadOnly=false;
+  stream=this.getClass().getResourceAsStream(IMPORT_FILE_NAME);
+  List<String> res=testobject.importUsers(stream,previousDomain,isUserProviderReadOnly);
+  assertNotNull(res);
+  assertEquals(0,res.size());
+  stream.close();
+  Collection<User> users=userManager.getUsers();
+  assertEquals(2,users.size());
+}

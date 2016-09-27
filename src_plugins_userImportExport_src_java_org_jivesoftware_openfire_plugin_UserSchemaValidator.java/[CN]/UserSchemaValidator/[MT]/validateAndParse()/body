@@ -1,0 +1,45 @@
+{
+  ValidatorErrorHandler handler=new ValidatorErrorHandler();
+  try {
+    DocumentBuilderFactory documentBuilderFactory=DocumentBuilderFactory.newInstance();
+    documentBuilderFactory.setNamespaceAware(true);
+    documentBuilderFactory.setXIncludeAware(true);
+    documentBuilderFactory.setValidating(false);
+    documentBuilderFactory.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris",false);
+    documentBuilderFactory.setFeature("http://apache.org/xml/features/xinclude/fixup-language",false);
+    if (schemaSources.length > 0) {
+      Log.info("Checking Schema's");
+      SchemaFactory schemaFactory=SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+      schemaFactory.setErrorHandler(handler);
+      Schema schema=schemaFactory.newSchema(schemaSources);
+      documentBuilderFactory.setSchema(schema);
+      Log.info("Start validating document");
+    }
+ else {
+      Log.info("Loading document");
+    }
+    DocumentBuilder documentBuilder=documentBuilderFactory.newDocumentBuilder();
+    handler.reset();
+    documentBuilder.setEntityResolver(new EntityResolver(){
+      @Override public InputSource resolveEntity(      String publicId,      String systemId) throws SAXException, IOException {
+        Log.info(String.format("resolved Entity:%s %s",(publicId != null ? publicId : ""),systemId));
+        return null;
+      }
+    }
+);
+    documentBuilder.setErrorHandler(handler);
+    Document result=documentBuilder.parse(source);
+    if (result != null && handler.isValid()) {
+      return result;
+    }
+ else {
+      Log.warn(String.format("document is invalid. %1$d errors found.",handler.getNrOfErrors()));
+      return null;
+    }
+  }
+ catch (  Exception e) {
+    Log.warn(String.format("document validation failed. %1$d errors found.",handler.getNrOfErrors()));
+    Log.debug("",e);
+    return null;
+  }
+}

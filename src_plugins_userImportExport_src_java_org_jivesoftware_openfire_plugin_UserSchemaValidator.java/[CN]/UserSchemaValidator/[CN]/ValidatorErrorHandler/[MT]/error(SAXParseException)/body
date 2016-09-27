@@ -1,3 +1,9 @@
 {
-  Log.error("ERROR:" + e);
+  if (e.getMessage().contains(STRICT_DECLARATION_MSG)) {
+    Log.warn("This error indicates there is no XML Schema to validate the refered element: " + e.getLocalizedMessage());
+  }
+ else {
+    Log.warn("ERROR:" + e.getLocalizedMessage());
+    nrOfErrors++;
+  }
 }
