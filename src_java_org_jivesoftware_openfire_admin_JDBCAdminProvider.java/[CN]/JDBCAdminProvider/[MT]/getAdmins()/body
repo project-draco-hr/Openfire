@@ -1,0 +1,22 @@
+{
+  Connection con=null;
+  PreparedStatement pstmt=null;
+  ResultSet rs=null;
+  List<JID> jids=new ArrayList<>();
+  try {
+    con=getConnection();
+    pstmt=con.prepareStatement(getAdminsSQL);
+    rs=pstmt.executeQuery();
+    while (rs.next()) {
+      String name=rs.getString(1);
+      jids.add(new JID(name + "@" + xmppDomain));
+    }
+    return jids;
+  }
+ catch (  SQLException e) {
+    throw new RuntimeException(e);
+  }
+ finally {
+    DbConnectionManager.closeConnection(rs,pstmt,con);
+  }
+}
