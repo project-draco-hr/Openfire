@@ -1,0 +1,19 @@
+{
+  JiveGlobals.migrateProperty("jdbcProvider.driver");
+  JiveGlobals.migrateProperty("jdbcProvider.connectionString");
+  JiveGlobals.migrateProperty("jdbcAdminProvider.getAdminsSQL");
+  xmppDomain=JiveGlobals.getProperty("xmpp.domain");
+  useConnectionProvider=JiveGlobals.getBooleanProperty("jdbcAdminProvider.useConnectionProvider");
+  getAdminsSQL=JiveGlobals.getProperty("jdbcAdminProvider.getAdminsSQL");
+  if (!useConnectionProvider) {
+    String jdbcDriver=JiveGlobals.getProperty("jdbcProvider.driver");
+    try {
+      Class.forName(jdbcDriver).newInstance();
+    }
+ catch (    Exception e) {
+      Log.error("Unable to load JDBC driver: " + jdbcDriver,e);
+      return;
+    }
+    connectionString=JiveGlobals.getProperty("jdbcProvider.connectionString");
+  }
+}
