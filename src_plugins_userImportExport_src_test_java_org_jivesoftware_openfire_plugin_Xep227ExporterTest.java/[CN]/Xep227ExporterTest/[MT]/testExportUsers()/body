@@ -1,0 +1,24 @@
+{
+  InExporter testobject=new Xep227Exporter("serverName",offlineMessagesStore,vCardManager,privateStorage,userManager,null);
+  for (int i=0; i < 10; i++) {
+    userManager.createUser("username" + i,"pw","name" + i,"email" + i);
+  }
+  Document result=testobject.exportUsers();
+  assertNotNull(result);
+  assertEquals(1,result.nodeCount());
+  assertNotNull(result.node(0));
+  Element elem=((Element)result.node(0));
+  assertEquals(1,elem.nodeCount());
+  assertNotNull(elem.node(0));
+  elem=((Element)elem.node(0));
+  assertEquals(10,elem.nodeCount());
+  assertNotNull(elem.node(0));
+  elem=((Element)elem.node(0));
+  assertEquals(3,elem.nodeCount());
+  assertEquals(2,elem.attributeCount());
+  ByteArrayOutputStream out=new ByteArrayOutputStream();
+  XMLWriter writer=new XMLWriter(out,OutputFormat.createPrettyPrint());
+  writer.write(result);
+  logger.fine(out.toString());
+  assertTrue("Invalid input",testobject.validate(new ByteArrayInputStream(out.toByteArray())));
+}

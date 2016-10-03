@@ -1,0 +1,18 @@
+{
+  Log.debug("exportUsers");
+  Document document=DocumentHelper.createDocument();
+  Element root=document.addElement(SERVER_DATA_ELEMENT_NAME,URN_XMPP_PIE_0_NS);
+  Element host=root.addElement(HOST_ELEMENT_NAME);
+  host.addAttribute(JID_NAME,serverName);
+  Collection<User> users=userManager.getUsers();
+  for (  User user : users) {
+    String userName=user.getUsername();
+    Element userElement=host.addElement(USER_ELEMENT_NAME);
+    exportUser(userElement,user);
+    exportOfflineMessages(serverName,userElement,userName);
+    exportRoster(userElement,user);
+    exportVCard(userElement,userName);
+    exportPrivateStorage(userName,userElement);
+  }
+  return document;
+}

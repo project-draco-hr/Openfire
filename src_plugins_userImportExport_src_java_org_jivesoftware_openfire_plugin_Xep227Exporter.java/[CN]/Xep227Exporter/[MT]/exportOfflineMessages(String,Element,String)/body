@@ -1,0 +1,21 @@
+{
+  Collection<OfflineMessage> offlineMessages=offlineMessagesStore.getMessages(userName,false);
+  if (!offlineMessages.isEmpty()) {
+    Element offlineElement=userElement.addElement(OFFLINE_MESSAGES_ELEMENT_NAME);
+    for (    OfflineMessage offMessage : offlineMessages) {
+      Element messageElement=offlineElement.addElement(new QName(MESSAGE_ELEMENT_NAME,JABBER_MSG_NS));
+      for (      Object att : offMessage.getElement().attributes()) {
+        Attribute attribute=(Attribute)att;
+        messageElement.addAttribute(attribute.getQName(),attribute.getValue());
+      }
+      for (Iterator<Element> iterator=offMessage.getElement().elementIterator(); iterator.hasNext(); ) {
+        Element element=iterator.next();
+        messageElement.add(element.createCopy(new QName(element.getName(),(element.getNamespace() == Namespace.NO_NAMESPACE ? JABBER_MSG_NS : element.getNamespace()))));
+      }
+      Element delayElement=messageElement.addElement("delay","urn:xmpp:delay");
+      delayElement.addAttribute(FROM_NAME,hostname);
+      delayElement.addAttribute("stamp",XMPPDateTimeFormat.format(offMessage.getCreationDate()));
+      delayElement.addText("Offline Storage");
+    }
+  }
+}

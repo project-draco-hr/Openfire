@@ -1,0 +1,15 @@
+{
+  logger.finest("testImportUser");
+  InExporter testobject=new OpenfireExporter("serverName",userManager,rosterItemProvider);
+  String TEST_IMPORT_FILE="test-openfire-import.xml";
+  InputStream stream=this.getClass().getResourceAsStream(TEST_IMPORT_FILE);
+  assertTrue("Invalid input",testobject.validate(stream));
+  stream.close();
+  String previousDomain=null;
+  boolean isUserProviderReadOnly=false;
+  stream=this.getClass().getResourceAsStream(TEST_IMPORT_FILE);
+  List<String> res=testobject.importUsers(stream,previousDomain,isUserProviderReadOnly);
+  assertNotNull(res);
+  assertEquals(0,res.size());
+  stream.close();
+}

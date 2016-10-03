@@ -1,0 +1,30 @@
+{
+  Log.debug("importUserRoster");
+  Iterator<Element> rosterIter=userElement.elementIterator(ITEM_ELEMENT_NAME);
+  while (rosterIter.hasNext()) {
+    Element rosterElement=rosterIter.next();
+    String jid=rosterElement.attributeValue(JID_NAME);
+    String nickname=rosterElement.attributeValue(NAME_NAME);
+    String substatus=rosterElement.attributeValue(SUBSCRIPTION_NAME);
+    String askstatus=rosterElement.attributeValue(ASK_NAME);
+    List<String> groups=new ArrayList<String>();
+    Iterator<Element> groupIter=rosterElement.elementIterator(GROUP_ELEMENT_NAME);
+    while (groupIter.hasNext()) {
+      Element group=groupIter.next();
+      String groupName=group.getText();
+      if (groupName != null && groupName.trim().length() > 0) {
+        groups.add(groupName);
+      }
+    }
+    if (previousDomain != null && jid != null) {
+      jid=jid.replace(previousDomain,serverName);
+    }
+    try {
+      rosterItems.add(new RosterItem(new JID(jid),(substatus != null ? SubType.valueOf(substatus.toUpperCase()) : SubType.BOTH),(ASK_SUBSCRIBE_ENUM.equals(askstatus) ? AskType.SUBSCRIBE : AskType.NONE),RecvType.NONE,nickname,groups));
+    }
+ catch (    Exception e) {
+      Log.warn("Adding User Roster failed:" + e.getLocalizedMessage());
+      Log.debug("",e);
+    }
+  }
+}

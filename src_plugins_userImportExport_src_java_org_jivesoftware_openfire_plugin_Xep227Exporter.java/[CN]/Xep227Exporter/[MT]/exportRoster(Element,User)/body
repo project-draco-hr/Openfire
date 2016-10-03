@@ -1,0 +1,18 @@
+{
+  Element rosterElement=userElement.addElement(QUERY_ELEMENT_NAME,JABBER_IQ_ROSTER_NS);
+  Collection<RosterItem> roster=user.getRoster().getRosterItems();
+  for (  RosterItem ri : roster) {
+    Element itemElement=rosterElement.addElement(ITEM_ELEMENT_NAME);
+    itemElement.addAttribute(JID_NAME,ri.getJid().toBareJID());
+    itemElement.addAttribute(NAME_NAME,ri.getNickname());
+    itemElement.addAttribute(SUBSCRIPTION_NAME,ri.getSubStatus().getName());
+    if (ri.getAskStatus() == AskType.SUBSCRIBE) {
+      itemElement.addAttribute(ASK_NAME,ASK_SUBSCRIBE_ENUM);
+    }
+    Element groupElement=itemElement.addElement(GROUP_ELEMENT_NAME);
+    List<String> groups=ri.getGroups();
+    for (    String group : groups) {
+      groupElement.addText(group);
+    }
+  }
+}

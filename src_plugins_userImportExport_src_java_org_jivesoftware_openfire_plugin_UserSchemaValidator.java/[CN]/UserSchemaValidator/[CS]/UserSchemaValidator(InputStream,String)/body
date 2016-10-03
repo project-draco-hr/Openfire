@@ -1,0 +1,21 @@
+{
+  this.source=source;
+  List<Source> sourceList=new ArrayList<Source>();
+  for (  String schema : schemaFile) {
+    try {
+      URL schemaURL=this.getClass().getClassLoader().getResource(schema);
+      if (schemaURL != null) {
+        sourceList.add(new StreamSource(schemaURL.openStream()));
+      }
+ else {
+        Log.warn("Cannot find schema definition " + schema);
+      }
+    }
+ catch (    IOException e) {
+      Log.warn("Cannot open schema definition " + schema + " : "+ e.getMessage());
+      Log.debug("",e);
+    }
+  }
+  schemaSources=new Source[sourceList.size()];
+  sourceList.toArray(schemaSources);
+}
